@@ -37,4 +37,9 @@ class Status extends Model
       return url($url);
     }
 
+    public function likes()
+    {
+      return $this->hasMany(Like::class);
+    }
+
 }
