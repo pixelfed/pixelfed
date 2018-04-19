@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+
+    public function url()
+    {
+        return url('/' . $this->username);
+    }
 }
