@@ -4,10 +4,24 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
-use App\{Media, Status, User};
+use App\{Media, Profile, Status, User};
+use Vinkla\Hashids\Facades\Hashids;
 
 class StatusController extends Controller
 {
+    public function show(Request $request, $username, $hashid)
+    {
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $id = Hashids::decode($hashid);
+      if(empty($id)) {
+        abort(404);
+      } else {
+        $id = $id[0];
+      }
+      $status = Status::whereProfileId($user->id)->findOrFail($id);
+      return view('status.show', compact('user', 'status'));
+    }
+
     public function store(Request $request)
     {
       if(Auth::check() == false)
@@ -41,6 +55,6 @@ class StatusController extends Controller
       $media->mime = $request->file('photo')->getClientMimeType();
       $media->save();
       
-      return [$media, $request->all()];
+      return redirect($status->url());
     }
 }
