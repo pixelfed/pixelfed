@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\{Status, User};
 
 class TimelineController extends Controller
 {
@@ -13,6 +14,7 @@ class TimelineController extends Controller
 
     public function personal()
     {
-      return view('timeline.personal');
+      $timeline = Status::orderBy('id','desc')->paginate(10);
+      return view('timeline.personal', compact('timeline'));
     }
 }
