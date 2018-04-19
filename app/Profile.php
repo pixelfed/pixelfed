@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Profile extends Model
 {
+    public function url()
+    {
+        return url('/' . $this->username);
+    }
+    
     public function statuses()
     {
       return $this->hasMany(Status::class);
@@ -33,5 +38,10 @@ class Profile extends Model
         'id',
         'id'
       );
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 }
