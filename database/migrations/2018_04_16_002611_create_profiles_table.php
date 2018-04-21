@@ -16,14 +16,25 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable();
-            $table->string('username')->nullable()->unique()->index();
+            $table->string('domain')->nullable();
+            $table->string('username')->nullable()->index();
             $table->string('name')->nullable();
             $table->string('bio', 150)->nullable();
             $table->string('location')->nullable();
             $table->string('website')->nullable();
-            $table->string('remote_url')->nullable();
             $table->text('keybase_proof')->nullable();
             $table->boolean('is_private')->default(false);
+            // PuSH/WebSub
+            $table->string('verify_token')->nullable();
+            $table->string('secret')->nullable();
+            // RSA Key Pair
+            $table->text('private_key')->nullable();
+            $table->text('public_key')->nullable();
+            // URLs
+            $table->string('remote_url')->nullable();
+            $table->string('salmon_url')->nullable();
+            $table->string('hub_url')->nullable();
+            $table->unique(['domain', 'username']);
             $table->timestamps();
         });
     }
