@@ -6,6 +6,10 @@ class Nickname {
 
     public static function normalizeProfileUrl($url)
     {
+      if(starts_with($url, 'acct:')) {
+        $url = str_replace('acct:', '', $url);
+      }
+
       if(!str_contains($url, '@') && filter_var($url, FILTER_VALIDATE_URL)) {
         $parsed = parse_url($url);
         $username = str_replace(['/','\\','@'], '', $parsed['path']);
