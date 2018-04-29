@@ -19,6 +19,7 @@ class CreateLikesTable extends Migration
             $table->bigInteger('status_id')->unsigned();
             // Flag to remove spammy profile_ids
             $table->boolean('flagged')->default(false);
+            $table->unique(['profile_id', 'status_id']);
             $table->timestamps();
         });
     }
