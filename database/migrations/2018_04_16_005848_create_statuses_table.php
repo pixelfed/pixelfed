@@ -15,9 +15,22 @@ class CreateStatusesTable extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('profile_id')->nullable();
+            $table->string('uri')->nullable();          
             $table->string('caption')->nullable();
-            $table->boolean('is_nsfw')->default(false);          
+            $table->unsignedInteger('profile_id')->nullable();
+            $table->bigInteger('in_reply_to_id')->unsigned()->nullable();
+            $table->bigInteger('reblog_of_id')->unsigned()->nullable();
+            $table->string('url')->nullable();
+            $table->boolean('is_nsfw')->default(false);
+            $table->enum('visibility', ['public', 'unlisted', 'private', 'direct'])->default('public');
+            $table->boolean('reply')->default(false);
+            $table->bigInteger('likes_count')->unsigned()->default(0);
+            $table->bigInteger('reblogs_count')->unsigned()->default(0);
+            $table->string('language')->nullable();
+            $table->bigInteger('conversation_id')->unsigned()->nullable();
+            $table->boolean('local')->default(true);
+            $table->bigInteger('application_id')
+            $table->bigInteger('in_reply_to_profile_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }
