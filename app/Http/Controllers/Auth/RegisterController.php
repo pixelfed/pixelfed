@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\Util\Lexer\RestrictedNames;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -48,6 +49,8 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $this->validateUsername($data['username']);
+        
         return Validator::make($data, [
             'name' => 'required|string|max:255',
             'username' => 'required|alpha_dash|min:2|max:15|unique:users',
@@ -70,5 +73,14 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function validateUsername($username)
+    {
+        $restricted = RestrictedNames::get();
+
+        if(in_array($username, $restricted)) {
+            return abort(403);
+        }
     }
 }
