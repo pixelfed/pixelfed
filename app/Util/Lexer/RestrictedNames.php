@@ -58,6 +58,7 @@ class RestrictedNames {
      "isatap",
      "it",
      "js",
+     "liltay",
      "localdomain",
      "localhost",
      "login",
