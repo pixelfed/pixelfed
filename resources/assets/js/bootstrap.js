@@ -10,8 +10,16 @@ window.Popper = require('popper.js').default;
 
 try {
     window.$ = window.jQuery = require('jquery');
-
     require('bootstrap');
+    window.InfiniteScroll = require('infinite-scroll');
+    window.filesize = require('filesize');
+    window.typeahead = require('./lib/typeahead');
+    window.Bloodhound = require('./lib/bloodhound');
+
+    require('./components/localstorage');
+    require('./components/likebutton');
+    require('./components/commentform');
+    require('./components/searchform');
 } catch (e) {}
 
 /**
