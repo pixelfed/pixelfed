@@ -1,4 +1,79 @@
+body, button, input, textarea {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",
+                 Roboto,Helvetica,Arial,sans-serif;
+}
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+@media (min-width: 1200px) {
+  .container {
+      max-width: 935px;
+  }
+}
+
+.text-dark {
+  color: #212529 !important;
+}
+
+.search-form {
+  min-width: 125px;
+  width: 265px;
+}
+
+.search-form input,
+.search-form .form-inline,
+.search-form .form-control {
+  width: 100%;
+}
+
+.settings-nav .active {
+  border-left: 2px solid #6c757d !important
+}
+
+.settings-nav .active .nav-link{
+  font-weight: bold;
+}
+
+.card-disabled {
+  background-color: rgba(245, 245, 245, 1);
+  opacity: .4;
+}
+
+.card.status-container {
+}
+
+.card.status-container .status-photo {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-align: center !important;
+  -ms-flex-align: center !important;
+  align-items: center !important;
+  padding: 0;
+  background-color: #fff;
+}
+
+.card.status-container .status-comments {
+  height: 220px;
+  overflow-y: scroll;
+  border-bottom:1px solid rgba(0, 0, 0, 0.1);
+}
+
+.card.status-container.orientation-square .status-comments {
+  height: 360px !important;
+}
+
+.card.status-container.orientation-portrait .status-comments {
+  height: 528px !important;
+}
+
+.no-caret.dropdown-toggle {
+  text-decoration: none !important;
+}
+
+.no-caret.dropdown-toggle::after {
+  display:none;
 }
