@@ -14,7 +14,7 @@ class CreateProfilesTable extends Migration
     public function up()
     {
         Schema::create('profiles', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->unsignedInteger('user_id')->nullable();
             $table->string('domain')->nullable();
             $table->string('username')->nullable()->index();
@@ -24,6 +24,8 @@ class CreateProfilesTable extends Migration
             $table->string('website')->nullable();
             $table->text('keybase_proof')->nullable();
             $table->boolean('is_private')->default(false);
+            // ActivityPub
+            $table->string('sharedInbox')->nullable()->index();
             // PuSH/WebSub
             $table->string('verify_token')->nullable();
             $table->string('secret')->nullable();

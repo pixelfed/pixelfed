@@ -14,10 +14,11 @@ class CreateStatusesTable extends Migration
     public function up()
     {
         Schema::create('statuses', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('uri')->nullable();          
             $table->string('caption')->nullable();
-            $table->unsignedInteger('profile_id')->nullable();
+            $table->text('rendered')->nullable();
+            $table->bigInteger('profile_id')->unsigned()->nullable();
             $table->bigInteger('in_reply_to_id')->unsigned()->nullable();
             $table->bigInteger('reblog_of_id')->unsigned()->nullable();
             $table->string('url')->nullable();
@@ -29,8 +30,9 @@ class CreateStatusesTable extends Migration
             $table->string('language')->nullable();
             $table->bigInteger('conversation_id')->unsigned()->nullable();
             $table->boolean('local')->default(true);
-            $table->bigInteger('application_id')
+            $table->bigInteger('application_id')->unsigned()->nullable();
             $table->bigInteger('in_reply_to_profile_id')->unsigned()->nullable();
+            $table->json('entities')->nullable();
             $table->timestamps();
         });
     }

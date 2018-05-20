@@ -15,14 +15,18 @@ class CreateMediaTable extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('status_id')->nullable();
-            $table->unsignedInteger('profile_id')->nullable();
-            $table->unsignedInteger('user_id')->nullable();
+            $table->bigInteger('status_id')->unsigned()->nullable();
+            $table->bigInteger('profile_id')->unsigned()->nullable();
+            $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('media_path');
+            $table->string('thumbnail_path')->nullable();
             $table->string('cdn_url')->nullable();
+            $table->string('optimized_url')->nullable();
+            $table->string('thumbnail_url')->nullable();
             $table->tinyInteger('order')->unsigned()->default(1);
             $table->string('mime')->nullable();
             $table->unsignedInteger('size')->nullable();
+            $table->string('orientation')->nullable();
             $table->timestamp('processed_at')->nullable();
             $table->unique(['status_id', 'media_path']);
             $table->timestamps();
