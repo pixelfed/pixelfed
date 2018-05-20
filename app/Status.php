@@ -23,11 +23,16 @@ class Status extends Model
       return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
     }
 
+    public function thumb()
+    {
+      return url(Storage::url($this->firstMedia()->thumbnail_path));
+    }
+
     public function url()
     {
-      $hid = Hashids::encode($this->id);
+      $id = $this->id;
       $username = $this->profile->username;
-      return url("/p/@{$username}/{$hid}");
+      return url(config('app.url') . "/p/@{$username}/{$id}");
     }
 
     public function mediaUrl()
@@ -44,7 +49,51 @@ class Status extends Model
 
     public function comments()
     {
-      return $this->hasMany(Comment::class);
+      return $this->hasMany(Status::class, 'in_reply_to_id');
+    }
+
+    public function parent()
+    {
+      if(!empty($this->in_reply_to_id)) {
+        return Status::findOrFail($this->in_reply_to_id);
+      }
+    }
+
+    public function conversation()
+    {
+      return $this->hasOne(Conversation::class);
+    }
+
+    public function hashtags()
+    {
+      return $this->hasManyThrough(
+        Hashtag::class,
+        StatusHashtag::class,
+        'status_id',
+        'id',
+        'id',
+        'hashtag_id'
+      );
+    }
+
+    public function toActivityStream()
+    {
+      $media = $this->media;
+      $mediaCollection = [];
+      foreach($media as $image) {
+        $mediaCollection[] = [
+          "type" => "Link",
+          "href" => $image->url(),
+          "mediaType" => $image->mime
+        ];
+      }
+      $obj = [
+        "@context" => "https://www.w3.org/ns/activitystreams",
+        "type" => "Image",
+        "name" => null,
+        "url" => $mediaCollection
+      ];
+      return $obj;
     }
 
 }
