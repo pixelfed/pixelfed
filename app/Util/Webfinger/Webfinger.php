@@ -53,48 +53,22 @@ class Webfinger {
         'href' => $user->url()
       ],
       [
-        'rel' => 'http://gmpg.org/xfn/11',
-        'type' => 'text/html',
-        'href' => $user->url()
-      ],
-      [
-        'rel' => 'describedby',
-        'type' => 'application\/rdf+xml',
-        'href' => $user->url('/foaf')
-      ],
-      [
-        'rel' => 'http://apinamespace.org/atom',
-        'type' => 'application/atomsvc+xml',
-        'href' => url('/api/statusnet/app/service/admin.xml')
-      ],
-      [
-        'rel' => 'http://apinamespace.org/twitter',
-        'href' => url('/api/')
-      ],
-      [
-        'rel' => 'http://specs.openid.net/auth/2.0/provider',
-        'href' => $user->url()
-      ],
-      [
         'rel' => 'http://schemas.google.com/g/2010#updates-from',
         'type' => 'application/atom+xml',
-        'href' => url("/api/statuses/user_timeline/{$user->id}.atom")
+        'href' => url("/users/{$user->username}.atom")
+      ],
+      [
+        'rel' => 'self',
+        'type' => 'application/activity+json',
+        'href' => $user->permalink()
       ],
       [
         'rel' => 'magic-public-key',
-        'href' => ''
+        'href' => null//$user->public_key
       ],
       [
         'rel' => 'salmon',
-        'href' => $user->url('/salmon')
-      ],
-      [
-        'rel' => 'http://salmon-protocol.org/ns/salmon-replies',
-        'href' => $user->url('/salmon')
-      ],
-      [
-        'rel' => 'http://salmon-protocol.org/ns/salmon-mention',
-        'href' => $user->url('/salmon')
+        'href' => $user->permalink('/salmon')
       ],
       [
         'rel' => 'http://ostatus.org/schema/1.0/subscribe',
