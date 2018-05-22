@@ -3,14 +3,32 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Storage;
 
 class Profile extends Model
 {
-    public function url()
+    protected $hidden = [
+        'private_key',
+    ];
+
+    protected $visible = ['id', 'username', 'name'];
+
+    public function url($suffix = '')
     {
-        return url('/' . $this->username);
+        return url('/@' . $this->username . $suffix);
+    }
+
+    public function permalink($suffix = '')
+    {
+        return url('users/' . $this->username . $suffix);
     }
     
+    public function emailUrl()
+    {
+        $domain = parse_url(config('app.url'), PHP_URL_HOST);
+        return $this->username . '@' . $domain;
+    }
+
     public function statuses()
     {
       return $this->hasMany(Status::class);
@@ -43,5 +61,16 @@ class Profile extends Model
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function avatar()
+    {
+        return $this->hasOne(Avatar::class);
+    }
+
+    public function avatarUrl()
+    {
+        $url = url(Storage::url($this->avatar->media_path ?? 'public/avatars/default.png'));
+        return $url;
     }
 }
