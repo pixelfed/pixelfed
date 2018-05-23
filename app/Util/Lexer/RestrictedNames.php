@@ -4,10 +4,9 @@ namespace App\Util\Lexer;
 
 class RestrictedNames {
 
-  static $restricted = [
+  static $blacklist = [
      "about",
      "abuse",
-     "admin",
      "administrator",
      "app",
      "autoconfig",
@@ -38,16 +37,12 @@ class RestrictedNames {
      "faq",
      "faqs",
      "features",
-     "federation",
-     "fediverse",
      "ftp",
      "guest",
      "guests",
      "help",
-     "horizon",
      "hostmaster",
      "hostmaster",
-     "i",
      "image",
      "images",
      "imap",
@@ -58,7 +53,6 @@ class RestrictedNames {
      "isatap",
      "it",
      "js",
-     "liltay",
      "localdomain",
      "localhost",
      "login",
@@ -89,9 +83,6 @@ class RestrictedNames {
      "ns8",
      "ns9",
      "owner",
-     "pixelfed",
-     "pixelfed-support",
-     "pixelfed_support",
      "pop",
      "pop3",
      "postmaster",
@@ -125,9 +116,38 @@ class RestrictedNames {
      "www"
    ];
 
+  static $reserved = [
+     // Reserved for instance admin
+     "admin",
+
+     // Static Assets
+     "assets",
+
+     // Laravel Horizon
+     "horizon",
+
+     // Reserved route
+     "i",
+
+     // Official accounts
+     "pixelfed",
+     "pixelfed-support",
+     "pixelfed_support",
+  ];
+
   public static function get()
   {
-    return self::$restricted;
+     
+     $reserved = $blacklist = [];
+
+     if(true == config('pixelfed.restricted_names.use_blacklist')) {
+          $blacklist = self::$blacklist;
+     }
+
+     if(true == config('pixelfed.restricted_names.reserved_routes')) {
+          $reserved = self::$reserved;
+     }
+     return array_merge($blacklist, $reserved);
   }
 
 }
