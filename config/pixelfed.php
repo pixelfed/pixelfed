@@ -15,4 +15,6 @@ return [
     'use_blacklist' => false
   ],
   
+  'open_registration' => env('OPEN_REGISTRATION', true),
+  
 ];

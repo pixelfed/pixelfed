@@ -39,6 +39,7 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+        $this->openRegistrationCheck();
     }
 
     /**
@@ -81,6 +82,14 @@ class RegisterController extends Controller
 
         if(in_array($username, $restricted)) {
             return abort(403);
+        }
+    }
+
+    public function openRegistrationCheck()
+    {
+        $openRegistration = config('pixelfed.open_registration');
+        if(false == $openRegistration) {
+            abort(403);
         }
     }
 }
