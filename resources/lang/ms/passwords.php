@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Passwords must be at least six characters and match the confirmation.',
+    'password' => 'Kata laluan mesti mempunyai sekurang-kurangnya enam askara dan sepadan dengan pengesahan.',
     'reset' => 'Kata laluan anda sudah ditetap semula!',
-    'sent' => 'We have e-mailed your password reset link!',
-    'token' => 'This password reset token is invalid.',
+    'sent' => 'Kami sudah emel pautan penetapan semula kata laluan anda!',
+    'token' => 'Token penetapan semula kata laluan ini tidak sah.',
     'user' => "Kami tidak menjumpai pengguna dengan alamat emel tersebut.",
 
 ];
