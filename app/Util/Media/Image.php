@@ -106,8 +106,8 @@ class Image {
 
     try {
       $img = Intervention::make($file);
-      $img->fit($aspect['width'], $aspect['height'], function ($constraint) {
-        $constraint->upsize();
+      $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
+        $constraint->aspectRatio();
       });
       $converted = $this->convertPngToJpeg($path, $thumbnail, $img->extension);
       $newPath = storage_path('app/'.$converted['path']);
