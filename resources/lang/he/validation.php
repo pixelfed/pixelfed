@@ -13,16 +13,16 @@ return [
     |
     */
 
-    'accepted'             => 'ה- :attribute must be accepted.',
-    'active_url'           => 'ה- :attribute is not a valid URL.',
-    'after'                => 'ה- :attribute must be a date after :date.',
-    'after_or_equal'       => 'ה- :attribute must be a date after or equal to :date.',
-    'alpha'                => 'ה- :attribute may only contain letters.',
-    'alpha_dash'           => 'ה- :attribute may only contain letters, numbers, and dashes.',
-    'alpha_num'            => 'ה- :attribute may only contain letters and numbers.',
-    'array'                => 'ה- :attribute must be an array.',
-    'before'               => 'ה- :attribute must be a date before :date.',
-    'before_or_equal'      => 'ה- :attribute must be a date before or equal to :date.',
+    'accepted'             => 'חובה לאשר את ה- :attribute.',
+    'active_url'           => 'ה- :attribute לא URL תקין.',
+    'after'                => 'ה- :attribute חייב להיות תאריך אחרי :date.',
+    'after_or_equal'       => 'ה- :attribute חייב להיות תאריך אחרי או שווה ל- :date.',
+    'alpha'                => 'ה- :attribute יכול לכלול רק אותיות.',
+    'alpha_dash'           => 'ה- :attribute יכול לכלול רק אותיות, מספרים וקוים מפרידים.',
+    'alpha_num'            => 'ה- :attribute יכול לכלול רק אותיות ומספרים.',
+    'array'                => 'ה- :attribute חייב להיות מערך.',
+    'before'               => 'ה- :attribute חייב להיות תאריך לפני :date.',
+    'before_or_equal'      => 'ה- :attribute חייב להיות תאריך לפני או שווה ל- :date.',
     'between'              => [
         'numeric' => 'ה- :attribute צריך להיות בין :min ו- :max.',
         'file'    => 'ה- :attribute צריך להיות בין :min ו- :max קילובייט.',
