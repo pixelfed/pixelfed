@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
+@push('scripts')
+<script type="text/javascript" src="{{mix('js/timeline.js')}}"></script>
+@endpush 
+
 @section('content')
 
 <div class="container">
-  <div class="col-12 col-md-6 offset-md-3">
+  <div class="col-12 col-md-8 offset-md-2 pt-4">
     @if ($errors->any())
       <div class="alert alert-danger">
           <ul>
@@ -13,10 +17,19 @@
           </ul>
       </div>
     @endif
-    
+    {{--<div class="card mb-5">
+      <div class="card-body text-center">
+        <div class="btn-group" role="group">
+          <a href="/timeline" class="btn btn-outline-primary font-weight-bold">My Timeline</a>
+          <a href="/timeline/local" class="btn btn-outline-secondary">Local Timeline</a>
+          <a href="/timeline/fediverse" class="btn btn-outline-secondary">Fediverse Timeline</a>
+          <a href="/i/dm" class="btn btn-outline-secondary">DMs</a>
+        </div>
+      </div>
+    </div>--}}
     <div class="card">
-      <div class="card-header font-weight-bold">New Status Post</div>
-      <div class="card-body">
+      <div class="card-header font-weight-bold">New Post</div>
+      <div class="card-body" id="statusForm">
         <form method="post" action="/timeline" enctype="multipart/form-data">
           @csrf
           <div class="form-group">
@@ -27,16 +40,20 @@
             <label class="font-weight-bold text-muted small">Caption</label>
             <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
           </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="submit" class="btn btn-outline-primary btn-block">Post</button>
         </form>
       </div>  
     </div>
 
     <div class="timeline-feed my-5" data-timeline="personal">
-  @foreach($timeline as $item)
-    @include('status.template')
+    @foreach($timeline as $item)
 
-  @endforeach
+      @include('status.template')
+
+    @endforeach
+    </div>
+    <div class="d-flex justify-content-center">
+      {{$timeline->links()}}
     </div>
 
   </div>
