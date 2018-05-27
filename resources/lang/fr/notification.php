@@ -1,4 +1,4 @@
 <?php
 return [
-  'likedPhoto' => 'Aimé votre photo.',
+  'likedPhoto' => 'a aimé votre photo.',
 ];
