@@ -2,7 +2,7 @@ FROM php:7.2-fpm-alpine
 
 RUN apk add --no-cache git imagemagick \
     && apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libtool \
-    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install pdo_mysql pcntl \
     && pecl install imagick \
     && docker-php-ext-enable imagick \
     && apk del --purge .build
