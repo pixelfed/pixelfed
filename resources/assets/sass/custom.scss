@@ -77,3 +77,12 @@ body, button, input, textarea {
 .no-caret.dropdown-toggle::after {
   display:none;
 }
+
+.notification-page .profile-link {
+  color: #212529;
+  font-weight: bold;
+}
+
+.notification-page .list-group-item:first-child {
+  border-top: none;
+}
