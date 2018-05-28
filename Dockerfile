@@ -1,17 +1,33 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.2.6-fpm-alpine
 
-RUN apk add --no-cache git imagemagick \
-    && apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libtool \
-    && docker-php-ext-install pdo_mysql pcntl \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && apk del --purge .build
+ARG COMPOSER_VERSION="1.6.5"
+ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef0be3434"
 
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/ \
-    && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer
+RUN apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libtool && \
+  apk --no-cache add imagemagick git && \
+  docker-php-ext-install pdo_mysql pcntl && \
+  pecl install imagick && \
+  docker-php-ext-enable imagick pcntl imagick && \
+  curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /tmp/composer.phar && \
+  echo "${COMPOSER_CHECKSUM}  /tmp/composer.phar" | sha256sum -c - && \
+  install -m0755 -o root -g root /tmp/composer.phar /usr/bin/composer.phar && \
+  ln -sf /usr/bin/composer.phar /usr/bin/composer && \
+  mkdir -p /var/www && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/sessions && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/views && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/cache && \
+  rm /tmp/composer.phar && \
+  apk del --purge .build
 
-WORKDIR /var/www/html
-COPY . .
+COPY --chown=www-data . /var/www/html/pixelfed/
+
+WORKDIR /var/www/html/pixelfed
+USER www-data
 RUN composer install --prefer-source --no-interaction
+
+VOLUME ["/var/www/html"]
+USER root
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
