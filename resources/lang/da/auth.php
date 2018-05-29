@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Disse oplysninger stemmer ikke overens med vores data.',
-    'throttle' => 'For mange login-forsøg. Vær venlig at prøve igen om :seconds seconds.',
+    'failed' => 'Disse oplysninger stemmer ikke overens med nogen konto.',
+    'throttle' => 'For mange loginforsøg. Vær venlig at prøve igen om :seconds sekunder.',
 
 ];
