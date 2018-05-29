@@ -13,12 +13,12 @@ RUN apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libt
   install -m0755 -o root -g root /tmp/composer.phar /usr/bin/composer.phar && \
   ln -sf /usr/bin/composer.phar /usr/bin/composer && \
   mkdir -p /var/www && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/sessions && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/views && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed/storage/framework/cache && \
+  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed \
+    /var/www/html/pixelfed/storage \
+    /var/www/html/pixelfed/storage/framework \
+    /var/www/html/pixelfed/storage/framework/sessions \
+    /var/www/html/pixelfed/storage/framework/views \
+    /var/www/html/pixelfed/storage/framework/cache && \
   rm /tmp/composer.phar && \
   apk del --purge .build
 
