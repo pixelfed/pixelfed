@@ -1,7 +1,7 @@
 storage
 data
 Dockerfile
-docker-compose.yml
+docker-compose*.yml
 .dockerignore
 .git
 .gitignore
