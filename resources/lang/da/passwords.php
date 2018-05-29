@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Adgangskode skal være mindst 6 tegn og skal matche bekræftelsen.',
+    'password' => 'Adgangskode skal v&aelig;re mindst 6 tegn og skal matche bekr&aelig;ftelsen.',
     'reset' => 'Din adgangskode er blevet nulstillet!',
     'sent' => 'Vi har sendt dig en email med et link, hvor du kan nulstille din andgangskode!',
-    'token' => 'Dette nulstillingslink er ikke længere gyldigt.',
+    'token' => 'Dette nulstillingslink er ikke l&aelig;ngere gyldigt.',
     'user' => "Vi kan ikke finde en bruger med den emailadresse.",
 
 ];
