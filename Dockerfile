@@ -16,6 +16,7 @@ RUN apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libt
   install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed \
     /var/www/html/pixelfed/storage \
     /var/www/html/pixelfed/storage/framework \
+    /var/www/html/pixelfed/storage/logs \
     /var/www/html/pixelfed/storage/framework/sessions \
     /var/www/html/pixelfed/storage/framework/views \
     /var/www/html/pixelfed/storage/framework/cache && \
