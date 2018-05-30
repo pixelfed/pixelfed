@@ -17,16 +17,6 @@
           </ul>
       </div>
     @endif
-    {{--<div class="card mb-5">
-      <div class="card-body text-center">
-        <div class="btn-group" role="group">
-          <a href="/timeline" class="btn btn-outline-primary font-weight-bold">My Timeline</a>
-          <a href="/timeline/local" class="btn btn-outline-secondary">Local Timeline</a>
-          <a href="/timeline/fediverse" class="btn btn-outline-secondary">Fediverse Timeline</a>
-          <a href="/i/dm" class="btn btn-outline-secondary">DMs</a>
-        </div>
-      </div>
-    </div>--}}
     <div class="card">
       <div class="card-header font-weight-bold">New Post</div>
       <div class="card-body" id="statusForm">
