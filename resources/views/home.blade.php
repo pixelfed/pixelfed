@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
+<div class="container mt-4">
+    <div class="row justify-content-center" style="min-height: 60vh">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Dashboard</div>
@@ -14,10 +14,24 @@
                         </div>
                     @endif
 
-                    You are logged in!
+                    <p class="lead mb-0">Welcome to {{config('app.name')}}!</p>
                 </div>
             </div>
+
+            <a class="card mt-3 text-primary font-weight-bold text-center" href="{{route('timeline.personal')}}">
+                <div class="card-body">
+                    Take me to my timeline
+                </div>
+            </a>
         </div>
     </div>
 </div>
 @endsection
+
+@push('meta')
+<link rel="canonical" href="{{request()->url()}}">
+@endpush
+
+
+@push('styles')
+@endpush
