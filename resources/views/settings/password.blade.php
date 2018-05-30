@@ -11,20 +11,20 @@
     <div class="form-group row">
       <label for="existing" class="col-sm-3 col-form-label font-weight-bold">Current</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="existing" placeholder="Your current password">
+        <input type="password" class="form-control" name="current" placeholder="Your current password">
       </div>
     </div>
     <hr>
     <div class="form-group row">
       <label for="new" class="col-sm-3 col-form-label font-weight-bold">New</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="new" placeholder="Enter new password here">
+        <input type="password" class="form-control" name="password" placeholder="Enter new password here">
       </div>
     </div>
     <div class="form-group row">
       <label for="confirm" class="col-sm-3 col-form-label font-weight-bold">Confirm</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="confirm" placeholder="Confirm new password">
+        <input type="password" class="form-control" name="password_confirmation" placeholder="Confirm new password">
       </div>
     </div>
     <hr>
