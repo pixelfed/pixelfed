@@ -12,11 +12,12 @@
   </section>
   <section class="mt-5">
     <p class="small text-muted font-weight-bold text-uppercase mb-3">Supported Services</p>
-    <p class="">
-      <a class="btn btn-outline-primary font-weight-bold" href="/settings/import/instagram">Import from Instagram</a>
-    </p>
+    <p class="font-weight-bold text-muted">No services are supported at the moment.</p>
     <hr>
     <p class="small text-muted font-weight-bold text-uppercase mb-3">Coming Soon</p>
+    <p class="">
+      <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from Instagram</a>
+    </p>
     <p class="">
       <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from Mastodon</a>
     </p>
