@@ -37,6 +37,10 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
+        if($actor->id === $status->profile_id) {
+            return true;
+        }
+
         try {
 
             $notification = new Notification;
