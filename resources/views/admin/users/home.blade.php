@@ -11,8 +11,6 @@
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Username</th>
-        <th scope="col">Email</th>
         <th scope="col">Statuses</th>
         <th scope="col">Storage</th>
         <th scope="col">Role</th>
@@ -27,8 +25,6 @@
             {{$user->id}}
           </a>
         </th>
-        <td>{{$user->username}}</td>
-        <td>{{$user->email}}</td>
         <td>{{$user->profile->statuses->count()}}</td>
         <td><p class="human-size" data-bytes="{{App\Media::whereUserId($user->id)->sum('size')}}"></p></td>
         <td>{!!$user->is_admin ? '<span class="text-danger">admin</span>' : 'member'!!}</td>
@@ -37,7 +33,7 @@
       @endforeach
     </tbody>
   </table>
-  <div class="d-flex justify-content-center mt-5">
+  <div class="d-flex justify-content-center mt-5 small">
     {{$users->links()}}
   </div>
 @endsection

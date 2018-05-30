@@ -12,7 +12,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Username</th>
-        <th scope="col">Caption</th>
+        <th scope="col">Likes</th>
         <th scope="col">Storage</th>
         <th scope="col">Created</th>
       </tr>
@@ -25,19 +25,19 @@
             {{$status->id}}
           </a>
         </th>
-        <td>{{$status->profile->username}}</td>
-        <td>{{str_limit($status->caption, 30)}}</td>
+        <td class="font-weight-bold">{{$status->profile->username}}</td>
+        <td class="font-weight-bold">{{$status->likes()->count()}}</td>
         @if(!$status->media_path)
-        <td>0</td>
+        <td class="font-weight-bold">0</td>
         @else
         <td><div class="human-size" data-bytes="{{$status->firstMedia()->size}}">{{$status->firstMedia()->size}}</div></td>
         @endif
-        <td>{{$status->created_at->diffForHumans()}}</td>
+        <td class="font-weight-bold">{{$status->created_at->diffForHumans(null, true, true, true)}}</td>
       </tr>
       @endforeach
     </tbody>
   </table>
-  <div class="d-flex justify-content-center mt-5">
+  <div class="d-flex justify-content-center mt-5 small">
     {{$statuses->links()}}
   </div>
 @endsection
