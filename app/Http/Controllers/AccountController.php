@@ -38,9 +38,9 @@ class AccountController extends Controller
     public function hydrateNotifications($keys)
     {
       $prefix = 'notification.';
-      $notifications = [];
+      $notifications = collect([]);
       foreach($keys as $key) {
-        $notifications[] = Cache::get($prefix . $key);
+        $notifications->push(Cache::get("{$prefix}{$key}"));
       }
       return $notifications;
     }
