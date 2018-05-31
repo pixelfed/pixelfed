@@ -34,6 +34,6 @@ class User extends Authenticatable
 
     public function url()
     {
-        return url(config('app.url') . '/@' . $this->username);
+        return url(config('app.url') . '/' . $this->username);
     }
 }
