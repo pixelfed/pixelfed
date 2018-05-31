@@ -12,23 +12,20 @@ RUN apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libt
   echo "${COMPOSER_CHECKSUM}  /tmp/composer.phar" | sha256sum -c - && \
   install -m0755 -o root -g root /tmp/composer.phar /usr/bin/composer.phar && \
   ln -sf /usr/bin/composer.phar /usr/bin/composer && \
-  mkdir -p /var/www && \
-  install -d -m0755 -o www-data -g www-data /var/www/html/pixelfed \
-    /var/www/html/pixelfed/storage \
-    /var/www/html/pixelfed/storage/framework \
-    /var/www/html/pixelfed/storage/logs \
-    /var/www/html/pixelfed/storage/framework/sessions \
-    /var/www/html/pixelfed/storage/framework/views \
-    /var/www/html/pixelfed/storage/framework/cache && \
   rm /tmp/composer.phar && \
-  apk del --purge .build
+  apk --no-cache del --purge .build
 
-COPY --chown=www-data . /var/www/html/pixelfed/
+COPY . /var/www/html/
 
-WORKDIR /var/www/html/pixelfed
-USER www-data
-RUN composer install --prefer-source --no-interaction
+WORKDIR /var/www/html
+RUN install -d -m0755 -o www-data -g www-data \
+    /var/www/html/storage \
+    /var/www/html/storage/framework \
+    /var/www/html/storage/logs \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/framework/cache && \
+  composer install --prefer-source --no-interaction
 
 VOLUME ["/var/www/html"]
-USER root
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
