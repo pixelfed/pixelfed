@@ -10,6 +10,7 @@
         "bitverse/identicon": "^1.1",
         "fideloper/proxy": "^4.0",
         "intervention/image": "^2.4",
+        "kitetail/zttp": "^0.3.0",
         "laravel/framework": "5.6.*",
         "laravel/horizon": "^1.2",
         "laravel/tinker": "^1.0",
