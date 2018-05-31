@@ -54,24 +54,49 @@
             Posts
           </div>
           <div class="font-weight-light pr-5">
-            <a class="text-dark" href="#">
+            <a class="text-dark" href="{{$user->url('/followers')}}">
               <span class="font-weight-bold">{{$user->followerCount(true)}}</span> 
               Followers
             </a>
           </div>
           <div class="font-weight-light pr-5">
-            <span class="font-weight-bold">{{$user->followingCount(true)}}</span> 
-            Following
+            <a class="text-dark" href="{{$user->url('/following')}}">
+              <span class="font-weight-bold">{{$user->followingCount(true)}}</span> 
+              Following
+            </a>
           </div>
         </div>
-        <p class="lead font-weight-bold">
-          {{$user->name}}
+        <p class="lead">
+          <span class="font-weight-bold">{{$user->name}}</span> 
+          @if($user->remote_url)
+          <span class="badge badge-info">REMOTE PROFILE</span>
+          @endif
+          {{$user->bio}}
         </p>
       </div>
     </div>
   </div>
 
   <div class="profile-timeline mt-5 row">
+    @if($owner == true)
+      <div class="col-12 mb-5">
+        <ul class="nav nav-tabs d-flex justify-content-center">
+          <li class="nav-item mr-3">
+            <a class="nav-link {{request()->is('*/saved') ? '':'active'}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{request()->is('*/saved') ? 'active':''}} font-weight-bold text-uppercase" href="{{$user->url('/saved')}}">Saved</a>
+          </li>
+        </ul>
+      </div>
+    @endif
+
+    @if($owner && request()->is('*/saved'))
+    <div class="col-12">
+      <p class="text-muted font-weight-bold small">{{__('profile.savedWarning')}}</p>
+    </div>
+    @endif
+
     @if($timeline->count() > 0)
       @foreach($timeline as $status)
       <div class="col-12 col-md-4 mb-4">
