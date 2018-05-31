@@ -19,7 +19,23 @@
           </span>
           <span class="float-right notification-action">
           </span>
-          @break
+        @break
+        @case('follow')
+          <span class="notification-icon pr-3">
+            <img src="{{$notification->actor->avatarUrl()}}" width="32px" class="rounded-circle">
+          </span>
+          <span class="notification-text">
+            {!! $notification->rendered !!}
+            <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
+          </span>
+          <span class="float-right notification-action">
+           <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$notification->actor->id}}" data-action="follow">
+              @csrf
+              <input type="hidden" name="item" value="{{$notification->actor->id}}">
+              <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
+            </form>
+          </span>
+        @break
         @endswitch
       </li>
       @endforeach
