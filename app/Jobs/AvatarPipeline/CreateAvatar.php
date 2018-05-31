@@ -2,7 +2,7 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\{Avatar, User};
+use App\{Avatar, Profile};
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -18,15 +18,15 @@ class CreateAvatar implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $user;
+    protected $profile;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct(Profile $profile)
     {
-        $this->user = $user;
+        $this->profile = $profile;
     }
 
     /**
@@ -36,19 +36,19 @@ class CreateAvatar implements ShouldQueue
      */
     public function handle()
     {
-        $username = $this->user->profile->username;
-        $email = $this->user->email;
+        $profile = $this->profile;
+        $username = $profile->username;
 
         $generator = new RingsGenerator();
         $generator->setBackgroundColor(Color::parseHex('#FFFFFF'));
 
-        $identicon = new Identicon(new HashPreprocessor('sha1'), $generator);
+        $identicon = new Identicon(new HashPreprocessor('sha256'), $generator);
 
-        $hash = $username . str_random(12) . $email;
+        $hash = $username . str_random(12);
         $icon = $identicon->getIcon($hash);
 
         try {
-          $prefix = $this->user->profile->id;
+          $prefix = $profile->id;
           $padded = str_pad($prefix, 12, 0, STR_PAD_LEFT);
           $parts = str_split($padded, 3);
           foreach($parts as $k => $part) {
@@ -92,7 +92,7 @@ class CreateAvatar implements ShouldQueue
         }
 
         $avatar = new Avatar;
-        $avatar->profile_id = $this->user->profile->id;
+        $avatar->profile_id = $profile->id;
         $avatar->media_path = $path;
         $avatar->thumb_path = $path;
         $avatar->change_count = 0;
