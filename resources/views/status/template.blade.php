@@ -29,7 +29,11 @@
             </form>
             <span class="icon-speech"></span>
             <span class="float-right">
-            <span class="icon-notebook"></span>
+              <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
+                @csrf
+                <input type="hidden" name="item" value="{{$item->id}}">
+                <button class="btn btn-link text-dark p-0" type="submit"><span class="icon-notebook" style="font-size:25px;"></span></button>
+              </form>
             </span>
           </div>
           <div class="likes font-weight-bold">
