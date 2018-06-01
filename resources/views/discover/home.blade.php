@@ -10,9 +10,11 @@
         <div class="card">
           <div class="card-body p-4 text-center">
             <div class="avatar pb-3">
-              <img src="{{$profile->avatarUrl()}}" class="img-thumbnail rounded-circle" width="64px">
+              <a href="{{$profile->url()}}">
+                <img src="{{$profile->avatarUrl()}}" class="img-thumbnail rounded-circle" width="64px">
+              </a>
             </div>
-            <p class="lead font-weight-bold mb-0">{{$profile->username}}</p>
+            <p class="lead font-weight-bold mb-0"><a href="{{$profile->url()}}" class="text-dark">{{$profile->username}}</a></p>
             <p class="text-muted">{{$profile->name}}</p>
             <form class="follow-form" method="post" action="/i/follow" data-id="{{$profile->id}}" data-action="follow">
               @csrf
