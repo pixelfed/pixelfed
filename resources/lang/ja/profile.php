@@ -1,8 +1,8 @@
 <?php
 
 return [
-  'emptyTimeline' => 'This user has no posts yet!',
-  'emptyFollowers' => 'This user has no followers yet!',
-  'emptyFollowing' => 'This user is not following anyone yet!',
-  'savedWarning'  => 'Only you can see what you\'ve saved',
+  'emptyTimeline' => 'このユーザーはまだ何も投稿していません！',
+  'emptyFollowers' => 'このユーザーにはまだフォロワーがいません！',
+  'emptyFollowing' => 'このユーザーはまだ誰もフォローしていません！',
+  'savedWarning'  => 'あなたが保存したものはあなただけが見ることが出来ます。',
 ];
