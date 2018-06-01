@@ -28,7 +28,7 @@
           </div>
           <div class="form-group">
             <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
+            <input type="text" class="form-control" name="caption" placeholder="Add a caption here. Up to 150 characters." maxlength=150>
           </div>
           <button type="submit" class="btn btn-outline-primary btn-block">Post</button>
         </form>
