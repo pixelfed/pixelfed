@@ -25,7 +25,7 @@ class ProfileController extends Controller
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
       ];
 
-      if(in_array($request->header('accept'), $mimes)) {
+      if(in_array($request->header('accept'), $mimes) && config('pixelfed.activitypub_enabled')) {
         return $this->showActivityPub($request, $user);
       }
 

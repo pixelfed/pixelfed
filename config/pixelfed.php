@@ -71,5 +71,9 @@ return [
     |
     */
     'open_registration' => env('OPEN_REGISTRATION', true),
+
+    'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
+
+    'activitypub_enabled' => env('ACTIVITY_PUB', false),
     
 ];

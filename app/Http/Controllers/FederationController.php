@@ -123,8 +123,11 @@ class FederationController extends Controller
 
     public function userOutbox(Request $request, $username)
     {
+      if(config('pixelfed.activitypub_enabled') == false) {
+        abort(403);
+      }
+      
       $user = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
-
       $timeline = $user->statuses()->orderBy('created_at','desc')->paginate(10);
       $fractal = new Fractal\Manager();
       $resource = new Fractal\Resource\Item($user, new ProfileOutbox);
