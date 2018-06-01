@@ -33,6 +33,12 @@ class CommentController extends Controller
 
       NewStatusPipeline::dispatch($reply, false);
 
-      return redirect($status->url());
+      if($request->ajax()) {
+        $response = ['code' => 200, 'msg' => 'Comment saved'];
+      } else {
+        $response = redirect($status->url());
+      }
+
+      return $response;
     }
 }
