@@ -56,6 +56,25 @@
           <span class="following-name text-muted">
             {{$user->name}}
           </span>
+          @if(Auth::check() && Auth::id() != $user->user_id)
+            @if($user->followedBy(Auth::user()->profile) == false)
+            <span class="float-right notification-action">
+              <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
+                @csrf
+                <input type="hidden" name="item" value="{{$user->id}}">
+                <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
+              </form>
+            </span>
+            @else
+            <span class="float-right notification-action">
+              <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
+                @csrf
+                <input type="hidden" name="item" value="{{$user->id}}">
+                <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
+              </form>
+            </span>
+            @endif
+          @endif
       </li>
       @endforeach
     </ul>
