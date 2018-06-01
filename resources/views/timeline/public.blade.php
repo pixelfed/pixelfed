@@ -24,7 +24,7 @@
           @csrf
           <div class="form-group">
             <label class="font-weight-bold text-muted small">Upload Image</label>
-            <input type="file" class="form-control-file" name="photo">
+            <input type="file" class="form-control-file" name="photo" accept="image/*">
           </div>
           <div class="form-group">
             <label class="font-weight-bold text-muted small">Caption</label>
