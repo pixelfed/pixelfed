@@ -20,6 +20,7 @@ try {
     require('./components/likebutton');
     require('./components/commentform');
     require('./components/searchform');
+    require('./components/bookmarkform');
 } catch (e) {}
 
 /**
