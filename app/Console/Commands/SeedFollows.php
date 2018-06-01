@@ -41,10 +41,10 @@ class SeedFollows extends Command
     {
         $limit = 10000;
 
-        for ($i=0; $i < $limit; $i++) { 
+        for ($i=0; $i < $limit; $i++) {
             try {
-                $actor = Profile::orderByRaw('rand()')->firstOrFail();
-                $target = Profile::orderByRaw('rand()')->firstOrFail();
+                $actor = Profile::inRandomOrder()->firstOrFail();
+                $target = Profile::inRandomOrder()->firstOrFail();
 
                 $follow = new Follower;
                 $follow->profile_id = $actor->id;

@@ -16,7 +16,7 @@ class DiscoverController extends Controller
     public function home()
     {
       $following = Follower::whereProfileId(Auth::user()->profile->id)->pluck('following_id');
-      $people = Profile::whereNotIn('id', $following)->orderByRaw('rand()')->take(3)->get();
+      $people = Profile::inRandomOrder()->whereNotIn('id', $following)->take(3)->get();
       $posts = Status::whereHas('media')->whereNotIn('profile_id', $following)->orderBy('created_at', 'desc')->take('21')->get();
       return view('discover.home', compact('people', 'posts'));
     }
