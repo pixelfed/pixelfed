@@ -41,6 +41,15 @@
       @include('status.template')
 
     @endforeach
+    @if($timeline->count() == 0)
+    <div class="card">
+      <div class="card-body py-5">
+        <div class="d-flex justify-content-center align-items-center">
+          <p class="lead font-weight-bold mb-0">{{ __('timeline.emptyPersonalTimeline') }}</p>
+        </div>
+      </div>
+    </div>
+    @endif
     </div>
     <div class="d-flex justify-content-center">
       {{$timeline->links()}}
