@@ -22,7 +22,7 @@
       <tr>
         <th scope="row">
           <a href="{{$user->url()}}">
-            {{$user->profile->username}}
+            {{$user->username}}
           </a>
         </th>
         <td>{{$user->profile->statuses->count()}}</td>
