@@ -30,9 +30,9 @@ class StatusController extends Controller
       $user = Auth::user();
 
       $this->validate($request, [
-        'photo'     => 'required|image|max:15000',
-        'caption'   => 'string|max:150',
-        'nullable'  => 'string|max:420'
+        'photo'       => 'required|image|max:15000',
+        'caption'     => 'string|max:150',
+        'description' => 'nullable|string|max:420'
       ]);
 
       $monthHash = hash('sha1', date('Y') . date('m'));
