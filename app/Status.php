@@ -20,7 +20,7 @@ class Status extends Model
 
     public function firstMedia()
     {
-      return $this->hasOne(Media::class)->orderBy('order', 'asc');
+      return $this->hasOne(Media::class)->orderBy('order', 'asc')->limit(1);
     }
 
     public function thumb()
