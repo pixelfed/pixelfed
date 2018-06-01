@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Profile;
 use Auth;
+use App\Profile;
+use League\Fractal;
+use Illuminate\Http\Request;
+use App\Util\Lexer\Nickname;
+use App\Util\Webfinger\Webfinger;
+use App\Transformer\ActivityPub\{
+  ProfileOutbox, 
+  ProfileTransformer
+};
+use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
 
 class FederationController extends Controller
 {
@@ -20,6 +28,25 @@ class FederationController extends Controller
     {
       $this->authCheck();
       return view('federation.remotefollow');
+    }
+
+    public function remoteFollowStore(Request $request)
+    {
+      $this->authCheck();
+      $this->validate($request, [
+        'url' => 'required|string'
+      ]);
+
+      if(config('pixelfed.remote_follow_enabled') !== true) {
+        abort(403);
+      }
+
+      $follower = Auth::user()->profile;
+      $url = $request->input('url');
+
+      RemoteFollowPipeline::dispatch($follower, $url);
+
+      return redirect()->back();
     }
 
     public function nodeinfoWellKnown()
@@ -81,4 +108,28 @@ class FederationController extends Controller
 
       return response()->json($res);
     }
+
+
+    public function webfinger(Request $request)
+    {
+      $this->validate($request, ['resource'=>'required']);
+      $resource = $request->input('resource');
+      $parsed = Nickname::normalizeProfileUrl($resource);
+      $username = $parsed['username'];
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $webfinger = (new Webfinger($user))->generate();
+      return response()->json($webfinger);
+    }
+
+    public function userOutbox(Request $request, $username)
+    {
+      $user = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+
+      $timeline = $user->statuses()->orderBy('created_at','desc')->paginate(10);
+      $fractal = new Fractal\Manager();
+      $resource = new Fractal\Resource\Item($user, new ProfileOutbox);
+      $res = $fractal->createData($resource)->toArray();
+      return response()->json($res['data']);
+    }
+
 }
