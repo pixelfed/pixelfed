@@ -48,6 +48,12 @@ class CreateAvatar implements ShouldQueue
         $icon = $identicon->getIcon($hash);
 
         try {
+          
+          $baseDir = storage_path('app/public/avatars');
+          if(!is_dir($baseDir)) {
+            mkdir($baseDir);
+          }
+
           $prefix = $profile->id;
           $padded = str_pad($prefix, 12, 0, STR_PAD_LEFT);
           $parts = str_split($padded, 3);
