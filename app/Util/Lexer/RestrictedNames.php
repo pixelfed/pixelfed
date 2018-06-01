@@ -128,11 +128,6 @@ class RestrictedNames {
 
      // Reserved route
      "i",
-
-     // Official accounts
-     "pixelfed",
-     "pixelfed-support",
-     "pixelfed_support",
   ];
 
   public static function get()
