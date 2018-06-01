@@ -2,7 +2,7 @@
 
 return [
 
-  'likedPhoto' => 'liked your photo.',
-  'startedFollowingYou' => 'started following you.',
+  'likedPhoto' => '写真がお気に入りされました。',
+  'startedFollowingYou' => 'フォローされました。',
 
 ];
