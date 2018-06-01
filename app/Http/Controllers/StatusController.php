@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
+use Auth, Cache;
+use App\Jobs\StatusPipeline\NewStatusPipeline;
 use Illuminate\Http\Request;
 use App\{Media, Profile, Status, User};
 use Vinkla\Hashids\Facades\Hashids;
 
 class StatusController extends Controller
 {
-    public function show(Request $request, $username, $hashid)
+    public function show(Request $request, $username, int $id)
     {
       $user = Profile::whereUsername($username)->firstOrFail();
-      $id = Hashids::decode($hashid);
-      if(empty($id)) {
-        abort(404);
-      } else {
-        $id = $id[0];
-      }
       $status = Status::whereProfileId($user->id)->findOrFail($id);
+      if(!$status->media_path && $status->in_reply_to_id) {
+        return view('status.reply', compact('user', 'status'));
+      }
       return view('status.show', compact('user', 'status'));
     }
 
@@ -32,10 +30,11 @@ class StatusController extends Controller
       $user = Auth::user();
 
       $this->validate($request, [
-        'photo'   => 'required|image|max:8000',
+        'photo'   => 'required|image|max:15000',
         'caption' => 'string|max:150'
       ]);
-      $monthHash = hash('sha1',date('Y').date('m'));
+
+      $monthHash = hash('sha1', date('Y') . date('m'));
       $userHash = hash('sha1', $user->id . (string) $user->created_at);
       $storagePath = "public/m/{$monthHash}/{$userHash}";
       $path = $request->photo->store($storagePath);
@@ -54,6 +53,10 @@ class StatusController extends Controller
       $media->size = $request->file('photo')->getClientSize();
       $media->mime = $request->file('photo')->getClientMimeType();
       $media->save();
+      NewStatusPipeline::dispatch($status, $media);
+
+      // TODO: Parse Caption
+      // TODO: Send to subscribers
       
       return redirect($status->url());
     }
