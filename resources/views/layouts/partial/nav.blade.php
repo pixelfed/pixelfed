@@ -20,13 +20,13 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                 @else
-                    <li class="nav-item">
+                    <li class="nav-item px-2">
                         <a class="nav-link" href="{{route('discover')}}"><i class="lead icon-compass"></i></a>
                     </li>
-                    <li class="nav-item px-3">
+                    <li class="nav-item px-2">
                         <a class="nav-link" href="{{route('notifications')}}"><i class="lead icon-heart"></i></a>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown px-2">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             <i class="lead icon-user"></i> <span class="caret"></span>
                         </a>
