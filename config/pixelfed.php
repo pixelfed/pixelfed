@@ -71,6 +71,7 @@ return [
     |
     */
     'open_registration' => env('OPEN_REGISTRATION', true),
+    'recaptcha' => env('RECAPTCHA_ENABLED', false),
 
     'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
 
