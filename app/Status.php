@@ -25,7 +25,7 @@ class Status extends Model
 
     public function thumb()
     {
-      return url(Storage::url($this->firstMedia()->thumbnail_path));
+      return url(Storage::url($this->firstMedia->thumbnail_path));
     }
 
     public function url()

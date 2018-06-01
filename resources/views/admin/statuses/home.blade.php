@@ -30,7 +30,7 @@
         @if(!$status->media_path)
         <td class="font-weight-bold">0</td>
         @else
-        <td><div class="human-size" data-bytes="{{$status->firstMedia()->size}}">{{$status->firstMedia()->size}}</div></td>
+        <td><div class="human-size" data-bytes="{{$status->firstMedia->size}}">{{$status->firstMedia->size}}</div></td>
         @endif
         <td class="font-weight-bold">{{$status->created_at->diffForHumans(null, true, true, true)}}</td>
       </tr>

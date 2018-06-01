@@ -56,8 +56,8 @@ class ProfileOutbox extends Fractal\TransformerAbstract
               // TODO: support more than 1 attachment
               [
                 'type' => 'Document',
-                'mediaType' => $i->firstMedia()->mime,
-                'url' => $i->firstMedia()->url(),
+                'mediaType' => $i->firstMedia->mime,
+                'url' => $i->firstMedia->url(),
                 'name' => null
               ]
             ],
