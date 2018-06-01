@@ -56,6 +56,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::get('remote-follow', 'FederationController@remoteFollow')->name('remotefollow');
     Route::post('remote-follow', 'FederationController@remoteFollowStore');
     Route::post('comment', 'CommentController@store');
+    Route::post('delete', 'StatusController@delete');
     Route::post('like', 'LikeController@store');
     Route::post('follow', 'FollowerController@store');
     Route::post('bookmark', 'BookmarkController@store');

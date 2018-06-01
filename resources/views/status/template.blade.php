@@ -13,6 +13,17 @@
                 <a class="dropdown-item" href="{{$item->url()}}">Go to post</a>
                 <a class="dropdown-item" href="{{route('report.form')}}?type=post&id={{$item->id}}">Report Inappropriate</a>
                 <a class="dropdown-item" href="#">Embed</a>
+              @if(Auth::check())
+                @if(Auth::user()->profile->id === $item->profile->id || Auth::user()->is_admin == true)
+                <form method="post" action="/i/delete">
+                  @csrf
+                  <input type="hidden" name="type" value="post">
+                  <input type="hidden" name="item" value="{{$item->id}}">
+                  <button type="submit" class="dropdown-item btn btn-link">Delete</button>
+                </form>
+                @endif
+              @endif
+
               </div>
             </div>
           </div>
@@ -55,8 +66,17 @@
           <div class="comments">
             @if(isset($showSingleComment) && $showSingleComment === true)
               <p class="mb-0">
-                <span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="{{$status->profile->url()}}">{{$status->profile->username}}</a></bdi></span>
-                <span class="comment-text">{!!$status->rendered!!}</span><a href="{{$status->url()}}" class="text-dark small font-weight-bold float-right">{{$status->created_at->diffForHumans(null, true, true, true)}}</a>
+                <span class="font-weight-bold pr-1">
+                  <bdi>
+                    <a class="text-dark" href="{{$status->profile->url()}}">{{$status->profile->username}}</a>
+                  </bdi>
+                </span>
+                <span class="comment-text">{!!$status->rendered!!}</span>
+                <span class="float-right">
+                  <a href="{{$status->url()}}" class="text-dark small font-weight-bold">
+                    {{$status->created_at->diffForHumans(null, true, true, true)}}
+                  </a>
+                </span>
               </p>
             @else
             @foreach($item->comments->reverse()->take(3) as $comment)
