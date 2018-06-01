@@ -9,7 +9,11 @@
       <div class="card-body p-0">
         <div class="row">
           <div class="col-12 col-md-8 status-photo">
-            <img src="{{$status->mediaUrl()}}" width="100%">
+            <img src="{{$status->mediaUrl()}}" width="100%"
+              @if($status->description)
+              alt="{{$status->description}}"
+              @endif
+            >
           </div>
           <div class="col-12 col-md-4" style="height:100%">
             <div class="status-username d-inline-flex align-items-center pr-3 pt-3">

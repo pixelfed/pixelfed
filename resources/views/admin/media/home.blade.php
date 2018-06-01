@@ -11,7 +11,11 @@
     @foreach($media as $status)
     <div class="col-12 col-md-4 mb-4">
       <a class="card" href="{{$status->url()}}">
-        <img class="card-img-top" src="{{$status->thumb()}}" width="150px" height="150px">
+        <img class="card-img-top" src="{{$status->thumb()}}" width="150px" height="150px"
+          @if($status->description)
+          alt="{{$status->description}}"
+          @endif
+        >
       </a>
     </div>
     @endforeach

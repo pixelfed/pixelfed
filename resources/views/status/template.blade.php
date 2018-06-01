@@ -18,7 +18,11 @@
           </div>
         </div>
         <a href="{{$item->url()}}">
-          <img class="card-img-top" src="{{$item->mediaUrl()}}">
+          <img class="card-img-top" src="{{$item->mediaUrl()}}"
+            @if($item->description)
+            alt="{{$item->description}}"
+            @endif
+          >
         </a>
         <div class="card-body">
           <div class="reactions h3">
