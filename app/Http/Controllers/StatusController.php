@@ -30,8 +30,8 @@ class StatusController extends Controller
       $user = Auth::user();
 
       $this->validate($request, [
-        'photo'   => 'required|image|max:15000',
-        'caption' => 'string|max:150'
+        'photo'   => 'required|mimes:jpeg,png,bmp,gif|max:' . config('pixelfed.max_photo_size'),
+        'caption' => 'string|max:' . config('pixelfed.max_caption_length')
       ]);
 
       $monthHash = hash('sha1', date('Y') . date('m'));

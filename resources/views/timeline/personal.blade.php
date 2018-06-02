@@ -17,24 +17,9 @@
           </ul>
       </div>
     @endif
-    <div class="card">
-      <div class="card-header font-weight-bold">New Post</div>
-      <div class="card-body" id="statusForm">
-        <form method="post" action="/timeline" enctype="multipart/form-data">
-          @csrf
-          <div class="form-group">
-            <label class="font-weight-bold text-muted small">Upload Image</label>
-            <input type="file" class="form-control-file" name="photo" accept="image/*">
-          </div>
-          <div class="form-group">
-            <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
-          </div>
-          <button type="submit" class="btn btn-outline-primary btn-block">Post</button>
-        </form>
-      </div>  
-    </div>
 
+    @include('timeline.partial.new-form')
+    
     <div class="timeline-feed my-5" data-timeline="personal">
     @foreach($timeline as $item)
 
