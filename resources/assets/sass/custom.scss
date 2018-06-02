@@ -105,3 +105,53 @@ body, button, input, textarea {
 .notification-page .list-group-item:first-child {
   border-top: none;
 }
+
+.nav-topbar {
+  border-top: 1px solid $gray-300;
+}
+.nav-topbar .nav-item {
+  margin: -1px 1.5rem 0;
+}
+.nav-topbar .nav-link {
+  border: 1px solid transparent;
+  color: $gray-300;
+  padding: 0.75rem 0;
+}
+.nav-topbar .nav-link:focus, .nav-topbar .nav-link:hover {
+  border-top-color: $gray-300;
+}
+.nav-topbar .nav-link.disabled {
+  color: $gray-300;
+  background-color: transparent;
+  border-color: transparent;
+}
+.nav-topbar .nav-item.show .nav-link, .nav-topbar .nav-link.active {
+  color: $gray-600;
+  border-top-color: $gray-600;
+}
+.nav-topbar .dropdown-menu {
+  margin-top:-1px;
+}
+
+.info-overlay {
+    position: relative;
+}
+
+.info-overlay .info-overlay-text {
+    display: none;
+    position: absolute;
+}
+
+.info-overlay:hover .info-overlay-text {
+    display: flex;
+}
+
+.info-overlay-text {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.font-weight-ultralight {
+    font-weight: 200 !important;
+}

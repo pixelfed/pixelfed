@@ -4,19 +4,19 @@
 
 <div class="container">
   
-  <div class="profile-header row my-5 offset-md-1">
-    <div class="col-12 col-md-3">
-      <div class="profile-avatar">
+  <div class="profile-header row my-5">
+    <div class="col-12 col-md-4 d-flex">
+      <div class="profile-avatar mx-auto">
         <img class="img-thumbnail" src="{{$user->avatarUrl()}}" style="border-radius:100%;" width="172px">
       </div>
     </div>
-    <div class="col-12 col-md-9 d-flex align-items-center">
+    <div class="col-12 col-md-8 d-flex align-items-center">
       <div class="profile-details">
         <div class="username-bar pb-2  d-flex align-items-center">
-          <span class="font-weight-light h1">{{$user->username}}</span>
+          <span class="font-weight-ultralight h1">{{$user->username}}</span>
           @if($owner == true)
-          <span class="pl-4">
-            <a class="btn btn-outline-secondary font-weight-bold px-4 py-0" href="{{route('settings')}}">Settings</a>
+          <span class="h5 pl-2 b-0">
+            <a class="icon-settings text-muted" href="{{route('settings')}}"></a>
           </span>
           @elseif ($following == true)
           <span class="pl-4">
@@ -80,8 +80,8 @@
   <div class="profile-timeline mt-5 row">
     @if($owner == true)
       <div class="col-12 mb-5">
-        <ul class="nav nav-tabs d-flex justify-content-center">
-          <li class="nav-item mr-3">
+        <ul class="nav nav-topbar d-flex justify-content-center">
+          <li class="nav-item">
             <a class="nav-link {{request()->is('*/saved') ? '':'active'}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
           </li>
           <li class="nav-item">
@@ -100,8 +100,14 @@
     @if($timeline->count() > 0)
       @foreach($timeline as $status)
       <div class="col-12 col-md-4 mb-4">
-        <a class="card" href="{{$status->url()}}">
+        <a class="card info-overlay" href="{{$status->url()}}">
           <img class="card-img-top" src="{{$status->thumb()}}" width="300px" height="300px">
+          <div class="info-overlay-text">
+            <h5 class="text-white m-auto">
+              <span class="icon-heart">{{$item->likes()->count()}}</span>
+              <span class="icon-speech">{{$item->comments()->count()}}</span>
+            </h5>
+          </div>
         </a>
       </div>
       @endforeach
