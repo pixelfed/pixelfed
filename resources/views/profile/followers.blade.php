@@ -18,7 +18,7 @@
         <div class="profile-stats pb-3 d-inline-flex lead">
           <div class="font-weight-light pr-5">
             <a class="text-dark" href="{{$profile->url()}}">
-              <span class="font-weight-bold">{{$profile->statuses()->count()}}</span> 
+              <span class="font-weight-bold">{{$profile->statuses()->whereNull('in_reply_to_id')->count()}}</span> 
               Posts
             </a>
           </div>
