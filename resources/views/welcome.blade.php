@@ -8,3 +8,7 @@
       </div>
     </div>
 @endsection
+
+@push('meta')
+<link rel="canonical" href="{{request()->url()}}">
+@endpush
