@@ -9,5 +9,5 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="Platfor/API Terms of Use">
+<meta property="og:description" content="Platform/API Terms of Use">
 @endpush
