@@ -20,7 +20,7 @@ return [
     'alpha'                => ':attribute m&aring; kun indeholde bogstaver.',
     'alpha_dash'           => ':attribute m&aring; kun indeholde bogstaver, tal og bindestreger.',
     'alpha_num'            => ':attribute m&aring; kun indeholde bogstaver og tal.',
-    'array'                => ':attribute skal v&aelig;re en Array.',
+    'array'                => ':attribute skal v&aelig;re et Array.',
     'before'               => ':attribute skal v&aelig;re en dato f&oslash;r :date.',
     'before_or_equal'      => ':attribute skal v&aelig;re en dato f&oslash;r, eller det samme som :date.',
     'between'              => [
@@ -49,7 +49,7 @@ return [
     'ip'                   => ':attribute skal v&aelig;re en gyldig IP-adresse.',
     'ipv4'                 => ':attribute skal v&aelig;re en gyldig IPv4 adresse.',
     'ipv6'                 => ':attribute skal v&aelig;re en gyldig IPv6 adresse.',
-    'json'                 => ':attribute skal v&aelig;re en gyldig JSON string.',
+    'json'                 => ':attribute skal v&aelig;re en gyldig JSON-streng.',
     'max'                  => [
         'numeric' => ':attribute m&aring; ikke v&aelig;re st&oslash;rre end :max.',
         'file'    => ':attribute m&aring; ikke v&aelig;re st&oslash;rre end :max kilobytes.',
