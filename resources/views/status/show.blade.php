@@ -22,7 +22,6 @@
             <p class="small text-uppercase mb-0"><a href="{{$status->url()}}" class="text-muted">{{$status->created_at->diffForHumans()}}</a></p>
           </div>
         </div>
-        <hr>
         <div class="card-body status-comments">
           <div class="status-comment">
             <p class="mb-1">
