@@ -22,7 +22,7 @@ class SettingsController extends Controller
     {
       $this->validate($request, [
         'name'  => 'required|string|max:30',
-        'bio'   => 'string|max:125'
+        'bio'   => 'nullable|string|max:125'
       ]);
 
       $changes = false;

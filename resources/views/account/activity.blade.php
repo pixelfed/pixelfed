@@ -28,6 +28,7 @@
             {!! $notification->rendered !!}
             <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
           </span>
+          @if($notification->actor->followedBy(Auth::user()->profile) == false)
           <span class="float-right notification-action">
            <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$notification->actor->id}}" data-action="follow">
               @csrf
@@ -35,6 +36,7 @@
               <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
             </form>
           </span>
+          @endif
         @break
         @endswitch
       </li>

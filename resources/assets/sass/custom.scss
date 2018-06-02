@@ -51,15 +51,15 @@ body, button, input, textarea {
 .card.status-container {
 }
 
+.card-img-top {
+  height: auto;
+}
+
 .card.status-container .status-photo {
   display: -webkit-box !important;
   display: -ms-flexbox !important;
   display: flex !important;
-  -webkit-box-align: center !important;
-  -ms-flex-align: center !important;
-  align-items: center !important;
-  padding: 0;
-  background-color: #fff;
+  margin: auto !important;
 }
 
 .card.status-container .status-comments {

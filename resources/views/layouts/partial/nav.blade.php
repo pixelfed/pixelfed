@@ -37,7 +37,7 @@
                             <div class="dropdown-divider"></div>
                             @endif
                             <a class="dropdown-item font-weight-bold" href="{{ Auth::user()->url() }}">My Profile</a>
-                            <a class="dropdown-item font-weight-bold" href="{{url(config('app.url') . '/settings')}}">Settings</a>
+                            <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">Settings</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">Remote Follow</a>
                             <div class="dropdown-divider"></div>

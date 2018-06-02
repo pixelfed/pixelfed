@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'La contraseña debe tener al menos seis caracteres y coincidir con la de confirmación.',
-    'reset' => '¡Tu contraseña se ha cambiado!',
-    'sent' => 'Te hemos enviado a tu correo un enlace para cambiar tu contraseña.',
-    'token' => 'El "token" para canbiar la contraseña no es válido.',
-    'user' => "No hemos podido encontrar a ningún usuario con esa contraseña.",
+    'password' => 'Os contrasinais deben ser ao menos de seis caracteres e concordar na confirmación.',
+    'reset' => 'Restableceuse o seu contrasinal!',
+    'sent' => 'Acabamos de enviarlle unha ligazón para restablecer o contrasinal!',
+    'token' => 'Este testemuño de restablecemento de contrasinal non é válido.',
+    'user' => "Non atopamos unha usuaria con ese enderezo de correo.",
 
 ];

@@ -47,6 +47,12 @@
                             </div>
                         </div>
 
+                        @if(config('pixelfed.recaptcha'))
+                        <div class="row my-3">
+                            {!! Recaptcha::render() !!}
+                        </div>
+                        @endif
+
                         <div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">

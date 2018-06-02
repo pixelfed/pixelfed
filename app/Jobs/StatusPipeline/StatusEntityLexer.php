@@ -45,7 +45,7 @@ class StatusEntityLexer implements ShouldQueue
     public function parseHashtags()
     {
         $status = $this->status;
-        $text = $status->caption;
+        $text = e($status->caption);
         $tags = HashtagLexer::getHashtags($text);
         $rendered = $text;
         if(count($tags) > 0) {
