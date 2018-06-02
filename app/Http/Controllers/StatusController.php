@@ -12,8 +12,21 @@ class StatusController extends Controller
 {
     public function show(Request $request, $username, int $id)
     {
-      $user = Profile::whereUsername($username)->firstOrFail();
-      $status = Status::whereProfileId($user->id)->findOrFail($id);
+      /*
+       * Load all required data
+       */
+      $user = Profile::whereUsername($username)->with('avatar')->firstOrFail();
+      $status = Status::whereProfileId($user->id)->with(['firstMedia', 'comments', 'comments.profile'])->findOrFail($id);
+
+      // avoid calling the same profile in the blade template
+      $status->profile = $user;
+
+      // load a count non-relationship; this seems to be the most sane solution.
+      $status->likesCount;
+      /*
+       * End load all required data
+       */
+
       if(!$status->media_path && $status->in_reply_to_id) {
         return view('status.reply', compact('user', 'status'));
       }
@@ -23,8 +36,8 @@ class StatusController extends Controller
     public function store(Request $request)
     {
       if(Auth::check() == false)
-      { 
-        abort(403); 
+      {
+        abort(403);
       }
 
       $user = Auth::user();
@@ -57,7 +70,7 @@ class StatusController extends Controller
 
       // TODO: Parse Caption
       // TODO: Send to subscribers
-      
+
       return redirect($status->url());
     }
 

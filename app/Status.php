@@ -20,12 +20,12 @@ class Status extends Model
 
     public function firstMedia()
     {
-      return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
+      return $this->hasOne(Media::class)->orderBy('order', 'asc')->limit(1);
     }
 
     public function thumb()
     {
-      return url(Storage::url($this->firstMedia()->thumbnail_path));
+      return url(Storage::url($this->firstMedia->thumbnail_path));
     }
 
     public function url()
@@ -37,7 +37,7 @@ class Status extends Model
 
     public function mediaUrl()
     {
-      $path = $this->firstMedia()->media_path;
+      $path = $this->firstMedia->media_path;
       $url = Storage::url($path);
       return url($url);
     }
@@ -45,6 +45,15 @@ class Status extends Model
     public function likes()
     {
       return $this->hasMany(Like::class);
+    }
+
+    public function getLikesCountAttribute()
+    {
+        if(isset($this->likesCountNumber)) {
+            return $this->likesCountNumber;
+        }
+
+        return $this->likesCountNumber = $this->likes()->count();
     }
 
     public function comments()

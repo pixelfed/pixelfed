@@ -4,8 +4,7 @@
 
 <div class="container">
   <div class="col-12 mt-4">
-    
-    <div class="card status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
+    <div class="card status-container orientation-{{$status->firstMedia->orientation ?? 'unknown'}}">
       <div class="card-body p-0">
         <div class="row">
           <div class="col-12 col-md-8 status-photo">
@@ -64,7 +63,7 @@
               </span>
             </div>
             <div class="likes font-weight-bold mb-0">
-              <span class="like-count">{{$status->likes()->count()}}</span> likes
+              <span class="like-count">{{$status->likesCount}}</span> likes
             </div>
             <div class="timestamp mb-0">
               <p class="small text-uppercase mb-0"><a href="{{$status->url()}}" class="text-muted">{{$status->created_at->diffForHumans()}}</a></p>
