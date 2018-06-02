@@ -33,7 +33,11 @@
       @foreach($posts as $status)
       <div class="col-12 col-md-4 mb-4">
         <a class="card" href="{{$status->url()}}">
-          <img class="card-img-top" src="{{$status->thumb()}}" width="300px" height="300px">
+          <img class="card-img-top" src="{{$status->thumb()}}" width="300px" height="300px"
+            @if($status->description)
+            alt="{{$status->description}}"
+            @endif
+          >
         </a>
       </div>
       @endforeach

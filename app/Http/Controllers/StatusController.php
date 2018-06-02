@@ -30,8 +30,9 @@ class StatusController extends Controller
       $user = Auth::user();
 
       $this->validate($request, [
-        'photo'   => 'required|image|max:15000',
-        'caption' => 'string|max:150'
+        'photo'       => 'required|image|max:15000',
+        'caption'     => 'string|max:150',
+        'description' => 'nullable|string|max:420'
       ]);
 
       $monthHash = hash('sha1', date('Y') . date('m'));
@@ -43,6 +44,7 @@ class StatusController extends Controller
       $status = new Status;
       $status->profile_id = $profile->id;
       $status->caption = $request->caption;
+      $status->description = $request->description;
       $status->save();
 
       $media = new Media;

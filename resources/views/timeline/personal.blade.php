@@ -30,6 +30,10 @@
             <label class="font-weight-bold text-muted small">Caption</label>
             <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
           </div>
+          <div class="form-group">
+            <label class="font-weight-bold text-muted small">Alternative text</label>
+            <input type="text" class="form-control" name="description" placeholder="Describe for the visually impaired. Up to 420 characters." maxlength="420">
+          </div>
           <button type="submit" class="btn btn-outline-primary btn-block">Post</button>
         </form>
       </div>  
