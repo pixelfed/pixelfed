@@ -10,3 +10,7 @@
     <p class="lead">PixelFed is a federated image sharing platform, powered by the <a href="#">ActivityPub</a> protocol.</p>
   </section>
 @endsection
+
+@push('meta')
+<meta property="og:description" content="PixelFed is a federated image sharing platform, powered by the ActivityPub protocol.">
+@endpush

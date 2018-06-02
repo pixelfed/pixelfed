@@ -15,3 +15,7 @@
     </ul>
   </section>
 @endsection
+
+@push('meta')
+<meta property="og:description" content="What's Fediverse">
+@endpush

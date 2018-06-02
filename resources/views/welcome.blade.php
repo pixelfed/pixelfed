@@ -10,5 +10,5 @@
 @endsection
 
 @push('meta')
-<link rel="canonical" href="{{request()->url()}}">
+<meta property="og:description" content="Federated Image Sharing">
 @endpush

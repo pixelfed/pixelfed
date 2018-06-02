@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app',['title' => 'Welcome to ' . config('app.name')])
 
 @section('content')
 <div class="container mt-4">
@@ -29,7 +29,7 @@
 @endsection
 
 @push('meta')
-<link rel="canonical" href="{{request()->url()}}">
+<meta property="og:description" content="">
 @endpush
 
 
