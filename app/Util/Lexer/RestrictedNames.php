@@ -55,8 +55,6 @@ class RestrictedNames {
      "js",
      "localdomain",
      "localhost",
-     "login",
-     "logout",
      "mail",
      "mailer-daemon",
      "mailerdaemon",
@@ -108,8 +106,6 @@ class RestrictedNames {
      "tutorial",
      "tutorials",
      "usenet",
-     "user",
-     "users",
      "uucp",
      "webmaster",
      "wpad",
@@ -126,8 +122,23 @@ class RestrictedNames {
      // Laravel Horizon
      "horizon",
 
-     // Reserved route
+     // Reserved routes
+     "account",
+     "api",
+     "auth",
      "i",
+     "discover",
+     "home",
+     "login",
+     "logout",
+     "p",
+     "password",
+     "search",
+     "settings",
+     "site",
+     "timeline",
+     "user",
+     "users",
   ];
 
   public static function get()

@@ -44,9 +44,23 @@
               <input type="hidden" name="item" value="{{$status->id}}">
               <button class="btn btn-link text-dark p-0" type="submit"><span class="icon-heart" style="font-size:25px;"></span></button>
             </form>
-              <span class="icon-speech"></span>
+              <span class="icon-speech pr-3"></span>
+              @if(Auth::check())
+                @if(Auth::user()->profile->id === $status->profile->id || Auth::user()->is_admin == true)
+                <form method="post" action="/i/delete" class="d-inline-flex">
+                  @csrf
+                  <input type="hidden" name="type" value="post">
+                  <input type="hidden" name="item" value="{{$status->id}}">
+                  <button type="submit" class="btn btn-link text-dark p-0"><span class="icon-trash" style="font-size:25px;"></span></button>
+                </form>
+                @endif
+              @endif
               <span class="float-right">
-                <span class="icon-notebook"></span>
+                <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$status->id}}" data-action="bookmark">
+                  @csrf
+                  <input type="hidden" name="item" value="{{$status->id}}">
+                  <button class="btn btn-link text-dark p-0" type="submit"><span class="icon-notebook" style="font-size:25px;"></span></button>
+                </form>
               </span>
             </div>
             <div class="likes font-weight-bold mb-0">

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth, Cache;
-use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Jobs\StatusPipeline\{NewStatusPipeline, StatusDelete};
 use Illuminate\Http\Request;
 use App\{Media, Profile, Status, User};
 use Vinkla\Hashids\Facades\Hashids;
@@ -59,5 +59,25 @@ class StatusController extends Controller
       // TODO: Send to subscribers
       
       return redirect($status->url());
+    }
+
+    public function delete(Request $request)
+    {
+      if(!Auth::check()) {
+        abort(403);
+      }
+
+      $this->validate($request, [
+        'type'  => 'required|string',
+        'item'  => 'required|integer|min:1'
+      ]);
+
+      $status = Status::findOrFail($request->input('item'));
+
+      if($status->profile_id === Auth::user()->profile->id || Auth::user()->is_admin == true) {
+        StatusDelete::dispatch($status);
+      }
+
+      return redirect(Auth::user()->url());
     }
 }

@@ -52,12 +52,19 @@ class RegisterController extends Controller
     {
         $this->validateUsername($data['username']);
         
-        return Validator::make($data, [
+
+        $rules = [
             'name' => 'required|string|max:255',
             'username' => 'required|alpha_dash|min:2|max:15|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-        ]);
+        ];
+
+        if(config('pixelfed.recaptcha')) {
+            $rules['g-recaptcha-response'] = 'required|recaptcha';
+        }
+
+        return Validator::make($data, $rules);
     }
 
     /**

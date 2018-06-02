@@ -18,7 +18,7 @@
         <div class="profile-stats pb-3 d-inline-flex lead">
           <div class="font-weight-light pr-5">
             <a class="text-dark" href="{{$profile->url()}}">
-              <span class="font-weight-bold">{{$profile->statuses()->count()}}</span> 
+              <span class="font-weight-bold">{{$profile->statuses()->whereNull('in_reply_to_id')->count()}}</span> 
               Posts
             </a>
           </div>
@@ -56,6 +56,25 @@
           <span class="following-name text-muted">
             {{$user->name}}
           </span>
+          @if(Auth::check() && Auth::id() != $user->user_id)
+            @if ($user->followedBy(Auth::user()->profile) == true)
+            <span class="float-right notification-action">
+              <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
+                @csrf
+                <input type="hidden" name="item" value="{{$user->id}}">
+                <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
+              </form>
+            </span>
+            @else
+            <span class="float-right notification-action">
+              <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
+                @csrf
+                <input type="hidden" name="item" value="{{$user->id}}">
+                <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
+              </form>
+            </span>
+            @endif
+          @endif
       </li>
       @endforeach
     </ul>

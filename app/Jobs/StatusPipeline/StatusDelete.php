@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Jobs\StatusPipeline;
+
+use App\{Media, StatusHashtag, Status};
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+
+class StatusDelete implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    protected $status;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Status $status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $status = $this->status;
+        $this->unlinkRemoveMedia($status);
+    }
+
+    public function unlinkRemoveMedia($status)
+    {
+        if($status->media()->count() == 0) {
+            return;
+        }
+
+        foreach($status->media as $media) {
+            $thumbnail = storage_path("app/{$media->thumbnail_path}");
+            $photo = storage_path("app/{$media->media_path}");
+
+            try {
+                if(is_file($thumbnail)) {
+                    unlink($thumbnail);
+                }
+                if(is_file($photo)) {
+                    unlink($photo);
+                }
+                $media->delete();
+            } catch (Exception $e) {
+                
+            }
+        }
+
+        $status->likes()->delete();
+        StatusHashtag::whereStatusId($status->id)->delete();
+        $status->delete();
+
+        return true;
+    }
+}
