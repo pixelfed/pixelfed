@@ -153,3 +153,23 @@ body, button, input, textarea {
 .font-weight-ultralight {
     font-weight: 200 !important;
 }
+
+.square {
+    position: relative;
+    width: 100%;
+}
+
+.square::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.square-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+}

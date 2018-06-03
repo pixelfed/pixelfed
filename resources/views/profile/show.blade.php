@@ -101,12 +101,14 @@
       @foreach($timeline as $status)
       <div class="col-12 col-md-4 mb-4">
         <a class="card info-overlay" href="{{$status->url()}}">
-          <img class="card-img-top" src="{{$status->thumb()}}" width="300px" height="300px">
-          <div class="info-overlay-text">
-            <h5 class="text-white m-auto">
-              <span class="icon-heart">{{$item->likes()->count()}}</span>
-              <span class="icon-speech">{{$item->comments()->count()}}</span>
-            </h5>
+          <div class="square">
+            <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
+            <div class="info-overlay-text">
+              <h5 class="text-white m-auto">
+                <span class="icon-heart">{{$item->likes()->count()}}</span>
+                <span class="icon-speech">{{$item->comments()->count()}}</span>
+              </h5>
+            </div>
           </div>
         </a>
       </div>
