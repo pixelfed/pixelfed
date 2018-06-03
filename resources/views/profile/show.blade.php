@@ -105,8 +105,8 @@
             <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
             <div class="info-overlay-text">
               <h5 class="text-white m-auto">
-                <span class="icon-heart">{{$item->likes()->count()}}</span>
-                <span class="icon-speech">{{$item->comments()->count()}}</span>
+                <span class="icon-heart">{{$status->likes()->count()}}</span>
+                <span class="icon-speech">{{$status->comments()->count()}}</span>
               </h5>
             </div>
           </div>
