@@ -40,7 +40,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('prettySize', function($expression) {
-
             $size = intval($expression);
             $precision = 0;
             $short = true;
@@ -50,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
             for($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {}
             $res = round($size, $precision).$units[$i];
             return "<?php echo '$res'; ?>";
+        });
+
+        Blade::directive('maxFileSize', function() {
+          $value = config('pixelfed.max_photo_size');
+          return \App\Util\Lexer\PrettyNumber::size($value, true);
         });
     }
 

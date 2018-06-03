@@ -56,9 +56,7 @@ body, button, input, textarea {
 }
 
 .card.status-container .status-photo {
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
+  display: block !important;
   margin: auto !important;
 }
 
