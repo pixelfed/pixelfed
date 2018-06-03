@@ -19,7 +19,7 @@
             </div>
           </div>
           <div class="timestamp mb-0">
-            <p class="small text-uppercase mb-0"><a href="{{$status->url()}}" class="text-muted">{{$status->created_at->diffForHumans()}}</a></p>
+            <p class="small text-uppercase mb-0"><a href="{{$status->url()}}" class="text-muted">{{$status->created_at->diffForHumans(null, true, true, true)}}</a></p>
           </div>
         </div>
         <div class="card-body status-comments">
