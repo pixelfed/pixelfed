@@ -65,7 +65,7 @@
             </span>
           </div>
           <div class="likes font-weight-bold mb-0">
-            <span class="like-count">{{$status->likes()->count()}}</span> likes
+            <span class="like-count">{{$status->likes_count}}</span> likes
           </div>
         </div>
         <div class="card-footer">
