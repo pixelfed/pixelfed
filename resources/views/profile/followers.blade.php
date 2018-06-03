@@ -5,7 +5,7 @@
 @include('profile.partial.user-info')
 
 <div class="container following-page" style="min-height: 60vh;">
-  <div class="col-12 col-md-8 offset-2">
+  <div class="col-12 col-md-8 offset-md-2">
     @if($followers->count() !== 0)
     <ul class="list-group mt-4">
       @foreach($followers as $user)
