@@ -47,8 +47,10 @@
           </div>
           <div class="profile-stats pb-3 d-inline-flex lead">
             <div class="font-weight-light pr-5">
+              <a class="text-dark" href="{{$user->url()}}">
               <span class="font-weight-bold">{{$user->statuses()->whereNull('in_reply_to_id')->count()}}</span> 
               Posts
+              </a>
             </div>
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url('/followers')}}">
