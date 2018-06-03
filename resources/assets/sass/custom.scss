@@ -66,15 +66,6 @@ body, button, input, textarea {
   border-bottom:1px solid rgba(0, 0, 0, 0.1);
 }
 
-.card.status-container.orientation-square .status-comments {
-  height: 360px !important;
-}
-
-
-.card.status-container.orientation-portrait .status-comments {
-  height: 528px !important;
-}
-
 .card.status-container.orientation-landscape .status-photo img {
   max-height: 451px !important;
 }
