@@ -56,23 +56,12 @@ body, button, input, textarea {
 }
 
 .card.status-container .status-photo {
-  display: block !important;
   margin: auto !important;
 }
 
 .card.status-container .status-comments {
-  height: 220px;
   overflow-y: scroll;
   border-bottom:1px solid rgba(0, 0, 0, 0.1);
-}
-
-.card.status-container.orientation-square .status-comments {
-  height: 360px !important;
-}
-
-
-.card.status-container.orientation-portrait .status-comments {
-  height: 528px !important;
 }
 
 .no-caret.dropdown-toggle {
