@@ -13,9 +13,12 @@
       <div class="card-body" id="statusForm">
         <form method="post" action="/timeline" enctype="multipart/form-data">
           @csrf
-          <div class="form-group">
-            <label class="font-weight-bold text-muted small">Upload Image</label>
-            <input type="file" class="form-control-file" name="photo" accept="image/*">
+          <div class="custom-file">
+            <label class="custom-file-label">
+              <span class="icon-picture mr-1"></span>
+              Upload Image
+            </label>
+            <input type="file" class="custom-file-input" name="photo" accept="image/*">
             <small class="form-text text-muted">
               Max Size: @maxFileSize(). Supported formats: jpeg, png, gif, bmp.
             </small>
