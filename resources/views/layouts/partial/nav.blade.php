@@ -61,8 +61,8 @@
         </div>
     </div>
 </nav>
-<nav class="navbar-nav m-auto d-md-none d-flex">
-  <form class="form-inline search-form">
+<nav class="breadcrumb d-md-none d-flex">
+  <form class="form-inline search-form mx-auto">
    <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
   </form>
 </nav>
