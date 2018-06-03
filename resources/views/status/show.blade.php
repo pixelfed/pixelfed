@@ -8,7 +8,7 @@
       <div class="col-12 col-md-8 status-photo px-0">
         <img src="{{$status->mediaUrl()}}" width="100%">
       </div>
-      <div class="col-12 col-md-4 px-0 d-flex flex-column">
+      <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
         <div class="d-flex align-items-center justify-content-between card-header">
           <div class="d-flex align-items-center status-username">
             <div class="status-avatar mr-2">
