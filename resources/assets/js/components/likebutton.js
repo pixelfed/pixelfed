@@ -1,29 +1,60 @@
 $(document).ready(function() {
+
   if(!ls.get('likes')) {
-    ls.set('likes', []);
+    axios.get('/api/v1/likes')
+    .then(function (res) {
+      ls.set('likes', res.data);
+      console.log(res);
+    })
+    .catch(function (res) {
+      ls.set('likes', []);
+    })
   }
 
-  $('.like-form').submit(function(e) {
+
+  pixelfed.hydrateLikes = function() {
+    var likes = ls.get('likes');
+    $('.like-form').each(function(i, el) {
+      var el = $(el);
+      var id = el.data('id');
+      var heart = el.find('.status-heart');
+
+      if(likes.indexOf(id) != -1) {
+        heart.addClass('fas fa-heart').removeClass('far fa-heart');
+      }
+    });
+  };
+
+  pixelfed.hydrateLikes();
+
+  $(document).on('submit', '.like-form', function(e) {
     e.preventDefault();
     var el = $(this);
     var id = el.data('id');
-    var res = axios.post('/i/like', {item: id});
-    var likes = ls.get('likes');
-    var action = false;
-    var counter = el.parent().parent().find('.like-count');
-    var count = parseInt(counter.text());
-    if(likes.indexOf(id) > -1) {
-      likes.splice(id, 1);
-      count--;
-      counter.text(count);
-      action = 'unlike';
-    } else {
-      likes.push(id);
-      count++;
-      counter.text(count);
-      action = 'like';
-    }
-    ls.set('likes', likes);
-    console.log(action + ' - ' + $(this).data('id') + ' like event');
+    axios.post('/i/like', {item: id})
+    .then(function (res) {
+      var likes = ls.get('likes');
+      var action = false;
+      var counter = el.parents().eq(1).find('.like-count');
+      var count = res.data.count;
+      var heart = el.find('.status-heart');
+
+      if(likes.indexOf(id) > -1) {
+        heart.addClass('far fa-heart').removeClass('fas fa-heart');
+        likes = likes.filter(function(item) { 
+            return item !== id
+        });
+        counter.text(count);
+        action = 'unlike';
+      } else {
+        heart.addClass('fas fa-heart').removeClass('far fa-heart');
+        likes.push(id);
+        counter.text(count);
+        action = 'like';
+      }
+
+      ls.set('likes', likes);
+      console.log(action + ' - ' + id + ' like event');
+    });
   });
 });

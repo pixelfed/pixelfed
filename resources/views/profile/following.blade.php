@@ -4,16 +4,16 @@
 
 <div class="container following-page" style="min-height: 60vh;">
 
-  <div class="profile-header row my-5 offset-md-1">
-    <div class="col-12 col-md-3">
-      <div class="profile-avatar">
+  <div class="profile-header row my-5">
+    <div class="col-12 col-md-4 d-flex">
+      <div class="profile-avatar mx-auto">
         <img class="img-thumbnail" src="{{$profile->avatarUrl()}}" style="border-radius:100%;" width="172px">
       </div>
     </div>
-    <div class="col-12 col-md-9 d-flex align-items-center">
+    <div class="col-12 col-md-8 d-flex align-items-center">
       <div class="profile-details">
         <div class="username-bar pb-2  d-flex align-items-center">
-          <span class="font-weight-light h1">{{$profile->username}}</span>
+          <span class="font-weight-ultralight h1">{{$profile->username}}</span>
         </div>
         <div class="profile-stats pb-3 d-inline-flex lead">
           <div class="font-weight-light pr-5">
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <div class="col-12 col-md-8 offset-2">
+  <div class="col-12 col-md-8 offset-md-2">
     @if($following->count() !== 0)
     <ul class="list-group mt-4">
       @foreach($following as $user)

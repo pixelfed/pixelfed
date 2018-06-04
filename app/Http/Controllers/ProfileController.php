@@ -32,7 +32,12 @@ class ProfileController extends Controller
       // TODO: refactor this mess
       $owner = Auth::check() && Auth::id() === $user->user_id;
       $following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
-      $timeline = $user->statuses()->whereHas('media')->whereNull('in_reply_to_id')->orderBy('id','desc')->paginate(21);
+      $timeline = $user->statuses()
+                  ->whereHas('media')
+                  ->whereNull('in_reply_to_id')
+                  ->orderBy('id','desc')
+                  ->withCount(['comments', 'likes'])
+                  ->simplePaginate(21);
 
       return view('profile.show', compact('user', 'owner', 'following', 'timeline'));
     }

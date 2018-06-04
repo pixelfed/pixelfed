@@ -56,37 +56,12 @@ body, button, input, textarea {
 }
 
 .card.status-container .status-photo {
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
   margin: auto !important;
 }
 
 .card.status-container .status-comments {
-  height: 220px;
   overflow-y: scroll;
   border-bottom:1px solid rgba(0, 0, 0, 0.1);
-}
-
-.card.status-container.orientation-square .status-comments {
-  height: 360px !important;
-}
-
-
-.card.status-container.orientation-portrait .status-comments {
-  height: 528px !important;
-}
-
-.card.status-container.orientation-landscape .status-photo img {
-  max-height: 451px !important;
-}
-
-.card.status-container.orientation-square .status-photo img {
-  max-height: 601px !important;
-}
-
-.card.status-container.orientation-portrait .status-photo img {
-  max-height: 772px !important;
 }
 
 .no-caret.dropdown-toggle {
@@ -104,4 +79,90 @@ body, button, input, textarea {
 
 .notification-page .list-group-item:first-child {
   border-top: none;
+}
+
+.nav-topbar {
+  border-top: 1px solid $gray-300;
+}
+.nav-topbar .nav-item {
+  margin: -1px 1.5rem 0;
+}
+.nav-topbar .nav-link {
+  border: 1px solid transparent;
+  color: $gray-300;
+  padding: 0.75rem 0;
+}
+.nav-topbar .nav-link:focus, .nav-topbar .nav-link:hover {
+  border-top-color: $gray-300;
+}
+.nav-topbar .nav-link.disabled {
+  color: $gray-300;
+  background-color: transparent;
+  border-color: transparent;
+}
+.nav-topbar .nav-item.show .nav-link, .nav-topbar .nav-link.active {
+  color: $gray-600;
+  border-top-color: $gray-600;
+}
+.nav-topbar .dropdown-menu {
+  margin-top:-1px;
+}
+
+.info-overlay {
+    position: relative;
+}
+
+.info-overlay .info-overlay-text {
+    display: none;
+    position: absolute;
+}
+
+.info-overlay:hover .info-overlay-text {
+    display: flex;
+}
+
+.info-overlay-text {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.font-weight-ultralight {
+    font-weight: 200 !important;
+}
+
+.square {
+    position: relative;
+    width: 100%;
+}
+
+.square::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.square-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+}
+
+.fas, .far {
+  font-size: 25px !important;
+}
+
+
+.far.fa-heart {
+  color: #343a40;
+}
+
+.svg-inline--fa.fa-heart.fa-w-16.status-heart.fa-2x {
+  color: #f70ec4;
+}
+
+.fas.fa-heart {
 }
