@@ -10,10 +10,10 @@ use App\{Comment, Profile, Status};
 class CommentController extends Controller
 {
 
-    public function show(Request $request, $username, int $id)
+    public function show(Request $request, $username, int $id, int $cid)
     {
       $user = Profile::whereUsername($username)->firstOrFail();
-      $status = Status::whereProfileId($user->id)->whereNotNull('in_reply_to_id')->findOrFail($id);
+      $status = Status::whereProfileId($user->id)->whereInReplyToId($id)->findOrFail($cid);
       return view('status.reply', compact('user', 'status'));
     }
 

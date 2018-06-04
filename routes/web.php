@@ -125,6 +125,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::view('libraries', 'site.libraries')->name('site.libraries');
   });
 
+  Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
   Route::get('p/{username}/{id}', 'StatusController@show');
   Route::get('{username}/saved', 'ProfileController@savedBookmarks');
   Route::get('{username}/followers', 'ProfileController@followers');
