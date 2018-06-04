@@ -5,7 +5,7 @@ $(document).ready(function() {
     el.focus();
   });
 
-  $('.comment-form').submit(function(e, data) {
+  $(document).on('submit', '.comment-form', function(e, data) {
     e.preventDefault();
 
     let el = $(this);

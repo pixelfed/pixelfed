@@ -11,9 +11,8 @@ $(document).ready(function() {
     })
   }
 
-  hydrateLikes();
 
-  function hydrateLikes() {
+  pixelfed.hydrateLikes = function() {
     var likes = ls.get('likes');
     $('.like-form').each(function(i, el) {
       var el = $(el);
@@ -24,9 +23,11 @@ $(document).ready(function() {
         heart.addClass('fas fa-heart').removeClass('far fa-heart');
       }
     });
-  }
+  };
 
-  $('.like-form').submit(function(e) {
+  pixelfed.hydrateLikes();
+
+  $(document).on('submit', '.like-form', function(e) {
     e.preventDefault();
     var el = $(this);
     var id = el.data('id');
