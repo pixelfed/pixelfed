@@ -76,5 +76,25 @@ return [
     'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
 
     'activitypub_enabled' => env('ACTIVITY_PUB', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Photo file size limit
+    |--------------------------------------------------------------------------
+    |
+    | Update the max photo size, in KB.
+    |
+    */
+    'max_photo_size' => env('MAX_PHOTO_SIZE', 15000),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Caption limit
+    |--------------------------------------------------------------------------
+    |
+    | Change the caption length limit for new local posts.
+    |
+    */
+    'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
     
 ];

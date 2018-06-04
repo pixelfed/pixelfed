@@ -6,4 +6,7 @@ $(document).ready(function() {
     append: '.timeline-feed',
     history: false,
   });
+  infScroll.on( 'append', function( response, path, items ) {
+    pixelfed.hydrateLikes();
+  });
 });

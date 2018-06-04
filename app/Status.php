@@ -32,7 +32,12 @@ class Status extends Model
     {
       $id = $this->id;
       $username = $this->profile->username;
-      return url(config('app.url') . "/p/{$username}/{$id}");
+      $path = config('app.url') . "/p/{$username}/{$id}";
+      if(!is_null($this->in_reply_to_id)) {
+        $pid = $this->in_reply_to_id;
+        $path = config('app.url') . "/p/{$username}/{$pid}/c/{$id}";
+      }
+      return url($path);
     }
 
     public function mediaUrl()
@@ -96,4 +101,17 @@ class Status extends Model
       return $obj;
     }
 
+    public function replyToText()
+    {
+      $actorName = $this->profile->username;
+      return "{$actorName} " . __('notification.commented');
+    }
+
+    public function replyToHtml()
+    {
+      $actorName = $this->profile->username;
+      $actorUrl = $this->profile->url();
+      return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> " .
+          __('notification.commented');
+    }
 }
