@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use Auth, Hashids;
 use App\{Comment, Profile, Status};
@@ -40,6 +41,7 @@ class CommentController extends Controller
       $reply->save();
 
       NewStatusPipeline::dispatch($reply, false);
+      CommentPipeline::dispatch($status, $reply);
 
       if($request->ajax()) {
         $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url()];

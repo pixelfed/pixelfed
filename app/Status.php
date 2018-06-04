@@ -101,4 +101,17 @@ class Status extends Model
       return $obj;
     }
 
+    public function replyToText()
+    {
+      $actorName = $this->profile->username;
+      return "{$actorName} " . __('notification.commented');
+    }
+
+    public function replyToHtml()
+    {
+      $actorName = $this->profile->username;
+      $actorUrl = $this->profile->url();
+      return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> " .
+          __('notification.commented');
+    }
 }

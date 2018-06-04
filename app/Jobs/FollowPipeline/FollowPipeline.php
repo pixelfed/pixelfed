@@ -46,6 +46,8 @@ class FollowPipeline implements ShouldQueue
             $notification->action = 'follow';
             $notification->message = $follower->toText();
             $notification->rendered = $follower->toHtml();
+            $notification->item_id = $target->id;
+            $notification->item_type = "App\Profile";
             $notification->save();
 
             Cache::forever('notification.' . $notification->id, $notification);

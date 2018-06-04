@@ -16,7 +16,9 @@ class AccountController extends Controller
     public function notifications(Request $request)
     {
       $profile = Auth::user()->profile;
-      $notifications = $this->fetchNotifications($profile->id);
+      //$notifications = $this->fetchNotifications($profile->id);
+      $notifications = Notification::whereProfileId($profile->id)
+          ->orderBy('id','desc')->take(30)->simplePaginate();
       return view('account.activity', compact('profile', 'notifications'));
     }
 

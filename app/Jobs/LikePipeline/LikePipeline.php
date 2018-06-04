@@ -49,6 +49,8 @@ class LikePipeline implements ShouldQueue
             $notification->action = 'like';
             $notification->message = $like->toText();
             $notification->rendered = $like->toHtml();
+            $notification->item_id = $status->id;
+            $notification->item_type = "App\Status";
             $notification->save();
 
             Cache::forever('notification.' . $notification->id, $notification);
