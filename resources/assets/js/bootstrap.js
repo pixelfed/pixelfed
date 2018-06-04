@@ -9,6 +9,7 @@ window.Popper = require('popper.js').default;
  */
 
 try {
+    window.pixelfed = {};
     window.$ = window.jQuery = require('jquery');
     require('bootstrap');
     window.InfiniteScroll = require('infinite-scroll');

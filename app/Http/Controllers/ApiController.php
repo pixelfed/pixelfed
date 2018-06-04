@@ -24,9 +24,9 @@ class ApiController extends Controller
 
         $likes = Like::whereProfileId($profile->id)
                  ->orderBy('id', 'desc')
-                 ->take(100)
+                 ->take(1000)
                  ->pluck('status_id');
-                 
+
         return response()->json($likes);
     }
 }
