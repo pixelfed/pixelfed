@@ -33,22 +33,24 @@
         </a>
         <div class="card-body">
           <div class="reactions h3">
-            <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like">
+            <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
               @csrf
               <input type="hidden" name="item" value="{{$item->id}}">
-              <button class="btn btn-link text-dark p-0" type="submit"><span class="icon-heart" style="font-size:25px;"></span></button>
+              <button class="btn btn-link text-dark p-0" type="submit">
+                <span class="far fa-heart status-heart fa-2x"></span>
+              </button>
             </form>
-            <span class="icon-speech"></span>
+            <span class="far fa-comment status-comment-focus"></span>
             <span class="float-right">
               <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
                 @csrf
                 <input type="hidden" name="item" value="{{$item->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit"><span class="icon-notebook" style="font-size:25px;"></span></button>
+                <button class="btn btn-link text-dark p-0" type="submit"><span class="far fa-bookmark" style="font-size:25px;"></span></button>
               </form>
             </span>
           </div>
           <div class="likes font-weight-bold">
-            <span class="like-count">{{$item->likes()->count()}}</span> likes
+            <span class="like-count">{{$item->likes_count}}</span> likes
           </div>
           <div class="caption">
             <p class="mb-1">
@@ -95,7 +97,7 @@
           <form class="comment-form" method="post" action="/i/comment" data-id="{{$item->id}}" data-truncate="true">
             @csrf
             <input type="hidden" name="item" value="{{$item->id}}">
-            <input class="form-control" name="comment" placeholder="Add a comment...">
+            <input class="form-control status-reply-input" name="comment" placeholder="Add a comment...">
           </form>
         </div>
       </div>

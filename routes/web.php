@@ -47,6 +47,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::get('search/{tag}', 'SearchController@searchAPI')
           ->where('tag', '[A-Za-z0-9]+');
     Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
+    Route::get('v1/likes', 'ApiController@hydrateLikes');
   });
 
   Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');
@@ -124,6 +125,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::view('libraries', 'site.libraries')->name('site.libraries');
   });
 
+  Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
   Route::get('p/{username}/{id}', 'StatusController@show');
   Route::get('{username}/saved', 'ProfileController@savedBookmarks');
   Route::get('{username}/followers', 'ProfileController@followers');

@@ -1,28 +1,32 @@
 <?php
 
-namespace App\Jobs\LikePipeline;
+namespace App\Jobs\CommentPipeline;
 
 use Cache, Log, Redis;
-use App\{Like, Notification};
+use App\{Like, Notification, Status};
+use App\Util\Lexer\Hashtag as HashtagLexer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class LikePipeline implements ShouldQueue
+class CommentPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $like;
+    protected $status;
+    protected $comment;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Like $like)
+    public function __construct(Status $status, Status $comment)
     {
-        $this->like = $like;
+        $this->status = $status;
+        $this->comment = $comment;
     }
 
     /**
@@ -32,35 +36,34 @@ class LikePipeline implements ShouldQueue
      */
     public function handle()
     {
-        $like = $this->like;
+        $status = $this->status;
+        $comment = $this->comment;
 
-        $status = $this->like->status;
-        $actor = $this->like->actor;
-
-        if($actor->id === $status->profile_id) {
-            return true;
-        }
+        $target = $status->profile;
+        $actor = $comment->profile;
 
         try {
 
             $notification = new Notification;
-            $notification->profile_id = $status->profile_id;
+            $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
-            $notification->action = 'like';
-            $notification->message = $like->toText();
-            $notification->rendered = $like->toHtml();
-            $notification->item_id = $status->id;
+            $notification->action = 'comment';
+            $notification->message = $comment->replyToText();
+            $notification->rendered = $comment->replyToHtml();
+            $notification->item_id = $comment->id;
             $notification->item_type = "App\Status";
             $notification->save();
 
             Cache::forever('notification.' . $notification->id, $notification);
             
             $redis = Redis::connection();
-            $key = config('cache.prefix').':user.' . $status->profile_id . '.notifications';
-            $redis->lpush($key, $notification->id);
+
+            $nkey = config('cache.prefix').':user.' . $target->id . '.notifications';
+            $redis->lpush($nkey, $notification->id);
 
         } catch (Exception $e) {
             Log::error($e);
         }
+
     }
 }

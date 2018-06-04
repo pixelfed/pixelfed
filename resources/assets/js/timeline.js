@@ -6,7 +6,12 @@ $(document).ready(function() {
     append: '.timeline-feed',
     history: false,
   });
+
   $("#modal-post").addClass("modal fade");
   $("#modal-dialog").addClass("modal-dialog");
   $("#modal-text").removeClass("d-none");
+
+  infScroll.on( 'append', function( response, path, items ) {
+    pixelfed.hydrateLikes();
+  });
 });
