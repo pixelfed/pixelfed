@@ -13,9 +13,11 @@ class StatusController extends Controller
     public function show(Request $request, $username, int $id)
     {
       $user = Profile::whereUsername($username)->firstOrFail();
-      $status = Status::whereProfileId($user->id)->findOrFail($id);
+      $status = Status::whereProfileId($user->id)
+              ->withCount('likes')
+              ->findOrFail($id);
       if(!$status->media_path && $status->in_reply_to_id) {
-        return view('status.reply', compact('user', 'status'));
+        return redirect($status->url());
       }
       return view('status.show', compact('user', 'status'));
     }
