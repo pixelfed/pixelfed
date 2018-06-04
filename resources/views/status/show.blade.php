@@ -43,16 +43,20 @@
             <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$status->id}}" data-action="like">
               @csrf
               <input type="hidden" name="item" value="{{$status->id}}">
-              <button class="btn btn-link text-dark p-0" type="submit"><h3 class="icon-heart mb-0"></h3></button>
+              <button class="btn btn-link text-dark p-0" type="submit">
+                <span class="far fa-heart fa-lg mb-0"></span>
+              </button>
             </form>
-            <span class="icon-speech pr-3"></span>
+            <span class="far fa-comment fa-lg pt-1 pr-3"></span>
             @if(Auth::check())
             @if(Auth::user()->profile->id === $status->profile->id || Auth::user()->is_admin == true)
             <form method="post" action="/i/delete" class="d-inline-flex">
               @csrf
               <input type="hidden" name="type" value="post">
               <input type="hidden" name="item" value="{{$status->id}}">
-              <button type="submit" class="btn btn-link text-dark p-0"><h3 class="icon-trash mb-0"></h3></button>
+              <button type="submit" class="btn btn-link text-dark p-0">
+                <span class="far fa-trash-alt fa-lg mb-0"></span>
+              </button>
             </form>
             @endif
             @endif
@@ -60,12 +64,14 @@
               <form class="d-inline-flex bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$status->id}}" data-action="bookmark">
                 @csrf
                 <input type="hidden" name="item" value="{{$status->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit"><h3 class="icon-notebook mb-0"></h3></button>
+                <button class="btn btn-link text-dark p-0" type="submit">
+                  <span class="far fa-bookmark fa-lg mb-0"></span>
+                </button>
               </form>
             </span>
           </div>
           <div class="likes font-weight-bold mb-0">
-            <span class="like-count">{{$status->likes_count}}</span> likes
+            <span class="like-count" data-count="{{$status->likes_count}}">{{$status->likes_count}}</span> likes
           </div>
         </div>
         <div class="card-footer">
