@@ -35,7 +35,7 @@ $(document).ready(function() {
     .then(function (res) {
       var likes = ls.get('likes');
       var action = false;
-      var counter = el.parents().eq(2).find('.like-count');
+      var counter = el.parents().eq(1).find('.like-count');
       var count = res.data.count;
       var heart = el.find('.status-heart');
 
@@ -54,7 +54,7 @@ $(document).ready(function() {
       }
 
       ls.set('likes', likes);
-      console.log(action + ' - ' + $(this).data('id') + ' like event');
+      console.log(action + ' - ' + id + ' like event');
     });
   });
 });
