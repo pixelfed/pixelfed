@@ -18,14 +18,14 @@
               <span class="icon-picture mr-1"></span>
               Upload Image
             </label>
-            <input type="file" class="custom-file-input" name="photo" accept="image/*">
+            <input type="file" class="custom-file-input" name="photo" accept="image/*" required>
             <small class="form-text text-muted">
               Max Size: @maxFileSize(). Supported formats: jpeg, png, gif, bmp.
             </small>
           </div>
           <div class="form-group">
             <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
+            <input type="text" class="form-control" name="caption" placeholder="Add a caption here" required>
             <small class="form-text text-muted">
               Max length: {{config('pixelfed.max_caption_length')}} characters.
             </small>
