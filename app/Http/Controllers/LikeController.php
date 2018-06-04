@@ -21,21 +21,30 @@ class LikeController extends Controller
       ]);
 
       $profile = Auth::user()->profile;
-      $status = Status::findOrFail($request->input('item'));
+      $status = Status::withCount('likes')->findOrFail($request->input('item'));
+
+      $count = $status->likes_count;
 
       if($status->likes()->whereProfileId($profile->id)->count() !== 0) {
         $like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
         $like->delete();
-        return redirect()->back();
+        $count--;
+      } else {
+        $like = new Like;
+        $like->profile_id = $profile->id;
+        $like->status_id = $status->id;
+        $like->save();
+        $count++;
       }
-
-      $like = new Like;
-      $like->profile_id = $profile->id;
-      $like->status_id = $status->id;
-      $like->save();
 
       LikePipeline::dispatch($like);
 
-      return redirect($status->url());
+      if($request->ajax()) {
+        $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];
+      } else {
+        $response = redirect($status->url());
+      }
+
+      return $response;
     }
 }
