@@ -17,7 +17,7 @@ class StatusController extends Controller
               ->withCount('likes')
               ->findOrFail($id);
       if(!$status->media_path && $status->in_reply_to_id) {
-        return view('status.reply', compact('user', 'status'));
+        return redirect($status->url());
       }
       return view('status.show', compact('user', 'status'));
     }

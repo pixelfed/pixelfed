@@ -32,7 +32,12 @@ class Status extends Model
     {
       $id = $this->id;
       $username = $this->profile->username;
-      return url(config('app.url') . "/p/{$username}/{$id}");
+      $path = config('app.url') . "/p/{$username}/{$id}";
+      if(!is_null($this->in_reply_to_id)) {
+        $pid = $this->in_reply_to_id;
+        $path = config('app.url') . "/p/{$username}/{$pid}/c/{$id}";
+      }
+      return url($path);
     }
 
     public function mediaUrl()
