@@ -17,4 +17,14 @@ class Notification extends Model
     return $this->belongsTo(Profile::class, 'profile_id', 'id');
   }
 
+  public function item()
+  {
+    return $this->morphTo();
+  }
+
+  public function status()
+  {
+    return $this->belongsTo(Status::class, 'item_id', 'id');
+  }
+
 }
