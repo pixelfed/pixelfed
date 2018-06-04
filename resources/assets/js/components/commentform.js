@@ -24,7 +24,7 @@ $(document).ready(function() {
       if($('.status-container').length == 1) {
         var comments = el.parents().eq(3).find('.comments');
       } else {
-        var comments = el.parents().eq(2).find('.comments');
+        var comments = el.parents().eq(1).find('.comments');
       }
 
       var comment = '<p class="mb-0"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ commenttext + '</span><span class="float-right"><a href="' + permalink + '" class="text-dark small font-weight-bold">1s</a></span></p>';
