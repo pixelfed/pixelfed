@@ -9,6 +9,14 @@ use App\{Comment, Profile, Status};
 
 class CommentController extends Controller
 {
+
+    public function show(Request $request, $username, int $id)
+    {
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $status = Status::whereProfileId($user->id)->whereNotNull('in_reply_to_id')->findOrFail($id);
+      return view('status.reply', compact('user', 'status'));
+    }
+
     public function store(Request $request)
     {
       if(Auth::check() === false) { abort(403); }
@@ -34,7 +42,7 @@ class CommentController extends Controller
       NewStatusPipeline::dispatch($reply, false);
 
       if($request->ajax()) {
-        $response = ['code' => 200, 'msg' => 'Comment saved'];
+        $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url()];
       } else {
         $response = redirect($status->url());
       }
