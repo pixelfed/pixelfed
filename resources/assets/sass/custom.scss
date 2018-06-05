@@ -163,6 +163,12 @@ body, button, input, textarea {
     background-position: 50%;
 }
 
+@media (max-width: map-get($grid-breakpoints, "md")) {
+ .border-md-left-0 {
+  border-left:0!important
+ }
+}
+
 .fas, .far {
   font-size: 25px !important;
 }
