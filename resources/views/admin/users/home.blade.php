@@ -10,7 +10,7 @@
   <table class="table">
     <thead class="thead-dark">
       <tr>
-        <th scope="col">#</th>
+        <th scope="col">Username</th>
         <th scope="col">Statuses</th>
         <th scope="col">Storage</th>
         <th scope="col">Role</th>
@@ -21,8 +21,8 @@
       @foreach($users as $user)
       <tr>
         <th scope="row">
-          <a href="/users/show/{{$user->id}}">
-            {{$user->id}}
+          <a href="{{$user->url()}}">
+            {{$user->username}}
           </a>
         </th>
         <td>{{$user->profile->statuses->count()}}</td>
