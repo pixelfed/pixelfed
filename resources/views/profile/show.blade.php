@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app',['title' => $user->username . " on " . config('app.name')])
 
 @section('content')
 
@@ -133,3 +133,9 @@
 </div>
 
 @endsection
+
+@push('meta')
+<meta property="og:description" content="{{$user->bio}}">
+<meta property="og:image" content="{{$user->avatarUrl()}}">
+@endpush
+

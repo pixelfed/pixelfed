@@ -78,3 +78,7 @@
   </div>
 
 @endsection
+
+@push('meta')
+<meta property="og:description" content="Privacy Policy">
+@endpush

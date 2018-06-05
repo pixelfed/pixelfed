@@ -1,6 +1,6 @@
   <footer>
-    <div class="container mt-5">
-        <p class="text-uppercase font-weight-bold small">
+    <div class="container py-3">
+        <p class="mb-0 text-uppercase font-weight-bold small">
           <a href="{{route('site.about')}}" class="text-primary pr-2">About Us</a>
           <a href="{{route('site.help')}}" class="text-primary pr-2">Support</a>
           <a href="" class="text-primary pr-2">API</a>
