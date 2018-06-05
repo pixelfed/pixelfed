@@ -14,7 +14,7 @@
             <span class="h5 pl-2 b-0">
             <a class="icon-settings text-muted" href="{{route('settings')}}"></a>
             </span>
-            @elseif ($following == true)
+            @elseif ($is_following == true)
             <span class="pl-4">
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
                 @csrf
@@ -22,7 +22,7 @@
                 <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
               </form>
             </span>
-            @elseif ($following == false)
+            @elseif ($is_following == false)
             <span class="pl-4">
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
                 @csrf
