@@ -31,7 +31,7 @@ class ProfileController extends Controller
 
       // TODO: refactor this mess
       $owner = Auth::check() && Auth::id() === $user->user_id;
-      $following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+      $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
       $timeline = $user->statuses()
                   ->whereHas('media')
                   ->whereNull('in_reply_to_id')
@@ -39,7 +39,7 @@ class ProfileController extends Controller
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(21);
 
-      return view('profile.show', compact('user', 'owner', 'following', 'timeline'));
+      return view('profile.show', compact('user', 'owner', 'is_following', 'timeline'));
     }
 
     public function showActivityPub(Request $request, $user)
