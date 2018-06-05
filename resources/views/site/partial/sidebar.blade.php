@@ -9,6 +9,9 @@
       <li class="nav-item pl-3 {{request()->is('site/help')?'active':''}}">
         <a class="nav-link lead text-muted" href="{{route('site.help')}}">Help</a>
       </li>
+      <li class="nav-item pl-3 {{request()->is('site/language')?'active':''}}">
+        <a class="nav-link lead text-muted" href="{{route('site.language')}}">Language</a>
+      </li>
       <li class="nav-item">
         <hr>
       </li>

@@ -10,7 +10,7 @@
           <a href="#" class="text-primary pr-2">Directory</a>
           <a href="#" class="text-primary pr-2">Profiles</a>
           <a href="#" class="text-primary pr-2">Hashtags</a>
-          <a href="#" class="text-primary ">Language</a>
+          <a href="{{route('site.language')}}" class="text-primary">Language</a>
           <a href="#" class="text-dark float-right">© {{date('Y')}} PixelFed.org</a>
         </p>
     </div>
