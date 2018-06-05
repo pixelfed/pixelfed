@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Dessa autentiseringsuppgifter matchar inte vårt register.',
-    'throttle' => 'För många inloggningsförsök. Var god försök igen om :seconds sekunder.',
+    'failed' => 'Nämä kirjautumistiedot eivät vastaa tallennettuja',
+    'throttle' => 'Liian monta kirjautumisyritystä. Yrityä uudelleen :seconds sekuntin kuluttua.',
 
 ];

@@ -7,3 +7,7 @@
   </div>
   <hr>
 @endsection
+
+@push('meta')
+<meta property="og:description" content="Platform/API Terms of Use">
+@endpush

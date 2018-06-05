@@ -42,3 +42,7 @@
 </div>
 
 @endsection
+
+@push('meta')
+<meta property="og:description" content="Discover People!">
+@endpush

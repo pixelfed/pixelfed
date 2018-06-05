@@ -35,3 +35,7 @@
 </div>
 
 @endsection
+
+@push('meta')
+<meta property="og:description" content="Discover {{$tag->name}}">
+@endpush

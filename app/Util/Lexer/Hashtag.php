@@ -7,7 +7,7 @@ class Hashtag {
   public static function getHashtags($status)
   {  
     $hashtags = false;  
-    preg_match_all("/(#\w+)/u", $status, $matches);
+    preg_match_all("/(?<!&)(#\w+)/u", $status, $matches);
     if ($matches) {
         $res = array_count_values($matches[0]);
         $hashtags = array_keys($res);

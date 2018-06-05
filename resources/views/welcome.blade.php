@@ -8,3 +8,7 @@
       </div>
     </div>
 @endsection
+
+@push('meta')
+<meta property="og:description" content="Federated Image Sharing">
+@endpush
