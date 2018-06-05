@@ -71,9 +71,12 @@ body, button, input, textarea {
   margin: auto !important;
 }
 
-.card.status-container .status-comments {
-  overflow-y: scroll;
-  border-bottom:1px solid rgba(0, 0, 0, 0.1);
+@media (min-width: map-get($grid-breakpoints, "md")) {
+  .card.status-container .status-comments {
+    overflow-y:scroll;
+    border-bottom:1px solid rgba(0,0,0,.1);
+    height: 200px;
+  }
 }
 
 .no-caret.dropdown-toggle {
@@ -163,6 +166,12 @@ body, button, input, textarea {
     background-position: 50%;
 }
 
+@media (max-width: map-get($grid-breakpoints, "md")) {
+ .border-md-left-0 {
+  border-left:0!important
+ }
+}
+
 .fas, .far {
   font-size: 25px !important;
 }
@@ -177,4 +186,19 @@ body, button, input, textarea {
 }
 
 .fas.fa-heart {
+}
+
+@media (max-width: map-get($grid-breakpoints, "md")) {
+  .border-md-left-0 {
+    border-left:0!important
+  }
+  .card.status-container .status-comments {
+    border-top:1px solid rgba(0,0,0,.1);
+  }
+  .sticky-md-bottom {
+    position:-webkit-sticky;
+    position:sticky;
+    bottom:0;
+    z-index:1020
+  }
 }

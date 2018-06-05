@@ -94,7 +94,7 @@ class FederationController extends Controller
           'outbound' => []
         ],
         'software' => [
-          'name' => 'PixelFed',
+          'name' => 'pixelfed',
           'version' => config('pixelfed.version')
         ],
         'usage' => [
