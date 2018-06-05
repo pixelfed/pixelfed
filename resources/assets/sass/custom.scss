@@ -202,3 +202,15 @@ body, button, input, textarea {
     z-index:1020
   }
 }
+
+@keyframes loading-bar {
+  from { background-position: 0 0; }
+  to { background-position: 100vw 0; }
+}
+
+.loading-page {
+  background-image: linear-gradient(to right, #6736dd, #10c5f8, #10c5f8, #6736dd);
+  width: 100vw;
+  height: .25rem;
+  animation: loading-bar 3s linear infinite;
+}
