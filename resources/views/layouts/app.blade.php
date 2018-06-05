@@ -19,12 +19,10 @@
 </head>
 <body class="">
     @include('layouts.partial.nav')
-    <main class="">
+    <main id="content">
         @yield('content')
     </main>
-    <div class="align-items-end">
-        @include('layouts.partial.footer')
-    </div>
+    @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
     @stack('scripts')
 </body>
