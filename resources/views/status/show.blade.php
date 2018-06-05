@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . " posted a photo: " . $status->likes()->count() . " likes, " . $status->comments()->count() . " comments" ])
+@extends('layouts.app',['title' => $user->username . " posted a photo: " . $status->likes_count . " likes, " . $status->comments_count . " comments" ])
 
 @section('content')
 
