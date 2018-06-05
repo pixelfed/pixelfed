@@ -14,7 +14,7 @@ class StatusController extends Controller
     {
       $user = Profile::whereUsername($username)->firstOrFail();
       $status = Status::whereProfileId($user->id)
-              ->withCount('likes')
+              ->withCount(['likes', 'comments'])
               ->findOrFail($id);
       if(!$status->media_path && $status->in_reply_to_id) {
         return redirect($status->url());

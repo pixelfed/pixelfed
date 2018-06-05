@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app',['title' => $user->username . " posted a photo: " . $status->likes_count . " likes, " . $status->comments_count . " comments" ])
 
 @section('content')
 
@@ -87,3 +87,8 @@
 </div>
 
 @endsection
+
+@push('meta')
+<meta property="og:description" content="{!! $status->rendered ?? e($status->caption) !!}">
+<meta property="og:image" content="{{$status->mediaUrl()}}">
+@endpush
