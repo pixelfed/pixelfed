@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-between align-items-center">
     <h4>Timeline</h4>
     <button type="button" class="btn btn-link text-dark" data-toggle="modal" data-target="#modal-post">
-      <span class="icon-plus"></span>
+      <span class="far fa-plus-square"></span>
     </button>
   </div>
 </div>
