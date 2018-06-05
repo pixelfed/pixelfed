@@ -61,15 +61,23 @@ class ProfileController extends Controller
     public function followers(Request $request, $username)
     {
       $profile = Profile::whereUsername($username)->firstOrFail();
+      // TODO: fix $profile/$user mismatch in profile & follower templates
+      $user = $profile;
+      $owner = Auth::check() && Auth::id() === $user->user_id;
+      $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
       $followers = $profile->followers()->orderBy('created_at','desc')->simplePaginate(12);
-      return view('profile.followers', compact('profile', 'followers'));
+      return view('profile.followers', compact('user', 'profile', 'followers', 'owner', 'is_following'));
     }
 
     public function following(Request $request, $username)
     {
       $profile = Profile::whereUsername($username)->firstOrFail();
+      // TODO: fix $profile/$user mismatch in profile & follower templates
+      $user = $profile;
+      $owner = Auth::check() && Auth::id() === $user->user_id;
+      $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
       $following = $profile->following()->orderBy('created_at','desc')->simplePaginate(12);
-      return view('profile.following', compact('profile', 'following'));
+      return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following'));
     }
 
     public function savedBookmarks(Request $request, $username)
