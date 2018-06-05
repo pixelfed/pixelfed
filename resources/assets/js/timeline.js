@@ -9,6 +9,7 @@ $(document).ready(function() {
     history: false,
   });
   infScroll.on( 'append', function( response, path, items ) {
+    $('.page-load-status').show();
     pixelfed.hydrateLikes();
   });
 });
