@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container notification-page" style="min-height: 60vh;">
-  <div class="col-12 col-md-8 offset-2">
+  <div class="col-12 col-md-8 offset-md-2">
     <ul class="list-group">
 
       @foreach($notifications as $notification)
