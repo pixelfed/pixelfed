@@ -203,3 +203,10 @@ body, button, input, textarea {
   height: .25rem;
   animation: loading-bar 3s linear infinite;
 }
+
+.notification-image {
+    background-size: cover;
+    width: 32px;
+    height: 32px;
+    background-position: 50%;
+}
