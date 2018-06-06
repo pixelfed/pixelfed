@@ -1,6 +1,6 @@
       <div class="card my-4 status-card">
         <div class="card-header d-inline-flex align-items-center bg-white">
-          <img class="img-thumbnail" src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
+          <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
           <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
             {{$item->profile->username}}
           </a>
@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-        <a href="{{$item->url()}}">
+        <a class="max-hide-overflow" href="{{$item->url()}}">
           <img class="card-img-top" src="{{$item->mediaUrl()}}">
         </a>
         <div class="card-body">
