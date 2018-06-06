@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . " on " . config('app.name')])
+@extends('layouts.app',['title' => $user->name . " on " . config('app.name')])
 
 @section('content')
 
