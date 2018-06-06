@@ -42,6 +42,10 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
+        if($actor->id === $target->id) {
+            return true;
+        }
+
         try {
 
             $notification = new Notification;
