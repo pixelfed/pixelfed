@@ -1,6 +1,5 @@
 $(document).ready(function() {
   $('.pagination').hide();
-  $('.page-load-status').show();
   let elem = document.querySelector('.timeline-feed');
   let infScroll = new InfiniteScroll( elem, {
     path: '.pagination__next',
@@ -9,7 +8,6 @@ $(document).ready(function() {
     history: false,
   });
   infScroll.on( 'append', function( response, path, items ) {
-    $('.page-load-status').show();
     pixelfed.hydrateLikes();
   });
 });

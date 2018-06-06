@@ -39,7 +39,7 @@
 
     <div class="page-load-status">
       <div class="infinite-scroll-request">
-        <div class="fixed-top loading-page"></div>
+        <div class="d-none fixed-top loading-page"></div>
       </div>
       <div class="infinite-scroll-last">
         <h3>No more content</h3>
