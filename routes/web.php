@@ -61,6 +61,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::post('like', 'LikeController@store');
     Route::post('follow', 'FollowerController@store');
     Route::post('bookmark', 'BookmarkController@store');
+    Route::get('lang/{locale}', 'SiteController@changeLocale');
 
     Route::group(['prefix' => 'report'], function() {
       Route::get('/', 'ReportController@showForm')->name('report.form');
@@ -123,6 +124,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::view('privacy', 'site.privacy')->name('site.privacy');
     Route::view('platform', 'site.platform')->name('site.platform');
     Route::view('libraries', 'site.libraries')->name('site.libraries');
+    Route::view('language', 'site.language')->name('site.language');
   });
 
   Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');

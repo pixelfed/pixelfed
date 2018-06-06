@@ -172,21 +172,10 @@ body, button, input, textarea {
  }
 }
 
-.fas, .far {
-  font-size: 25px !important;
-}
-
-
-.far.fa-heart {
-  color: #343a40;
-}
-
-.svg-inline--fa.fa-heart.fa-w-16.status-heart.fa-2x {
-  color: #f70ec4;
-}
-
 .fas.fa-heart {
+  color: #f70ec4!important;
 }
+
 
 @media (max-width: map-get($grid-breakpoints, "md")) {
   .border-md-left-0 {
@@ -201,4 +190,16 @@ body, button, input, textarea {
     bottom:0;
     z-index:1020
   }
+}
+
+@keyframes loading-bar {
+  from { background-position: 0 0; }
+  to { background-position: 100vw 0; }
+}
+
+.loading-page {
+  background-image: linear-gradient(to right, #6736dd, #10c5f8, #10c5f8, #6736dd);
+  width: 100vw;
+  height: .25rem;
+  animation: loading-bar 3s linear infinite;
 }

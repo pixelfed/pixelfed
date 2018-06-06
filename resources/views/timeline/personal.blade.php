@@ -36,6 +36,27 @@
     </div>
     @endif
     </div>
+
+    <div class="page-load-status">
+      <div class="infinite-scroll-request">
+        <div class="d-none fixed-top loading-page"></div>
+      </div>
+      <div class="infinite-scroll-last">
+        <h3>No more content</h3>
+        <p class="text-muted">
+          Maybe you could try 
+          <a href="{{route('discover')}}">discovering</a>
+          more people you can follow.
+        </p>
+      </div>
+      <div class="infinite-scroll-error">
+        <h3>Whoops, an error</h3>
+        <p class="text-muted">
+          Try reloading the page
+        </p>
+      </div>
+    </div>
+
     <div class="d-flex justify-content-center">
       {{$timeline->links()}}
     </div>
