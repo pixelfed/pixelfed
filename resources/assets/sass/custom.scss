@@ -203,3 +203,43 @@ body, button, input, textarea {
   height: .25rem;
   animation: loading-bar 3s linear infinite;
 }
+
+.liked {
+    position: relative;
+    z-index: 1;
+}
+
+.liked::after {
+    content: "\F0a3";
+    color: transparent;
+    animation: liking 1.5s;
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: 0;
+}
+
+@keyframes liking {
+ 0% {
+  -webkit-transform:rotate(0deg);
+  transform:rotate(0deg);
+  font-size:0;
+  top: .25rem;
+  color: #ebf70e;
+ }
+ 75% {
+  -webkit-transform:rotate(1turn);
+  transform:rotate(1turn);
+  top: -0.55rem;
+  font-size: 2.8rem;
+  opacity:1;
+  left: -0.55rem;
+ }
+ 100% {
+  transform:rotate(1turn);
+  top: 2.5rem;
+  left: 0em;
+  font-size:0;
+  left: 0.9rem
+ }
+}
