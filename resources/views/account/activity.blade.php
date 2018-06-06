@@ -53,7 +53,9 @@
           </span>
           <span class="float-right notification-action">
             @if($notification->item_id)
-              <a href="{{$notification->status->parent()->url()}}"><img src="{{$notification->status->parent()->thumb()}}" width="32px" height="32px"></a>
+              <a href="{{$notification->status->parent()->url()}}">
+                <div class="notification-image" style="background-image: url('{{$notification->status->parent()->thumb()}}')"></div>
+              </a>
             @endif
           </span>
         @break
