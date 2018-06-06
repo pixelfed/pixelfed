@@ -172,21 +172,10 @@ body, button, input, textarea {
  }
 }
 
-.fas, .far {
-  font-size: 25px !important;
-}
-
-
-.far.fa-heart {
-  color: #343a40;
-}
-
-.svg-inline--fa.fa-heart.fa-w-16.status-heart.fa-2x {
-  color: #f70ec4;
-}
-
 .fas.fa-heart {
+  color: #f70ec4!important;
 }
+
 
 @media (max-width: map-get($grid-breakpoints, "md")) {
   .border-md-left-0 {

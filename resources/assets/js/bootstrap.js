@@ -17,7 +17,6 @@ try {
     window.typeahead = require('./lib/typeahead');
     window.Bloodhound = require('./lib/bloodhound');
 
-    require('./lib/fontawesome-all');
     require('./components/localstorage');
     require('./components/likebutton');
     require('./components/commentform');
