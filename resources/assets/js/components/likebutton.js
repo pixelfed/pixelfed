@@ -20,7 +20,7 @@ $(document).ready(function() {
       var heart = el.find('.status-heart');
 
       if(likes.indexOf(id) != -1) {
-        heart.removeClass('far fa-heart').addClass('fas fa-heart');
+        heart.removeClass('far fa-heart').addClass('fas fa-heart liked');
       }
     });
   };
@@ -40,14 +40,14 @@ $(document).ready(function() {
       var heart = el.find('.status-heart');
 
       if(likes.indexOf(id) > -1) {
-        heart.removeClass('fas fa-heart').addClass('far fa-heart');
+        heart.removeClass('fas fa-heart liked').addClass('far fa-heart');
         likes = likes.filter(function(item) { 
             return item !== id
         });
         counter.text(count);
         action = 'unlike';
       } else {
-        heart.removeClass('far fa-heart').addClass('fas fa-heart');
+        heart.removeClass('far fa-heart').addClass('fas fa-heart liked');
         likes.push(id);
         counter.text(count);
         action = 'like';
