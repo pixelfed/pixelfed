@@ -57,18 +57,18 @@
                <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$status->id}}" data-action="like">
                 @csrf
                 <input type="hidden" name="item" value="{{$status->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit">
+                <button class="btn btn-link text-dark btn-lg p-0" type="submit" title="Like!">
                   <span class="far fa-heart fa-lg mb-0"></span>
                 </button>
               </form>
-              <span class="far fa-comment fa-lg pt-1 pr-3"></span>
+              <span class="far fa-comment pt-1 pr-3" title="Comment"></span>
               @if(Auth::check())
               @if(Auth::user()->profile->id === $status->profile->id || Auth::user()->is_admin == true)
               <form method="post" action="/i/delete" class="d-inline-flex">
                 @csrf
                 <input type="hidden" name="type" value="post">
                 <input type="hidden" name="item" value="{{$status->id}}">
-                <button type="submit" class="btn btn-link text-dark p-0">
+                <button type="submit" class="btn btn-link btn-lg text-dark p-0" title="Remove">
                   <span class="far fa-trash-alt fa-lg mb-0"></span>
                 </button>
               </form>
@@ -78,7 +78,7 @@
                 <form class="d-inline-flex bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$status->id}}" data-action="bookmark">
                   @csrf
                   <input type="hidden" name="item" value="{{$status->id}}">
-                  <button class="btn btn-link text-dark p-0" type="submit">
+                  <button class="btn btn-link text-dark p-0 btn-lg" type="submit" title="Save">
                     <span class="far fa-bookmark fa-lg mb-0"></span>
                   </button>
                 </form>
