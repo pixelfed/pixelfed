@@ -6,7 +6,7 @@
 
 @if($owner == true)
 <div>
-  <ul class="nav nav-topbar d-flex justify-content-center">
+  <ul class="nav nav-topbar d-flex justify-content-center border-0">
     <li class="nav-item">
       <a class="nav-link {{request()->is('*/saved') ? '':'active'}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
     </li>

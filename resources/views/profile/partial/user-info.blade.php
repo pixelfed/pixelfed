@@ -1,4 +1,4 @@
-<div class="bg-white py-5">
+<div class="bg-white py-5 border-bottom">
   <div class="container">
     <div class="row">
       <div class="col-12 col-md-4 d-flex">
