@@ -12,7 +12,7 @@
           </div>
           <div class="form-group">
             <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
+            <input type="text" class="form-control" name="caption" placeholder="Add a caption here" maxlength="{{config('pixelfed.max_caption_length')}}">
             <small class="form-text text-muted">
               Max length: {{config('pixelfed.max_caption_length')}} characters.
             </small>
