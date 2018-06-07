@@ -5,6 +5,7 @@
   <div class="col-12 col-md-8 offset-md-2">
     <ul class="list-group">
 
+    @if($notifications->count() > 0)
       @foreach($notifications as $notification)
       <li class="list-group-item notification">
         @switch($notification->action)
@@ -61,6 +62,11 @@
         @endswitch
       </li>
       @endforeach
+    @else
+      <div class="mt-4">
+        <div class="alert alert-info font-weight-bold">No unread notifications found.</div>
+      </div>
+    @endif
     </ul>
   </div>
 </div>
