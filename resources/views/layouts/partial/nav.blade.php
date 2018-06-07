@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
             <strong class="font-weight-bold">{{ config('app.name', 'Laravel') }}</strong>
         </a>
@@ -18,13 +18,13 @@
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                 @else
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('discover')}}"><i class="lead icon-compass"></i></a>
+                        <a class="nav-link" href="{{route('discover')}}" title="Discover"><i class="lead icon-compass"></i></a>
                     </li>
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('notifications')}}"><i class="lead icon-heart"></i></a>
+                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications"><i class="lead icon-heart"></i></a>
                     </li>
                     <li class="nav-item dropdown px-2">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre title="User Menu">
                             <i class="lead icon-user"></i> <span class="caret"></span>
                         </a>
 

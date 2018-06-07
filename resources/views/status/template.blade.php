@@ -6,7 +6,7 @@
           </a>
           <div class="text-right" style="flex-grow:1;">
             <div class="dropdown">
-              <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
               <span class="icon-options"></span>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
@@ -36,16 +36,16 @@
             <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
               @csrf
               <input type="hidden" name="item" value="{{$item->id}}">
-              <button class="btn btn-link text-dark p-0" type="submit">
+              <button class="btn btn-link text-dark p-0" type="submit" title=""Like!>
                 <span class="far fa-heart status-heart fa-2x"></span>
               </button>
             </form>
-            <span class="far fa-comment status-comment-focus"></span>
+            <span class="far fa-comment status-comment-focus" title="Comment"></span>
             <span class="float-right">
               <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
                 @csrf
                 <input type="hidden" name="item" value="{{$item->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit"><span class="far fa-bookmark" style="font-size:25px;"></span></button>
+                <button class="btn btn-link text-dark p-0" type="submit" title="Save"><span class="far fa-bookmark" style="font-size:25px;"></span></button>
               </form>
             </span>
           </div>
