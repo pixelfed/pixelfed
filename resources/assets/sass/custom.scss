@@ -225,4 +225,10 @@ body, button, input, textarea {
   .max-hide-overflow {
     max-height: 1000px!important;
   }
+
+.notification-image {
+  background-size: cover;
+  width: 32px;
+  height: 32px;
+  background-position: 50%;
 }
