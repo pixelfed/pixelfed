@@ -10,6 +10,7 @@ body {
 #content {
   margin-bottom: auto !important;
 }
+
 body, button, input, textarea {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",
                  Roboto,Helvetica,Arial,sans-serif;
@@ -242,4 +243,33 @@ body, button, input, textarea {
   font-size:0;
   left: 0.9rem
  }
+
+.max-hide-overflow {
+  max-height: 500px;
+  overflow-y: hidden;
+}
+
+@media (min-width: map-get($grid-breakpoints, "xs")) {
+  .max-hide-overflow {
+    max-height: 600px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "md")) {
+  .max-hide-overflow {
+    max-height: 800px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "xl")) {
+  .max-hide-overflow {
+    max-height: 1000px!important;
+  }
+}
+
+.notification-image {
+  background-size: cover;
+  width: 32px;
+  height: 32px;
+  background-position: 50%;
 }

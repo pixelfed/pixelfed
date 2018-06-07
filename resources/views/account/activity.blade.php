@@ -5,6 +5,7 @@
   <div class="col-12 col-md-8 offset-md-2">
     <ul class="list-group">
 
+    @if($notifications->count() > 0)
       @foreach($notifications as $notification)
       <li class="list-group-item notification">
         @switch($notification->action)
@@ -53,7 +54,9 @@
           </span>
           <span class="float-right notification-action">
             @if($notification->item_id)
-              <a href="{{$notification->status->parent()->url()}}"><img src="{{$notification->status->parent()->thumb()}}" width="32px" height="32px"></a>
+              <a href="{{$notification->status->parent()->url()}}">
+                <div class="notification-image" style="background-image: url('{{$notification->status->parent()->thumb()}}')"></div>
+              </a>
             @endif
           </span>
         @break
@@ -61,6 +64,11 @@
         @endswitch
       </li>
       @endforeach
+    @else
+      <div class="mt-4">
+        <div class="alert alert-info font-weight-bold">No unread notifications found.</div>
+      </div>
+    @endif
     </ul>
   </div>
 </div>
