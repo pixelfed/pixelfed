@@ -13,7 +13,7 @@
           <a href="#" class="text-primary pr-2 pl-2">Directory</a>
           <a href="#" class="text-primary pr-2">Profiles</a>
           <a href="#" class="text-primary">Hashtags</a>
-          <a href="http://pixelfed.org" class="text-dark float-right">© {{date('Y')}} PixelFed.org</a>
+          <a href="http://pixelfed.org" class="text-dark float-right">Powered by PixelFed</a>
         </p>
     </div>
   </footer>
