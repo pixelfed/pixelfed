@@ -33,9 +33,11 @@ class StatusController extends Controller
 
       $this->validate($request, [
         'photo'   => 'required|mimes:jpeg,png,bmp,gif|max:' . config('pixelfed.max_photo_size'),
-        'caption' => 'string|max:' . config('pixelfed.max_caption_length')
+        'caption' => 'string|max:' . config('pixelfed.max_caption_length'),
+        'cw'      => 'nullable|string'
       ]);
 
+      $cw = $request->filled('cw') && $request->cw == 'on' ? true : false;
       $monthHash = hash('sha1', date('Y') . date('m'));
       $userHash = hash('sha1', $user->id . (string) $user->created_at);
       $storagePath = "public/m/{$monthHash}/{$userHash}";
@@ -45,6 +47,8 @@ class StatusController extends Controller
       $status = new Status;
       $status->profile_id = $profile->id;
       $status->caption = $request->caption;
+      $status->is_nsfw = $cw;
+
       $status->save();
 
       $media = new Media;
