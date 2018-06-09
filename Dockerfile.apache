@@ -14,18 +14,19 @@ RUN apt-get update \
  && ln -sf /usr/bin/composer.phar /usr/bin/composer \
  && rm /tmp/composer.phar
 
-COPY . /var/www/html/
+COPY . /var/www/
 
-WORKDIR /var/www/html
+WORKDIR /var/www/
 RUN install -d -m0755 -o www-data -g www-data \
-    /var/www/html/storage \
-    /var/www/html/storage/framework \
-    /var/www/html/storage/logs \
-    /var/www/html/storage/framework/sessions \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/framework/cache && \
-  composer install --prefer-source --no-interaction
+    /var/www/storage \
+    /var/www/storage/framework \
+    /var/www/storage/logs \
+    /var/www/storage/framework/sessions \
+    /var/www/storage/framework/views \
+    /var/www/storage/framework/cache \
+ && composer install --prefer-source --no-interaction \
+ && rm -rf html && mv public html
 
-VOLUME ["/var/www/html"]
+VOLUME ["/var/www/storage"]
 
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
