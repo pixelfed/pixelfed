@@ -17,7 +17,7 @@
               Max length: {{config('pixelfed.max_caption_length')}} characters.
             </small>
           </div>
-          <div class="form-group">
+          {{-- <div class="form-group">
             <label class="font-weight-bold text-muted small">CW/NSFW</label>
             <div class="switch switch-sm">
               <input type="checkbox" class="switch" id="cw-switch" name="cw">
@@ -26,7 +26,7 @@
             <small class="form-text text-muted">
               Please mark all NSFW and controversial content, as per our content policy.
             </small>
-          </div>  
+          </div>  --}}
           <button type="submit" class="btn btn-outline-primary btn-block">Post</button>
         </form>
       </div>  
