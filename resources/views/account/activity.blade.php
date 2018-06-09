@@ -61,6 +61,23 @@
           </span>
         @break
 
+        @case('mention')
+          <span class="notification-icon pr-3">
+            <img src="{{$notification->status->profile->avatarUrl()}}" width="32px" class="rounded-circle">
+          </span>
+          <span class="notification-text">
+            {!! $notification->rendered !!}
+            <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
+          </span>
+          <span class="float-right notification-action">
+            @if($notification->item_id)
+              <a href="{{$notification->status->url()}}">
+                <div class="notification-image" style="background-image: url('{{$notification->status->thumb()}}')"></div>
+              </a>
+            @endif
+          </span>
+        @break
+
         @endswitch
       </li>
       @endforeach
