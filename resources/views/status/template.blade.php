@@ -97,7 +97,7 @@
           <form class="comment-form" method="post" action="/i/comment" data-id="{{$item->id}}" data-truncate="true">
             @csrf
             <input type="hidden" name="item" value="{{$item->id}}">
-            <input class="form-control status-reply-input" name="comment" placeholder="Add a comment...">
+            <input class="form-control status-reply-input" name="comment" placeholder="Add a comment…">
           </form>
         </div>
       </div>

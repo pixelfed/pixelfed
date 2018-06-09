@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . "'s follows"])
+@extends('layouts.app',['title' => $user->username . "’s follows"])
 
 @section('content')
 
