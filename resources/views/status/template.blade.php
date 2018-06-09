@@ -7,7 +7,7 @@
           <div class="text-right" style="flex-grow:1;">
             <div class="dropdown">
               <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-              <span class="icon-options"></span>
+              <span class="fas fa-ellipsis-v fa-lg text-muted"></span>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="{{$item->url()}}">Go to post</a>
@@ -28,9 +28,20 @@
             </div>
           </div>
         </div>
+        @if($item->is_nsfw)
+        <details>
+          <p>
+            <summary>NSFW / Hidden Image</summary>
+            <a class="max-hide-overflow" href="{{$item->url()}}">
+              <img class="card-img-top" src="{{$item->mediaUrl()}}">
+            </a>
+          </p>
+        </details>
+        @else
         <a class="max-hide-overflow" href="{{$item->url()}}">
           <img class="card-img-top" src="{{$item->mediaUrl()}}">
         </a>
+        @endif
         <div class="card-body">
           <div class="reactions h3">
             <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
