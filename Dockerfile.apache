@@ -8,6 +8,7 @@ RUN apt-get update \
  && docker-php-ext-install pdo_mysql pcntl \
  && pecl install imagick \
  && docker-php-ext-enable imagick pcntl imagick \
+ && a2enmod rewrite \
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /tmp/composer.phar \
  && echo "${COMPOSER_CHECKSUM}  /tmp/composer.phar" | sha256sum -c - \
  && install -m0755 -o root -g root /tmp/composer.phar /usr/bin/composer.phar \
