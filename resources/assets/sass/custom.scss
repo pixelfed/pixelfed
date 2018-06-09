@@ -214,6 +214,10 @@ body, button, input, textarea {
   .max-hide-overflow {
     max-height: 600px!important;
   }
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
 }
 
 @media (min-width: map-get($grid-breakpoints, "md")) {
@@ -233,4 +237,9 @@ body, button, input, textarea {
   width: 32px;
   height: 32px;
   background-position: 50%;
+}
+
+.status-photo img {
+    object-fit: contain;
+    max-height: calc(100vh - (6rem));
 }
