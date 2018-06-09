@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container px-0 mt-md-4">
-  <div class="card status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
+  <div class="card card-md-rounded-0 status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
     <div class="row mx-0">
     <div class="d-flex d-md-none align-items-center justify-content-between card-header w-100">
       <div class="d-flex align-items-center status-username">
