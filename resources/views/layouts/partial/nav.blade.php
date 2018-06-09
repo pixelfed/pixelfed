@@ -18,37 +18,54 @@
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                 @else
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('discover')}}" title="Discover"><i class="lead icon-compass"></i></a>
+                        <a class="nav-link" href="{{route('discover')}}" title="Discover"><i class="far fa-compass fa-lg"></i></a>
                     </li>
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications"><i class="lead icon-heart"></i></a>
+                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications"><i class="far fa-heart fa-lg"></i></a>
                     </li>
                     <li class="nav-item dropdown px-2">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre title="User Menu">
-                            <i class="lead icon-user"></i> <span class="caret"></span>
+                            <i class="far fa-user fa-lg"></i> <span class="caret"></span>
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            @if(Auth::user()->is_admin == true)
-                            <a class="dropdown-item font-weight-bold" href="{{ route('admin.home') }}">Admin</a>
-                            <div class="dropdown-divider"></div>
-                            @endif
-                            <a class="dropdown-item font-weight-bold" href="{{ Auth::user()->url() }}">My Profile</a>
-                            <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">Settings</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">Remote Follow</a>
+                            <a class="dropdown-item font-weight-ultralight" href="{{Auth::user()->url()}}">
+                                <span class="far fa-user pr-1"></span>
+                                &commat;{{Auth::user()->username}}
+                                <p class="small mb-0">{{__('navmenu.viewMyProfile')}}</p>
+                            </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">
-                                My Timeline
+                                <span class="fas fa-list-alt pr-1"></span>
+                                {{__('navmenu.myTimeline')}}
                             </a>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
-                                Public Timeline
+                                <span class="far fa-list-alt pr-1"></span>
+                                {{__('navmenu.publicTimeline')}}
                             </a>
                             <div class="dropdown-divider"></div>
+                            <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
+                                <span class="fas fa-user-plus pr-1"></span>
+                                {{__('navmenu.remoteFollow')}}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
+                                <span class="fas fa-cog pr-1"></span>
+                                {{__('navmenu.settings')}}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            @if(Auth::user()->is_admin == true)
+                            <a class="dropdown-item font-weight-bold" href="{{ route('admin.home') }}">
+                                <span class="fas fa-cogs pr-1"></span>
+                                {{__('navmenu.admin')}}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            @endif
                             <a class="dropdown-item font-weight-bold" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">
-                                {{ __('Logout') }}
+                                <span class="fas fa-sign-out-alt pr-1"></span>
+                                {{ __('navmenu.logout') }}
                             </a>
 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
