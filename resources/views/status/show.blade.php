@@ -104,6 +104,6 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="{!! $status->rendered ?? e($status->caption) !!}">
+<meta property="og:description" content="{{ $status->caption }}">
 <meta property="og:image" content="{{$status->mediaUrl()}}">
 @endpush
