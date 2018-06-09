@@ -25,7 +25,7 @@ RUN install -d -m0755 -o www-data -g www-data \
     /var/www/storage/framework/views \
     /var/www/storage/framework/cache \
  && composer install --prefer-source --no-interaction \
- && rm -rf html && mv public html
+ && rm -rf html && ln -s public html
 
 VOLUME ["/var/www/storage"]
 
