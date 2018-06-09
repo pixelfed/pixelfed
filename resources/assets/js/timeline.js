@@ -7,6 +7,11 @@ $(document).ready(function() {
     status: '.page-load-status',
     history: false,
   });
+
+  $("#modal-post").addClass("modal fade");
+  $("#modal-dialog").addClass("modal-dialog");
+  $("#modal-text").removeClass("d-none");
+
   infScroll.on( 'append', function( response, path, items ) {
     pixelfed.hydrateLikes();
   });

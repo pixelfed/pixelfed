@@ -32,8 +32,20 @@
     <div class="profile-timeline row">
       @foreach($posts as $status)
       <div class="col-12 col-md-4 mb-4">
-        <a class="card" href="{{$status->url()}}">
-          <img class="card-img-top" src="{{$status->thumb()}}" width="300px" height="300px">
+        <a class="card info-overlay" href="{{$status->url()}}">
+          <div class="square">
+            <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
+            <div class="info-overlay-text">
+              <h5 class="text-white m-auto font-weight-bold">
+                <span class="pr-4">
+                  <span class="icon-heart pr-1"></span> {{$status->likes_count}}
+                </span>
+                <span>
+                  <span class="icon-speech pr-1"></span> {{$status->comments_count}}
+                </span>
+              </h5>
+            </div>
+          </div>
         </a>
       </div>
       @endforeach
