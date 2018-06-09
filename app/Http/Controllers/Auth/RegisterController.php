@@ -54,7 +54,7 @@ class RegisterController extends Controller
         
 
         $rules = [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max' . config('pixelfed.max_name_length'),
             'username' => 'required|alpha_dash|min:2|max:15|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',

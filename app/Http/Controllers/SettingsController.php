@@ -21,8 +21,8 @@ class SettingsController extends Controller
     public function homeUpdate(Request $request)
     {
       $this->validate($request, [
-        'name'  => 'required|string|max:30',
-        'bio'   => 'nullable|string|max:125'
+        'name'  => 'required|string|max:' . config('pixelfed.max_name_length'),
+        'bio'   => 'nullable|string|max:' . config('pixelfed.max_bio_length')
       ]);
 
       $changes = false;

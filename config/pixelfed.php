@@ -96,5 +96,25 @@ return [
     |
     */
     'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
-    
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bio length limit
+    |--------------------------------------------------------------------------
+    |
+    | Change the bio length limit for user profiles.
+    |
+    */
+    'max_bio_length' => env('MAX_BIO_LENGTH', 125),
+
+    /*
+    |--------------------------------------------------------------------------
+    | User name length limit
+    |--------------------------------------------------------------------------
+    |
+    | Change the length limit for user names.
+    |
+    */
+    'max_name_length' => env('MAX_NAME_LENGTH', 30),
+
 ];
