@@ -25,6 +25,9 @@ class Status extends Model
 
     public function thumb()
     {
+      if($this->media->count() == 0) {
+        return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+      }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Auth, Cache, Redis;
 use App\{Notification, Profile, User};
 
@@ -15,10 +16,17 @@ class AccountController extends Controller
 
     public function notifications(Request $request)
     {
+      $this->validate($request, [
+          'page' => 'nullable|min:1|max:3'
+      ]);
       $profile = Auth::user()->profile;
-      //$notifications = $this->fetchNotifications($profile->id);
+      $timeago = Carbon::now()->subMonths(6);
       $notifications = Notification::whereProfileId($profile->id)
-          ->orderBy('id','desc')->take(30)->simplePaginate();
+          ->whereDate('created_at', '>', $timeago)
+          ->orderBy('id','desc')
+          ->take(30)
+          ->simplePaginate();
+
       return view('account.activity', compact('profile', 'notifications'));
     }
 

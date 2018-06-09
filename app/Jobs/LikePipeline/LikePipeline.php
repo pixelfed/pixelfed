@@ -37,7 +37,14 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        if($actor->id === $status->profile_id) {
+        $exists = Notification::whereProfileId($status->profile_id)
+                  ->whereActorId($actor->id)
+                  ->whereAction('like')
+                  ->whereItemId($status->id)
+                  ->whereItemType('App\Status')
+                  ->count();
+
+        if($actor->id === $status->profile_id || $exists !== 0) {
             return true;
         }
 

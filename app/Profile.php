@@ -14,6 +14,11 @@ class Profile extends Model
 
     protected $visible = ['id', 'username', 'name'];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function url($suffix = '')
     {
         return url($this->username . $suffix);
