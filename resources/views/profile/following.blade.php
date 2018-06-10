@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . "’s follows"])
+@extends('layouts.app',['title' => $profile->username . "’s follows"])
 
 @section('content')
 
@@ -60,6 +60,6 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="{{$user->bio}}">
-<meta property="og:image" content="{{$user->avatarUrl()}}">
+<meta property="og:description" content="{{$profile->bio}}">
+<meta property="og:image" content="{{$profile->avatarUrl()}}">
 @endpush
