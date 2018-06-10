@@ -16,7 +16,18 @@
       </div>
      </div>
       <div class="col-12 col-md-8 status-photo px-0">
+        @if($status->is_nsfw)
+        <details class="details-animated">
+          <p>
+            <summary>NSFW / Hidden Image</summary>
+            <a class="max-hide-overflow" href="{{$status->url()}}">
+              <img class="card-img-top" src="{{$status->mediaUrl()}}">
+            </a>
+          </p>
+        </details>
+        @else
         <img src="{{$status->mediaUrl()}}" width="100%">
+        @endif
       </div>
       <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
         <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">

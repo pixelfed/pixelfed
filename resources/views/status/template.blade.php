@@ -29,7 +29,7 @@
           </div>
         </div>
         @if($item->is_nsfw)
-        <details>
+        <details class="details-animated">
           <p>
             <summary>NSFW / Hidden Image</summary>
             <a class="max-hide-overflow" href="{{$item->url()}}">

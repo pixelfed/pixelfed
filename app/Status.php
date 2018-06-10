@@ -25,7 +25,7 @@ class Status extends Model
 
     public function thumb()
     {
-      if($this->media->count() == 0) {
+      if($this->media->count() == 0 || $this->is_nsfw) {
         return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
       }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
