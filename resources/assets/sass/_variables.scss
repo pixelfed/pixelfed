@@ -6,3 +6,17 @@ $body-bg: #f5f8fa;
 $font-family-sans-serif:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
+
+$font-size-lg: ($font-size-base * 1.25);
+$font-size-sm: ($font-size-base * .875);
+$input-height: 2.375rem;
+$input-height-sm: 1.9375rem;
+$input-height-lg: 3rem;
+$input-btn-focus-width: .2rem;
+$custom-control-indicator-bg: #dee2e6;
+$custom-control-indicator-disabled-bg: #e9ecef;
+$custom-control-description-disabled-color: #868e96;
+$white: white;
+$theme-colors: (
+  'primary': #08d
+);

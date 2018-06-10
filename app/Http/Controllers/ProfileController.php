@@ -32,6 +32,7 @@ class ProfileController extends Controller
       // TODO: refactor this mess
       $owner = Auth::check() && Auth::id() === $user->user_id;
       $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+      $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
       $timeline = $user->statuses()
                   ->whereHas('media')
                   ->whereNull('in_reply_to_id')
@@ -39,7 +40,7 @@ class ProfileController extends Controller
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(21);
 
-      return view('profile.show', compact('user', 'owner', 'is_following', 'timeline'));
+      return view('profile.show', compact('user', 'owner', 'is_following', 'is_admin', 'timeline'));
     }
 
     public function showActivityPub(Request $request, $user)
@@ -66,7 +67,8 @@ class ProfileController extends Controller
       $owner = Auth::check() && Auth::id() === $user->user_id;
       $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
       $followers = $profile->followers()->orderBy('created_at','desc')->simplePaginate(12);
-      return view('profile.followers', compact('user', 'profile', 'followers', 'owner', 'is_following'));
+      $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+      return view('profile.followers', compact('user', 'profile', 'followers', 'owner', 'is_following', 'is_admin'));
     }
 
     public function following(Request $request, $username)
@@ -77,7 +79,8 @@ class ProfileController extends Controller
       $owner = Auth::check() && Auth::id() === $user->user_id;
       $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
       $following = $profile->following()->orderBy('created_at','desc')->simplePaginate(12);
-      return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following'));
+      $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+      return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following', 'is_admin'));
     }
 
     public function savedBookmarks(Request $request, $username)
@@ -88,7 +91,9 @@ class ProfileController extends Controller
       $user = Auth::user()->profile;
       $owner = true;
       $following = false;
-      $timeline = $user->bookmarks()->orderBy('created_at','desc')->simplePaginate(10);
-      return view('profile.show', compact('user', 'owner', 'following', 'timeline'));
+      $timeline = $user->bookmarks()->withCount(['likes','comments'])->orderBy('created_at','desc')->simplePaginate(10);
+      $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+      $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+      return view('profile.show', compact('user', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
     }
 }

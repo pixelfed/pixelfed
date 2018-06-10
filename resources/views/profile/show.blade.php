@@ -6,7 +6,7 @@
 
 @if($owner == true)
 <div>
-  <ul class="nav nav-topbar d-flex justify-content-center">
+  <ul class="nav nav-topbar d-flex justify-content-center border-0">
     <li class="nav-item">
       <a class="nav-link {{request()->is('*/saved') ? '':'active'}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
     </li>
@@ -32,10 +32,10 @@
           <div class="info-overlay-text">
             <h5 class="text-white m-auto font-weight-bold">
               <span class="pr-4">
-              <span class="icon-heart pr-1"></span> {{$status->likes_count}}
+              <span class="far fa-heart fa-lg pr-1"></span> {{$status->likes_count}}
               </span>
               <span>
-              <span class="icon-speech pr-1"></span> {{$status->comments_count}}
+              <span class="far fa-comment fa-lg pr-1"></span> {{$status->comments_count}}
               </span>
             </h5>
           </div>
