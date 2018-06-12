@@ -77,7 +77,7 @@
     <h4 class="font-weight-bold">Changes to our Privacy Policy</h4>
     <p class="lead">If we decide to change our privacy policy, we will post those changes on this page.</p>
 
-    <p class="lead">This document is CC-BY-SA. It was last updated May 31, 2018.</p>
+    <p class="lead">This document is CC-BY-SA. It was last updated Jun 12, 2018.</p>
 
     <p class="lead">Originally adapted from the <a href="https://mastodon.social/terms">Mastodon</a> privacy policy.</p>
   </div>
