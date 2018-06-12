@@ -31,3 +31,5 @@ RUN install -d -m0755 -o www-data -g www-data \
 VOLUME ["/var/www/storage"]
 
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
+
+CMD /var/www/docker/start.sh
