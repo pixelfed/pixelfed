@@ -16,17 +16,15 @@ class NewStatusPipeline implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
-    protected $media;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Status $status, $media = false)
+    public function __construct(Status $status)
     {
         $this->status = $status;
-        $this->media = $media;
     }
 
     /**
@@ -37,13 +35,10 @@ class NewStatusPipeline implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
-        $media = $this->media;
 
         StatusEntityLexer::dispatch($status);
-        StatusActivityPubDeliver::dispatch($status);
-        if($media) {
-            ImageOptimize::dispatch($media);
-        }
+        //StatusActivityPubDeliver::dispatch($status);
+
         Cache::forever('post.' . $status->id, $status);
         
         $redis = Redis::connection();
