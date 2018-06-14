@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth, Cache;
 use App\Jobs\StatusPipeline\{NewStatusPipeline, StatusDelete};
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use Illuminate\Http\Request;
 use App\{Media, Profile, Status, User};
 use Vinkla\Hashids\Facades\Hashids;
@@ -14,7 +15,7 @@ class StatusController extends Controller
     {
       $user = Profile::whereUsername($username)->firstOrFail();
       $status = Status::whereProfileId($user->id)
-              ->withCount(['likes', 'comments'])
+              ->withCount(['likes', 'comments', 'media'])
               ->findOrFail($id);
       if(!$status->media_path && $status->in_reply_to_id) {
         return redirect($status->url());
@@ -32,36 +33,47 @@ class StatusController extends Controller
       $user = Auth::user();
 
       $this->validate($request, [
-        'photo'   => 'required|mimes:jpeg,png,bmp,gif|max:' . config('pixelfed.max_photo_size'),
+        'photo.*'   => 'required|mimes:jpeg,png,bmp,gif|max:' . config('pixelfed.max_photo_size'),
         'caption' => 'string|max:' . config('pixelfed.max_caption_length'),
-        'cw'      => 'nullable|string'
+        'cw'      => 'nullable|string',
+        'filter_class' => 'nullable|string',
+        'filter_name' => 'nullable|string',
       ]);
 
       $cw = $request->filled('cw') && $request->cw == 'on' ? true : false;
       $monthHash = hash('sha1', date('Y') . date('m'));
       $userHash = hash('sha1', $user->id . (string) $user->created_at);
-      $storagePath = "public/m/{$monthHash}/{$userHash}";
-      $path = $request->photo->store($storagePath);
       $profile = $user->profile;
 
       $status = new Status;
       $status->profile_id = $profile->id;
-      $status->caption = $request->caption;
+      $status->caption = strip_tags($request->caption);
       $status->is_nsfw = $cw;
 
       $status->save();
 
-      $media = new Media;
-      $media->status_id = $status->id;
-      $media->profile_id = $profile->id;
-      $media->user_id = $user->id;
-      $media->media_path = $path;
-      $media->size = $request->file('photo')->getClientSize();
-      $media->mime = $request->file('photo')->getClientMimeType();
-      $media->save();
-      NewStatusPipeline::dispatch($status, $media);
+      $photos = $request->file('photo');
+      $order = 1;
+      foreach ($photos as $k => $v) {
+        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $path = $v->store($storagePath);
+        $media = new Media;
+        $media->status_id = $status->id;
+        $media->profile_id = $profile->id;
+        $media->user_id = $user->id;
+        $media->media_path = $path;
+        $media->size = $v->getClientSize();
+        $media->mime = $v->getClientMimeType();
+        $media->filter_class = $request->input('filter_class');
+        $media->filter_name = $request->input('filter_name');
+        $media->order = $order;
+        $media->save();
+        ImageOptimize::dispatch($media);
+        $order++;
+      }
 
-      // TODO: Parse Caption
+      NewStatusPipeline::dispatch($status);
+
       // TODO: Send to subscribers
       
       return redirect($status->url());

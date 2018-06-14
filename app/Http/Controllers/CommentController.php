@@ -34,8 +34,8 @@ class CommentController extends Controller
 
       $reply = new Status();
       $reply->profile_id = $profile->id;
-      $reply->caption = $comment;
-      $reply->rendered = e($comment);
+      $reply->caption = e(strip_tags($comment));
+      $reply->rendered = $comment;
       $reply->in_reply_to_id = $status->id;
       $reply->in_reply_to_profile_id = $status->profile_id;
       $reply->save();
