@@ -14,6 +14,7 @@ $(document).ready(function() {
     let commenttext = commentform.val();
     let item = {item: id, comment: commenttext};
 
+    commentform.prop('disabled', true);
     axios.post('/i/comment', item)
     .then(function (res) {
 
@@ -33,6 +34,7 @@ $(document).ready(function() {
       
       commentform.val('');
       commentform.blur();
+      commentform.prop('disabled', false);
 
     })
     .catch(function (res) {

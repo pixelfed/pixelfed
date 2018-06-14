@@ -58,6 +58,14 @@ class StatusDelete implements ShouldQueue
                 
             }
         }
+        $comments = Status::where('in_reply_to_id', $status->id)->get();
+        foreach($comments as $comment) {
+            $comment->in_reply_to_id = null;
+            $comment->save();
+            Notification::whereItemType('App\Status')
+                ->whereItemId($comment->id)
+                ->delete();
+        }
 
         $status->likes()->delete();
         Notification::whereItemType('App\Status')
