@@ -22,6 +22,7 @@ try {
     require('./components/commentform');
     require('./components/searchform');
     require('./components/bookmarkform');
+    require('./components/statusform');
 } catch (e) {}
 
 /**

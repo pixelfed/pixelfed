@@ -27,7 +27,7 @@
     @foreach($timeline as $status)
     <div class="col-12 col-md-4 mb-4">
       <a class="card info-overlay" href="{{$status->url()}}">
-        <div class="square">
+        <div class="square {{$status->firstMedia()->filter_class}}">
           <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
           <div class="info-overlay-text">
             <h5 class="text-white m-auto font-weight-bold">

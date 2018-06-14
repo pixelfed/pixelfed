@@ -40,6 +40,10 @@ class StatusController extends Controller
         'filter_name' => 'nullable|string',
       ]);
 
+      if(count($request->file('photo')) > config('pixelfed.max_album_length')) {
+        return redirect()->back()->with('error', 'Too many files, max limit per post: ' . config('pixelfed.max_album_length'));
+      }
+
       $cw = $request->filled('cw') && $request->cw == 'on' ? true : false;
       $monthHash = hash('sha1', date('Y') . date('m'));
       $userHash = hash('sha1', $user->id . (string) $user->created_at);

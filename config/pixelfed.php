@@ -96,5 +96,15 @@ return [
     |
     */
     'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Album size limit
+    |--------------------------------------------------------------------------
+    |
+    | The max number of photos allowed per post.
+    |
+    */
+    'max_album_length'  => env('MAX_ALBUM_LENGTH', 4),
     
 ];
