@@ -74,7 +74,7 @@
           </div>
           @if($item->comments()->count() > 3)
           <div class="more-comments">
-            <a class="text-muted" href="#">Load more comments</a>
+            <a class="text-muted" href="{{$item->url()}}">Load more comments</a>
           </div>
           @endif
           <div class="comments">
@@ -93,12 +93,6 @@
                 </span>
               </p>
             @else
-            @foreach($item->comments->reverse()->take(3) as $comment)
-              <p class="mb-0">
-                <span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="{{$comment->profile->url()}}">{{$comment->profile->username}}</a></bdi></span>
-                <span class="comment-text">{!! str_limit($item->rendered ?? e($item->caption), 150) !!}</span>
-              </p>
-            @endforeach
             @endif
           </div>
           <div class="timestamp pt-1">
