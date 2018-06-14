@@ -41,7 +41,7 @@ class AccountController extends Controller
         if(EmailVerification::whereUserId(Auth::id())->count() !== 0) {
             return redirect()->back()->with('status', 'A verification email has already been sent! Please check your email.');
         }
-        
+
         $user = User::whereNull('email_verified_at')->find(Auth::id());
         $utoken = hash('sha512', $user->id);
         $rtoken = str_random(40);
@@ -60,8 +60,8 @@ class AccountController extends Controller
 
     public function confirmVerifyEmail(Request $request, $userToken, $randomToken)
     {
-        $verify = EmailVerification::where(DB::raw('BINARY `user_token`'), $userToken)
-          ->where(DB::raw('BINARY `random_token`'), $randomToken)
+        $verify = EmailVerification::where(DB::raw('BINARY user_token'), $userToken)
+          ->where(DB::raw('BINARY random_token'), $randomToken)
           ->firstOrFail();
         if(Auth::id() === $verify->user_id) {
           $user = User::find(Auth::id());
