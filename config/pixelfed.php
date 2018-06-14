@@ -106,5 +106,15 @@ return [
     |
     */
     'max_album_length'  => env('MAX_ALBUM_LENGTH', 4),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | Require email verification before a new user can do anything.
+    |
+    */
+    'enforce_email_verification'  => env('ENFORCE_EMAIL_VERIFICATION', true),
     
 ];
