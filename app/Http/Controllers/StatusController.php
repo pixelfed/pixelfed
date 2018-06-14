@@ -47,7 +47,7 @@ class StatusController extends Controller
 
       $status = new Status;
       $status->profile_id = $profile->id;
-      $status->caption = $request->caption;
+      $status->caption = strip_tags($request->caption);
       $status->is_nsfw = $cw;
 
       $status->save();
