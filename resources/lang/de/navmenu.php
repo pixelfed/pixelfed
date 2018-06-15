@@ -2,7 +2,7 @@
 
 return [
 
-    'viewMyProfile' => 'Mein Profil öffnen',
+    'viewMyProfile' => 'Mein Profil &ouml;ffnen',
     'myTimeline' => 'Meine Timeline',
     'publicTimeline' => '&Ouml;ffentliche Timeline',
     'remoteFollow' => 'Remote folgen',
