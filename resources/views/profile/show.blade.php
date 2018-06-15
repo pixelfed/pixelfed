@@ -17,7 +17,7 @@
 </div>
 @endif
 <div class="container">
-  <div class="profile-timeline mt-5 row">
+  <div class="profile-timeline mt-2 mt-md-4 row">
     @if($owner && request()->is('*/saved'))
     <div class="col-12">
       <p class="text-muted font-weight-bold small">{{__('profile.savedWarning')}}</p>
@@ -25,8 +25,8 @@
     @endif
     @if($timeline->count() > 0)
     @foreach($timeline as $status)
-    <div class="col-12 col-md-4 mb-4">
-      <a class="card info-overlay" href="{{$status->url()}}">
+    <div class="col-4 p-0 p-sm-2 p-md-3">
+      <a class="card info-overlay card-md-border-0" href="{{$status->url()}}">
         <div class="square {{$status->firstMedia()->filter_class}}">
           <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
           <div class="info-overlay-text">
