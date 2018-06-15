@@ -1,4 +1,4 @@
-      <div class="card my-4 status-card">
+      <div class="card my-4 status-card card-md-rounded-0">
         <div class="card-header d-inline-flex align-items-center bg-white">
           <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
           <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
