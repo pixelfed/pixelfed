@@ -193,6 +193,13 @@ body, button, input, textarea {
   }
 }
 
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-border-0 {
+    border-width: 0!important;
+    border-radius: 0!important;
+  }
+}
+
 @keyframes loading-bar {
   from { background-position: 0 0; }
   to { background-position: 100vw 0; }
