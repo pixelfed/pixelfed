@@ -3,9 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Mention extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     public function profile()
     {
@@ -14,7 +23,7 @@ class Mention extends Model
 
     public function status()
     {
-      return $this->belongsTo(Status::class);
+      return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
     public function toText()

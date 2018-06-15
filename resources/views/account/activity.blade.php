@@ -19,7 +19,7 @@
             <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
           </span>
           <span class="float-right notification-action">
-            @if($notification->item_id)
+            @if($notification->item_id && $notification->item_type == 'App\Status')
               <a href="{{$notification->status->url()}}"><img src="{{$notification->status->thumb()}}" width="32px" height="32px"></a>
             @endif
           </span>
@@ -70,10 +70,16 @@
             <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
           </span>
           <span class="float-right notification-action">
-            @if($notification->item_id)
+            @if($notification->item_id && $notification->item_type === 'App\Status')
+              @if(is_null($notification->status->in_reply_to_id))
               <a href="{{$notification->status->url()}}">
                 <div class="notification-image" style="background-image: url('{{$notification->status->thumb()}}')"></div>
               </a>
+              @else
+              <a href="{{$notification->status->parent()->url()}}">
+                <div class="notification-image" style="background-image: url('{{$notification->status->parent()->thumb()}}')"></div>
+              </a>
+              @endif
             @endif
           </span>
         @break
@@ -81,12 +87,20 @@
         @endswitch
       </li>
       @endforeach
+    </ul>
+
+      <div class="d-flex justify-content-center my-4">
+        {{$notifications->links()}}
+      </div>
     @else
       <div class="mt-4">
         <div class="alert alert-info font-weight-bold">No unread notifications found.</div>
       </div>
     @endif
-    </ul>
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="text/javascript" src="{{mix('js/activity.js')}}"></script>
+@endpush

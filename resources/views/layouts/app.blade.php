@@ -20,11 +20,9 @@
 
     <meta name="medium" content="image">
     <meta name="theme-color" content="#10c5f8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
     <link rel="canonical" href="{{request()->url()}}">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" integrity="sha256-7O1DfUu4pybYI7uAATw34eDrgQaWGOfMV/8erfDQz/Q=" crossorigin="anonymous" />
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     @stack('styles')
 </head>

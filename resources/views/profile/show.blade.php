@@ -27,15 +27,15 @@
     @foreach($timeline as $status)
     <div class="col-12 col-md-4 mb-4">
       <a class="card info-overlay" href="{{$status->url()}}">
-        <div class="square">
+        <div class="square {{$status->firstMedia()->filter_class}}">
           <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
           <div class="info-overlay-text">
             <h5 class="text-white m-auto font-weight-bold">
               <span class="pr-4">
-              <span class="icon-heart pr-1"></span> {{$status->likes_count}}
+              <span class="far fa-heart fa-lg pr-1"></span> {{$status->likes_count}}
               </span>
               <span>
-              <span class="icon-speech pr-1"></span> {{$status->comments_count}}
+              <span class="far fa-comment fa-lg pr-1"></span> {{$status->comments_count}}
               </span>
             </h5>
           </div>

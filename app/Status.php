@@ -2,12 +2,21 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Storage;
-use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+    
     public function profile()
     {
       return $this->belongsTo(Profile::class);
@@ -25,6 +34,9 @@ class Status extends Model
 
     public function thumb()
     {
+      if($this->media->count() == 0 || $this->is_nsfw) {
+        return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+      }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
     }
 
@@ -38,6 +50,11 @@ class Status extends Model
         $path = config('app.url') . "/p/{$username}/{$pid}/c/{$id}";
       }
       return url($path);
+    }
+
+    public function editUrl()
+    {
+      return $this->url() . '/edit';
     }
 
     public function mediaUrl()

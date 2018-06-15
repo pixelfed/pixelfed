@@ -6,11 +6,13 @@
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            @auth
             <ul class="navbar-nav ml-auto d-none d-md-block">
               <form class="form-inline search-form">
                 <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
               </form>
             </ul>
+            @endauth
 
             <ul class="navbar-nav ml-auto">
                 @guest
@@ -29,10 +31,10 @@
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item font-weight-ultralight" href="{{Auth::user()->url()}}">
-                                <span class="far fa-user pr-1"></span>
+                            <a class="dropdown-item font-weight-ultralight text-truncate" href="{{Auth::user()->url()}}">
+                                <img class="img-thumbnail rounded-circle pr-1" src="{{Auth::user()->profile->avatarUrl()}}" width="32px">
                                 &commat;{{Auth::user()->username}}
-                                <p class="small mb-0">{{__('navmenu.viewMyProfile')}}</p>
+                                <p class="small mb-0 text-muted">{{__('navmenu.viewMyProfile')}}</p>
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">
@@ -48,12 +50,10 @@
                                 <span class="fas fa-user-plus pr-1"></span>
                                 {{__('navmenu.remoteFollow')}}
                             </a>
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
                             </a>
-                            <div class="dropdown-divider"></div>
                             @if(Auth::user()->is_admin == true)
                             <a class="dropdown-item font-weight-bold" href="{{ route('admin.home') }}">
                                 <span class="fas fa-cogs pr-1"></span>
@@ -78,8 +78,10 @@
         </div>
     </div>
 </nav>
+@auth
 <nav class="breadcrumb d-md-none d-flex">
   <form class="form-inline search-form mx-auto">
    <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
   </form>
 </nav>
+@endauth
