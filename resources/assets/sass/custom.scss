@@ -193,6 +193,13 @@ body, button, input, textarea {
   }
 }
 
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
+}
+
 @keyframes loading-bar {
   from { background-position: 0 0; }
   to { background-position: 100vw 0; }
@@ -213,10 +220,6 @@ body, button, input, textarea {
 @media (min-width: map-get($grid-breakpoints, "xs")) {
   .max-hide-overflow {
     max-height: 600px!important;
-  }
-  .card-md-rounded-0 {
-    border-width: 1px 0;
-    border-radius:0 !important;
   }
 }
 
