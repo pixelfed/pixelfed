@@ -5,7 +5,7 @@ ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends libmagickwand-dev git \
- && docker-php-ext-install pdo_mysql pcntl \
+ && docker-php-ext-install pdo_mysql pcntl gd \
  && pecl install imagick \
  && docker-php-ext-enable imagick pcntl imagick \
  && a2enmod rewrite \
@@ -14,6 +14,8 @@ RUN apt-get update \
  && install -m0755 -o root -g root /tmp/composer.phar /usr/bin/composer.phar \
  && ln -sf /usr/bin/composer.phar /usr/bin/composer \
  && rm /tmp/composer.phar
+
+ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 
 COPY . /var/www/
 
@@ -25,11 +27,11 @@ RUN install -d -m0755 -o www-data -g www-data \
     /var/www/storage/framework/sessions \
     /var/www/storage/framework/views \
     /var/www/storage/framework/cache \
+ && cp -r storage storage.skel \
+ && cp docker/env .env \
  && composer install --prefer-source --no-interaction \
  && rm -rf html && ln -s public html
 
 VOLUME ["/var/www/storage"]
-
-ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 
 CMD /var/www/docker/start.sh

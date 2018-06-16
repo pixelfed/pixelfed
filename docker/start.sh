@@ -1,8 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-mkdir -p storage/app/public/avatars
-mkdir -p storage/{debugbar,logs}
-mkdir -p storage/framework/{cache,sessions,views,testing}
-php artisan migrate
+cp -r storage.skel/* storage/
+php artisan migrate --force
 
 exec apache2-foreground
