@@ -1,35 +1,28 @@
 ---
 version: '3'
 services:
-  nginx:
-    image: nginx:alpine
-    networks:
-      - internal
-      - external
-    ports:
-      - 3000:80
-    volumes:
-      - "php-storage:/var/www/html"
-      - ./contrib/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
 
-  php:
+  pixelfed:
     build: .
     image: pixelfed
     volumes:
       - "php-storage:/var/www/html"
     networks:
+      - external
       - internal
     environment:
+      # The full list of available variables is documented in docker/env
       - DB_HOST=mysql
       - DB_DATABASE=pixelfed
       - DB_USERNAME=${DB_USERNAME:-pixelfed}
       - DB_PASSWORD=${DB_PASSWORD:-pixelfed}
       - REDIS_HOST=redis
-      - APP_KEY=${APP_KEY}
-    env_file:
-      - ./.env
+      - APP_KEY=SetYourAppKeyHere
+      - APP_NAME=Pixelfed
+      - APP_URL=https://your.url
+      - MAIL_HOST=mail.host
+      - MAIL_FROM_ADDRESS=noreply@your.url
+      - MAIL_FROM_NAME=Pixelfed
 
   mysql:
     image: mysql:5.7
@@ -40,8 +33,6 @@ services:
       - MYSQL_USER=${DB_USERNAME:-pixelfed}
       - MYSQL_PASSWORD=${DB_PASSWORD:-pixelfed}
       - MYSQL_RANDOM_ROOT_PASSWORD="true"
-    env_file:
-      - ./.env
     volumes:
       - "mysql-data:/var/lib/mysql"
 
