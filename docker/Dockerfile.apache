@@ -20,13 +20,8 @@ ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 COPY . /var/www/
 
 WORKDIR /var/www/
-RUN install -d -m0755 -o www-data -g www-data \
-    /var/www/storage \
-    /var/www/storage/framework \
-    /var/www/storage/logs \
-    /var/www/storage/framework/sessions \
-    /var/www/storage/framework/views \
-    /var/www/storage/framework/cache \
+RUN find storage -name .gitignore -exec rm {} + \
+ && chown -R www-data:www-data /var/www/storage
  && cp -r storage storage.skel \
  && cp docker/env .env \
  && composer install --prefer-source --no-interaction \

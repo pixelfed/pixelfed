@@ -1,4 +1,3 @@
-storage
 data
 Dockerfile
 docker-compose*.yml
