@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="container p-0">
-  <div class="col-md-8 mx-auto pt-4 px-0">
+  <div class="col-md-10 col-lg-8 mx-auto pt-4 px-0">
     @if ($errors->any())
       <div class="alert alert-danger">
           <ul>
