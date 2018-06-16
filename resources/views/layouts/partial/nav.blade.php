@@ -6,11 +6,13 @@
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            @auth
             <ul class="navbar-nav ml-auto d-none d-md-block">
               <form class="form-inline search-form">
                 <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
               </form>
             </ul>
+            @endauth
 
             <ul class="navbar-nav ml-auto">
                 @guest
@@ -76,8 +78,10 @@
         </div>
     </div>
 </nav>
+@auth
 <nav class="breadcrumb d-md-none d-flex">
   <form class="form-inline search-form mx-auto">
    <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
   </form>
 </nav>
+@endauth

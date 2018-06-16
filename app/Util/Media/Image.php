@@ -103,6 +103,10 @@ class Image {
     $ratio = $this->getAspectRatio($file, $thumbnail);
     $aspect = $ratio['dimensions'];
     $orientation = $ratio['orientation'];
+    if($media->mime === 'image/gif' && !$thumbnail)
+    {
+        return;
+    }
 
     try {
       $img = Intervention::make($file)->orientate();

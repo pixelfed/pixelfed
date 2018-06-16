@@ -25,7 +25,7 @@ Route::domain(config('pixelfed.domain.admin'))->group(function() {
   Route::get('media/list', 'AdminController@media')->name('admin.media');
 });
 
-Route::domain(config('pixelfed.domain.app'))->group(function() {
+Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(function() {
 
   Route::view('/', 'welcome');
 
@@ -62,6 +62,9 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::post('follow', 'FollowerController@store');
     Route::post('bookmark', 'BookmarkController@store');
     Route::get('lang/{locale}', 'SiteController@changeLocale');
+    Route::get('verify-email', 'AccountController@verifyEmail');
+    Route::post('verify-email', 'AccountController@sendVerifyEmail');
+    Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail');
 
     Route::group(['prefix' => 'report'], function() {
       Route::get('/', 'ReportController@showForm')->name('report.form');
