@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
-            <img src="/img/pixelfed-full-color.svg" height="60px">
+            <img src="/img/pixelfed-icon-color.svg" height="60px" class="p-2">
+            <span class="h4 font-weight-bold mb-0">{{ config('app.name', 'Laravel') }}</span>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -78,7 +79,7 @@
     </div>
 </nav>
 @auth
-<nav class="breadcrumb d-md-none d-flex m-0">
+<nav class="breadcrumb d-md-none d-flex">
   <form class="form-inline search-form mx-auto">
    <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
   </form>
