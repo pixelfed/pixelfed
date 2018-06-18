@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container px-0 mt-md-4">
-  <div class="card status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
+  <div class="card card-md-rounded-0 status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
     <div class="row mx-0">
     <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
       <div class="d-flex align-items-center status-username">
@@ -87,23 +87,23 @@
             </div>
           </div>
           <div class="card-body flex-grow-0 py-1">
-            <div class="reactions h3 mb-0">
+            <div class="reactions my-1">
                <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$status->id}}" data-action="like">
                 @csrf
                 <input type="hidden" name="item" value="{{$status->id}}">
-                <button class="btn btn-link text-dark btn-lg p-0" type="submit" title="Like!">
-                  <span class="far fa-heart fa-lg mb-0"></span>
+                <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Like!">
+                  <h3 class="far fa-heart m-0"></h3>
                 </button>
               </form>
-              <span class="far fa-comment pt-1 pr-3" title="Comment"></span>
+              <h3 class="far fa-comment pr-3 m-0" title="Comment"></h3>
               @if(Auth::check())
               @if(Auth::user()->profile->id === $status->profile->id || Auth::user()->is_admin == true)
               <form method="post" action="/i/delete" class="d-inline-flex">
                 @csrf
                 <input type="hidden" name="type" value="post">
                 <input type="hidden" name="item" value="{{$status->id}}">
-                <button type="submit" class="btn btn-link btn-lg text-dark p-0" title="Remove">
-                  <span class="far fa-trash-alt fa-lg mb-0"></span>
+                <button type="submit" class="btn btn-link text-dark p-0 border-0" title="Remove">
+                  <h3 class="far fa-trash-alt m-0"></h3>
                 </button>
               </form>
               @endif
@@ -112,8 +112,8 @@
                 <form class="d-inline-flex bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$status->id}}" data-action="bookmark">
                   @csrf
                   <input type="hidden" name="item" value="{{$status->id}}">
-                  <button class="btn btn-link text-dark p-0 btn-lg" type="submit" title="Save">
-                    <span class="far fa-bookmark fa-lg mb-0"></span>
+                  <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
+                    <h3 class="far fa-bookmark m-0"></h3>
                   </button>
                 </form>
               </span>
