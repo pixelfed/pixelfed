@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
-            <img src="/img/pixelfed-icon-black.svg" height="60px" class="p-2">
+            <img src="/img/pixelfed-icon-black.svg" height="25px" class="pr-2">
             <span class="h4 font-weight-bold mb-0">{{ config('app.name', 'Laravel') }}</span>
         </a>
 
@@ -19,13 +19,13 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                 @else
-                    <li class="nav-item px-2">
+                    <li class="nav-item px-sm-2">
                         <a class="nav-link" href="{{route('discover')}}" title="Discover"><i class="far fa-compass fa-lg"></i></a>
                     </li>
-                    <li class="nav-item px-2">
+                    <li class="nav-item px-sm-2">
                         <a class="nav-link" href="{{route('notifications')}}" title="Notifications"><i class="far fa-heart fa-lg"></i></a>
                     </li>
-                    <li class="nav-item dropdown px-2">
+                    <li class="nav-item dropdown px-sm-2">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre title="User Menu">
                             <i class="far fa-user fa-lg"></i> <span class="caret"></span>
                         </a>
