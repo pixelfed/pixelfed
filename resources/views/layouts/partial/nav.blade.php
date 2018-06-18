@@ -79,7 +79,7 @@
     </div>
 </nav>
 @auth
-<nav class="breadcrumb d-md-none d-flex">
+<nav class="breadcrumb d-md-none d-flex m-0">
   <form class="form-inline search-form mx-auto">
    <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
   </form>
