@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $profile->username . "'s followers"])
+@extends('layouts.app',['title' => $profile->username . "’s followers"])
 
 @section('content')
 

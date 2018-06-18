@@ -6,8 +6,8 @@
 
 @section('content')
 
-<div class="container">
-  <div class="col-12 col-md-8 offset-md-2 pt-4">
+<div class="container px-0">
+  <div class="col-md-10 col-lg-8 mx-auto pt-4 px-0">
     @if ($errors->any())
       <div class="alert alert-danger">
           <ul>
@@ -28,11 +28,11 @@
     @endforeach
     </div>
 
-    <div class="page-load-status">
-      <div class="infinite-scroll-request">
-        <div class="d-none fixed-top loading-page"></div>
+    <div class="page-load-status" style="display: none;">
+      <div class="infinite-scroll-request" style="display: none;">
+        <div class="fixed-top loading-page"></div>
       </div>
-      <div class="infinite-scroll-last">
+      <div class="infinite-scroll-last" style="display: none;">
         <h3>No more content</h3>
         <p class="text-muted">
           Maybe you could try 
@@ -40,7 +40,7 @@
           more people you can follow.
         </p>
       </div>
-      <div class="infinite-scroll-error">
+      <div class="infinite-scroll-error" style="display: none;">
         <h3>Whoops, an error</h3>
         <p class="text-muted">
           Try reloading the page

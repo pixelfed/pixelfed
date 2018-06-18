@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-            <strong class="font-weight-bold">{{ config('app.name', 'Laravel') }}</strong>
+            <img src="/img/pixelfed-icon-color.svg" height="60px" class="p-2">
+            <span class="h4 font-weight-bold mb-0">{{ config('app.name', 'Laravel') }}</span>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">

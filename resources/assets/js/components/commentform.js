@@ -21,6 +21,7 @@ $(document).ready(function() {
       var username = res.data.username;
       var permalink = res.data.url;
       var profile = res.data.profile;
+      var reply = res.data.comment;
 
       if($('.status-container').length == 1) {
         var comments = el.parents().eq(3).find('.comments');
@@ -28,7 +29,7 @@ $(document).ready(function() {
         var comments = el.parents().eq(1).find('.comments');
       }
 
-      var comment = '<p class="mb-0"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ commenttext + '</span><span class="float-right"><a href="' + permalink + '" class="text-dark small font-weight-bold">1s</a></span></p>';
+      var comment = '<p class="mb-0"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ reply + '</span><span class="float-right"><a href="' + permalink + '" class="text-dark small font-weight-bold">1s</a></span></p>';
 
       comments.prepend(comment);
       

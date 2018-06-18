@@ -198,6 +198,10 @@ body, button, input, textarea {
     border-width: 0!important;
     border-radius: 0!important;
   }
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
 }
 
 @keyframes loading-bar {
@@ -240,6 +244,12 @@ body, button, input, textarea {
   width: 32px;
   height: 32px;
   background-position: 50%;
+}
+
+
+.status-photo img {
+    object-fit: contain;
+    max-height: calc(100vh - (6rem));
 }
 
 @keyframes fadeInDown {

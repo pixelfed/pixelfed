@@ -22,12 +22,12 @@
         <div class="row">
           <div class="col-12 col-md-8 offset-md-2 my-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold" disabled>
-              I'm not interested in this content
+              I’m not interested in this content
             </a></p>
           </div>
           <div class="col-12 col-md-8 offset-md-2 my-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold">
-              It's spam
+              It’s spam
             </a></p>
           </div>
           <div class="col-12 col-md-8 offset-md-2 my-3">
@@ -37,7 +37,7 @@
           </div>
           <div class="col-12 col-md-8 offset-md-2 my-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold">
-              It's abusive or harmful
+              It’s abusive or harmful
             </a></p>
           </div>
           <div class="col-12 col-md-8 offset-md-2 my-3">
