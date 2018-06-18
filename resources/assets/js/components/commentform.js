@@ -11,7 +11,7 @@ $(document).ready(function() {
     let el = $(this);
     let id = el.data('id');
     let commentform = el.find('input[name="comment"]');
-    let commenttext = commentform.val();
+    let commenttext = $(commentform.val()).text();
     let item = {item: id, comment: commenttext};
 
     commentform.prop('disabled', true);
