@@ -44,20 +44,22 @@
         </a>
         @endif
         <div class="card-body">
-          <div class="reactions h3">
-            <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
+          <div class="reactions my-1">
+            <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
               @csrf
               <input type="hidden" name="item" value="{{$item->id}}">
               <button class="btn btn-link text-dark p-0" type="submit" title=""Like!>
-                <span class="far fa-heart status-heart fa-2x"></span>
+                <h3 class="far fa-heart status-heart m-0"></h3>
               </button>
             </form>
-            <span class="far fa-comment status-comment-focus" title="Comment"></span>
+            <h3 class="far fa-comment status-comment-focus" title="Comment"></h3>
             <span class="float-right">
-              <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
+              <form class="d-inline-flex bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
                 @csrf
                 <input type="hidden" name="item" value="{{$item->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit" title="Save"><span class="far fa-bookmark" style="font-size:25px;"></span></button>
+                <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
+                  <h3 class="far fa-bookmark m-0"></h3>
+                </button>
               </form>
             </span>
           </div>
