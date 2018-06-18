@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
-            <img src="/img/pixelfed-icon-color.svg" height="60px" class="p-2">
+            <img src="/img/pixelfed-icon-black.svg" height="60px" class="p-2">
             <span class="h4 font-weight-bold mb-0">{{ config('app.name', 'Laravel') }}</span>
         </a>
 
