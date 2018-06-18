@@ -34,7 +34,7 @@ class CommentController extends Controller
 
       $reply = new Status();
       $reply->profile_id = $profile->id;
-      $reply->caption = e(strip_tags($comment));
+      $reply->caption = e($comment);
       $reply->rendered = $comment;
       $reply->in_reply_to_id = $status->id;
       $reply->in_reply_to_profile_id = $status->profile_id;
@@ -44,7 +44,7 @@ class CommentController extends Controller
       CommentPipeline::dispatch($status, $reply);
 
       if($request->ajax()) {
-        $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url()];
+        $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url(), 'comment' => $reply->caption];
       } else {
         $response = redirect($status->url());
       }
