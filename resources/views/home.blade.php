@@ -2,6 +2,11 @@
 
 @section('content')
 <div class="container mt-4">
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
     <div class="row justify-content-center">
         <div class="col-md-8 p-sm-3 p-0">
             <a class="card font-weight-bold text-center h-100 card-md-rounded-0" href="{{Auth::user()->url()}}">
