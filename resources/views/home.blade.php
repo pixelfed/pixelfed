@@ -9,7 +9,7 @@
     @endif
     <div class="row justify-content-center">
         <div class="col-md-8 p-sm-3 p-0">
-            <a class="card font-weight-bold text-center h-100 card-md-rounded-0" href="{{Auth::user()->url()}}">
+            <a class="card font-weight-bold text-center h-100 card-md-rounded-0 text-dark" href="{{Auth::user()->url()}}">
                 <div class="card-body">
                     <img class="img-thumbnail rounded-circle d-inline-block mr-2" src="{{Auth::user()->profile->avatarUrl()}}" width="60">
                     <h1 class="d-inline-block mb-0">&commat;{{Auth::user()->username}}</h1>
@@ -49,7 +49,7 @@
             </a>
         </div>
         <div class="col-md-4 p-sm-3 p-0">
-            <a class="card text-white font-weight-bold text-center h-100 bg-danger card-md-rounded-0" href="{{ route('logout') }}">
+            <a class="card text-danger font-weight-bold text-center h-100 card-md-rounded-0" href="{{ route('logout') }}">
                 <div class="card-body d-flex flex-column">
                     <h2 class="fas fa-sign-out-alt mt-auto"></h2>
                     <p class="mb-auto">{{ __('navmenu.logout') }}</p>
