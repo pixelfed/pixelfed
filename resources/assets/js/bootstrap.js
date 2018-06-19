@@ -18,6 +18,7 @@ try {
     window.Bloodhound = require('./lib/bloodhound');
 
     require('./components/localstorage');
+    require('./components/nav');
     require('./components/likebutton');
     require('./components/commentform');
     require('./components/searchform');
