@@ -10,6 +10,7 @@ body {
 #content {
   margin-bottom: auto !important;
 }
+
 body, button, input, textarea {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",
                  Roboto,Helvetica,Arial,sans-serif;
@@ -192,6 +193,13 @@ body, button, input, textarea {
   }
 }
 
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
+}
+
 @keyframes loading-bar {
   from { background-position: 0 0; }
   to { background-position: 100vw 0; }
@@ -203,3 +211,55 @@ body, button, input, textarea {
   height: .25rem;
   animation: loading-bar 3s linear infinite;
 }
+
+.max-hide-overflow {
+  max-height: 500px;
+  overflow-y: hidden;
+}
+
+@media (min-width: map-get($grid-breakpoints, "xs")) {
+  .max-hide-overflow {
+    max-height: 600px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "md")) {
+  .max-hide-overflow {
+    max-height: 800px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "xl")) {
+  .max-hide-overflow {
+    max-height: 1000px!important;
+  }
+}
+
+.notification-image {
+  background-size: cover;
+  width: 32px;
+  height: 32px;
+  background-position: 50%;
+}
+
+
+.status-photo img {
+    object-fit: contain;
+    max-height: calc(100vh - (6rem));
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.25em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.details-animated[open] {
+  animation-name: fadeInDown;
+  animation-duration: 0.5s;
+}
+

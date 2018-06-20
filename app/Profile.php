@@ -5,14 +5,28 @@ namespace App;
 use Storage;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profile extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     protected $hidden = [
         'private_key',
     ];
 
     protected $visible = ['id', 'username', 'name'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function url($suffix = '')
     {
