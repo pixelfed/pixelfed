@@ -1,4 +1,4 @@
-    <div class="card">
+    <div class="card card-md-rounded-0">
       <div class="card-header font-weight-bold">New Post</div>
       <div class="card-body" id="statusForm">
         @if (session('error'))
