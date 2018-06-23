@@ -3,5 +3,5 @@ return [
   'likedPhoto' => 'a aimé votre photo.',
   'startedFollowingYou' => 'a commencé à vous suivre.',
   'commented' => 'commenté sur votre post.',
-  'mentionedYou' => 'vos à mentionné.'
+  'mentionedYou' => 'vous à mentionné.'
 ];
