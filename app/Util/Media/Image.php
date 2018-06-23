@@ -103,44 +103,31 @@ class Image {
     $ratio = $this->getAspectRatio($file, $thumbnail);
     $aspect = $ratio['dimensions'];
     $orientation = $ratio['orientation'];
+    if($media->mime === 'image/gif' && !$thumbnail)
+    {
+        return;
+    }
 
     try {
-      $img = Intervention::make($file);
-      $img->fit($aspect['width'], $aspect['height'], function ($constraint) {
-        $constraint->upsize();
+      $img = Intervention::make($file)->orientate();
+      $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
+        $constraint->aspectRatio();
       });
-      $converted = $this->convertPngToJpeg($path, $thumbnail, $img->extension);
+      $converted = $this->setBaseName($path, $thumbnail, $img->extension);
       $newPath = storage_path('app/'.$converted['path']);
-      $is_png = false;
-
-      if($img->extension == 'png' || $converted['png'] == true) {
-        \Log::info('PNG detected, ' . json_encode([$img, $converted]));
-        $is_png = true;
-        $newPath = str_replace('.png', '.jpeg', $newPath);
-        $img->encode('jpg', 80)->save($newPath);
-        if(!$thumbnail) {
-          @unlink($file);
-        }
-        \Log::info('PNG SAVED, ' . json_encode([$img, $newPath]));
-      } else {
-        \Log::info('PNG not detected, ' . json_encode([$img, $converted]));
-        $img->save($newPath, 75);
-      }
+            
+      $img->save($newPath, 75);
       
       if(!$thumbnail) {
         $media->orientation = $orientation;
       }
 
-      if($is_png == true) {
-        if($thumbnail == false) {
+      if($thumbnail == true) {
+          $media->thumbnail_path = $converted['path'];
+          $media->thumbnail_url = url(Storage::url($converted['path']));
+      } else {
           $media->media_path = $converted['path'];
           $media->mime = $img->mime;
-        }
-      }
-
-      if($thumbnail == true) {
-        $media->thumbnail_path = $converted['path'];
-        $media->thumbnail_url = url(Storage::url($converted['path']));
       }
 
       $media->save();
@@ -150,18 +137,14 @@ class Image {
     }
   }
 
-  public function convertPngToJpeg($basePath, $thumbnail = false, $extension)
+  public function setBaseName($basePath, $thumbnail = false, $extension)
   {
     $png = false;
     $path = explode('.', $basePath);
     $name = ($thumbnail == true) ? $path[0] . '_thumb' : $path[0];
     $ext = last($path);
     $basePath = "{$name}.{$ext}";
-    if($extension == 'png' || $ext == 'png') {
-      $ext = 'jpeg';
-      $basePath = "{$name}.{$ext}";
-      $png = true;
-    }
+
     return ['path' => $basePath, 'png' => $png];
   }
 

@@ -2,12 +2,21 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Storage;
-use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+    
     public function profile()
     {
       return $this->belongsTo(Profile::class);
@@ -25,6 +34,9 @@ class Status extends Model
 
     public function thumb()
     {
+      if($this->media->count() == 0 || $this->is_nsfw) {
+        return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+      }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
     }
 
@@ -32,13 +44,25 @@ class Status extends Model
     {
       $id = $this->id;
       $username = $this->profile->username;
-      return url(config('app.url') . "/p/@{$username}/{$id}");
+      $path = config('app.url') . "/p/{$username}/{$id}";
+      if(!is_null($this->in_reply_to_id)) {
+        $pid = $this->in_reply_to_id;
+        $path = config('app.url') . "/p/{$username}/{$pid}/c/{$id}";
+      }
+      return url($path);
+    }
+
+    public function editUrl()
+    {
+      return $this->url() . '/edit';
     }
 
     public function mediaUrl()
     {
-      $path = $this->firstMedia()->media_path;
-      $url = Storage::url($path);
+      $media = $this->firstMedia();
+      $path = $media->media_path;
+      $hash = is_null($media->processed_at) ? md5('unprocessed') : md5($media->created_at); 
+      $url = Storage::url($path) . "?v={$hash}";
       return url($url);
     }
 
@@ -96,4 +120,17 @@ class Status extends Model
       return $obj;
     }
 
+    public function replyToText()
+    {
+      $actorName = $this->profile->username;
+      return "{$actorName} " . __('notification.commented');
+    }
+
+    public function replyToHtml()
+    {
+      $actorName = $this->profile->username;
+      $actorUrl = $this->profile->url();
+      return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> " .
+          __('notification.commented');
+    }
 }

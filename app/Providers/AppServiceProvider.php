@@ -6,6 +6,7 @@ use App\User;
 use Auth, Horizon;
 use App\Observers\UserObserver;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
+
         User::observe(UserObserver::class);
 
         Horizon::auth(function ($request) {
@@ -37,7 +40,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('prettySize', function($expression) {
-
             $size = intval($expression);
             $precision = 0;
             $short = true;
@@ -47,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
             for($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {}
             $res = round($size, $precision).$units[$i];
             return "<?php echo '$res'; ?>";
+        });
+
+        Blade::directive('maxFileSize', function() {
+          $value = config('pixelfed.max_photo_size');
+          return \App\Util\Lexer\PrettyNumber::size($value, true);
         });
     }
 

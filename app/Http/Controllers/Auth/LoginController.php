@@ -36,4 +36,24 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    public function validateLogin($request)
+    {
+        $rules = [
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ];
+
+        if(config('pixelfed.recaptcha')) {
+            $rules['g-recaptcha-response'] = 'required|recaptcha';
+        }
+
+        $this->validate($request, $rules);
+    }
 }

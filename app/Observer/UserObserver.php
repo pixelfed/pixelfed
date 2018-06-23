@@ -34,7 +34,7 @@ class UserObserver
             $profile->public_key = $pki_public;
             $profile->save();
 
-            CreateAvatar::dispatch($user);
+            CreateAvatar::dispatch($profile);
         }
     }
 

@@ -9,6 +9,7 @@ window.Popper = require('popper.js').default;
  */
 
 try {
+    window.pixelfed = {};
     window.$ = window.jQuery = require('jquery');
     require('bootstrap');
     window.InfiniteScroll = require('infinite-scroll');
@@ -20,6 +21,8 @@ try {
     require('./components/likebutton');
     require('./components/commentform');
     require('./components/searchform');
+    require('./components/bookmarkform');
+    require('./components/statusform');
 } catch (e) {}
 
 /**

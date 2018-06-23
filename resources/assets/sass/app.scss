@@ -1,6 +1,7 @@
 
 // Fonts
 @import "fonts";
+@import "lib/fontawesome";
 
 // Variables
 @import "variables";
@@ -10,6 +11,10 @@
 
 @import "custom";
 
+@import "components/filters";
+
 @import "components/typeahead";
 
 @import "components/notifications";
+
+@import "components/switch";

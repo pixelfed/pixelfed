@@ -1,3 +1,16 @@
+html, body {
+  min-height:100vh;
+}
+
+body {
+  display: flex;
+  flex-flow: column;
+}
+
+#content {
+  margin-bottom: auto !important;
+}
+
 body, button, input, textarea {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",
                  Roboto,Helvetica,Arial,sans-serif;
@@ -6,6 +19,12 @@ body, button, input, textarea {
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.bg-pixelfed {
+  background:#10c5f8;
+  background:-webkit-gradient(linear,left top,right bottom,from(#6736dd),to(#10c5f8));
+  background:linear-gradient(to bottom right,#6736dd,#10c5f8);
 }
 
 @media (min-width: 1200px) {
@@ -45,29 +64,20 @@ body, button, input, textarea {
 .card.status-container {
 }
 
+.card-img-top {
+  height: auto;
+}
+
 .card.status-container .status-photo {
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
-  -webkit-box-align: center !important;
-  -ms-flex-align: center !important;
-  align-items: center !important;
-  padding: 0;
-  background-color: #fff;
+  margin: auto !important;
 }
 
-.card.status-container .status-comments {
-  height: 220px;
-  overflow-y: scroll;
-  border-bottom:1px solid rgba(0, 0, 0, 0.1);
-}
-
-.card.status-container.orientation-square .status-comments {
-  height: 360px !important;
-}
-
-.card.status-container.orientation-portrait .status-comments {
-  height: 528px !important;
+@media (min-width: map-get($grid-breakpoints, "md")) {
+  .card.status-container .status-comments {
+    overflow-y:scroll;
+    border-bottom:1px solid rgba(0,0,0,.1);
+    height: 200px;
+  }
 }
 
 .no-caret.dropdown-toggle {
@@ -77,3 +87,179 @@ body, button, input, textarea {
 .no-caret.dropdown-toggle::after {
   display:none;
 }
+
+.notification-page .profile-link {
+  color: #212529;
+  font-weight: bold;
+}
+
+.notification-page .list-group-item:first-child {
+  border-top: none;
+}
+
+.nav-topbar {
+  border-top: 1px solid $gray-300;
+}
+.nav-topbar .nav-item {
+  margin: -1px 1.5rem 0;
+}
+.nav-topbar .nav-link {
+  border: 1px solid transparent;
+  color: $gray-300;
+  padding: 0.75rem 0;
+}
+.nav-topbar .nav-link:focus, .nav-topbar .nav-link:hover {
+  border-top-color: $gray-300;
+}
+.nav-topbar .nav-link.disabled {
+  color: $gray-300;
+  background-color: transparent;
+  border-color: transparent;
+}
+.nav-topbar .nav-item.show .nav-link, .nav-topbar .nav-link.active {
+  color: $gray-600;
+  border-top-color: $gray-600;
+}
+.nav-topbar .dropdown-menu {
+  margin-top:-1px;
+}
+
+.info-overlay {
+    position: relative;
+}
+
+.info-overlay .info-overlay-text {
+    display: none;
+    position: absolute;
+}
+
+.info-overlay:hover .info-overlay-text {
+    display: flex;
+}
+
+.info-overlay-text {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.font-weight-ultralight {
+    font-weight: 200 !important;
+}
+
+.square {
+    position: relative;
+    width: 100%;
+}
+
+.square::after {
+    content: "";
+    display: block;
+    padding-bottom: 100%;
+}
+
+.square-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+}
+
+@media (max-width: map-get($grid-breakpoints, "md")) {
+ .border-md-left-0 {
+  border-left:0!important
+ }
+}
+
+.fas.fa-heart {
+  color: #f70ec4!important;
+}
+
+
+@media (max-width: map-get($grid-breakpoints, "md")) {
+  .border-md-left-0 {
+    border-left:0!important
+  }
+  .card.status-container .status-comments {
+    border-top:1px solid rgba(0,0,0,.1);
+  }
+  .sticky-md-bottom {
+    position:-webkit-sticky;
+    position:sticky;
+    bottom:0;
+    z-index:1020
+  }
+}
+
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
+}
+
+@keyframes loading-bar {
+  from { background-position: 0 0; }
+  to { background-position: 100vw 0; }
+}
+
+.loading-page {
+  background-image: linear-gradient(to right, #6736dd, #10c5f8, #10c5f8, #6736dd);
+  width: 100vw;
+  height: .25rem;
+  animation: loading-bar 3s linear infinite;
+}
+
+.max-hide-overflow {
+  max-height: 500px;
+  overflow-y: hidden;
+}
+
+@media (min-width: map-get($grid-breakpoints, "xs")) {
+  .max-hide-overflow {
+    max-height: 600px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "md")) {
+  .max-hide-overflow {
+    max-height: 800px!important;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, "xl")) {
+  .max-hide-overflow {
+    max-height: 1000px!important;
+  }
+}
+
+.notification-image {
+  background-size: cover;
+  width: 32px;
+  height: 32px;
+  background-position: 50%;
+}
+
+
+.status-photo img {
+    object-fit: contain;
+    max-height: calc(100vh - (6rem));
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.25em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.details-animated[open] {
+  animation-name: fadeInDown;
+  animation-duration: 0.5s;
+}
+

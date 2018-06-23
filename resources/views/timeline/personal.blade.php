@@ -1,9 +1,13 @@
 @extends('layouts.app')
 
+@push('scripts')
+<script type="text/javascript" src="{{mix('js/timeline.js')}}"></script>
+@endpush 
+
 @section('content')
 
-<div class="container">
-  <div class="col-12 col-md-6 offset-md-3">
+<div class="container p-0">
+  <div class="col-md-10 col-lg-8 mx-auto pt-4 px-0">
     @if ($errors->any())
       <div class="alert alert-danger">
           <ul>
@@ -13,30 +17,48 @@
           </ul>
       </div>
     @endif
+
+    @include('timeline.partial.new-form')
     
-    <div class="card">
-      <div class="card-header font-weight-bold">New Status Post</div>
-      <div class="card-body">
-        <form method="post" action="/timeline" enctype="multipart/form-data">
-          @csrf
-          <div class="form-group">
-            <label class="font-weight-bold text-muted small">Upload Image</label>
-            <input type="file" class="form-control-file" name="photo">
-          </div>
-          <div class="form-group">
-            <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" placeholder="Add a caption here">
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>  
+    <div class="timeline-feed my-5" data-timeline="personal">
+    @foreach($timeline as $item)
+
+      @include('status.template')
+
+    @endforeach
+    @if($timeline->count() == 0)
+    <div class="card card-md-rounded-0">
+      <div class="card-body py-5">
+        <div class="d-flex justify-content-center align-items-center">
+          <p class="lead font-weight-bold mb-0">{{ __('timeline.emptyPersonalTimeline') }}</p>
+        </div>
+      </div>
+    </div>
+    @endif
     </div>
 
-    <div class="timeline-feed my-5" data-timeline="personal">
-  @foreach($timeline as $item)
-    @include('status.template')
+    <div class="page-load-status" style="display: none;">
+      <div class="infinite-scroll-request" style="display: none;">
+        <div class="fixed-top loading-page"></div>
+      </div>
+      <div class="infinite-scroll-last" style="display: none;">
+        <h3>No more content</h3>
+        <p class="text-muted">
+          Maybe you could try 
+          <a href="{{route('discover')}}">discovering</a>
+          more people you can follow.
+        </p>
+      </div>
+      <div class="infinite-scroll-error" style="display: none;">
+        <h3>Whoops, an error</h3>
+        <p class="text-muted">
+          Try reloading the page
+        </p>
+      </div>
+    </div>
 
-  @endforeach
+    <div class="d-flex justify-content-center">
+      {{$timeline->links()}}
     </div>
 
   </div>
