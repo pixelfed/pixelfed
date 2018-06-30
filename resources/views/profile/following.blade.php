@@ -5,11 +5,11 @@
 @include('profile.partial.user-info')
 
 <div class="container following-page" style="min-height: 60vh;">
-  <div class="col-12 col-md-8 offset-md-2">
+  <div class="col-12 col-md-8 offset-md-2 px-0">
     @if($following->count() !== 0)
-    <ul class="list-group mt-4">
+    <ul class="list-group mt-4 px-0">
       @foreach($following as $user)
-      <li class="list-group-item following">
+      <li class="list-group-item following card-md-rounded-0">
           <span class="following-icon pr-3">
             <img src="{{$user->avatarUrl()}}" width="32px" class="rounded-circle">
           </span>
