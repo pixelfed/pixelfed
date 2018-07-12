@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Report extends Model
+class AccountLog extends Model
 {
     //
 }
