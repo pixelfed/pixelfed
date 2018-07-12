@@ -27,7 +27,7 @@ class LikeController extends Controller
 
       if($status->likes()->whereProfileId($profile->id)->count() !== 0) {
         $like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
-        $like->delete();
+        $like->forceDelete();
         $count--;
       } else {
         $like = new Like;
@@ -35,9 +35,9 @@ class LikeController extends Controller
         $like->status_id = $status->id;
         $like->save();
         $count++;
+        LikePipeline::dispatch($like);
       }
 
-      LikePipeline::dispatch($like);
 
       if($request->ajax()) {
         $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];
