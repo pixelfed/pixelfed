@@ -79,6 +79,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Account file size limit
+    |--------------------------------------------------------------------------
+    |
+    | Update the max account size, the per user limit of files in kb.
+    | This applies to local and remote users. Old remote posts may be GC.
+    |
+    */
+    'max_account_size' => env('MAX_ACCOUNT_SIZE', 100000),
+
+    /*
+    |--------------------------------------------------------------------------
     | Photo file size limit
     |--------------------------------------------------------------------------
     |
