@@ -18,15 +18,24 @@ class AccountController extends Controller
     public function notifications(Request $request)
     {
       $this->validate($request, [
-          'page' => 'nullable|min:1|max:3'
+          'page' => 'nullable|min:1|max:3',
+          'a'    => 'nullable|alpha_dash',
       ]);
       $profile = Auth::user()->profile;
+      $action = $request->input('a');
       $timeago = Carbon::now()->subMonths(6);
-      $notifications = Notification::whereProfileId($profile->id)
-          ->whereDate('created_at', '>', $timeago)
-          ->orderBy('id','desc')
-          ->take(30)
-          ->simplePaginate();
+      if($action && in_array($action, ['comment', 'follow', 'mention'])) {
+        $notifications = Notification::whereProfileId($profile->id)
+            ->whereAction($action)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('id','desc')
+            ->simplePaginate(30);
+      } else {
+        $notifications = Notification::whereProfileId($profile->id)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('id','desc')
+            ->simplePaginate(30);
+      }
 
       return view('account.activity', compact('profile', 'notifications'));
     }
@@ -105,4 +114,5 @@ class AccountController extends Controller
       }
       return $notifications;
     }
+
 }
