@@ -21,7 +21,6 @@ class ProfileController extends Controller
 
       $mimes = [
         'application/activity+json', 
-        'application/ld+json',
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
       ];
 
@@ -36,7 +35,7 @@ class ProfileController extends Controller
       $timeline = $user->statuses()
                   ->whereHas('media')
                   ->whereNull('in_reply_to_id')
-                  ->orderBy('id','desc')
+                  ->orderBy('created_at','desc')
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(21);
 
