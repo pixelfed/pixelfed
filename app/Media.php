@@ -23,4 +23,11 @@ class Media extends Model
       $url = Storage::url($path);
       return url($url);
     }
+
+    public function thumbnailUrl()
+    {
+      $path = $this->thumbnail_path;
+      $url = Storage::url($path);
+      return url($url);
+    }
 }

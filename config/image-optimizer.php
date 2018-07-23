@@ -49,5 +49,5 @@ return [
      * If set to `true` all output of the optimizer binaries will be appended to the default log.
      * You can also set this to a class that implements `Psr\Log\LoggerInterface`.
      */
-    'log_optimizer_activity' => true,
+    'log_optimizer_activity' => false,
 ];
