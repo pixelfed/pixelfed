@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth, Hashids;
+use Auth, Cache, Hashids;
 use App\{Like, Profile, Status, User};
 use App\Jobs\LikePipeline\LikePipeline;
 
@@ -38,6 +38,12 @@ class LikeController extends Controller
         LikePipeline::dispatch($like);
       }
 
+      $likes = Like::whereProfileId($profile->id)
+               ->orderBy('id', 'desc')
+               ->take(1000)
+               ->pluck('status_id');
+               
+      Cache::put('api:like-ids:user:'.$profile->id,  $likes, 1440);
 
       if($request->ajax()) {
         $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];
