@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.1.0',
+    'version' => '0.1.1',
 
     /*
     |--------------------------------------------------------------------------
@@ -82,8 +82,8 @@ return [
     | Account file size limit
     |--------------------------------------------------------------------------
     |
-    | Update the max account size, the per user limit of files in kb.
-    | This applies to local and remote users. Old remote posts may be GC.
+    | Update the max account size, the per user limit of files in KB.
+    |
     |
     */
     'max_account_size' => env('MAX_ACCOUNT_SIZE', 100000),
