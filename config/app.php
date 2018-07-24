@@ -151,6 +151,7 @@ return [
          * Package Service Providers...
          */
         Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
+        Jackiedo\DotenvEditor\DotenvEditorServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -211,6 +212,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
+        'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
     ],
 
 ];
