@@ -10,15 +10,15 @@
           @include('settings.partial.sidebar')
           <div class="col-12 col-md-9 p-5">
             @if (session('status'))
-                <div class="alert alert-success">
+                <div class="alert alert-success font-weight-bold">
                     {{ session('status') }}
                 </div>
             @endif
             @if ($errors->any())
                 <div class="alert alert-danger">
-                    <ul>
+                    <ul class="mb-0">
                         @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                            <li class="font-weight-bold">{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
