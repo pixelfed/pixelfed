@@ -4,117 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00d8fe04c29dc3eb62ed466b4ef241da",
+    "content-hash": "69060b27fb92fe5440aae30a3e4928ac",
     "packages": [
-        {
-            "name": "99designs/http-signatures",
-            "version": "4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/99designs/http-signatures-php.git",
-                "reference": "acb9d2e4f4661de9445fa5930b49a259bfd6175b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/99designs/http-signatures-php/zipball/acb9d2e4f4661de9445fa5930b49a259bfd6175b",
-                "reference": "acb9d2e4f4661de9445fa5930b49a259bfd6175b",
-                "shasum": ""
-            },
-            "require": {
-                "paragonie/random_compat": "^1.0|^2.0",
-                "php": ">=5.5",
-                "psr/http-message": "^1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^1.11",
-                "guzzlehttp/psr7": "^1.2",
-                "phpunit/phpunit": "~4.8",
-                "symfony/http-foundation": "~2.8|~3.0",
-                "symfony/psr-http-message-bridge": "^1.0",
-                "zendframework/zend-diactoros": "^1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "HttpSignatures\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Paul Annesley",
-                    "email": "paul@99designs.com"
-                }
-            ],
-            "description": "Sign and verify HTTP messages",
-            "keywords": [
-                "hmac",
-                "http",
-                "https",
-                "signature",
-                "signed",
-                "signing"
-            ],
-            "time": "2017-05-04T01:36:17+00:00"
-        },
-        {
-            "name": "99designs/http-signatures-guzzlehttp",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/99designs/http-signatures-guzzlehttp.git",
-                "reference": "920ddd3cfbfae4c11a0f7c3b44699c01ae8cb203"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/99designs/http-signatures-guzzlehttp/zipball/920ddd3cfbfae4c11a0f7c3b44699c01ae8cb203",
-                "reference": "920ddd3cfbfae4c11a0f7c3b44699c01ae8cb203",
-                "shasum": ""
-            },
-            "require": {
-                "99designs/http-signatures": ">=3.0.0 <5.0.0",
-                "guzzlehttp/guzzle": ">=6.0 <7.0.0",
-                "php": ">=5.5.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Adrian Palmer",
-                    "email": "adrian.palmer@99designs.com"
-                },
-                {
-                    "name": "Ruben de Vries",
-                    "email": "ruben@rubensayshi.com"
-                }
-            ],
-            "description": "Sign and verify HTTP messages with Guzzle 6",
-            "homepage": "https://github.com/99designs/http-signatures-guzzlehttp",
-            "keywords": [
-                "guzzle 6",
-                "hmac",
-                "http",
-                "https",
-                "signature",
-                "signed",
-                "signing"
-            ],
-            "time": "2017-05-04T02:00:20+00:00"
-        },
         {
             "name": "beyondcode/laravel-self-diagnosis",
             "version": "0.4.0",
@@ -2810,6 +2701,115 @@
                 "laravel"
             ],
             "time": "2018-07-05T03:42:05+00:00"
+        },
+        {
+            "name": "pixelfed/http-signatures",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pixelfed/http-signatures-php.git",
+                "reference": "a3b6985c632b7add360a24a507eae4187f2b51a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pixelfed/http-signatures-php/zipball/a3b6985c632b7add360a24a507eae4187f2b51a4",
+                "reference": "a3b6985c632b7add360a24a507eae4187f2b51a4",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/random_compat": "^1.0|^2.0",
+                "php": ">=5.5",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.11",
+                "guzzlehttp/psr7": "^1.2",
+                "phpunit/phpunit": "~4.8",
+                "symfony/http-foundation": "~2.8|~3.0",
+                "symfony/psr-http-message-bridge": "^1.0",
+                "zendframework/zend-diactoros": "^1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "HttpSignatures\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Annesley",
+                    "email": "paul@99designs.com"
+                }
+            ],
+            "description": "Sign and verify HTTP messages",
+            "keywords": [
+                "hmac",
+                "http",
+                "https",
+                "signature",
+                "signed",
+                "signing"
+            ],
+            "time": "2018-07-18T02:16:30+00:00"
+        },
+        {
+            "name": "pixelfed/http-signatures-guzzlehttp",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pixelfed/http-signatures-guzzlehttp.git",
+                "reference": "19f74eb85d7d13b7e71d6c7983a227c06342c8a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pixelfed/http-signatures-guzzlehttp/zipball/19f74eb85d7d13b7e71d6c7983a227c06342c8a4",
+                "reference": "19f74eb85d7d13b7e71d6c7983a227c06342c8a4",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": ">=6.0 <7.0.0",
+                "php": ">=5.5.0",
+                "pixelfed/http-signatures": "5.x"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adrian Palmer",
+                    "email": "adrian.palmer@99designs.com"
+                },
+                {
+                    "name": "Ruben de Vries",
+                    "email": "ruben@rubensayshi.com"
+                }
+            ],
+            "description": "Sign and verify HTTP messages with Guzzle 6",
+            "homepage": "https://github.com/99designs/http-signatures-guzzlehttp",
+            "keywords": [
+                "guzzle 6",
+                "hmac",
+                "http",
+                "https",
+                "signature",
+                "signed",
+                "signing"
+            ],
+            "time": "2018-07-18T02:23:35+00:00"
         },
         {
             "name": "predis/predis",
