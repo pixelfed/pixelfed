@@ -18,17 +18,22 @@ class ProfileController extends Controller
     public function show(Request $request, $username)
     {
       $user = Profile::whereUsername($username)->firstOrFail();
+      $settings = User::whereUsername($username)->firstOrFail()->settings;
 
       $mimes = [
         'application/activity+json', 
-        'application/ld+json',
         'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
       ];
 
       if(in_array($request->header('accept'), $mimes) && config('pixelfed.activitypub_enabled')) {
         return $this->showActivityPub($request, $user);
       }
-
+      if($user->is_private == true) {
+        $can_access = $this->privateProfileCheck($user);
+        if($can_access !== true) {
+          abort(403);
+        }
+      }
       // TODO: refactor this mess
       $owner = Auth::check() && Auth::id() === $user->user_id;
       $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
@@ -36,11 +41,26 @@ class ProfileController extends Controller
       $timeline = $user->statuses()
                   ->whereHas('media')
                   ->whereNull('in_reply_to_id')
-                  ->orderBy('id','desc')
+                  ->orderBy('created_at','desc')
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(21);
 
-      return view('profile.show', compact('user', 'owner', 'is_following', 'is_admin', 'timeline'));
+      return view('profile.show', compact('user', 'settings', 'owner', 'is_following', 'is_admin', 'timeline'));
+    }
+
+    protected function privateProfileCheck(Profile $profile)
+    {
+      if(Auth::check() === false) {
+        return false;
+      }
+
+      $follower_ids = (array) $profile->followers()->pluck('followers.profile_id');
+      $pid = Auth::user()->profile->id;
+      if(!in_array($pid, $follower_ids) && $pid !== $profile->id) {
+        return false;
+      }
+
+      return true;
     }
 
     public function showActivityPub(Request $request, $user)

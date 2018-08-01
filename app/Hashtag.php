@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hashtag extends Model
 {
-    protected $fillable = ['name','slug'];
+    public $fillable = ['name','slug'];
 
     public function posts()
     {

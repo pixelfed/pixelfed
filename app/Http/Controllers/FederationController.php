@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
+use Auth, Cache;
 use App\Profile;
+use Carbon\Carbon;
 use League\Fractal;
 use Illuminate\Http\Request;
 use App\Util\Lexer\Nickname;
@@ -13,15 +14,26 @@ use App\Transformer\ActivityPub\{
   ProfileTransformer
 };
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
+use App\Jobs\InboxPipeline\InboxWorker;
 
 class FederationController extends Controller
 {
     public function authCheck()
     {
       if(!Auth::check()) { 
-        abort(403); 
+        return abort(403);
       }
-      return;
+    }
+
+    public function authorizeFollow(Request $request)
+    {
+      $this->authCheck();
+      $this->validate($request, [
+        'acct' => 'required|string|min:3|max:255'
+      ]);
+      $acct = $request->input('acct');
+      $nickname = Nickname::normalizeProfileUrl($acct);
+      return view('federation.authorizefollow', compact('acct', 'nickname'));
     }
 
     public function remoteFollow()
@@ -64,61 +76,58 @@ class FederationController extends Controller
 
     public function nodeinfo()
     {
-      $res =  [
-        'metadata' => [
-          'nodeName' => config('app.name'),
-          'software' => [
-            'homepage' => 'https://pixelfed.org',
-            'github' => 'https://github.com/pixelfed',
-            'follow' => 'https://mastodon.social/@pixelfed'
-          ],
-          /*
-          TODO: Custom Features for Trending
-          'customFeatures' => [
-            'trending' => [
-              'description' => 'Trending API for federated discovery',
-              'api' => [
-                'url' => null,
-                'docs' => null
-              ],
+      $res = Cache::remember('api:nodeinfo', 60, function() {
+        return [
+          'metadata' => [
+            'nodeName' => config('app.name'),
+            'software' => [
+              'homepage' => 'https://pixelfed.org',
+              'github' => 'https://github.com/pixelfed',
+              'follow' => 'https://mastodon.social/@pixelfed'
             ],
           ],
-          */
-        ],
-        'openRegistrations' => config('pixelfed.open_registration'),
-        'protocols' => [
-          'activitypub'
-        ],
-        'services' => [
-          'inbound' => [],
-          'outbound' => []
-        ],
-        'software' => [
-          'name' => 'pixelfed',
-          'version' => config('pixelfed.version')
-        ],
-        'usage' => [
-          'localPosts' => \App\Status::whereLocal(true)->count(),
-          'users' => [
-            'total' => \App\User::count()
-          ]
-        ],
-        'version' => '2.0'
-      ];
-
-      return response()->json($res);
+          'openRegistrations' => config('pixelfed.open_registration'),
+          'protocols' => [
+            'activitypub'
+          ],
+          'services' => [
+            'inbound' => [],
+            'outbound' => []
+          ],
+          'software' => [
+            'name' => 'pixelfed',
+            'version' => config('pixelfed.version')
+          ],
+          'usage' => [
+            'localPosts' => \App\Status::whereLocal(true)->whereHas('media')->count(),
+            'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
+            'users' => [
+              'total' => \App\User::count(),
+              'activeHalfyear' => \App\User::where('updated_at', '>', Carbon::now()->subMonths(6)->toDateTimeString())->count(),
+              'activeMonth' => \App\User::where('updated_at', '>', Carbon::now()->subMonths(1)->toDateTimeString())->count(),
+            ]
+          ],
+          'version' => '2.0'
+        ];
+      });
+      return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
 
     public function webfinger(Request $request)
     {
-      $this->validate($request, ['resource'=>'required']);
-      $resource = $request->input('resource');
-      $parsed = Nickname::normalizeProfileUrl($resource);
-      $username = $parsed['username'];
-      $user = Profile::whereUsername($username)->firstOrFail();
-      $webfinger = (new Webfinger($user))->generate();
-      return response()->json($webfinger);
+      $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
+      
+      $hash = hash('sha512', $request->input('resource'));
+
+      $webfinger = Cache::remember('api:webfinger:'.$hash, 1440, function() use($request) {
+        $resource = $request->input('resource');
+        $parsed = Nickname::normalizeProfileUrl($resource);
+        $username = $parsed['username'];
+        $user = Profile::whereUsername($username)->firstOrFail();
+        return (new Webfinger($user))->generate();
+      });
+      return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT);
     }
 
     public function userOutbox(Request $request, $username)
@@ -133,6 +142,22 @@ class FederationController extends Controller
       $resource = new Fractal\Resource\Item($user, new ProfileOutbox);
       $res = $fractal->createData($resource)->toArray();
       return response()->json($res['data']);
+    }
+
+    public function userInbox(Request $request, $username)
+    {
+      if(config('pixelfed.activitypub_enabled') == false) {
+        abort(403);
+      }
+      $mimes = [
+        'application/activity+json', 
+        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+      ];
+      if(!in_array($request->header('Content-Type'), $mimes)) {
+        abort(500, 'Invalid request');
+      }
+      $profile = Profile::whereUsername($username)->firstOrFail();
+      InboxWorker::dispatch($request, $profile, $request->all());
     }
 
 }

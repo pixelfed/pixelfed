@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth, Hashids;
+use Auth, Cache, Hashids;
 use App\{Like, Profile, Status, User};
 use App\Jobs\LikePipeline\LikePipeline;
 
@@ -27,7 +27,7 @@ class LikeController extends Controller
 
       if($status->likes()->whereProfileId($profile->id)->count() !== 0) {
         $like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
-        $like->delete();
+        $like->forceDelete();
         $count--;
       } else {
         $like = new Like;
@@ -35,9 +35,15 @@ class LikeController extends Controller
         $like->status_id = $status->id;
         $like->save();
         $count++;
+        LikePipeline::dispatch($like);
       }
 
-      LikePipeline::dispatch($like);
+      $likes = Like::whereProfileId($profile->id)
+               ->orderBy('id', 'desc')
+               ->take(1000)
+               ->pluck('status_id');
+               
+      Cache::put('api:like-ids:user:'.$profile->id,  $likes, 1440);
 
       if($request->ajax()) {
         $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];

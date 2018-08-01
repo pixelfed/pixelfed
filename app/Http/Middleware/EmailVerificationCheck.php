@@ -18,7 +18,7 @@ class EmailVerificationCheck
         if($request->user() && 
             config('pixelfed.enforce_email_verification') &&
             is_null($request->user()->email_verified_at) && 
-            !$request->is('i/verify-email') && !$request->is('login') && 
+            !$request->is('i/verify-email') && !$request->is('log*') && 
             !$request->is('i/confirm-email/*')
         ) {
             return redirect('/i/verify-email');
