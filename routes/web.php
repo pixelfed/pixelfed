@@ -1,17 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-
 Route::domain(config('pixelfed.domain.admin'))->group(function() {
   Route::redirect('/', '/dashboard');
   Route::redirect('timeline', config('app.url').'/timeline');
@@ -25,7 +13,7 @@ Route::domain(config('pixelfed.domain.admin'))->group(function() {
   Route::get('media/list', 'AdminController@media')->name('admin.media');
 });
 
-Route::domain(config('pixelfed.domain.app'))->group(function() {
+Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(function() {
 
   Route::view('/', 'welcome');
 
@@ -62,6 +50,9 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::post('follow', 'FollowerController@store');
     Route::post('bookmark', 'BookmarkController@store');
     Route::get('lang/{locale}', 'SiteController@changeLocale');
+    Route::get('verify-email', 'AccountController@verifyEmail');
+    Route::post('verify-email', 'AccountController@sendVerifyEmail');
+    Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail');
 
     Route::group(['prefix' => 'report'], function() {
       Route::get('/', 'ReportController@showForm')->name('report.form');
@@ -88,6 +79,7 @@ Route::domain(config('pixelfed.domain.app'))->group(function() {
     Route::get('email', 'SettingsController@email')->name('settings.email');
     Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
     Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
+    Route::post('privacy', 'SettingsController@privacyStore');
     Route::get('security', 'SettingsController@security')->name('settings.security');
     Route::get('applications', 'SettingsController@applications')->name('settings.applications');
     Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');

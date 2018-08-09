@@ -1,4 +1,4 @@
-      <div class="card my-4 status-card">
+      <div class="card my-4 status-card card-md-rounded-0">
         <div class="card-header d-inline-flex align-items-center bg-white">
           <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
           <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
@@ -15,6 +15,7 @@
                 <a class="dropdown-item" href="#">Embed</a>
               @if(Auth::check())
                 @if(Auth::user()->profile->id === $item->profile->id || Auth::user()->is_admin == true)
+                <a class="dropdown-item" href="{{$item->editUrl()}}">Edit</a>
                 <form method="post" action="/i/delete">
                   @csrf
                   <input type="hidden" name="type" value="post">
@@ -29,34 +30,36 @@
           </div>
         </div>
         @if($item->is_nsfw)
-        <details>
+        <details class="details-animated">
           <p>
             <summary>NSFW / Hidden Image</summary>
-            <a class="max-hide-overflow" href="{{$item->url()}}">
+            <a class="max-hide-overflow {{$item->firstMedia()->filter_class}}" href="{{$item->url()}}">
               <img class="card-img-top" src="{{$item->mediaUrl()}}">
             </a>
           </p>
         </details>
         @else
-        <a class="max-hide-overflow" href="{{$item->url()}}">
+        <a class="max-hide-overflow {{$item->firstMedia()->filter_class}}" href="{{$item->url()}}">
           <img class="card-img-top" src="{{$item->mediaUrl()}}">
         </a>
         @endif
         <div class="card-body">
-          <div class="reactions h3">
-            <form class="like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
+          <div class="reactions my-1">
+            <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
               @csrf
               <input type="hidden" name="item" value="{{$item->id}}">
               <button class="btn btn-link text-dark p-0" type="submit" title=""Like!>
-                <span class="far fa-heart status-heart fa-2x"></span>
+                <h3 class="far fa-heart status-heart m-0"></h3>
               </button>
             </form>
-            <span class="far fa-comment status-comment-focus" title="Comment"></span>
+            <h3 class="far fa-comment status-comment-focus" title="Comment"></h3>
             <span class="float-right">
-              <form class="bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
+              <form class="d-inline-flex bookmark-form" method="post" action="/i/bookmark" style="display: inline;" data-id="{{$item->id}}" data-action="bookmark">
                 @csrf
                 <input type="hidden" name="item" value="{{$item->id}}">
-                <button class="btn btn-link text-dark p-0" type="submit" title="Save"><span class="far fa-bookmark" style="font-size:25px;"></span></button>
+                <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
+                  <h3 class="far fa-bookmark m-0"></h3>
+                </button>
               </form>
             </span>
           </div>
@@ -73,7 +76,7 @@
           </div>
           @if($item->comments()->count() > 3)
           <div class="more-comments">
-            <a class="text-muted" href="#">Load more comments</a>
+            <a class="text-muted" href="{{$item->url()}}">Load more comments</a>
           </div>
           @endif
           <div class="comments">
@@ -84,7 +87,7 @@
                     <a class="text-dark" href="{{$status->profile->url()}}">{{$status->profile->username}}</a>
                   </bdi>
                 </span>
-                <span class="comment-text">{!!$status->rendered!!}</span>
+                <span class="comment-text">{!! $item->rendered ?? e($item->caption) !!}</span>
                 <span class="float-right">
                   <a href="{{$status->url()}}" class="text-dark small font-weight-bold">
                     {{$status->created_at->diffForHumans(null, true, true, true)}}
@@ -92,12 +95,6 @@
                 </span>
               </p>
             @else
-            @foreach($item->comments->reverse()->take(3) as $comment)
-              <p class="mb-0">
-                <span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="{{$comment->profile->url()}}">{{$comment->profile->username}}</a></bdi></span>
-                <span class="comment-text">{{ str_limit($comment->caption, 125) }}</span>
-              </p>
-            @endforeach
             @endif
           </div>
           <div class="timestamp pt-1">
@@ -108,7 +105,7 @@
           <form class="comment-form" method="post" action="/i/comment" data-id="{{$item->id}}" data-truncate="true">
             @csrf
             <input type="hidden" name="item" value="{{$item->id}}">
-            <input class="form-control status-reply-input" name="comment" placeholder="Add a comment...">
+            <input class="form-control status-reply-input" name="comment" placeholder="Add a comment…">
           </form>
         </div>
       </div>

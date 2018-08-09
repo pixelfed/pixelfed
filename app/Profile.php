@@ -5,9 +5,18 @@ namespace App;
 use Storage;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profile extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     protected $hidden = [
         'private_key',
     ];
@@ -20,6 +29,15 @@ class Profile extends Model
     }
 
     public function url($suffix = '')
+    {
+        if($this->remote_url) {
+            return $this->remote_url;
+        } else {
+            return url($this->username . $suffix);
+        }
+    }
+
+    public function localUrl($suffix = '')
     {
         return url($this->username . $suffix);
     }
@@ -114,5 +132,10 @@ class Profile extends Model
     {
         $url = url(Storage::url($this->avatar->media_path ?? 'public/avatars/default.png'));
         return $url;
+    }
+
+    public function statusCount()
+    {
+        return $this->statuses()->whereHas('media')->count();
     }
 }

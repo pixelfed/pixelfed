@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.1.0',
+    'version' => '0.1.2',
 
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +79,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Account file size limit
+    |--------------------------------------------------------------------------
+    |
+    | Update the max account size, the per user limit of files in KB.
+    |
+    |
+    */
+    'max_account_size' => env('MAX_ACCOUNT_SIZE', 100000),
+
+    /*
+    |--------------------------------------------------------------------------
     | Photo file size limit
     |--------------------------------------------------------------------------
     |
@@ -96,5 +107,25 @@ return [
     |
     */
     'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Album size limit
+    |--------------------------------------------------------------------------
+    |
+    | The max number of photos allowed per post.
+    |
+    */
+    'max_album_length'  => env('MAX_ALBUM_LENGTH', 4),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | Require email verification before a new user can do anything.
+    |
+    */
+    'enforce_email_verification'  => env('ENFORCE_EMAIL_VERIFICATION', true),
     
 ];

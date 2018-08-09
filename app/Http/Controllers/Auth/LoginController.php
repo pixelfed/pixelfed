@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\{AccountLog, User};
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -25,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -55,5 +56,26 @@ class LoginController extends Controller
         }
 
         $this->validate($request, $rules);
+    }
+
+    /**
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated($request, $user)
+    {
+        $log = new AccountLog;
+        $log->user_id = $user->id;
+        $log->item_id = $user->id;
+        $log->item_type = 'App\User';
+        $log->action = 'auth.login';
+        $log->message = 'Account Login';
+        $log->link = null;
+        $log->ip_address = $request->ip();
+        $log->user_agent = $request->userAgent();
+        $log->save();
     }
 }

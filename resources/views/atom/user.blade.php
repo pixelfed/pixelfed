@@ -26,14 +26,14 @@
   <link rel="self" type="application/atom+xml" href="{{$profile->permalink('.atom')}}"/>
 @foreach($items as $item)
     <entry>
-        <title><![CDATA[{{ $item->caption }}]]></title>
+        <title>{{ $item->caption }}</title>
         <link rel="alternate" href="{{ $item->url() }}" />
         <id>{{ url($item->id) }}</id>
         <author>
             <name> <![CDATA[{{ $item->profile->username }}]]></name>
         </author>
         <summary type="html">
-            <![CDATA[{!! $item->caption !!}]]>
+            {{ $item->caption }}
         </summary>
         <updated>{{ $item->updated_at->toAtomString() }}</updated>
     </entry>

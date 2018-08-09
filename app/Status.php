@@ -2,12 +2,21 @@
 
 namespace App;
 
+use Auth, Storage;
 use Illuminate\Database\Eloquent\Model;
-use Storage;
-use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Model
 {
+    use SoftDeletes;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
+    
     public function profile()
     {
       return $this->belongsTo(Profile::class);
@@ -25,7 +34,7 @@ class Status extends Model
 
     public function thumb()
     {
-      if($this->media->count() == 0) {
+      if($this->media->count() == 0 || $this->is_nsfw) {
         return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
       }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
@@ -43,6 +52,11 @@ class Status extends Model
       return url($path);
     }
 
+    public function editUrl()
+    {
+      return $this->url() . '/edit';
+    }
+
     public function mediaUrl()
     {
       $media = $this->firstMedia();
@@ -57,15 +71,39 @@ class Status extends Model
       return $this->hasMany(Like::class);
     }
 
+    public function liked() : bool
+    {
+      $profile = Auth::user()->profile;
+      return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
+    }
+
     public function comments()
     {
       return $this->hasMany(Status::class, 'in_reply_to_id');
     }
 
+    public function bookmarked()
+    {
+      $profile = Auth::user()->profile;
+      return Bookmark::whereProfileId($profile->id)->whereStatusId($this->id)->count();
+    }
+
+    public function shares()
+    {
+      return $this->hasMany(Status::class, 'reblog_of_id');
+    }
+
+    public function shared() : bool
+    {
+      $profile = Auth::user()->profile;
+      return Status::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
+    }
+
     public function parent()
     {
-      if(!empty($this->in_reply_to_id)) {
-        return Status::findOrFail($this->in_reply_to_id);
+      $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
+      if(!empty($parent)) {
+        return Status::findOrFail($parent);
       }
     }
 
@@ -84,6 +122,23 @@ class Status extends Model
         'id',
         'hashtag_id'
       );
+    }
+
+    public function mentions()
+    {
+      return $this->hasManyThrough(
+        Profile::class,
+        Mention::class,
+        'status_id',
+        'id',
+        'id',
+        'profile_id'
+      );
+    }
+
+    public function reportUrl()
+    {
+      return route('report.form') . "?type=post&id={$this->id}";
     }
 
     public function toActivityStream()

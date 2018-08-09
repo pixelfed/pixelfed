@@ -193,6 +193,13 @@ body, button, input, textarea {
   }
 }
 
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-rounded-0 {
+    border-width: 1px 0;
+    border-radius:0 !important;
+  }
+}
+
 @keyframes loading-bar {
   from { background-position: 0 0; }
   to { background-position: 100vw 0; }
@@ -234,3 +241,25 @@ body, button, input, textarea {
   height: 32px;
   background-position: 50%;
 }
+
+
+.status-photo img {
+    object-fit: contain;
+    max-height: calc(100vh - (6rem));
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-1.25em);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.details-animated[open] {
+  animation-name: fadeInDown;
+  animation-duration: 0.5s;
+}
+
