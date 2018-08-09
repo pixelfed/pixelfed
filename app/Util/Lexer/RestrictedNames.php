@@ -118,6 +118,7 @@ class RestrictedNames {
 
      // Static Assets
      "assets",
+     "storage",
 
      // Laravel Horizon
      "horizon",
@@ -127,14 +128,19 @@ class RestrictedNames {
      "api",
      "auth",
      "i",
+     "dashboard",
      "discover",
+     "docs",
      "home",
      "login",
      "logout",
+     "media",
      "p",
      "password",
+     "reports",
      "search",
      "settings",
+     "statuses",
      "site",
      "timeline",
      "user",

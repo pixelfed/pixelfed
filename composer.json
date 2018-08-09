@@ -12,7 +12,7 @@
         "fideloper/proxy": "^4.0",
         "greggilbert/recaptcha": "dev-master",
         "intervention/image": "^2.4",
-        "kitetail/zttp": "^0.3.0",
+        "pixelfed/zttp": "^0.4",
         "laravel/framework": "5.6.*",
         "laravel/horizon": "^1.2",
         "laravel/passport": "^6.0",
