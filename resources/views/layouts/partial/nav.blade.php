@@ -27,7 +27,10 @@
                             <i class="far fa-heart fa-lg"></i>
                         </a>
                     </li>
-                    <li class="nav-item dropdown px-2">
+                    <li id="menuNoJs" class="nav-item px-2">
+                        <a class="nav-link" href="{{route('home')}}" title="Dashboard"><i class="far fa-user fa-lg"></i></a>
+                    </li>
+                    <li id="menuJs" class="nav-item dropdown px-2" style="display: none;">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre title="User Menu">
                             <i class="far fa-user fa-lg"></i> <span class="caret"></span>
                         </a>
