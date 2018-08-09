@@ -1,6 +1,6 @@
 # PixelFed: Federated Image Sharing
 
-PixelFed is a federated social image sharing platform, similar to instagram.
+PixelFed is a federated social image sharing platform, similar to Instagram.
 Federation is done using the [ActivityPub](https://activitypub.rocks/) protocol,
 which is used by [Mastodon](http://joinmastodon.org/), [PeerTube](https://joinpeertube.org/en/),
 [Pleroma](https://pleroma.social/), and more. Through ActivityPub PixelFed can share
