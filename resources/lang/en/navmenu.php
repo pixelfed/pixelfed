@@ -9,5 +9,6 @@ return [
     'settings' => 'Settings',
     'admin' => 'Admin',
     'logout' => 'Logout',
+    'directMessages' => 'Direct Messages',
 
 ];
