@@ -3,16 +3,53 @@
 @section('content')
 <div class="container notification-page" style="min-height: 60vh;">
   <div class="col-12 col-md-8 offset-md-2">
+    <div class="card mt-3">
+      <div class="card-body p-0">
+        <ul class="nav nav-tabs d-flex text-center">
+          {{--
+            <li class="nav-item flex-fill">
+              <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications.following')}}">Following</a>
+            </li> 
+          --}}
+          <li class="nav-item flex-fill">
+            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications')}}">My Notifications</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="">
+      <div class="dropdown text-right mt-2">
+        <a class="btn btn-link btn-sm dropdown-toggle font-weight-bold text-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Filter
+        </a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <a href="?a=comment" class="dropdown-item font-weight-bold" title="Commented on your post">
+                  Comments only
+                </a>
+                <a href="?a=follow" class="dropdown-item font-weight-bold" title="Followed you">
+                  New Followers only
+                </a>
+                <a href="?a=mention" class="dropdown-item font-weight-bold" title="Mentioned you">
+                  Mentions only
+                </a>
+                <a href="{{route('notifications')}}" class="dropdown-item font-weight-bold text-dark">
+                  View All
+                </a>
+        </div>
+      </div>
+    </div>
     <ul class="list-group">
 
     @if($notifications->count() > 0)
       @foreach($notifications as $notification)
-      <li class="list-group-item notification">
+      <li class="list-group-item notification border-0">
         @switch($notification->action)
 
         @case('like')
           <span class="notification-icon pr-3">
-            <img src="{{$notification->actor->avatarUrl()}}" width="32px" class="rounded-circle">
+            <img src="{{optional($notification->actor, function($actor) {
+              return $actor->avatarUrl(); }) }}" width="32px" class="rounded-circle">
           </span>
           <span class="notification-text">
             {!! $notification->rendered !!}

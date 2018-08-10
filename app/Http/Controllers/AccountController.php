@@ -40,6 +40,25 @@ class AccountController extends Controller
       return view('account.activity', compact('profile', 'notifications'));
     }
 
+    public function followingActivity(Request $request)
+    {
+      $this->validate($request, [
+          'page' => 'nullable|min:1|max:3',
+          'a'    => 'nullable|alpha_dash',
+      ]);
+      $profile = Auth::user()->profile;
+      $action = $request->input('a');
+      $timeago = Carbon::now()->subMonths(1);
+      $following = $profile->following->pluck('id');
+      $notifications = Notification::whereIn('actor_id', $following)
+          ->where('profile_id', '!=', $profile->id)
+          ->whereDate('created_at', '>', $timeago)
+          ->orderBy('notifications.id','desc')
+          ->simplePaginate(30);
+
+      return view('account.following', compact('profile', 'notifications'));
+    }
+
     public function verifyEmail(Request $request)
     {
       return view('account.verify_email');

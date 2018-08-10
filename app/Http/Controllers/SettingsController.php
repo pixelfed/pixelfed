@@ -3,19 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{AccountLog, Profile, User};
+use App\{AccountLog, Media, Profile, User};
 use Auth, DB;
+use App\Util\Lexer\PrettyNumber;
 
 class SettingsController extends Controller
 {
     public function __construct()
     {
-      return $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function home()
     {
-      return view('settings.home');
+      $id = Auth::user()->profile->id;
+      $storage = [];
+      $used = Media::whereProfileId($id)->sum('size');
+      $storage['limit'] = config('pixelfed.max_account_size') * 1024;
+      $storage['used'] = $used;
+      $storage['percentUsed'] = ceil($storage['used'] / $storage['limit'] * 100);
+      $storage['limitPretty'] = PrettyNumber::size($storage['limit']);
+      $storage['usedPretty'] = PrettyNumber::size($storage['used']);
+      return view('settings.home', compact('storage'));
     }
 
     public function homeUpdate(Request $request)

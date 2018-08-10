@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.1.2',
+    'version' => '0.1.3',
 
     /*
     |--------------------------------------------------------------------------
@@ -86,7 +86,7 @@ return [
     |
     |
     */
-    'max_account_size' => env('MAX_ACCOUNT_SIZE', 100000),
+    'max_account_size' => env('MAX_ACCOUNT_SIZE', 1000000),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +106,7 @@ return [
     | Change the caption length limit for new local posts.
     |
     */
-    'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
+    'max_caption_length' => env('MAX_CAPTION_LENGTH', 500),
 
     /*
     |--------------------------------------------------------------------------
@@ -127,5 +127,15 @@ return [
     |
     */
     'enforce_email_verification'  => env('ENFORCE_EMAIL_VERIFICATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image Quality
+    |--------------------------------------------------------------------------
+    |
+    | Set the image optimization quality, must be a value between 1-100.
+    |
+    */
+    'image_quality'  => (int) env('IMAGE_QUALITY', 80),
     
 ];

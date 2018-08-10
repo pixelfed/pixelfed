@@ -15,17 +15,44 @@ class DiscoverController extends Controller
 
     public function home()
     {
-      $following = Follower::whereProfileId(Auth::user()->profile->id)->pluck('following_id');
-      $people = Profile::inRandomOrder()->where('id', '!=', Auth::user()->profile->id)->whereNotIn('id', $following)->take(3)->get();
-      $posts = Status::whereHas('media')->where('profile_id', '!=', Auth::user()->profile->id)->whereNotIn('profile_id', $following)->orderBy('created_at', 'desc')->take('21')->get();
+      $pid = Auth::user()->profile->id;
+
+      $following = Follower::whereProfileId($pid)
+          ->pluck('following_id');
+
+      $people = Profile::inRandomOrder()
+          ->where('id', '!=', $pid)
+          ->whereNotIn('id', $following)
+          ->take(3)
+          ->get();
+
+      $posts = Status::whereHas('media')
+          ->where('profile_id', '!=', $pid)
+          ->whereNotIn('profile_id', $following)
+          ->orderBy('created_at', 'desc')
+          ->simplePaginate(21);
+
       return view('discover.home', compact('people', 'posts'));
     }
 
     public function showTags(Request $request, $hashtag)
     {
-      $tag = Hashtag::whereSlug($hashtag)->firstOrFail();
-      $posts = $tag->posts()->has('media')->orderBy('id','desc')->paginate(12);
-      $count = $tag->posts()->has('media')->orderBy('id','desc')->count();
-      return view('discover.tags.show', compact('tag', 'posts', 'count'));
+      $this->validate($request, [
+          'page' => 'nullable|integer|min:1|max:10'
+      ]);
+
+      $tag = Hashtag::with('posts')
+          ->withCount('posts')
+          ->whereSlug($hashtag)
+          ->firstOrFail();
+
+      $posts = $tag->posts()
+          ->whereIsNsfw(false)
+          ->whereVisibility('public')
+          ->has('media')
+          ->orderBy('id','desc')
+          ->simplePaginate(12);
+
+      return view('discover.tags.show', compact('tag', 'posts'));
     }
 }

@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-use App\Like;
+use Auth, Cache;
+use App\{Like, Status};
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\BaseApiController;
 
-class ApiController extends Controller
+class ApiController extends BaseApiController
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     public function hydrateLikes(Request $request)
     {
@@ -21,12 +18,18 @@ class ApiController extends Controller
         ]);
 
         $profile = Auth::user()->profile;
-
-        $likes = Like::whereProfileId($profile->id)
+        $res = Cache::remember('api:like-ids:user:'.$profile->id, 1440, function() use ($profile) {
+            return Like::whereProfileId($profile->id)
                  ->orderBy('id', 'desc')
                  ->take(1000)
                  ->pluck('status_id');
+        });
 
-        return response()->json($likes);
+        return response()->json($res);
+    }
+
+    public function loadMoreComments(Request $request)
+    {
+        return;
     }
 }

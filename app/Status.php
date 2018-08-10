@@ -52,6 +52,14 @@ class Status extends Model
       return url($path);
     }
 
+    public function permalink($suffix = '/activity')
+    {
+      $id = $this->id;
+      $username = $this->profile->username;
+      $path = config('app.url') . "/p/{$username}/{$id}{$suffix}";
+      return url($path);
+    }
+
     public function editUrl()
     {
       return $this->url() . '/edit';
@@ -173,5 +181,10 @@ class Status extends Model
       $actorUrl = $this->profile->url();
       return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> " .
           __('notification.commented');
+    }
+
+    public function recentComments()
+    {
+      return $this->comments()->orderBy('created_at','desc')->take(3);
     }
 }
