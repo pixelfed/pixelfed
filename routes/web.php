@@ -127,6 +127,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
   });
 
   Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
+  Route::get('p/{username}/{id}/c', 'CommentController@showAll');
   Route::get('p/{username}/{id}', 'StatusController@show');
   Route::get('{username}/saved', 'ProfileController@savedBookmarks');
   Route::get('{username}/followers', 'ProfileController@followers');
