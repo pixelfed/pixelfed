@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Storage;
+use Auth, Storage;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,6 +29,15 @@ class Profile extends Model
     }
 
     public function url($suffix = '')
+    {
+        if($this->remote_url) {
+            return $this->remote_url;
+        } else {
+            return url($this->username . $suffix);
+        }
+    }
+
+    public function localUrl($suffix = '')
     {
         return url($this->username . $suffix);
     }
@@ -123,5 +132,41 @@ class Profile extends Model
     {
         $url = url(Storage::url($this->avatar->media_path ?? 'public/avatars/default.png'));
         return $url;
+    }
+
+    public function statusCount()
+    {
+        return $this->statuses()->whereHas('media')->count();
+    }
+
+    public function recommendFollowers()
+    {
+        $follows = $this->following()->pluck('followers.id');
+        $following = $this->following()
+            ->orderByRaw('rand()')
+            ->take(3)
+            ->pluck('following_id');
+        $following->push(Auth::id());
+        $following = Follower::whereNotIn('profile_id', $follows)
+            ->whereNotIn('following_id', $following)
+            ->whereNotIn('following_id', $follows)
+            ->whereIn('profile_id', $following)
+            ->orderByRaw('rand()')
+            ->limit(3)
+            ->pluck('following_id');
+        $recommended = [];
+        foreach($following as $follow) {
+            $recommended[] = Profile::findOrFail($follow);
+        }
+
+        return $recommended;
+    }
+
+    public function keyId()
+    {
+        if($this->remote_url) {
+            return;
+        }
+        return $this->permalink('#main-key');
     }
 }

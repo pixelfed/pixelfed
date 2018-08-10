@@ -7,21 +7,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <meta name="robots" content="noimageindex, noarchive">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>{{ $title or config('app.name', 'Laravel') }}</title>
-    <meta property="og:site_name" content="{{ config('app.name', 'Laravel') }}">
-    <meta property="og:title" content="{{ $title or config('app.name', 'Laravel') }}">
+    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+
+    <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
+    <meta property="og:title" content="{{ $title or config('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{request()->url()}}">
-
     @stack('meta')
 
     <meta name="medium" content="image">
     <meta name="theme-color" content="#10c5f8">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
+    <link rel="shortcut icon" type="image/png" href="/img/favicon.png">
     <link rel="canonical" href="{{request()->url()}}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     @stack('styles')
@@ -34,5 +33,14 @@
     @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
     @stack('scripts')
+    @if(Auth::check())
+    <div class="modal" tabindex="-1" role="dialog" id="composeModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          @include('timeline.partial.new-form')
+        </div>
+      </div>
+    </div>
+    @endif
 </body>
 </html>

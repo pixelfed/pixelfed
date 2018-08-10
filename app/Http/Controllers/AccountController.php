@@ -18,17 +18,45 @@ class AccountController extends Controller
     public function notifications(Request $request)
     {
       $this->validate($request, [
-          'page' => 'nullable|min:1|max:3'
+          'page' => 'nullable|min:1|max:3',
+          'a'    => 'nullable|alpha_dash',
       ]);
       $profile = Auth::user()->profile;
+      $action = $request->input('a');
       $timeago = Carbon::now()->subMonths(6);
-      $notifications = Notification::whereProfileId($profile->id)
-          ->whereDate('created_at', '>', $timeago)
-          ->orderBy('id','desc')
-          ->take(30)
-          ->simplePaginate();
+      if($action && in_array($action, ['comment', 'follow', 'mention'])) {
+        $notifications = Notification::whereProfileId($profile->id)
+            ->whereAction($action)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('id','desc')
+            ->simplePaginate(30);
+      } else {
+        $notifications = Notification::whereProfileId($profile->id)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('id','desc')
+            ->simplePaginate(30);
+      }
 
       return view('account.activity', compact('profile', 'notifications'));
+    }
+
+    public function followingActivity(Request $request)
+    {
+      $this->validate($request, [
+          'page' => 'nullable|min:1|max:3',
+          'a'    => 'nullable|alpha_dash',
+      ]);
+      $profile = Auth::user()->profile;
+      $action = $request->input('a');
+      $timeago = Carbon::now()->subMonths(1);
+      $following = $profile->following->pluck('id');
+      $notifications = Notification::whereIn('actor_id', $following)
+          ->where('profile_id', '!=', $profile->id)
+          ->whereDate('created_at', '>', $timeago)
+          ->orderBy('notifications.id','desc')
+          ->simplePaginate(30);
+
+      return view('account.following', compact('profile', 'notifications'));
     }
 
     public function verifyEmail(Request $request)
@@ -38,9 +66,18 @@ class AccountController extends Controller
 
     public function sendVerifyEmail(Request $request)
     {
-        if(EmailVerification::whereUserId(Auth::id())->count() !== 0) {
-            return redirect()->back()->with('status', 'A verification email has already been sent! Please check your email.');
+        $timeLimit = Carbon::now()->subDays(1)->toDateTimeString();
+        $recentAttempt = EmailVerification::whereUserId(Auth::id())
+          ->where('created_at', '>', $timeLimit)->count();
+        $exists = EmailVerification::whereUserId(Auth::id())->count();
+
+        if($recentAttempt == 1 && $exists == 1) {
+            return redirect()->back()->with('error', 'A verification email has already been sent recently. Please check your email, or try again later.');
+        } elseif ($recentAttempt == 0 && $exists !== 0) {
+            // Delete old verification and send new one.
+            EmailVerification::whereUserId(Auth::id())->delete();
         }
+
 
         $user = User::whereNull('email_verified_at')->find(Auth::id());
         $utoken = hash('sha512', $user->id);
@@ -60,14 +97,15 @@ class AccountController extends Controller
 
     public function confirmVerifyEmail(Request $request, $userToken, $randomToken)
     {
-        $verify = EmailVerification::where(DB::raw('BINARY user_token'), $userToken)
-          ->where(DB::raw('BINARY random_token'), $randomToken)
+        $verify = EmailVerification::where('user_token', $userToken)
+          ->where('random_token', $randomToken)
           ->firstOrFail();
+
         if(Auth::id() === $verify->user_id) {
           $user = User::find(Auth::id());
           $user->email_verified_at = Carbon::now();
           $user->save();
-          return redirect('/timeline');
+          return redirect('/');
         }
     }
 
@@ -95,4 +133,5 @@ class AccountController extends Controller
       }
       return $notifications;
     }
+
 }

@@ -62,4 +62,5 @@
 @push('meta')
 <meta property="og:description" content="{{$profile->bio}}">
 <meta property="og:image" content="{{$profile->avatarUrl()}}">
+<meta name="robots" content="NOINDEX, NOFOLLOW">
 @endpush

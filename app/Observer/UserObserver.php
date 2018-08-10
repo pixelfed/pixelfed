@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\{Profile, User};
+use App\{Profile, User, UserSetting};
 use App\Jobs\AvatarPipeline\CreateAvatar;
 
 class UserObserver
@@ -35,6 +35,12 @@ class UserObserver
             $profile->save();
 
             CreateAvatar::dispatch($profile);
+        }
+
+        if(empty($user->settings)) {
+            $settings = new UserSetting;
+            $settings->user_id = $user->id;
+            $settings->save();
         }
     }
 

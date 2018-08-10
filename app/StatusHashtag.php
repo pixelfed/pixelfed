@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class StatusHashtag extends Model
 {
-    protected $fillable = ['status_id', 'hashtag_id'];
+    public $fillable = ['status_id', 'hashtag_id'];
 }

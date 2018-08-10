@@ -37,6 +37,11 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
+        if($status->url !== null) {
+            // Ignore notifications to remote statuses
+            return;
+        }
+
         $exists = Notification::whereProfileId($status->profile_id)
                   ->whereActorId($actor->id)
                   ->whereAction('like')

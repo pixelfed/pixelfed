@@ -173,11 +173,6 @@ body, button, input, textarea {
  }
 }
 
-.fas.fa-heart {
-  color: #f70ec4!important;
-}
-
-
 @media (max-width: map-get($grid-breakpoints, "md")) {
   .border-md-left-0 {
     border-left:0!important
@@ -265,4 +260,37 @@ body, button, input, textarea {
 .details-animated[open] {
   animation-name: fadeInDown;
   animation-duration: 0.5s;
+}
+
+.card {
+  box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+  border: none;
+}
+
+.box-shadow {
+  box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
+}
+
+.border-left-primary {
+  border-left: 3px solid $primary;
+}
+
+.settings-nav .nav-item.active .nav-link {
+  font-weight: bold !important;
+}
+
+details summary::-webkit-details-marker {
+  display: none!important;
+}
+
+.details-animated > summary {
+  display: block;
+  background-color: #ECF0F1;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
+}
+
+.details-animated[open] > summary {
+  display: none!important;
 }

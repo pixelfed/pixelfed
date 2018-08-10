@@ -115,8 +115,9 @@ class Image {
       });
       $converted = $this->setBaseName($path, $thumbnail, $img->extension);
       $newPath = storage_path('app/'.$converted['path']);
-            
-      $img->save($newPath, 75);
+      
+      $quality = config('pixelfed.image_quality');
+      $img->save($newPath, $quality);
       
       if(!$thumbnail) {
         $media->orientation = $orientation;

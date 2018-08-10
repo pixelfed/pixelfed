@@ -1,9 +1,5 @@
 $(document).ready(function() {
 
-    $('#statusForm .btn-filter-select').on('click', function(e) {
-        let el = $(this);
-    });
-
     pixelfed.create = {};
     pixelfed.filters = {};
     pixelfed.create.hasGeneratedSelect = false;
@@ -78,7 +74,7 @@ $(document).ready(function() {
         pixelfed.create.hasGeneratedSelect = true;
     }
 
-    $('#fileInput').on('change', function() {
+    $(document).on('change', '#fileInput', function() {
         previewImage(this);
         $('#statusForm .form-filters.d-none').removeClass('d-none');
         $('#statusForm .form-preview.d-none').removeClass('d-none');
@@ -88,23 +84,43 @@ $(document).ready(function() {
         }
     });
 
-    $('#filterSelectDropdown').on('change', function() {
+    $(document).on('change', '#filterSelectDropdown', function() {
         let el = $(this);
         let filter = el.val();
         let oldFilter = pixelfed.create.currentFilterClass;
         if(filter == 'none') {
-          $('.filterContainer').removeClass(oldFilter);
-          pixelfed.create.currentFilterClass = false;
-          pixelfed.create.currentFilterName = 'None';
-          $('.form-group.form-preview .form-text').text('Current Filter: No filter selected');
-          return;
+            $('input[name=filter_class]').val('');
+            $('input[name=filter_name]').val('');
+            $('.filterContainer').removeClass(oldFilter);
+            pixelfed.create.currentFilterClass = false;
+            pixelfed.create.currentFilterName = 'None';
+            $('.form-group.form-preview .form-text').text('Current Filter: No filter selected');
+            return;
+        } else {
+            $('.filterContainer').removeClass(oldFilter).addClass(filter);
+            pixelfed.create.currentFilterClass = filter;
+            pixelfed.create.currentFilterName = el.find(':selected').text();
+            $('.form-group.form-preview .form-text').text('Current Filter: ' + pixelfed.create.currentFilterName);
+            $('input[name=filter_class]').val(pixelfed.create.currentFilterClass);
+            $('input[name=filter_name]').val(pixelfed.create.currentFilterName);
+            return;
         }
-        $('.filterContainer').removeClass(oldFilter).addClass(filter);
-        pixelfed.create.currentFilterClass = filter;
-        pixelfed.create.currentFilterName = el.find(':selected').text();
-        $('.form-group.form-preview .form-text').text('Current Filter: ' + pixelfed.create.currentFilterName);
-        $('input[name=filter_class]').val(pixelfed.create.currentFilterClass);
-        $('input[name=filter_name]').val(pixelfed.create.currentFilterName);
     });
 
+    $(document).on('keyup keydown', '#statusForm textarea[name=caption]', function() {
+      const el = $(this);
+      const len = el.val().length;
+      const limit = el.data('limit');
+      if(len > limit) {
+        const diff = limit - len;
+        $('#statusForm .caption-counter').text(diff).addClass('text-danger');
+      } else {
+          $('#statusForm .caption-counter').text(len).removeClass('text-danger');
+      }
+    });
+
+    $(document).on('focus', '#statusForm textarea[name=caption]', function() {
+      const el = $(this);
+      el.attr('rows', '3');
+    });
 });
