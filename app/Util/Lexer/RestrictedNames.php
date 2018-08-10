@@ -145,6 +145,13 @@ class RestrictedNames {
      "timeline",
      "user",
      "users",
+     "400",
+     "401",
+     "403",
+     "404",
+     "500",
+     "503",
+     "504",
   ];
 
   public static function get()
