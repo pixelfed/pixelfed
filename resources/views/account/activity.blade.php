@@ -6,9 +6,11 @@
     <div class="card mt-3">
       <div class="card-body p-0">
         <ul class="nav nav-tabs d-flex text-center">
-          <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications.following')}}">Following</a>
-          </li>
+          {{--
+            <li class="nav-item flex-fill">
+              <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications.following')}}">Following</a>
+            </li> 
+          --}}
           <li class="nav-item flex-fill">
             <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications')}}">My Notifications</a>
           </li>
