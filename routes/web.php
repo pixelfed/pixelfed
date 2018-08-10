@@ -85,6 +85,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('home', 'SettingsController@home')->name('settings');
     Route::post('home', 'SettingsController@homeUpdate');
     Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
+    Route::post('avatar', 'AvatarController@store');
     Route::get('password', 'SettingsController@password')->name('settings.password');
     Route::post('password', 'SettingsController@passwordUpdate');
     Route::get('email', 'SettingsController@email')->name('settings.email');
