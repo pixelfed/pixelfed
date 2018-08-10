@@ -1,18 +1,17 @@
 $(document).ready(function() {
 
-  if(!ls.get('likes')) {
-    axios.get('/api/v1/likes')
-    .then(function (res) {
-      ls.set('likes', res.data);
-      console.log(res);
-    })
-    .catch(function (res) {
-      ls.set('likes', []);
-    })
+  pixelfed.fetchLikes = () => {
+      axios.get('/api/v1/likes')
+      .then(function (res) {
+        ls.set('likes', res.data);
+      })
+      .catch(function (res) {
+        ls.set('likes', []);
+      })
   }
 
 
-  pixelfed.hydrateLikes = function() {
+  pixelfed.hydrateLikes = () => {
     var likes = ls.get('likes');
     $('.like-form').each(function(i, el) {
       var el = $(el);
@@ -20,11 +19,14 @@ $(document).ready(function() {
       var heart = el.find('.status-heart');
 
       if(likes.indexOf(id) != -1) {
-        heart.removeClass('far fa-heart').addClass('fas fa-heart');
+        heart.removeClass('text-dark').addClass('text-primary');
+      } else {
+        heart.removeClass('text-primary').addClass('text-dark');
       }
     });
   };
 
+  pixelfed.fetchLikes();
   pixelfed.hydrateLikes();
 
   $(document).on('submit', '.like-form', function(e) {
@@ -33,6 +35,8 @@ $(document).ready(function() {
     var id = el.data('id');
     axios.post('/i/like', {item: id})
     .then(function (res) {
+      pixelfed.fetchLikes();
+      pixelfed.hydrateLikes();
       var likes = ls.get('likes');
       var action = false;
       var counter = el.parents().eq(1).find('.like-count');
@@ -40,14 +44,14 @@ $(document).ready(function() {
       var heart = el.find('.status-heart');
 
       if(likes.indexOf(id) > -1) {
-        heart.removeClass('fas fa-heart').addClass('far fa-heart');
+        heart.removeClass('text-primary').addClass('text-dark');
         likes = likes.filter(function(item) { 
             return item !== id
         });
         counter.text(count);
         action = 'unlike';
       } else {
-        heart.removeClass('far fa-heart').addClass('fas fa-heart');
+        heart.removeClass('text-dark').addClass('text-primary');
         likes.push(id);
         counter.text(count);
         action = 'like';
