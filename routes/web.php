@@ -1,6 +1,6 @@
 <?php
 
-Route::domain(config('pixelfed.domain.admin'))->group(function() {
+Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(function() {
   Route::redirect('/', '/dashboard');
   Route::redirect('timeline', config('app.url').'/timeline');
   Route::get('dashboard', 'AdminController@home')->name('admin.home');
@@ -15,7 +15,8 @@ Route::domain(config('pixelfed.domain.admin'))->group(function() {
 
 Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(function() {
 
-  Route::view('/', 'welcome');
+  Route::get('/', 'SiteController@home')->name('timeline.personal');
+  Route::post('/', 'StatusController@store');
 
   Auth::routes();
 
@@ -35,18 +36,27 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('search/{tag}', 'SearchController@searchAPI')
           ->where('tag', '[A-Za-z0-9]+');
     Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
-    Route::get('v1/likes', 'ApiController@hydrateLikes');
+
+    Route::group(['prefix' => 'v1'], function() {
+      Route::get('likes', 'ApiController@hydrateLikes');
+    });
+    Route::group(['prefix' => 'local'], function() {
+      Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
+      Route::post('i/more-comments', 'ApiController@loadMoreComments');
+    });
   });
 
   Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');
 
   Route::group(['prefix' => 'i'], function() {
     Route::redirect('/', '/');
+    Route::get('compose', 'StatusController@compose')->name('compose');
     Route::get('remote-follow', 'FederationController@remoteFollow')->name('remotefollow');
     Route::post('remote-follow', 'FederationController@remoteFollowStore');
     Route::post('comment', 'CommentController@store');
     Route::post('delete', 'StatusController@delete');
     Route::post('like', 'LikeController@store');
+    Route::post('share', 'StatusController@storeShare');
     Route::post('follow', 'FollowerController@store');
     Route::post('bookmark', 'BookmarkController@store');
     Route::get('lang/{locale}', 'SiteController@changeLocale');
@@ -62,6 +72,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
       Route::get('spam/post', 'ReportController@spamPostForm')->name('report.spam.post');
       Route::get('spam/profile', 'ReportController@spamProfileForm')->name('report.spam.profile');
     });
+
   });
 
   Route::group(['prefix' => 'account'], function() {
@@ -83,14 +94,25 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('security', 'SettingsController@security')->name('settings.security');
     Route::get('applications', 'SettingsController@applications')->name('settings.applications');
     Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
-    Route::get('import', 'SettingsController@dataImport')->name('settings.import');
-    Route::get('import/instagram', 'SettingsController@dataImportInstagram')->name('settings.import.ig');
     Route::get('developers', 'SettingsController@developers')->name('settings.developers');
   });
 
+  Route::group(['prefix' => 'site'], function() {
+    Route::redirect('/', '/');
+    Route::get('about', 'SiteController@about')->name('site.about');
+    Route::view('help', 'site.help')->name('site.help');
+    Route::view('developer-api', 'site.developer')->name('site.developers');
+    Route::view('fediverse', 'site.fediverse')->name('site.fediverse');
+    Route::view('open-source', 'site.opensource')->name('site.opensource');
+    Route::view('banned-instances', 'site.bannedinstances')->name('site.bannedinstances');
+    Route::view('terms', 'site.terms')->name('site.terms');
+    Route::view('privacy', 'site.privacy')->name('site.privacy');
+    Route::view('platform', 'site.platform')->name('site.platform');
+    Route::view('language', 'site.language')->name('site.language');
+  });
+
   Route::group(['prefix' => 'timeline'], function() {
-    Route::get('/', 'TimelineController@personal')->name('timeline.personal');
-    Route::post('/', 'StatusController@store');
+    Route::redirect('/', '/');
     Route::get('public', 'TimelineController@local')->name('timeline.public');
     Route::post('public', 'StatusController@store');
   });
@@ -100,23 +122,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('{user}.atom', 'ProfileController@showAtomFeed');
     Route::get('{username}/outbox', 'FederationController@userOutbox');
     Route::get('{user}', function($user) {
-      return redirect('/@'.$user);
+      return redirect('/'.$user);
     });
-  });
-
-  Route::group(['prefix' => 'site'], function() {
-    Route::redirect('/', '/');
-    Route::view('about', 'site.about')->name('site.about');
-    Route::view('features', 'site.features')->name('site.features');
-    Route::view('help', 'site.help')->name('site.help');
-    Route::view('fediverse', 'site.fediverse')->name('site.fediverse');
-    Route::view('open-source', 'site.opensource')->name('site.opensource');
-    Route::view('banned-instances', 'site.bannedinstances')->name('site.bannedinstances');
-    Route::view('terms', 'site.terms')->name('site.terms');
-    Route::view('privacy', 'site.privacy')->name('site.privacy');
-    Route::view('platform', 'site.platform')->name('site.platform');
-    Route::view('libraries', 'site.libraries')->name('site.libraries');
-    Route::view('language', 'site.language')->name('site.language');
   });
 
   Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
