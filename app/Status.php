@@ -92,6 +92,9 @@ class Status extends Model
 
     public function bookmarked()
     {
+      if(!Auth::check()) {
+        return 0;
+      }
       $profile = Auth::user()->profile;
       return Bookmark::whereProfileId($profile->id)->whereStatusId($this->id)->count();
     }
