@@ -189,6 +189,10 @@ body, button, input, textarea {
 }
 
 @media (max-width: map-get($grid-breakpoints, "sm")) {
+  .card-md-border-0 {
+    border-width: 0!important;
+    border-radius: 0!important;
+  }
   .card-md-rounded-0 {
     border-width: 1px 0;
     border-radius:0 !important;
