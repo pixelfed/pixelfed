@@ -118,7 +118,7 @@ class FederationController extends Controller
     {
       $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
       
-      $hash = hash('sha512', $request->input('resource'));
+      $hash = hash('sha256', $request->input('resource'));
 
       $webfinger = Cache::remember('api:webfinger:'.$hash, 1440, function() use($request) {
         $resource = $request->input('resource');
@@ -141,7 +141,7 @@ class FederationController extends Controller
       $fractal = new Fractal\Manager();
       $resource = new Fractal\Resource\Item($user, new ProfileOutbox);
       $res = $fractal->createData($resource)->toArray();
-      return response()->json($res['data']);
+      return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
     }
 
     public function userInbox(Request $request, $username)
