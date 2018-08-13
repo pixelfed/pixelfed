@@ -68,7 +68,7 @@ class ProfileController extends Controller
       $fractal = new Fractal\Manager();
       $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
       $res = $fractal->createData($resource)->toArray();
-      return response()->json($res['data']);
+      return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
     }
 
     public function showAtomFeed(Request $request, $user)
