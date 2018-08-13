@@ -3,9 +3,9 @@
       <li class="nav-item pl-3 {{request()->is('settings/home')?'active':''}}">
         <a class="nav-link font-weight-light  text-muted" href="{{route('settings')}}">Profile</a>
       </li>
-      <li class="nav-item pl-3 {{request()->is('settings/avatar')?'active':''}}">
+{{--       <li class="nav-item pl-3 {{request()->is('settings/avatar')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.avatar')}}">Avatar</a>
-      </li>
+      </li> --}}
       <li class="nav-item pl-3 {{request()->is('settings/password')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.password')}}">Password</a>
       </li>
@@ -14,7 +14,8 @@
       </li>
       <li class="nav-item pl-3 {{request()->is('settings/notifications')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">Notifications</a>
-      </li> --}}
+      </li>
+   --}}
       <li class="nav-item pl-3 {{request()->is('settings/privacy')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.privacy')}}">Privacy</a>
       </li>
