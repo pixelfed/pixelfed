@@ -38,6 +38,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
     Route::group(['prefix' => 'v1'], function() {
+      Route::post('avatar/update', 'ApiController@avatarUpdate');
       Route::get('likes', 'ApiController@hydrateLikes');
     });
     Route::group(['prefix' => 'local'], function() {

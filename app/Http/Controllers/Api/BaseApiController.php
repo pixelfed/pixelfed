@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use Auth;
-use App\{Like, Profile, Status};
+use App\{
+    Avatar, 
+    Like, 
+    Profile, 
+    Status
+};
 use League\Fractal;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\AvatarController;
 use App\Util\Webfinger\Webfinger;
 use App\Transformer\Api\{
   AccountTransformer,
   StatusTransformer
 };
+use App\Jobs\AvatarPipeline\AvatarOptimize;
 use League\Fractal\Serializer\ArraySerializer;
 
 class BaseApiController extends Controller
@@ -67,5 +74,38 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer);
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
+    }
+
+    public function avatarUpdate(Request $request)
+    {
+        $this->validate($request, [
+            'upload'   => 'required|mimes:jpeg,png,gif|max:2000',
+        ]);
+        try {
+          $user = Auth::user();
+          $file = $request->file('upload');
+          $path = (new AvatarController())->getPath($user, $file);
+          $dir = $path['root'];
+          $name = $path['name'];
+          $public = $path['storage'];
+          $currentAvatar = storage_path('app/'.$user->profile->avatar->media_path);
+          $loc = $request->file('upload')->storeAs($public, $name);
+
+          $avatar = Avatar::whereProfileId($user->profile->id)->firstOrFail();
+          $opath = $avatar->media_path;
+          $avatar->media_path = "$public/$name";
+          $avatar->thumb_path = null;
+          $avatar->change_count = ++$avatar->change_count;
+          $avatar->last_processed_at = null;
+          $avatar->save();
+
+          AvatarOptimize::dispatch($user->profile, $currentAvatar);
+        } catch (Exception $e) {
+        }
+
+        return response()->json([
+            'code' => 200,
+            'msg' => 'Avatar successfully updated'
+        ]);
     }
 }
