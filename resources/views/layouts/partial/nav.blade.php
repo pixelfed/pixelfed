@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ url('/timeline') }}" title="Logo">
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
             <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2">
-            <span class="font-weight-bold mb-0" style="font-size:20px;">{{ config('app.name', 'Laravel') }}</span>
+            <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config('app.name', 'Laravel') }}</span>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -16,19 +16,26 @@
 
             <ul class="navbar-nav ml-auto">
                 @guest
-                    <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}">{{ __('Login') }}</a></li>
-                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}">{{ __('Register') }}</a></li>
+                    <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
+                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('discover')}}" title="Discover"><i class="far fa-compass fa-lg"></i></a>
+                        <a class="nav-link" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
                     </li>
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications">
-                            <i class="far fa-heart fa-lg"></i>
+                        <a class="nav-link nav-notification" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom">
+                            <i class="far fa-heart fa-lg text"></i>
                         </a>
                     </li>
+                    <li class="nav-item px-2">
+                        <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
+                            <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
+                              <i class="far fa-plus-square fa-lg text-primary"></i>
+                            </a>
+                        </div>
+                    </li>
                     <li class="nav-item dropdown px-2">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre title="User Menu">
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
                             <i class="far fa-user fa-lg"></i> <span class="caret"></span>
                         </a>
 
@@ -47,6 +54,10 @@
                                 <span class="far fa-list-alt pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
+                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('messages')}}">
+                                <span class="far fa-envelope pr-1"></span>
+                                {{__('navmenu.directMessages')}}
+                            </a> --}}
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
                                 <span class="fas fa-user-plus pr-1"></span>

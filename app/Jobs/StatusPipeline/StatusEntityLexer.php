@@ -107,15 +107,15 @@ class StatusEntityLexer implements ShouldQueue
             if(empty($mentioned) || !isset($mentioned->id)) {
                 continue;
             }
-            
+
             DB::transaction(function () use ($status, $mentioned) {
                 $m = new Mention;
                 $m->status_id = $status->id;
                 $m->profile_id = $mentioned->id;
                 $m->save();
+                
+                MentionPipeline::dispatch($status, $m);
             });
-
-            MentionPipeline::dispatch($status, $m);
         }
     }
 

@@ -18,6 +18,14 @@ class CommentController extends Controller
       return view('status.reply', compact('user', 'status'));
     }
 
+    public function showAll(Request $request, $username, int $id)
+    {
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $status = Status::whereProfileId($user->id)->findOrFail($id);
+      $replies = Status::whereInReplyToId($id)->paginate(40);
+      return view('status.comments', compact('user', 'status', 'replies'));
+    }
+
     public function store(Request $request)
     {
       if(Auth::check() === false) { abort(403); }

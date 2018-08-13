@@ -3,43 +3,73 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{AccountLog, Profile, User};
+use App\{AccountLog, EmailVerification, Media, Profile, User};
 use Auth, DB;
+use App\Util\Lexer\PrettyNumber;
 
 class SettingsController extends Controller
 {
     public function __construct()
     {
-      return $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function home()
     {
-      return view('settings.home');
+      $id = Auth::user()->profile->id;
+      $storage = [];
+      $used = Media::whereProfileId($id)->sum('size');
+      $storage['limit'] = config('pixelfed.max_account_size') * 1024;
+      $storage['used'] = $used;
+      $storage['percentUsed'] = ceil($storage['used'] / $storage['limit'] * 100);
+      $storage['limitPretty'] = PrettyNumber::size($storage['limit']);
+      $storage['usedPretty'] = PrettyNumber::size($storage['used']);
+      return view('settings.home', compact('storage'));
     }
 
     public function homeUpdate(Request $request)
     {
       $this->validate($request, [
         'name'  => 'required|string|max:30',
-        'bio'   => 'nullable|string|max:125'
+        'bio'   => 'nullable|string|max:125',
+        'website' => 'nullable|url',
+        'email' => 'nullable|email'
       ]);
 
       $changes = false;
       $name = $request->input('name');
       $bio = $request->input('bio');
+      $website = $request->input('website');
+      $email = $request->input('email');
       $user = Auth::user();
       $profile = $user->profile;
 
-      if($profile->name != $name) {
+
+      if($user->email != $email) {
         $changes = true;
-        $user->name = $name;
-        $profile->name = $name;
+        $user->email = $email;
+        $user->email_verified_at = null;
+        // Prevent old verifications from working
+        EmailVerification::whereUserId($user->id)->delete();
       }
 
-      if($profile->bio != $bio) {
-        $changes = true;
-        $profile->bio = $bio;
+      // Only allow email to be updated if not yet verified
+      if(!$changes && $user->email_verified_at) {
+        if($profile->name != $name) {
+          $changes = true;
+          $user->name = $name;
+          $profile->name = $name;
+        }
+
+        if($profile->website != $website) {
+          $changes = true;
+          $profile->website = $website;
+        }
+
+        if($profile->bio != $bio) {
+          $changes = true;
+          $profile->bio = $bio;
+        }
       }
 
       if($changes === true) {

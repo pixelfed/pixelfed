@@ -9,5 +9,6 @@ return [
     'settings' => 'Einstellungen',
     'admin' => 'Administration',
     'logout' => 'Abmelden',
+    'directMessages' => 'Privatnachrichten',
 
 ];
