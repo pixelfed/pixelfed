@@ -17,7 +17,7 @@ class AvatarController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-          'avatar' => 'required|mimes:jpeg,png|max:1000'
+          'avatar' => 'required|mimes:jpeg,png|max:2000'
         ]);
         try {
           $user = Auth::user();
