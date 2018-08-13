@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth, Log, Storage;
+use Auth, Cache, Log, Storage;
 use App\Avatar;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 
@@ -21,15 +21,16 @@ class AvatarController extends Controller
         ]);
         try {
           $user = Auth::user();
+          $profile = $user->profile;
           $file = $request->file('avatar');
           $path = $this->getPath($user, $file);
           $dir = $path['root'];
           $name = $path['name'];
           $public = $path['storage'];
-          $currentAvatar = storage_path('app/'.$user->profile->avatar->media_path);
+          $currentAvatar = storage_path('app/'.$profile->avatar->media_path);
           $loc = $request->file('avatar')->storeAs($public, $name);
 
-          $avatar = Avatar::whereProfileId($user->profile->id)->firstOrFail();
+          $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
           $opath = $avatar->media_path;
           $avatar->media_path = "$public/$name";
           $avatar->thumb_path = null;
@@ -37,6 +38,7 @@ class AvatarController extends Controller
           $avatar->last_processed_at = null;
           $avatar->save();
 
+          Cache::forget("avatar:{$profile->id}");
           AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (Exception $e) {
         }

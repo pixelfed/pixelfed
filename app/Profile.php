@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Auth, Storage;
+use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -130,7 +130,12 @@ class Profile extends Model
 
     public function avatarUrl()
     {
-        $url = url(Storage::url($this->avatar->media_path ?? 'public/avatars/default.png'));
+        $url = Cache::remember("avatar:{$this->id}", 1440, function() {
+            $path = $this->avatar->media_path ?? 'public/avatars/default.png';
+            $version = hash('sha1', $this->avatar->created_at);
+            $path = "{$path}?v={$version}";
+            return url(Storage::url($path));
+        });
         return $url;
     }
 
