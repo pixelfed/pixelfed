@@ -41,7 +41,11 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'endpoints' => [
             'sharedInbox' => config('routes.api.sharedInbox')
           ],
-              
+          'icon' => [
+            'type' => 'Image',
+            'mediaType' => 'image/jpeg',
+            'url' => $profile->avatarUrl()
+          ]
       ];
   }
 
