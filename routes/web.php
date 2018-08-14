@@ -123,9 +123,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::redirect('/', '/');
     Route::get('{user}.atom', 'ProfileController@showAtomFeed');
     Route::get('{username}/outbox', 'FederationController@userOutbox');
-    Route::get('{user}', function($user) {
-      return redirect('/'.$user);
-    });
+    Route::get('{username}', 'ProfileController@permalinkRedirect');
   });
 
   Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
