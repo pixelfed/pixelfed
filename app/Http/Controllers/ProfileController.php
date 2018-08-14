@@ -20,14 +20,10 @@ class ProfileController extends Controller
       $user = Profile::whereUsername($username)->firstOrFail();
       $settings = User::whereUsername($username)->firstOrFail()->settings;
 
-      $mimes = [
-        'application/activity+json', 
-        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
-      ];
-
-      if(str_contains($request->header('accept'), $mimes) && config('pixelfed.activitypub_enabled')) {
+      if($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
         return $this->showActivityPub($request, $user);
       }
+
       if($user->is_private == true) {
         $can_access = $this->privateProfileCheck($user);
         if($can_access !== true) {
@@ -53,12 +49,7 @@ class ProfileController extends Controller
       $user = Profile::whereUsername($username)->firstOrFail();
       $settings = User::whereUsername($username)->firstOrFail()->settings;
 
-      $mimes = [
-        'application/activity+json', 
-        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
-      ];
-
-      if(str_contains($request->header('accept'), $mimes) && config('pixelfed.activitypub_enabled')) {
+      if($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
         return $this->showActivityPub($request, $user);
       }
 
