@@ -9,5 +9,6 @@ return [
     'settings' => 'Ustawienia',
     'admin' => 'Administrator',
     'logout' => 'Wyloguj się',
+    'directMessages' => 'Wiadomości bezpośrednie',
 
 ];

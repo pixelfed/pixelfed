@@ -294,3 +294,7 @@ details summary::-webkit-details-marker {
 .details-animated[open] > summary {
   display: none!important;
 }
+
+.profile-avatar img {
+  object-fit: cover;
+}
