@@ -16,7 +16,9 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://w3id.org/security/v1',
             [
               "manuallyApprovesFollowers" => "as:manuallyApprovesFollowers",
-              "featured" => 'https://pixelfed.org/ns/featured',
+              "featured" => [
+                "https://pixelfed.org/ns#featured" => ["@type" => "@id"],
+              ]
             ]
           ],
           'id' => $profile->permalink(),
