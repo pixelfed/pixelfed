@@ -3,33 +3,40 @@
 namespace App\Http\Controllers;
 
 use Auth, Cache;
-use App\Jobs\StatusPipeline\{NewStatusPipeline, StatusDelete};
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use League\Fractal;
 use Illuminate\Http\Request;
-use App\{Media, Profile, Status, User};
 use Vinkla\Hashids\Facades\Hashids;
+use App\{Media, Profile, Status, User};
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Transformer\ActivityPub\StatusTransformer;
+use App\Jobs\StatusPipeline\{NewStatusPipeline, StatusDelete};
 
 class StatusController extends Controller
 {
     public function show(Request $request, $username, int $id)
     {
         $user = Profile::whereUsername($username)->firstOrFail();
+
         $status = Status::whereProfileId($user->id)
                 ->withCount(['likes', 'comments', 'media'])
                 ->findOrFail($id);
+
         if(!$status->media_path && $status->in_reply_to_id) {
           return redirect($status->url());
         }
+
+        if($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+          return $this->showActivityPub($request, $status);
+        }
+
         $replies = Status::whereInReplyToId($status->id)->simplePaginate(30);
+
         return view('status.show', compact('user', 'status', 'replies'));
     }
 
     public function compose()
     {
-        if(Auth::check() == false)
-        { 
-          abort(403); 
-        }
+        $this->authCheck();
         return view('status.compose');
     }
 
@@ -155,5 +162,21 @@ class StatusController extends Controller
         }
 
         return $response;
+    }
+
+    public function showActivityPub(Request $request, $status)
+    {
+      $fractal = new Fractal\Manager();
+      $resource = new Fractal\Resource\Item($status, new StatusTransformer);
+      $res = $fractal->createData($resource)->toArray();
+      return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+    }
+
+    protected function authCheck()
+    {
+        if(Auth::check() == false)
+        { 
+          abort(403); 
+        }
     }
 }

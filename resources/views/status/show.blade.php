@@ -169,4 +169,4 @@
 @push('meta')
 <meta property="og:description" content="{{ $status->caption }}">
     <meta property="og:image" content="{{$status->mediaUrl()}}">
-@endpush
+    <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>@endpush
