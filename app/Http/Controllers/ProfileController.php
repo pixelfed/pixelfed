@@ -48,6 +48,23 @@ class ProfileController extends Controller
       return view('profile.show', compact('user', 'settings', 'owner', 'is_following', 'is_admin', 'timeline'));
     }
 
+    public function permalinkRedirect(Request $request, $username)
+    {
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $settings = User::whereUsername($username)->firstOrFail()->settings;
+
+      $mimes = [
+        'application/activity+json', 
+        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+      ];
+
+      if(in_array($request->header('accept'), $mimes) && config('pixelfed.activitypub_enabled')) {
+        return $this->showActivityPub($request, $user);
+      }
+
+      return redirect($user->url());
+    }
+
     protected function privateProfileCheck(Profile $profile)
     {
       if(Auth::check() === false) {
