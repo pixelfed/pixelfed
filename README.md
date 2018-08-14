@@ -16,7 +16,7 @@ testing and development.
 
 ## Requirements
  - PHP >= 7.1.3 (7.2+ recommended for stable version)
- - MySQL, Postgres (MariaDB and sqlite are not supported yet)
+ - MySQL >= 5.7, Postgres (MariaDB and sqlite are not supported yet)
  - Redis
  - Composer
  - GD or ImageMagick
