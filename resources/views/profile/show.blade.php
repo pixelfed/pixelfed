@@ -56,7 +56,11 @@
         <div class="card">
           <div class="card-body py-5 my-5">
             <div class="d-flex my-5 py-5 justify-content-center align-items-center">
-              <p class="lead font-weight-bold">{{ __('profile.emptyTimeline') }}</p>
+              @if($owner && request()->is('*/saved'))
+                <p class="lead font-weight-bold">{{ __('profile.emptySaved') }}</p>
+              @else
+                <p class="lead font-weight-bold">{{ __('profile.emptyTimeline') }}</p>
+              @endif
             </div>
           </div>
       </div>

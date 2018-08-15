@@ -6,14 +6,14 @@
   <div class="card card-md-rounded-0 status-container orientation-{{$status->firstMedia()->orientation ?? 'unknown'}}">
     <div class="row mx-0">
     <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
-      <div class="d-flex align-items-center status-username">
+      <a href="{{$user->url()}}" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" title="{{$user->username}}">
         <div class="status-avatar mr-2">
-          <img class="img-thumbnail" src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">
+          <img src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">
         </div>
         <div class="username">
-          <a href="{{$user->url()}}" class="username-link font-weight-bold text-dark">{{$user->username}}</a>
+          <span class="username-link font-weight-bold text-dark">{{$user->username}}</span>
         </div>
-      </div>
+      </a>
      </div>
       <div class="col-12 col-md-8 status-photo px-0">
         @if($status->is_nsfw && $status->media_count == 1)
@@ -61,14 +61,14 @@
       </div>
       <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
         <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
-          <div class="d-flex align-items-center status-username">
+          <a href="{{$user->url()}}" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" title="{{$user->username}}">
             <div class="status-avatar mr-2">
-              <img class="img-thumbnail" src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">
+              <img src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">
             </div>
             <div class="username">
-              <a href="{{$user->url()}}" class="username-link font-weight-bold text-dark">{{$user->username}}</a>
+              <span class="username-link font-weight-bold text-dark">{{$user->username}}</span>
             </div>
-          </div>
+          </a>
             <div class="float-right">
               <div class="dropdown">
                 <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
@@ -169,4 +169,4 @@
 @push('meta')
 <meta property="og:description" content="{{ $status->caption }}">
     <meta property="og:image" content="{{$status->mediaUrl()}}">
-@endpush
+    <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>@endpush
