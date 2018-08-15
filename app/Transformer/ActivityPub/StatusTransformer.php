@@ -46,7 +46,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
           'sensitive' => (bool) $status->is_nsfw,
           'atomUri' => $status->url(),
           'inReplyToAtomUri' => null,
-          'conversation' => $status->url(),
           'attachment' => $status->media->map(function($media) {
             return [
               'type' => 'Document',
