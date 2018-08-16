@@ -50,7 +50,6 @@ class ProfileOutbox extends Fractal\TransformerAbstract
             'sensitive' => (bool) $i->is_nsfw,
             'atomUri' => $i->url(),
             'inReplyToAtomUri' => null,
-            'conversation' => $i->url(),
             'attachment' => [
 
               // TODO: support more than 1 attachment
