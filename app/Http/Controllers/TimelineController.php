@@ -20,6 +20,7 @@ class TimelineController extends Controller
       $following->push(Auth::user()->profile->id);
       $timeline = Status::whereIn('profile_id', $following)
                   ->orderBy('id','desc')
+                  ->withCount(['comments', 'likes'])
                   ->simplePaginate(20);
       $type = 'personal';
       return view('timeline.template', compact('timeline', 'type'));
@@ -31,6 +32,7 @@ class TimelineController extends Controller
       // $timeline = Timeline::build()->local();
       $timeline = Status::whereHas('media')
                   ->whereNull('in_reply_to_id')
+                  ->withCount(['comments', 'likes'])
                   ->orderBy('id','desc')
                   ->simplePaginate(20);
       $type = 'local';
