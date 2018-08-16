@@ -132,7 +132,7 @@ class Profile extends Model
     {
         $url = Cache::remember("avatar:{$this->id}", 1440, function() {
             $path = $this->avatar->media_path ?? 'public/avatars/default.png';
-            $version = hash('sha1', $this->avatar->created_at);
+            $version = $this->avatar ? hash('sha1', $this->avatar->created_at) : '';
             $path = "{$path}?v={$version}";
             return url(Storage::url($path));
         });
