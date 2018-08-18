@@ -5,7 +5,7 @@ ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef
 
 RUN apk add --no-cache --virtual .build build-base autoconf imagemagick-dev libtool && \
   apk --no-cache add imagemagick git && \
-  docker-php-ext-install pdo_mysql pcntl && \
+  docker-php-ext-install pdo_mysql pcntl bcmath && \
   pecl install imagick && \
   docker-php-ext-enable imagick pcntl imagick && \
   curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /tmp/composer.phar && \
