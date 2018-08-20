@@ -92,7 +92,7 @@ class AccountController extends Controller
 
         Mail::to($user->email)->send(new ConfirmEmail($verify));
 
-        return redirect()->back()->with('status', 'Email verification email sent!');
+        return redirect()->back()->with('status', 'Verification email sent!');
     }
 
     public function confirmVerifyEmail(Request $request, $userToken, $randomToken)

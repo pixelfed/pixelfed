@@ -21,7 +21,7 @@ class SiteController extends Controller
 
     public function homeGuest()
     {
-        return view('welcome');
+        return view('site.index');
     }
 
     public function homeTimeline()
