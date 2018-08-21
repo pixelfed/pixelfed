@@ -70,13 +70,14 @@
               </a>
             </div>
           </div>
-          <p class="lead">
+          <p class="lead mb-0">
             <span class="font-weight-bold">{{$user->name}}</span> 
             @if($user->remote_url)
             <span class="badge badge-info">REMOTE PROFILE</span>
             @endif
-            {{$user->bio}}
           </p>
+          <p class="mb-0 lead">{{$user->bio}}</p>
+          <p class="mb-0"><a href="{{$user->website}}" class="font-weight-bold" rel="external nofollow noopener" target="_blank">{{str_limit($user->website, 30)}}</a></p>
         </div>
       </div>
     </div>
