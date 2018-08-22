@@ -171,6 +171,8 @@ class SettingsController extends Controller
       $fields = [
           'is_private',
           'crawlable',
+          'show_profile_follower_count',
+          'show_profile_following_count'
       ];
       foreach($fields as $field) {
           $form = $request->input($field);
