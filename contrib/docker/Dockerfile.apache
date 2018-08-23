@@ -32,11 +32,9 @@ COPY . /var/www/
 
 WORKDIR /var/www/
 RUN cp -r storage storage.skel \
+ && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
  && composer install --prefer-source --no-interaction \
  && rm -rf html && ln -s public html
-
-COPY contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini
-COPY contrib/docker/start.sh /start.sh
 
 VOLUME ["/var/www/storage"]
 
@@ -58,4 +56,4 @@ ENV APP_ENV=production \
     REMOTE_FOLLOW=false \
     ACTIVITY_PUB=false
 
-CMD /start.sh
+CMD /var/www/contrib/docker/start.sh
