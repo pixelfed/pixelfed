@@ -1,1 +1,1 @@
-docker/Dockerfile.apache
+contrib/docker/Dockerfile.apache

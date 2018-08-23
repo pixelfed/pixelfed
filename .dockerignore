@@ -1,4 +1,5 @@
 data
+contrib
 Dockerfile
 docker-compose*.yml
 .dockerignore
