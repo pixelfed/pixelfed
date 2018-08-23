@@ -30,7 +30,7 @@
                     <li class="nav-item px-2">
                         <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                             <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
-                              <i class="far fa-plus-square fa-lg text-primary"></i>
+                              <i class="fas fa-camera-retro fa-lg text-primary"></i>
                             </a>
                         </div>
                     </li>
