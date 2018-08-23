@@ -6,10 +6,21 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Auth, DB, Cache, Mail, Redis;
-use App\{EmailVerification, Notification, Profile, User};
+use App\{
+  EmailVerification, 
+  Notification, 
+  Profile, 
+  User,
+  UserFilter
+};
 
 class AccountController extends Controller
 {
+    protected $filters = [
+      'user.mute',
+      'user.block'
+    ];
+
     public function __construct()
     {
       $this->middleware('auth');
@@ -132,6 +143,99 @@ class AccountController extends Controller
         $notifications->push(Cache::get("{$prefix}{$key}"));
       }
       return $notifications;
+    }
+
+    public function messages()
+    {
+      return view('account.messages');
+    }
+
+
+    public function showMessage(Request $request, $id)
+    {
+      return view('account.message');
+    }
+
+    public function mute(Request $request)
+    {
+        $this->validate($request, [
+          'type' => 'required|string',
+          'item' => 'required|integer|min:1'
+        ]);
+
+        $user = Auth::user()->profile;
+        $type = $request->input('type');
+        $item = $request->input('item');
+        $action = "{$type}.mute";
+
+        if(!in_array($action, $this->filters)) {
+          return abort(406);
+        }
+        $filterable = [];
+        switch ($type) {
+          case 'user':
+            $profile = Profile::findOrFail($item);
+            if($profile->id == $user->id) {
+              return abort(403);
+            }
+            $class = get_class($profile);
+            $filterable['id'] = $profile->id;
+            $filterable['type'] = $class;
+            break;
+          
+          default:
+            # code...
+            break;
+        }
+
+        $filter = UserFilter::firstOrCreate([
+          'user_id' => $user->id,
+          'filterable_id' => $filterable['id'],
+          'filterable_type' => $filterable['type'],
+          'filter_type' => 'mute'
+        ]);
+
+        return redirect()->back();
+
+    }
+
+    public function block(Request $request)
+    {
+        $this->validate($request, [
+          'type' => 'required|string',
+          'item' => 'required|integer|min:1'
+        ]);
+        
+        $user = Auth::user()->profile;
+        $type = $request->input('type');
+        $item = $request->input('item');
+        $action = "{$type}.block";
+        if(!in_array($action, $this->filters)) {
+          return abort(406);
+        }
+        $filterable = [];
+        switch ($type) {
+          case 'user':
+            $profile = Profile::findOrFail($item);
+            $class = get_class($profile);
+            $filterable['id'] = $profile->id;
+            $filterable['type'] = $class;
+            break;
+          
+          default:
+            # code...
+            break;
+        }
+
+        $filter = UserFilter::firstOrCreate([
+          'user_id' => $user->id,
+          'filterable_id' => $filterable['id'],
+          'filterable_type' => $filterable['type'],
+          'filter_type' => 'block'
+        ]);
+
+        return redirect()->back();
+
     }
 
 }
