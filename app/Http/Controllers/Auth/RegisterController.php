@@ -51,11 +51,22 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         $this->validateUsername($data['username']);
-        
+        $usernameRules = [
+            'required',
+            'alpha_dash',
+            'min:2',
+            'max:15',
+            'unique:users',
+            function($attribute, $value, $fail) {
+                if(!ctype_alpha($value[0])) {
+                    return $fail($attribute . ' is invalid. Username must be alpha-numeric and start with a letter.');
+                }
+            }
+        ];        
 
         $rules = [
             'name' => 'required|string|max:255',
-            'username' => 'required|alpha_dash|min:2|max:15|unique:users',
+            'username' => $usernameRules,
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ];

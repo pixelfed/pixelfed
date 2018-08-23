@@ -44,29 +44,33 @@ class SettingsController extends Controller
       $user = Auth::user();
       $profile = $user->profile;
 
+      $validate = config('pixelfed.enforce_email_verification');
 
       if($user->email != $email) {
         $changes = true;
         $user->email = $email;
-        $user->email_verified_at = null;
-        // Prevent old verifications from working
-        EmailVerification::whereUserId($user->id)->delete();
+
+        if($validate) {
+          $user->email_verified_at = null;
+          // Prevent old verifications from working
+          EmailVerification::whereUserId($user->id)->delete();
+        }
       }
 
       // Only allow email to be updated if not yet verified
-      if(!$changes && $user->email_verified_at) {
+      if(!$validate || !$changes && $user->email_verified_at) {
         if($profile->name != $name) {
           $changes = true;
           $user->name = $name;
           $profile->name = $name;
         }
 
-        if($profile->website != $website) {
+        if(!$profile->website || $profile->website != $website) {
           $changes = true;
           $profile->website = $website;
         }
 
-        if($profile->bio != $bio) {
+        if(!$profile->bio || !$profile->bio != $bio) {
           $changes = true;
           $profile->bio = $bio;
         }
@@ -167,6 +171,8 @@ class SettingsController extends Controller
       $fields = [
           'is_private',
           'crawlable',
+          'show_profile_follower_count',
+          'show_profile_following_count'
       ];
       foreach($fields as $field) {
           $form = $request->input($field);

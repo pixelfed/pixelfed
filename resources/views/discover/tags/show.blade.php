@@ -21,27 +21,28 @@
       </div>
     </div>
   </div>
-
-  <div class="tag-timeline row">
-    @foreach($posts as $status)
-    <div class="col-4 p-0 p-sm-2 p-md-3">
-      <a class="card info-overlay card-md-border-0" href="{{$status->url()}}">
-        <div class="square {{$status->firstMedia()->filter_class}}">
-          <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
-          <div class="info-overlay-text">
-            <h5 class="text-white m-auto font-weight-bold">
-              <span class="pr-4">
-              <span class="far fa-heart fa-lg pr-1"></span> {{$status->likes_count}}
-              </span>
-              <span>
-              <span class="far fa-comment fa-lg pr-1"></span> {{$status->comments_count}}
-              </span>
-            </h5>
+  <div class="tag-timeline">
+    <div class="row">
+      @foreach($posts as $status)
+      <div class="col-4 p-0 p-sm-2 p-md-3">
+        <a class="card info-overlay card-md-border-0" href="{{$status->url()}}">
+          <div class="square {{$status->firstMedia()->filter_class}}">
+            <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
+            <div class="info-overlay-text">
+              <h5 class="text-white m-auto font-weight-bold">
+                <span class="pr-4">
+                <span class="far fa-heart fa-lg pr-1"></span> {{$status->likes_count}}
+                </span>
+                <span>
+                <span class="far fa-comment fa-lg pr-1"></span> {{$status->comments_count}}
+                </span>
+              </h5>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
+      @endforeach
     </div>
-    @endforeach
   </div>
   <div class="d-flex justify-content-center pagination-container mt-4">
     {{$posts->links()}}

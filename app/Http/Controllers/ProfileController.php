@@ -18,7 +18,12 @@ class ProfileController extends Controller
     public function show(Request $request, $username)
     {
       $user = Profile::whereUsername($username)->firstOrFail();
-      $settings = User::whereUsername($username)->firstOrFail()->settings;
+      if($user->remote_url) {
+        $settings = new \StdClass;
+        $settings->crawlable = false;
+      } else {
+        $settings = User::whereUsername($username)->firstOrFail()->settings;
+      }
 
       if($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
         return $this->showActivityPub($request, $user);
@@ -37,6 +42,7 @@ class ProfileController extends Controller
       $timeline = $user->statuses()
                   ->whereHas('media')
                   ->whereNull('in_reply_to_id')
+                  ->whereNull('reblog_of_id')
                   ->orderBy('created_at','desc')
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(21);
