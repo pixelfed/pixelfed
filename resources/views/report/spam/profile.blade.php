@@ -28,7 +28,7 @@
               This users profile contains spam
             </a></p>
           </div>
-          <div class="col-12 col-md-8 offset-md-2 my-3">
+          <div class="col-12 col-md-8 offset-md-2">
             <p><a class="font-weight-bold" href="#">
               Learn more
             </a> about our reporting guidelines and policy.</p>
