@@ -67,11 +67,18 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
 
     Route::group(['prefix' => 'report'], function() {
       Route::get('/', 'ReportController@showForm')->name('report.form');
+      Route::post('/', 'ReportController@formStore');
       Route::get('not-interested', 'ReportController@notInterestedForm')->name('report.not-interested');
       Route::get('spam', 'ReportController@spamForm')->name('report.spam');
       Route::get('spam/comment', 'ReportController@spamCommentForm')->name('report.spam.comment');
       Route::get('spam/post', 'ReportController@spamPostForm')->name('report.spam.post');
       Route::get('spam/profile', 'ReportController@spamProfileForm')->name('report.spam.profile');
+      Route::get('sensitive/comment', 'ReportController@sensitiveCommentForm')->name('report.sensitive.comment');
+      Route::get('sensitive/post', 'ReportController@sensitivePostForm')->name('report.sensitive.post');
+      Route::get('sensitive/profile', 'ReportController@sensitiveProfileForm')->name('report.sensitive.profile');
+      Route::get('abusive/comment', 'ReportController@abusiveCommentForm')->name('report.abusive.comment');
+      Route::get('abusive/post', 'ReportController@abusivePostForm')->name('report.abusive.post');
+      Route::get('abusive/profile', 'ReportController@abusiveProfileForm')->name('report.abusive.profile');
     });
 
   });
