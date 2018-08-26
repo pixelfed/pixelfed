@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.1.0',
+    'version' => '0.1.7',
 
     /*
     |--------------------------------------------------------------------------
@@ -79,6 +79,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Account file size limit
+    |--------------------------------------------------------------------------
+    |
+    | Update the max account size, the per user limit of files in KB.
+    |
+    |
+    */
+    'max_account_size' => env('MAX_ACCOUNT_SIZE', 1000000),
+
+    /*
+    |--------------------------------------------------------------------------
     | Photo file size limit
     |--------------------------------------------------------------------------
     |
@@ -117,4 +128,34 @@ return [
     */
     'max_name_length' => env('MAX_NAME_LENGTH', 30),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Album size limit
+    |--------------------------------------------------------------------------
+    |
+    | The max number of photos allowed per post.
+    |
+    */
+    'max_album_length'  => env('MAX_ALBUM_LENGTH', 4),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Email Verification
+    |--------------------------------------------------------------------------
+    |
+    | Require email verification before a new user can do anything.
+    |
+    */
+    'enforce_email_verification'  => env('ENFORCE_EMAIL_VERIFICATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image Quality
+    |--------------------------------------------------------------------------
+    |
+    | Set the image optimization quality, must be a value between 1-100.
+    |
+    */
+    'image_quality'  => (int) env('IMAGE_QUALITY', 80),
+    
 ];

@@ -13,7 +13,7 @@ class ProfileOutbox extends Fractal\TransformerAbstract
       $count = $profile->statuses()->count();
       $statuses = $profile->statuses()->has('media')->orderBy('id','desc')->take(20)->get()->map(function($i, $k) {
         $item = [
-          'id'  => $i->url(),
+          'id'  => $i->permalink(),
           // TODO: handle other types
           'type' => 'Create',
           'actor' => $i->profile->url(),
@@ -47,10 +47,9 @@ class ProfileOutbox extends Fractal\TransformerAbstract
               // TODO: add cc's
               //"{$notice->getProfile()->getUrl()}/subscribers",
             ],
-            'sensitive' => null,
+            'sensitive' => (bool) $i->is_nsfw,
             'atomUri' => $i->url(),
             'inReplyToAtomUri' => null,
-            'conversation' => $i->url(),
             'attachment' => [
 
               // TODO: support more than 1 attachment

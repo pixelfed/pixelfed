@@ -18,6 +18,14 @@ class CommentController extends Controller
       return view('status.reply', compact('user', 'status'));
     }
 
+    public function showAll(Request $request, $username, int $id)
+    {
+      $user = Profile::whereUsername($username)->firstOrFail();
+      $status = Status::whereProfileId($user->id)->findOrFail($id);
+      $replies = Status::whereInReplyToId($id)->paginate(40);
+      return view('status.comments', compact('user', 'status', 'replies'));
+    }
+
     public function store(Request $request)
     {
       if(Auth::check() === false) { abort(403); }
@@ -34,8 +42,8 @@ class CommentController extends Controller
 
       $reply = new Status();
       $reply->profile_id = $profile->id;
-      $reply->caption = $comment;
-      $reply->rendered = e($comment);
+      $reply->caption = e($comment);
+      $reply->rendered = $comment;
       $reply->in_reply_to_id = $status->id;
       $reply->in_reply_to_profile_id = $status->profile_id;
       $reply->save();
@@ -44,7 +52,7 @@ class CommentController extends Controller
       CommentPipeline::dispatch($status, $reply);
 
       if($request->ajax()) {
-        $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url()];
+        $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url(), 'comment' => $reply->caption];
       } else {
         $response = redirect($status->url());
       }

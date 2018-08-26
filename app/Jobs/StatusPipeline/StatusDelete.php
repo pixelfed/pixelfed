@@ -2,7 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\{Media, StatusHashtag, Status};
+use App\{Media, Notification, StatusHashtag, Status};
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -58,8 +58,19 @@ class StatusDelete implements ShouldQueue
                 
             }
         }
+        $comments = Status::where('in_reply_to_id', $status->id)->get();
+        foreach($comments as $comment) {
+            $comment->in_reply_to_id = null;
+            $comment->save();
+            Notification::whereItemType('App\Status')
+                ->whereItemId($comment->id)
+                ->delete();
+        }
 
         $status->likes()->delete();
+        Notification::whereItemType('App\Status')
+            ->whereItemId($status->id)
+            ->delete();
         StatusHashtag::whereStatusId($status->id)->delete();
         $status->delete();
 

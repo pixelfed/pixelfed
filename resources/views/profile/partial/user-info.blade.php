@@ -1,4 +1,4 @@
-<div class="bg-white py-5">
+<div class="bg-white py-5 border-bottom">
   <div class="container">
     <div class="row">
       <div class="col-12 col-md-4 d-flex">
@@ -8,11 +8,16 @@
       </div>
       <div class="col-12 col-md-8 d-flex align-items-center">
         <div class="profile-details">
-          <div class="username-bar pb-2  d-flex align-items-center">
+          <div class="username-bar pb-2 d-flex align-items-center">
             <span class="font-weight-ultralight h1">{{$user->username}}</span>
+            @if($is_admin == true)
+            <span class="pl-4">
+              <span class="btn btn-outline-danger font-weight-bold py-0">ADMIN</span>
+            </span>
+            @endif
             @if($owner == true)
-            <span class="h5 pl-2 b-0">
-            <a class="icon-settings text-muted" href="{{route('settings')}}"></a>
+            <span class="pl-4">
+            <a class="fas fa-cog fa-lg text-muted" href="{{route('settings')}}"></a>
             </span>
             @elseif ($is_following == true)
             <span class="pl-4">
@@ -48,7 +53,7 @@
           <div class="profile-stats pb-3 d-inline-flex lead">
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url()}}">
-              <span class="font-weight-bold">{{$user->statuses()->whereNull('in_reply_to_id')->count()}}</span> 
+              <span class="font-weight-bold">{{$user->statuses()->whereNull('reblog_of_id')->whereNull('in_reply_to_id')->count()}}</span> 
               Posts
               </a>
             </div>
@@ -65,13 +70,14 @@
               </a>
             </div>
           </div>
-          <p class="lead">
+          <p class="lead mb-0">
             <span class="font-weight-bold">{{$user->name}}</span> 
             @if($user->remote_url)
             <span class="badge badge-info">REMOTE PROFILE</span>
             @endif
-            {{$user->bio}}
           </p>
+          <p class="mb-0 lead">{{$user->bio}}</p>
+          <p class="mb-0"><a href="{{$user->website}}" class="font-weight-bold" rel="external nofollow noopener" target="_blank">{{str_limit($user->website, 30)}}</a></p>
         </div>
       </div>
     </div>

@@ -1,15 +1,15 @@
-@extends('layouts.app',['title' => $user->username . "'s followers"])
+@extends('layouts.app',['title' => $profile->username . "’s followers"])
 
 @section('content')
 
 @include('profile.partial.user-info')
 
 <div class="container following-page" style="min-height: 60vh;">
-  <div class="col-12 col-md-8 offset-md-2">
+  <div class="col-12 col-md-8 offset-md-2 px-0">
     @if($followers->count() !== 0)
-    <ul class="list-group mt-4">
+    <ul class="list-group mt-4 px-0">
       @foreach($followers as $user)
-      <li class="list-group-item following">
+      <li class="list-group-item following card-md-rounded-0">
           <span class="following-icon pr-3">
             <img src="{{$user->avatarUrl()}}" width="32px" class="rounded-circle">
           </span>
@@ -60,6 +60,7 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="{{$user->bio}}">
-<meta property="og:image" content="{{$user->avatarUrl()}}">
+<meta property="og:description" content="{{$profile->bio}}">
+<meta property="og:image" content="{{$profile->avatarUrl()}}">
+<meta name="robots" content="NOINDEX, NOFOLLOW">
 @endpush

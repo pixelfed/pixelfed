@@ -103,6 +103,10 @@ class Image {
     $ratio = $this->getAspectRatio($file, $thumbnail);
     $aspect = $ratio['dimensions'];
     $orientation = $ratio['orientation'];
+    if($media->mime === 'image/gif' && !$thumbnail)
+    {
+        return;
+    }
 
     try {
       $img = Intervention::make($file)->orientate();
@@ -111,8 +115,9 @@ class Image {
       });
       $converted = $this->setBaseName($path, $thumbnail, $img->extension);
       $newPath = storage_path('app/'.$converted['path']);
-            
-      $img->save($newPath, 75);
+      
+      $quality = config('pixelfed.image_quality');
+      $img->save($newPath, $quality);
       
       if(!$thumbnail) {
         $media->orientation = $orientation;

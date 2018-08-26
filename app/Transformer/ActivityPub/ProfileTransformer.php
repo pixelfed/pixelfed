@@ -11,7 +11,16 @@ class ProfileTransformer extends Fractal\TransformerAbstract
   public function transform(Profile $profile)
   {
       return [
-          '@context' => 'https://www.w3.org/ns/activitystreams',
+          '@context' => [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
+            [
+              "manuallyApprovesFollowers" => "as:manuallyApprovesFollowers",
+              "featured" => [
+                "https://pixelfed.org/ns#featured" => ["@type" => "@id"],
+              ]
+            ]
+          ],
           'id' => $profile->permalink(),
           'type' => 'Person',
           'following' => $profile->permalink('/following'),
@@ -23,9 +32,9 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'name'  => $profile->name,
           'summary' => $profile->bio,
           'url' => $profile->url(),
-          'manuallyApprovesFollowers' => $profile->is_private,
-          'follower_count' => $profile->followers()->count(),
-          'following_count' => $profile->following()->count(),
+          'manuallyApprovesFollowers' => (bool) $profile->is_private,
+          // 'follower_count' => $profile->followers()->count(),
+          // 'following_count' => $profile->following()->count(),
           'publicKey' => [
             'id' => $profile->permalink() . '#main-key',
             'owner' => $profile->permalink(),
@@ -34,7 +43,11 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'endpoints' => [
             'sharedInbox' => config('routes.api.sharedInbox')
           ],
-              
+          'icon' => [
+            'type' => 'Image',
+            'mediaType' => 'image/jpeg',
+            'url' => $profile->avatarUrl()
+          ]
       ];
   }
 

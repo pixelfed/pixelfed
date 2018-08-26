@@ -2,7 +2,9 @@
 
 return [
 
-  'likedPhoto' => 'polubił Twoje zdjęcie.',
-  'startedFollowingYou' => 'zaczął Cię obserwować.',
+  'likedPhoto' => 'polubił(a) Twoje zdjęcie.',
+  'startedFollowingYou' => 'zaczął(-ęła) Cię obserwować.',
+  'commented' => 'skomentował(a) Twój wpis',
+  'mentionedYou' => 'wspomniał(a) o Tobie.'
 
 ];

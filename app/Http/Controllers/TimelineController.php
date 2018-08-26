@@ -18,24 +18,25 @@ class TimelineController extends Controller
       // TODO: Use redis for timelines
       $following = Follower::whereProfileId(Auth::user()->profile->id)->pluck('following_id');
       $following->push(Auth::user()->profile->id);
-      $timeline = Status::whereHas('media')
-                  ->whereNull('in_reply_to_id')
-                  ->whereIn('profile_id', $following)
+      $timeline = Status::whereIn('profile_id', $following)
                   ->orderBy('id','desc')
                   ->withCount(['comments', 'likes'])
-                  ->simplePaginate(10);
-      return view('timeline.personal', compact('timeline'));
+                  ->simplePaginate(20);
+      $type = 'personal';
+      return view('timeline.template', compact('timeline', 'type'));
     }
 
     public function local()
     {
       // TODO: Use redis for timelines
+      // $timeline = Timeline::build()->local();
       $timeline = Status::whereHas('media')
                   ->whereNull('in_reply_to_id')
-                  ->orderBy('id','desc')
                   ->withCount(['comments', 'likes'])
-                  ->simplePaginate(10);
-      return view('timeline.public', compact('timeline'));
+                  ->orderBy('id','desc')
+                  ->simplePaginate(20);
+      $type = 'local';
+      return view('timeline.template', compact('timeline', 'type'));
     }
 
 }
