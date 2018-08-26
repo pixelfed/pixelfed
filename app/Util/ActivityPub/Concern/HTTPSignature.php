@@ -46,7 +46,7 @@ class HTTPSignature {
 
         try {
           $url = $this->profile;
-          $res = Zttp::timeout(60)->withoutVerifying()->withHeaders([
+          $res = Zttp::timeout(30)->withHeaders([
               'Accept' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
               'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org'
             ])->get($url);
