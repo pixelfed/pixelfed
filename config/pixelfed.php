@@ -106,7 +106,7 @@ return [
     | Change the caption length limit for new local posts.
     |
     */
-    'max_caption_length' => env('MAX_CAPTION_LENGTH', 150),
+    'max_caption_length' => env('MAX_CAPTION_LENGTH', 500),
 
     /*
     |--------------------------------------------------------------------------
