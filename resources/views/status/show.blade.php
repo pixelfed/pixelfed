@@ -96,10 +96,12 @@
         <div class="d-flex flex-md-column flex-column-reverse h-100">
           <div class="card-body status-comments">
             <div class="status-comment">
+              @unless (empty($status->caption))
               <p class="mb-1">
                 <span class="font-weight-bold pr-1">{{$status->profile->username}}</span>
                 <span class="comment-text" v-pre>{!! $status->rendered ?? e($status->caption) !!}</span>
               </p>
+              @endunless
               <p class="mb-1"><a href="{{$status->url()}}/c" class="text-muted">View all comments</a></p>
               <div class="comments">
                 @foreach($replies as $item)
