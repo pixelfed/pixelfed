@@ -39,6 +39,9 @@
       <label for="bio" class="col-sm-3 col-form-label font-weight-bold text-right">Bio</label>
       <div class="col-sm-9">
         <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2">{{Auth::user()->profile->bio}}</textarea>
+        <small class="form-text text-muted">
+          Max length: {{config('pixelfed.max_bio_length')}} characters.
+        </small>
       </div>
     </div>
     <div class="pt-5">
