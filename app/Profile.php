@@ -143,7 +143,11 @@ class Profile extends Model
 
     public function statusCount()
     {
-        return $this->statuses()->whereHas('media')->count();
+        return $this->statuses()
+        ->whereHas('media')
+        ->whereNull('in_reply_to_id')
+        ->whereNull('reblog_of_id')
+        ->count();
     }
 
     public function recommendFollowers()
@@ -159,6 +163,7 @@ class Profile extends Model
             ->whereNotIn('following_id', $follows)
             ->whereIn('profile_id', $following)
             ->orderByRaw('rand()')
+            ->distinct('id')
             ->limit(3)
             ->pluck('following_id');
         $recommended = [];
