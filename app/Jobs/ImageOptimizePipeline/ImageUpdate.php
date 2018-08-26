@@ -43,9 +43,9 @@ class ImageUpdate implements ShouldQueue
         $path = storage_path('app/'. $media->media_path);
         $thumb = storage_path('app/'. $media->thumbnail_path);
         try {
-            ImageOptimizer::optimize($thumb);
             if(!in_array($media->mime, $this->protectedMimes))
             {
+                ImageOptimizer::optimize($thumb);
                 ImageOptimizer::optimize($path);
             }
         } catch (Exception $e) {
