@@ -32,9 +32,18 @@ class Status extends Model
       return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
     }
 
-    public function thumb()
+    public function viewType()
     {
-      if($this->media->count() == 0 || $this->is_nsfw) {
+      $media = $this->firstMedia();
+      $type = explode('/', $media->mime);
+      return $type[0];
+    }
+    
+    public function thumb($showNsfw = false)
+    {
+      $type = $this->viewType();
+      $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
+      if($this->media->count() == 0 || $is_nsfw || $type != 'image') {
         return "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
       }
       return url(Storage::url($this->firstMedia()->thumbnail_path));
