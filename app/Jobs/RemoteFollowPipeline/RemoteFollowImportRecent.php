@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {
@@ -216,7 +217,9 @@ class RemoteFollowImportRecent implements ShouldQueue
           $media->size = 0;
           $media->mime = $mime;
           $media->save();
-
+          
+          ImageThumbnail::dispatch($media);
+          
           return true;
       } catch (Exception $e) {
           return false;

@@ -5,7 +5,12 @@
   <div class="col-12 col-md-8 offset-md-2">
     @if (session('status'))
         <div class="alert alert-success">
-            {{ session('status') }}
+            <p class="font-weight-bold mb-0">{{ session('status') }}</p>
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">
+            <p class="font-weight-bold mb-0">{{ session('error') }}</p>
         </div>
     @endif
     <div class="card">

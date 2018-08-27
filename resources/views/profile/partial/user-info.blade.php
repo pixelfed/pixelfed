@@ -57,18 +57,22 @@
               Posts
               </a>
             </div>
+            @if($settings->show_profile_follower_count)
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url('/followers')}}">
               <span class="font-weight-bold">{{$user->followerCount(true)}}</span> 
               Followers
               </a>
             </div>
+            @endif
+            @if($settings->show_profile_following_count)
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url('/following')}}">
               <span class="font-weight-bold">{{$user->followingCount(true)}}</span> 
               Following
               </a>
             </div>
+            @endif
           </div>
           <p class="lead mb-0">
             <span class="font-weight-bold">{{$user->name}}</span> 

@@ -28,9 +28,11 @@ class UpdateSettingsTable extends Migration
      */
     public function down()
     {
-        $table->dropColumn('show_profile_followers');
-        $table->dropColumn('show_profile_follower_count');
-        $table->dropColumn('show_profile_following');
-        $table->dropColumn('show_profile_following_count');
+       Schema::table('user_settings', function (Blueprint $table) {
+            $table->dropColumn('show_profile_followers');
+            $table->dropColumn('show_profile_follower_count');
+            $table->dropColumn('show_profile_following');
+            $table->dropColumn('show_profile_following_count');
+        });
     }
 }

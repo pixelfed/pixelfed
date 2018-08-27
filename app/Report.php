@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
+    protected $dates = ['admin_seen'];
+    
     public function url()
     {
       return url('/i/admin/reports/show/' . $this->id);

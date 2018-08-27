@@ -16,6 +16,12 @@ class ImageUpdate implements ShouldQueue
 
     protected $media;
 
+    protected $protectedMimes = [
+        'image/gif',
+        'image/bmp',
+        'video/mp4'
+    ];
+
     /**
      * Create a new job instance.
      *
@@ -37,9 +43,9 @@ class ImageUpdate implements ShouldQueue
         $path = storage_path('app/'. $media->media_path);
         $thumb = storage_path('app/'. $media->thumbnail_path);
         try {
-            ImageOptimizer::optimize($thumb);
-            if($media->mime !== 'image/gif')
+            if(!in_array($media->mime, $this->protectedMimes))
             {
+                ImageOptimizer::optimize($thumb);
                 ImageOptimizer::optimize($path);
             }
         } catch (Exception $e) {

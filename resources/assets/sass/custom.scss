@@ -298,3 +298,13 @@ details summary::-webkit-details-marker {
 .profile-avatar img {
   object-fit: cover;
 }
+
+.tt-menu {
+  padding: 0 !important;
+  border-radius: 0 0 0.25rem 0.25rem !important;
+}
+
+.tt-dataset .alert {
+  border: 0 !important;
+  border-radius: 0 !important;
+}

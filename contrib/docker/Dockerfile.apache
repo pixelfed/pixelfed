@@ -1,0 +1,59 @@
+FROM php:7-apache
+
+ARG COMPOSER_VERSION="1.6.5"
+ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef0be3434"
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git \
+      optipng pngquant jpegoptim gifsicle \
+      libfreetype6 libjpeg62-turbo libpng16-16 libxpm4 libvpx4 libmagickwand-6.q16-3 \
+      libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libvpx-dev libmagickwand-dev \
+ && docker-php-source extract \
+ && docker-php-ext-configure gd \
+      --with-freetype-dir=/usr/lib/x86_64-linux-gnu/ \
+      --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
+      --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
+      --with-vpx-dir=/usr/lib/x86_64-linux-gnu/ \
+ && docker-php-ext-install pdo_mysql pcntl gd exif bcmath \
+ && pecl install imagick \
+ && docker-php-ext-enable imagick pcntl imagick gd exif \
+ && a2enmod rewrite \
+ && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
+ && echo "${COMPOSER_CHECKSUM}  /usr/bin/composer" | sha256sum -c - \
+ && chmod 755 /usr/bin/composer \
+ && apt-get autoremove --purge -y \
+       libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libvpx-dev libmagickwand-dev \
+ && rm -rf /var/cache/apt \
+ && docker-php-source delete
+
+ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
+
+COPY . /var/www/
+
+WORKDIR /var/www/
+RUN cp -r storage storage.skel \
+ && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
+ && composer install --prefer-source --no-interaction \
+ && rm -rf html && ln -s public html
+
+VOLUME ["/var/www/storage"]
+
+ENV APP_ENV=production \
+    APP_DEBUG=false \
+    LOG_CHANNEL=stderr \
+    DB_CONNECTION=mysql \
+    DB_PORT=3306 \
+    DB_HOST=db \
+    BROADCAST_DRIVER=log \
+    QUEUE_DRIVER=redis \
+    HORIZON_PREFIX=horizon-pixelfed \
+    REDIS_HOST=redis \
+    SESSION_SECURE_COOKIE=true \
+    API_BASE="/api/1/" \
+    API_SEARCH="/api/search" \
+    OPEN_REGISTRATION=true \
+    ENFORCE_EMAIL_VERIFICATION=true \
+    REMOTE_FOLLOW=false \
+    ACTIVITY_PUB=false
+
+CMD /var/www/contrib/docker/start.sh

@@ -21,17 +21,33 @@ class StatusController extends Controller
                 ->withCount(['likes', 'comments', 'media'])
                 ->findOrFail($id);
 
-        if(!$status->media_path && $status->in_reply_to_id) {
-          return redirect($status->url());
-        }
-
         if($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
           return $this->showActivityPub($request, $status);
         }
 
+        $template = $this->detectTemplate($status);
+
         $replies = Status::whereInReplyToId($status->id)->simplePaginate(30);
 
-        return view('status.show', compact('user', 'status', 'replies'));
+        return view($template, compact('user', 'status', 'replies'));
+    }
+
+    protected function detectTemplate($status)
+    {
+        $template = Cache::rememberForever('template:status:type:'.$status->id, function () use($status) {
+          $template = 'status.show.photo';
+          if(!$status->media_path && $status->in_reply_to_id) {
+            $template = 'status.reply';
+          }
+          if($status->media->count() > 1) {
+            $template = 'status.show.album';
+          }
+          if($status->viewType() == 'video') {
+            $template = 'status.show.video';
+          }
+          return $template;
+        });
+        return $template;
     }
 
     public function compose()
@@ -42,11 +58,7 @@ class StatusController extends Controller
 
     public function store(Request $request)
     {
-        if(Auth::check() == false)
-        { 
-          abort(403); 
-        }
-
+        $this->authCheck();
         $user = Auth::user();
 
         $size = Media::whereUserId($user->id)->sum('size') / 1000;
@@ -56,7 +68,7 @@ class StatusController extends Controller
         }
 
         $this->validate($request, [
-          'photo.*'   => 'required|mimes:jpeg,png,bmp,gif|max:' . config('pixelfed.max_photo_size'),
+          'photo.*'   => 'required|mimes:jpeg,png,gif|max:' . config('pixelfed.max_photo_size'),
           'caption' => 'string|max:' . config('pixelfed.max_caption_length'),
           'cw'      => 'nullable|string',
           'filter_class' => 'nullable|string',
@@ -83,11 +95,13 @@ class StatusController extends Controller
         foreach ($photos as $k => $v) {
           $storagePath = "public/m/{$monthHash}/{$userHash}";
           $path = $v->store($storagePath);
+          $hash = \hash_file('sha256', $v);
           $media = new Media;
           $media->status_id = $status->id;
           $media->profile_id = $profile->id;
           $media->user_id = $user->id;
           $media->media_path = $path;
+          $media->original_sha256 = $hash;
           $media->size = $v->getClientSize();
           $media->mime = $v->getClientMimeType();
           $media->filter_class = $request->input('filter_class');
@@ -170,6 +184,57 @@ class StatusController extends Controller
       $resource = new Fractal\Resource\Item($status, new StatusTransformer);
       $res = $fractal->createData($resource)->toArray();
       return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+    }
+
+    public function edit(Request $request, $username, $id)
+    {
+        $this->authCheck();
+        $user = Auth::user()->profile;
+        $status = Status::whereProfileId($user->id)
+                ->with(['media'])
+                ->findOrFail($id);
+        return view('status.edit', compact('user', 'status'));
+    }
+
+
+    public function editStore(Request $request, $username, $id)
+    {
+        $this->authCheck();
+        $user = Auth::user()->profile;
+        $status = Status::whereProfileId($user->id)
+                ->with(['media'])
+                ->findOrFail($id);
+
+        $this->validate($request, [
+          'id' => 'required|integer|min:1',
+          'caption' => 'nullable',
+          'filter' => 'nullable|alpha_dash|max:30'
+        ]);
+
+        $id = $request->input('id');
+        $caption = $request->input('caption');
+        $filter = $request->input('filter');
+
+        $media = Media::whereProfileId($user->id)
+            ->whereStatusId($status->id)
+            ->find($id);
+
+        $changed = false;
+
+        if($media->caption != $caption) {
+          $media->caption = $caption;
+          $changed = true;
+        }
+
+        if($media->filter_class != $filter) {
+          $media->filter_class = $filter;
+          $changed = true;
+        }
+
+        if($changed === true) {
+          $media->save();
+        }
+        return response()->json([], 200);
     }
 
     protected function authCheck()
