@@ -31,7 +31,7 @@ class SettingsController extends Controller
     {
       $this->validate($request, [
         'name'  => 'required|string|max:' . config('pixelfed.max_name_length'),
-        'bio'   => 'nullable|string|max:' . config('pixelfed.max_bio_length')
+        'bio'   => 'nullable|string|max:' . config('pixelfed.max_bio_length'),
         'website' => 'nullable|url',
         'email' => 'nullable|email'
       ]);
