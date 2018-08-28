@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'As credenciais non constan nos nosos rexistros.',
+    'failed'   => 'As credenciais non constan nos nosos rexistros.',
     'throttle' => 'Demasiados intentos de conexión. Por favor, inténteo de novo en :seconds seconds.',
 
 ];

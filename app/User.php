@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -42,7 +42,7 @@ class User extends Authenticatable
 
     public function url()
     {
-        return url(config('app.url') . '/' . $this->username);
+        return url(config('app.url').'/'.$this->username);
     }
 
     public function settings()

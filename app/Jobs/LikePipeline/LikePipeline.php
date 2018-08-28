@@ -2,19 +2,23 @@
 
 namespace App\Jobs\LikePipeline;
 
-use Cache, Log, Redis;
-use App\{Like, Notification};
+use App\Like;
+use App\Notification;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Redis;
 
 class LikePipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $like;
+
     /**
      * Create a new job instance.
      *
@@ -37,7 +41,7 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        if($status->url !== null) {
+        if ($status->url !== null) {
             // Ignore notifications to remote statuses
             return;
         }
@@ -49,13 +53,12 @@ class LikePipeline implements ShouldQueue
                   ->whereItemType('App\Status')
                   ->count();
 
-        if($actor->id === $status->profile_id || $exists !== 0) {
+        if ($actor->id === $status->profile_id || $exists !== 0) {
             return true;
         }
 
         try {
-
-            $notification = new Notification;
+            $notification = new Notification();
             $notification->profile_id = $status->profile_id;
             $notification->actor_id = $actor->id;
             $notification->action = 'like';
@@ -65,12 +68,11 @@ class LikePipeline implements ShouldQueue
             $notification->item_type = "App\Status";
             $notification->save();
 
-            Cache::forever('notification.' . $notification->id, $notification);
-            
-            $redis = Redis::connection();
-            $key = config('cache.prefix').':user.' . $status->profile_id . '.notifications';
-            $redis->lpush($key, $notification->id);
+            Cache::forever('notification.'.$notification->id, $notification);
 
+            $redis = Redis::connection();
+            $key = config('cache.prefix').':user.'.$status->profile_id.'.notifications';
+            $redis->lpush($key, $notification->id);
         } catch (Exception $e) {
             Log::error($e);
         }

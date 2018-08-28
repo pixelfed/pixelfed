@@ -4,7 +4,6 @@ namespace App\Transformer\Api;
 
 use App\Hashtag;
 use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
 
 class HashtagTransformer extends Fractal\TransformerAbstract
 {
@@ -12,7 +11,7 @@ class HashtagTransformer extends Fractal\TransformerAbstract
     {
         return [
             'name' => $hashtag->name,
-            'url' => $hashtag->url(),
+            'url'  => $hashtag->url(),
         ];
     }
 }

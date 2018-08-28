@@ -2,13 +2,12 @@
 
 namespace App\Jobs\InboxPipeline;
 
-use App\Profile;
 use App\Util\ActivityPub\Inbox;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class SharedInboxWorker implements ShouldQueue
 {

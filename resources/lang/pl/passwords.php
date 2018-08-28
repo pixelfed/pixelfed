@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Hasło musi składać się z przynajmniej 6 znaków i być równe powtórzonemu.',
-    'reset' => 'Twoje hasło zostało zresetowane!',
-    'sent' => 'Wysłaliśmy Ci link resetujący hasło mailem!',
-    'token' => 'This password reset token is invalid.',
-    'user' => "Nie znaleziono użytkownika z tym adresem e-mail.",
+    'reset'    => 'Twoje hasło zostało zresetowane!',
+    'sent'     => 'Wysłaliśmy Ci link resetujący hasło mailem!',
+    'token'    => 'This password reset token is invalid.',
+    'user'     => 'Nie znaleziono użytkownika z tym adresem e-mail.',
 
 ];

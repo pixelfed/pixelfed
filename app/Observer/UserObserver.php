@@ -2,28 +2,31 @@
 
 namespace App\Observers;
 
-use App\{Profile, User, UserSetting};
 use App\Jobs\AvatarPipeline\CreateAvatar;
+use App\Profile;
+use App\User;
+use App\UserSetting;
 
 class UserObserver
 {
     /**
      * Listen to the User created event.
      *
-     * @param  \App\User  $user
+     * @param \App\User $user
+     *
      * @return void
      */
     public function saved(User $user)
     {
-        if(empty($user->profile)) {
-            $profile = new Profile;
+        if (empty($user->profile)) {
+            $profile = new Profile();
             $profile->user_id = $user->id;
             $profile->username = $user->username;
             $profile->name = $user->name;
             $pkiConfig = [
-                "digest_alg" => "sha512",
-                "private_key_bits" => 2048,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
+                'digest_alg'       => 'sha512',
+                'private_key_bits' => 2048,
+                'private_key_type' => OPENSSL_KEYTYPE_RSA,
             ];
             $pki = openssl_pkey_new($pkiConfig);
             openssl_pkey_export($pki, $pki_private);
@@ -37,11 +40,10 @@ class UserObserver
             CreateAvatar::dispatch($profile);
         }
 
-        if(empty($user->settings)) {
-            $settings = new UserSetting;
+        if (empty($user->settings)) {
+            $settings = new UserSetting();
             $settings->user_id = $user->id;
             $settings->save();
         }
     }
-
 }

@@ -12,8 +12,8 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-    
-    'failed' => 'פרטים אלו אינם תואמים לרשימותינו.',
+
+    'failed'   => 'פרטים אלו אינם תואמים לרשימותינו.',
     'throttle' => 'יותר מדי ניסיונות כניסה. אנא נסה שוב בעוד :seconds שניות.',
 
 ];

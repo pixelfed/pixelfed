@@ -2,13 +2,13 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use ImageOptimizer;
-use App\{Media, Status};
+use App\Media;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use ImageOptimizer;
 
 class ImageUpdate implements ShouldQueue
 {
@@ -19,7 +19,7 @@ class ImageUpdate implements ShouldQueue
     protected $protectedMimes = [
         'image/gif',
         'image/bmp',
-        'video/mp4'
+        'video/mp4',
     ];
 
     /**
@@ -40,18 +40,18 @@ class ImageUpdate implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        $path = storage_path('app/'. $media->media_path);
-        $thumb = storage_path('app/'. $media->thumbnail_path);
+        $path = storage_path('app/'.$media->media_path);
+        $thumb = storage_path('app/'.$media->thumbnail_path);
+
         try {
-            if(!in_array($media->mime, $this->protectedMimes))
-            {
+            if (!in_array($media->mime, $this->protectedMimes)) {
                 ImageOptimizer::optimize($thumb);
                 ImageOptimizer::optimize($path);
             }
         } catch (Exception $e) {
             return;
         }
-        if(!is_file($path) || !is_file($thumb)) {
+        if (!is_file($path) || !is_file($thumb)) {
             return;
         }
         $photo_size = filesize($path);

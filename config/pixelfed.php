@@ -12,7 +12,7 @@ return [
     */
     'domain' => [
       'admin' => env('ADMIN_DOMAIN'),
-      'app' => env('APP_DOMAIN'),
+      'app'   => env('APP_DOMAIN'),
     ],
 
     /*
@@ -34,7 +34,7 @@ return [
     |
     */
     'nodeinfo' => [
-      'url' => config('app.url') . '/' . 'api/nodeinfo/2.0.json'
+      'url' => config('app.url').'/'.'api/nodeinfo/2.0.json',
     ],
 
     /*
@@ -59,9 +59,9 @@ return [
     */
     'restricted_names' => [
       'reserved_routes' => true,
-      'use_blacklist' => false
+      'use_blacklist'   => false,
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Allow New Registrations
@@ -71,7 +71,7 @@ return [
     |
     */
     'open_registration' => env('OPEN_REGISTRATION', true),
-    'recaptcha' => env('RECAPTCHA_ENABLED', false),
+    'recaptcha'         => env('RECAPTCHA_ENABLED', false),
 
     'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
 
@@ -159,5 +159,5 @@ return [
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
 
     'media_types' => env('MEDIA_TYPES', 'jpeg,png,gif'),
-    
+
 ];

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Wprowadzone dane logowania nie są zgodne z naszą bazą danych.',
+    'failed'   => 'Wprowadzone dane logowania nie są zgodne z naszą bazą danych.',
     'throttle' => 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie za :seconds sekund.',
 
 ];

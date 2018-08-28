@@ -2,12 +2,12 @@
 
 return [
 
-    'viewMyProfile' => 'Ver perfil',
-    'myTimeline' => 'A miña liña temporal',
+    'viewMyProfile'  => 'Ver perfil',
+    'myTimeline'     => 'A miña liña temporal',
     'publicTimeline' => 'Liña temporal pública',
-    'remoteFollow' => 'Seguimento remoto',
-    'settings' => 'Axustes',
-    'admin' => 'Admin',
-    'logout' => 'Saír',
+    'remoteFollow'   => 'Seguimento remoto',
+    'settings'       => 'Axustes',
+    'admin'          => 'Admin',
+    'logout'         => 'Saír',
 
 ];

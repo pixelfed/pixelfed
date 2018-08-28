@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Storage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Storage;
 
 class Media extends Model
 {
@@ -16,18 +16,20 @@ class Media extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
-    
+
     public function url()
     {
-      $path = $this->media_path;
-      $url = Storage::url($path);
-      return url($url);
+        $path = $this->media_path;
+        $url = Storage::url($path);
+
+        return url($url);
     }
 
     public function thumbnailUrl()
     {
-      $path = $this->thumbnail_path;
-      $url = Storage::url($path);
-      return url($url);
+        $path = $this->thumbnail_path;
+        $url = Storage::url($path);
+
+        return url($url);
     }
 }

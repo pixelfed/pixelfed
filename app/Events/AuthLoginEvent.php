@@ -2,14 +2,11 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
+use App\User;
+use App\UserSetting;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use App\{User, UserSetting};
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class AuthLoginEvent
 {
@@ -27,8 +24,8 @@ class AuthLoginEvent
 
     public function handle(User $user)
     {
-        if(empty($user->settings)) {
-            $settings = new UserSetting;
+        if (empty($user->settings)) {
+            $settings = new UserSetting();
             $settings->user_id = $user->id;
             $settings->save();
         }
