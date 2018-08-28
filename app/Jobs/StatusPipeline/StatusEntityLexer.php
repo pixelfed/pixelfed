@@ -2,23 +2,20 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use DB, Cache;
-use App\{
-    Hashtag,
-    Media,
-    Mention,
-    Profile,
-    Status,
-    StatusHashtag
-};
-use App\Util\Lexer\Hashtag as HashtagLexer;
-use App\Util\Lexer\{Autolink, Extractor};
+use App\Hashtag;
+use App\Jobs\MentionPipeline\MentionPipeline;
+use App\Mention;
+use App\Profile;
+use App\Status;
+use App\StatusHashtag;
+use App\Util\Lexer\Autolink;
+use App\Util\Lexer\Extractor;
+use DB;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Jobs\MentionPipeline\MentionPipeline;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -57,7 +54,7 @@ class StatusEntityLexer implements ShouldQueue
     public function extractEntities()
     {
         $this->entities = Extractor::create()->extract($this->status->caption);
-        $this->autolinkStatus();    
+        $this->autolinkStatus();
     }
 
     public function autolinkStatus()
@@ -83,7 +80,7 @@ class StatusEntityLexer implements ShouldQueue
         $tags = array_unique($this->entities['hashtags']);
         $status = $this->status;
 
-        foreach($tags as $tag) {
+        foreach ($tags as $tag) {
             DB::transaction(function () use ($status, $tag) {
                 $slug = str_slug($tag);
                 $hashtag = Hashtag::firstOrCreate(
@@ -101,22 +98,21 @@ class StatusEntityLexer implements ShouldQueue
         $mentions = array_unique($this->entities['mentions']);
         $status = $this->status;
 
-        foreach($mentions as $mention) {
+        foreach ($mentions as $mention) {
             $mentioned = Profile::whereUsername($mention)->firstOrFail();
-            
-            if(empty($mentioned) || !isset($mentioned->id)) {
+
+            if (empty($mentioned) || !isset($mentioned->id)) {
                 continue;
             }
 
             DB::transaction(function () use ($status, $mentioned) {
-                $m = new Mention;
+                $m = new Mention();
                 $m->status_id = $status->id;
                 $m->profile_id = $mentioned->id;
                 $m->save();
-                
+
                 MentionPipeline::dispatch($status, $m);
             });
         }
     }
-
 }

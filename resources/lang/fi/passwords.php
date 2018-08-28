@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Salasanan täytyy olla vähintään kuusi merkkiä ja vastata vahvistusta.',
-    'reset' => 'Salasanasi on nollattu!',
-    'sent' => 'Olemme lähettäneet salasanan nollauslinkin sähköpostitse!',
-    'token' => 'Tämä salasanan nollauslinkki ei ole toimiva.',
-    'user' => "Emme löydä käyttäjää tuolla sähköpostiosoitteella.",
+    'reset'    => 'Salasanasi on nollattu!',
+    'sent'     => 'Olemme lähettäneet salasanan nollauslinkin sähköpostitse!',
+    'token'    => 'Tämä salasanan nollauslinkki ei ole toimiva.',
+    'user'     => 'Emme löydä käyttäjää tuolla sähköpostiosoitteella.',
 
 ];

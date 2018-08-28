@@ -2,14 +2,15 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use \Carbon\Carbon;
-use Image as Intervention;
-use App\{Avatar, Profile};
+use App\Avatar;
+use App\Profile;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Image as Intervention;
 
 class AvatarOptimize implements ShouldQueue
 {
@@ -54,16 +55,15 @@ class AvatarOptimize implements ShouldQueue
             $avatar->save();
             $this->deleteOldAvatar($avatar->media_path, $this->current);
         } catch (Exception $e) {
-            
         }
     }
 
     protected function deleteOldAvatar($new, $current)
     {
-        if(storage_path('app/' . $new) == $current) {
+        if (storage_path('app/'.$new) == $current) {
             return;
         }
-        if(is_file($current)) {
+        if (is_file($current)) {
             @unlink($current);
         }
     }

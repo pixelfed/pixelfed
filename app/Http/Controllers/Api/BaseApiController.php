@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use Auth, Cache;
-use App\{
-    Avatar, 
-    Like, 
-    Profile, 
-    Status
-};
-use League\Fractal;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Avatar;
 use App\Http\Controllers\AvatarController;
-use App\Util\Webfinger\Webfinger;
-use App\Transformer\Api\{
-  AccountTransformer,
-  StatusTransformer
-};
+use App\Http\Controllers\Controller;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
+use App\Profile;
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\StatusTransformer;
+use Auth;
+use Cache;
+use Illuminate\Http\Request;
+use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
 class BaseApiController extends Controller
@@ -35,8 +29,9 @@ class BaseApiController extends Controller
     public function accounts(Request $request, $id)
     {
         $profile = Profile::findOrFail($id);
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer);
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
@@ -44,8 +39,9 @@ class BaseApiController extends Controller
     {
         $profile = Profile::findOrFail($id);
         $followers = $profile->followers;
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer);
+        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
@@ -53,8 +49,9 @@ class BaseApiController extends Controller
     {
         $profile = Profile::findOrFail($id);
         $following = $profile->following;
-        $resource = new Fractal\Resource\Collection($following, new AccountTransformer);
+        $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
@@ -62,17 +59,18 @@ class BaseApiController extends Controller
     {
         $profile = Profile::findOrFail($id);
         $statuses = $profile->statuses()->orderBy('id', 'desc')->paginate(20);
-        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer);
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
-    
     public function followSuggestions(Request $request)
     {
         $followers = Auth::user()->profile->recommendFollowers();
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer);
+        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res);
     }
 
@@ -81,33 +79,34 @@ class BaseApiController extends Controller
         $this->validate($request, [
             'upload'   => 'required|mimes:jpeg,png,gif|max:2000',
         ]);
+
         try {
-          $user = Auth::user();
-          $profile = $user->profile;
-          $file = $request->file('upload');
-          $path = (new AvatarController())->getPath($user, $file);
-          $dir = $path['root'];
-          $name = $path['name'];
-          $public = $path['storage'];
-          $currentAvatar = storage_path('app/'.$profile->avatar->media_path);
-          $loc = $request->file('upload')->storeAs($public, $name);
+            $user = Auth::user();
+            $profile = $user->profile;
+            $file = $request->file('upload');
+            $path = (new AvatarController())->getPath($user, $file);
+            $dir = $path['root'];
+            $name = $path['name'];
+            $public = $path['storage'];
+            $currentAvatar = storage_path('app/'.$profile->avatar->media_path);
+            $loc = $request->file('upload')->storeAs($public, $name);
 
-          $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
-          $opath = $avatar->media_path;
-          $avatar->media_path = "$public/$name";
-          $avatar->thumb_path = null;
-          $avatar->change_count = ++$avatar->change_count;
-          $avatar->last_processed_at = null;
-          $avatar->save();
+            $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
+            $opath = $avatar->media_path;
+            $avatar->media_path = "$public/$name";
+            $avatar->thumb_path = null;
+            $avatar->change_count = ++$avatar->change_count;
+            $avatar->last_processed_at = null;
+            $avatar->save();
 
-          Cache::forget("avatar:{$profile->id}");
-          AvatarOptimize::dispatch($user->profile, $currentAvatar);
+            Cache::forget("avatar:{$profile->id}");
+            AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (Exception $e) {
         }
 
         return response()->json([
             'code' => 200,
-            'msg' => 'Avatar successfully updated'
+            'msg'  => 'Avatar successfully updated',
         ]);
     }
 }

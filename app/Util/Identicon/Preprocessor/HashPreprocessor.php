@@ -8,11 +8,11 @@ class HashPreprocessor implements \Bitverse\Identicon\Preprocessor\PreprocessorI
 
     public function __construct($algo = 'sha256')
     {
-      $this->algo = $algo;
+        $this->algo = $algo;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function process($string)
     {

@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookmark;
+use App\Status;
 use Auth;
-use App\{Bookmark, Profile, Status};
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
@@ -16,7 +17,7 @@ class BookmarkController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'item' => 'required|integer|min:1'
+            'item' => 'required|integer|min:1',
         ]);
 
         $profile = Auth::user()->profile;
@@ -26,17 +27,16 @@ class BookmarkController extends Controller
             ['status_id' => $status->id], ['profile_id' => $profile->id]
         );
 
-        if(!$bookmark->wasRecentlyCreated) {
+        if (!$bookmark->wasRecentlyCreated) {
             $bookmark->delete();
         }
 
-        if($request->ajax()) {
-          $response = ['code' => 200, 'msg' => 'Bookmark saved!'];
-      } else {
-          $response = redirect()->back();
-      }
+        if ($request->ajax()) {
+            $response = ['code' => 200, 'msg' => 'Bookmark saved!'];
+        } else {
+            $response = redirect()->back();
+        }
 
-      return $response;
-  }
-
+        return $response;
+    }
 }

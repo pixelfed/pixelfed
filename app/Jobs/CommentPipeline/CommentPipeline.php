@@ -2,14 +2,16 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use Cache, Log, Redis;
-use App\{Like, Notification, Status};
-use App\Util\Lexer\Hashtag as HashtagLexer;
+use App\Notification;
+use App\Status;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Redis;
 
 class CommentPipeline implements ShouldQueue
 {
@@ -42,13 +44,12 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
-        if($actor->id === $target->id) {
+        if ($actor->id === $target->id) {
             return true;
         }
 
         try {
-
-            $notification = new Notification;
+            $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'comment';
@@ -58,16 +59,14 @@ class CommentPipeline implements ShouldQueue
             $notification->item_type = "App\Status";
             $notification->save();
 
-            Cache::forever('notification.' . $notification->id, $notification);
-            
+            Cache::forever('notification.'.$notification->id, $notification);
+
             $redis = Redis::connection();
 
-            $nkey = config('cache.prefix').':user.' . $target->id . '.notifications';
+            $nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
             $redis->lpush($nkey, $notification->id);
-
         } catch (Exception $e) {
             Log::error($e);
         }
-
     }
 }

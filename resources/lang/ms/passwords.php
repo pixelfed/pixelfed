@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Kata laluan mesti mempunyai sekurang-kurangnya enam askara dan sepadan dengan pengesahan.',
-    'reset' => 'Kata laluan anda sudah ditetap semula!',
-    'sent' => 'Kami sudah emel pautan penetapan semula kata laluan anda!',
-    'token' => 'Token penetapan semula kata laluan ini tidak sah.',
-    'user' => "Kami tidak menjumpai pengguna dengan alamat emel tersebut.",
+    'reset'    => 'Kata laluan anda sudah ditetap semula!',
+    'sent'     => 'Kami sudah emel pautan penetapan semula kata laluan anda!',
+    'token'    => 'Token penetapan semula kata laluan ini tidak sah.',
+    'user'     => 'Kami tidak menjumpai pengguna dengan alamat emel tersebut.',
 
 ];

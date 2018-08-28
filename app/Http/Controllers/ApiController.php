@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Auth, Cache;
-use App\{Like, Status};
-use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Like;
+use Auth;
+use Cache;
+use Illuminate\Http\Request;
 
 class ApiController extends BaseApiController
 {
-
     public function hydrateLikes(Request $request)
     {
         $this->validate($request, [
@@ -18,7 +18,7 @@ class ApiController extends BaseApiController
         ]);
 
         $profile = Auth::user()->profile;
-        $res = Cache::remember('api:like-ids:user:'.$profile->id, 1440, function() use ($profile) {
+        $res = Cache::remember('api:like-ids:user:'.$profile->id, 1440, function () use ($profile) {
             return Like::whereProfileId($profile->id)
                  ->orderBy('id', 'desc')
                  ->take(1000)
@@ -30,6 +30,5 @@ class ApiController extends BaseApiController
 
     public function loadMoreComments(Request $request)
     {
-        return;
     }
 }

@@ -4,16 +4,12 @@
  * @author     Nick Pope <nick@nickpope.me.uk>
  * @copyright  Copyright © 2010, Nick Pope
  * @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License v2.0
- * @package    Twitter.Text
  */
 
 namespace App\Util\Lexer;
 
-use App\Util\Lexer\Regex;
-use App\Util\Lexer\StringUtils;
-
 /**
- * Twitter HitHighlighter Class
+ * Twitter HitHighlighter Class.
  *
  * Performs "hit highlighting" on tweets that have been auto-linked already.
  * Useful with the results returned from the search API.
@@ -25,27 +21,25 @@ use App\Util\Lexer\StringUtils;
  * @author     Nick Pope <nick@nickpope.me.uk>
  * @copyright  Copyright © 2010, Nick Pope
  * @license    http://www.apache.org/licenses/LICENSE-2.0  Apache License v2.0
- * @package    Twitter.Text
  */
 class HitHighlighter extends Regex
 {
-
     /**
      * The tag to surround hits with.
      *
-     * @var  string
+     * @var string
      */
     protected $tag = 'em';
 
     /**
      * Provides fluent method chaining.
      *
-     * @param  string  $tweet        The tweet to be hit highlighted.
-     * @param  bool    $full_encode  Whether to encode all special characters.
+     * @param string $tweet       The tweet to be hit highlighted.
+     * @param bool   $full_encode Whether to encode all special characters.
      *
      * @see  __construct()
      *
-     * @return  HitHighlighter
+     * @return HitHighlighter
      */
     public static function create($tweet = null, $full_encode = false)
     {
@@ -59,9 +53,9 @@ class HitHighlighter extends Regex
      *
      * @see  htmlspecialchars()
      *
-     * @param  string  $tweet        The tweet to be hit highlighted.
-     * @param  bool    $escape       Whether to escape the tweet (default: true).
-     * @param  bool    $full_encode  Whether to encode all special characters.
+     * @param string $tweet       The tweet to be hit highlighted.
+     * @param bool   $escape      Whether to escape the tweet (default: true).
+     * @param bool   $full_encode Whether to encode all special characters.
      */
     public function __construct($tweet = null, $escape = true, $full_encode = false)
     {
@@ -79,7 +73,7 @@ class HitHighlighter extends Regex
     /**
      * Set the highlighting tag to surround hits with.  The default tag is 'em'.
      *
-     * @return  string  The tag name.
+     * @return string The tag name.
      */
     public function getTag()
     {
@@ -89,26 +83,27 @@ class HitHighlighter extends Regex
     /**
      * Set the highlighting tag to surround hits with.  The default tag is 'em'.
      *
-     * @param  string  $v  The tag name.
+     * @param string $v The tag name.
      *
-     * @return  HitHighlighter  Fluid method chaining.
+     * @return HitHighlighter Fluid method chaining.
      */
     public function setTag($v)
     {
         $this->tag = $v;
+
         return $this;
     }
 
     /**
      * Hit highlights the tweet.
      *
-     * @param string $tweet The tweet to be hit highlighted.
-     * @param array  $hits  An array containing the start and end index pairs
-     *                        for the highlighting.
+     * @param string $tweet       The tweet to be hit highlighted.
+     * @param array  $hits        An array containing the start and end index pairs
+     *                            for the highlighting.
      * @param bool   $escape      Whether to escape the tweet (default: true).
-     * @param bool   $full_encode  Whether to encode all special characters.
+     * @param bool   $full_encode Whether to encode all special characters.
      *
-     * @return  string  The hit highlighted tweet.
+     * @return string The hit highlighted tweet.
      */
     public function highlight($tweet = null, array $hits = null)
     {
@@ -119,8 +114,8 @@ class HitHighlighter extends Regex
             return $tweet;
         }
         $highlightTweet = '';
-        $tags = array('<' . $this->tag . '>', '</' . $this->tag . '>');
-        # Check whether we can simply replace or whether we need to chunk...
+        $tags = ['<'.$this->tag.'>', '</'.$this->tag.'>'];
+        // Check whether we can simply replace or whether we need to chunk...
         if (strpos($tweet, '<') === false) {
             $ti = 0; // tag increment (for added tags)
             $highlightTweet = $tweet;
@@ -137,12 +132,12 @@ class HitHighlighter extends Regex
             $chunk_cursor = 0;
             $offset = 0;
             $start_in_chunk = false;
-            # Flatten the multidimensional hits array:
-            $hits_flat = array();
+            // Flatten the multidimensional hits array:
+            $hits_flat = [];
             foreach ($hits as $hit) {
                 $hits_flat = array_merge($hits_flat, $hit);
             }
-            # Loop over the hit indices:
+            // Loop over the hit indices:
             for ($index = 0; $index < count($hits_flat); $index++) {
                 $hit = $hits_flat[$index];
                 $tag = $tags[$index % 2];
@@ -154,7 +149,7 @@ class HitHighlighter extends Regex
                         $placed = true;
                     }
                     if (isset($chunks[$chunk_index + 1])) {
-                        $highlightTweet .= '<' . $chunks[$chunk_index + 1] . '>';
+                        $highlightTweet .= '<'.$chunks[$chunk_index + 1].'>';
                     }
                     $offset += StringUtils::strlen($chunk);
                     $chunk_cursor = 0;
@@ -164,12 +159,12 @@ class HitHighlighter extends Regex
                 }
                 if (!$placed && $chunk !== null) {
                     $hit_spot = $hit - $offset;
-                    $highlightTweet .= StringUtils::substr($chunk, $chunk_cursor, $hit_spot - $chunk_cursor) . $tag;
+                    $highlightTweet .= StringUtils::substr($chunk, $chunk_cursor, $hit_spot - $chunk_cursor).$tag;
                     $chunk_cursor = $hit_spot;
                     $start_in_chunk = ($index % 2 === 0);
                     $placed = true;
                 }
-                # Ultimate fallback - hits that run off the end get a closing tag:
+                // Ultimate fallback - hits that run off the end get a closing tag:
                 if (!$placed) {
                     $highlightTweet .= $tag;
                 }
@@ -179,20 +174,22 @@ class HitHighlighter extends Regex
                     $highlightTweet .= StringUtils::substr($chunk, $chunk_cursor);
                 }
                 for ($index = $chunk_index + 1; $index < count($chunks); $index++) {
-                    $highlightTweet .= ($index % 2 === 0 ? $chunks[$index] : '<' . $chunks[$index] . '>');
+                    $highlightTweet .= ($index % 2 === 0 ? $chunks[$index] : '<'.$chunks[$index].'>');
                 }
             }
         }
+
         return $highlightTweet;
     }
 
     /**
      * Hit highlights the tweet.
      *
-     * @param  array  $hits  An array containing the start and end index pairs
-     *                       for the highlighting.
+     * @param array $hits An array containing the start and end index pairs
+     *                    for the highlighting.
      *
-     * @return  string  The hit highlighted tweet.
+     * @return string The hit highlighted tweet.
+     *
      * @deprecated since version 1.1.0
      */
     public function addHitHighlighting(array $hits)

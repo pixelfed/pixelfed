@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hashtag extends Model
 {
-    public $fillable = ['name','slug'];
+    public $fillable = ['name', 'slug'];
 
     public function posts()
     {
-      return $this->hasManyThrough(
+        return $this->hasManyThrough(
         Status::class,
         StatusHashtag::class,
         'hashtag_id',
@@ -22,7 +22,6 @@ class Hashtag extends Model
 
     public function url()
     {
-      return config('routes.hashtag.base') . $this->slug;
+        return config('routes.hashtag.base').$this->slug;
     }
- 
 }

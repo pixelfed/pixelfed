@@ -2,11 +2,11 @@
 
 namespace App\Util\ActivityPub;
 
-use App\Jobs\AvatarPipeline\CreateAvatar;
-use App\{Follower, Like, Profile, Like, Status, User};
+use App\Like;
+use App\Profile;
 
-class Inbox {
-
+class Inbox
+{
     protected $request;
     protected $profile;
     protected $payload;
@@ -58,12 +58,11 @@ class Inbox {
     {
         $actor = $this->payload['object'];
         $target = $this->profile;
-
     }
 
     public function actorFirstOrCreate($actorUrl)
     {
-        if(Profile::whereRemoteUrl($actorUrl)->count() !== 0) {
+        if (Profile::whereRemoteUrl($actorUrl)->count() !== 0) {
             return Profile::whereRemoteUrl($actorUrl)->firstOrFail();
         }
 
@@ -73,7 +72,7 @@ class Inbox {
         $username = $res['preferredUsername'];
         $remoteUsername = "@{$username}@{$domain}";
 
-        $profile = new Profile;
+        $profile = new Profile();
         $profile->user_id = null;
         $profile->domain = $domain;
         $profile->username = $remoteUsername;
@@ -82,7 +81,5 @@ class Inbox {
         $profile->sharedInbox = $res['endpoints']['sharedInbox'];
         $profile->remote_url = $res['url'];
         $profile->save();
-
     }
-
 }
