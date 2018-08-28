@@ -41,6 +41,8 @@ jobs:
           paths:
             - vendor
 
+      - run: php artisan key:generate && php artisan config:clear
+
       # run tests with phpunit or codecept
       - run: ./vendor/bin/phpunit
       - store_test_results:
