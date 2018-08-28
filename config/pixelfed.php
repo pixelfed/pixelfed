@@ -157,5 +157,7 @@ return [
     |
     */
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
+
+    'media_types' => env('MEDIA_TYPES', 'jpeg,png,gif'),
     
 ];
