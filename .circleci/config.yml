@@ -41,7 +41,10 @@ jobs:
           paths:
             - vendor
 
-      - run: php artisan key:generate && php artisan config:clear
+      - run: cp .env.example .env
+      - run: php artisan storage:link
+      - run: php artisan key:generate
+      - run: php artisan config:clear
 
       # run tests with phpunit or codecept
       - run: ./vendor/bin/phpunit
