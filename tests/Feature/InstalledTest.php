@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class InstalledTest extends TestCase
 {
@@ -22,8 +20,8 @@ class InstalledTest extends TestCase
         $response
           ->assertStatus(200)
           ->assertJson([
-            "links" => [
-              ["rel" => "http://nodeinfo.diaspora.software/ns/schema/2.0"]
-          ]]);
+            'links' => [
+              ['rel' => 'http://nodeinfo.diaspora.software/ns/schema/2.0'],
+          ], ]);
     }
 }

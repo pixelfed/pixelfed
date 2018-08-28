@@ -2,14 +2,14 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use Cache, Redis;
-use App\{Media, Status};
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Status;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Redis;
 
 class NewStatusPipeline implements ShouldQueue
 {
@@ -39,9 +39,9 @@ class NewStatusPipeline implements ShouldQueue
         StatusEntityLexer::dispatch($status);
         //StatusActivityPubDeliver::dispatch($status);
 
-        Cache::forever('post.' . $status->id, $status);
-        
+        Cache::forever('post.'.$status->id, $status);
+
         $redis = Redis::connection();
-        $redis->lpush(config('cache.prefix').':user.' . $status->profile_id . '.posts', $status->id);
+        $redis->lpush(config('cache.prefix').':user.'.$status->profile_id.'.posts', $status->id);
     }
 }

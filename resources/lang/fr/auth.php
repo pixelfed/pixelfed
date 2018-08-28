@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,7 +11,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-    'failed' => 'Ces informations ne correspondent pas à nos dossiers.',
+    'failed'   => 'Ces informations ne correspondent pas à nos dossiers.',
     'throttle' => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
 ];
-© 2018 GitHub, Inc.

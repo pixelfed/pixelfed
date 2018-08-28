@@ -2,9 +2,9 @@
 
 return [
 
-  'likedPhoto' => 'gef&auml;llt dein Foto.',
+  'likedPhoto'          => 'gef&auml;llt dein Foto.',
   'startedFollowingYou' => 'folgt dir nun.',
-  'commented' => 'hat deinen Post kommentiert.',
-  'mentionedYou' => 'hat dich erw&auml;hnt.'
+  'commented'           => 'hat deinen Post kommentiert.',
+  'mentionedYou'        => 'hat dich erw&auml;hnt.',
 
 ];

@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\{Follower, Profile};
-use Illuminate\Console\Command;
+use App\Follower;
 use App\Jobs\FollowPipeline\FollowPipeline;
+use App\Profile;
+use Illuminate\Console\Command;
 
 class SeedFollows extends Command
 {
@@ -41,12 +42,12 @@ class SeedFollows extends Command
     {
         $limit = 10000;
 
-        for ($i=0; $i < $limit; $i++) {
+        for ($i = 0; $i < $limit; $i++) {
             try {
                 $actor = Profile::inRandomOrder()->firstOrFail();
                 $target = Profile::inRandomOrder()->firstOrFail();
 
-                $follow = new Follower;
+                $follow = new Follower();
                 $follow->profile_id = $actor->id;
                 $follow->following_id = $target->id;
                 $follow->save();

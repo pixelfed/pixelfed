@@ -2,12 +2,14 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\{Media, Notification, StatusHashtag, Status};
+use App\Notification;
+use App\Status;
+use App\StatusHashtag;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class StatusDelete implements ShouldQueue
 {
@@ -38,28 +40,27 @@ class StatusDelete implements ShouldQueue
 
     public function unlinkRemoveMedia($status)
     {
-        if($status->media()->count() == 0) {
+        if ($status->media()->count() == 0) {
             return;
         }
 
-        foreach($status->media as $media) {
+        foreach ($status->media as $media) {
             $thumbnail = storage_path("app/{$media->thumbnail_path}");
             $photo = storage_path("app/{$media->media_path}");
 
             try {
-                if(is_file($thumbnail)) {
+                if (is_file($thumbnail)) {
                     unlink($thumbnail);
                 }
-                if(is_file($photo)) {
+                if (is_file($photo)) {
                     unlink($photo);
                 }
                 $media->delete();
             } catch (Exception $e) {
-                
             }
         }
         $comments = Status::where('in_reply_to_id', $status->id)->get();
-        foreach($comments as $comment) {
+        foreach ($comments as $comment) {
             $comment->in_reply_to_id = null;
             $comment->save();
             Notification::whereItemType('App\Status')

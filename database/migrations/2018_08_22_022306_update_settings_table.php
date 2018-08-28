@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class UpdateSettingsTable extends Migration
 {
@@ -28,7 +28,7 @@ class UpdateSettingsTable extends Migration
      */
     public function down()
     {
-       Schema::table('user_settings', function (Blueprint $table) {
+        Schema::table('user_settings', function (Blueprint $table) {
             $table->dropColumn('show_profile_followers');
             $table->dropColumn('show_profile_follower_count');
             $table->dropColumn('show_profile_following');

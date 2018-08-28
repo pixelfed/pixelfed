@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\{AccountLog, User};
+use App\AccountLog;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -41,17 +42,18 @@ class LoginController extends Controller
     /**
      * Validate the user login request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return void
      */
     public function validateLogin($request)
     {
         $rules = [
             $this->username() => 'required|string',
-            'password' => 'required|string',
+            'password'        => 'required|string',
         ];
 
-        if(config('pixelfed.recaptcha')) {
+        if (config('pixelfed.recaptcha')) {
             $rules['g-recaptcha-response'] = 'required|recaptcha';
         }
 
@@ -61,13 +63,14 @@ class LoginController extends Controller
     /**
      * The user has been authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
+     * @param \Illuminate\Http\Request $request
+     * @param mixed                    $user
+     *
      * @return mixed
      */
     protected function authenticated($request, $user)
     {
-        $log = new AccountLog;
+        $log = new AccountLog();
         $log->user_id = $user->id;
         $log->item_id = $user->id;
         $log->item_type = 'App\User';

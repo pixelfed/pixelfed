@@ -40,12 +40,12 @@ return [
     'connections' => [
 
         'main' => [
-            'salt' => env("APP_HASHID_SALT", "v3MsJ1Hgnlma8YPrD3f4sW6vAn6zLnkuh6vOpKnR5IKkLqDGIk7TCADS2igpEN4ADrtXkkzV2E8HBfzpz7BreDzQqVOYDMeb4cJ1xhDhDwDeicZVUPyrxihHDaMWpTsP"),
+            'salt'   => env('APP_HASHID_SALT', 'v3MsJ1Hgnlma8YPrD3f4sW6vAn6zLnkuh6vOpKnR5IKkLqDGIk7TCADS2igpEN4ADrtXkkzV2E8HBfzpz7BreDzQqVOYDMeb4cJ1xhDhDwDeicZVUPyrxihHDaMWpTsP'),
             'length' => '24',
         ],
 
         'alternative' => [
-            'salt' => 'your-salt-string',
+            'salt'   => 'your-salt-string',
             'length' => 'your-length-integer',
         ],
 

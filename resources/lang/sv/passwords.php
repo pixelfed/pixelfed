@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'Lösenord måste vara minst sex tecken långa, och matcha bekräftelsen.',
-    'reset' => 'Ditt lösenord har återställts!',
-    'sent' => 'Vi har skickat återställningslänken till ditt e-postkonto!',
-    'token' => 'Denna lösenords-token är ogiltig.',
-    'user' => "Vi kan inte hitta en användare med den e-postadressen.",
+    'reset'    => 'Ditt lösenord har återställts!',
+    'sent'     => 'Vi har skickat återställningslänken till ditt e-postkonto!',
+    'token'    => 'Denna lösenords-token är ogiltig.',
+    'user'     => 'Vi kan inte hitta en användare med den e-postadressen.',
 
 ];

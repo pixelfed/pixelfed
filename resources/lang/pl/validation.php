@@ -71,7 +71,7 @@ return [
     'regex'                => 'Format :attribute jest nieprawidłowy.',
     'required'             => 'Pole :attribute jest wymagane.',
     'required_if'          => 'Pole :attribute musi być wypełnione, jeżeli wartość :other to :value.',
-    'required_unless'      => 'Pole :attribute musi być wypełnione, jeżeli wartość :other nie jest jedną z :values.', 
+    'required_unless'      => 'Pole :attribute musi być wypełnione, jeżeli wartość :other nie jest jedną z :values.',
     'required_with'        => 'Pole :attribute musi być wypełnione, jeżeli :values jest obecne.',
     'required_with_all'    => 'Pole :attribute musi być wypełnione, jeżeli :values są obecne.',
     'required_without'     => 'Pole :attribute hest wymagane, jeżeli :values nie są obecne.',

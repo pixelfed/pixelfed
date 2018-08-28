@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\User;
 use App\Util\Lexer\RestrictedNames;
-use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -45,7 +45,8 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
+     *
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -57,21 +58,21 @@ class RegisterController extends Controller
             'min:2',
             'max:15',
             'unique:users',
-            function($attribute, $value, $fail) {
-                if(!ctype_alpha($value[0])) {
-                    return $fail($attribute . ' is invalid. Username must be alpha-numeric and start with a letter.');
+            function ($attribute, $value, $fail) {
+                if (!ctype_alpha($value[0])) {
+                    return $fail($attribute.' is invalid. Username must be alpha-numeric and start with a letter.');
                 }
-            }
-        ];        
+            },
+        ];
 
         $rules = [
-            'name' => 'required|string|max:' . config('pixelfed.max_name_length'),
+            'name'     => 'required|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
-            'email' => 'required|string|email|max:255|unique:users',
+            'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ];
 
-        if(config('pixelfed.recaptcha')) {
+        if (config('pixelfed.recaptcha')) {
             $rules['g-recaptcha-response'] = 'required|recaptcha';
         }
 
@@ -81,15 +82,16 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
+     *
      * @return \App\User
      */
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'name'     => $data['name'],
             'username' => $data['username'],
-            'email' => $data['email'],
+            'email'    => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
     }
@@ -98,7 +100,7 @@ class RegisterController extends Controller
     {
         $restricted = RestrictedNames::get();
 
-        if(in_array($username, $restricted)) {
+        if (in_array($username, $restricted)) {
             return abort(403);
         }
     }
@@ -106,7 +108,7 @@ class RegisterController extends Controller
     public function openRegistrationCheck()
     {
         $openRegistration = config('pixelfed.open_registration');
-        if(false == $openRegistration) {
+        if (false == $openRegistration) {
             abort(403);
         }
     }

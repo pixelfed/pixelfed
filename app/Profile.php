@@ -2,10 +2,12 @@
 
 namespace App;
 
-use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
+use Auth;
+use Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Storage;
 
 class Profile extends Model
 {
@@ -30,27 +32,28 @@ class Profile extends Model
 
     public function url($suffix = '')
     {
-        if($this->remote_url) {
+        if ($this->remote_url) {
             return $this->remote_url;
         } else {
-            return url($this->username . $suffix);
+            return url($this->username.$suffix);
         }
     }
 
     public function localUrl($suffix = '')
     {
-        return url($this->username . $suffix);
+        return url($this->username.$suffix);
     }
 
     public function permalink($suffix = '')
     {
-        return url('users/' . $this->username . $suffix);
+        return url('users/'.$this->username.$suffix);
     }
 
     public function emailUrl()
     {
         $domain = parse_url(config('app.url'), PHP_URL_HOST);
-        return $this->username . '@' . $domain;
+
+        return $this->username.'@'.$domain;
     }
 
     public function statuses()
@@ -61,7 +64,7 @@ class Profile extends Model
     public function followingCount($short = false)
     {
         $count = $this->following()->count();
-        if($short) {
+        if ($short) {
             return PrettyNumber::convert($count);
         } else {
             return $count;
@@ -71,7 +74,7 @@ class Profile extends Model
     public function followerCount($short = false)
     {
         $count = $this->followers()->count();
-        if($short) {
+        if ($short) {
             return PrettyNumber::convert($count);
         } else {
             return $count;
@@ -81,7 +84,7 @@ class Profile extends Model
     public function following()
     {
         return $this->belongsToMany(
-            Profile::class,
+            self::class,
             'followers',
             'profile_id',
             'following_id'
@@ -91,7 +94,7 @@ class Profile extends Model
     public function followers()
     {
         return $this->belongsToMany(
-            Profile::class,
+            self::class,
             'followers',
             'following_id',
             'profile_id'
@@ -126,18 +129,20 @@ class Profile extends Model
     public function avatar()
     {
         return $this->hasOne(Avatar::class)->withDefault([
-            'media_path' => 'public/avatars/default.png'
+            'media_path' => 'public/avatars/default.png',
         ]);
     }
 
     public function avatarUrl()
     {
-        $url = Cache::remember("avatar:{$this->id}", 1440, function() {
+        $url = Cache::remember("avatar:{$this->id}", 1440, function () {
             $path = optional($this->avatar)->media_path;
             $version = hash('sha1', $this->avatar->created_at);
             $path = "{$path}?v={$version}";
+
             return url(Storage::url($path));
         });
+
         return $url;
     }
 
@@ -167,8 +172,8 @@ class Profile extends Model
             ->limit(3)
             ->pluck('following_id');
         $recommended = [];
-        foreach($following as $follow) {
-            $recommended[] = Profile::findOrFail($follow);
+        foreach ($following as $follow) {
+            $recommended[] = self::findOrFail($follow);
         }
 
         return $recommended;
@@ -176,9 +181,10 @@ class Profile extends Model
 
     public function keyId()
     {
-        if($this->remote_url) {
+        if ($this->remote_url) {
             return;
         }
+
         return $this->permalink('#main-key');
     }
 }

@@ -2,24 +2,23 @@
 
 namespace App\Transformer\ActivityPub;
 
-use App\{Profile, Status};
+use App\Status;
 use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-
-  public function transform(Status $status)
-  {
-      return [
+    public function transform(Status $status)
+    {
+        return [
           '@context' => [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
             [
-              "manuallyApprovesFollowers" => "as:manuallyApprovesFollowers",
-              "featured" => [
-                "https://pixelfed.org/ns#featured" => ["@type" => "@id"],
-              ]
-            ]
+              'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
+              'featured'                  => [
+                'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
+              ],
+            ],
           ],
           'id' => $status->url(),
 
@@ -27,35 +26,34 @@ class StatusTransformer extends Fractal\TransformerAbstract
           'type' => 'Note',
 
           // XXX: CW Title
-          'summary' => null,
-          'content' => $status->rendered ?? $status->caption,
+          'summary'   => null,
+          'content'   => $status->rendered ?? $status->caption,
           'inReplyTo' => null,
 
           // TODO: fix date format
-          'published' => $status->created_at->toAtomString(),
-          'url' => $status->url(),
+          'published'    => $status->created_at->toAtomString(),
+          'url'          => $status->url(),
           'attributedTo' => $status->profile->permalink(),
-          'to' => [
+          'to'           => [
             // TODO: handle proper scope
-            'https://www.w3.org/ns/activitystreams#Public'
+            'https://www.w3.org/ns/activitystreams#Public',
           ],
           'cc' => [
             // TODO: add cc's
             $status->profile->permalink('/followers'),
           ],
-          'sensitive' => (bool) $status->is_nsfw,
-          'atomUri' => $status->url(),
+          'sensitive'        => (bool) $status->is_nsfw,
+          'atomUri'          => $status->url(),
           'inReplyToAtomUri' => null,
-          'attachment' => $status->media->map(function($media) {
-            return [
-              'type' => 'Document',
+          'attachment'       => $status->media->map(function ($media) {
+              return [
+              'type'      => 'Document',
               'mediaType' => $media->mime,
-              'url' => $media->url(),
-              'name' => null
+              'url'       => $media->url(),
+              'name'      => null,
             ];
           }),
-          'tag' => []
+          'tag' => [],
       ];
-  }
-
+    }
 }

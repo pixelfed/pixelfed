@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Media;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Media;
+use Illuminate\Console\Command;
 
 class CatchUnoptimizedMedia extends Command
 {
@@ -40,7 +40,7 @@ class CatchUnoptimizedMedia extends Command
     public function handle()
     {
         $medias = Media::whereNull('processed_at')->take(50)->get();
-        foreach($medias as $media) {
+        foreach ($medias as $media) {
             ImageOptimize::dispatch($media);
         }
     }
