@@ -23,7 +23,22 @@
       <p class="text-muted small help-text">When your account is visible to search engines, your information can be crawled and stored by search engines.</p>
     </div>
 
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="show_profile_follower_count" id="show_profile_follower_count" {{$settings->show_profile_follower_count ? 'checked=""':''}}>
+      <label class="form-check-label font-weight-bold" for="show_profile_follower_count">
+        {{__('Show Follower Count')}}
+      </label>
+      <p class="text-muted small help-text">Display follower count on profile</p>
+    </div>
 
+
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="show_profile_following_count" id="show_profile_following_count" {{$settings->show_profile_following_count ? 'checked=""':''}}>
+      <label class="form-check-label font-weight-bold" for="show_profile_following_count">
+        {{__('Show Following Count')}}
+      </label>
+      <p class="text-muted small help-text">Display following count on profile</p>
+    </div>
 
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
