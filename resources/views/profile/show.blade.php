@@ -29,7 +29,7 @@
       <div class="col-4 p-0 p-sm-2 p-md-3">
         <a class="card info-overlay card-md-border-0" href="{{$status->url()}}">
           <div class="square {{$status->firstMedia()->filter_class}}">
-            <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
+            <img src="{{$status->thumb()}}" alt="{{$status->caption}}" class="square-content">
             <div class="info-overlay-text">
               <h5 class="text-white m-auto font-weight-bold">
                 <span>

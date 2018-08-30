@@ -162,9 +162,7 @@ body, button, input, textarea {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: 50%;
+    object-fit: cover;
 }
 
 @media (max-width: map-get($grid-breakpoints, "md")) {
