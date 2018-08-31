@@ -28,11 +28,10 @@ class DiscoverController extends Controller
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
                   ->pluck('filterable_id');
-                  
-        $following = $following->push($filtered);
+        $following->push($pid);
+        $following->push($filtered);
 
         $people = Profile::inRandomOrder()
-          ->where('id', '!=', $pid)
           ->whereNotIn('id', $following)
           ->take(3)
           ->get();
