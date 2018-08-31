@@ -7,6 +7,7 @@ use App\EmailVerification;
 use App\Media;
 use App\Profile;
 use App\User;
+use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use DB;
@@ -254,4 +255,64 @@ class SettingsController extends Controller
     {
         return view('settings.developers');
     }
+
+    public function mutedUsers()
+    {   
+        $pid = Auth::user()->profile->id;
+        $ids = (new UserFilter())->mutedUserIds($pid);
+        $users = Profile::whereIn('id', $ids)->simplePaginate(15);
+        return view('settings.privacy.muted', compact('users'));
+    }
+
+    public function mutedUsersUpdate(Request $request)
+    {   
+        $this->validate($request, [
+            'profile_id' => 'required|integer|min:1'
+        ]);
+        $fid = $request->input('profile_id');
+        $pid = Auth::user()->profile->id;
+        DB::transaction(function () use ($fid, $pid) {
+            $filter = UserFilter::whereUserId($pid)
+                ->whereFilterableId($fid)
+                ->whereFilterableType('App\Profile')
+                ->whereFilterType('mute')
+                ->firstOrFail();
+            $filter->delete();
+        });
+        return redirect()->back();
+    }
+
+    public function blockedUsers()
+    {
+        $pid = Auth::user()->profile->id;
+        $ids = (new UserFilter())->blockedUserIds($pid);
+        $users = Profile::whereIn('id', $ids)->simplePaginate(15);
+        return view('settings.privacy.blocked', compact('users'));
+    }
+
+
+    public function blockedUsersUpdate(Request $request)
+    {   
+        $this->validate($request, [
+            'profile_id' => 'required|integer|min:1'
+        ]);
+        $fid = $request->input('profile_id');
+        $pid = Auth::user()->profile->id;
+        DB::transaction(function () use ($fid, $pid) {
+            $filter = UserFilter::whereUserId($pid)
+                ->whereFilterableId($fid)
+                ->whereFilterableType('App\Profile')
+                ->whereFilterType('block')
+                ->firstOrFail();
+            $filter->delete();
+        });
+        return redirect()->back();
+    }
+
+    public function blockedInstances()
+    {
+        $settings = Auth::user()->settings;
+        return view('settings.privacy.blocked-instances');
+    }
 }
+
