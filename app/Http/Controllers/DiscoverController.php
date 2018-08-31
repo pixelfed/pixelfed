@@ -29,7 +29,10 @@ class DiscoverController extends Controller
                   ->whereIn('filter_type', ['mute', 'block'])
                   ->pluck('filterable_id');
         $following->push($pid);
-        $following->push($filtered);
+        
+        if($filtered->count() > 0) {
+          $following->push($filtered);
+        }
 
         $people = Profile::inRandomOrder()
           ->whereNotIn('id', $following)
