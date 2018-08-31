@@ -16,7 +16,7 @@
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">Notifications</a>
       </li>
    --}}
-      <li class="nav-item pl-3 {{request()->is('settings/privacy')?'active':''}}">
+      <li class="nav-item pl-3 {{request()->is('settings/privacy*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.privacy')}}">Privacy</a>
       </li>
 {{--       <li class="nav-item pl-3 {{request()->is('settings/security')?'active':''}}">
