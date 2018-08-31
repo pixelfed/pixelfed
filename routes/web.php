@@ -15,7 +15,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
-    Route::post('/', 'StatusController@store');
+    Route::post('/', 'StatusController@store')->middleware('throttle:500,1440');
 
     Auth::routes();
 
@@ -51,23 +51,23 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::redirect('/', '/');
         Route::get('compose', 'StatusController@compose')->name('compose');
         Route::get('remote-follow', 'FederationController@remoteFollow')->name('remotefollow');
-        Route::post('remote-follow', 'FederationController@remoteFollowStore');
-        Route::post('comment', 'CommentController@store');
-        Route::post('delete', 'StatusController@delete');
-        Route::post('mute', 'AccountController@mute');
-        Route::post('block', 'AccountController@block');
-        Route::post('like', 'LikeController@store');
-        Route::post('share', 'StatusController@storeShare');
-        Route::post('follow', 'FollowerController@store');
-        Route::post('bookmark', 'BookmarkController@store');
+        Route::post('remote-follow', 'FederationController@remoteFollowStore')->middleware('throttle:100,1440');
+        Route::post('comment', 'CommentController@store')->middleware('throttle:1000,1440');
+        Route::post('delete', 'StatusController@delete')->middleware('throttle:1000,1440');
+        Route::post('mute', 'AccountController@mute')->middleware('throttle:100,1440');
+        Route::post('block', 'AccountController@block')->middleware('throttle:100,1440');
+        Route::post('like', 'LikeController@store')->middleware('throttle:1000,1440');
+        Route::post('share', 'StatusController@storeShare')->middleware('throttle:1000,1440');
+        Route::post('follow', 'FollowerController@store')->middleware('throttle:250,1440');
+        Route::post('bookmark', 'BookmarkController@store')->middleware('throttle:250,1440');
         Route::get('lang/{locale}', 'SiteController@changeLocale');
         Route::get('verify-email', 'AccountController@verifyEmail');
-        Route::post('verify-email', 'AccountController@sendVerifyEmail');
-        Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail');
+        Route::post('verify-email', 'AccountController@sendVerifyEmail')->middleware('throttle:10,1440');
+        Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail')->middleware('throttle:10,1440');
 
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
-            Route::post('/', 'ReportController@formStore');
+            Route::post('/', 'ReportController@formStore')->middleware('throttle:100,1440');
             Route::get('not-interested', 'ReportController@notInterestedForm')->name('report.not-interested');
             Route::get('spam', 'ReportController@spamForm')->name('report.spam');
             Route::get('spam/comment', 'ReportController@spamCommentForm')->name('report.spam.comment');
@@ -90,19 +90,19 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::group(['prefix' => 'settings'], function () {
         Route::redirect('/', '/settings/home');
         Route::get('home', 'SettingsController@home')->name('settings');
-        Route::post('home', 'SettingsController@homeUpdate');
+        Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:25,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
-        Route::post('avatar', 'AvatarController@store');
+        Route::post('avatar', 'AvatarController@store')->middleware('throttle:5,1440');
         Route::get('password', 'SettingsController@password')->name('settings.password');
-        Route::post('password', 'SettingsController@passwordUpdate');
+        Route::post('password', 'SettingsController@passwordUpdate')->middleware('throttle:2,1440');
         Route::get('email', 'SettingsController@email')->name('settings.email');
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
-        Route::post('privacy', 'SettingsController@privacyStore');
+        Route::post('privacy', 'SettingsController@privacyStore')->middleware('throttle:25,1440');
         Route::get('privacy/muted-users', 'SettingsController@mutedUsers')->name('settings.privacy.muted-users');
-        Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate');
+        Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
-        Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
+        Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
         Route::get('security', 'SettingsController@security')->name('settings.security');
         Route::get('applications', 'SettingsController@applications')->name('settings.applications');
