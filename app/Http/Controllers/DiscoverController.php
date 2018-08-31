@@ -6,6 +6,7 @@ use App\Follower;
 use App\Hashtag;
 use App\Profile;
 use App\Status;
+use App\UserFilter;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,13 @@ class DiscoverController extends Controller
 
         $following = Follower::whereProfileId($pid)
           ->pluck('following_id');
+
+        $filtered = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id');
+                  
+        $following = $following->push($filtered);
 
         $people = Profile::inRandomOrder()
           ->where('id', '!=', $pid)
