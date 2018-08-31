@@ -54,6 +54,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::post('remote-follow', 'FederationController@remoteFollowStore');
         Route::post('comment', 'CommentController@store');
         Route::post('delete', 'StatusController@delete');
+        Route::post('mute', 'AccountController@mute');
+        Route::post('block', 'AccountController@block');
         Route::post('like', 'LikeController@store');
         Route::post('share', 'StatusController@storeShare');
         Route::post('follow', 'FollowerController@store');
@@ -97,6 +99,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
         Route::post('privacy', 'SettingsController@privacyStore');
+        Route::get('privacy/muted-users', 'SettingsController@mutedUsers')->name('settings.privacy.muted-users');
+        Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate');
+        Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
+        Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
+        Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
         Route::get('security', 'SettingsController@security')->name('settings.security');
         Route::get('applications', 'SettingsController@applications')->name('settings.applications');
         Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
