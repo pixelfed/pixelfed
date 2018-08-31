@@ -6,6 +6,12 @@
     <h3 class="font-weight-bold">Privacy Settings</h3>
   </div>
   <hr>
+  <div class="form-group pb-1">
+    <p>
+      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">Muted Users</a>
+      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">Blocked Users</a>
+    </p>
+  </div>
   <form method="post">
     @csrf
     <div class="form-check pb-3">

@@ -14,7 +14,23 @@
           <a class="dropdown-item font-weight-bold" href="{{route('report.form')}}?type=post&id={{$item->id}}">Report</a>
           <a class="dropdown-item font-weight-bold" href="#">Embed</a>
         @if(Auth::check())
+          @if(Auth::user()->profile->id !== $item->profile->id)
+          <div class="dropdown-divider"></div>
+          <form method="post" action="/i/mute">
+            @csrf
+            <input type="hidden" name="type" value="user">
+            <input type="hidden" name="item" value="{{$item->profile_id}}">
+            <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Mute this user</button>
+          </form>
+          <form method="post" action="/i/block">
+            @csrf
+            <input type="hidden" name="type" value="user">
+            <input type="hidden" name="item" value="{{$item->profile_id}}">
+            <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Block this user</button>
+          </form>
+          @endif
           @if(Auth::user()->profile->id === $item->profile->id || Auth::user()->is_admin == true)
+          <div class="dropdown-divider"></div>
           <a class="dropdown-item font-weight-bold" href="{{$item->editUrl()}}">Edit</a>
           <form method="post" action="/i/delete">
             @csrf

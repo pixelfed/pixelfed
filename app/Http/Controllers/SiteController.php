@@ -7,6 +7,7 @@ use App\Follower;
 use App\Profile;
 use App\Status;
 use App\User;
+use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use Cache;
@@ -30,10 +31,16 @@ class SiteController extends Controller
 
     public function homeTimeline()
     {
+        $pid = Auth::user()->profile->id;
         // TODO: Use redis for timelines
         $following = Follower::whereProfileId(Auth::user()->profile->id)->pluck('following_id');
         $following->push(Auth::user()->profile->id);
+        $filtered = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id');
         $timeline = Status::whereIn('profile_id', $following)
+                  ->whereNotIn('profile_id', $filtered)
                   ->whereHas('media')
                   ->orderBy('id', 'desc')
                   ->withCount(['comments', 'likes', 'shares'])
