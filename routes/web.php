@@ -4,6 +4,9 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::redirect('/', '/dashboard');
     Route::redirect('timeline', config('app.url').'/timeline');
     Route::get('dashboard', 'AdminController@home')->name('admin.home');
+    Route::get('reports', 'AdminController@reports')->name('admin.reports');
+    Route::get('reports/show/{id}', 'AdminController@showReport');
+    Route::post('reports/show/{id}', 'AdminController@updateReport');
     Route::redirect('statuses', '/statuses/list');
     Route::get('statuses/list', 'AdminController@statuses')->name('admin.statuses');
     Route::get('statuses/show/{id}', 'AdminController@showStatus');

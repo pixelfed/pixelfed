@@ -8,7 +8,7 @@
       <div class="card-body p-0">
         <div class="row">
           @include('admin.partial.sidebar')
-          <div class="col-12 col-md-9 p-5">
+          <div class="col-12 col-md-9 p-4">
             @if (session('status'))
                 <div class="alert alert-success">
                     {{ session('status')}}

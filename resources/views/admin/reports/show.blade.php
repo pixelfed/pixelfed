@@ -19,9 +19,9 @@
       {{-- <a href="#" class="card-link font-weight-bold">Request Mod Feedback</a> --}}
       <a href="#" class="card-link report-action-btn font-weight-bold" data-action="cw">Add CW</a>
       <a href="#" class="card-link report-action-btn font-weight-bold" data-action="unlist">Unlist/Hide</a>
-      <a href="#" class="card-link report-action-btn font-weight-bold text-danger" data-action="delete">Delete</a>
+{{--       <a href="#" class="card-link report-action-btn font-weight-bold text-danger" data-action="delete">Delete</a>
       <a href="#" class="card-link report-action-btn font-weight-bold text-danger" data-action="shadowban">Shadowban User</a>
-      <a href="#" class="card-link report-action-btn font-weight-bold text-danger" data-action="ban">Ban User</a>
+      <a href="#" class="card-link report-action-btn font-weight-bold text-danger" data-action="ban">Ban User</a> --}}
       @else
       <p class="font-weight-bold mb-0">Resolved {{$report->admin_seen->diffForHumans()}}</p>
       @endif
