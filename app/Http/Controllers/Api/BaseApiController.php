@@ -57,8 +57,14 @@ class BaseApiController extends Controller
 
     public function accountStatuses(Request $request, $id)
     {
+        $pid = Auth::user()->profile->id;
         $profile = Profile::findOrFail($id);
-        $statuses = $profile->statuses()->orderBy('id', 'desc')->paginate(20);
+        $statuses = $profile->statuses(); 
+        if($pid === $profile->id) {
+            $statuses = $statuses->orderBy('id', 'desc')->paginate(20);
+        } else {
+            $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate(20);
+        }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
