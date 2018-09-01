@@ -42,6 +42,7 @@ class SiteController extends Controller
         $timeline = Status::whereIn('profile_id', $following)
                   ->whereNotIn('profile_id', $filtered)
                   ->whereHas('media')
+                  ->whereVisibility('public')
                   ->orderBy('id', 'desc')
                   ->withCount(['comments', 'likes', 'shares'])
                   ->simplePaginate(20);

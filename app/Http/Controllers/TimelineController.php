@@ -52,6 +52,7 @@ class TimelineController extends Controller
                   ->whereNotIn('profile_id', $filtered)
                   ->whereNull('in_reply_to_id')
                   ->whereNull('reblog_of_id')
+                  ->whereVisibility('public')
                   ->withCount(['comments', 'likes'])
                   ->orderBy('id', 'desc')
                   ->simplePaginate(20);

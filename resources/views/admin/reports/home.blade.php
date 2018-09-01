@@ -1,13 +1,23 @@
 @extends('admin.partial.template')
 
 @section('section')
-  <div class="title">
-    <h3 class="font-weight-bold">Reports</h3>
+  <div class="title font-weight-bold">
+    <h3 class="">Reports</h3>
+    <p>
+      <span class="pr-3">
+        <span>Open:</span>
+        <span class="text-danger">{{App\Report::whereNull('admin_seen')->count()}}</span>
+      </span>
+      <span class="">
+        <span>Closed:</span>
+        <span class="text-success">{{App\Report::whereNotNull('admin_seen')->count()}}</span>
+      </span>
+    </p>
   </div>
 
   <hr>
 
-  <table class="table">
+  <table class="table table-responsive">
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
@@ -22,7 +32,7 @@
       @foreach($reports as $report)
       <tr>
         <th scope="row">
-          <a href="{{$report->url()}}">
+          <a href="{{$report->url()}}" class="btn btn-sm btn-outline-primary">
             {{$report->id}}
           </a>
         </th>
