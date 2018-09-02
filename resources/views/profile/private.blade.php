@@ -8,11 +8,11 @@
   <div class="profile-timeline mt-2 mt-md-4">
     <div class="card">
       <div class="card-body py-5">
-        <p class="text-center lead font-weight-bold">
+        <p class="text-center lead font-weight-bold mb-0">
           {{__('profile.privateProfileWarning')}}
         </p>
 
-        @if(Auth::check())
+        @if(!Auth::check())
         <p class="text-center mb-0">{{ __('profile.alreadyFollow', ['username'=>$user->username])}}</p>
         <p class="text-center mb-0"><a href="{{route('login')}}">{{__('Log in')}}</a></p>
         <p class="text-center mb-0">{{__('profile.loginToSeeProfile')}}</p>
