@@ -59,10 +59,10 @@
                                 {{__('navmenu.directMessages')}}
                             </a> --}}
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
+                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
                                 <span class="fas fa-user-plus pr-1"></span>
                                 {{__('navmenu.remoteFollow')}}
-                            </a>
+                            </a> --}}
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}

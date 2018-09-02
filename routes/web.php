@@ -54,8 +54,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::group(['prefix' => 'i'], function () {
         Route::redirect('/', '/');
         Route::get('compose', 'StatusController@compose')->name('compose');
-        Route::get('remote-follow', 'FederationController@remoteFollow')->name('remotefollow');
-        Route::post('remote-follow', 'FederationController@remoteFollowStore')->middleware('throttle:100,1440');
         Route::post('comment', 'CommentController@store')->middleware('throttle:1000,1440');
         Route::post('delete', 'StatusController@delete')->middleware('throttle:1000,1440');
         Route::post('mute', 'AccountController@mute')->middleware('throttle:100,1440');
