@@ -8,7 +8,7 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Reported: <a href="{{$report->reported()->url()}}">{{$report->reported()->url()}}</a></h5>
-      <h6 class="card-subtitle mb-2 text-muted">Reported by: <a href="{{$report->reporter->url()}}">{{$report->reporter->username}}</a> <span class="badge badge-primary">admin</span></h6>
+      <h6 class="card-subtitle mb-2 text-muted">Reported by: <a href="{{$report->reporter->url()}}">{{$report->reporter->username}}</a></h6>
       <p class="card-text text-muted">
         <span class="font-weight-bold text-dark">Message: </span>
         {{$report->message ?? 'No message provided.'}}
