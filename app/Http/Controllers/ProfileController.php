@@ -86,7 +86,7 @@ class ProfileController extends Controller
         }
 
         $user = Auth::user()->profile;
-        if($user->id == $profile->id) {
+        if($user->id == $profile->id || !$profile->is_private) {
             return false;
         }
 
@@ -124,7 +124,14 @@ class ProfileController extends Controller
 
     public function showAtomFeed(Request $request, $user)
     {
-        $profile = Profile::whereUsername($user)->firstOrFail();
+        $profile = $user = Profile::whereUsername($user)->firstOrFail();
+        if($profile->is_private || Auth::check()) {
+            $blocked = $this->blockedProfileCheck($profile);
+            $check = $this->privateProfileCheck($profile, null);
+            if($check || $blocked) {
+                return view('profile.private', compact('user'));
+            }
+        }
         $items = $profile->statuses()->orderBy('created_at', 'desc')->take(10)->get();
         return response()->view('atom.user', compact('profile', 'items'))
         ->header('Content-Type', 'application/atom+xml');
@@ -134,6 +141,13 @@ class ProfileController extends Controller
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
         // TODO: fix $profile/$user mismatch in profile & follower templates
+        if($profile->is_private || Auth::check()) {
+            $blocked = $this->blockedProfileCheck($profile);
+            $check = $this->privateProfileCheck($profile, null);
+            if($check || $blocked) {
+                return view('profile.private', compact('user'));
+            }
+        }
         $owner = Auth::check() && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         $followers = $profile->followers()->orderBy('created_at', 'desc')->simplePaginate(12);
@@ -149,8 +163,15 @@ class ProfileController extends Controller
 
     public function following(Request $request, $username)
     {
-        $profile = Profile::whereUsername($username)->firstOrFail();
+        $profile = $user = Profile::whereUsername($username)->firstOrFail();
         // TODO: fix $profile/$user mismatch in profile & follower templates
+        if($profile->is_private || Auth::check()) {
+            $blocked = $this->blockedProfileCheck($profile);
+            $check = $this->privateProfileCheck($profile, null);
+            if($check || $blocked) {
+                return view('profile.private', compact('user'));
+            }
+        }
         $user = $profile;
         $owner = Auth::check() && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
