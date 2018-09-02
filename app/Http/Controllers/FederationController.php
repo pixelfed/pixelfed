@@ -140,7 +140,10 @@ class FederationController extends Controller
         }
 
         $user = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
-        $timeline = $user->statuses()->orderBy('created_at', 'desc')->paginate(10);
+        if($user->is_private) {
+            return response()->json(['error'=>'403', 'msg' => 'private profile'], 403);
+        }
+        $timeline = $user->statuses()->whereVisibility('public')->orderBy('created_at', 'desc')->paginate(10);
         $fractal = new Fractal\Manager();
         $resource = new Fractal\Resource\Item($user, new ProfileOutbox());
         $res = $fractal->createData($resource)->toArray();
