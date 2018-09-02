@@ -81,4 +81,35 @@ trait AdminReportController
 
         return $this;
     }
+
+    protected function actionMap()
+    {
+        return [
+            '1' => 'ignore',
+            '2' => 'cw',
+            '3' => 'unlist',
+            '4' => 'delete',
+            '5' => 'shadowban',
+            '6' => 'ban'
+        ];
+    }
+
+    public function bulkUpdateReport(Request $request)
+    {
+        $this->validate($request, [
+            'action' => 'required|integer|min:1|max:10',
+            'ids'    => 'required|array'
+        ]);
+        $action = $this->actionMap()[$request->input('action')];
+        $ids = $request->input('ids');
+        $reports = Report::whereIn('id', $ids)->whereNull('admin_seen')->get();
+        foreach($reports as $report) {
+            $this->handleReportAction($report, $action);
+        }
+        $res = [
+            'message' => 'Success',
+            'code'    => 200
+        ];
+        return response()->json($res);
+    }
 }
