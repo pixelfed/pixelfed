@@ -29,7 +29,8 @@ class ProfileController extends Controller
         $username = $user->username;
         $loggedIn = Auth::check();
         $isPrivate = false;
-
+        $isBlocked = false;
+        
         if ($user->remote_url) {
             $settings = new \StdClass;
             $settings->crawlable = false;
