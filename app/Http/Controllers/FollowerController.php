@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Follower;
+use App\FollowRequest;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Profile;
 use Auth;
@@ -18,15 +19,26 @@ class FollowerController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-        'item'    => 'required|integer',
-      ]);
+            'item'    => 'required|integer',
+        ]);
+        $item = $request->input('item');
+        $this->handleFollowRequest($item);
+        return redirect()->back();
+    }
 
+    protected function handleFollowRequest($item)
+    {
         $user = Auth::user()->profile;
-        $target = Profile::where('id', '!=', $user->id)->findOrFail($request->input('item'));
-
+        $target = Profile::where('id', '!=', $user->id)->findOrFail($item);
+        $private = (bool) $target->is_private;
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
 
-        if ($isFollowing == 0) {
+        if($private == true) {
+            $follow = new FollowRequest;
+            $follow->follower_id = $user->id;
+            $follow->following_id = $target->id;
+            $follow->save();
+        } elseif ($isFollowing == 0) {
             $follower = new Follower();
             $follower->profile_id = $user->id;
             $follower->following_id = $target->id;
@@ -36,7 +48,5 @@ class FollowerController extends Controller
             $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
             $follower->delete();
         }
-
-        return redirect()->back();
     }
 }
