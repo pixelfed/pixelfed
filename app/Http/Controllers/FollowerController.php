@@ -33,7 +33,7 @@ class FollowerController extends Controller
         $private = (bool) $target->is_private;
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
 
-        if($private == true) {
+        if($private == true && $isFollowing == 0) {
             $follow = new FollowRequest;
             $follow->follower_id = $user->id;
             $follow->following_id = $target->id;
