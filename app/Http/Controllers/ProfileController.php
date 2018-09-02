@@ -42,27 +42,27 @@ class ProfileController extends Controller
         }
 
         if ($user->is_private == true) {
-            $isPrivate = $this->privateProfileCheck($user);
+            $isPrivate = $this->privateProfileCheck($user, $loggedIn);
         }
 
         if ($loggedIn == true) {
-            $isPrivate = $this->blockedProfileCheck($user);
+            $isBlocked = $this->blockedProfileCheck($user);
         }
 
-        if ($isPrivate == true) {
+        if ($isPrivate == true || $isBlocked == true) {
             return view('profile.private', compact('user'));
-        } else {
-            $owner = $loggedIn && Auth::id() === $user->user_id;
-            $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
-            $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-            $timeline = $user->statuses()
-                  ->whereHas('media')
-                  ->whereNull('in_reply_to_id')
-                  ->whereNull('reblog_of_id')
-                  ->orderBy('created_at', 'desc')
-                  ->withCount(['comments', 'likes'])
-                  ->simplePaginate(21);
-        }
+        } 
+
+        $owner = $loggedIn && Auth::id() === $user->user_id;
+        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+        $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+        $timeline = $user->statuses()
+              ->whereHas('media')
+              ->whereNull('in_reply_to_id')
+              ->whereNull('reblog_of_id')
+              ->orderBy('created_at', 'desc')
+              ->withCount(['comments', 'likes'])
+              ->simplePaginate(21);
 
         return view('profile.show', compact('user', 'settings', 'owner', 'is_following', 'is_admin', 'timeline'));
     }
@@ -79,18 +79,24 @@ class ProfileController extends Controller
         return redirect($user->url());
     }
 
-    protected function privateProfileCheck(Profile $profile)
+    protected function privateProfileCheck(Profile $profile, $loggedIn)
     {
-        if (Auth::check() === false) {
-            return false;
+        if (!Auth::check()) {
+            return true;
         }
-        $pid = Auth::user()->profile->id;
-        $follower_ids = $profile->followers()->pluck('followers.profile_id')->toArray();
-        if (!in_array($pid, $follower_ids) && $pid !== $profile->id) {
+
+        $user = Auth::user()->profile;
+        if($user->id == $profile->id) {
             return false;
         }
 
-        return true;
+        $follows = Follower::whereProfileId($user->id)->whereFollowingId($profile->id)->exists();
+        if ($follows == false) {
+            return true;
+        }
+        
+        return false;
+
     }
 
     protected function blockedProfileCheck(Profile $profile)
