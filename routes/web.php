@@ -7,6 +7,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('reports', 'AdminController@reports')->name('admin.reports');
     Route::get('reports/show/{id}', 'AdminController@showReport');
     Route::post('reports/show/{id}', 'AdminController@updateReport');
+    Route::post('reports/bulk', 'AdminController@bulkUpdateReport');
     Route::redirect('statuses', '/statuses/list');
     Route::get('statuses/list', 'AdminController@statuses')->name('admin.statuses');
     Route::get('statuses/show/{id}', 'AdminController@showStatus');
