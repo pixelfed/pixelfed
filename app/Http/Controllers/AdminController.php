@@ -83,11 +83,11 @@ class AdminController extends Controller
       $stats = [];
       $stats['total'] = [
         'count' => User::where('created_at', '>', Carbon::now()->subDays($total_duration))->count(),
-        'points' => User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
+        'points' => 0//User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
       ];
       $stats['new'] = [
         'count' => User::where('created_at', '>', Carbon::now()->subDays($new_duration))->count(),
-        'points' => User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
+        'points' => 0//User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
       ];
       $stats['active'] = [
         'count' => Status::groupBy('profile_id')->count()
