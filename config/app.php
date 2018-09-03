@@ -213,6 +213,7 @@ return [
 
         'Recaptcha'    => Greggilbert\Recaptcha\Facades\Recaptcha::class,
         'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
+        'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
     ],
 
 ];
