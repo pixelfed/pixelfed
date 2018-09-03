@@ -50,12 +50,13 @@ class ProfileController extends Controller
             $isBlocked = $this->blockedProfileCheck($user);
         }
 
-        if ($isPrivate == true || $isBlocked == true) {
-            return view('profile.private', compact('user'));
-        } 
-
         $owner = $loggedIn && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+
+        if ($isPrivate == true || $isBlocked == true) {
+            return view('profile.private', compact('user', 'is_following'));
+        } 
+
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         $timeline = $user->statuses()
               ->whereHas('media')
@@ -142,6 +143,8 @@ class ProfileController extends Controller
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
         // TODO: fix $profile/$user mismatch in profile & follower templates
+        $owner = Auth::check() && Auth::id() === $user->user_id;
+        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         if($profile->is_private || Auth::check()) {
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
@@ -149,8 +152,6 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user'));
             }
         }
-        $owner = Auth::check() && Auth::id() === $user->user_id;
-        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         $followers = $profile->followers()->orderBy('created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
@@ -166,6 +167,8 @@ class ProfileController extends Controller
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
         // TODO: fix $profile/$user mismatch in profile & follower templates
+        $owner = Auth::check() && Auth::id() === $user->user_id;
+        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         if($profile->is_private || Auth::check()) {
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
@@ -173,9 +176,6 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user'));
             }
         }
-        $user = $profile;
-        $owner = Auth::check() && Auth::id() === $user->user_id;
-        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         $following = $profile->following()->orderBy('created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
