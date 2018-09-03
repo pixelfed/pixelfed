@@ -101,14 +101,14 @@ class Profile extends Model
         );
     }
 
-    public function follows($profile)
+    public function follows($profile) : bool
     {
-        return Follower::whereProfileId($this->id)->whereFollowingId($profile->id)->count();
+        return Follower::whereProfileId($this->id)->whereFollowingId($profile->id)->exists();
     }
 
-    public function followedBy($profile)
+    public function followedBy($profile) : bool
     {
-        return Follower::whereProfileId($profile->id)->whereFollowingId($this->id)->count();
+        return Follower::whereProfileId($profile->id)->whereFollowingId($this->id)->exists();
     }
 
     public function bookmarks()
@@ -186,5 +186,23 @@ class Profile extends Model
         }
 
         return $this->permalink('#main-key');
+    }
+
+    public function mutedIds()
+    {
+        return UserFilter::whereUserId($this->id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('mute')
+            ->pluck('filterable_id');
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'profile_id');
+    }
+
+    public function media()
+    {
+        return $this->hasMany(Media::class, 'profile_id');
     }
 }
