@@ -88,6 +88,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::group(['prefix' => 'account'], function () {
         Route::redirect('/', '/');
         Route::get('activity', 'AccountController@notifications')->name('notifications');
+        Route::get('follow-requests', 'AccountController@followRequests')->name('follow-requests');
+        Route::post('follow-requests', 'AccountController@followRequestHandle');
     });
 
     Route::group(['prefix' => 'settings'], function () {
