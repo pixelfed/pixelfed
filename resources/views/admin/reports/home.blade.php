@@ -2,7 +2,7 @@
 
 @section('section')
   <div class="title font-weight-bold">
-    <h3 class="">Reports</h3>
+    <h3 class="font-weight-bold">Reports</h3>
     <p>
       <span class="pr-3">
         <span>Open:</span>
