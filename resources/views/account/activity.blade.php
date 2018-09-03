@@ -5,15 +5,18 @@
   <div class="col-12 col-md-8 offset-md-2">
     <div class="card mt-3">
       <div class="card-body p-0">
-        <ul class="nav nav-tabs d-flex text-center">
-          {{--
-            <li class="nav-item flex-fill">
-              <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications.following')}}">Following</a>
-            </li> 
-          --}}
+        <ul class="nav nav-pills d-flex text-center">
+        
+          {{-- <li class="nav-item flex-fill">
+            <a class="nav-link font-weight-bold text-uppercase" href="#">Following</a>
+          </li> --}} 
+        
           <li class="nav-item flex-fill">
             <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications')}}">My Notifications</a>
           </li>
+          <li class="nav-item flex-fill">
+            <a class="nav-link font-weight-bold text-uppercase" href="{{route('follow-requests')}}">Follow Requests</a>
+          </li> 
         </ul>
       </div>
     </div>

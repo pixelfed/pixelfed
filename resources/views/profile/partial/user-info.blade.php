@@ -19,7 +19,7 @@
             <span class="pl-4">
             <a class="fas fa-cog fa-lg text-muted" href="{{route('settings')}}"></a>
             </span>
-            @elseif ($is_following == true)
+            @elseif (Auth::check() && $is_following == true)
             <span class="pl-4">
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
                 @csrf
@@ -27,7 +27,7 @@
                 <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
               </form>
             </span>
-            @elseif ($is_following == false)
+            @elseif (Auth::check() && $is_following == false)
             <span class="pl-4">
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
                 @csrf

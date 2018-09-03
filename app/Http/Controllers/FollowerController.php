@@ -34,10 +34,10 @@ class FollowerController extends Controller
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
 
         if($private == true && $isFollowing == 0) {
-            $follow = new FollowRequest;
-            $follow->follower_id = $user->id;
-            $follow->following_id = $target->id;
-            $follow->save();
+            $follow = FollowRequest::firstOrCreate([
+                'follower_id' => $user->id,
+                'following_id' => $target->id
+            ]);
         } elseif ($isFollowing == 0) {
             $follower = new Follower();
             $follower->profile_id = $user->id;

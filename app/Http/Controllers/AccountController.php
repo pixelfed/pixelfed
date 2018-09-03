@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\EmailVerification;
+use App\Follower;
+use App\FollowRequest;
+use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Mail\ConfirmEmail;
 use App\Notification;
 use App\Profile;
@@ -235,5 +238,44 @@ class AccountController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function followRequests(Request $request)
+    {
+        $pid = Auth::user()->profile->id;
+        $followers = FollowRequest::whereFollowingId($pid)->orderBy('id','desc')->whereIsRejected(0)->simplePaginate(10);
+        return view('account.follow-requests', compact('followers'));
+    }
+
+    public function followRequestHandle(Request $request)
+    {
+        $this->validate($request, [
+            'action' => 'required|string|max:10',
+            'id' => 'required|integer|min:1'
+        ]);
+
+        $pid = Auth::user()->profile->id;
+        $action = $request->input('action') === 'accept' ? 'accept' : 'reject';
+        $id = $request->input('id');
+        $followRequest = FollowRequest::whereFollowingId($pid)->findOrFail($id);
+        $follower = $followRequest->follower;
+
+        switch ($action) {
+            case 'accept':
+                $follow = new Follower();
+                $follow->profile_id = $follower->id;
+                $follow->following_id = $pid;
+                $follow->save();
+                FollowPipeline::dispatch($follow);
+                $followRequest->delete();
+                break;
+
+            case 'reject':
+                $followRequest->is_rejected = true;
+                $followRequest->save();
+                break;
+        }
+
+        return response()->json(['msg' => 'success'], 200);
     }
 }
