@@ -22,7 +22,7 @@
             <img src="{{$follow->follower->avatarUrl()}}" width="32px" class="rounded-circle">
           </span>
           <span class="notification-text">
-            <span class="font-weight-bold">{{$follow->follower->username}}</span> {{__('wants to follow you')}}
+            <a class="font-weight-bold text-dark" href="{{$follow->follower->url()}}">{{$follow->follower->username}}</a> {{__('wants to follow you')}}
             <span class="text-muted notification-timestamp pl-1">{{$follow->created_at->diffForHumans(null, true, true)}}</span>
           </span>
           <span class="float-right">
