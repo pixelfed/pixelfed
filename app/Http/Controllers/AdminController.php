@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Media;
+use App\Profile;
 use App\Report;
 use App\Status;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\{
   AdminReportController
@@ -27,9 +29,17 @@ class AdminController extends Controller
 
     public function users(Request $request)
     {
+        $stats = $this->collectUserStats($request);
         $users = User::orderBy('id', 'desc')->paginate(10);
+        return view('admin.users.home', compact('users', 'stats'));
+    }
 
-        return view('admin.users.home', compact('users'));
+
+    public function editUser(Request $request, $id)
+    {
+        $user = User::find($id);
+        $profile = $user->profile;
+        return view('admin.users.edit', compact('user', 'profile'));
     }
 
     public function statuses(Request $request)
@@ -63,5 +73,34 @@ class AdminController extends Controller
     {
       $report = Report::findOrFail($id);
       return view('admin.reports.show', compact('report'));
+    }
+
+
+    protected function collectUserStats($request)
+    {
+      $total_duration = $request->query('total_duration') ?? '30';
+      $new_duration = $request->query('new_duration') ?? '7';
+      $stats = [];
+      $stats['total'] = [
+        'count' => User::where('created_at', '>', Carbon::now()->subDays($total_duration))->count(),
+        'points' => User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
+      ];
+      $stats['new'] = [
+        'count' => User::where('created_at', '>', Carbon::now()->subDays($new_duration))->count(),
+        'points' => User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
+      ];
+      $stats['active'] = [
+        'count' => Status::groupBy('profile_id')->count()
+      ];
+      $stats['profile'] = [
+        'local' => Profile::whereNull('remote_url')->count(),
+        'remote' => Profile::whereNotNull('remote_url')->count()
+      ];
+      $stats['avg'] = [
+        'age' => Carbon::parse(substr(User::avg('created_at'),0,8))->diffForHumans(null,true,true),
+        'posts' => floor(Status::avg('profile_id'))
+      ];
+      return $stats;
+
     }
 }
