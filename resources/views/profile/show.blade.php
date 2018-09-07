@@ -32,11 +32,13 @@
             <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
             <div class="info-overlay-text">
               <h5 class="text-white m-auto font-weight-bold">
-                <span class="pr-4">
-                <span class="far fa-heart fa-lg pr-1"></span> {{$status->likes_count}}
+                <span>
+                  <span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+                  <span class="d-flex-inline">{{App\Util\Lexer\PrettyNumber::convert($status->likes_count)}}</span>
                 </span>
                 <span>
-                <span class="far fa-comment fa-lg pr-1"></span> {{$status->comments_count}}
+                  <span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
+                  <span class="d-flex-inline">{{App\Util\Lexer\PrettyNumber::convert($status->comments_count)}}</span>
                 </span>
               </h5>
             </div>
