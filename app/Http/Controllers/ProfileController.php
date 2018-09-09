@@ -62,6 +62,7 @@ class ProfileController extends Controller
               ->whereHas('media')
               ->whereNull('in_reply_to_id')
               ->whereNull('reblog_of_id')
+              ->whereIn('visibility', ['public', 'unlisted'])
               ->orderBy('created_at', 'desc')
               ->withCount(['comments', 'likes'])
               ->simplePaginate(21);
