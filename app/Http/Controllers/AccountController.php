@@ -278,4 +278,23 @@ class AccountController extends Controller
 
         return response()->json(['msg' => 'success'], 200);
     }
+
+    public function sudoMode(Request $request)
+    {
+        return view('auth.sudo');
+    }
+
+    public function sudoModeVerify(Request $request)
+    {
+        $this->validate($request, [
+            'password' => 'required|string|max:500'
+        ]);
+        $user = Auth::user();
+        $password = $request->input('password');
+        $next = $request->cookie('redirectNext') ?:'/';
+        if(password_verify($password, $user->password) === true) {
+            return redirect($next)->withCookie('sudoMode', time());
+        }
+        return redirect($next);
+    }
 }
