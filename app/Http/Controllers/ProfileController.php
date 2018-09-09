@@ -132,7 +132,7 @@ class ProfileController extends Controller
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
             if($check || $blocked) {
-                return view('profile.private', compact('user'));
+                return redirect($profile->url());
             }
         }
         $items = $profile->statuses()->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
