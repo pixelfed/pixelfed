@@ -23,7 +23,6 @@ class DiscoverController extends Controller
 
         $following = Follower::whereProfileId($pid)
           ->pluck('following_id');
-
         $filtered = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
@@ -36,10 +35,12 @@ class DiscoverController extends Controller
 
         $people = Profile::inRandomOrder()
           ->whereNotIn('id', $following)
+          ->whereIsPrivate(false)
           ->take(3)
           ->get();
 
         $posts = Status::whereHas('media')
+          ->whereVisibility('public')
           ->where('profile_id', '!=', $pid)
           ->whereNotIn('profile_id', $following)
           ->orderBy('created_at', 'desc')
