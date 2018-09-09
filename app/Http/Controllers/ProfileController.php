@@ -135,7 +135,7 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user'));
             }
         }
-        $items = $profile->statuses()->orderBy('created_at', 'desc')->take(10)->get();
+        $items = $profile->statuses()->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
         return response()->view('atom.user', compact('profile', 'items'))
         ->header('Content-Type', 'application/atom+xml');
     }
