@@ -62,6 +62,7 @@ class ProfileController extends Controller
               ->whereHas('media')
               ->whereNull('in_reply_to_id')
               ->whereNull('reblog_of_id')
+              ->whereIn('visibility', ['public', 'unlisted'])
               ->orderBy('created_at', 'desc')
               ->withCount(['comments', 'likes'])
               ->simplePaginate(21);
@@ -131,10 +132,10 @@ class ProfileController extends Controller
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
             if($check || $blocked) {
-                return view('profile.private', compact('user'));
+                return redirect($profile->url());
             }
         }
-        $items = $profile->statuses()->orderBy('created_at', 'desc')->take(10)->get();
+        $items = $profile->statuses()->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
         return response()->view('atom.user', compact('profile', 'items'))
         ->header('Content-Type', 'application/atom+xml');
     }

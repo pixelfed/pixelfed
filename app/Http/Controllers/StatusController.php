@@ -25,6 +25,16 @@ class StatusController extends Controller
                 ->withCount(['likes', 'comments', 'media'])
                 ->findOrFail($id);
 
+        if($status->visibility == 'private' || $user->is_private) {
+            if(!Auth::check()) {
+                abort(403);
+            }
+            $pid = Auth::user()->profile;
+            if($user->followedBy($pid) == false && $user->id !== $pid->id) {
+                abort(403);
+            }
+        }
+
         if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
             return $this->showActivityPub($request, $status);
         }
@@ -80,6 +90,7 @@ class StatusController extends Controller
           'cw'           => 'nullable|string',
           'filter_class' => 'nullable|string',
           'filter_name'  => 'nullable|string',
+          'visibility'   => 'required|string|min:5|max:10',
         ]);
 
         if (count($request->file('photo')) > config('pixelfed.max_album_length')) {
@@ -89,11 +100,13 @@ class StatusController extends Controller
         $monthHash = hash('sha1', date('Y').date('m'));
         $userHash = hash('sha1', $user->id.(string) $user->created_at);
         $profile = $user->profile;
+        $visibility = $this->validateVisibility($request->visibility);
 
         $status = new Status();
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);
         $status->is_nsfw = $cw;
+        $status->visibility = $visibility;
 
         $status->save();
 
@@ -251,5 +264,11 @@ class StatusController extends Controller
         if (Auth::check() == false) {
             abort(403);
         }
+    }
+
+    protected function validateVisibility($visibility)
+    {
+        $allowed = ['public', 'unlisted', 'private'];
+        return in_array($visibility, $allowed) ? $visibility : 'public';
     }
 }
