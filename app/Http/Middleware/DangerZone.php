@@ -20,11 +20,13 @@ class DangerZone
             return redirect(route('login'));
         }
         if(!$request->is('i/auth/sudo')) {
-            if( false == $request->cookie('sudoMode') ) {
-                return redirect('/i/auth/sudo')->withCookie('redirectNext', $request->url());
+            if( !$request->session()->has('sudoMode') ) {
+                $request->session()->put('redirectNext', $request->url());
+                return redirect('/i/auth/sudo');
             } 
-            if( $request->cookie('sudoMode') < Carbon::now()->subMinutes(30)->timestamp ) {
-                return redirect('/i/auth/sudo')->withCookie('redirectNext', $request->url());
+            if( $request->session()->get('sudoMode') < Carbon::now()->subMinutes(30)->timestamp ) {
+                $request->session()->put('redirectNext', $request->url());
+                return redirect('/i/auth/sudo');
             } 
         }
         return $next($request);

@@ -291,9 +291,10 @@ class AccountController extends Controller
         ]);
         $user = Auth::user();
         $password = $request->input('password');
-        $next = $request->cookie('redirectNext') ?:'/';
+        $next = $request->session()->get('redirectNext', '/');
         if(password_verify($password, $user->password) === true) {
-            return redirect($next)->withCookie('sudoMode', time());
+            $request->session()->put('sudoMode', time());
+            return redirect($next);
         }
         return redirect($next);
     }
