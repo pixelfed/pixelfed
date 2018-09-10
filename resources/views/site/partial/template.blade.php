@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => 'About ' . config('app.name')])
+@extends('layouts.anon',['title' => 'About ' . config('app.name')])
 
 @section('content')
 
