@@ -68,6 +68,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::post('verify-email', 'AccountController@sendVerifyEmail')->middleware('throttle:10,1440');
         Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail')->middleware('throttle:10,1440');
 
+        Route::get('auth/sudo', 'AccountController@sudoMode');
+        Route::post('auth/sudo', 'AccountController@sudoModeVerify');
+
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
             Route::post('/', 'ReportController@formStore')->middleware('throttle:100,1440');
@@ -98,8 +101,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:25,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
         Route::post('avatar', 'AvatarController@store')->middleware('throttle:5,1440');
-        Route::get('password', 'SettingsController@password')->name('settings.password');
-        Route::post('password', 'SettingsController@passwordUpdate')->middleware('throttle:2,1440');
+        Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
+        Route::post('password', 'SettingsController@passwordUpdate')->middleware(['throttle:2,1440','dangerzone']);
         Route::get('email', 'SettingsController@email')->name('settings.email');
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
