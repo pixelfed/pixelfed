@@ -29,7 +29,7 @@ class AdminController extends Controller
 
     public function users(Request $request)
     {
-        $stats = $this->collectUserStats($request);
+        $stats = [];
         $users = User::orderBy('id', 'desc')->paginate(10);
         return view('admin.users.home', compact('users', 'stats'));
     }
@@ -77,7 +77,7 @@ class AdminController extends Controller
 
 
     protected function collectUserStats($request)
-    {
+    { 
       $total_duration = $request->query('total_duration') ?? '30';
       $new_duration = $request->query('new_duration') ?? '7';
       $stats = [];
@@ -97,7 +97,7 @@ class AdminController extends Controller
         'remote' => Profile::whereNotNull('remote_url')->count()
       ];
       $stats['avg'] = [
-        'age' => Carbon::parse(substr(User::avg('created_at'),0,8))->diffForHumans(null,true,true),
+        'age' => 0,
         'posts' => floor(Status::avg('profile_id'))
       ];
       return $stats;
