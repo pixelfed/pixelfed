@@ -4,7 +4,8 @@
   <div class="title">
     <h3 class="font-weight-bold">Users</h3>
   </div>
-  <div class="row mb-3">
+  <hr>
+  {{-- <div class="row mb-3">
     <div class="col-12 col-md-6 mb-2">
       <div class="card">
         <div class="card-body">
@@ -17,7 +18,7 @@
                 <option data-duration="30" selected="">1 Month</option>
                 <option data-duration="365">1 Year</option>
               </select>
-            </span> --}}
+            </span>
           </div>
           <div>
             <p class="h3 font-weight-bold mb-0">{{$stats['total']['count']}}</p>
@@ -38,7 +39,7 @@
                 <option selected="">1 Month</option>
                 <option>1 Year</option>
               </select>
-            </span> --}}
+            </span> 
           </div>
           <div>
             <p class="h3 font-weight-bold mb-0">{{$stats['new']['count']}}</p>
@@ -95,7 +96,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
   <div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
@@ -215,8 +216,8 @@
         lineColor: '#0083CD',
         fillColor: false
       };
-      $('.totalUsers').sparkline({{$stats['total']['points']}}, sparkopts);
-      $('.newUsers').sparkline({{$stats['new']['points']}}, sparkopts);
+      {{-- $('.totalUsers').sparkline({{$stats['total']['points']}}, sparkopts);
+      $('.newUsers').sparkline({{$stats['new']['points']}}, sparkopts); --}}
     });
   </script>
 @endpush
