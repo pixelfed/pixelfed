@@ -43,7 +43,7 @@ class SiteController extends Controller
                   ->whereNotIn('profile_id', $filtered)
                   ->whereHas('media')
                   ->whereVisibility('public')
-                  ->orderBy('id', 'desc')
+                  ->orderBy('created_at', 'desc')
                   ->withCount(['comments', 'likes', 'shares'])
                   ->simplePaginate(20);
         $type = 'personal';
