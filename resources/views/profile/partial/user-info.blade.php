@@ -81,7 +81,7 @@
             @endif
           </p>
           <p class="mb-0 lead">{{$user->bio}}</p>
-          <p class="mb-0"><a href="{{$user->website}}" class="font-weight-bold" rel="external nofollow noopener" target="_blank">{{str_limit($user->website, 30)}}</a></p>
+          <p class="mb-0"><a href="{{$user->website}}" class="font-weight-bold" rel="me external nofollow noopener" target="_blank">{{str_limit($user->website, 30)}}</a></p>
         </div>
       </div>
     </div>
