@@ -295,7 +295,10 @@ class AccountController extends Controller
         if(password_verify($password, $user->password) === true) {
             $request->session()->put('sudoMode', time());
             return redirect($next);
+        } else {
+            return redirect()
+                ->back()
+                ->withErrors(['password' => __('auth.failed')]);
         }
-        return redirect($next);
     }
 }
