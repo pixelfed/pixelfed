@@ -33,7 +33,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'email', 'password', 'is_admin', 'remember_token', 
+        'email_verified_at', '2fa_enabled', '2fa_secret', 
+        '2fa_backup_codes', '2fa_setup_at',
     ];
 
     public function profile()
