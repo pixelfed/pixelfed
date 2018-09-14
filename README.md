@@ -55,10 +55,9 @@ php artisan key:generate
 php artisan storage:link
 php artisan migrate
 php artisan horizon
-php artisan serve --host=localhost --port=80
 ```
 
-Check your browser at http://localhost
+
 
 ## Communication
 
