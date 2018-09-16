@@ -1,19 +1,16 @@
 <?php
 
-namespace App\Events;
+namespace App\Listeners;
 
 use App\User;
 use App\UserSetting;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AuthLoginEvent
+class AuthLogin
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-
     /**
-     * Create a new event instance.
+     * Create the event listener.
      *
      * @return void
      */
@@ -22,8 +19,15 @@ class AuthLoginEvent
         //
     }
 
-    public function handle(User $user)
+    /**
+     * Handle the event.
+     *
+     * @param  object  $event
+     * @return void
+     */
+    public function handle($event)
     {
+        $user = $event->user;
         if (empty($user->settings)) {
             $settings = new UserSetting();
             $settings->user_id = $user->id;

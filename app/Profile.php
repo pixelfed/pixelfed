@@ -205,4 +205,19 @@ class Profile extends Model
     {
         return $this->hasMany(Media::class, 'profile_id');
     }
+
+    public function inboxUrl()
+    {
+        return $this->inbox_url ?? $this->permalink('/inbox');
+    }
+
+    public function outboxUrl()
+    {
+        return $this->outbox_url ?? $this->permalink('/outbox');
+    }
+
+    public function sharedInbox()
+    {
+        return $this->sharedInbox ?? $this->inboxUrl();
+    }
 }
