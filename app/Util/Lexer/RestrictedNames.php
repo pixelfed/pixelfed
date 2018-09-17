@@ -113,6 +113,7 @@ class RestrictedNames
     public static $reserved = [
      // Reserved for instance admin
      'admin',
+     'administrator',
 
      // Static Assets
      'assets',
@@ -126,6 +127,7 @@ class RestrictedNames
      'api',
      'auth',
      'css',
+     'checkpoint',
      'c',
      'i',
      'dashboard',

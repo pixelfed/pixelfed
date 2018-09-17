@@ -19,7 +19,8 @@ class AdminController extends Controller
 
     public function __construct()
     {
-        return $this->middleware('admin');
+        $this->middleware('admin');
+        $this->middleware('twofactor');
     }
 
     public function home()

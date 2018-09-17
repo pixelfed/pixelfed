@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Mail;
 use Redis;
+use PragmaRX\Google2FA\Google2FA;
 
 class AccountController extends Controller
 {
@@ -299,6 +300,30 @@ class AccountController extends Controller
             return redirect()
                 ->back()
                 ->withErrors(['password' => __('auth.failed')]);
+        }
+    }
+
+    public function twoFactorCheckpoint(Request $request)
+    {
+        return view('auth.checkpoint');
+    }
+
+    public function twoFactorVerify(Request $request)
+    {
+        $this->validate($request, [
+            'code'  => 'required|string|max:32'
+        ]);
+        $user = Auth::user();
+        $code = $request->input('code');
+        $google2fa = new Google2FA();
+        $verify = $google2fa->verifyKey($user->{'2fa_secret'}, $code);
+        if($verify) {
+            $request->session()->push('2fa.session.active', true);
+            return redirect('/');
+        } else {
+            return redirect()->back()->withErrors([
+                'code' => 'Invalid code'
+            ]);
         }
     }
 }
