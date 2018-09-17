@@ -18,7 +18,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('media/list', 'AdminController@media')->name('admin.media');
 });
 
-Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::post('/', 'StatusController@store')->middleware('throttle:500,1440');
 
@@ -30,10 +30,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
     Route::get('/home', 'HomeController@index')->name('home');
 
     Route::get('discover', 'DiscoverController@home')->name('discover');
-
-    Route::get('search/hashtag/{tag}', function ($tag) {
-        return redirect('/discover/tags/'.$tag);
-    });
 
     Route::group(['prefix' => 'api'], function () {
         Route::get('search/{tag}', 'SearchController@searchAPI')
@@ -64,12 +60,15 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::post('follow', 'FollowerController@store')->middleware('throttle:250,1440');
         Route::post('bookmark', 'BookmarkController@store')->middleware('throttle:250,1440');
         Route::get('lang/{locale}', 'SiteController@changeLocale');
+
         Route::get('verify-email', 'AccountController@verifyEmail');
         Route::post('verify-email', 'AccountController@sendVerifyEmail')->middleware('throttle:10,1440');
         Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail')->middleware('throttle:10,1440');
 
         Route::get('auth/sudo', 'AccountController@sudoMode');
         Route::post('auth/sudo', 'AccountController@sudoModeVerify');
+        Route::get('auth/checkpoint', 'AccountController@twoFactorCheckpoint');
+        Route::post('auth/checkpoint', 'AccountController@twoFactorVerify');
 
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
@@ -97,7 +96,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
 
     Route::group(['prefix' => 'settings'], function () {
         Route::redirect('/', '/settings/home');
-        Route::get('home', 'SettingsController@home')->name('settings');
+        Route::get('home', 'SettingsController@home')
+        ->name('settings');
         Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:25,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
         Route::post('avatar', 'AvatarController@store')->middleware('throttle:5,1440');
@@ -112,7 +112,34 @@ Route::domain(config('pixelfed.domain.app'))->middleware('validemail')->group(fu
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
         Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
-        Route::get('security', 'SettingsController@security')->name('settings.security');
+
+        Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function() {
+            Route::get(
+                '/', 
+                'SettingsController@security'
+            )->name('settings.security');
+            Route::get(
+                '2fa/setup', 
+                'SettingsController@securityTwoFactorSetup'
+            )->name('settings.security.2fa.setup');
+            Route::post(
+                '2fa/setup', 
+                'SettingsController@securityTwoFactorSetupStore'
+            );
+            Route::get(
+                '2fa/edit', 
+                'SettingsController@securityTwoFactorEdit'
+            )->name('settings.security.2fa.edit');
+            Route::post(
+                '2fa/edit', 
+                'SettingsController@securityTwoFactorUpdate'
+            );
+            Route::get(
+                '2fa/recovery-codes',
+                'SettingsController@securityTwoFactorRecoveryCodes'
+            )->name('settings.security.2fa.recovery');
+        });
+
         Route::get('applications', 'SettingsController@applications')->name('settings.applications');
         Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
         Route::get('developers', 'SettingsController@developers')->name('settings.developers');
