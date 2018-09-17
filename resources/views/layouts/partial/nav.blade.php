@@ -24,7 +24,7 @@
                     </li>
                     <li class="nav-item px-2">
                         <a class="nav-link nav-notification" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom">
-                            <i class="far fa-heart fa-lg text"></i>
+                            <i class="fas fa-inbox fa-lg text"></i>
                         </a>
                     </li>
                     <li class="nav-item px-2">
