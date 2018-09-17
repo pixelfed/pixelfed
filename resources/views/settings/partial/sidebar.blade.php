@@ -3,29 +3,26 @@
       <li class="nav-item pl-3 {{request()->is('settings/home')?'active':''}}">
         <a class="nav-link font-weight-light  text-muted" href="{{route('settings')}}">Profile</a>
       </li>
-{{--       <li class="nav-item pl-3 {{request()->is('settings/avatar')?'active':''}}">
-        <a class="nav-link font-weight-light text-muted" href="{{route('settings.avatar')}}">Avatar</a>
-      </li> --}}
       <li class="nav-item pl-3 {{request()->is('settings/password')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.password')}}">Password</a>
       </li>
-  {{--     <li class="nav-item pl-3 {{request()->is('settings/email')?'active':''}}">
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/email')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.email')}}">Email</a>
       </li>
       <li class="nav-item pl-3 {{request()->is('settings/notifications')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">Notifications</a>
-      </li>
-   --}}
+      </li> --}}
+  
       <li class="nav-item pl-3 {{request()->is('settings/privacy*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.privacy')}}">Privacy</a>
       </li>
-{{--       <li class="nav-item pl-3 {{request()->is('settings/security')?'active':''}}">
+      <li class="nav-item pl-3 {{request()->is('settings/security*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.security')}}">Security</a>
       </li>
-      <li class="nav-item">
-      <hr>
+      {{-- <li class="nav-item">
+        <hr>
       </li>
-      <li class="nav-item pl-3 {{request()->is('settings/import*')?'active':''}}">
+      <li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
       </li>
       <li class="nav-item pl-3 {{request()->is('settings/data-export')?'active':''}}">
@@ -36,10 +33,10 @@
       <hr>
       </li>
       <li class="nav-item pl-3 {{request()->is('settings/applications')?'active':''}}">
-        <a class="nav-link font-weight-light text-muted" href="{{route('settings.applications')}}">Applications</a>
+        <a class="nav-link font-weight-light text-muted" href="#">Applications</a>
       </li>
       <li class="nav-item pl-3 {{request()->is('settings/developers')?'active':''}}">
-        <a class="nav-link font-weight-light text-muted" href="{{route('settings.developers')}}">Developers</a>
+        <a class="nav-link font-weight-light text-muted" href="#">Developers</a>
       </li> --}}
     </ul>
   </div>
