@@ -12,15 +12,20 @@
     "devDependencies": {
         "axios": "^0.18",
         "bootstrap": "^4.0.0",
-        "popper.js": "^1.12",
         "cross-env": "^5.1",
         "jquery": "^3.2",
-        "laravel-mix": "^2.0",
+        "laravel-mix": "^2.1.14",
         "lodash": "^4.17.4",
-        "vue": "^2.5.7"
+        "popper.js": "^1.12",
+        "vue": "^2.5.17"
     },
     "dependencies": {
         "filesize": "^3.6.1",
-        "infinite-scroll": "^3.0.4"
+        "infinite-scroll": "^3.0.4",
+        "laravel-echo": "^1.4.0",
+        "pusher-js": "^4.2.2",
+        "socket.io-client": "^2.1.1",
+        "sweetalert": "^2.1.0",
+        "twitter-text": "^2.0.4"
     }
 }
