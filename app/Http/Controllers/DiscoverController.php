@@ -60,6 +60,7 @@ class DiscoverController extends Controller
           ->whereVisibility('public')
           ->where('profile_id', '!=', $pid)
           ->whereNotIn('profile_id', $following)
+          ->withCount(['comments', 'likes'])
           ->orderBy('created_at', 'desc')
           ->simplePaginate(21);
 
