@@ -25,6 +25,13 @@
         </div>
       </div>
       @endforeach
+
+      @if($people->count() == 0)
+      <div class="col-12 text-center text-muted">
+          <h4 class="font-weight-bold">No results found</h4>
+      </div>
+      @endif
+
     </div>
   </section>
   <section class="pt-5 mt-5">
@@ -49,6 +56,13 @@
         </a>
       </div>
       @endforeach
+
+      @if($posts->count() == 0)
+      <div class="col-12 text-center text-muted">
+          <h4 class="font-weight-bold">No results found</h4>
+      </div>
+      @endif
+
     </div>
   </section>
 </div>
