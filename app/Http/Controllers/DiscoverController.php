@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
-use App\Hashtag;
-use App\Profile;
-use App\Status;
-use App\UserFilter;
-use Auth;
+use App\{
+  Follower,
+  Hashtag,
+  Profile,
+  Status, 
+  UserFilter
+};
+use Auth, DB, Cache;
 use Illuminate\Http\Request;
 
 class DiscoverController extends Controller
@@ -21,25 +23,35 @@ class DiscoverController extends Controller
     {
         $pid = Auth::user()->profile->id;
 
-        $following = Follower::whereProfileId($pid)
+        $following = Cache::remember('feature:discover:following:'.$pid, 15, function() use($pid) {
+          $following = Follower::whereProfileId($pid)
           ->pluck('following_id');
-        $filtered = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id');
-        $following->push($pid);
-        
-        if($filtered->count() > 0) {
-          $following->push($filtered);
-        }
+          $filtered = UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id');
+          $following->push($pid);
+          
+          if($filtered->count() > 0) {
+            $following->push($filtered);
+          }
+          return $following;
+        });
 
-        $people = Profile::inRandomOrder()
-          ->whereNotIn('id', $following)
-          ->whereIsPrivate(false)
-          ->take(3)
-          ->get();
+        $people = Cache::remember('feature:discover:people:'.$pid, 15, function() use($following) {
+            return Profile::inRandomOrder()
+                ->whereHas('statuses')
+                ->whereNull('domain')
+                ->whereNotIn('id', $following)
+                ->whereIsPrivate(false)
+                ->take(3)
+                ->get();
+        });
 
         $posts = Status::whereHas('media')
+          ->whereHas('profile', function($q) {
+            $q->where('is_private', false);
+          })
           ->whereVisibility('public')
           ->where('profile_id', '!=', $pid)
           ->whereNotIn('profile_id', $following)
