@@ -19,8 +19,12 @@ class DiscoverController extends Controller
         $this->middleware('auth');
     }
 
-    public function home()
+    public function home(Request $request)
     {
+        $this->validate($request, [
+          'page' => 'nullable|integer|max:50'
+        ]);
+
         $pid = Auth::user()->profile->id;
 
         $following = Cache::remember('feature:discover:following:'.$pid, 15, function() use($pid) {
@@ -52,9 +56,11 @@ class DiscoverController extends Controller
           ->whereHas('profile', function($q) {
             $q->where('is_private', false);
           })
+          ->whereIsNsfw(false)
           ->whereVisibility('public')
           ->where('profile_id', '!=', $pid)
           ->whereNotIn('profile_id', $following)
+          ->withCount(['comments', 'likes'])
           ->orderBy('created_at', 'desc')
           ->simplePaginate(21);
 
