@@ -43,7 +43,14 @@
 	  	<p>Please scan the QR code and then enter the 6 digit code in the form below. Keep in mind the code changes every 30 seconds, and is only good for 1 minute.</p>
 	  	<div class="card">
 	  		<div class="card-body text-center">
-	  			<img src="{{$qrcode}}">
+	  			<div class="pb-3">
+	  				<p class="font-weight-bold">QR Code</p>
+	  				<img src="{{$qrcode}}" class="img-fluid" width="200px">
+	  			</div>
+	  			<div>
+	  				<p class="font-weight-bold">OTP Secret</p>
+	  				<input type="text" class="form-control" value="{{ $user->{'2fa_secret'} }}" disabled>
+	  			</div>
 	  		</div>
 	  		<div class="card-body">
 	  			<form id="confirm-code">
