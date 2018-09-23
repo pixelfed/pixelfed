@@ -85,7 +85,13 @@ class StatusController extends Controller
         }
 
         $this->validate($request, [
-          'photo.*'      => 'required|mimes:jpeg,png,gif|max:'.config('pixelfed.max_photo_size'),
+          'photo.*'      => function() {
+            return [
+                'required',
+                'mimes:' . config('pixelfed.media_types'),
+                'max:' . config('pixelfed.max_photo_size'),
+            ];
+          },
           'caption'      => 'string|max:'.config('pixelfed.max_caption_length'),
           'cw'           => 'nullable|string',
           'filter_class' => 'nullable|string',
