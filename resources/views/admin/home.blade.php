@@ -24,8 +24,8 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
-          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereLocal(true)->count())}}</p>
-          <p class="small text-uppercase font-weight-bold text-muted mb-0">Local Statuses</p>
+          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(DB::table('failed_jobs')->where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count())}}</p>
+          <p class="small text-uppercase font-weight-bold text-muted mb-0">Failed Jobs (24h)</p>
         </div>
       </div>
     </div>
@@ -33,8 +33,36 @@
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
-          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::count())}}</p>
-          <p class="small text-uppercase font-weight-bold text-muted mb-0">All Statuses</p>
+          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Report::whereNull('admin_seen')->count())}}</p>
+          <p class="small text-uppercase font-weight-bold text-muted mb-0">Reports</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body text-center">
+          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereNull('in_reply_to_id')->whereNull('reblog_of_id')->count())}}</p>
+          <p class="small text-uppercase font-weight-bold text-muted mb-0">Statuses</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body text-center">
+          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereNotNull('in_reply_to_id')->count())}}</p>
+          <p class="small text-uppercase font-weight-bold text-muted mb-0">Replies</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body text-center">
+          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereNotNull('reblog_of_id')->count())}}</p>
+          <p class="small text-uppercase font-weight-bold text-muted mb-0">Shares (Reblogs)</p>
         </div>
       </div>
     </div>
@@ -87,7 +115,6 @@
         </div>
       </div>
     </div>
-    @php($filesum = filesize(storage_path('app/public/m/')))
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
