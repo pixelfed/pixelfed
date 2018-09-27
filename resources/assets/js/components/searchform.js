@@ -13,21 +13,21 @@ $(document).ready(function() {
     name: 'search',
     display: 'value',
     source: queryEngine,
-    limit: 20,
+    limit: 40,
     templates: {
       empty: [
-        '<div class="alert alert-danger mb-0">',
-          'unable to find any matches',
+        '<div class="alert alert-info mb-0 font-weight-bold">',
+          'No Results Found',
         '</div>'
       ].join('\n'),
       suggestion: function(data) {
         let type = data.type;
-        let res = null;
+        let res = false;
         switch(type) {
           case 'hashtag':
             res = '<a href="'+data.url+'">' +
             '<div class="media d-flex align-items-center">' +
-            '<div class="mr-3 h4 text-muted">#</div>' +
+            '<div class="mr-3 h4 text-muted"><span class="fas fa-hashtag"></span></div>' +
             '<div class="media-body text-truncate">' +
             '<p class="mt-0 mb-0 font-weight-bold">'+data.value+'</p>' +
             '<p class="text-muted mb-0">'+data.count+' posts</p>' +
@@ -38,7 +38,7 @@ $(document).ready(function() {
           case 'profile':
             res = '<a href="'+data.url+'">' +
             '<div class="media d-flex align-items-center">' +
-            '<div class="mr-3 h4 text-muted"><span class="icon-user"></span></div>' +
+            '<div class="mr-3 h4 text-muted"><span class="far fa-user"></span></div>' +
             '<div class="media-body text-truncate">' +
             '<p class="mt-0 mb-0 font-weight-bold">'+data.name+'</p>' +
             '<p class="text-muted mb-0">'+data.value+'</p>' +
@@ -46,8 +46,24 @@ $(document).ready(function() {
             '</div>' +
             '</a>';
           break;
+          case 'status':
+            res = '<a href="'+data.url+'">' +
+            '<div class="media d-flex align-items-center">' +
+            '<div class="mr-3 h4 text-muted"><img src="'+data.thumb+'" width="32px"></div>' +
+            '<div class="media-body text-truncate">' +
+            '<p class="mt-0 mb-0 font-weight-bold">'+data.name+'</p>' +
+            '<p class="text-muted mb-0">'+data.value+'</p>' +
+            '</div>' +
+            '</div>' +
+            '</a>';
+          break;
+          default:
+            res = false;
+          break;
         }
-        return res;
+        if(res !== false) {
+          return res;
+        }
       }
     }
   });
