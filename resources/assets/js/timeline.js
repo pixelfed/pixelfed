@@ -3,7 +3,12 @@ $(document).ready(function() {
   $('.container.timeline-container').removeClass('d-none');
   let elem = document.querySelector('.timeline-feed');
   pixelfed.fetchLikes();
-  
+  $('video').on('play', function() {
+    activated = this;
+    $('video').each(function() {
+      if(this != activated) this.pause();
+    });
+  });
   let infScroll = new InfiniteScroll( elem, {
     path: '.pagination__next',
     append: '.timeline-feed',
@@ -18,6 +23,12 @@ $(document).ready(function() {
       if(!el.hasClass('d-none') && !el.find('input[name="comment"]').val()) {
         $(this).addClass('d-none');
       }
+    });
+    $('video').on('play', function() {
+      activated = this;
+      $('video').each(function() {
+        if(this != activated) this.pause();
+      });
     });
   });
 
