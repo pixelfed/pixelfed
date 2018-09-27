@@ -16,7 +16,7 @@
                         <div class="form-group row">
 
                             <div class="col-md-12">
-                                <input id="code" type="code" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" placeholder="{{__('Two-Factor Authentication Code')}}" required autocomplete="off">
+                                <input id="code" type="text" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" placeholder="{{__('Two-Factor Authentication Code')}}" required autocomplete="off" autofocus="">
 
                                 @if ($errors->has('code'))
                                     <span class="invalid-feedback">

@@ -196,6 +196,30 @@ class Profile extends Model
             ->pluck('filterable_id');
     }
 
+    public function blockedIds()
+    {
+        return UserFilter::whereUserId($this->id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('block')
+            ->pluck('filterable_id');
+    }
+
+    public function mutedProfileUrls()
+    {
+        $ids = $this->mutedIds();
+        return $this->whereIn('id', $ids)->get()->map(function($i) {
+            return $i->url();
+        });
+    }
+
+    public function blockedProfileUrls()
+    {
+        $ids = $this->blockedIds();
+        return $this->whereIn('id', $ids)->get()->map(function($i) {
+            return $i->url();
+        });
+    }
+
     public function reports()
     {
         return $this->hasMany(Report::class, 'profile_id');
