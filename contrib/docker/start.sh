@@ -9,7 +9,7 @@ php artisan storage:link
 php artisan migrate --force
 
 # Run a worker if it is set as embedded
-if [ HORIZON_EMBED = true ]; then
+if [ $HORIZON_EMBED = true ]; then
 	php artisan horizon &
 fi
 
