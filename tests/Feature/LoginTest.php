@@ -21,9 +21,13 @@ class LoginTest extends TestCase
     /** @test */
     public function view_register_page()
     {
-        $response = $this->get('register');
+        if(true === config('pixelfed.open_registration')) {
+            $response = $this->get('register');
 
-        $response->assertSuccessful()
-                 ->assertSee('Register a new account');
+            $response->assertSuccessful()
+                     ->assertSee('Register a new account');
+        } else {
+            $this->assertTrue(true);
+        }
     }
 }
