@@ -23,7 +23,7 @@ class Profile extends Model
         'private_key',
     ];
 
-    protected $visible = ['id', 'username', 'name'];
+    protected $visible = ['username', 'name'];
 
     public function user()
     {
@@ -51,6 +51,10 @@ class Profile extends Model
 
     public function emailUrl()
     {
+        if($this->domain) {
+            return $this->username;
+        }
+        
         $domain = parse_url(config('app.url'), PHP_URL_HOST);
 
         return $this->username.'@'.$domain;
@@ -137,7 +141,7 @@ class Profile extends Model
     {
         $url = Cache::remember("avatar:{$this->id}", 1440, function () {
             $path = optional($this->avatar)->media_path;
-            $version = hash('sha1', $this->avatar->created_at);
+            $version = hash('sha1', $this->avatar->updated_at);
             $path = "{$path}?v={$version}";
 
             return url(Storage::url($path));
