@@ -35,7 +35,8 @@ class User extends Authenticatable
     protected $hidden = [
         'email', 'password', 'is_admin', 'remember_token', 
         'email_verified_at', '2fa_enabled', '2fa_secret', 
-        '2fa_backup_codes', '2fa_setup_at',
+        '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
+        'updated_at'
     ];
 
     public function profile()
@@ -51,5 +52,10 @@ class User extends Authenticatable
     public function settings()
     {
         return $this->hasOne(UserSetting::class);
+    }
+
+    public function receivesBroadcastNotificationsOn()
+    {
+        return 'App.User.'.$this->id;
     }
 }
