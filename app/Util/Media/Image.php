@@ -13,6 +13,10 @@ class Image
     public $portrait;
     public $thumbnail;
     public $orientation;
+    public $acceptedMimes = [
+        'image/png',
+        'image/jpeg',
+    ];
 
     public function __construct()
     {
@@ -22,27 +26,27 @@ class Image
         $this->landscape = $this->orientations()['landscape'];
         $this->portrait = $this->orientations()['portrait'];
         $this->thumbnail = [
-      'width'  => 293,
-      'height' => 293,
-    ];
+          'width'  => 640,
+          'height' => 640,
+        ];
         $this->orientation = null;
     }
 
     public function orientations()
     {
         return [
-      'square' => [
-        'width'  => 1080,
-        'height' => 1080,
-      ],
-      'landscape' => [
-        'width'  => 1920,
-        'height' => 1080,
-      ],
-      'portrait' => [
-        'width'  => 1080,
-        'height' => 1350,
-      ],
+          'square' => [
+            'width'  => 1080,
+            'height' => 1080,
+          ],
+          'landscape' => [
+            'width'  => 1920,
+            'height' => 1080,
+          ],
+          'portrait' => [
+            'width'  => 1080,
+            'height' => 1350,
+          ],
     ];
     }
 
@@ -53,9 +57,9 @@ class Image
         }
         if ($thumbnail) {
             return [
-        'dimensions'  => $this->thumbnail,
-        'orientation' => 'thumbnail',
-      ];
+            'dimensions'  => $this->thumbnail,
+            'orientation' => 'thumbnail',
+          ];
         }
 
         list($width, $height) = getimagesize($mediaPath);
@@ -98,18 +102,22 @@ class Image
     {
         $path = $media->media_path;
         $file = storage_path('app/'.$path);
+        if (!in_array($media->mime, $this->acceptedMimes)) {
+            return;
+        }
         $ratio = $this->getAspectRatio($file, $thumbnail);
         $aspect = $ratio['dimensions'];
         $orientation = $ratio['orientation'];
-        if ($media->mime === 'image/gif' && !$thumbnail) {
-            return;
-        }
 
         try {
             $img = Intervention::make($file)->orientate();
-            $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
-                $constraint->aspectRatio();
-            });
+            if($thumbnail) {
+                $img->crop($aspect['width'], $aspect['height']);
+            } else {
+                $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+            }
             $converted = $this->setBaseName($path, $thumbnail, $img->extension);
             $newPath = storage_path('app/'.$converted['path']);
 
