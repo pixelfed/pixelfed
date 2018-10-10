@@ -21,6 +21,12 @@ class Follower extends Model
         return $this->belongsTo(Profile::class, 'following_id', 'id');
     }
 
+    public function permalink()
+    {
+        $path = $this->actor->permalink("/follow/{$this->id}");
+        return url($path);
+    }
+
     public function toText()
     {
         $actorName = $this->actor->username;
