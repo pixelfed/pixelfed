@@ -30,30 +30,33 @@
       </div>
     </div>
 
+    @php($reports = App\Report::whereNull('admin_seen')->count())
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
-          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Report::whereNull('admin_seen')->count())}}</p>
+          <p class="h2" title="{{$reports}}" data-toggle="tooltip">{{App\Util\Lexer\PrettyNumber::convert($reports)}}</p>
           <p class="small text-uppercase font-weight-bold text-muted mb-0">Reports</p>
         </div>
       </div>
     </div>
   </div>
 
+  @php($statuses = App\Status::whereNull('in_reply_to_id')->whereNull('reblog_of_id')->count())
   <div class="row mt-4">
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
-          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereNull('in_reply_to_id')->whereNull('reblog_of_id')->count())}}</p>
+          <p class="h2" title="{{$statuses}}" data-toggle="tooltip">{{App\Util\Lexer\PrettyNumber::convert($statuses)}}</p>
           <p class="small text-uppercase font-weight-bold text-muted mb-0">Statuses</p>
         </div>
       </div>
     </div>
 
+    @php($replies = App\Status::whereNotNull('in_reply_to_id')->count())
     <div class="col-md-4">
       <div class="card">
         <div class="card-body text-center">
-          <p class="h2">{{App\Util\Lexer\PrettyNumber::convert(App\Status::whereNotNull('in_reply_to_id')->count())}}</p>
+          <p class="h2" title="{{$replies}}" data-toggle="tooltip">{{App\Util\Lexer\PrettyNumber::convert($replies)}}</p>
           <p class="small text-uppercase font-weight-bold text-muted mb-0">Replies</p>
         </div>
       </div>
