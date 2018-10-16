@@ -18,6 +18,8 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $fillable = ['profile_id', 'visibility'];
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);
@@ -36,16 +38,21 @@ class Status extends Model
     public function viewType()
     {
         $media = $this->firstMedia();
-        $type = explode('/', $media->mime);
+        $mime = explode('/', $media->mime)[0];
+        $count = $this->media()->count();
+        $type = ($mime == 'image') ? 'image' : 'video';
+        if($count > 1) {
+            $type = ($type == 'image') ? 'album' : 'video-album';
+        }
 
-        return $type[0];
+        return $type;
     }
 
     public function thumb($showNsfw = false)
     {
         $type = $this->viewType();
         $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-        if ($this->media->count() == 0 || $is_nsfw || $type != 'image') {
+        if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album'])) {
             return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
         }
 

@@ -32,4 +32,32 @@ class Media extends Model
 
         return url($url);
     }
+
+    public function mimeType()
+    {
+        return explode('/', $this->mime)[0];
+    }
+
+    public function activityVerb()
+    {
+        $verb = 'Image';
+        switch ($this->mimeType()) {
+            case 'image':
+                break;
+
+            case 'video':
+                $verb = 'Video';
+                break;
+            
+            default:
+                $verb = 'Document';
+                break;
+        }
+        return $verb;
+    }
+
+    public function getMetadata()
+    {
+        return json_decode($this->metadata, true, 3);
+    }
 }

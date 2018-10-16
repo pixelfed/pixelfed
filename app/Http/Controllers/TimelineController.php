@@ -29,6 +29,7 @@ class TimelineController extends Controller
                   ->pluck('filterable_id');
         $timeline = Status::whereIn('profile_id', $following)
                   ->whereNotIn('profile_id', $filtered)
+                  ->whereVisibility('public')
                   ->orderBy('created_at', 'desc')
                   ->withCount(['comments', 'likes'])
                   ->simplePaginate(20);
