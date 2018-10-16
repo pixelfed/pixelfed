@@ -55,4 +55,9 @@ class Media extends Model
         }
         return $verb;
     }
+
+    public function getMetadata()
+    {
+        return json_decode($this->metadata, true, 3);
+    }
 }
