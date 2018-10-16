@@ -22,6 +22,7 @@ class StatusController extends Controller
         $user = Profile::whereUsername($username)->firstOrFail();
 
         $status = Status::whereProfileId($user->id)
+                ->where('visibility', '!=', 'draft')
                 ->withCount(['likes', 'comments', 'media'])
                 ->findOrFail($id);
 
@@ -41,7 +42,7 @@ class StatusController extends Controller
 
         $template = $this->detectTemplate($status);
 
-        $replies = Status::whereInReplyToId($status->id)->simplePaginate(30);
+        $replies = Status::whereInReplyToId($status->id)->orderBy('created_at', 'desc')->simplePaginate(30);
 
         return view($template, compact('user', 'status', 'replies'));
     }
@@ -58,6 +59,9 @@ class StatusController extends Controller
             }
             if ($status->viewType() == 'video') {
                 $template = 'status.show.video';
+            }
+            if ($status->viewType() == 'video-album') {
+                $template = 'status.show.video-album';
             }
 
             return $template;
@@ -85,13 +89,7 @@ class StatusController extends Controller
         }
 
         $this->validate($request, [
-          'photo.*'      => function() {
-            return [
-                'required',
-                'mimes:' . config('pixelfed.media_types'),
-                'max:' . config('pixelfed.max_photo_size'),
-            ];
-          },
+          'photo.*'      => 'required|mimetypes:' . config('pixelfed.media_types').'|max:' . config('pixelfed.max_photo_size'),
           'caption'      => 'string|max:'.config('pixelfed.max_caption_length'),
           'cw'           => 'nullable|string',
           'filter_class' => 'nullable|string',
