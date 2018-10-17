@@ -1,8 +1,8 @@
 <?php
 return [
-    'viewMyProfile' => 'Voir mon profil',
-    'myTimeline' => 'Ma chronologie',
-    'publicTimeline' => 'Chronologie publique',
+    'viewMyProfile' => 'Consulter mon profil',
+    'myTimeline' => 'Mon fil',
+    'publicTimeline' => 'Fil public',
     'remoteFollow' => 'Suivre à distance',
     'settings' => 'Paramètres',
     'admin' => 'Admin',
