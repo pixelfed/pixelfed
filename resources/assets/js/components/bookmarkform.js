@@ -1,6 +1,5 @@
 $(document).ready(function() {
-
-  $('.bookmark-form').submit(function(e) {
+  $(document).on('submit', '.bookmark-form', function(e) {
     e.preventDefault();
     var el = $(this);
     var id = el.data('id');
