@@ -22,16 +22,9 @@ class UpdateStatusVisibilityDefaults extends Migration
 
             case 'pgsql':
                 $sql = <<<'SQL'
-# rename the existing type
 ALTER TYPE visibility_enum RENAME TO visibility_enum_old;
-
-# create the new type
 CREATE TYPE visibility_enum AS ENUM('public','unlisted','private','direct', 'draft');
-
-# update the columns to use the new type
 ALTER TABLE statuses ALTER COLUMN visibility TYPE visibility_enum USING visibility::text::visibility_enum;
-
-# remove the old type
 DROP TYPE visibility_enum_old;
 SQL;
                 DB::statement($sql);
