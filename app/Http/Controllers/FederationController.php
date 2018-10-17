@@ -104,8 +104,8 @@ class FederationController extends Controller
             'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
             'users'         => [
               'total'          => \App\User::count(),
-              'activeHalfyear' => \App\User::where('updated_at', '>', Carbon::now()->subMonths(6)->toDateTimeString())->count(),
-              'activeMonth'    => \App\User::where('updated_at', '>', Carbon::now()->subMonths(1)->toDateTimeString())->count(),
+              'activeHalfyear' => \App\AccountLog::select('action','user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
+              'activeMonth'    => \App\AccountLog::select('action','user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
             ],
           ],
           'version' => '2.0',
@@ -153,17 +153,6 @@ class FederationController extends Controller
 
     public function userInbox(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
-        $mimes = [
-        'application/activity+json',
-        'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-      ];
-        if (!in_array($request->header('Content-Type'), $mimes)) {
-            abort(500, 'Invalid request');
-        }
-        $profile = Profile::whereUsername($username)->firstOrFail();
-        InboxWorker::dispatch($request, $profile, $request->all());
+        return;
     }
 }
