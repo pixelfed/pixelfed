@@ -6,8 +6,11 @@ use App\Avatar;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\Controller;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Media;
 use App\Profile;
 use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\MediaTransformer;
 use App\Transformer\Api\StatusTransformer;
 use Auth;
 use Cache;
@@ -114,5 +117,45 @@ class BaseApiController extends Controller
             'code' => 200,
             'msg'  => 'Avatar successfully updated',
         ]);
+    }
+
+    public function uploadMedia(Request $request)
+    {
+        $this->validate($request, [
+              'file.*'      => function() {
+                return [
+                    'required',
+                    'mimes:' . config('pixelfed.media_types'),
+                    'max:' . config('pixelfed.max_photo_size'),
+                ];
+              },
+        ]);
+        $user = Auth::user();
+        $profile = $user->profile;
+        $monthHash = hash('sha1', date('Y').date('m'));
+        $userHash = hash('sha1', $user->id.(string) $user->created_at);
+        $photo = $request->file('file');
+
+        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $path = $photo->store($storagePath);
+        $hash = \hash_file('sha256', $photo);
+
+        $media = new Media();
+        $media->status_id = null;
+        $media->profile_id = $profile->id;
+        $media->user_id = $user->id;
+        $media->media_path = $path;
+        $media->original_sha256 = $hash;
+        $media->size = $photo->getClientSize();
+        $media->mime = $photo->getClientMimeType();
+        $media->filter_class = null;
+        $media->filter_name = null;
+        $media->save();
+
+        ImageOptimize::dispatch($media);
+        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
     }
 }

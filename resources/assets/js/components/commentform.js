@@ -35,9 +35,9 @@ $(document).ready(function() {
         var comments = el.parents().eq(1).find('.comments');
       }
 
-      var comment = '<p class="mb-0"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ reply + '</span><span class="float-right"><a href="' + permalink + '" class="text-dark small font-weight-bold">1s</a></span></p>';
+      var comment = '<p class="mb-2"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ reply + '</span></p>';
 
-      comments.append(comment);
+      comments.prepend(comment);
       
       commentform.val('');
       commentform.blur();

@@ -7,11 +7,8 @@
           <a href="{{route('site.terms')}}" class="text-primary pr-3">Terms</a>
           <a href="{{route('site.privacy')}}" class="text-primary pr-3">Privacy</a>
           <a href="{{route('site.platform')}}" class="text-primary pr-3">API</a>
-          <a href="#" class="text-primary pr-3">Directory</a>
-          <a href="#" class="text-primary pr-3">Profiles</a>
-          <a href="#" class="text-primary pr-3">Hashtags</a>
           <a href="{{route('site.language')}}" class="text-primary pr-3">Language</a>
-          <a href="http://pixelfed.org" class="text-muted float-right" rel="noopener">Powered by PixelFed</a>
+          <a href="https://pixelfed.org" class="text-muted float-right" rel="noopener">Powered by PixelFed</a>
         </p>
     </div>
   </footer>
