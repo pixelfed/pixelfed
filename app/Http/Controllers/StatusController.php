@@ -110,7 +110,10 @@ class StatusController extends Controller
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);
         $status->is_nsfw = $cw;
+
+        // TODO: remove deprecated visibility in favor of scope
         $status->visibility = $visibility;
+        $status->scope = $visibility;
 
         $status->save();
 
