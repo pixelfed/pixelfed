@@ -7,7 +7,7 @@
   </div>
   <hr>
   <section>
-    <p class="lead">The software that powers this website is called <a href="https://pixelfed.org">PixelFed</a> and anyone can <a href="https://github.com/dansup/pixelfed">download</a> the source code and run their own instance!</p>
+    <p class="lead">The software that powers this website is called <a href="https://pixelfed.org">PixelFed</a> and anyone can <a href="https://github.com/pixelfed/pixelfed">download</a> the source code and run their own instance!</p>
   </section>
 @endsection
 

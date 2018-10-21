@@ -39,7 +39,7 @@ This guide assumes you have NGINX/Apache installed, along with the dependencies.
 Those will not be covered in these early docs.
 
 ```bash
-git clone https://github.com/dansup/pixelfed.git
+git clone https://github.com/pixelfed/pixelfed.git
 cd pixelfed
 composer install
 cp .env.example .env
