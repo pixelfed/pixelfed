@@ -82,6 +82,7 @@ class DiscoverController extends Controller
           ->firstOrFail();
 
         $posts = $tag->posts()
+          ->withCount(['likes', 'comments'])
           ->whereIsNsfw(false)
           ->whereVisibility('public')
           ->has('media')

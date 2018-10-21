@@ -61,7 +61,7 @@
   <div class="cwrapper d-none">
     <p class="mb-1 text-center load-more-link"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p class="mb-2 d-flex justify-content-between align-items-center" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
+      <p class="mb-0 d-flex justify-content-between align-items-center" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
         <span class="pr-3">
           <span class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url">{{comment.account.username}}</a></bdi></span>
           <span class="comment-text" v-html="comment.content"></span>
