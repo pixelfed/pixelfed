@@ -39,7 +39,7 @@ class CatchUnoptimizedMedia extends Command
      */
     public function handle()
     {
-        $medias = Media::whereNull('processed_at')->take(50)->get();
+        $medias = Media::whereNotNull('status_id')->whereNull('processed_at')->take(250)->get();
         foreach ($medias as $media) {
             ImageOptimize::dispatch($media);
         }
