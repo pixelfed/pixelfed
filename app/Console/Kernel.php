@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('media:optimize')
                  ->hourly();
+        $schedule->command('media:gc')
+                 ->hourly();
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
     }
 
