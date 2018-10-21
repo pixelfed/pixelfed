@@ -71,10 +71,19 @@ return [
     |
     */
     'open_registration' => env('OPEN_REGISTRATION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Google Recaptcha v2
+    |--------------------------------------------------------------------------
+    |
+    | Enable/disable recaptcha on login/registration forms. API Keys required.
+    |
+    */
     'recaptcha'         => env('RECAPTCHA_ENABLED', false),
 
-    'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
 
+    'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
     'activitypub_enabled' => env('ACTIVITY_PUB', false),
 
     /*
@@ -159,5 +168,5 @@ return [
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
-
+    'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
 ];
