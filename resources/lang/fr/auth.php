@@ -11,6 +11,6 @@ return [
     | these language lines according to your application's requirements.
     |
     */
-    'failed'   => 'Ces informations ne correspondent pas à nos dossiers.',
-    'throttle' => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
+    'failed'   => 'Ces informations d\'identification ne correspondent à aucune se trouvant dans notre base de données.',
+    'throttle' => 'Beaucoup de tentatives de connexion ont été effectuées. Veuillez réessayer dans :seconds secondes.',
 ];
