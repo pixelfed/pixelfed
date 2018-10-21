@@ -2,15 +2,15 @@
 
 return [
 
-	'about'			=> 'Environ',
-	'help'			=> 'Aidez-moi',
-	'language'		=> 'La langue',
+	'about'			=> 'À propos',
+	'help'			=> 'Aide',
+	'language'		=> 'Langue',
 	'fediverse'		=> 'Fediverse',
 	'opensource'	=> 'Open Source',
-	'terms'			=> 'Termes',
-	'privacy'		=> 'Intimité',
-	'l10nWip'		=> 'Nous travaillons toujours sur le support de la localisation',
-	'currentLocale' => 'Locale actuelle',
+	'terms'			=> 'Conditions',
+	'privacy'		=> 'Vie privée',
+	'l10nWip'		=> 'Nous travaillons toujours sur la prise en charge des langues',
+	'currentLocale' => 'Langue actuelle',
 	'selectLocale'  => 'Sélectionnez l\'une des langues prises en charge',
 
 ];
