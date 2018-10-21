@@ -35,7 +35,7 @@ $(document).ready(function() {
         var comments = el.parents().eq(1).find('.comments');
       }
 
-      var comment = '<p class="mb-2"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ reply + '</span></p>';
+      var comment = '<p class="mb-0"><span class="font-weight-bold pr-1"><bdi><a class="text-dark" href="' + profile + '">' + username + '</a></bdi></span><span class="comment-text">'+ reply + '</span></p>';
 
       comments.prepend(comment);
       
