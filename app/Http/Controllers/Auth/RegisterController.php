@@ -39,7 +39,6 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-        $this->openRegistrationCheck();
     }
 
     /**
@@ -105,11 +104,36 @@ class RegisterController extends Controller
         }
     }
 
-    public function openRegistrationCheck()
+    /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
     {
-        $openRegistration = config('pixelfed.open_registration');
-        if (false == $openRegistration) {
-            abort(403);
+        $view = config('pixelfed.open_registration') == true ? 'auth.register' : 'site.closed-registration';
+        return view($view);
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        if(false == config('pixelfed.open_registration')) {
+            return abort(403);
         }
+
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $this->guard()->login($user);
+
+        return $this->registered($request, $user)
+                        ?: redirect($this->redirectPath());
     }
 }
