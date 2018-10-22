@@ -33,6 +33,10 @@ body, button, input, textarea {
   }
 }
 
+.dropdown-menu {
+  min-width: 13rem;
+}
+
 .text-dark {
   color: #212529 !important;
 }
@@ -257,6 +261,7 @@ body, button, input, textarea {
     transform: translateY(0);
   }
 }
+
 .details-animated[open] {
   animation-name: fadeInDown;
   animation-duration: 0.5s;
@@ -307,4 +312,36 @@ details summary::-webkit-details-marker {
 .tt-dataset .alert {
   border: 0 !important;
   border-radius: 0 !important;
+}
+
+.input-elevated {
+  font-size: 16px;
+  line-height: 1.5;
+  border: none;
+  background: #FFFFFF;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
+  border-radius: 5px;
+  padding: .5em 1em .5em .5em;
+} 
+
+.input-elevated::placeholder {
+  color: #838D99;
+}
+
+.input-elevated:focus {
+  outline: none;
+  box-shadow: 0 4px 10px 0 rgba(0,0,0,0.16);
+}
+
+.icon-wrapper {
+  display: inline-flex;
+  padding: 14px;
+  border-radius: 50%;
+  background: #10c5f8;
+  background: -webkit-gradient(linear,left top,right bottom,from(#6736dd),to(#10c5f8));
+  background: linear-gradient(to bottom right,#6736dd,#10c5f8);
+}
+
+.border-left-blue {
+  border-left: 3px solid #10c5f8;
 }

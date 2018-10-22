@@ -15,6 +15,7 @@ use App\Transformer\Api\StatusTransformer;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
@@ -119,6 +120,20 @@ class BaseApiController extends Controller
         ]);
     }
 
+    public function showTempMedia(Request $request, $profileId, $mediaId)
+    {
+        if (!$request->hasValidSignature()) {
+            abort(401);
+        }
+        $profile = Auth::user()->profile;
+        if($profile->id !== (int) $profileId) {
+            abort(403);
+        }
+        $media = Media::whereProfileId($profile->id)->findOrFail($mediaId);
+        $path = storage_path('app/'.$media->media_path);
+        return response()->file($path);
+    }
+
     public function uploadMedia(Request $request)
     {
         $this->validate($request, [
@@ -130,10 +145,27 @@ class BaseApiController extends Controller
                 ];
               },
         ]);
+
         $user = Auth::user();
         $profile = $user->profile;
+
+        if(config('pixelfed.enforce_account_limit') == true) {
+            $size = Media::whereUserId($user->id)->sum('size') / 1000;
+            $limit = (int) config('pixelfed.max_account_size');
+            if ($size >= $limit) {
+               abort(403, 'Account size limit reached.');
+            }
+        }
+
+        $recent = Media::whereProfileId($profile->id)->whereNull('status_id')->count();
+
+        if($recent > 50) {
+            abort(403);
+        }
+
         $monthHash = hash('sha1', date('Y').date('m'));
         $userHash = hash('sha1', $user->id.(string) $user->created_at);
+
         $photo = $request->file('file');
 
         $storagePath = "public/m/{$monthHash}/{$userHash}";
@@ -152,9 +184,21 @@ class BaseApiController extends Controller
         $media->filter_name = null;
         $media->save();
 
+        $url = URL::temporarySignedRoute(
+            'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id]
+        );
         ImageOptimize::dispatch($media);
-        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+
+        $res = [
+            'id'          => $media->id,
+            'type'        => $media->activityVerb(),
+            'url'         => $url,
+            'remote_url'  => null,
+            'preview_url' => $url,
+            'text_url'    => null,
+            'meta'        => $media->metadata,
+            'description' => null,
+        ];
 
         return response()->json($res);
     }

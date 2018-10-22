@@ -26,7 +26,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             // TODO: fixme
             'reblog' => null,
 
-            'content'          => "<p>$status->rendered</p>",
+            'content'          => "$status->rendered",
             'created_at'       => $status->created_at->format('c'),
             'emojis'           => [],
             'reblogs_count'    => $status->shares()->count(),
