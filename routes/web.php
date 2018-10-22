@@ -157,6 +157,27 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::view('privacy', 'site.privacy')->name('site.privacy');
         Route::view('platform', 'site.platform')->name('site.platform');
         Route::view('language', 'site.language')->name('site.language');
+
+        Route::group(['prefix'=>'kb'], function() {
+            Route::view('getting-started', 'site.help.getting-started')->name('help.getting-started');
+            Route::view('sharing-media', 'site.help.sharing-media')->name('help.sharing-media');
+            Route::view('your-profile', 'site.help.your-profile')->name('help.your-profile');
+            Route::view('stories', 'site.help.stories')->name('help.stories');
+            Route::view('embed', 'site.help.embed')->name('help.embed');
+            Route::view('hashtags', 'site.help.hashtags')->name('help.hashtags');
+            Route::view('discover', 'site.help.discover')->name('help.discover');
+            Route::view('direct-messages', 'site.help.dm')->name('help.dm');
+            Route::view('timelines', 'site.help.timelines')->name('help.timelines');
+            Route::view('what-is-the-fediverse', 'site.help.what-is-fediverse')->name('help.what-is-fediverse');
+            Route::view('safety-tips', 'site.help.safety-tips')->name('help.safety-tips');
+
+            Route::view('community-guidelines', 'site.help.community-guidelines')->name('help.community-guidelines');
+            Route::view('controlling-visibility', 'site.help.controlling-visibility')->name('help.controlling-visibility');
+            Route::view('abusive-activity', 'site.help.abusive-activity')->name('help.abusive-activity');
+            Route::view('blocking-accounts', 'site.help.blocking-accounts')->name('help.blocking-accounts');
+            Route::view('report-something', 'site.help.report-something')->name('help.report-something');
+            Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
+        });
     });
 
     Route::group(['prefix' => 'timeline'], function () {
