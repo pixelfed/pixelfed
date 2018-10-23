@@ -72,6 +72,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('auth/checkpoint', 'AccountController@twoFactorCheckpoint');
         Route::post('auth/checkpoint', 'AccountController@twoFactorVerify');
 
+        Route::get('media/preview/{profileId}/{mediaId}', 'ApiController@showTempMedia')->name('temp-media');
+
+
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
             Route::post('/', 'ReportController@formStore')->middleware('throttle:100,1440');
