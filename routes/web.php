@@ -39,10 +39,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'v1'], function () {
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
+            Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
             Route::post('i/more-comments', 'ApiController@loadMoreComments');
+            Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:250,1440');
         });
     });
 
