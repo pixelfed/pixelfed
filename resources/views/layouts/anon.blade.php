@@ -10,10 +10,10 @@
     <meta name="robots" content="noimageindex, noarchive">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>{{ $title or config('app.name', 'Laravel') }}</title>
+    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
 
     @if(isset($title))<meta property="og:site_name" content="{{ config('app.name', 'Laravel') }}">
-    <meta property="og:title" content="{{ $title or config('app.name', 'Laravel') }}">
+    <meta property="og:title" content="{{ $title ?? config('app.name', 'Laravel') }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{request()->url()}}">
     @endif
