@@ -1,6 +1,10 @@
     <div class="card card-md-rounded-0">
-      <div class="card-header bg-white font-weight-bold">
+      <div class="card-header bg-white font-weight-bold d-inline-flex justify-content-between">
         <div>{{__('Create New Post')}}</div>
+        <div>
+          <span class="badge badge-success mr-1">NEW</span>
+          <a href="/i/compose">Experimental UI</a>
+        </div>
       </div>
       <div class="card-body" id="statusForm">
 
@@ -10,7 +14,7 @@
           <input type="hidden" name="filter_class" value="">
           <div class="form-group">
             <div class="custom-file">
-              <input type="file" class="custom-file-input" id="fileInput" name="photo[]" accept="image/*" multiple="">
+              <input type="file" class="custom-file-input" id="fileInput" name="photo[]" accept="{{config('pixelfed.media_types')}}" multiple="">
               <label class="custom-file-label" for="fileInput">Upload Image(s)</label>
             </div>
             <small class="form-text text-muted">
@@ -53,7 +57,6 @@
                   Please mark all NSFW and controversial content, as per our content policy.
                 </small>
               </div>
-
               <div class="form-group d-none form-preview">
                 <label class="font-weight-bold text-muted small">Photo Preview</label>
                 <figure class="filterContainer">
