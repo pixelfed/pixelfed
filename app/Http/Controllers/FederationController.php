@@ -104,8 +104,8 @@ class FederationController extends Controller
             'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
             'users'         => [
               'total'          => \App\User::count(),
-              'activeHalfyear' => \App\AccountLog::select('action','user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
-              'activeMonth'    => \App\AccountLog::select('action','user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
+              'activeHalfyear' => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
+              'activeMonth'    => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
             ],
           ],
           'version' => '2.0',
