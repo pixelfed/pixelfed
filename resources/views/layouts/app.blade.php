@@ -12,7 +12,7 @@
     <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
 
     <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-    <meta property="og:title" content="{{ $title or config('app.name', 'pixelfed') }}">
+    <meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{request()->url()}}">
     @stack('meta')
