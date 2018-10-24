@@ -33,10 +33,15 @@ try {
     //     require('./components/CirclePanel.vue')
     // );
 
-    Vue.component(
-        'post-comments',
-        require('./components/PostComments.vue')
-    );
+    // Vue.component(
+    //     'post-presenter',
+    //     require('./components/PostPresenter.vue')
+    // );
+
+    // Vue.component(
+    //     'post-comments',
+    //     require('./components/PostComments.vue')
+    // );
 
     Vue.component(
         'passport-clients',
