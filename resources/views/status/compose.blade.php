@@ -22,6 +22,9 @@
         </div>
       </div>
       <div class="card-body bg-light">
+        <div class="composeLoader d-none text-center">
+          <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+        </div>
         <div class="d-none preview-pagination">
           <div class="d-flex justify-content-between align-items-center">
             <p class="prev text-light" onclick="pixelfed.uploader.previous()"><i class="fas fa-chevron-left"></i></p>
@@ -319,6 +322,7 @@ $(document).on('change', '.file-input', function(e) {
     if($('.welcome-text').hasClass('d-none') == false) {
       $('.welcome-text').addClass('d-none');
     }
+    $('.composeLoader').removeClass('d-none');
     let form = new FormData();
     form.append('file', io);
 
@@ -342,6 +346,7 @@ $(document).on('change', '.file-input', function(e) {
       };
       pixelfed.uploader.meta.push(meta);
       pixelfed.uploader.media.push(e.data);
+      $('.composeLoader').addClass('d-none');
       pixelfed.uploader.addPreview(e.data);
       pixelfed.uploader.paginate(e.data);
       if(pixelfed.uploader.ids.length >= pixelfed.uploader.limit) {
@@ -358,6 +363,7 @@ $(document).on('change', '.file-input', function(e) {
 $(document).on('click', '#addMedia', function(e) {
   e.preventDefault();
   let el = $(this);
+  el.attr('disabled', '');
   if(pixelfed.uploader.ids.length >= pixelfed.uploader.limit) {
     el.remove();
     return;
@@ -365,6 +371,7 @@ $(document).on('click', '#addMedia', function(e) {
   let fi = $('.file-input');
   fi.trigger('click');
   el.blur();
+  el.removeAttr('disabled');
 });
 
 $(document).on('change', '#filterSelectDropdown', function() {
@@ -458,6 +465,9 @@ $(document).on('click', '.preview-thumbs img', function(e) {
 
 $(document).on('click', '#create', function(e) {
   e.preventDefault();
+  let el = $(this);
+  el.attr('disabled', '');
+  $('.composeLoader').removeClass('d-none');
   let data = {
     media: pixelfed.uploader.meta,
     caption: $('.caption input').val(),
