@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use DB;
 use App\User;
 use App\UserSetting;
 use Illuminate\Queue\InteractsWithQueue;
@@ -29,9 +30,11 @@ class AuthLogin
     {
         $user = $event->user;
         if (empty($user->settings)) {
-            $settings = new UserSetting();
-            $settings->user_id = $user->id;
-            $settings->save();
+            DB::transaction(function() use($user) {
+                UserSetting::firstOrCreate([
+                    'user_id' => $user->id
+                ]);
+            });
         }
     }
 }
