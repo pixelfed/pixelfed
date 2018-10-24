@@ -6,6 +6,7 @@ use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Profile;
 use App\User;
 use App\UserSetting;
+use DB;
 
 class UserObserver
 {
@@ -41,9 +42,11 @@ class UserObserver
         }
 
         if (empty($user->settings)) {
-            $settings = new UserSetting();
-            $settings->user_id = $user->id;
-            $settings->save();
+            DB::transaction(function() use($user) {
+                UserSetting::firstOrCreate([
+                    'user_id' => $user->id
+                ]);
+            });
         }
     }
 }
