@@ -321,6 +321,12 @@ class AccountController extends Controller
             $request->session()->push('2fa.session.active', true);
             return redirect('/');
         } else {
+            if($request->session()->has('2fa.attempts')) {
+                $count = (int) $request->session()->has('2fa.attempts');
+                $request->session()->push('2fa.attempts', $count + 1);
+            } else {
+                $request->session()->push('2fa.attempts', 1);
+            }
             return redirect()->back()->withErrors([
                 'code' => 'Invalid code'
             ]);
