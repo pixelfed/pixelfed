@@ -169,4 +169,6 @@ return [
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
+    'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
+    'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
 ];
