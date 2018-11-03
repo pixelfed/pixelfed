@@ -224,6 +224,9 @@ class AccountController extends Controller
             $class = get_class($profile);
             $filterable['id'] = $profile->id;
             $filterable['type'] = $class;
+
+            Follower::whereProfileId($profile->id)->whereFollowingId($user->id)->delete();
+            Notification::whereProfileId($user->id)->whereActorId($profile->id)->delete();
             break;
 
           default:
