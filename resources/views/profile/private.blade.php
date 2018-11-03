@@ -1,7 +1,11 @@
 @extends('layouts.app',['title' => $user->username . " on " . config('app.name')])
 
 @section('content')
-
+@if (session('error'))
+    <div class="alert alert-danger text-center font-weight-bold mb-0">
+        {{ session('error') }}
+    </div>
+@endif
 @include('profile.partial.private-info')
 
 <div class="container">

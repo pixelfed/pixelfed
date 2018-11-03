@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
-use App\FollowRequest;
-use App\Jobs\FollowPipeline\FollowPipeline;
-use App\Profile;
+use App\{
+    Follower,
+    FollowRequest,
+    Profile,
+    UserFilter
+};
 use Auth;
 use Illuminate\Http\Request;
+use App\Jobs\FollowPipeline\FollowPipeline;
 
 class FollowerController extends Controller
 {
@@ -31,6 +34,16 @@ class FollowerController extends Controller
         $user = Auth::user()->profile;
         $target = Profile::where('id', '!=', $user->id)->findOrFail($item);
         $private = (bool) $target->is_private;
+        $blocked = UserFilter::whereUserId($target->id)
+                ->whereFilterType('block')
+                ->whereFilterableId($user->id)
+                ->whereFilterableType('App\Profile')
+                ->exists();
+
+        if($blocked == true) {
+            return redirect()->back()->with('error', 'You cannot follow this user.');
+        }
+
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
 
         if($private == true && $isFollowing == 0) {
