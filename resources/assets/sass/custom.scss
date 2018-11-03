@@ -394,3 +394,20 @@ details summary::-webkit-details-marker {
     transform: rotate(360deg);
   }
 }
+
+.navbar .nav-notification.dropdown-toggle::after {
+  display: none;
+}
+
+.navbar .dropdown .nav-notification-dropdown {
+  width:500px;
+  max-height: 300px;
+  overflow-y: scroll;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.nav-notification-dropdown .loader {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
