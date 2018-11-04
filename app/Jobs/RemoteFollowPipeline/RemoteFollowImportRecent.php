@@ -207,6 +207,7 @@ class RemoteFollowImportRecent implements ShouldQueue
 
         try {
             $info = pathinfo($url);
+            $url = str_replace(' ', '%20', $url);
             $img = file_get_contents($url);
             $file = '/tmp/'.str_random(12).$info['basename'];
             file_put_contents($file, $img);
