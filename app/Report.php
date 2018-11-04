@@ -22,14 +22,15 @@ class Report extends Model
     {
         $class = $this->object_type;
         switch ($class) {
-        case 'App\Status':
-         $column = 'id';
-          break;
+            case 'App\Status':
+             $column = 'id';
+              break;
 
-        default:
-         $column = 'id';
-          break;
-      }
+            default:
+             $class = 'App\Status';
+             $column = 'id';
+              break;
+        }
 
         return (new $class())->where($column, $this->object_id)->firstOrFail();
     }
