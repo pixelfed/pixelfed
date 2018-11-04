@@ -2,6 +2,8 @@ $(document).ready(function() {
   $('.pagination').hide();
   $('.container.timeline-container').removeClass('d-none');
   let elem = document.querySelector('.timeline-feed');
+  let type = elem.getAttribute('data-timeline');
+  $('.timeline-sidenav .nav-link[data-type="'+type+'"]').addClass('active');
   pixelfed.fetchLikes();
   $('video').on('play', function() {
     activated = this;
