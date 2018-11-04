@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Follower extends Model
 {
+
+    protected $fillable = ['profile_id', 'following_id', 'local_profile'];
+
     public function actor()
     {
         return $this->belongsTo(Profile::class, 'profile_id', 'id');
@@ -21,9 +24,9 @@ class Follower extends Model
         return $this->belongsTo(Profile::class, 'following_id', 'id');
     }
 
-    public function permalink()
+    public function permalink($append = null)
     {
-        $path = $this->actor->permalink("/follow/{$this->id}");
+        $path = $this->actor->permalink("/follow/{$this->id}{$append}");
         return url($path);
     }
 
