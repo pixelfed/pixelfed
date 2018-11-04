@@ -52,7 +52,7 @@ class Status extends Model
     {
         $type = $this->viewType();
         $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-        if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album'])) {
+        if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album', 'video'])) {
             return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
         }
 
@@ -66,7 +66,7 @@ class Status extends Model
         $path = config('app.url')."/p/{$username}/{$id}";
         if (!is_null($this->in_reply_to_id)) {
             $pid = $this->in_reply_to_id;
-            $path = config('app.url')."/p/{$username}/{$pid}/c/{$id}";
+            $path = "{$this->parent()->url()}#comment-{$id}";
         }
 
         return url($path);
