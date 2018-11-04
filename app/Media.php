@@ -19,8 +19,12 @@ class Media extends Model
 
     public function url()
     {
-        $path = $this->media_path;
-        $url = Storage::url($path);
+        if(!empty($this->remote_media) && $this->remote_url) {
+            $url = $this->remote_url;
+        } else {
+            $path = $this->media_path;
+            $url = Storage::url($path);
+        }
 
         return url($url);
     }
@@ -59,5 +63,16 @@ class Media extends Model
     public function getMetadata()
     {
         return json_decode($this->metadata, true, 3);
+    }
+
+    public function getModel()
+    {
+        if(empty($this->metadata)) {
+            return false;
+        }
+        $meta = $this->getMetadata();
+        if($meta && isset($meta['Model'])) {
+            return $meta['Model'];
+        }
     }
 }
