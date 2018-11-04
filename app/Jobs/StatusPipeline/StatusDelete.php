@@ -2,9 +2,12 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use App\Notification;
-use App\Status;
-use App\StatusHashtag;
+use App\{
+    Notification,
+    Report,
+    Status,
+    StatusHashtag,
+};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -73,6 +76,9 @@ class StatusDelete implements ShouldQueue
             ->whereItemId($status->id)
             ->delete();
         StatusHashtag::whereStatusId($status->id)->delete();
+        Report::whereObjectType('App\Status')
+            ->whereObjectId($status->id)
+            ->delete();
         $status->delete();
 
         return true;
