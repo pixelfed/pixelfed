@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\{
+    Hashtag,
     Like,
     Media,
+    Notification,
     Profile,
+    StatusHashtag,
     Status,
 };
 use Auth,Cache;
+use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
@@ -101,13 +105,15 @@ class InternalApiController extends Controller
         $attachments = [];
         $status = new Status;
 
-        foreach($medias as $media) {
+        foreach($medias as $k => $media) {
             $m = Media::findOrFail($media['id']);
             if($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
             }
             $m->filter_class = $media['filter'];
             $m->license = $media['license'];
+            $m->caption = strip_tags($media['alt']);
+            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
             if($media['cw'] == true) {
                 $m->is_nsfw = true;
                 $status->is_nsfw = true;
@@ -134,5 +140,88 @@ class InternalApiController extends Controller
         NewStatusPipeline::dispatch($status);
 
         return $status->url();
+    }
+
+    public function notifications(Request $request)
+    {
+        $this->validate($request, [
+          'page' => 'nullable|min:1|max:3',
+        ]);
+        $profile = Auth::user()->profile;
+        $timeago = Carbon::now()->subMonths(6);
+        $notifications = Notification::with('actor')
+        ->whereProfileId($profile->id)
+        ->whereDate('created_at', '>', $timeago)
+        ->orderBy('id', 'desc')
+        ->simplePaginate(30);
+        $notifications = $notifications->map(function($k, $v) {
+            return [
+                'id' => $k->id,
+                'action' => $k->action,
+                'message' => $k->message,
+                'rendered' => $k->rendered,
+                'actor' => [
+                    'avatar' => $k->actor->avatarUrl(),
+                    'username' => $k->actor->username,
+                    'url' => $k->actor->url(),
+                ],
+                // 'item' => [
+                //     'url' => $k->item->url(),
+                //     'thumb' => $k->item->thumb(),
+                // ],
+                'url' => $k->item->url()
+            ];
+        });
+        return response()->json($notifications, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function discover(Request $request)
+    {
+        $profile = Auth::user()->profile;
+        
+        $following = Cache::get('feature:discover:following:'.$profile->id, []);
+        $people = Profile::select('id', 'name', 'username')
+            ->with('avatar')
+            ->inRandomOrder()
+            ->whereHas('statuses')
+            ->whereNull('domain')
+            ->whereNotIn('id', $following)
+            ->whereIsPrivate(false)
+            ->take(3)
+            ->get();
+
+        $posts = Status::select('id', 'caption', 'profile_id')
+          ->whereHas('media')
+          ->whereHas('profile', function($q) {
+            $q->where('is_private', false);
+          })
+          ->whereIsNsfw(false)
+          ->whereVisibility('public')
+          ->where('profile_id', '<>', $profile->id)
+          ->whereNotIn('profile_id', $following)
+          ->withCount(['comments', 'likes'])
+          ->orderBy('created_at', 'desc')
+          ->take(21)
+          ->get();
+
+        $res = [
+            'people' => $people->map(function($profile) {
+                return [
+                    'avatar' => $profile->avatarUrl(),
+                    'name' => $profile->name,
+                    'username' => $profile->username,
+                    'url'   => $profile->url(),
+                ];
+            }),
+            'posts' => $posts->map(function($post) {
+                return [
+                    'url' => $post->url(),
+                    'thumb' => $post->thumb(),
+                    'comments_count' => $post->comments_count,
+                    'likes_count' => $post->likes_count,
+                ];
+            })
+        ];
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 }
