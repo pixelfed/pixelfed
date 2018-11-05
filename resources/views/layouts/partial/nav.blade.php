@@ -20,13 +20,18 @@
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
+                        <a class="nav-link" href="/i/discover" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
                     </li>
-                    <li class="nav-item px-2">
-                        <a class="nav-link nav-notification" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle nav-notification" href="{{route('notifications')}}" id="nav-notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-inbox fa-lg text"></i>
-                        </a>
-                    </li>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right nav-notification-dropdown" aria-labelledby="nav-notification">
+                        <div class="loader text-center">
+                            <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+                        </div>
+                      </div>
+                  </li>
                     <li class="nav-item px-2">
                         <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                             <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
@@ -34,9 +39,9 @@
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown px-2">
+                    <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
-                            <i class="far fa-user fa-lg"></i> <span class="caret"></span>
+                            <i class="far fa-user fa-lg"></i>
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
