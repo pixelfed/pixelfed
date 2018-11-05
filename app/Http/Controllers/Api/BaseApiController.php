@@ -2,22 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Avatar;
-use App\Http\Controllers\AvatarController;
-use App\Http\Controllers\Controller;
-use App\Jobs\AvatarPipeline\AvatarOptimize;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Media;
-use App\Profile;
-use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\MediaTransformer;
-use App\Transformer\Api\StatusTransformer;
-use Auth;
-use Cache;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
+use App\Http\Controllers\{
+    Controller,
+    AvatarController
+};
+use Auth, Cache, URL;
+use App\{Avatar,Media,Profile};
+use App\Transformer\Api\{
+    AccountTransformer,
+    MediaTransformer,
+    StatusTransformer
+};
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
+use App\Jobs\AvatarPipeline\AvatarOptimize;
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\VideoPipeline\{
+    VideoOptimize,
+    VideoPostProcess,
+    VideoThumbnail
+};
 
 class BaseApiController extends Controller
 {
@@ -187,7 +192,20 @@ class BaseApiController extends Controller
         $url = URL::temporarySignedRoute(
             'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id]
         );
-        ImageOptimize::dispatch($media);
+
+        switch ($media->mime) {
+            case 'image/jpeg':
+            case 'image/png':
+                ImageOptimize::dispatch($media);
+                break;
+
+            case 'video/mp4':
+                VideoThumbnail::dispatch($media);
+                break;
+            
+            default:
+                break;
+        }
 
         $res = [
             'id'          => $media->id,
