@@ -13,6 +13,7 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
+use App\Util\ActivityPub\Helpers;
 
 class FederationController extends Controller
 {
@@ -133,6 +134,19 @@ class FederationController extends Controller
         return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT);
     }
 
+    public function hostMeta(Request $request)
+    {
+        $path = route('well-known.webfinger');
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  <Link rel="lrdd" type="application/xrd+xml" template="{$path}?resource={uri}"/>
+</XRD>
+XML;
+
+        return response($xml)->header('Content-Type', 'application/xrd+xml');
+    }
+
     public function userOutbox(Request $request, $username)
     {
         if (config('pixelfed.activitypub_enabled') == false) {
@@ -153,6 +167,60 @@ class FederationController extends Controller
 
     public function userInbox(Request $request, $username)
     {
-        return;
+        if (config('pixelfed.activitypub_enabled') == false) {
+            abort(403);
+        }
+        $type = [
+            'application/activity+json'
+        ];
+        if (in_array($request->header('Content-Type'), $type) == false) {
+            abort(500, 'Invalid request');
+        }
+        $profile = Profile::whereUsername($username)->firstOrFail();
+        $headers = [
+            'date' => $request->header('date'),
+            'signature' => $request->header('signature'),
+            'digest'   => $request->header('digest'),
+            'content-type' => $request->header('content-type'),
+            'path'  => $request->getRequestUri(),
+            'host'  => $request->getHttpHost()
+        ];
+        InboxWorker::dispatch($headers, $profile, $request->all());
+    }
+
+    public function userFollowing(Request $request, $username)
+    {
+        if (config('pixelfed.activitypub_enabled') == false) {
+            abort(403);
+        }
+        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+        $obj = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id'       => $request->getUri(),
+            'type'     => 'OrderedCollectionPage',
+            'totalItems' => $profile->following()->count(),
+            'orderedItems' => $profile->following->map(function($f) {
+                return $f->permalink();
+            })
+        ];
+        return response()->json($obj); 
+    }
+
+    public function userFollowers(Request $request, $username)
+    {
+        if (config('pixelfed.activitypub_enabled') == false) {
+            abort(403);
+        }
+        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+        $obj = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id'       => $request->getUri(),
+            'type'     => 'OrderedCollectionPage',
+            'totalItems' => $profile->followers()->count(),
+            'orderedItems' => $profile->followers->map(function($f) {
+                return $f->permalink();
+            })
+        ];
+        return response()->json($obj); 
     }
 }
