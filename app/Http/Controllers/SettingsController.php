@@ -8,6 +8,7 @@ use App\UserFilter;
 use Auth;
 use DB;
 use Cache;
+use Purify;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Settings\{
     HomeSettings,
