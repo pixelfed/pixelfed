@@ -167,9 +167,11 @@ XML;
 
     public function userInbox(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
+        // if (config('pixelfed.activitypub_enabled') == false || config('pixelfed.ap_inbox') == false) {
+        //     abort(403, 'Inbox support disabled');
+        // }
+        return;
+        
         $type = [
             'application/activity+json'
         ];
