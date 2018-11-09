@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\Follower;
 use App\Profile;
 use App\Status;
 use App\User;
 use App\UserFilter;
-use Auth;
+use Illuminate\Http\Request;
 
 class TimelineController extends Controller
 {
@@ -17,8 +18,11 @@ class TimelineController extends Controller
         $this->middleware('twofactor');
     }
 
-    public function personal()
+    public function personal(Request $request)
     {
+        $this->validate($request,[
+          'page' => 'nullable|integer|max:20'
+        ]);
         $pid = Auth::user()->profile->id;
         // TODO: Use redis for timelines
         $following = Follower::whereProfileId($pid)->pluck('following_id');
@@ -32,14 +36,17 @@ class TimelineController extends Controller
                   ->whereVisibility('public')
                   ->orderBy('created_at', 'desc')
                   ->withCount(['comments', 'likes'])
-                  ->simplePaginate(20);
+                  ->simplePaginate(10);
         $type = 'personal';
 
         return view('timeline.template', compact('timeline', 'type'));
     }
 
-    public function local()
+    public function local(Request $request)
     {
+        $this->validate($request,[
+          'page' => 'nullable|integer|max:20'
+        ]);
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
@@ -57,7 +64,7 @@ class TimelineController extends Controller
                   ->whereVisibility('public')
                   ->withCount(['comments', 'likes'])
                   ->orderBy('created_at', 'desc')
-                  ->simplePaginate(20);
+                  ->simplePaginate(10);
         $type = 'local';
 
         return view('timeline.template', compact('timeline', 'type'));
