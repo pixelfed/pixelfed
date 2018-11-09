@@ -179,6 +179,7 @@
             <div class="card-body flex-grow-0 py-1">
               <div class="reactions my-1">
                 <form class="d-inline-flex pr-3" method="post" action="/i/like" style="display: inline;" :data-id="statusId" data-action="like">
+                  <input type="hidden" name="_token" value="">
                   <input type="hidden" name="item" :value="statusId">
                   <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Like!">
                     <h3 class="m-0 far fa-heart text-dark"></h3>
@@ -194,6 +195,7 @@
 
                 <span class="float-right">
                   <form class="d-inline-flex" method="post" action="/i/bookmark" style="display: inline;" data-id="#" data-action="bookmark" onclick="this.preventDefault()">
+                    <input type="hidden" name="_token" value="">
                     <input type="hidden" name="item" value="#">
                     <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
                       <h3 class="m-0 far fa-bookmark"></h3>
@@ -202,7 +204,7 @@
                 </span>
               </div>
               <div class="likes font-weight-bold mb-0">
-                <span class="like-count" data-count="0">0</span> likes
+                <span class="like-count">{{status.favourites_count || 0}}</span> likes
               </div>
               <div class="timestamp">
                 <a v-bind:href="statusUrl" class="small text-muted">
@@ -213,6 +215,7 @@
           </div>
           <div class="card-footer bg-white sticky-md-bottom">
             <form class="comment-form" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
+              <input type="hidden" name="_token" value="">
               <input type="hidden" name="item" :value="statusId">
 
               <input class="form-control" name="comment" placeholder="Add a comment..." autocomplete="off">
@@ -292,6 +295,11 @@ export default {
           }
     },
     mounted() {
+      let token = $('meta[name="csrf-token"]').attr('content');
+      $('input[name="_token"]').each(function(k, v) {
+          let el = $(v);
+          el.val(token);
+      });
       this.fetchData();
     },
     methods: {
