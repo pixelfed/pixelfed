@@ -24,6 +24,7 @@
     <link rel="canonical" href="{{request()->url()}}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     @stack('styles')
+
 </head>
 <body class="">
     @include('layouts.partial.nav')
@@ -32,6 +33,7 @@
     </main>
     @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/components.js') }}"></script>
     @stack('scripts')
     @if(Auth::check())
     <div class="modal" tabindex="-1" role="dialog" id="composeModal">
