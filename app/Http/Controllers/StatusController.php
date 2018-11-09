@@ -23,7 +23,6 @@ class StatusController extends Controller
 
         $status = Status::whereProfileId($user->id)
                 ->where('visibility', '!=', 'draft')
-                ->withCount(['likes', 'comments', 'media'])
                 ->findOrFail($id);
 
         if($status->visibility == 'private' || $user->is_private) {
@@ -40,34 +39,7 @@ class StatusController extends Controller
             return $this->showActivityPub($request, $status);
         }
 
-        $template = $this->detectTemplate($status);
-
-        $replies = Status::whereInReplyToId($status->id)->orderBy('created_at', 'desc')->simplePaginate(30);
-
-        return view($template, compact('user', 'status', 'replies'));
-    }
-
-    protected function detectTemplate($status)
-    {
-        $template = Cache::rememberForever('template:status:type:'.$status->id, function () use ($status) {
-            $template = 'status.show.photo';
-            if (!$status->media_path && $status->in_reply_to_id) {
-                $template = 'status.reply';
-            }
-            if ($status->media->count() > 1) {
-                $template = 'status.show.album';
-            }
-            if ($status->viewType() == 'video') {
-                $template = 'status.show.video';
-            }
-            if ($status->viewType() == 'video-album') {
-                $template = 'status.show.video-album';
-            }
-
-            return $template;
-        });
-
-        return $template;
+        return view('status.show', compact('user', 'status'));
     }
 
     public function compose()
