@@ -52,11 +52,6 @@ Vue.component(
 );
 
 Vue.component(
-    'post-presenter',
-    require('./components/PostPresenter.vue')
-);
-
-Vue.component(
     'post-comments',
     require('./components/PostComments.vue')
 );
