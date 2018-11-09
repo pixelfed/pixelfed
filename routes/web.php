@@ -43,6 +43,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
         });
         Route::group(['prefix' => 'v2'], function() {
+            Route::get('notifications', 'InternalApiController@notifications');
+            Route::get('discover', 'InternalApiController@discover');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
