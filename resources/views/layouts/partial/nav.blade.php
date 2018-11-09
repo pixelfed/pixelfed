@@ -20,7 +20,7 @@
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
                     <li class="nav-item px-2">
-                        <a class="nav-link" href="/i/discover" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
+                        <a class="nav-link" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle nav-notification" href="{{route('notifications')}}" id="nav-notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
