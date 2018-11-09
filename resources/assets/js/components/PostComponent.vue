@@ -278,8 +278,6 @@ pixelfed.presenter = {
         carouselItem.append(img);
         wrapper.append(check);
         wrapper.append(carouselItem);
-        pixelfed.orientation.set(item.orientation);
-
       }
       wrapper.append(counter);
       container.append(wrapper);
