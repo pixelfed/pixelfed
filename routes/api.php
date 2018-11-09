@@ -14,3 +14,7 @@ use Illuminate\Http\Request;
 */
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
 
+Route::group(['prefix' => 'api/v2'], function() {
+    Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
+    Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
+});
