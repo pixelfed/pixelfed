@@ -43,8 +43,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
         });
         Route::group(['prefix' => 'v2'], function() {
-            Route::get('profile/{username}/status/{postid}', 'InternalApiController@status');
-            Route::get('comments/{username}/status/{postId}', 'InternalApiController@statusComments');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
