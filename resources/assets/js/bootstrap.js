@@ -1,7 +1,7 @@
 window._ = require('lodash');
 window.Popper = require('popper.js').default;
 import swal from 'sweetalert';
-window.pixelfed = {};
+window.pixelfed = window.pixelfed || {};
 window.$ = window.jQuery = require('jquery');
 require('bootstrap');
 window.InfiniteScroll = require('infinite-scroll');
