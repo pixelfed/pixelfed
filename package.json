@@ -27,6 +27,7 @@
         "pusher-js": "^4.2.2",
         "socket.io-client": "^2.1.1",
         "sweetalert": "^2.1.0",
-        "twitter-text": "^2.0.5"
+        "twitter-text": "^2.0.5",
+        "video.js": "^7.2.3"
     }
 }
