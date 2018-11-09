@@ -24,8 +24,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Auth::routes();
 
-    Route::get('.well-known/webfinger', 'FederationController@webfinger');
-    Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown');
+    Route::get('.well-known/webfinger', 'FederationController@webfinger')->name('well-known.webfinger');
+    Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->name('well-known.nodeinfo');
+    Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
 
     Route::get('/home', 'HomeController@index')->name('home');
 
@@ -40,6 +41,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
+        });
+        Route::group(['prefix' => 'v2'], function() {
+            Route::get('profile/{username}/status/{postid}', 'InternalApiController@status');
+            Route::get('comments/{username}/status/{postId}', 'InternalApiController@statusComments');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
@@ -196,6 +201,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('{user}.atom', 'ProfileController@showAtomFeed');
         Route::get('{username}/outbox', 'FederationController@userOutbox');
         Route::get('{username}', 'ProfileController@permalinkRedirect');
+        Route::get('{username}/followers', 'FederationController@userFollowers');
+        Route::get('{username}/following', 'FederationController@userFollowing');
     });
 
     Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
