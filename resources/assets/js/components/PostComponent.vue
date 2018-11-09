@@ -187,6 +187,7 @@
                 </form>
                 <h3 class="far fa-comment pr-3 m-0" title="Comment"></h3>
                 <form class="d-inline-flex share-form pr-3" method="post" action="/i/share" style="display: inline;" data-id="11todo" data-action="share" data-count="status.favourite_count">
+                  <input type="hidden" name="_token" value="">
                   <input type="hidden" name="item" :value="statusId">
                   <button class="btn btn-link text-dark p-0" type="submit" title="Share">
                     <h3 class="m-0 far fa-share-square"></h3>
