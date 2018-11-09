@@ -103,8 +103,10 @@ class Status extends Model
 
     public function liked() : bool
     {
+        if(Auth::check() == false) {
+            return false;
+        }
         $profile = Auth::user()->profile;
-
         return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
     }
 
@@ -130,6 +132,9 @@ class Status extends Model
 
     public function shared() : bool
     {
+        if(Auth::check() == false) {
+            return false;
+        }
         $profile = Auth::user()->profile;
 
         return self::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
