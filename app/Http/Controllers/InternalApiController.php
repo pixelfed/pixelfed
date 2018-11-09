@@ -59,25 +59,23 @@ class InternalApiController extends Controller
         $profile = Profile::whereUsername($username)->first();
         $status = Status::whereProfileId($profile->id)->find($postId);
         if($request->filled('min_id') || $request->filled('max_id')) {
-            $q = false;
-            $limit = 50;
             if($request->filled('min_id')) {
                 $replies = $status->comments()
-                ->select('id', 'caption', 'rendered', 'profile_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             }
             if($request->filled('max_id')) {
                 $replies = $status->comments()
-                ->select('id', 'caption', 'rendered', 'profile_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             }
         } else {
             $replies = $status->comments()
-            ->select('id', 'caption', 'rendered', 'profile_id', 'created_at')
+            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
         }
