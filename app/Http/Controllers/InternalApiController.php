@@ -34,58 +34,6 @@ class InternalApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
-    public function status(Request $request, $username, int $postid)
-    {
-        $auth = Auth::user()->profile;
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($postid);
-        $status = new Fractal\Resource\Item($status, new StatusTransformer());
-        $user = new Fractal\Resource\Item($auth, new AccountTransformer());
-        $res = [];
-        $res['status'] = $this->fractal->createData($status)->toArray();
-        $res['user'] = $this->fractal->createData($user)->toArray();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
-    public function statusComments(Request $request, $username, int $postId)
-    {
-        $this->validate($request, [
-            'min_id'    => 'nullable|integer|min:1',
-            'max_id'    => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
-            'limit'     => 'nullable|integer|min:5|max:50'
-        ]);
-        $limit = $request->limit ?? 10;
-        $auth = Auth::user()->profile;
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($postId);
-        if($request->filled('min_id') || $request->filled('max_id')) {
-            if($request->filled('min_id')) {
-                $replies = $status->comments()
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
-                ->where('id', '>=', $request->min_id)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
-            }
-            if($request->filled('max_id')) {
-                $replies = $status->comments()
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
-                ->where('id', '<=', $request->max_id)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
-            }
-        } else {
-            $replies = $status->comments()
-            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
-            ->orderBy('id', 'desc')
-            ->paginate($limit);
-        }
-
-        $resource = new Fractal\Resource\Collection($replies, new StatusTransformer(), 'data');
-        $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
-        $res = $this->fractal->createData($resource)->toArray();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
     public function compose(Request $request)
     {
         $this->validate($request, [
@@ -163,10 +111,6 @@ class InternalApiController extends Controller
                     'username' => $k->actor->username,
                     'url' => $k->actor->url(),
                 ],
-                // 'item' => [
-                //     'url' => $k->item->url(),
-                //     'thumb' => $k->item->thumb(),
-                // ],
                 'url' => $k->item->url()
             ];
         });
