@@ -178,11 +178,11 @@
             </div>
             <div class="card-body flex-grow-0 py-1">
               <div class="reactions my-1">
-                <form class="d-inline-flex pr-3" method="post" action="/i/like" style="display: inline;" :data-id="statusId" data-action="like">
+                <form class="d-inline-flex pr-3 like-form" method="post" action="/i/like" style="display: inline;" :data-id="statusId" data-action="like">
                   <input type="hidden" name="_token" value="">
                   <input type="hidden" name="item" :value="statusId">
                   <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Like!">
-                    <h3 class="m-0 far fa-heart text-dark"></h3>
+                    <h3 class="status-heart m-0 far fa-heart text-dark"></h3>
                   </button>
                 </form>
                 <h3 class="far fa-comment pr-3 m-0" title="Comment"></h3>
@@ -299,8 +299,8 @@ export default {
           let el = $(v);
           el.val(token);
       });
-      this.loadLikes();
       this.fetchData();
+      pixelfed.hydrateLikes();
     },
     methods: {
       fetchData() {
@@ -364,14 +364,6 @@ export default {
         }
         $('.postPresenterLoader').addClass('d-none');
         $('.postPresenterContainer').removeClass('d-none');
-      },
-      loadLikes() {
-        let likes = ls.get('likes');
-        if(likes.length != 0) {
-          if(likes.indexOf(this.status.id) == 0) {
-              $('.far.fa-heart.text-dark').addClass('fas text-danger').removeClass('far text-dark');
-          }
-        }
       },
     }
 }
