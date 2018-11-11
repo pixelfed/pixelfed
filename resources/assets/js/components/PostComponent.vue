@@ -299,6 +299,7 @@ export default {
           let el = $(v);
           el.val(token);
       });
+      this.loadLikes();
       this.fetchData();
     },
     methods: {
@@ -363,7 +364,15 @@ export default {
         }
         $('.postPresenterLoader').addClass('d-none');
         $('.postPresenterContainer').removeClass('d-none');
-      }
+      },
+      loadLikes() {
+        let likes = ls.get('likes');
+        if(likes.length != 0) {
+          if(likes.indexOf(this.status.id) == 0) {
+              $('.far.fa-heart.text-dark').addClass('fas text-danger').removeClass('far text-dark');
+          }
+        }
+      },
     }
 }
 </script>
