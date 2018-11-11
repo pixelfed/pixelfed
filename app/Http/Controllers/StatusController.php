@@ -39,7 +39,8 @@ class StatusController extends Controller
             return $this->showActivityPub($request, $status);
         }
 
-        return view('status.show', compact('user', 'status'));
+        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        return view($template, compact('user', 'status'));
     }
 
     public function compose()
