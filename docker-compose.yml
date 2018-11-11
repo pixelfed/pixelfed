@@ -38,7 +38,7 @@ services:
   #     - "app-storage:/var/www/storage"
   #   networks:
   #     - internal
-  #   command: php artisan horizon
+  #   command: gosu www-data php artisan horizon
     
   db:
     image: mysql:5.7
