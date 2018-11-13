@@ -2,6 +2,22 @@ window.Vue = require('vue');
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue);
 
+pixelfed.readmore = () => {
+  $(document).find('.read-more').each(function(k,v) {
+      let el = $(this);
+      let attr = el.attr('data-readmore');
+      if(typeof attr !== typeof undefined && attr !== false) {
+        return;
+      }
+      el.readmore({
+        collapsedHeight: 44,
+        heightMargin: 20,
+        moreLink: '<a href="#" class="font-weight-bold small">Read more</a>',
+        lessLink: '<a href="#" class="font-weight-bold small">Hide</a>',
+      });
+  });
+};
+
 window.InfiniteScroll = require('infinite-scroll');
 window.filesize = require('filesize');
 import swal from 'sweetalert';
