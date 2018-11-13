@@ -18,22 +18,24 @@
   <div class="postCommentsContainer d-none">
     <p class="mb-1 text-center load-more-link"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p class="mb-0 d-flex justify-content-between align-items-center" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
-        <span class="pr-3">
-          <span class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi></span>
-          <span class="comment-text" v-html="comment.content"></span>
+      <p class="mb-0 read-more" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id" style="overflow: hidden;">
+        <span class="d-flex justify-content-between align-items-center ">
+          <span class="pr-3">
+            <span class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi></span>
+            <span class="comment-text" v-html="comment.content" style="overflow: hidden;"></span>
+          </span>
+          <b-dropdown :id="comment.uri" variant="link" no-caret class="float-right">
+            <template slot="button-content">
+                <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
+            </template>
+            <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
+          </b-dropdown>
         </span>
-        <b-dropdown :id="comment.uri" variant="link" no-caret class="float-right">
-          <template slot="button-content">
-              <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
-          </template>
-          <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
-        </b-dropdown>
       </p>
     </div>
   </div>
@@ -54,6 +56,9 @@ export default {
     },
     mounted() {
       this.fetchData();
+    },
+    updated() {
+      pixelfed.readmore();
     },
     methods: {
       embed(e) {
@@ -111,7 +116,6 @@ export default {
             $('.load-more-link').addClass('d-none');
             return;
           }
-          $('.postCommentsContainer').addClass('d-none');
           $('.postCommentsLoader').removeClass('d-none');
           let next = this.pagination.links.next;
           axios.get(next)
@@ -122,7 +126,6 @@ export default {
                 for(let i=0; i < res.length; i++) {
                   this.results.unshift(res[i]);
                 }
-                $('.postCommentsContainer').removeClass('d-none');
                 this.pagination = response.data.meta.pagination;
             });
       }
