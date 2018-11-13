@@ -4,6 +4,7 @@ $(document).ready(function() {
   let elem = document.querySelector('.timeline-feed');
   let type = elem.getAttribute('data-timeline');
   $('.timeline-sidenav .nav-link[data-type="'+type+'"]').addClass('active');
+  pixelfed.readmore();
   pixelfed.fetchLikes();
   $('video').on('play', function() {
     activated = this;
@@ -40,8 +41,8 @@ $(document).ready(function() {
 $(document).on("DOMContentLoaded", function() {
 
   var active = false;
-
   var lazyLoad = function() {
+    pixelfed.readmore();
     if (active === false) {
       active = true;
 
