@@ -30,6 +30,16 @@
                         <div class="loader text-center">
                             <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
                         </div>
+                        <div class="dropdown-item disabled bg-light py-2">
+                            <a href="{{route('notifications')}}" class="font-weight-bold mr-4" data-toggle="tooltip" title="Notifications"><i class="fas fa-inbox"></i></a>
+                            {{-- <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Direct Messages"><i class="far fa-envelope"></i></a>
+                            <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Following Activity"><i class="fas fa-users"></i></a> --}}
+                            <a href="{{route('follow-requests')}}" class="text-muted font-weight-bold" data-toggle="tooltip" title="Follow Requests"><i class="fas fa-user-plus"></i></a>
+
+                            <span class="float-right">
+                                <a class="btn btn-sm btn-outline-secondary py-0 notification-action" data-type="mark_read" href="#">Mark as Read</a>
+                            </span>
+                        </div>
                       </div>
                   </li>
                     <li class="nav-item px-2">
