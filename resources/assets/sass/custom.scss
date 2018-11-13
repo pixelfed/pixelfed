@@ -423,3 +423,15 @@ details summary::-webkit-details-marker {
     background: transparent;
     border: 1px solid #08d;
 }
+
+.messages-page .bg-primary.text-white a {
+  color: #fff;
+}
+
+.notification-tooltip .tooltip-inner {
+  font-weight: bold;
+}
+
+.notification-tooltip .arrow::before {
+  border-bottom-color:#dc3545 !important;
+}
