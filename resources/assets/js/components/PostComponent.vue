@@ -169,7 +169,7 @@
           <div class="d-flex flex-md-column flex-column-reverse h-100">
             <div class="card-body status-comments">
               <div class="status-comment">
-                <p class="mb-1">
+                <p class="mb-1 read-more" style="overflow: hidden;">
                   <span class="font-weight-bold pr-1">{{statusUsername}}</span>
                   <span class="comment-text"></span>
                 </p>
@@ -336,6 +336,7 @@ export default {
         let media = this.media;
 
         $('.status-comment .comment-text').html(status.content);
+
         if(container.children().length != 0) {
           return;
         }
@@ -362,6 +363,7 @@ export default {
           $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
           return;
         }
+        pixelfed.readmore();
         $('.postPresenterLoader').addClass('d-none');
         $('.postPresenterContainer').removeClass('d-none');
       },
