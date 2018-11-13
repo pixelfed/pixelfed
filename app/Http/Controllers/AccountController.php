@@ -64,10 +64,12 @@ class AccountController extends Controller
       ]);
         $profile = Auth::user()->profile;
         $action = $request->input('a');
+        $allowed = ['like', 'follow'];
         $timeago = Carbon::now()->subMonths(3);
         $following = $profile->following->pluck('id');
         $notifications = Notification::whereIn('actor_id', $following)
-          ->where('profile_id', '!=', $profile->id)
+          ->whereIn('action', $allowed)
+          ->where('actor_id', '<>', $profile->id)
           ->whereDate('created_at', '>', $timeago)
           ->orderBy('notifications.created_at', 'desc')
           ->simplePaginate(30);
