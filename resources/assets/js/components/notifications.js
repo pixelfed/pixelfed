@@ -123,7 +123,7 @@ $(document).ready(function() {
 	}
 
 	pixelfed.n.check = (count) => {
-		pixelfed.n.sound();
+		// pixelfed.n.sound();
 		pixelfed.n.showCount(count);
 	}
 
@@ -137,8 +137,8 @@ $(document).ready(function() {
 			ts = now;
 		}
 
-		if(force && count != null || ts > offset) {
-			pixelfed.n.showCount(count);
+		if(!force && count != null || ts > offset) {
+			//pixelfed.n.showCount(count);
 			ls.set('n.lastCheck', ts);
 			return;
 		}
@@ -148,7 +148,7 @@ $(document).ready(function() {
 			let len = res.data.length;
 			if(len > 0) {
 				ls.set('n.count', len);
-				ls.set('n.lastCheck', ts);
+				ls.set('n.lastCheck', Date.now());
 				pixelfed.n.check(len);
 			}
 		}).catch(err => {
