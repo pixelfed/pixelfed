@@ -31,6 +31,9 @@ require('./components/notifications');
 //     });
 // }
 
+// Initalize Notification Helper
+window.pixelfed.n = {};
+
 Vue.component(
     'follow-suggestions',
     require('./components/FollowSuggestions.vue')
