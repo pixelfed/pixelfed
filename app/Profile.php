@@ -275,10 +275,20 @@ class Profile extends Model
                     ]
                 ];
                 break;
-            
-            default:
-                # code...
-                break;
         }
+        return $audience;
+    }
+
+    public function getAudienceInbox($scope = 'public')
+    {
+        return $this
+            ->followers()
+            ->whereLocalProfile(false)
+            ->get()
+            ->map(function($follow) {
+                return $follow->sharedInbox ?? $follow->inbox_url;
+             })
+            ->unique()
+            ->toArray();
     }
 }
