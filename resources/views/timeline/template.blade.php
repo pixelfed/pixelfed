@@ -13,9 +13,9 @@
   </div>
 </noscript>
 
-<div class="container p-0 d-none timeline-container">
+<div class="container d-none timeline-container">
   <div class="row">
-    <div class="col-md-10 col-lg-8 mx-auto pt-4 px-0 my-3 pr-2">
+    <div class="col-md-10 col-lg-8 pt-4 px-0 my-3">
         @if (session('status'))
             <div class="alert alert-success">
                 <span class="font-weight-bold">{!! session('status') !!}</span>
