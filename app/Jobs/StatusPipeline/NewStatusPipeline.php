@@ -37,7 +37,7 @@ class NewStatusPipeline implements ShouldQueue
         $status = $this->status;
 
         StatusEntityLexer::dispatch($status);
-        //StatusActivityPubDeliver::dispatch($status);
+        StatusActivityPubDeliver::dispatch($status);
 
         Cache::forever('post.'.$status->id, $status);
 
