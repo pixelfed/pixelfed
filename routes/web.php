@@ -44,6 +44,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('notifications', 'InternalApiController@notifications');
+            Route::post('notifications', 'InternalApiController@notificationMarkAllRead');
             Route::get('discover', 'InternalApiController@discover');
         });
         Route::group(['prefix' => 'local'], function () {
