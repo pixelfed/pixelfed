@@ -113,7 +113,7 @@ class Status extends Model
     public function bookmarked()
     {
         if (!Auth::check()) {
-            return 0;
+            return false;
         }
         $profile = Auth::user()->profile;
 
@@ -139,7 +139,7 @@ class Status extends Model
     {
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (!empty($parent)) {
-            return self::findOrFail($parent);
+            return $this->findOrFail($parent);
         }
     }
 
@@ -254,7 +254,7 @@ class Status extends Model
                         'url' => $media->url(),
                         'name' => null
                     ];
-                })
+                })->toArray()
             ]
         ];
     }
@@ -268,14 +268,16 @@ class Status extends Model
         $res['to'] = [];
         $res['cc'] = [];
         $scope = $this->scope;
+        $mentions = $this->mentions->map(function ($mention) {
+            return $mention->permalink();
+        })->toArray();
+
         switch ($scope) {
             case 'public':
                 $res['to'] = [
                     "https://www.w3.org/ns/activitystreams#Public"
                 ];
-                $res['cc'] = [
-                    $this->profile->permalink('/followers')
-                ];
+                $res['cc'] = array_merge([$this->profile->permalink('/followers')], $mentions);
                 break;
             
             default:
