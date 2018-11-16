@@ -22,7 +22,7 @@ class StatusController extends Controller
         $user = Profile::whereUsername($username)->firstOrFail();
 
         $status = Status::whereProfileId($user->id)
-                ->where('visibility', '!=', 'draft')
+                ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
         if($status->visibility == 'private' || $user->is_private) {
