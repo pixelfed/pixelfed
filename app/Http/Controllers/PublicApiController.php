@@ -50,10 +50,15 @@ class PublicApiController extends Controller
     {
         $profile = Profile::whereUsername($username)->first();
         $status = Status::whereProfileId($profile->id)->find($postid);
-        $status = new Fractal\Resource\Item($status, new StatusTransformer());
+        $item = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = [
-        	'status' => $this->fractal->createData($status)->toArray(),
-        	'user' => $this->getUserData()
+        	'status' => $this->fractal->createData($item)->toArray(),
+        	'user' => $this->getUserData(),
+            'reactions' => [
+                'liked' => $status->liked(),
+                'shared' => $status->shared(),
+                'bookmarked' => $status->bookmarked(),
+            ],
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
