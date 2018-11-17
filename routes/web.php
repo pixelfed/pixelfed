@@ -18,7 +18,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('media/list', 'AdminController@media')->name('admin.media');
 });
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::post('/', 'StatusController@store')->middleware('throttle:500,1440');
 
