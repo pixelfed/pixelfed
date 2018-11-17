@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\{
+    DirectMessage,
     Hashtag,
     Like,
     Media,
@@ -111,7 +112,8 @@ class InternalApiController extends Controller
                     'username' => $k->actor->username,
                     'url' => $k->actor->url(),
                 ],
-                'url' => $k->item->url()
+                'url' => $k->item->url(),
+                'read_at' => $k->read_at,
             ];
         });
         return response()->json($notifications, 200, [], JSON_PRETTY_PRINT);
@@ -165,5 +167,37 @@ class InternalApiController extends Controller
             })
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+    public function directMessage(Request $request, $profileId, $threadId)
+    {
+        $profile = Auth::user()->profile;
+
+        if($profileId != $profile->id) { 
+            abort(403); 
+        }
+
+        $msg = DirectMessage::whereToId($profile->id)
+            ->orWhere('from_id',$profile->id)
+            ->findOrFail($threadId);
+
+        $thread = DirectMessage::with('status')->whereIn('to_id', [$profile->id, $msg->from_id])
+            ->whereIn('from_id', [$profile->id,$msg->from_id])
+            ->orderBy('created_at', 'asc')
+            ->paginate(30);
+
+        return response()->json(compact('msg', 'profile', 'thread'), 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function notificationMarkAllRead(Request $request)
+    {
+        $profile = Auth::user()->profile;
+
+        $notifications = Notification::whereProfileId($profile->id)->get();
+        foreach($notifications as $n) {
+            $n->read_at = Carbon::now();
+            $n->save();
+        }
+
+        return;
     }
 }
