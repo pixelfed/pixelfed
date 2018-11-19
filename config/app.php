@@ -215,6 +215,7 @@ return [
         'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
         'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
         'Purify'       => Stevebauman\Purify\Facades\Purify::class,
+        'FFMpeg'       => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
     ],
 
 ];
