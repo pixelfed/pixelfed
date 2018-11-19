@@ -15,7 +15,7 @@ class Image
     public $orientation;
     public $acceptedMimes = [
         'image/png',
-        'image/jpeg',
+        'image/jpeg'
     ];
 
     public function __construct()
@@ -114,9 +114,11 @@ class Image
             if($thumbnail) {
                 $img->crop($aspect['width'], $aspect['height']);
             } else {
+                $metadata = $img->exif();
                 $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
+                $media->metadata = json_encode($metadata);
             }
             $converted = $this->setBaseName($path, $thumbnail, $img->extension);
             $newPath = storage_path('app/'.$converted['path']);
