@@ -167,27 +167,7 @@ XML;
 
     public function userInbox(Request $request, $username)
     {
-        // if (config('pixelfed.activitypub_enabled') == false || config('pixelfed.ap_inbox') == false) {
-        //     abort(403, 'Inbox support disabled');
-        // }
-        return;
-        
-        $type = [
-            'application/activity+json'
-        ];
-        if (in_array($request->header('Content-Type'), $type) == false) {
-            abort(500, 'Invalid request');
-        }
-        $profile = Profile::whereUsername($username)->firstOrFail();
-        $headers = [
-            'date' => $request->header('date'),
-            'signature' => $request->header('signature'),
-            'digest'   => $request->header('digest'),
-            'content-type' => $request->header('content-type'),
-            'path'  => $request->getRequestUri(),
-            'host'  => $request->getHttpHost()
-        ];
-        InboxWorker::dispatch($headers, $profile, $request->all());
+        // todo
     }
 
     public function userFollowing(Request $request, $username)
