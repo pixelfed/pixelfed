@@ -36,13 +36,17 @@ class DiscoverController extends Controller
           ->firstOrFail();
 
         $posts = $tag->posts()
+          ->whereHas('media')
           ->withCount(['likes', 'comments'])
           ->whereIsNsfw(false)
           ->whereVisibility('public')
-          ->has('media')
           ->orderBy('id', 'desc')
           ->simplePaginate(12);
 
+        if($posts->count() == 0) {
+          abort(404);
+        }
+        
         return view('discover.tags.show', compact('tag', 'posts'));
     }
 }
