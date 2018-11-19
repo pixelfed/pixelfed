@@ -18,7 +18,7 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['profile_id', 'visibility'];
+    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id'];
 
     public function profile()
     {
@@ -279,9 +279,14 @@ class Status extends Model
                 ];
                 $res['cc'] = array_merge([$this->profile->permalink('/followers')], $mentions);
                 break;
-            
-            default:
-                # code...
+
+            case 'unlisted':
+                break;
+
+            case 'private':
+                break;
+
+            case 'direct':
                 break;
         }
         return $res[$audience];
