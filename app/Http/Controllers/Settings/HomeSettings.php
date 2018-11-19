@@ -11,6 +11,7 @@ use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use DB;
+use Purify;
 use Illuminate\Http\Request;
 
 trait HomeSettings
@@ -40,8 +41,8 @@ trait HomeSettings
       ]);
 
         $changes = false;
-        $name = $request->input('name');
-        $bio = $request->input('bio');
+        $name = strip_tags($request->input('name'));
+        $bio = $request->filled('bio') ? Purify::clean($request->input('bio')) : null;
         $website = $request->input('website');
         $email = $request->input('email');
         $user = Auth::user();
@@ -79,12 +80,12 @@ trait HomeSettings
                 $profile->name = $name;
             }
 
-            if (!$profile->website || $profile->website != $website) {
+            if ($profile->website != $website) {
                 $changes = true;
                 $profile->website = $website;
             }
 
-            if (!$profile->bio || !$profile->bio != $bio) {
+            if ($profile->bio != $bio) {
                 $changes = true;
                 $profile->bio = $bio;
             }

@@ -59,7 +59,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 
     public function includeMediaAttachments(Status $status)
     {
-        $media = $status->media;
+        $media = $status->media()->orderBy('order')->get();
 
         return $this->collection($media, new MediaTransformer());
     }

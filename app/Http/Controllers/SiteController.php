@@ -33,12 +33,19 @@ class SiteController extends Controller
     {
         $pid = Auth::user()->profile->id;
         // TODO: Use redis for timelines
-        $following = Follower::whereProfileId(Auth::user()->profile->id)->pluck('following_id');
-        $following->push(Auth::user()->profile->id);
-        $filtered = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id');
+        $following = Cache::rememberForever("user:following:list:$pid", function() use($pid) {
+          $following = Follower::whereProfileId($pid)->pluck('following_id');
+          $following->push($pid);
+          return $following->toArray();
+        });
+
+        $filtered = Cache::rememberForever("user:filter:list:$pid", function() use($pid) {
+          return UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id')->toArray();
+        });
+
         $timeline = Status::whereIn('profile_id', $following)
                   ->whereNotIn('profile_id', $filtered)
                   ->whereHas('media')
@@ -53,29 +60,22 @@ class SiteController extends Controller
 
     public function changeLocale(Request $request, $locale)
     {
-        if (!App::isLocale($locale)) {
-            return redirect()->back();
+        // todo: add other locales after pushing new l10n strings
+        $locales = ['en'];
+        if(in_array($locale, $locales)) {
+          session()->put('locale', $locale);
         }
-        App::setLocale($locale);
 
         return redirect()->back();
     }
 
     public function about()
     {
-        $res = Cache::remember('site:page:about', 15, function () {
-            $statuses = Status::whereHas('media')
-              ->whereNull('in_reply_to_id')
-              ->whereNull('reblog_of_id')
-              ->count();
-            $statusCount = PrettyNumber::convert($statuses);
-            $userCount = PrettyNumber::convert(User::count());
-            $remoteCount = PrettyNumber::convert(Profile::whereNotNull('remote_url')->count());
-            $adminContact = User::whereIsAdmin(true)->first();
+        return view('site.about');
+    }
 
-            return view('site.about')->with(compact('statusCount', 'userCount', 'remoteCount', 'adminContact'))->render();
-        });
-
-        return $res;
+    public function language()
+    {
+      return view('site.language');
     }
 }

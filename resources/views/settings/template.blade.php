@@ -14,10 +14,10 @@
                     {{ session('status') }}
                 </div>
             @endif
-            @if ($errors->any())
+            @if (session('errors'))
                 <div class="alert alert-danger">
                     <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
+                        @foreach (session('errors') as $error)
                             <li class="font-weight-bold">{{ $error }}</li>
                         @endforeach
                     </ul>

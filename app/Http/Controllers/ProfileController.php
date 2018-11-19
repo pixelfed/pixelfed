@@ -34,6 +34,8 @@ class ProfileController extends Controller
         if ($user->remote_url) {
             $settings = new \StdClass;
             $settings->crawlable = false;
+            $settings->show_profile_follower_count = true;
+            $settings->show_profile_following_count = true;
         } else {
             $settings = User::whereUsername($username)->firstOrFail()->settings;
         }

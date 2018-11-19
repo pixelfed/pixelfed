@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Auth, Cache;
 use App\Follower;
 use App\Profile;
 use App\Status;
 use App\User;
 use App\UserFilter;
-use Auth;
+use Illuminate\Http\Request;
 
 class TimelineController extends Controller
 {
@@ -17,39 +18,23 @@ class TimelineController extends Controller
         $this->middleware('twofactor');
     }
 
-    public function personal()
+    public function local(Request $request)
     {
-        $pid = Auth::user()->profile->id;
-        // TODO: Use redis for timelines
-        $following = Follower::whereProfileId($pid)->pluck('following_id');
-        $following->push($pid);
-        $filtered = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id');
-        $timeline = Status::whereIn('profile_id', $following)
-                  ->whereNotIn('profile_id', $filtered)
-                  ->whereVisibility('public')
-                  ->orderBy('created_at', 'desc')
-                  ->withCount(['comments', 'likes'])
-                  ->simplePaginate(20);
-        $type = 'personal';
-
-        return view('timeline.template', compact('timeline', 'type'));
-    }
-
-    public function local()
-    {
+        $this->validate($request,[
+          'page' => 'nullable|integer|max:20'
+        ]);
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $filtered = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id');
+        $filtered = Cache::rememberForever("user:filter:list:$pid", function() use($pid) {
+          return UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id')->toArray();
+        });
         $private = Profile::whereIsPrivate(true)->pluck('id');
-        $filtered = $filtered->merge($private);
+        $filtered = array_merge($private->toArray(), $filtered);
         $timeline = Status::whereHas('media')
                   ->whereNotIn('profile_id', $filtered)
                   ->whereNull('in_reply_to_id')
@@ -57,7 +42,7 @@ class TimelineController extends Controller
                   ->whereVisibility('public')
                   ->withCount(['comments', 'likes'])
                   ->orderBy('created_at', 'desc')
-                  ->simplePaginate(20);
+                  ->simplePaginate(10);
         $type = 'local';
 
         return view('timeline.template', compact('timeline', 'type'));

@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "name": "pixelfed/pixelfed",
+    "description": "Open and ethical photo sharing platform, powered by ActivityPub federation.",
+    "keywords": ["framework", "laravel", "pixelfed", "activitypub", "social", "network", "federation"],
+    "license": "AGPL-3.0-only",
     "type": "project",
     "require": {
         "php": "^7.1.3",

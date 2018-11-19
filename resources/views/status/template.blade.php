@@ -1,4 +1,4 @@
-<div class="card mb-4 status-card card-md-rounded-0" data-id="{{$item->id}}" data-comment-max-id="0">
+<div class="card mb-4 status-card card-md-rounded-0" data-id="{{$item->id}}" data-comment-max-id="0" data-profile-username="{{$item->profile->username}}" data-profile-name="{{$item->profile->name}}" data-timestamp="{{$item->created_at}}">
   <div class="card-header d-inline-flex align-items-center bg-white">
     <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
     <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
@@ -12,7 +12,7 @@
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
           <a class="dropdown-item font-weight-bold" href="{{$item->url()}}">Go to post</a>
           <a class="dropdown-item font-weight-bold" href="{{route('report.form')}}?type=post&id={{$item->id}}">Report</a>
-          <a class="dropdown-item font-weight-bold" href="#">Embed</a>
+          {{-- <a class="dropdown-item font-weight-bold" href="#" onclick="pixelfed.embed.onclick(this)">Embed</a> --}}
         @if(Auth::check())
           @if(Auth::user()->profile->id !== $item->profile->id)
           <div class="dropdown-divider"></div>
@@ -45,25 +45,21 @@
       </div>
     </div>
   </div>
-  @if($item->is_nsfw)
-  <details class="details-animated">
-      <summary>
-        <p class="mb-0 px-3 lead font-weight-bold">Content Warning: This may contain potentially sensitive content.</p>
-        <p class="font-weight-light">(click to show)</p>
-      </summary>
-      <a class="max-hide-overflow {{$item->firstMedia()->filter_class}}" href="{{$item->url()}}">
-        <img class="card-img-top lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{$item->mediaUrl()}}" data-srcset="{{$item->mediaUrl()}} 1x">
-      </a>
-  </details>
-  @else
-  <a class="max-hide-overflow {{$item->firstMedia()->filter_class}}" href="{{$item->url()}}">
-    @if($loop->index < 2)
-    <img class="card-img-top" src="{{$item->mediaUrl()}}" data-srcset="{{$item->mediaUrl()}} 1x">
-    @else
-    <img class="card-img-top lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{$item->mediaUrl()}}" data-srcset="{{$item->mediaUrl()}} 1x">
-    @endif
-  </a>
-  @endif
+  @php($status = $item)
+  @switch($status->viewType())
+    @case('image')
+      @include('status.timeline.photo')
+    @break
+    @case('album')
+      @include('status.timeline.album')
+    @break
+    @case('video')
+      @include('status.timeline.video')
+    @break
+    @case('video-album')
+      @include('status.timeline.video-album')
+    @break
+  @endswitch
   <div class="card-body">
     <div class="reactions my-1">
       <form class="d-inline-flex like-form pr-3" method="post" action="/i/like" style="display: inline;" data-id="{{$item->id}}" data-action="like" data-count="{{$item->likes_count}}">
@@ -97,9 +93,9 @@
     <div class="caption">
       <p class="mb-1">
         <span class="username font-weight-bold">
-          <bdi><a class="text-dark" href="{{$item->profile->url()}}">{{$item->profile->username}}</a></bdi>
+          <bdi><a class="text-dark" href="{{$item->profile->url()}}" v-pre>{{$item->profile->username}}</a></bdi>
         </span>
-        <span>{!! $item->rendered ?? e($item->caption) !!}</span>
+        <span v-pre>{!! $item->rendered ?? e($item->caption) !!}</span>
       </p>
     </div>
     <div class="comments">

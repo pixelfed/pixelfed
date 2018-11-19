@@ -52,7 +52,7 @@ $(document).ready(function() {
             '<div class="mr-3 h4 text-muted"><img src="'+data.thumb+'" width="32px"></div>' +
             '<div class="media-body text-truncate">' +
             '<p class="mt-0 mb-0 font-weight-bold">'+data.name+'</p>' +
-            '<p class="text-muted mb-0">'+data.value+'</p>' +
+            '<p class="text-muted mb-0 small">'+data.value+'</p>' +
             '</div>' +
             '</div>' +
             '</a>';
