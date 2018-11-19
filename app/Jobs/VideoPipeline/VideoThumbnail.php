@@ -45,8 +45,8 @@ class VideoThumbnail implements ShouldQueue
             $save = implode('/', $path);
             $video = FFMpeg::open($base);
             if($video->getDurationInSeconds() < 1) {
-                $video->getFrameFromSeconds(1);
-            } elseif($video->getDurationInSeconds() < 5)
+                $video->getFrameFromSeconds(0);
+            } elseif($video->getDurationInSeconds() < 5) {
                 $video->getFrameFromSeconds(4);
             }
                 $video->export()
