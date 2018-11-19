@@ -121,9 +121,7 @@ class StatusController extends Controller
 
     public function delete(Request $request)
     {
-        if (!Auth::check()) {
-            abort(403);
-        }
+        $this->authCheck();
 
         $this->validate($request, [
           'type'  => 'required|string',
@@ -141,6 +139,8 @@ class StatusController extends Controller
 
     public function storeShare(Request $request)
     {
+        $this->authCheck();
+        
         $this->validate($request, [
           'item'    => 'required|integer',
         ]);
