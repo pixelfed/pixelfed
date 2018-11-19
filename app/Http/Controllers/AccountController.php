@@ -70,6 +70,7 @@ class AccountController extends Controller
         $notifications = Notification::whereIn('actor_id', $following)
           ->whereIn('action', $allowed)
           ->where('actor_id', '<>', $profile->id)
+          ->where('profile_id', '<>', $profile->id)
           ->whereDate('created_at', '>', $timeago)
           ->orderBy('notifications.created_at', 'desc')
           ->simplePaginate(30);
