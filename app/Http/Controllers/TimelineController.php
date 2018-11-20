@@ -27,14 +27,13 @@ class TimelineController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $filtered = Cache::rememberForever("user:filter:list:$pid", function() use($pid) {
-          return UserFilter::whereUserId($pid)
-                    ->whereFilterableType('App\Profile')
-                    ->whereIn('filter_type', ['mute', 'block'])
-                    ->pluck('filterable_id')->toArray();
-        });
-        $private = Profile::whereIsPrivate(true)->pluck('id');
-        $filtered = array_merge($private->toArray(), $filtered);
+        $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+        $filters = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+        $filtered = array_merge($private->toArray(), $filters);
+
         $timeline = Status::whereHas('media')
                   ->whereNotIn('profile_id', $filtered)
                   ->whereNull('in_reply_to_id')
