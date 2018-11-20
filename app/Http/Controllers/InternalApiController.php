@@ -146,9 +146,6 @@ class InternalApiController extends Controller
 
         $posts = Status::select('id', 'caption', 'profile_id')
           ->whereHas('media')
-          ->whereHas('profile', function($q) {
-            $q->where('is_private', false);
-          })
           ->whereIsNsfw(false)
           ->whereVisibility('public')
           ->whereNotIn('profile_id', $following)
