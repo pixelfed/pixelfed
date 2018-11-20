@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use App\{
     DirectMessage,
     Hashtag,
+    Follower,
     Like,
     Media,
     Notification,
     Profile,
     StatusHashtag,
     Status,
+    UserFilter,
 };
 use Auth,Cache;
 use Carbon\Carbon;
@@ -122,8 +124,16 @@ class InternalApiController extends Controller
     public function discover(Request $request)
     {
         $profile = Auth::user()->profile;
-        
-        $following = Cache::get('feature:discover:following:'.$profile->id, []);
+        $pid = $profile->id;
+        //$following = Cache::get('feature:discover:following:'.$profile->id, []);
+        $following = Follower::whereProfileId($pid)->pluck('following_id');
+
+        $filtered = UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id')->toArray();
+        $following = array_merge($following->push($pid)->toArray(), $filtered);
+
         $people = Profile::select('id', 'name', 'username')
             ->with('avatar')
             ->inRandomOrder()
@@ -141,7 +151,6 @@ class InternalApiController extends Controller
           })
           ->whereIsNsfw(false)
           ->whereVisibility('public')
-          ->where('profile_id', '<>', $profile->id)
           ->whereNotIn('profile_id', $following)
           ->withCount(['comments', 'likes'])
           ->orderBy('created_at', 'desc')
