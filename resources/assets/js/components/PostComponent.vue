@@ -124,15 +124,29 @@
           </div>
         </a>
         <div class="float-right">
-          <!-- <div class="dropdown">
+          <div class="post-actions d-none">
+          <div class="dropdown">
             <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
             <span class="fas fa-ellipsis-v text-muted"></span>
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item font-weight-bold" href="#">View Exif</a>
-              <a class="dropdown-item font-weight-bold" href="{{$status->reportUrl()}}">Report</a>
+                <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                <div class="dropdown-divider"></div>
+                <form method="post" action="/i/mute">
+                  <input type="hidden" name="_token" value="">            
+                  <input type="hidden" name="type" value="user">
+                  <input type="hidden" name="item" value="">
+                  <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Mute this user</button>
+                </form>
+                <form method="post" action="/i/block">
+                  <input type="hidden" name="_token" value="">            
+                  <input type="hidden" name="type" value="user">
+                  <input type="hidden" name="item" value="">
+                  <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Block this user</button>
+                </form>
+              </div>
             </div>
-          </div> -->
+          </div>
         </div>
        </div>
         <div class="col-12 col-md-8 status-photo px-0">
@@ -155,13 +169,27 @@
               </div>
             </a>
               <div class="float-right">
+                <div class="post-actions d-none">
                 <div class="dropdown">
                   <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
                   <span class="fas fa-ellipsis-v text-muted"></span>
                   </button>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item font-weight-bold show-exif">Show Exif</a>
-                    <a class="dropdown-item font-weight-bold" href="#">Report</a>
+                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                        <div class="dropdown-divider"></div>
+                        <form method="post" action="/i/mute">
+                          <input type="hidden" name="_token" value="">            
+                          <input type="hidden" name="type" value="user">
+                          <input type="hidden" name="item" value="">
+                          <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Mute this user</button>
+                        </form>
+                        <form method="post" action="/i/block">
+                          <input type="hidden" name="_token" value="">            
+                          <input type="hidden" name="type" value="user">
+                          <input type="hidden" name="item" value="">
+                          <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Block this user</button>
+                        </form>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -215,7 +243,10 @@
             </div>
           </div>
           <div class="card-footer bg-white sticky-md-bottom">
-            <form class="comment-form" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
+            <div class="comment-form-guest">
+              <a href="/login">Login</a> to like or comment.
+            </div>
+            <form class="comment-form d-none" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
               <input type="hidden" name="_token" value="">
               <input type="hidden" name="item" :value="statusId">
 
@@ -290,7 +321,8 @@ export default {
     data() {
         return {
             status: {},
-            media: {}
+            media: {},
+            user: {}
           }
     },
     mounted() {
@@ -301,8 +333,28 @@ export default {
       });
       this.fetchData();
       pixelfed.hydrateLikes();
+      this.authCheck();
     },
     methods: {
+      authCheck() {
+        let authed = $('body').hasClass('loggedIn');
+        if(authed == true) {
+          $('.comment-form-guest').addClass('d-none');
+          $('.comment-form').removeClass('d-none');
+        }
+      },
+      showMuteBlock() {
+        let sid = this.status.account.id;
+        console.log('sid :' + sid);
+        let uid = this.user.id;
+        console.log('uid :' + uid);
+        if(sid != uid) {
+          $('.post-actions').removeClass('d-none');
+        }
+      },
+      reportUrl() {
+        return '/i/report?type=post&id=' + this.status.id;
+      },
       timestampFormat() {
           let ts = new Date(this.status.created_at);
           return ts.toDateString();
@@ -313,8 +365,10 @@ export default {
             .then(response => {
                 let self = this;
                 self.status = response.data.status;
+                self.user = response.data.user;
                 self.media = self.status.media_attachments;
                 this.buildPresenter();
+                this.showMuteBlock();
             }).catch(error => {
               if(!error.response) {
                 $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
@@ -338,6 +392,11 @@ export default {
         let container = $('.postPresenterContainer');
         let status = this.status;
         let media = this.media;
+
+        $('input[name="item"]').each(function(k, v) {
+            let el = $(v);
+            el.val(status.account.id);
+        });
 
         $('.status-comment .comment-text').html(status.content);
 
