@@ -209,7 +209,7 @@
               </div>
               <div class="timestamp">
                 <a v-bind:href="statusUrl" class="small text-muted">
-                  November 1, 2018
+                  {{timestampFormat()}}
                 </a>
               </div>
             </div>
@@ -303,6 +303,10 @@ export default {
       pixelfed.hydrateLikes();
     },
     methods: {
+      timestampFormat() {
+          let ts = new Date(this.status.created_at);
+          return ts.toDateString();
+      },
       fetchData() {
           let url = '/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId;
           axios.get(url)
