@@ -26,7 +26,7 @@
     @stack('styles')
 
 </head>
-<body class="">
+<body class="{{Auth::check()?'loggedIn':''}}">
     @include('layouts.partial.nav')
     <main id="content">
         @yield('content')
