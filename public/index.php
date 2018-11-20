@@ -18,8 +18,13 @@ define('LARAVEL_START', microtime(true));
 | loading any of our classes later on. It feels great to relax.
 |
 */
+$autoload = __DIR__.'/../vendor/autoload.php';
 
-require __DIR__.'/../vendor/autoload.php';
+if (!file_exists($autoload)) {
+    throw new RuntimeException('The autoloader is missing. You can install dependencies through `composer install`.');
+}
+
+require $autoload;
 
 /*
 |--------------------------------------------------------------------------
