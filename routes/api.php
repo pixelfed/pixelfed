@@ -12,9 +12,3 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('/users/{username}/inbox', 'FederationController@userInbox');
-
-Route::group(['prefix' => 'api/v2'], function() {
-    Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
-    Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
-});
