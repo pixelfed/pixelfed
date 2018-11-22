@@ -26,7 +26,19 @@
             <div class="media-body">
               <h5 class="mt-0 font-weight-bold">{{$status->profile->username}}</h5>
               <p class="mb-1">{!! $status->rendered !!}</p>
-              <p class="mb-0"><a href="{{$status->url()}}" class="text-muted">{{$status->created_at->diffForHumans()}}</a></p>
+              <div class="mb-0">
+                <a href="{{$status->url()}}" class="text-muted">
+                  {{$status->created_at->diffForHumans()}}
+                </a>
+                @if(Auth::check() && $status->profile_id == Auth::user()->profile->id)
+                <form class="float-right" method="POST" action="/i/delete">
+                  @csrf
+                  <input type="hidden" name="item" value="{{$status->id}}">
+                  <input type="hidden" name="type" value="status">
+                  <button class="btn btn-outline-danger small font-weight-bold btn-sm py-1">Delete</button>
+                </form>
+                @endif
+              </div>
             </div>
           </div>
         </div>

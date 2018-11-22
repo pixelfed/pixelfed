@@ -133,8 +133,11 @@ class StatusController extends Controller
         if ($status->profile_id === Auth::user()->profile->id || Auth::user()->is_admin == true) {
             StatusDelete::dispatch($status);
         }
-
-        return redirect(Auth::user()->url());
+        if($request->wantsJson()) {
+            return response()->json(['Status successfully deleted.']);
+        } else {
+            return redirect(Auth::user()->url());
+        }
     }
 
     public function storeShare(Request $request)

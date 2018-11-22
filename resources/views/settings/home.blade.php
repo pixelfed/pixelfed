@@ -38,10 +38,10 @@
     <div class="form-group row">
       <label for="bio" class="col-sm-3 col-form-label font-weight-bold text-right">Bio</label>
       <div class="col-sm-9">
-        <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2">{{Auth::user()->profile->bio}}</textarea>
-        <small class="form-text text-muted">
-          Max length: {{config('pixelfed.max_bio_length')}} characters.
-        </small>
+        <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}">{{Auth::user()->profile->bio}}</textarea>
+        <p class="form-text">
+          <span class="bio-counter float-right small text-muted">0/{{config('pixelfed.max_bio_length')}}</span>
+        </p>
       </div>
     </div>
     <div class="pt-5">
@@ -110,6 +110,25 @@
 
   $(document).on('click', '.modal-close', function(e) {
     swal.close();
+  });
+
+  $('#bio').on('change keyup paste', function(e) {
+    let el = $(this);
+    let len = el.val().length;
+    let limit = el.data('max-length');
+
+    if(len > 100) {
+      el.attr('rows', '4');
+    }
+
+    let val = len + ' / ' + limit;
+
+    if(len > limit) {
+      let diff = len - limit;
+      val = '<span class="text-danger">-' + diff + '</span> / ' + limit;
+    }
+
+    $('.bio-counter').html(val);
   });
 
   $(document).on('click', '.change-profile-photo', function(e) {

@@ -201,7 +201,7 @@
                   <span class="font-weight-bold pr-1">{{statusUsername}}</span>
                   <span class="comment-text"></span>
                 </p>
-                <post-comments :post-id="statusId" :post-username="statusUsername"></post-comments>
+                <post-comments :user="this.user" :post-id="statusId" :post-username="statusUsername"></post-comments>
               </div>
             </div>
             <div class="card-body flex-grow-0 py-1">
@@ -266,7 +266,7 @@
 pixelfed.postComponent = {};
 pixelfed.presenter = {
   show: {
-    image: function(container, media) { console.log(234);
+    image: function(container, media) {
       let wrapper = $('<div>');
       wrapper.addClass(media[0]['filter_class']);
       let el = $('<img>');
@@ -345,9 +345,7 @@ export default {
       },
       showMuteBlock() {
         let sid = this.status.account.id;
-        console.log('sid :' + sid);
         let uid = this.user.id;
-        console.log('uid :' + uid);
         if(sid != uid) {
           $('.post-actions').removeClass('d-none');
         }

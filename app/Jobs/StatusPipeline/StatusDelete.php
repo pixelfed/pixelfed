@@ -38,15 +38,12 @@ class StatusDelete implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
+
         $this->unlinkRemoveMedia($status);
     }
 
     public function unlinkRemoveMedia($status)
     {
-        if ($status->media()->count() == 0) {
-            return;
-        }
-
         foreach ($status->media as $media) {
             $thumbnail = storage_path("app/{$media->thumbnail_path}");
             $photo = storage_path("app/{$media->media_path}");

@@ -37,6 +37,7 @@
             <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" v-on:click="deleteComment(comment.id, index)" v-if="comment.account.id == user.id">Delete</b-dropdown-item>
           </b-dropdown>
         </span>
       </p>
@@ -47,7 +48,7 @@
 
 <script>
 export default {
-    props: ['post-id', 'post-username'],
+    props: ['post-id', 'post-username', 'user'],
     data() {
         return {
             results: {},
@@ -66,6 +67,16 @@ export default {
     methods: {
       embed(e) {
           pixelfed.embed.build(e);
+      },
+      deleteComment(id, i) {
+        axios.post('/i/delete', {
+          type: 'comment',
+          item: id
+        }).then(res => {
+          this.results.splice(i, 1);
+        }).catch(err => {
+          swal('Something went wrong!', 'Please try again later', 'error');
+        });
       },
       l(e) {
         let len = e.length;
