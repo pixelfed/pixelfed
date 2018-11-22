@@ -115,3 +115,8 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
   });
 });
+
+const warningTitleCSS = 'color:red; font-size:60px; font-weight: bold; -webkit-text-stroke: 1px black;';
+const warningDescCSS = 'font-size: 18px;';
+console.log('%cStop!', warningTitleCSS);
+console.log("%cThis is a browser feature intended for developers. If someone told you to copy and paste something here to enable a Pixelfed feature or \"hack\" someone's account, it is a scam and will give them access to your Pixelfed account.", warningDescCSS);
