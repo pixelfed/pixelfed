@@ -112,7 +112,9 @@ class Image
         try {
             $img = Intervention::make($file)->orientate();
             if($thumbnail) {
-                $img->crop($aspect['width'], $aspect['height']);
+                $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
+                    $constraint->aspectRatio();
+                });
             } else {
                 $metadata = $img->exif();
                 $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
