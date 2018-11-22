@@ -203,6 +203,16 @@ class AccountController extends Controller
           'filter_type'     => 'mute',
         ]);
 
+        $pid = $user->id;
+        Cache::remember("user:filter:list:$pid", 1440, function() use($pid) {
+          $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+          $filters = UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id')->toArray();
+          return array_merge($private->toArray(), $filters);
+        });
+
         return redirect()->back();
     }
 
@@ -224,6 +234,9 @@ class AccountController extends Controller
         switch ($type) {
           case 'user':
             $profile = Profile::findOrFail($item);
+            if ($profile->id == $user->id) {
+                return abort(403);
+            }
             $class = get_class($profile);
             $filterable['id'] = $profile->id;
             $filterable['type'] = $class;
@@ -244,6 +257,15 @@ class AccountController extends Controller
           'filter_type'     => 'block',
         ]);
 
+        $pid = $user->id;
+        Cache::remember("user:filter:list:$pid", 1440, function() use($pid) {
+          $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+          $filters = UserFilter::whereUserId($pid)
+                    ->whereFilterableType('App\Profile')
+                    ->whereIn('filter_type', ['mute', 'block'])
+                    ->pluck('filterable_id')->toArray();
+          return array_merge($private->toArray(), $filters);
+        });
         return redirect()->back();
     }
 
