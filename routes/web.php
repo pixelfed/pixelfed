@@ -111,15 +111,15 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/settings/home');
         Route::get('home', 'SettingsController@home')
         ->name('settings');
-        Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:25,1440');
+        Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:250,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
-        Route::post('avatar', 'AvatarController@store')->middleware('throttle:5,1440');
+        Route::post('avatar', 'AvatarController@store')->middleware('throttle:50,1440');
         Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
         Route::post('password', 'SettingsController@passwordUpdate')->middleware(['throttle:2,1440','dangerzone']);
         Route::get('email', 'SettingsController@email')->name('settings.email');
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
-        Route::post('privacy', 'SettingsController@privacyStore')->middleware('throttle:50,1440');
+        Route::post('privacy', 'SettingsController@privacyStore')->middleware('throttle:250,1440');
         Route::get('privacy/muted-users', 'SettingsController@mutedUsers')->name('settings.privacy.muted-users');
         Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
