@@ -33,6 +33,7 @@ class UpdateCommand extends Command
         '0.1.7',
         '0.1.8',
         '0.1.9',
+        '0.2.1',
     ];
 
     protected $version;
@@ -76,8 +77,13 @@ class UpdateCommand extends Command
             case '0.1.8':
                 $this->info('You are running an older version that doesn\'t require any updates!');
                 break;
+
             case '0.1.9':
                 $this->update019();
+                break;
+
+            case '0.2.1':
+                $this->update021();
                 break;
 
             default:
@@ -124,6 +130,34 @@ class UpdateCommand extends Command
             }
         });
         $this->updateVersionFile('0.1.9', true);
+        $bar->finish();
+    }
+
+    public function update021()
+    {
+        $this->buildVersionFile();
+        $v = $this->getVersionFile();
+        if($v['updated'] == true) {
+            $this->info('Already up to date!');
+            exit;
+        }
+
+        $statusCount = Status::count();
+        $this->info('Running updates ...');
+        $bar = $this->output->createProgressBar($statusCount);
+        Status::has('media')->chunk(200, function($statuses) use ($bar) {
+
+            foreach($statuses as $status) {
+                if($status->firstMedia()) {
+                    $media = $status->firstMedia();
+                    if(in_array($media->mime, ['image/jpeg', 'image/png'])) {
+                        ImageThumbnail::dispatch($media);
+                    }
+                }
+                $bar->advance();
+            }
+        });
+        $this->updateVersionFile('0.2.1', true);
         $bar->finish();
     }
 
