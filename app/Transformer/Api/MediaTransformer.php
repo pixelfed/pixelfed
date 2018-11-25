@@ -16,7 +16,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'remote_url'  => null,
             'preview_url' => $media->thumbnailUrl(),
             'text_url'    => null,
-            'meta'        => $media->metadata,
+            'meta'        => null,
             'description' => $media->caption,
             'license'     => $media->license,
             'is_nsfw'     => $media->is_nsfw,
