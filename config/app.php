@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Pixelfed'),
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -214,6 +214,8 @@ return [
         'Recaptcha'    => Greggilbert\Recaptcha\Facades\Recaptcha::class,
         'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
         'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
+        'Purify'       => Stevebauman\Purify\Facades\Purify::class,
+        'FFMpeg'       => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
     ],
 
 ];

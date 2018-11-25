@@ -64,10 +64,13 @@ class AccountController extends Controller
       ]);
         $profile = Auth::user()->profile;
         $action = $request->input('a');
+        $allowed = ['like', 'follow'];
         $timeago = Carbon::now()->subMonths(3);
         $following = $profile->following->pluck('id');
         $notifications = Notification::whereIn('actor_id', $following)
-          ->where('profile_id', '!=', $profile->id)
+          ->whereIn('action', $allowed)
+          ->where('actor_id', '<>', $profile->id)
+          ->where('profile_id', '<>', $profile->id)
           ->whereDate('created_at', '>', $timeago)
           ->orderBy('notifications.created_at', 'desc')
           ->simplePaginate(30);
@@ -200,6 +203,11 @@ class AccountController extends Controller
           'filter_type'     => 'mute',
         ]);
 
+        $pid = $user->id;
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
+
         return redirect()->back();
     }
 
@@ -221,6 +229,9 @@ class AccountController extends Controller
         switch ($type) {
           case 'user':
             $profile = Profile::findOrFail($item);
+            if ($profile->id == $user->id) {
+                return abort(403);
+            }
             $class = get_class($profile);
             $filterable['id'] = $profile->id;
             $filterable['type'] = $class;
@@ -241,6 +252,10 @@ class AccountController extends Controller
           'filter_type'     => 'block',
         ]);
 
+        $pid = $user->id;
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
         return redirect()->back();
     }
 

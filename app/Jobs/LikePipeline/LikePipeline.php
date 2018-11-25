@@ -41,8 +41,8 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        if ($status->url !== null) {
-            // Ignore notifications to remote statuses
+        if (!$status || $status->url !== null) {
+            // Ignore notifications to remote statuses, or deleted statuses
             return;
         }
 

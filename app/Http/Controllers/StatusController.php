@@ -22,8 +22,7 @@ class StatusController extends Controller
         $user = Profile::whereUsername($username)->firstOrFail();
 
         $status = Status::whereProfileId($user->id)
-                ->where('visibility', '!=', 'draft')
-                ->withCount(['likes', 'comments', 'media'])
+                ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
         if($status->visibility == 'private' || $user->is_private) {
@@ -40,34 +39,8 @@ class StatusController extends Controller
             return $this->showActivityPub($request, $status);
         }
 
-        $template = $this->detectTemplate($status);
-
-        $replies = Status::whereInReplyToId($status->id)->orderBy('created_at', 'desc')->simplePaginate(30);
-
-        return view($template, compact('user', 'status', 'replies'));
-    }
-
-    protected function detectTemplate($status)
-    {
-        $template = Cache::rememberForever('template:status:type:'.$status->id, function () use ($status) {
-            $template = 'status.show.photo';
-            if (!$status->media_path && $status->in_reply_to_id) {
-                $template = 'status.reply';
-            }
-            if ($status->media->count() > 1) {
-                $template = 'status.show.album';
-            }
-            if ($status->viewType() == 'video') {
-                $template = 'status.show.video';
-            }
-            if ($status->viewType() == 'video-album') {
-                $template = 'status.show.video-album';
-            }
-
-            return $template;
-        });
-
-        return $template;
+        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        return view($template, compact('user', 'status'));
     }
 
     public function compose()
@@ -148,9 +121,7 @@ class StatusController extends Controller
 
     public function delete(Request $request)
     {
-        if (!Auth::check()) {
-            abort(403);
-        }
+        $this->authCheck();
 
         $this->validate($request, [
           'type'  => 'required|string',
@@ -162,12 +133,17 @@ class StatusController extends Controller
         if ($status->profile_id === Auth::user()->profile->id || Auth::user()->is_admin == true) {
             StatusDelete::dispatch($status);
         }
-
-        return redirect(Auth::user()->url());
+        if($request->wantsJson()) {
+            return response()->json(['Status successfully deleted.']);
+        } else {
+            return redirect(Auth::user()->url());
+        }
     }
 
     public function storeShare(Request $request)
     {
+        $this->authCheck();
+        
         $this->validate($request, [
           'item'    => 'required|integer',
         ]);

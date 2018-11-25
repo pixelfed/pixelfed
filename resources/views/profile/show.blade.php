@@ -1,15 +1,22 @@
 @extends('layouts.app',['title' => $user->username . " on " . config('app.name')])
 
 @section('content')
-
+@if (session('error'))
+    <div class="alert alert-danger text-center font-weight-bold mb-0">
+        {{ session('error') }}
+    </div>
+@endif
 @include('profile.partial.user-info')
 
 @if(true === $owner)
 <div>
   <ul class="nav nav-topbar d-flex justify-content-center border-0">
     <li class="nav-item">
-      <a class="nav-link {{request()->is('*/saved') ? '':'active'}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
+      <a class="nav-link {{request()->is($user->username) ? 'active': ''}} font-weight-bold text-uppercase" href="{{$user->url()}}">Posts</a>
     </li>
+    {{-- <li class="nav-item">
+      <a class="nav-link {{request()->is('*/collections') ? 'active': ''}} font-weight-bold text-uppercase" href="{{$user->url()}}/collections">Collections</a>
+    </li> --}}
     <li class="nav-item">
       <a class="nav-link {{request()->is('*/saved') ? 'active':''}} font-weight-bold text-uppercase" href="{{$user->url('/saved')}}">Saved</a>
     </li>
@@ -29,7 +36,19 @@
       <div class="col-4 p-0 p-sm-2 p-md-3">
         <a class="card info-overlay card-md-border-0" href="{{$status->url()}}">
           <div class="square {{$status->firstMedia()->filter_class}}">
-            <div class="square-content" style="background-image: url('{{$status->thumb()}}')"></div>
+            @switch($status->viewType())
+            @case('album')
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-images fa-2x"></i></span>
+            @break
+            @case('video')
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-video fa-2x"></i></span>
+            @break
+            @case('video-album')
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-film fa-2x"></i></span>
+            @break
+            @endswitch
+            <div class="square-content" style="background-image: url('{{$status->thumb()}}')">
+            </div>
             <div class="info-overlay-text">
               <h5 class="text-white m-auto font-weight-bold">
                 <span>

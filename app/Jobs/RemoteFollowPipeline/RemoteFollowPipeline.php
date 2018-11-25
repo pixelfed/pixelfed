@@ -83,7 +83,7 @@ class RemoteFollowPipeline implements ShouldQueue
         $profile->domain = $domain;
         $profile->username = $remoteUsername;
         $profile->name = $res['name'];
-        $profile->bio = str_limit($res['summary'], 125);
+        $profile->bio = Purify::clean($res['summary']);
         $profile->sharedInbox = $res['endpoints']['sharedInbox'];
         $profile->remote_url = $res['url'];
         $profile->save();

@@ -98,7 +98,6 @@ class Extractor extends Regex
         $entities = array_merge($entities, $this->extractURLsWithIndices($tweet));
         $entities = array_merge($entities, $this->extractHashtagsWithIndices($tweet, false));
         $entities = array_merge($entities, $this->extractMentionsOrListsWithIndices($tweet));
-        $entities = array_merge($entities, $this->extractCashtagsWithIndices($tweet));
         $entities = $this->removeOverlappingEntities($entities);
 
         return $entities;
@@ -303,33 +302,6 @@ class Extractor extends Regex
      */
     public function extractCashtagsWithIndices($tweet = null)
     {
-        if (is_null($tweet)) {
-            $tweet = $this->tweet;
-        }
-
-        if (!preg_match('/\$/iu', $tweet)) {
-            return [];
-        }
-
-        preg_match_all(self::$patterns['valid_cashtag'], $tweet, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
-        $tags = [];
-
-        foreach ($matches as $match) {
-            list($all, $before, $dollar, $cash_text, $outer) = array_pad($match, 3, ['', 0]);
-            $start_position = $dollar[1] > 0 ? StringUtils::strlen(substr($tweet, 0, $dollar[1])) : $dollar[1];
-            $end_position = $start_position + StringUtils::strlen($dollar[0].$cash_text[0]);
-
-            if (preg_match(self::$patterns['end_hashtag_match'], $outer[0])) {
-                continue;
-            }
-
-            $tags[] = [
-                'cashtag' => $cash_text[0],
-                'indices' => [$start_position, $end_position],
-            ];
-        }
-
-        return $tags;
     }
 
     /**

@@ -46,6 +46,9 @@ class Profile extends Model
 
     public function permalink($suffix = '')
     {
+        if($this->remote_url) {
+            return $this->remote_url;
+        }
         return url('users/'.$this->username.$suffix);
     }
 
@@ -247,5 +250,45 @@ class Profile extends Model
     public function sharedInbox()
     {
         return $this->sharedInbox ?? $this->inboxUrl();
+    }
+
+    public function getDefaultScope()
+    {
+        return $this->is_private == true ? 'private' : 'public';
+    }
+
+    public function getAudience($scope = false)
+    {
+        if($this->remote_url) {
+            return [];
+        }
+        $scope = $scope ?? $this->getDefaultScope();
+        $audience = [];
+        switch ($scope) {
+            case 'public':
+                $audience = [
+                    'to' => [
+                        'https://www.w3.org/ns/activitystreams#Public'
+                    ],
+                    'cc' => [
+                        $this->permalink('/followers')
+                    ]
+                ];
+                break;
+        }
+        return $audience;
+    }
+
+    public function getAudienceInbox($scope = 'public')
+    {
+        return $this
+            ->followers()
+            ->whereLocalProfile(false)
+            ->get()
+            ->map(function($follow) {
+                return $follow->sharedInbox ?? $follow->inbox_url;
+             })
+            ->unique()
+            ->toArray();
     }
 }

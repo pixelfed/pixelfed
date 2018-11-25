@@ -18,14 +18,15 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('media/list', 'AdminController@media')->name('admin.media');
 });
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::post('/', 'StatusController@store')->middleware('throttle:500,1440');
 
     Auth::routes();
 
-    Route::get('.well-known/webfinger', 'FederationController@webfinger');
-    Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown');
+    Route::get('.well-known/webfinger', 'FederationController@webfinger')->name('well-known.webfinger');
+    Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->name('well-known.nodeinfo');
+    Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
 
     Route::get('/home', 'HomeController@index')->name('home');
 
@@ -40,6 +41,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
+        });
+        Route::group(['prefix' => 'v2'], function() {
+            Route::get('notifications', 'InternalApiController@notifications');
+            Route::post('notifications', 'InternalApiController@notificationMarkAllRead');
+            Route::get('discover', 'InternalApiController@discover');
+            Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
+            Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
@@ -103,15 +111,15 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/settings/home');
         Route::get('home', 'SettingsController@home')
         ->name('settings');
-        Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:25,1440');
+        Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:250,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
-        Route::post('avatar', 'AvatarController@store')->middleware('throttle:5,1440');
+        Route::post('avatar', 'AvatarController@store')->middleware('throttle:50,1440');
         Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
         Route::post('password', 'SettingsController@passwordUpdate')->middleware(['throttle:2,1440','dangerzone']);
         Route::get('email', 'SettingsController@email')->name('settings.email');
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
-        Route::post('privacy', 'SettingsController@privacyStore')->middleware('throttle:25,1440');
+        Route::post('privacy', 'SettingsController@privacyStore')->middleware('throttle:250,1440');
         Route::get('privacy/muted-users', 'SettingsController@mutedUsers')->name('settings.privacy.muted-users');
         Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
@@ -196,6 +204,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('{user}.atom', 'ProfileController@showAtomFeed');
         Route::get('{username}/outbox', 'FederationController@userOutbox');
         Route::get('{username}', 'ProfileController@permalinkRedirect');
+        Route::get('{username}/followers', 'FederationController@userFollowers');
+        Route::get('{username}/following', 'FederationController@userFollowing');
     });
 
     Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');

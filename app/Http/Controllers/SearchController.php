@@ -38,7 +38,10 @@ class SearchController extends Controller
                 });
                 $tokens->push($tags);
             }
-            $users = Profile::select('username', 'name', 'id')->where('username', 'like', '%'.$tag.'%')->limit(20)->get();
+            $users = Profile::select('username', 'name', 'id')
+                ->where('username', 'like', '%'.$tag.'%')
+                ->limit(20)
+                ->get();
 
             if($users->count() > 0) {
                 $profiles = $users->map(function ($item, $key) {
@@ -71,7 +74,7 @@ class SearchController extends Controller
                     'count'  => 0,
                     'url'    => $item->url(),
                     'type'   => 'status',
-                    'value'  => 'Posted '.$item->created_at->diffForHumans(),
+                    'value'  => "by {$item->profile->username} <span class='float-right'>{$item->created_at->diffForHumans(null, true, true)}</span>",
                     'tokens' => [$item->caption],
                     'name'   => $item->caption,
                     'thumb'  => $item->thumb(),

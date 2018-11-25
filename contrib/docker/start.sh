@@ -2,18 +2,18 @@
 
 # Create the storage tree if needed and fix permissions
 cp -r storage.skel/* storage/
-chown -R www-data:www-data storage/
+chown -R www-data:www-data storage/ bootstrap/cache/
 php artisan storage:link
 
 # Migrate database if the app was upgraded
-php artisan migrate --force
+gosu www-data:www-data php artisan migrate --force
 
 # Run other specific migratins if required
-php artisan update
+gosu www-data:www-data php artisan update
 
 # Run a worker if it is set as embedded
 if [ "$HORIZON_EMBED" = "true" ]; then
-	php artisan horizon &
+  gosu www-data:www-data php artisan horizon &
 fi
 
 # Finally run Apache

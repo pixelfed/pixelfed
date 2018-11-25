@@ -14,7 +14,7 @@ class InboxWorker implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $request;
+    protected $headers;
     protected $profile;
     protected $payload;
 
@@ -23,9 +23,9 @@ class InboxWorker implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($request, Profile $profile, $payload)
+    public function __construct($headers, $profile, $payload)
     {
-        $this->request = $request;
+        $this->headers = $headers;
         $this->profile = $profile;
         $this->payload = $payload;
     }
@@ -37,6 +37,6 @@ class InboxWorker implements ShouldQueue
      */
     public function handle()
     {
-        (new Inbox($this->request, $this->profile, $this->payload))->handle();
+        (new Inbox($this->headers, $this->profile, $this->payload))->handle();
     }
 }

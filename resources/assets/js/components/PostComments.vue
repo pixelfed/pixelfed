@@ -1,82 +1,45 @@
-<style type="text/css">
-.b-dropdown > button {
-  padding:0 !important;
-}
-</style>
-<style scoped>
+<style>
  span {
   font-size: 14px;
  }
  .comment-text {
   word-break: break-all;
  }
- .b-dropdown {
-    padding:0 !important;
+ .comment-text p {
+  display: inline;
  }
-.b-dropdown < button {
- }
- .lds-ring {
-  display: inline-block;
-  position: relative;
-  width: 64px;
-  height: 64px;
-}
-.lds-ring div {
-  box-sizing: border-box;
-  display: block;
-  position: absolute;
-  width: 51px;
-  height: 51px;
-  margin: 6px;
-  border: 6px solid #6c757d;
-  border-radius: 50%;
-  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #6c757d transparent transparent transparent;
-}
-.lds-ring div:nth-child(1) {
-  animation-delay: -0.45s;
-}
-.lds-ring div:nth-child(2) {
-  animation-delay: -0.3s;
-}
-.lds-ring div:nth-child(3) {
-  animation-delay: -0.15s;
-}
-@keyframes lds-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 </style>
 
 <template>
 <div>
-  <div class="lwrapper text-center">
+  <div class="postCommentsLoader text-center">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
   </div>
-  <div class="cwrapper d-none">
-    <p class="mb-1 text-center load-more-link"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
+  <div class="postCommentsContainer d-none">
+    <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p class="mb-0 d-flex justify-content-between align-items-center" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
-        <span class="pr-3">
-          <span class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url">{{comment.account.username}}</a></bdi></span>
-          <span class="comment-text" v-html="comment.content"></span>
+      <p class="mb-1" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
+        <span class="d-flex justify-content-between align-items-center">
+          <span class="pr-3" style="overflow: hidden;">
+            <div class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi>
+            </div>
+            <div class="read-more" style="overflow: hidden;">
+              <span class="comment-text" v-html="comment.content" style="overflow: hidden;"></span>
+            </div>
+          </span>
+          <b-dropdown :id="comment.uri" variant="link" no-caret right class="float-right">
+            <template slot="button-content">
+                <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
+            </template>
+            <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
+            <b-dropdown-item class="font-weight-bold" v-on:click="deleteComment(comment.id, index)" v-if="comment.account.id == user.id">Delete</b-dropdown-item>
+          </b-dropdown>
         </span>
-        <b-dropdown :id="comment.uri" variant="link" no-caret class="float-right">
-          <template slot="button-content">
-              <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
-          </template>
-          <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item>
-          <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
-          <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
-        </b-dropdown>
       </p>
     </div>
   </div>
@@ -85,7 +48,7 @@
 
 <script>
 export default {
-    props: ['post-id', 'post-username'],
+    props: ['post-id', 'post-username', 'user'],
     data() {
         return {
             results: {},
@@ -98,9 +61,27 @@ export default {
     mounted() {
       this.fetchData();
     },
+    updated() {
+      pixelfed.readmore();
+    },
     methods: {
       embed(e) {
-          pixelfed.embed.build(e);
+          //pixelfed.embed.build(e);
+      },
+      deleteComment(id, i) {
+        axios.post('/i/delete', {
+          type: 'comment',
+          item: id
+        }).then(res => {
+          this.results.splice(i, 1);
+        }).catch(err => {
+          swal('Something went wrong!', 'Please try again later', 'error');
+        });
+      },
+      l(e) {
+        let len = e.length;
+        if(len < 10) { return e; } 
+        return e.substr(0, 10)+'...';
       },
       reply(e) {
           this.reply_to_profile_id = e.account.id;
@@ -114,11 +95,34 @@ export default {
                 let self = this;
                 this.results = response.data.data;
                 this.pagination = response.data.meta.pagination;
-                $('.lwrapper').addClass('d-none');
-                $('.cwrapper').removeClass('d-none');
+                if(this.results.length > 0) {
+                  $('.load-more-link').removeClass('d-none');
+                }
+                $('.postCommentsLoader').addClass('d-none');
+                $('.postCommentsContainer').removeClass('d-none');
             }).catch(error => {
-                $('.lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch comments. Please try again later.');
-                console.log(error);
+              if(!error.response) {
+                $('.postCommentsLoader .lds-ring')
+                  .attr('style','width:100%')
+                  .addClass('pt-4 font-weight-bold text-muted')
+                  .text('An error occured, cannot fetch comments. Please try again later.');
+              } else {
+                switch(error.response.status) {
+                  case 401:
+                    $('.postCommentsLoader .lds-ring')
+                      .attr('style','width:100%')
+                      .addClass('pt-4 font-weight-bold text-muted')
+                      .text('Please login to view.');
+                  break;
+
+                  default:
+                    $('.postCommentsLoader .lds-ring')
+                      .attr('style','width:100%')
+                      .addClass('pt-4 font-weight-bold text-muted')
+                      .text('An error occured, cannot fetch comments. Please try again later.');
+                  break;
+                }
+              }
             });
       },
       loadMore(e) {
@@ -127,18 +131,16 @@ export default {
             $('.load-more-link').addClass('d-none');
             return;
           }
-          $('.cwrapper').addClass('d-none');
-          $('.lwrapper').removeClass('d-none');
+          $('.postCommentsLoader').removeClass('d-none');
           let next = this.pagination.links.next;
           axios.get(next)
             .then(response => {
                 let self = this;
                 let res =  response.data.data;
-                $('.lwrapper').addClass('d-none');
+                $('.postCommentsLoader').addClass('d-none');
                 for(let i=0; i < res.length; i++) {
                   this.results.unshift(res[i]);
                 }
-                $('.cwrapper').removeClass('d-none');
                 this.pagination = response.data.meta.pagination;
             });
       }

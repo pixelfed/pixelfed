@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/grey/svg/pixelfed-icon-grey</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon-copy-10" fill="#D8D8D8">
+            <g id="Group-12">
+                <path d="M25,50 C11.1928813,50 0,38.8071187 0,25 C0,11.1928813 11.1928813,0 25,0 C38.8071187,0 50,11.1928813 50,25 C50,38.8071187 38.8071187,50 25,50 Z M23.0153159,30.4580153 L27.6014641,30.4580153 C31.9217989,30.4580153 35.4241222,27.0484974 35.4241222,22.842644 C35.4241222,18.6367906 31.9217989,15.2272727 27.6014641,15.2272727 L20.9822918,15.2272727 C18.4897909,15.2272727 16.4692198,17.1943023 16.4692198,19.6207562 L16.4692198,36.7207782 L23.0153159,30.4580153 Z" id="Combined-Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

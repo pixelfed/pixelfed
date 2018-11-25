@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Auth;
+use Auth, Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Storage;
@@ -18,7 +18,7 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['profile_id', 'visibility'];
+    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id'];
 
     public function profile()
     {
@@ -37,26 +37,29 @@ class Status extends Model
 
     public function viewType()
     {
-        $media = $this->firstMedia();
-        $mime = explode('/', $media->mime)[0];
-        $count = $this->media()->count();
-        $type = ($mime == 'image') ? 'image' : 'video';
-        if($count > 1) {
-            $type = ($type == 'image') ? 'album' : 'video-album';
-        }
-
-        return $type;
+        return Cache::remember('status:view-type:'.$this->id, 40320, function() {
+            $media = $this->firstMedia();
+            $mime = explode('/', $media->mime)[0];
+            $count = $this->media()->count();
+            $type = ($mime == 'image') ? 'image' : 'video';
+            if($count > 1) {
+                $type = ($type == 'image') ? 'album' : 'video-album';
+            }
+            return $type;
+        });
     }
 
     public function thumb($showNsfw = false)
     {
-        $type = $this->viewType();
-        $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-        if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album'])) {
-            return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
-        }
+        return Cache::remember('status:thumb:'.$this->id, 40320, function() use ($showNsfw) {
+            $type = $this->viewType();
+            $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album', 'video'])) {
+                return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+            }
 
-        return url(Storage::url($this->firstMedia()->thumbnail_path));
+            return url(Storage::url($this->firstMedia()->thumbnail_path));
+        });
     }
 
     public function url()
@@ -64,11 +67,6 @@ class Status extends Model
         $id = $this->id;
         $username = $this->profile->username;
         $path = config('app.url')."/p/{$username}/{$id}";
-        if (!is_null($this->in_reply_to_id)) {
-            $pid = $this->in_reply_to_id;
-            $path = config('app.url')."/p/{$username}/{$pid}/c/{$id}";
-        }
-
         return url($path);
     }
 
@@ -103,8 +101,10 @@ class Status extends Model
 
     public function liked() : bool
     {
+        if(Auth::check() == false) {
+            return false;
+        }
         $profile = Auth::user()->profile;
-
         return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
     }
 
@@ -116,7 +116,7 @@ class Status extends Model
     public function bookmarked()
     {
         if (!Auth::check()) {
-            return 0;
+            return false;
         }
         $profile = Auth::user()->profile;
 
@@ -130,6 +130,9 @@ class Status extends Model
 
     public function shared() : bool
     {
+        if(Auth::check() == false) {
+            return false;
+        }
         $profile = Auth::user()->profile;
 
         return self::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
@@ -139,7 +142,7 @@ class Status extends Model
     {
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (!empty($parent)) {
-            return self::findOrFail($parent);
+            return $this->findOrFail($parent);
         }
     }
 
@@ -254,7 +257,7 @@ class Status extends Model
                         'url' => $media->url(),
                         'name' => null
                     ];
-                })
+                })->toArray()
             ]
         ];
     }
@@ -268,18 +271,25 @@ class Status extends Model
         $res['to'] = [];
         $res['cc'] = [];
         $scope = $this->scope;
+        $mentions = $this->mentions->map(function ($mention) {
+            return $mention->permalink();
+        })->toArray();
+
         switch ($scope) {
             case 'public':
                 $res['to'] = [
                     "https://www.w3.org/ns/activitystreams#Public"
                 ];
-                $res['cc'] = [
-                    $this->profile->permalink('/followers')
-                ];
+                $res['cc'] = array_merge([$this->profile->permalink('/followers')], $mentions);
                 break;
-            
-            default:
-                # code...
+
+            case 'unlisted':
+                break;
+
+            case 'private':
+                break;
+
+            case 'direct':
                 break;
         }
         return $res[$audience];

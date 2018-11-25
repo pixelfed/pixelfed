@@ -20,7 +20,7 @@ use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowImportRecent;
 use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use HttpSignatures\{GuzzleHttpSignatures, KeyStore, Context, Verifier};
+use App\Util\HttpSignatures\{GuzzleHttpSignatures, KeyStore, Context, Verifier};
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
 class Helpers {
@@ -309,31 +309,27 @@ class Helpers {
     {
         $profile = $senderProfile;
         $keyId = $profile->keyId();
-        $privateKey = openssl_pkey_get_private($profile->private_key);
 
-
-        $date = date('D, d M Y h:i:s').' GMT';
+        $date = new \DateTime('UTC');
+        $date = $date->format('D, d M Y H:i:s \G\M\T');
         $host = parse_url($url, PHP_URL_HOST);
+        $path = parse_url($url, PHP_URL_PATH);
         $headers = [
-        	'(request-target)' => 'post '.parse_url($url, PHP_URL_PATH),
-            'Date'         => $date,
-            'Host'		   => $host,
-            'Content-Type' => 'application/activity+json',
+            'date'         => $date,
+            'host'		   => $host,
+            'content-type' => 'application/activity+json',
         ];
-        if($body) {
-        	$payload = is_string($body) ? $body : json_encode($body);
-        	$digest = base64_encode(hash('sha256', $payload, true));
-        	$headers['Digest'] = 'SHA-256=' . $digest;
-        }
-        $stringToSign = self::_headersToSigningString($headers);
-        $signedHeaders = implode(' ', array_map('strtolower', array_keys($headers)));
-		openssl_sign($stringToSign, $signature, $privateKey, OPENSSL_ALGO_SHA256);
-    	openssl_free_key($privateKey);
-	    $signature = base64_encode($signature);
-    	$signatureHeader = 'keyId="'.$keyId.'",headers="'.$signedHeaders.'",algorithm="rsa-sha256",signature="'.$signature.'"';
-    	unset($headers['(request-target)']);
-    	$headers['Signature'] = $signatureHeader;
-    	Zttp::withHeaders($headers)->post($url, $body);
+
+        $context = new Context([
+            'keys' => [$profile->keyId() => $profile->private_key],
+            'algorithm' => 'rsa-sha256',
+            'headers' => ['(request-target)', 'date', 'host', 'content-type'],
+        ]);
+
+        $handlerStack = GuzzleHttpSignatures::defaultHandlerFromContext($context);
+        $client = new Client(['handler' => $handlerStack]);
+
+        $response = $client->request('POST', $url, ['headers' => $headers, 'json' => $body]);
         return;
     }
 

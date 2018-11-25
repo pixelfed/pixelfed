@@ -19,24 +19,42 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
-                    <li class="nav-item px-2">
+                    <li class="nav-item pr-2">
                         <a class="nav-link" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
                     </li>
-                    <li class="nav-item px-2">
-                        <a class="nav-link nav-notification" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom">
-                            <i class="fas fa-inbox fa-lg text"></i>
-                        </a>
+                    <li class="nav-item pr-2">
+                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-inbox fa-lg text"></i></a>
                     </li>
-                    <li class="nav-item px-2">
+                    {{-- <li class="nav-item dropdown d-none d-md-block pr-2">
+                        <a class="nav-link dropdown-toggle nav-notification" href="{{route('notifications')}}" id="nav-notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-inbox fa-lg text"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right nav-notification-dropdown" aria-labelledby="nav-notification">
+                        <div class="loader text-center">
+                            <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+                        </div>
+                        <div class="dropdown-item disabled bg-light py-2">
+                            <a href="{{route('notifications')}}" class="font-weight-bold mr-4" data-toggle="tooltip" title="Notifications"><i class="fas fa-inbox"></i></a>
+                            {{-- <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Direct Messages"><i class="far fa-envelope"></i></a>
+                            <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Following Activity"><i class="fas fa-users"></i></a> -}}
+                            <a href="{{route('follow-requests')}}" class="text-muted font-weight-bold" data-toggle="tooltip" title="Follow Requests"><i class="fas fa-user-plus"></i></a>
+
+                            <span class="float-right">
+                                <a class="btn btn-sm btn-outline-secondary py-0 notification-action" data-type="mark_read" href="#">Mark as Read</a>
+                            </span>
+                        </div>
+                      </div>
+                    </li> --}}
+                    <li class="nav-item pr-2">
                         <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                             <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
                               <i class="fas fa-camera-retro fa-lg text-primary"></i>
                             </a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown px-2">
+                    <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
-                            <i class="far fa-user fa-lg"></i> <span class="caret"></span>
+                            <i class="far fa-user fa-lg"></i>
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">

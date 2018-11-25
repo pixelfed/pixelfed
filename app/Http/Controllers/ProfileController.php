@@ -34,6 +34,8 @@ class ProfileController extends Controller
         if ($user->remote_url) {
             $settings = new \StdClass;
             $settings->crawlable = false;
+            $settings->show_profile_follower_count = true;
+            $settings->show_profile_following_count = true;
         } else {
             $settings = User::whereUsername($username)->firstOrFail()->settings;
         }
@@ -150,7 +152,7 @@ class ProfileController extends Controller
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
             if($check || $blocked) {
-                return view('profile.private', compact('user'));
+                return view('profile.private', compact('user', 'is_following'));
             }
         }
         $followers = $profile->followers()->orderBy('created_at', 'desc')->simplePaginate(12);
@@ -174,7 +176,7 @@ class ProfileController extends Controller
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
             if($check || $blocked) {
-                return view('profile.private', compact('user'));
+                return view('profile.private', compact('user', 'is_following'));
             }
         }
         $following = $profile->following()->orderBy('created_at', 'desc')->simplePaginate(12);

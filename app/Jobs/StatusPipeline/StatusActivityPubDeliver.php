@@ -8,6 +8,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use App\Transformer\ActivityPub\Verb\CreateNote;
+use App\Util\ActivityPub\Helpers;
 
 class StatusActivityPubDeliver implements ShouldQueue
 {
@@ -33,6 +37,18 @@ class StatusActivityPubDeliver implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
+
+        $audience = $status->profile->getAudienceInbox();
+        $profile = $status->profile;
+
+        $fractal = new Fractal\Manager();
+        $fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Item($status, new CreateNote());
+        $activity = $fractal->createData($resource)->toArray();
+
+        foreach($audience as $url) {
+            Helpers::sendSignedObject($profile, $url, $activity);
+        }
 
         // todo: fanout on write
     }

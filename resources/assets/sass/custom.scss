@@ -33,10 +33,6 @@ body, button, input, textarea {
   }
 }
 
-.dropdown-menu {
-  min-width: 13rem;
-}
-
 .text-dark {
   color: #212529 !important;
 }
@@ -248,6 +244,7 @@ body, button, input, textarea {
 
 .status-photo img {
     object-fit: contain;
+    width: 100%;
     max-height: calc(100vh - (6rem));
 }
 
@@ -393,4 +390,48 @@ details summary::-webkit-details-marker {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.navbar .nav-notification.dropdown-toggle::after {
+  display: none;
+}
+
+.navbar .dropdown .nav-notification-dropdown {
+  width:500px;
+  max-height: 300px;
+  overflow-y: scroll;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.nav-notification-dropdown .loader {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.timeline-sidenav.nav-pills .nav-link {
+  color: #6c757d;
+}
+
+.timeline-sidenav.nav-pills .nav-link:hover {
+    background: rgba(0,0,0,0.04);
+}
+
+.timeline-sidenav.nav-pills .nav-link.active, 
+.timeline-sidenav.nav-pills .show > .nav-link {
+    color: #08d;
+    background: transparent;
+    border: 1px solid #08d;
+}
+
+.messages-page .bg-primary.text-white a {
+  color: #fff;
+}
+
+.notification-tooltip .tooltip-inner {
+  font-weight: bold;
+}
+
+.notification-tooltip .arrow::before {
+  border-bottom-color:#dc3545 !important;
 }

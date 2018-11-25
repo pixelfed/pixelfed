@@ -16,8 +16,13 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'remote_url'  => null,
             'preview_url' => $media->thumbnailUrl(),
             'text_url'    => null,
-            'meta'        => $media->metadata,
-            'description' => null,
+            'meta'        => null,
+            'description' => $media->caption,
+            'license'     => $media->license,
+            'is_nsfw'     => $media->is_nsfw,
+            'orientation' => $media->orientation,
+            'filter_name' => $media->filter_name,
+            'filter_class' => $media->filter_class,
         ];
     }
 }
