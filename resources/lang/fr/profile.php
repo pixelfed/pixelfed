@@ -4,7 +4,7 @@ return [
   'emptyTimeline'  => 'Cet·te utilisateur·rice n\'a pas encore de publications !',
   'emptyFollowers' => 'Cet·te utilisateur·rice n`\'a pas encore d\'abonné·e·s !',
   'emptyFollowing' => 'Cet·te utilisateur·rice ne suit personne pour le moment !',
-  'emptySaved'     => 'Vous n\'avez sauvegardé aucune publication pour le moment !'
+  'emptySaved'     => 'Vous n\'avez sauvegardé aucune publication pour le moment !',
   'savedWarning'   => 'Vous seul pouvez voir ce que vous avez enregistré',
   'privateProfileWarning' => 'Ce compte est privé',
   'alreadyFollow'         => 'N\'êtes vous pas déjà abonné·e à :username ?',
