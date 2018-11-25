@@ -126,7 +126,7 @@ class InternalApiController extends Controller
         $profile = Auth::user()->profile;
         $pid = $profile->id;
         $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
-            return Follower::whereProfileId($pid)->pluck('following_id');
+            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
         $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
             return UserFilter::whereUserId($pid)
