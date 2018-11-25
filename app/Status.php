@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Auth;
+use Auth, Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Storage;
@@ -37,26 +37,29 @@ class Status extends Model
 
     public function viewType()
     {
-        $media = $this->firstMedia();
-        $mime = explode('/', $media->mime)[0];
-        $count = $this->media()->count();
-        $type = ($mime == 'image') ? 'image' : 'video';
-        if($count > 1) {
-            $type = ($type == 'image') ? 'album' : 'video-album';
-        }
-
-        return $type;
+        return Cache::remember('status:view-type:'.$this->id, 40320, function() {
+            $media = $this->firstMedia();
+            $mime = explode('/', $media->mime)[0];
+            $count = $this->media()->count();
+            $type = ($mime == 'image') ? 'image' : 'video';
+            if($count > 1) {
+                $type = ($type == 'image') ? 'album' : 'video-album';
+            }
+            return $type;
+        });
     }
 
     public function thumb($showNsfw = false)
     {
-        $type = $this->viewType();
-        $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-        if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album', 'video'])) {
-            return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
-        }
+        return Cache::remember('status:thumb:'.$this->id, 40320, function() use ($showNsfw) {
+            $type = $this->viewType();
+            $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album', 'video'])) {
+                return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+            }
 
-        return url(Storage::url($this->firstMedia()->thumbnail_path));
+            return url(Storage::url($this->firstMedia()->thumbnail_path));
+        });
     }
 
     public function url()

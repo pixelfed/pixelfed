@@ -72,41 +72,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-  $(document).on('click', '.modal-update', function(e) {
-    swal({
-      title: 'Upload Photo',
-      content: {
-        element: 'input',
-        attributes: {
-          placeholder: 'Upload your photo',
-          type: 'file',
-          name: 'photoUpload',
-          id: 'photoUploadInput'
-        }
-      },
-      buttons: {
-        confirm: {
-          text: 'Upload'
-        }
-      }
-    }).then((res) => {
-      const input = $('#photoUploadInput')[0];
-      const photo = input.files[0];
-      const form = new FormData();
-      form.append("upload", photo);
-
-      axios.post('/api/v1/avatar/update', form, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-      }).then((res) => {
-        swal('Success', 'Your photo has been successfully updated! It may take a few minutes to update across the site.', 'success');
-      }).catch((res) => {
-        let msg = res.response.data.errors.upload[0];
-        swal('Something went wrong', msg, 'error');
-      });
-    });
-  });
 
   $(document).on('click', '.modal-close', function(e) {
     swal.close();
@@ -133,26 +98,41 @@
 
   $(document).on('click', '.change-profile-photo', function(e) {
     e.preventDefault();
-    var content = $('<ul>').addClass('list-group');
-    var upload = $('<li>').text('Upload photo').addClass('list-group-item');
-    content.append(upload);
-    const list = document.createElement('ul');
-    list.className = 'list-group';
-
-    const uploadPhoto = document.createElement('li');
-    uploadPhoto.innerHTML = 'Upload Photo';
-    uploadPhoto.className = 'list-group-item font-weight-bold text-primary modal-update';
-    list.appendChild(uploadPhoto);
-
-    const cancel = document.createElement('li');
-    cancel.innerHTML = 'Cancel';
-    cancel.className = 'list-group-item modal-close';
-    list.appendChild(cancel);
-
     swal({
-      title: 'Change Profile Photo',
-      content: list,
-      buttons: false
+      title: 'Upload Photo',
+      content: {
+        element: 'input',
+        attributes: {
+          placeholder: 'Upload your photo',
+          type: 'file',
+          name: 'photoUpload',
+          id: 'photoUploadInput'
+        }
+      },
+      buttons: {
+        confirm: {
+          text: 'Upload'
+        }
+      }
+    }).then((res) => {
+      if(!res) {
+        return;
+      }
+      const input = $('#photoUploadInput')[0];
+      const photo = input.files[0];
+      const form = new FormData();
+      form.append("upload", photo);
+
+      axios.post('/api/v1/avatar/update', form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+      }).then((res) => {
+        swal('Success', 'Your photo has been successfully updated! It may take a few minutes to update across the site.', 'success');
+      }).catch((res) => {
+        let msg = res.response.data.errors.upload[0];
+        swal('Something went wrong', msg, 'error');
+      });
     });
   });
 </script>
