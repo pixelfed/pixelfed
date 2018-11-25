@@ -125,16 +125,19 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        //$following = Cache::get('feature:discover:following:'.$profile->id, []);
-        $following = Follower::whereProfileId($pid)->pluck('following_id');
+        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+            return Follower::whereProfileId($pid)->pluck('following_id');
+        });
+        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
+            return UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->pluck('filterable_id')->toArray();
+        });
+        $following = array_merge($following, $filters);
 
-        $filtered = UserFilter::whereUserId($pid)
-                    ->whereFilterableType('App\Profile')
-                    ->whereIn('filter_type', ['mute', 'block'])
-                    ->pluck('filterable_id')->toArray();
-        $following = array_merge($following->push($pid)->toArray(), $filtered);
-
-        $people = Profile::select('id', 'name', 'username')
+        $people = Cache::remember('feature:discover:people:'.$pid, 15, function() use ($following) {
+            return Profile::select('id', 'name', 'username')
             ->with('avatar')
             ->inRandomOrder()
             ->whereHas('statuses')
@@ -143,16 +146,20 @@ class InternalApiController extends Controller
             ->whereIsPrivate(false)
             ->take(3)
             ->get();
+        });
 
-        $posts = Status::select('id', 'caption', 'profile_id')
-          ->whereHas('media')
-          ->whereIsNsfw(false)
-          ->whereVisibility('public')
-          ->whereNotIn('profile_id', $following)
-          ->withCount(['comments', 'likes'])
-          ->orderBy('created_at', 'desc')
-          ->take(21)
-          ->get();
+        $posts = Cache::remember('feature:discover:posts:'.$pid, 60, function() use ($following) {
+            return Status::select('id', 'caption', 'profile_id')
+              ->whereNull('in_reply_to_id')
+              ->whereNull('reblog_of_id')
+              ->whereIsNsfw(false)
+              ->whereVisibility('public')
+              ->whereNotIn('profile_id', $following)
+              ->withCount(['comments', 'likes'])
+              ->orderBy('created_at', 'desc')
+              ->take(21)
+              ->get();
+          });
 
         $res = [
             'people' => $people->map(function($profile) {
