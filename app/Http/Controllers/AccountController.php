@@ -204,12 +204,9 @@ class AccountController extends Controller
         ]);
 
         $pid = $user->id;
-        Cache::remember("user:filter:list:$pid", 1440, function() use($pid) {
-          return UserFilter::whereUserId($pid)
-                    ->whereFilterableType('App\Profile')
-                    ->whereIn('filter_type', ['mute', 'block'])
-                    ->pluck('filterable_id')->toArray();
-        });
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
 
         return redirect()->back();
     }
@@ -256,12 +253,9 @@ class AccountController extends Controller
         ]);
 
         $pid = $user->id;
-        Cache::remember("user:filter:list:$pid", 1440, function() use($pid) {
-          return UserFilter::whereUserId($pid)
-                    ->whereFilterableType('App\Profile')
-                    ->whereIn('filter_type', ['mute', 'block'])
-                    ->pluck('filterable_id')->toArray();
-        });
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
         return redirect()->back();
     }
 
