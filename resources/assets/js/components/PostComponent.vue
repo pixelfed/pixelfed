@@ -1,113 +1,5 @@
 <style>
-.carousel {
-  position: relative;
-  width: 600px;
-  height: 400px;
-  overflow: hidden;
-  margin: 0 auto;
-}
-.carousel:hover .slide:after,
-.carousel:hover .counter,
-.carousel:hover .slide:before {
-  opacity: 1;
-}
-.slide {
-  float: right;
-  position: absolute;
-  z-index: 1;
-  width: 600px;
-  height: 400px;
-  background-color: #fff;
-  text-align: center;
-  transition: opacity 0.4s;
-  opacity: 1;
-}
-.slide:before {
-  content: attr(annot);
-  display: block;
-  position: absolute;
-  left: 20px;
-  bottom: 20px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  z-index: 12;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.slide:after {
-  content: attr(slide);
-  display: block;
-  position: absolute;
-  bottom: 0;
-  transition: opacity 0.3s;
-  width: 100%;
-  height: 80px;
-  opacity: 0;
-  background-image: linear-gradient(transparent, rgba(0,0,0,0.2));
-  text-align: left;
-  text-indent: 549px;
-  line-height: 101px;
-  font-size: 13px;
-  color: #fff;
-  font-weight: bold;
-}
-.counter {
-  position: absolute;
-  bottom: 20px;
-  right: 2px;
-  height: 20px;
-  width: 60px;
-  z-index: 2;
-  text-align: center;
-  color: #fff;
-  line-height: 21px;
-  font-size: 13px;
-  font-weight: bold;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.carousel-slide {
-  top: 0;
-  right: 0;
-  float: right;
-  position: absolute;
-  margin-top: 0;
-  z-index: 9;
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
-.carousel-slide:checked {
-  z-index: 8;
-}
-.carousel-slide:checked + .slide {
-  opacity: 0;
-}
-.carousel-slide:checked:nth-child(1):checked {
-  z-index: 9;
-}
-.carousel-slide:nth-child(1):checked {
-  float: left;
-  z-index: 9;
-}
-.carousel-slide:nth-child(1):checked + .slide {
-  opacity: 1;
-}
-.carousel-slide:nth-child(1):checked ~ .carousel-slide {
-  float: left;
-  z-index: 8;
-}
-.carousel-slide:nth-child(1):checked ~ .carousel-slide + .slide {
-  opacity: 0;
-}
-.carousel-slide:nth-child(1):checked ~ .carousel-slide:checked {
-  z-index: 9;
-}
-.carousel-slide:nth-child(1):checked ~ .carousel-slide:checked + .slide {
-  opacity: 1;
-}
+
 </style>
 <template>
 <div class="postComponent">
@@ -213,7 +105,7 @@
                     <h3 class="status-heart m-0 far fa-heart text-dark"></h3>
                   </button>
                 </form>
-                <h3 class="far fa-comment pr-3 m-0" title="Comment"></h3>
+                <h3 class="far fa-comment pr-3 m-0" title="Comment" v-on:click="commentFocus"></h3>
                 <form class="d-inline-flex share-form pr-3" method="post" action="/i/share" style="display: inline;" data-id="11todo" data-action="share" data-count="status.favourite_count">
                   <input type="hidden" name="_token" value="">
                   <input type="hidden" name="item" :value="statusId">
@@ -225,7 +117,7 @@
                 <span class="float-right">
                   <form class="d-inline-flex" method="post" action="/i/bookmark" style="display: inline;" data-id="#" data-action="bookmark" onclick="this.preventDefault()">
                     <input type="hidden" name="_token" value="">
-                    <input type="hidden" name="item" value="#">
+                    <input type="hidden" name="item" :value="statusId">
                     <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
                       <h3 class="m-0 far fa-bookmark"></h3>
                     </button>
@@ -267,6 +159,9 @@ pixelfed.postComponent = {};
 pixelfed.presenter = {
   show: {
     image: function(container, media) {
+      $('.status-container')
+        .removeClass('orientation-unknown')
+        .addClass('orientation-' + media[0]['orientation']);
       let wrapper = $('<div>');
       wrapper.addClass(media[0]['filter_class']);
       let el = $('<img>');
@@ -288,29 +183,67 @@ pixelfed.presenter = {
       container.append(wrapper);
     },
 
-    imageAlbum: function(container, media) {
+    imageAlbum: function(container, media, status) {
+      $('.status-container')
+        .removeClass('orientation-unknown')
+        .addClass('orientation-' + media[0]['orientation']);
+      let id = 'photo-carousel-wrapper-' + status.id;
       let wrapper = $('<div>');
-      wrapper.addClass('carousel');
-      let counter = $('<div>');
-      counter.attr('class', 'counter');
-      counter.attr('count', media.length);
-      counter.text('  / ' + media.length);
-      for(var i = media.length - 1; i >= 0; i--) {
+      wrapper.addClass('carousel slide carousel-fade');
+      wrapper.attr('data-ride', 'carousel');
+      wrapper.attr('id', id);
+      let indicators = $('<ol>');
+      indicators.addClass('carousel-indicators');
+      let prev = $('<a>');
+      prev.addClass('carousel-control-prev');
+      prev.attr('href', '#' + id);
+      prev.attr('role', 'button');
+      prev.attr('data-slide', 'prev');
+      let prevIcon = $('<span>').addClass('carousel-control-prev-icon').attr('aria-hidden', 'true');
+      let prevSr = $('<span>').addClass('sr-only');
+      prev.append(prevIcon, prevSr);
+      let next = $('<a>');
+      next.addClass('carousel-control-next');
+      next.attr('href', '#' + id);
+      next.attr('role', 'button');
+      next.attr('data-slide', 'next');
+      let nextIcon = $('<span>').addClass('carousel-control-next-icon').attr('aria-hidden', 'true');
+      let nextSr = $('<span>').addClass('sr-only');
+      let inner = $('<div>').addClass('carousel-inner');
+      next.append(nextIcon, nextSr);
+      for(let i = 0; i < media.length; i++) {
+        let li = $('<li>');
+        li.attr('data-target', '#' + id);
+        li.attr('data-slide-to', i);
+        if(i == 0) {
+          li.addClass('active');
+        }
+        indicators.append(li);
         let item = media[i];
-        let carouselItem = $('<div>').addClass('slide d-flex align-items-center');
-        carouselItem.attr('slide', i + 1);
-        carouselItem.attr('annot', item.description);
-        let check = $('<input>');
-        check.attr('type', 'checkbox');
-        check.attr('class', 'carousel-slide');
+        let carouselItem = $('<div>').addClass('carousel-item');
+        if(i == 0) {
+          carouselItem.addClass('active');
+        }
+        let figure = $('<figure>');
+        if(item['filter_class']) {
+          figure.addClass(item['filter_class']);
+        }
+
+        let badge = $('<span>');
+        badge.addClass('float-right mr-3 badge badge-dark');
+        badge.style = 'position:fixed;top:8px;right:0;margin-bottom:-20px;';
+        badge.text(i+1 + '/' + media.length);
+
         let img = $('<img>');
-        img.addClass('img-fluid');
+        img.addClass('d-block w-100');
         img.attr('src', item['url']);
-        carouselItem.append(img);
-        wrapper.append(check);
-        wrapper.append(carouselItem);
+
+        figure.append(badge, img);
+        carouselItem.append(figure);
+
+        inner.append(carouselItem);
       }
-      wrapper.append(counter);
+      wrapper.append(indicators, inner, prev, next);
       container.append(wrapper);
     }
   }
@@ -322,7 +255,8 @@ export default {
         return {
             status: {},
             media: {},
-            user: {}
+            user: {},
+            reactions: {}
           }
     },
     mounted() {
@@ -332,8 +266,22 @@ export default {
           el.val(token);
       });
       this.fetchData();
-      pixelfed.hydrateLikes();
+      //pixelfed.hydrateLikes();
       this.authCheck();
+    },
+    updated() {
+      $('.carousel').carousel();
+      if(this.reactions) {
+        if(this.reactions.bookmarked == true) {
+          $('.far.fa-bookmark').removeClass('far').addClass('fas text-warning');
+        }
+        if(this.reactions.shared == true) {
+          $('.far.fa-share-square').addClass('text-primary');
+        }
+        if(this.reactions.liked == true) {
+          $('.far.fa-heart ').removeClass('far text-dark').addClass('fas text-danger');
+        }
+      }
     },
     methods: {
       authCheck() {
@@ -355,7 +303,7 @@ export default {
       },
       timestampFormat() {
           let ts = new Date(this.status.created_at);
-          return ts.toDateString();
+          return ts.toDateString() + ' ' + ts.toLocaleTimeString();
       },
       fetchData() {
           let url = '/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId;
@@ -365,6 +313,7 @@ export default {
                 self.status = response.data.status;
                 self.user = response.data.user;
                 self.media = self.status.media_attachments;
+                self.reactions = response.data.reactions;
                 this.buildPresenter();
                 this.showMuteBlock();
             }).catch(error => {
@@ -385,6 +334,9 @@ export default {
                 }
               }
             });
+      },
+      commentFocus() {
+        $('.comment-form input[name="comment"]').focus();
       },
       buildPresenter() {
         let container = $('.postPresenterContainer');
@@ -407,8 +359,7 @@ export default {
           break;
 
           case 'album':
-            pixelfed.presenter.show.imageAlbum(container, media);
-            $('.carousel').carousel();
+            pixelfed.presenter.show.imageAlbum(container, media, this.status);
           break;
 
           case 'video':

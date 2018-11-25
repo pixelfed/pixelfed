@@ -16,7 +16,7 @@
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
   </div>
   <div class="postCommentsContainer d-none">
-    <p class="mb-1 text-center load-more-link"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
+    <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
       <p class="mb-1" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
         <span class="d-flex justify-content-between align-items-center">
@@ -27,7 +27,7 @@
               <span class="comment-text" v-html="comment.content" style="overflow: hidden;"></span>
             </div>
           </span>
-          <b-dropdown :id="comment.uri" variant="link" no-caret class="float-right">
+          <b-dropdown :id="comment.uri" variant="link" no-caret right class="float-right">
             <template slot="button-content">
                 <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
             </template>
@@ -66,7 +66,7 @@ export default {
     },
     methods: {
       embed(e) {
-          pixelfed.embed.build(e);
+          //pixelfed.embed.build(e);
       },
       deleteComment(id, i) {
         axios.post('/i/delete', {
@@ -95,6 +95,9 @@ export default {
                 let self = this;
                 this.results = response.data.data;
                 this.pagination = response.data.meta.pagination;
+                if(this.results.length > 0) {
+                  $('.load-more-link').removeClass('d-none');
+                }
                 $('.postCommentsLoader').addClass('d-none');
                 $('.postCommentsContainer').removeClass('d-none');
             }).catch(error => {
@@ -103,7 +106,6 @@ export default {
                   .attr('style','width:100%')
                   .addClass('pt-4 font-weight-bold text-muted')
                   .text('An error occured, cannot fetch comments. Please try again later.');
-                console.log(error);
               } else {
                 switch(error.response.status) {
                   case 401:
@@ -120,7 +122,6 @@ export default {
                       .text('An error occured, cannot fetch comments. Please try again later.');
                   break;
                 }
-                console.log(error.response.status);
               }
             });
       },
