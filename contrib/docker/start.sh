@@ -12,7 +12,7 @@ gosu www-data:www-data php artisan migrate --force
 gosu www-data:www-data php artisan update
 
 # Run a worker if it is set as embedded
-if [ $HORIZON_EMBED = true ]; then
+if [ "$HORIZON_EMBED" = "true" ]; then
   gosu www-data:www-data php artisan horizon &
 fi
 
