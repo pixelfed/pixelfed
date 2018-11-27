@@ -82,7 +82,7 @@ class StatusEntityLexer implements ShouldQueue
 
         foreach ($tags as $tag) {
             DB::transaction(function () use ($status, $tag) {
-                $slug = str_slug($tag);
+                $slug = str_slug($tag, '-', false);
                 $hashtag = Hashtag::firstOrCreate(
                     ['name' => $tag, 'slug' => $slug]
                 );
