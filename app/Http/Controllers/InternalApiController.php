@@ -136,34 +136,31 @@ class InternalApiController extends Controller
         });
         $following = array_merge($following, $filters);
 
-        $people = Cache::remember('feature:discover:people:'.$pid, 15, function() use ($following) {
-            return Profile::select('id', 'name', 'username')
+        $people = Profile::select('id', 'name', 'username')
             ->with('avatar')
-            ->inRandomOrder()
+            ->orderByRaw('rand()')
             ->whereHas('statuses')
             ->whereNull('domain')
             ->whereNotIn('id', $following)
             ->whereIsPrivate(false)
             ->take(3)
             ->get();
-        });
 
-        $posts = Cache::remember('feature:discover:posts:'.$pid, 60, function() use ($following) {
-            return Status::select('id', 'caption', 'profile_id')
+        $posts = Status::select('id', 'caption', 'profile_id')
               ->whereNull('in_reply_to_id')
               ->whereNull('reblog_of_id')
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
-              ->withCount(['comments', 'likes'])
+              ->with('media')
               ->orderBy('created_at', 'desc')
               ->take(21)
               ->get();
-          });
 
         $res = [
             'people' => $people->map(function($profile) {
                 return [
+                    'id'    => $profile->id,
                     'avatar' => $profile->avatarUrl(),
                     'name' => $profile->name,
                     'username' => $profile->username,
@@ -174,8 +171,6 @@ class InternalApiController extends Controller
                 return [
                     'url' => $post->url(),
                     'thumb' => $post->thumb(),
-                    'comments_count' => $post->comments_count,
-                    'likes_count' => $post->likes_count,
                 ];
             })
         ];
