@@ -58,7 +58,7 @@ class AvatarController extends Controller
         $path = $this->buildPath($id);
         $dir = storage_path('app/'.$path);
         $this->checkDir($dir);
-        $name = 'avatar.'.$file->guessExtension();
+        $name = str_random(20).'_avatar.'.$file->guessExtension();
         $res = ['root' => 'storage/app/'.$path, 'name' => $name, 'storage' => $path];
 
         return $res;
