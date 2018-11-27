@@ -55,11 +55,11 @@ export default {
 		}
 	},
 	mounted() {
-    this.slowTimeout();
     this.fetchData();
 	},
 
 	methods: {
+    
     followUser(id, event) {
       axios.post('/i/follow', {
         item: id
@@ -75,31 +75,30 @@ export default {
         );
       });
     },
+
 		fetchData() {
-			axios.get('/api/v2/discover')
-			.then((res) => {
-				let data = res.data;
-				this.people = data.people;
-				this.posts = data.posts;
+      axios.get('/api/v2/discover/people')
+      .then((res) => {
+        let data = res.data;
+        this.people = data.people;
 
-				if(this.people.length > 1) {
-					$('.section-people .loader').hide();
-					$('.section-people .row.d-none').removeClass('d-none');
-				}
+        if(this.people.length > 1) {
+          $('.section-people .loader').hide();
+          $('.section-people .row.d-none').removeClass('d-none');
+        }
+      });
 
-				if(this.posts.length > 1) {
-					$('.section-explore .loader').hide();
-					$('.section-explore .row.d-none').removeClass('d-none');
-				}
-			});
-		},
-    slowTimeout() {
-      setTimeout(function() {
-        let el = $('<p>').addClass('font-weight-bold').text('This is taking longer than expected to load. Please try reloading the page if this does not load after 30 seconds.');
-        $('.section-people .loader').append(el);
-        $('.section-explore .loader').append(el);
-      }, 5000);
-    }
+      axios.get('/api/v2/discover/posts')
+      .then((res) => {
+        let data = res.data;
+        this.posts = data.posts;
+
+        if(this.posts.length > 1) {
+          $('.section-explore .loader').hide();
+          $('.section-explore .row.d-none').removeClass('d-none');
+        }
+      });
+		}
 	}
 }
 </script>

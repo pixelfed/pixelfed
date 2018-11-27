@@ -121,6 +121,7 @@ class InternalApiController extends Controller
         return response()->json($notifications, 200, [], JSON_PRETTY_PRINT);
     }
 
+    // deprecated
     public function discover(Request $request)
     {
         $profile = Auth::user()->profile;
@@ -176,6 +177,83 @@ class InternalApiController extends Controller
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
+
+    public function discoverPeople(Request $request)
+    {
+        $profile = Auth::user()->profile;
+        $pid = $profile->id;
+        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
+        });
+        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
+            return UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->pluck('filterable_id')->toArray();
+        });
+        $following = array_merge($following, $filters);
+
+        $people = Profile::select('id', 'name', 'username')
+            ->with('avatar')
+            ->orderByRaw('rand()')
+            ->whereHas('statuses')
+            ->whereNull('domain')
+            ->whereNotIn('id', $following)
+            ->whereIsPrivate(false)
+            ->take(3)
+            ->get();
+
+        $res = [
+            'people' => $people->map(function($profile) {
+                return [
+                    'id'    => $profile->id,
+                    'avatar' => $profile->avatarUrl(),
+                    'name' => $profile->name,
+                    'username' => $profile->username,
+                    'url'   => $profile->url(),
+                ];
+            })
+        ];
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function discoverPosts(Request $request)
+    {
+        $profile = Auth::user()->profile;
+        $pid = $profile->id;
+        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
+        });
+        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
+            return UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->pluck('filterable_id')->toArray();
+        });
+        $following = array_merge($following, $filters);
+
+        $posts = Status::select('id', 'caption', 'profile_id')
+              ->whereNull('in_reply_to_id')
+              ->whereNull('reblog_of_id')
+              ->whereIsNsfw(false)
+              ->whereVisibility('public')
+              ->whereNotIn('profile_id', $following)
+              ->with('media')
+              ->orderBy('created_at', 'desc')
+              ->take(21)
+              ->get();
+
+        $res = [
+            'posts' => $posts->map(function($post) {
+                return [
+                    'url' => $post->url(),
+                    'thumb' => $post->thumb(),
+                ];
+            })
+        ];
+        return response()->json($res);
+    }
+
     public function directMessage(Request $request, $profileId, $threadId)
     {
         $profile = Auth::user()->profile;
