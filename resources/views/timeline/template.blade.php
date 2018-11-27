@@ -15,7 +15,7 @@
 
 <div class="container d-none timeline-container">
   <div class="row">
-    <div class="col-md-10 col-lg-8 pt-4 px-0 my-3">
+    <div class="col-md-8 col-lg-8 pt-4 px-0 my-3">
         @if (session('status'))
             <div class="alert alert-success">
                 <span class="font-weight-bold">{!! session('status') !!}</span>
@@ -72,7 +72,7 @@
       </div>
 
     </div>
-    <div class="col-md-2 col-lg-4 pt-4 my-3">
+    <div class="col-md-4 col-lg-4 pt-4 my-3">
         <div class="media d-flex align-items-center mb-4">
           <a href="{{Auth::user()->profile->url()}}">
             <img class="mr-3 rounded-circle box-shadow" src="{{Auth::user()->profile->avatarUrl()}}" alt="{{Auth::user()->username}}'s avatar" width="64px">
