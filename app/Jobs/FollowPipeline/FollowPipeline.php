@@ -51,7 +51,7 @@ class FollowPipeline implements ShouldQueue
             $notification->save();
 
             Cache::forever('notification.'.$notification->id, $notification);
-
+            Cache::forget('feature:discover:people:'.$actor->id);
             $redis = Redis::connection();
 
             $nkey = config('cache.prefix').':user.'.$target->id.'.notifications';

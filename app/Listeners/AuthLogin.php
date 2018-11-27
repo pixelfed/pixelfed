@@ -2,24 +2,18 @@
 
 namespace App\Listeners;
 
-use DB;
-use App\User;
-use App\UserSetting;
+use DB, Cache;
+use App\{
+    Follower,
+    User,
+    UserFilter,
+    UserSetting
+};
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class AuthLogin
 {
-    /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * Handle the event.
      *
@@ -36,5 +30,22 @@ class AuthLogin
                 ]);
             });
         }
+        $this->warmCache($user);
+    }
+
+    public function warmCache($user)
+    {
+        $pid = $user->profile->id;
+
+        Cache::remember('feature:discover:following:'.$pid, 10080, function() use ($pid) {
+            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
+        });
+
+        Cache::remember("user:filter:list:$pid", 10080, function() use($pid) {
+            return UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->pluck('filterable_id')->toArray();
+        });
     }
 }

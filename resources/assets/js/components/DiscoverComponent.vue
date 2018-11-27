@@ -16,10 +16,7 @@
             </div>
             <p class="lead font-weight-bold mb-0 text-truncate"><a :href="profile.url" class="text-dark">{{profile.username}}</a></p>
             <p class="text-muted text-truncate">{{profile.name}}</p>
-            <form class="follow-form" method="post" action="/i/follow" data-id="#" data-action="follow">
-              <input type="hidden" name="item" value="#">
-              <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
-            </form>
+            <button class="btn btn-primary font-weight-bold px-4 py-0" v-on:click="followUser(profile.id, $event)">Follow</button>
           </div>
         </div>
       </div>
@@ -36,16 +33,6 @@
           <a class="card info-overlay card-md-border-0" :href="post.url">
             <div class="square filter_class">
               <div class="square-content" v-bind:style="{ 'background-image': 'url(' + post.thumb + ')' }"></div>
-              <div class="info-overlay-text">
-                <h5 class="text-white m-auto font-weight-bold">
-                  <span class="pr-4">
-                  <span class="far fa-heart fa-lg pr-1"></span> {{post.likes_count}}
-                  </span>
-                  <span>
-                  <span class="far fa-comment fa-lg pr-1"></span> {{post.comments_count}}
-                  </span>
-                </h5>
-              </div>
             </div>
           </a>
         </div>
@@ -53,7 +40,7 @@
      </div>
   </section>
   <section class="mb-5">
-  	<p class="lead text-center">To view more posts, check the <a href="#" class="font-weight-bold">home</a>, <a href="#" class="font-weight-bold">local</a> or <a href="#" class="font-weight-bold">federated</a> timelines.</p>
+  	<p class="lead text-center">To view more posts, check the <a href="/" class="font-weight-bold">home</a> or <a href="/timeline/public" class="font-weight-bold">local</a> timelines.</p>
   </section>
 </div>
 </template>
@@ -68,10 +55,26 @@ export default {
 		}
 	},
 	mounted() {
-		this.fetchData();
+    this.slowTimeout();
+    this.fetchData();
 	},
 
 	methods: {
+    followUser(id, event) {
+      axios.post('/i/follow', {
+        item: id
+      }).then(res => {
+        let el = $(event.target);
+        el.addClass('btn-outline-secondary').removeClass('btn-primary');
+        el.text('Unfollow');
+      }).catch(err => {
+        swal(
+          'Whoops! Something went wrong...',
+          'An error occured, please try again later.',
+          'error'
+        );
+      });
+    },
 		fetchData() {
 			axios.get('/api/v2/discover')
 			.then((res) => {
@@ -80,16 +83,23 @@ export default {
 				this.posts = data.posts;
 
 				if(this.people.length > 1) {
-					$('.section-people .lds-ring').hide();
+					$('.section-people .loader').hide();
 					$('.section-people .row.d-none').removeClass('d-none');
 				}
 
 				if(this.posts.length > 1) {
-					$('.section-explore .lds-ring').hide();
+					$('.section-explore .loader').hide();
 					$('.section-explore .row.d-none').removeClass('d-none');
 				}
 			});
-		}
+		},
+    slowTimeout() {
+      setTimeout(function() {
+        let el = $('<p>').addClass('font-weight-bold').text('This is taking longer than expected to load. Please try reloading the page if this does not load after 30 seconds.');
+        $('.section-people .loader').append(el);
+        $('.section-explore .loader').append(el);
+      }, 5000);
+    }
 	}
 }
 </script>
