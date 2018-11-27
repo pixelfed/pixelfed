@@ -63,7 +63,7 @@
         <input type="file" name="media" class="d-none file-input" multiple="">
         <div class="caption d-none">
           <div class="form-group mb-0">
-            <input type="text" class="form-control input-elevated font-weight-bold" placeholder="Add an optional caption">
+            <textarea class="form-control input-elevated font-weight-bold" placeholder="Add an optional caption"></textarea>
           </div>
         </div>
         <div class="options"></div>
@@ -470,7 +470,7 @@ $(document).on('click', '#create', function(e) {
   $('.composeLoader').removeClass('d-none');
   let data = {
     media: pixelfed.uploader.meta,
-    caption: $('.caption input').val(),
+    caption: $('.caption textarea').val(),
     visibility: pixelfed.uploader.visibility,
   };
   axios.post('/api/local/status/compose', data)
