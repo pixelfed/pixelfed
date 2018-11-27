@@ -18,7 +18,7 @@
   <div class="postCommentsContainer d-none">
     <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p class="mb-1" v-for="(comment, index) in results" :data-id="comment.id" v-bind:key="comment.id">
+      <p class="mb-1" v-for="(comment, index) in results" :data-id="comment.id" :key="comment.id">
         <span class="d-flex justify-content-between align-items-center">
           <span class="pr-3" style="overflow: hidden;">
             <div class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi>
