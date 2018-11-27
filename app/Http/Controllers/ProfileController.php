@@ -37,7 +37,7 @@ class ProfileController extends Controller
             $settings->show_profile_follower_count = true;
             $settings->show_profile_following_count = true;
         } else {
-            $settings = User::whereUsername($username)->firstOrFail()->settings;
+            $settings = $user->user->settings;
         }
 
         if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
@@ -101,7 +101,6 @@ class ProfileController extends Controller
         }
         
         return false;
-
     }
 
     protected function blockedProfileCheck(Profile $profile)
@@ -145,6 +144,7 @@ class ProfileController extends Controller
     public function followers(Request $request, $username)
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
+
         // TODO: fix $profile/$user mismatch in profile & follower templates
         $owner = Auth::check() && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
@@ -161,7 +161,10 @@ class ProfileController extends Controller
             $settings = new \StdClass;
             $settings->crawlable = false;
         } else {
-            $settings = User::whereUsername($username)->firstOrFail()->settings;
+            $settings = $profile->user->settings;
+            if(!$settings->show_profile_follower_count && !$owner) {
+                abort(403);
+            }
         }
         return view('profile.followers', compact('user', 'profile', 'followers', 'owner', 'is_following', 'is_admin', 'settings'));
     }
@@ -185,7 +188,10 @@ class ProfileController extends Controller
             $settings = new \StdClass;
             $settings->crawlable = false;
         } else {
-            $settings = User::whereUsername($username)->firstOrFail()->settings;
+            $settings = $profile->user->settings;
+            if(!$settings->show_profile_follower_count && !$owner) {
+                abort(403);
+            }
         }
         return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following', 'is_admin', 'settings'));
     }
