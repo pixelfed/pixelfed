@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\{
     Hashtag,
+    Follower,
     Like,
     Media,
     Notification,
@@ -30,7 +31,7 @@ class PublicApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('throttle:200, 15');
+        $this->middleware('throttle:200, 30');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
@@ -50,6 +51,7 @@ class PublicApiController extends Controller
     {
         $profile = Profile::whereUsername($username)->first();
         $status = Status::whereProfileId($profile->id)->find($postid);
+        $this->scopeCheck($profile, $status);
         $item = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = [
         	'status' => $this->fractal->createData($item)->toArray(),
@@ -73,6 +75,7 @@ class PublicApiController extends Controller
         $limit = $request->limit ?? 10;
         $profile = Profile::whereUsername($username)->first();
         $status = Status::whereProfileId($profile->id)->find($postId);
+        $this->scopeCheck($profile, $status);
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
                 $replies = $status->comments()
@@ -99,5 +102,48 @@ class PublicApiController extends Controller
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    protected function scopeCheck(Profile $profile, Status $status)
+    {
+        if($profile->is_private == true && Auth::check() == false) {
+            abort(404);
+        } 
+
+        switch ($status->scope) {
+            case 'public':
+            case 'unlisted':
+                $user = Auth::check() ? Auth::user() : false;
+                if($user && $profile->is_private) {
+                    $follows = Follower::whereProfileId($user->profile->id)
+                        ->whereFollowingId($profile->id)
+                        ->exists();
+                    if($follows == false && $profile->id !== $user->profile->id) {
+                        abort(404);
+                    }
+                }
+                break;
+
+            case 'private':
+                $follows = Follower::whereProfileId($user->profile->id)
+                    ->whereFollowingId($profile->id)
+                    ->exists();
+                if($follows == false && $profile->id !== $user->profile->id) {
+                    abort(404);
+                }
+                break;
+
+            case 'direct':
+                abort(404);
+                break;
+
+            case 'draft':
+                abort(404);
+                break;
+            
+            default:
+                abort(404);
+                break;
+        }
     }
 }
