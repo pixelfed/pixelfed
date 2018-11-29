@@ -23,7 +23,7 @@
           <span class="pr-3" style="overflow: hidden;">
             <div class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi>
             </div>
-            <div class="read-more" style="overflow: hidden;">
+            <div class="read-more" style="overflow: hidden;" :id="comment.id + '-reply-readmore'">
               <span class="comment-text" v-html="comment.content" style="overflow: hidden;"></span>
             </div>
           </span>
@@ -51,7 +51,7 @@ export default {
     props: ['post-id', 'post-username', 'user'],
     data() {
         return {
-            results: {},
+            results: null,
             pagination: {},
             min_id: 0,
             max_id: 0,
