@@ -30,6 +30,10 @@ class LogFailedLogin
         $user = $event->user;
         $request = request();
 
+        if(!$user) {
+            return;
+        }
+        
         $log = new AccountLog();
         $log->user_id = $user->id;
         $log->item_id = $user->id;
