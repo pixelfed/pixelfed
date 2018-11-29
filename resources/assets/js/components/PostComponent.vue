@@ -91,7 +91,7 @@
               <div class="status-comment">
                 <p class="mb-1 read-more" style="overflow: hidden;">
                   <span class="font-weight-bold pr-1">{{statusUsername}}</span>
-                  <span class="comment-text"></span>
+                  <span class="comment-text" :id="status.id + '-status-readmore'"></span>
                 </p>
                 <post-comments :user="this.user" :post-id="statusId" :post-username="statusUsername"></post-comments>
               </div>

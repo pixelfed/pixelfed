@@ -3,7 +3,7 @@ import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue);
 
 pixelfed.readmore = () => {
-  $(document).find('.read-more').each(function(k,v) {
+  $('.read-more').each(function(k,v) {
       let el = $(this);
       let attr = el.attr('data-readmore');
       if(typeof attr !== typeof undefined && attr !== false) {
