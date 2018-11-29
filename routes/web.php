@@ -46,7 +46,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'InternalApiController@notifications');
             Route::post('notifications', 'InternalApiController@notificationMarkAllRead');
             Route::get('discover', 'InternalApiController@discover');
-            Route::get('discover/people', 'InternalApiController@discoverPeople');
+            // Route::get('discover/people', 'InternalApiController@discoverPeople');
             Route::get('discover/posts', 'InternalApiController@discoverPosts');
             Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
             Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');

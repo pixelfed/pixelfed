@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-  <section class="mb-5 section-people">
+  <!-- <section class="mb-5 section-people">
     <p class="lead text-muted font-weight-bold mb-0">Discover People</p>
     <div class="loader text-center">
     	<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
@@ -21,7 +21,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <section class="mb-5 section-explore">
     <p class="lead text-muted font-weight-bold mb-0">Explore</p>
     <div class="profile-timeline">
@@ -77,16 +77,16 @@ export default {
     },
 
 		fetchData() {
-      axios.get('/api/v2/discover/people')
-      .then((res) => {
-        let data = res.data;
-        this.people = data.people;
+      // axios.get('/api/v2/discover/people')
+      // .then((res) => {
+      //   let data = res.data;
+      //   this.people = data.people;
 
-        if(this.people.length > 1) {
-          $('.section-people .loader').hide();
-          $('.section-people .row.d-none').removeClass('d-none');
-        }
-      });
+      //   if(this.people.length > 1) {
+      //     $('.section-people .loader').hide();
+      //     $('.section-people .row.d-none').removeClass('d-none');
+      //   }
+      // });
 
       axios.get('/api/v2/discover/posts')
       .then((res) => {
