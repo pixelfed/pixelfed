@@ -25,7 +25,10 @@ class LoginTest extends TestCase
             $response->assertSuccessful()
                      ->assertSee('Register a new account');
         } else {
-            $this->assertTrue(true);
+            $response = $this->get('register');
+
+            $response->assertSuccessful()
+                    ->assertSee('Registration is closed');
         }
     }
 }
