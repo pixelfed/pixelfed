@@ -173,14 +173,30 @@ pixelfed.presenter = {
 
     video: function(container, media) {
       let wrapper = $('<div>');
-      wrapper.addClass('embed-responsive embed-responsive-4by3');
+      wrapper.addClass('');
       let el = $('<video>');
       el.addClass('embed-responsive-item');
       el.attr('controls', '');
+      el.attr('loop', '');
       el.attr('src', media[0]['url']);
       el.attr('title', media[0]['description']);
       wrapper.append(el);
       container.append(wrapper);
+      
+      const player = new Plyr(el, {
+        controls: [
+            'restart', // Restart playback
+            'play', // Play/pause playback
+            'progress', // The progress bar and scrubber for playback and buffering
+            'current-time', // The current time of playback
+            'duration', // The full duration of the media
+            'volume', // Volume control
+            'captions', // Toggle captions
+            'settings', // Settings menu
+            'fullscreen', // Toggle fullscreen
+        ]
+      });
+      player.volume = 0.75;
     },
 
     imageAlbum: function(container, media, status) {
