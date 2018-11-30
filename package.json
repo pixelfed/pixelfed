@@ -24,11 +24,11 @@
         "filesize": "^3.6.1",
         "infinite-scroll": "^3.0.4",
         "laravel-echo": "^1.4.0",
+        "plyr": "^3.4.7",
         "pusher-js": "^4.2.2",
         "readmore-js": "^2.2.1",
         "socket.io-client": "^2.1.1",
         "sweetalert": "^2.1.0",
-        "twitter-text": "^2.0.5",
-        "video.js": "^7.2.3"
+        "twitter-text": "^2.0.5"
     }
 }

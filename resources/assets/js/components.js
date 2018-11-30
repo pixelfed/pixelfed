@@ -20,6 +20,7 @@ pixelfed.readmore = () => {
 
 window.InfiniteScroll = require('infinite-scroll');
 window.filesize = require('filesize');
+window.Plyr = require('plyr');
 import swal from 'sweetalert';
 
 require('./components/localstorage');
