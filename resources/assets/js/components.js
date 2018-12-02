@@ -1,6 +1,11 @@
 window.Vue = require('vue');
 import BootstrapVue from 'bootstrap-vue'
+import InfiniteLoading from 'vue-infinite-loading';
+import Loading from 'vue-loading-overlay';
+
 Vue.use(BootstrapVue);
+Vue.use(InfiniteLoading);
+Vue.use(Loading);
 
 pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {
