@@ -50,6 +50,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/posts', 'InternalApiController@discoverPosts');
             Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
             Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
+            Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
+            Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
