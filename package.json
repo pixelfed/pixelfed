@@ -29,6 +29,8 @@
         "readmore-js": "^2.2.1",
         "socket.io-client": "^2.1.1",
         "sweetalert": "^2.1.0",
-        "twitter-text": "^2.0.5"
+        "twitter-text": "^2.0.5",
+        "vue-infinite-loading": "^2.4.3",
+        "vue-loading-overlay": "^3.1.0"
     }
 }
