@@ -31,7 +31,7 @@ class PublicApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('throttle:200, 30');
+        $this->middleware('throttle:3000, 30');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
@@ -47,6 +47,30 @@ class PublicApiController extends Controller
     	}
     }
 
+    protected function getLikes($status)
+    {
+        if(false == Auth::check()) {
+            return [];
+        } else {
+            $profile = Auth::user()->profile;
+            $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
+            $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
+            return $this->fractal->createData($collection)->toArray();
+        }
+    }
+
+    protected function getShares($status)
+    {
+        if(false == Auth::check()) {
+            return [];
+        } else {
+            $profile = Auth::user()->profile;
+            $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
+            $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
+            return $this->fractal->createData($collection)->toArray();
+        }
+    }
+
     public function status(Request $request, $username, int $postid)
     {
         $profile = Profile::whereUsername($username)->first();
@@ -56,6 +80,8 @@ class PublicApiController extends Controller
         $res = [
         	'status' => $this->fractal->createData($item)->toArray(),
         	'user' => $this->getUserData(),
+            'likes' => $this->getLikes($status),
+            'shares' => $this->getShares($status),
             'reactions' => [
                 'liked' => $status->liked(),
                 'shared' => $status->shared(),
@@ -102,6 +128,28 @@ class PublicApiController extends Controller
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function statusLikes(Request $request, $username, $id)
+    {
+        $profile = Profile::whereUsername($username)->first();
+        $status = Status::whereProfileId($profile->id)->find($id);
+        $this->scopeCheck($profile, $status);
+        $likes = $this->getLikes($status);
+        return response()->json([
+            'data' => $likes
+        ]);
+    }
+
+    public function statusShares(Request $request, $username, $id)
+    {
+        $profile = Profile::whereUsername($username)->first();
+        $status = Status::whereProfileId($profile->id)->find($id);
+        $this->scopeCheck($profile, $status);
+        $shares = $this->getShares($status);
+        return response()->json([
+            'data' => $shares
+        ]);
     }
 
     protected function scopeCheck(Profile $profile, Status $status)
