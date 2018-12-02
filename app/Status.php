@@ -3,6 +3,7 @@
 namespace App;
 
 use Auth, Cache;
+use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Storage;
@@ -49,9 +50,11 @@ class Status extends Model
         return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
     }
 
+    // todo: deprecate after 0.6.0
     public function viewType()
     {
-        return Cache::remember('status:view-type:'.$this->id, 40320, function() {
+        return Cache::remember('status:view-type:'.$this->id, 10080, function() {
+            $this->setType();
             $media = $this->firstMedia();
             $mime = explode('/', $media->mime)[0];
             $count = $this->media()->count();
@@ -61,6 +64,20 @@ class Status extends Model
             }
             return $type;
         });
+    }
+
+    // todo: deprecate after 0.6.0
+    public function setType()
+    {
+        if(in_array($this->type, self::STATUS_TYPES)) {
+            return;
+        }
+        $mimes = $this->media->pluck('mime')->toArray();
+        $type = StatusController::mimeTypeCheck($mimes);
+        if($type) {
+            $this->type = $type;
+            $this->save();
+        }
     }
 
     public function thumb($showNsfw = false)
