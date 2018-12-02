@@ -18,13 +18,14 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id'];
+    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id'];
 
     const STATUS_TYPES = [
         'photo',
         'photo:album',
         'video',
         'video:album',
+        'photo:video:album'
         'share',
         'reply',
         'story',
