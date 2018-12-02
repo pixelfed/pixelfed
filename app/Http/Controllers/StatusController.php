@@ -92,6 +92,8 @@ class StatusController extends Controller
 
         $photos = $request->file('photo');
         $order = 1;
+        $mimes = [];
+
         foreach ($photos as $k => $v) {
             $storagePath = "public/m/{$monthHash}/{$userHash}";
             $path = $v->store($storagePath);
@@ -108,9 +110,13 @@ class StatusController extends Controller
             $media->filter_name = $request->input('filter_name');
             $media->order = $order;
             $media->save();
+            array_push($mimes, $media->mime);
             ImageOptimize::dispatch($media);
             $order++;
         }
+
+        $status->type = $this->mimeTypeCheck($mimes);
+        $status->save();
 
         NewStatusPipeline::dispatch($status);
 
@@ -253,5 +259,39 @@ class StatusController extends Controller
     {
         $allowed = ['public', 'unlisted', 'private'];
         return in_array($visibility, $allowed) ? $visibility : 'public';
+    }
+
+    public static function mimeTypeCheck($mimes)
+    {
+        $allowed = explode(',', config('pixelfed.media_types'));
+        $count = count($mimes);
+        $photos = 0;
+        $videos = 0;
+        foreach($mimes as $mime) {
+            if(in_array($mime, $allowed) == false) {
+                continue;
+            }
+            if(str_contains($mime, 'image/')) {
+                $photos++;
+            }
+            if(str_contains($mime, 'video/')) {
+                $videos++;
+            }
+        }
+        if($photos == 1 && $videos == 0) {
+            return 'photo';
+        }
+        if($videos == 1 && $photos == 0) {
+            return 'video';
+        }
+        if($photos > 1 && $videos == 0) {
+            return 'photo:album';
+        }
+        if($videos > 1 && $photos == 0) {
+            return 'video:album';
+        }
+        if($photos >= 1 && $videos >= 1) {
+            return 'photo:video:album';
+        }
     }
 }

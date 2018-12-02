@@ -25,7 +25,7 @@ class Status extends Model
         'photo:album',
         'video',
         'video:album',
-        'photo:video:album'
+        'photo:video:album',
         'share',
         'reply',
         'story',
