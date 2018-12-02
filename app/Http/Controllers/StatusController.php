@@ -115,7 +115,7 @@ class StatusController extends Controller
             $order++;
         }
 
-        $status->type = $this->mimeTypeCheck($mimes);
+        $status->type = (new self)::mimeTypeCheck($mimes);
         $status->save();
 
         NewStatusPipeline::dispatch($status);
