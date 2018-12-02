@@ -20,6 +20,19 @@ class Status extends Model
 
     protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id'];
 
+    const STATUS_TYPES = [
+        'photo',
+        'photo:album',
+        'video',
+        'video:album',
+        'share',
+        'reply',
+        'story',
+        'story:reply',
+        'story:reaction',
+        'story:live'
+    ];
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);
@@ -108,6 +121,18 @@ class Status extends Model
         return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
     }
 
+    public function likedBy()
+    {
+        return $this->hasManyThrough(
+            Profile::class,
+            Like::class,
+            'status_id',
+            'id',
+            'id',
+            'profile_id'
+        );
+    }
+
     public function comments()
     {
         return $this->hasMany(self::class, 'in_reply_to_id');
@@ -136,6 +161,18 @@ class Status extends Model
         $profile = Auth::user()->profile;
 
         return self::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
+    }
+
+    public function sharedBy()
+    {
+        return $this->hasManyThrough(
+            Profile::class,
+            Status::class,
+            'reblog_of_id',
+            'id',
+            'id',
+            'profile_id'
+        );
     }
 
     public function parent()
