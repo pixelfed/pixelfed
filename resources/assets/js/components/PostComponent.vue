@@ -1,8 +1,12 @@
 <style>
-
+#l-modal .modal-body,
+#s-modal .modal-body {
+  max-height: 70vh;
+  overflow-y: scroll;
+}
 </style>
 <template>
-<div class="postComponent">
+<div class="postComponent d-none">
   <div class="container px-0 mt-md-4">
     <div class="card card-md-rounded-0 status-container orientation-unknown">
       <div class="row mx-0">
@@ -91,7 +95,7 @@
               <div class="status-comment">
                 <p class="mb-1 read-more" style="overflow: hidden;">
                   <span class="font-weight-bold pr-1">{{statusUsername}}</span>
-                  <span class="comment-text" :id="status.id + '-status-readmore'"></span>
+                  <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                 </p>
                 <post-comments :user="this.user" :post-id="statusId" :post-username="statusUsername"></post-comments>
               </div>
@@ -124,8 +128,13 @@
                   </form>
                 </span>
               </div>
-              <div class="likes font-weight-bold mb-0">
-                <span class="like-count">{{status.favourites_count || 0}}</span> likes
+              <div class="reaction-counts font-weight-bold mb-0">
+                <span style="cursor:pointer;" v-on:click="likesModal">
+                  <span class="like-count">{{status.favourites_count || 0}}</span> likes
+                </span>
+                <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                  <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
+                </span>
               </div>
               <div class="timestamp">
                 <a v-bind:href="statusUrl" class="small text-muted">
@@ -150,6 +159,69 @@
       </div>
     </div>
   </div>
+  
+  <b-modal ref="likesModal" 
+    id="l-modal"
+    hide-footer 
+    centered 
+    title="Likes"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="user in likes">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
+        <div slot="no-more"></div>
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </div>
+  </b-modal>
+  <b-modal ref="sharesModal" 
+    id="s-modal"
+    hide-footer 
+    centered 
+    title="Shares"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="user in shares">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
+        <div slot="no-more"></div>
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </div>
+  </b-modal>
 </div>
 </template>
 
@@ -272,9 +344,14 @@ export default {
             status: {},
             media: {},
             user: {},
-            reactions: {}
+            reactions: {},
+            likes: {},
+            likesPage: 1,
+            shares: {},
+            sharesPage: 1,
           }
     },
+
     mounted() {
       let token = $('meta[name="csrf-token"]').attr('content');
       $('input[name="_token"]').each(function(k, v) {
@@ -282,11 +359,12 @@ export default {
           el.val(token);
       });
       this.fetchData();
-      //pixelfed.hydrateLikes();
       this.authCheck();
     },
+
     updated() {
       $('.carousel').carousel();
+
       if(this.reactions) {
         if(this.reactions.bookmarked == true) {
           $('.far.fa-bookmark').removeClass('far').addClass('fas text-warning');
@@ -297,6 +375,11 @@ export default {
         if(this.reactions.liked == true) {
           $('.far.fa-heart ').removeClass('far text-dark').addClass('fas text-danger');
         }
+      }
+
+      if(this.status) {
+        let title = this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes';
+        $('head title').text(title);
       }
     },
     methods: {
@@ -314,24 +397,36 @@ export default {
           $('.post-actions').removeClass('d-none');
         }
       },
+
       reportUrl() {
         return '/i/report?type=post&id=' + this.status.id;
       },
+
       timestampFormat() {
           let ts = new Date(this.status.created_at);
           return ts.toDateString() + ' ' + ts.toLocaleTimeString();
       },
+
       fetchData() {
-          let url = '/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId;
-          axios.get(url)
+          let loader = this.$loading.show({
+            'opacity': 0,
+            'background-color': '#f5f8fa'
+          });
+          axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId)
             .then(response => {
                 let self = this;
                 self.status = response.data.status;
                 self.user = response.data.user;
                 self.media = self.status.media_attachments;
                 self.reactions = response.data.reactions;
+                self.likes = response.data.likes;
+                self.shares = response.data.shares;
+                self.likesPage = 2;
+                self.sharesPage = 2;
                 this.buildPresenter();
                 this.showMuteBlock();
+                loader.hide();
+                $('.postComponent').removeClass('d-none');
             }).catch(error => {
               if(!error.response) {
                 $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
@@ -351,9 +446,58 @@ export default {
               }
             });
       },
+
       commentFocus() {
         $('.comment-form input[name="comment"]').focus();
       },
+
+      likesModal() {
+        if(this.status.favourites_count == 0 || $('body').hasClass('loggedIn') == false) {
+          return;
+        }
+        this.$refs.likesModal.show();
+      },
+
+      sharesModal() {
+        if(this.status.reblogs_count == 0 || $('body').hasClass('loggedIn') == false) {
+          return;
+        }
+        this.$refs.sharesModal.show();
+      },
+
+      infiniteLikesHandler($state) {
+        let api = '/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId;
+        axios.get(api, {
+          params: {
+            page: this.likesPage,
+          },
+        }).then(({ data }) => {
+          if (data.data.length) {
+            this.likesPage += 1;
+            this.likes.push(...data.data);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        });
+      },
+
+      infiniteSharesHandler($state) {
+        axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId, {
+          params: {
+            page: this.sharesPage,
+          },
+        }).then(({ data }) => {
+          if (data.data.length) {
+            this.sharesPage += 1;
+            this.shares.push(...data.data);
+            $state.loaded();
+          } else {
+            $state.complete();
+          }
+        });
+      },
+
       buildPresenter() {
         let container = $('.postPresenterContainer');
         let status = this.status;
@@ -363,8 +507,6 @@ export default {
             let el = $(v);
             el.val(status.account.id);
         });
-
-        $('.status-comment .comment-text').html(status.content);
 
         if(container.children().length != 0) {
           return;
