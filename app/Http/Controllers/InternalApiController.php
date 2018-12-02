@@ -53,6 +53,7 @@ class InternalApiController extends Controller
         $medias = $request->input('media');
         $attachments = [];
         $status = new Status;
+        $mimes = [];
 
         foreach($medias as $k => $media) {
             $m = Media::findOrFail($media['id']);
@@ -69,6 +70,7 @@ class InternalApiController extends Controller
             }
             $m->save();
             $attachments[] = $m;
+            array_push($mimes, $m->mime);
         }
 
         $status->caption = strip_tags($request->caption);
@@ -84,6 +86,7 @@ class InternalApiController extends Controller
 
         $status->visibility = $visibility;
         $status->scope = $visibility;
+        $status->type = StatusController::mimeTypeCheck($mimes);
         $status->save();
 
         NewStatusPipeline::dispatch($status);
@@ -96,6 +99,7 @@ class InternalApiController extends Controller
         $this->validate($request, [
           'page' => 'nullable|min:1|max:3',
         ]);
+        
         $profile = Auth::user()->profile;
         $timeago = Carbon::now()->subMonths(6);
         $notifications = Notification::with('actor')
@@ -148,8 +152,7 @@ class InternalApiController extends Controller
             ->get();
 
         $posts = Status::select('id', 'caption', 'profile_id')
-              ->whereNull('in_reply_to_id')
-              ->whereNull('reblog_of_id')
+              ->whereHas('media')
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
@@ -233,8 +236,7 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $posts = Status::select('id', 'caption', 'profile_id')
-              ->whereNull('in_reply_to_id')
-              ->whereNull('reblog_of_id')
+              ->whereHas('media')
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
