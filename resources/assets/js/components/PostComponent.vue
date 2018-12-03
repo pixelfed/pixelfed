@@ -20,26 +20,21 @@
           </div>
         </a>
         <div class="float-right">
-          <div class="post-actions d-none">
+          <div class="post-actions">
           <div class="dropdown">
             <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
             <span class="fas fa-ellipsis-v text-muted"></span>
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                <div class="dropdown-divider"></div>
-                <form method="post" action="/i/mute">
-                  <input type="hidden" name="_token" value="">            
-                  <input type="hidden" name="type" value="user">
-                  <input type="hidden" name="item" value="">
-                  <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Mute this user</button>
-                </form>
-                <form method="post" action="/i/block">
-                  <input type="hidden" name="_token" value="">            
-                  <input type="hidden" name="type" value="user">
-                  <input type="hidden" name="item" value="">
-                  <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Block this user</button>
-                </form>
+                <span class="menu-user d-none">
+                  <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                  <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
+                  <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
+                </span>
+                <span class="menu-author d-none">
+                  <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                  <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
+                </span>
               </div>
             </div>
           </div>
@@ -65,26 +60,21 @@
               </div>
             </a>
               <div class="float-right">
-                <div class="post-actions d-none">
+                <div class="post-actions">
                 <div class="dropdown">
                   <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
                   <span class="fas fa-ellipsis-v text-muted"></span>
                   </button>
                       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                        <div class="dropdown-divider"></div>
-                        <form method="post" action="/i/mute">
-                          <input type="hidden" name="_token" value="">            
-                          <input type="hidden" name="type" value="user">
-                          <input type="hidden" name="item" value="">
-                          <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Mute this user</button>
-                        </form>
-                        <form method="post" action="/i/block">
-                          <input type="hidden" name="_token" value="">            
-                          <input type="hidden" name="type" value="user">
-                          <input type="hidden" name="item" value="">
-                          <button type="submit" class="dropdown-item btn btn-link font-weight-bold">Block this user</button>
-                        </form>
+                        <span class="menu-user d-none">
+                          <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                          <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
+                          <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
+                        </span>
+                        <span class="menu-author d-none">
+                          <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                          <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
+                        </span>
                       </div>
                   </div>
                 </div>
@@ -102,31 +92,10 @@
             </div>
             <div class="card-body flex-grow-0 py-1">
               <div class="reactions my-1">
-                <form class="d-inline-flex pr-3 like-form" method="post" action="/i/like" style="display: inline;" :data-id="statusId" data-action="like">
-                  <input type="hidden" name="_token" value="">
-                  <input type="hidden" name="item" :value="statusId">
-                  <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Like!">
-                    <h3 class="status-heart m-0 far fa-heart text-dark"></h3>
-                  </button>
-                </form>
+                <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0' : 'far fa-heart pr-3 m-0 like-btn']" title="Like" v-on:click="likeStatus"></h3>
                 <h3 class="far fa-comment pr-3 m-0" title="Comment" v-on:click="commentFocus"></h3>
-                <form class="d-inline-flex share-form pr-3" method="post" action="/i/share" style="display: inline;" data-id="11todo" data-action="share" data-count="status.favourite_count">
-                  <input type="hidden" name="_token" value="">
-                  <input type="hidden" name="item" :value="statusId">
-                  <button class="btn btn-link text-dark p-0" type="submit" title="Share">
-                    <h3 class="m-0 far fa-share-square"></h3>
-                  </button>
-                </form>
-
-                <span class="float-right">
-                  <form class="d-inline-flex" method="post" action="/i/bookmark" style="display: inline;" data-id="#" data-action="bookmark" onclick="this.preventDefault()">
-                    <input type="hidden" name="_token" value="">
-                    <input type="hidden" name="item" :value="statusId">
-                    <button class="btn btn-link text-dark p-0 border-0" type="submit" title="Save">
-                      <h3 class="m-0 far fa-bookmark"></h3>
-                    </button>
-                  </form>
-                </span>
+                <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary' : 'far fa-share-square pr-3 m-0 share-btn']" title="Share" v-on:click="shareStatus"></h3>
+                <h3 v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right' : 'far fa-bookmark m-0 float-right']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
               </div>
               <div class="reaction-counts font-weight-bold mb-0">
                 <span style="cursor:pointer;" v-on:click="likesModal">
@@ -150,7 +119,6 @@
             <form class="comment-form d-none" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
               <input type="hidden" name="_token" value="">
               <input type="hidden" name="item" :value="statusId">
-
               <input class="form-control" name="comment" placeholder="Add a comment..." autocomplete="off">
             </form>
           </div>
@@ -159,7 +127,7 @@
       </div>
     </div>
   </div>
-  
+
   <b-modal ref="likesModal" 
     id="l-modal"
     hide-footer 
@@ -228,6 +196,7 @@
 <script>
 
 pixelfed.postComponent = {};
+
 pixelfed.presenter = {
   show: {
     image: function(container, media) {
@@ -344,7 +313,10 @@ export default {
             status: {},
             media: {},
             user: {},
-            reactions: {},
+            reactions: {
+              liked: false,
+              shared: false
+            },
             likes: {},
             likesPage: 1,
             shares: {},
@@ -353,13 +325,13 @@ export default {
     },
 
     mounted() {
+      this.fetchData();
+      this.authCheck();
       let token = $('meta[name="csrf-token"]').attr('content');
       $('input[name="_token"]').each(function(k, v) {
           let el = $(v);
           el.val(token);
       });
-      this.fetchData();
-      this.authCheck();
     },
 
     updated() {
@@ -390,16 +362,23 @@ export default {
           $('.comment-form').removeClass('d-none');
         }
       },
+
       showMuteBlock() {
         let sid = this.status.account.id;
         let uid = this.user.id;
-        if(sid != uid) {
-          $('.post-actions').removeClass('d-none');
+        if(sid == uid) {
+          $('.post-actions .menu-author').removeClass('d-none');
+        } else {
+          $('.post-actions .menu-user').removeClass('d-none');
         }
       },
 
       reportUrl() {
         return '/i/report?type=post&id=' + this.status.id;
+      },
+
+      editUrl() {
+        return this.status.url + '/edit';
       },
 
       timestampFormat() {
@@ -511,17 +490,27 @@ export default {
         if(container.children().length != 0) {
           return;
         }
-        switch(this.statusTemplate) {
+
+        let template = this.status.pf_type ? this.status.pf_type : this.statusTemplate;
+        switch(template) {
           case 'image':
+          case 'photo':
             pixelfed.presenter.show.image(container, media);
           break;
 
           case 'album':
+          case 'photo:album':
             pixelfed.presenter.show.imageAlbum(container, media, this.status);
           break;
 
           case 'video':
             pixelfed.presenter.show.video(container, media);
+          break;
+
+          case 'video:album':
+          case 'photo:video:album':
+              $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('We cannot load this post properly. We\'re working on a fix!');
+                return;
           break;
 
           default:
@@ -537,6 +526,107 @@ export default {
         $('.postPresenterLoader').addClass('d-none');
         $('.postPresenterContainer').removeClass('d-none');
       },
+
+      likeStatus(event) {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/like', {
+          item: this.status.id
+        }).then(res => {
+          this.status.favourites_count = res.data.count;
+          if(this.reactions.liked == true) {
+            this.reactions.liked = false;
+          } else {
+            this.reactions.liked = true;
+          }
+        }).catch(err => {
+          swal('Error', 'Something went wrong, please try again later.', 'error');
+        });
+      },
+
+      shareStatus() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/share', {
+          item: this.status.id
+        }).then(res => {
+          this.status.reblogs_count = res.data.count;
+          if(this.reactions.shared == true) {
+            this.reactions.shared = false;
+          } else {
+            this.reactions.shared = true;
+          }
+        }).catch(err => {
+          swal('Error', 'Something went wrong, please try again later.', 'error');
+        });
+      },
+
+      bookmarkStatus() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/bookmark', {
+          item: this.status.id
+        }).then(res => {
+          if(this.reactions.bookmarked == true) {
+            this.reactions.bookmarked = false;
+          } else {
+            this.reactions.bookmarked = true;
+          }
+        }).catch(err => {
+          swal('Error', 'Something went wrong, please try again later.', 'error');
+        });
+      },
+
+      muteProfile() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/mute', {
+          type: 'user',
+          item: this.status.account.id
+        }).then(res => {
+          swal('Success', 'You have successfully muted ' + this.status.account.acct, 'success');
+        }).catch(err => {
+          swal('Error', 'Something went wrong. Please try again later.', 'error');
+        });
+      },
+
+      blockProfile() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/block', {
+          type: 'user',
+          item: this.status.account.id
+        }).then(res => {
+          swal('Success', 'You have successfully blocked ' + this.status.account.acct, 'success');
+        }).catch(err => {
+          swal('Error', 'Something went wrong. Please try again later.', 'error');
+        });
+      },
+
+      deletePost() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/delete', {
+          type: 'status',
+          item: this.status.id
+        }).then(res => {
+          swal('Success', 'You have successfully deleted this post', 'success');
+        }).catch(err => {
+          swal('Error', 'Something went wrong. Please try again later.', 'error');
+        });
+      }
     }
 }
 </script>
