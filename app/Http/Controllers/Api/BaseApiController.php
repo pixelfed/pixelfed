@@ -8,9 +8,15 @@ use App\Http\Controllers\{
     AvatarController
 };
 use Auth, Cache, URL;
-use App\{Avatar,Media,Profile};
+use App\{
+    Avatar,
+    Notification,
+    Media,
+    Profile
+};
 use App\Transformer\Api\{
     AccountTransformer,
+    NotificationTransformer,
     MediaTransformer,
     StatusTransformer
 };
@@ -33,6 +39,15 @@ class BaseApiController extends Controller
         $this->middleware('auth');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
+    }
+
+    public function notification(Request $request, $id)
+    {
+        $notification = Notification::findOrFail($id);
+        $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
     public function accounts(Request $request, $id)
@@ -173,6 +188,11 @@ class BaseApiController extends Controller
 
         $photo = $request->file('file');
 
+        $mimes = explode(',', config('pixelfed.media_types'));
+        if(in_array($photo->getMimeType(), $mimes) == false) {
+            return;
+        }
+
         $storagePath = "public/m/{$monthHash}/{$userHash}";
         $path = $photo->store($storagePath);
         $hash = \hash_file('sha256', $photo);
@@ -183,8 +203,8 @@ class BaseApiController extends Controller
         $media->user_id = $user->id;
         $media->media_path = $path;
         $media->original_sha256 = $hash;
-        $media->size = $photo->getClientSize();
-        $media->mime = $photo->getClientMimeType();
+        $media->size = $photo->getSize();
+        $media->mime = $photo->getMimeType();
         $media->filter_class = null;
         $media->filter_name = null;
         $media->save();

@@ -93,8 +93,15 @@ class StatusController extends Controller
         $photos = $request->file('photo');
         $order = 1;
         $mimes = [];
+        $medias = 0;
 
         foreach ($photos as $k => $v) {
+
+            $allowedMimes = explode(',', config('pixelfed.media_types'));
+            if(in_array($v->getMimeType(), $allowedMimes) == false) {
+                continue;
+            }
+
             $storagePath = "public/m/{$monthHash}/{$userHash}";
             $path = $v->store($storagePath);
             $hash = \hash_file('sha256', $v);
@@ -104,8 +111,8 @@ class StatusController extends Controller
             $media->user_id = $user->id;
             $media->media_path = $path;
             $media->original_sha256 = $hash;
-            $media->size = $v->getClientSize();
-            $media->mime = $v->getClientMimeType();
+            $media->size = $v->getSize();
+            $media->mime = $v->getMimeType();
             $media->filter_class = $request->input('filter_class');
             $media->filter_name = $request->input('filter_name');
             $media->order = $order;
@@ -113,8 +120,13 @@ class StatusController extends Controller
             array_push($mimes, $media->mime);
             ImageOptimize::dispatch($media);
             $order++;
+            $medias++;
         }
 
+        if($medias == 0) {
+            $status->delete();
+            return;
+        }
         $status->type = (new self)::mimeTypeCheck($mimes);
         $status->save();
 
