@@ -7,7 +7,8 @@
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "postinstall": "opencollective-postinstall"
     },
     "devDependencies": {
         "axios": "^0.18",
@@ -24,6 +25,7 @@
         "filesize": "^3.6.1",
         "infinite-scroll": "^3.0.4",
         "laravel-echo": "^1.4.0",
+        "opencollective-postinstall": "^2.0.1",
         "plyr": "^3.4.7",
         "pusher-js": "^4.2.2",
         "readmore-js": "^2.2.1",
@@ -31,6 +33,11 @@
         "sweetalert": "^2.1.0",
         "twitter-text": "^2.0.5",
         "vue-infinite-loading": "^2.4.3",
-        "vue-loading-overlay": "^3.1.0"
+        "vue-loading-overlay": "^3.1.0",
+        "opencollective": "^1.0.3"
+    },
+    "collective": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/pixelfed-528"
     }
 }
