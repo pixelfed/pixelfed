@@ -3,6 +3,7 @@
 namespace App;
 
 use Auth, Cache;
+use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Storage;
@@ -18,7 +19,21 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id'];
+    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id'];
+
+    const STATUS_TYPES = [
+        'photo',
+        'photo:album',
+        'video',
+        'video:album',
+        'photo:video:album',
+        'share',
+        'reply',
+        'story',
+        'story:reply',
+        'story:reaction',
+        'story:live'
+    ];
 
     public function profile()
     {
@@ -35,9 +50,11 @@ class Status extends Model
         return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
     }
 
+    // todo: deprecate after 0.6.0
     public function viewType()
     {
-        return Cache::remember('status:view-type:'.$this->id, 40320, function() {
+        return Cache::remember('status:view-type:'.$this->id, 10080, function() {
+            $this->setType();
             $media = $this->firstMedia();
             $mime = explode('/', $media->mime)[0];
             $count = $this->media()->count();
@@ -47,6 +64,20 @@ class Status extends Model
             }
             return $type;
         });
+    }
+
+    // todo: deprecate after 0.6.0
+    public function setType()
+    {
+        if(in_array($this->type, self::STATUS_TYPES)) {
+            return;
+        }
+        $mimes = $this->media->pluck('mime')->toArray();
+        $type = StatusController::mimeTypeCheck($mimes);
+        if($type) {
+            $this->type = $type;
+            $this->save();
+        }
     }
 
     public function thumb($showNsfw = false)
@@ -108,6 +139,18 @@ class Status extends Model
         return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
     }
 
+    public function likedBy()
+    {
+        return $this->hasManyThrough(
+            Profile::class,
+            Like::class,
+            'status_id',
+            'id',
+            'id',
+            'profile_id'
+        );
+    }
+
     public function comments()
     {
         return $this->hasMany(self::class, 'in_reply_to_id');
@@ -136,6 +179,18 @@ class Status extends Model
         $profile = Auth::user()->profile;
 
         return self::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
+    }
+
+    public function sharedBy()
+    {
+        return $this->hasManyThrough(
+            Profile::class,
+            Status::class,
+            'reblog_of_id',
+            'id',
+            'id',
+            'profile_id'
+        );
     }
 
     public function parent()

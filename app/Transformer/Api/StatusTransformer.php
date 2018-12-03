@@ -17,29 +17,31 @@ class StatusTransformer extends Fractal\TransformerAbstract
     public function transform(Status $status)
     {
         return [
-            'id'                     => $status->id,
-            'uri'                    => $status->url(),
-            'url'                    => $status->url(),
-            'in_reply_to_id'         => $status->in_reply_to_id,
-            'in_reply_to_account_id' => $status->in_reply_to_profile_id,
+            'id'                        => $status->id,
+            'uri'                       => $status->url(),
+            'url'                       => $status->url(),
+            'in_reply_to_id'            => $status->in_reply_to_id,
+            'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
+            'reblog'                    => $status->reblog_of_id || $status->in_reply_to_id ? $this->transform($status->parent()) : null,
+            'content'                   => "$status->rendered",
+            'created_at'                => $status->created_at->format('c'),
+            'emojis'                    => [],
+            'reblogs_count'             => $status->shares()->count(),
+            'favourites_count'          => $status->likes()->count(),
+            'reblogged'                 => $status->shared(),
+            'favourited'                => $status->liked(),
+            'muted'                     => null,
+            'sensitive'                 => (bool) $status->is_nsfw,
+            'spoiler_text'              => $status->cw_summary,
+            'visibility'                => $status->visibility,
+            'application'               => [
+                'name'      => 'web',
+                'website'   => null
+             ],
+            'language'                  => null,
+            'pinned'                    => null,
 
-            // TODO: fixme
-            'reblog' => null,
-
-            'content'          => "$status->rendered",
-            'created_at'       => $status->created_at->format('c'),
-            'emojis'           => [],
-            'reblogs_count'    => $status->shares()->count(),
-            'favourites_count' => $status->likes()->count(),
-            'reblogged'        => $status->shared(),
-            'favourited'       => $status->liked(),
-            'muted'            => null,
-            'sensitive'        => (bool) $status->is_nsfw,
-            'spoiler_text'     => '',
-            'visibility'       => $status->visibility,
-            'application'      => null,
-            'language'         => null,
-            'pinned'           => null,
+            'pf_type'          => $status->type,
         ];
     }
 
