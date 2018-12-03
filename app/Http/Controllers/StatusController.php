@@ -142,7 +142,6 @@ class StatusController extends Controller
         $this->authCheck();
 
         $this->validate($request, [
-          'type'  => 'required|string',
           'item'  => 'required|integer|min:1',
         ]);
 
