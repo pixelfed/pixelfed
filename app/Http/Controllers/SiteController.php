@@ -68,7 +68,14 @@ class SiteController extends Controller
 
     public function about()
     {
-        return view('site.about');
+        $stats = Cache::remember('site:about:stats', 1440, function() {
+            return [
+                'posts' => Status::whereLocal(true)->count(),
+                'users' => User::count(),
+                'admin' => User::whereIsAdmin(true)->first()
+            ];
+        });
+        return view('site.about', compact('stats'));
     }
 
     public function language()
