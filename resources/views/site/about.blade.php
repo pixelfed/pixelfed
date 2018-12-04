@@ -9,7 +9,7 @@
 </div>
 <div class="bg-white">
 	<div class="container d-flex justify-content-center">
-	  <div class="card" style="width:500px;margin-top:-30px;">
+	  <div class="card mr-3" style="width:500px;margin-top:-30px;">
 	    <div class="card-header d-inline-flex align-items-center bg-white">
 	        <img src="/storage/avatars/default.png" width="32px" height="32px" style="border-radius: 32px; border: 1px solid #ccc">
 	        <span class="username font-weight-bold pl-2 text-dark">
@@ -32,6 +32,34 @@
 	        </p>
 	      </div>
 	    </div>
+	  </div>
+	  <div style="width:300px;margin-top:-30px;text-align: center;">
+		  <div class="card border-left-blue mb-3">
+		    <div class="card-body">
+		    	<p class="h2 mb-0">{{$stats['posts']}}</p>
+		    	<p class="font-weight-bold mb-0">Posts</p>
+		    </div>
+		  </div>
+
+		  <div class="card border-left-blue mb-3">
+		    <div class="card-body">
+		    	<p class="h2 mb-0">{{$stats['users']}}</p>
+		    	<p class="font-weight-bold mb-0">Users</p>
+		    </div>
+		  </div>
+
+		  @if($stats['admin'])
+		  <div class="card border-left-blue mb-3">
+		    <div class="card-body">
+		    	<p class="h2 mb-0">
+		    		<a href="{{$stats['admin']->url()}}">
+		    		&commat;{{$stats['admin']->username}}
+		    		</a>
+		    	</p>
+		    	<p class="font-weight-bold mb-0">Instance Admin</p>
+		    </div>
+		  </div>
+		  @endif
 	  </div>
 	</div>
 	<div class="container py-5">
