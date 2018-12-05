@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Cache;
 use App\Report;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -47,6 +48,7 @@ trait AdminReportController
                 break;
 
             case 'cw':
+                Cache::forget('status:thumb:'.$item->id);
                 $item->is_nsfw = true;
                 $item->save();
                 $report->nsfw = true;
