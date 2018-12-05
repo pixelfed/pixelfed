@@ -199,7 +199,7 @@ pixelfed.postComponent = {};
 
 pixelfed.presenter = {
   show: {
-    image: function(container, media) {
+    image: function(container, media, status) {
       $('.status-container')
         .removeClass('orientation-unknown')
         .addClass('orientation-' + media[0]['orientation']);
@@ -209,10 +209,21 @@ pixelfed.presenter = {
       el.attr('src', media[0]['url']);
       el.attr('title', media[0]['description']);
       wrapper.append(el);
-      container.append(wrapper);
+      if(status.sensitive == true) {
+        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
+        let cw = $('<details>').addClass('details-animated');
+        let summary = $('<summary>');
+        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
+        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
+        summary.append(text, direction);
+        cw.append(summary, wrapper);
+        container.append(cw);
+      } else {
+        container.append(wrapper);
+      }
     },
 
-    video: function(container, media) {
+    video: function(container, media, status) {
       let wrapper = $('<div>');
       wrapper.addClass('');
       let el = $('<video>');
@@ -222,7 +233,18 @@ pixelfed.presenter = {
       el.attr('src', media[0]['url']);
       el.attr('title', media[0]['description']);
       wrapper.append(el);
-      container.append(wrapper);
+      if(status.sensitive == true) {
+        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
+        let cw = $('<details>').addClass('details-animated');
+        let summary = $('<summary>');
+        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
+        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
+        summary.append(text, direction);
+        cw.append(summary, wrapper);
+        container.append(cw);
+      } else {
+        container.append(wrapper);
+      }
       
       const player = new Plyr(el, {
         controls: [
@@ -301,7 +323,18 @@ pixelfed.presenter = {
         inner.append(carouselItem);
       }
       wrapper.append(indicators, inner, prev, next);
-      container.append(wrapper);
+      if(status.sensitive == true) {
+        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
+        let cw = $('<details>').addClass('details-animated');
+        let summary = $('<summary>');
+        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
+        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
+        summary.append(text, direction);
+        cw.append(summary, wrapper);
+        container.append(cw);
+      } else {
+        container.append(wrapper);
+      }
     }
   }
 };
@@ -495,7 +528,7 @@ export default {
         switch(template) {
           case 'image':
           case 'photo':
-            pixelfed.presenter.show.image(container, media);
+            pixelfed.presenter.show.image(container, media, this.status);
           break;
 
           case 'album':
@@ -504,7 +537,7 @@ export default {
           break;
 
           case 'video':
-            pixelfed.presenter.show.video(container, media);
+            pixelfed.presenter.show.video(container, media, this.status);
           break;
 
           case 'video:album':
