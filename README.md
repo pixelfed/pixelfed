@@ -1,4 +1,6 @@
 # PixelFed: Federated Image Sharing
+[![Backers on Open Collective](https://opencollective.com/pixelfed-528/backers/badge.svg)](#backers)
+ [![Sponsors on Open Collective](https://opencollective.com/pixelfed-528/sponsors/badge.svg)](#sponsors) 
 
 PixelFed is a federated social image sharing platform, similar to Instagram.
 Federation is done using the [ActivityPub](https://activitypub.rocks/) protocol,
@@ -73,3 +75,33 @@ Matrix](https://matrix.to/#/#freenode_#pixelfed:matrix.org)
 
 The lead maintainer is on Patreon! You can become a Patron at
 https://www.patreon.com/dansup
+
+### Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/pixelfed/pixelfed/graphs/contributors"><img src="https://opencollective.com/pixelfed-528/contributors.svg?width=890&button=false" /></a>
+
+
+### Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/pixelfed-528#backer)]
+
+<a href="https://opencollective.com/pixelfed-528#backers" target="_blank"><img src="https://opencollective.com/pixelfed-528/backers.svg?width=890"></a>
+
+
+### Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/pixelfed-528#sponsor)]
+
+<a href="https://opencollective.com/pixelfed-528/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/5/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/6/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/7/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/8/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/pixelfed-528/sponsor/9/website" target="_blank"><img src="https://opencollective.com/pixelfed-528/sponsor/9/avatar.svg"></a>
+
+
