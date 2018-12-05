@@ -21,7 +21,7 @@ return [
     'alpha_dash'           => ':attribute darf nur Buchstaben, Zahlen, und Bindestriche beinhalten.',
     'alpha_num'            => ':attribute darf nur Buchstaben und Zahlen beinhalten.',
     'array'                => ':attribute muss ein Array sein.',
-    'before'               => ':attribute muss vor dem :date fallen.',
+    'before'               => ':attribute muss ein Datum vor dem :date sein.',
     'before_or_equal'      => ':attribute muss auf den :date oder davor fallen.',
     'between'              => [
         'numeric' => ':attribute muss eine Zahl zwischen :min bis :max sein.',
