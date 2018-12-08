@@ -161,6 +161,7 @@ class PublicApiController extends Controller
         switch ($status->scope) {
             case 'public':
             case 'unlisted':
+            case 'private':
                 $user = Auth::check() ? Auth::user() : false;
                 if($user && $profile->is_private) {
                     $follows = Follower::whereProfileId($user->profile->id)
@@ -169,15 +170,6 @@ class PublicApiController extends Controller
                     if($follows == false && $profile->id !== $user->profile->id) {
                         abort(404);
                     }
-                }
-                break;
-
-            case 'private':
-                $follows = Follower::whereProfileId($user->profile->id)
-                    ->whereFollowingId($profile->id)
-                    ->exists();
-                if($follows == false && $profile->id !== $user->profile->id) {
-                    abort(404);
                 }
                 break;
 
