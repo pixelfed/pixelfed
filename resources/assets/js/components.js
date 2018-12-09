@@ -2,10 +2,12 @@ window.Vue = require('vue');
 import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
+import VueTimeago from 'vue-timeago'
 
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
+Vue.use(VueTimeago);
 
 pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {
@@ -79,6 +81,11 @@ Vue.component(
 Vue.component(
     'post-comments',
     require('./components/PostComments.vue')
+);
+
+Vue.component(
+    'timeline',
+    require('./components/Timeline.vue')
 );
 
 Vue.component(
