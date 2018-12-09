@@ -288,4 +288,19 @@ class InternalApiController extends Controller
 
         return;
     }
+
+    public function statusReplies(Request $request, int $id)
+    {
+        $parent = Status::findOrFail($id);
+
+        $children = Status::whereInReplyToId($parent->id)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        $resource = new Fractal\Resource\Collection($children, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
 }
