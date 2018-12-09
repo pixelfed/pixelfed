@@ -23,6 +23,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'orientation' => $media->orientation,
             'filter_name' => $media->filter_name,
             'filter_class' => $media->filter_class,
+            'mime'        => $media->mime,
         ];
     }
 }
