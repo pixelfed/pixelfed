@@ -25,6 +25,7 @@
         "filesize": "^3.6.1",
         "infinite-scroll": "^3.0.4",
         "laravel-echo": "^1.4.0",
+        "opencollective": "^1.0.3",
         "opencollective-postinstall": "^2.0.1",
         "plyr": "^3.4.7",
         "pusher-js": "^4.2.2",
@@ -34,7 +35,7 @@
         "twitter-text": "^2.0.5",
         "vue-infinite-loading": "^2.4.3",
         "vue-loading-overlay": "^3.1.0",
-        "opencollective": "^1.0.3"
+        "vue-timeago": "^5.0.0"
     },
     "collective": {
         "type": "opencollective",
