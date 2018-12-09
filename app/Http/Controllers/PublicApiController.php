@@ -12,6 +12,7 @@ use App\{
     Profile,
     StatusHashtag,
     Status,
+    UserFilter
 };
 use Auth,Cache;
 use Carbon\Carbon;
@@ -193,5 +194,128 @@ class PublicApiController extends Controller
                 abort(404);
                 break;
         }
+    }
+
+    public function publicTimelineApi(Request $request)
+    {
+        if(!Auth::check()) {
+            return abort(403);
+        }
+
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer',
+          'max_id'      => 'nullable|integer',
+          'limit'       => 'nullable|integer|max:20'
+        ]);
+
+        $page = $request->input('page');
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit') ?? 10;
+
+        // TODO: Use redis for timelines
+        // $timeline = Timeline::build()->local();
+        $pid = Auth::user()->profile->id;
+
+        $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+        $filters = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+        $filtered = array_merge($private->toArray(), $filters);
+
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $timeline = Status::whereHas('media')
+                      ->where('id', $dir, $id)
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
+                      ->withCount(['comments', 'likes'])
+                      ->orderBy('created_at', 'desc')
+                      ->limit($limit)
+                      ->get();
+        } else {
+            $timeline = Status::whereHas('media')
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
+                      ->withCount(['comments', 'likes'])
+                      ->orderBy('created_at', 'desc')
+                      ->simplePaginate($limit);
+        }
+
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+
+    }
+
+    public function homeTimelineApi(Request $request)
+    {
+        if(!Auth::check()) {
+            return abort(403);
+        }
+
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer',
+          'max_id'      => 'nullable|integer',
+          'limit'       => 'nullable|integer|max:20'
+        ]);
+
+        $page = $request->input('page');
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit') ?? 10;
+
+        // TODO: Use redis for timelines
+        // $timeline = Timeline::build()->local();
+        $pid = Auth::user()->profile->id;
+
+        $following = Follower::whereProfileId($pid)->pluck('following_id');
+        $following->push($pid)->toArray();
+
+        $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+        $filters = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+        $filtered = array_merge($private->toArray(), $filters);
+
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $timeline = Status::whereHas('media')
+                      ->where('id', $dir, $id)
+                      ->whereIn('profile_id', $following)
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
+                      ->withCount(['comments', 'likes'])
+                      ->orderBy('created_at', 'desc')
+                      ->limit($limit)
+                      ->get();
+        } else {
+            $timeline = Status::whereHas('media')
+                      ->whereIn('profile_id', $following)
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
+                      ->withCount(['comments', 'likes'])
+                      ->orderBy('created_at', 'desc')
+                      ->simplePaginate($limit);
+        }
+
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+
     }
 }
