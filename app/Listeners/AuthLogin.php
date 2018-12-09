@@ -30,22 +30,29 @@ class AuthLogin
                 ]);
             });
         }
-        $this->warmCache($user);
-    }
+        
+        if(empty($user->profile)) {
+            DB::transaction(function() use($user) {
+                $profile = new Profile();
+                $profile->user_id = $user->id;
+                $profile->username = $user->username;
+                $profile->name = $user->name;
+                $pkiConfig = [
+                    'digest_alg'       => 'sha512',
+                    'private_key_bits' => 2048,
+                    'private_key_type' => OPENSSL_KEYTYPE_RSA,
+                ];
+                $pki = openssl_pkey_new($pkiConfig);
+                openssl_pkey_export($pki, $pki_private);
+                $pki_public = openssl_pkey_get_details($pki);
+                $pki_public = $pki_public['key'];
 
-    public function warmCache($user)
-    {
-        $pid = $user->profile->id;
+                $profile->private_key = $pki_private;
+                $profile->public_key = $pki_public;
+                $profile->save();
 
-        Cache::remember('feature:discover:following:'.$pid, 10080, function() use ($pid) {
-            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
-        });
-
-        Cache::remember("user:filter:list:$pid", 10080, function() use($pid) {
-            return UserFilter::whereUserId($pid)
-            ->whereFilterableType('App\Profile')
-            ->whereIn('filter_type', ['mute', 'block'])
-            ->pluck('filterable_id')->toArray();
-        });
+                CreateAvatar::dispatch($profile);
+            });
+        }
     }
 }
