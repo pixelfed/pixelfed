@@ -1,0 +1,449 @@
+<template>
+<div class="container" style="">
+	<div class="row">
+		<div class="col-md-8 col-lg-8 pt-4 px-0 my-3">
+			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
+
+				<div class="card-header d-inline-flex align-items-center bg-white">
+					<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
+					<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
+						{{status.account.username}}
+					</a>
+					<div class="text-right" style="flex-grow:1;">
+						<div class="dropdown">
+							<button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+								<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
+							</button>
+							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+								<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
+								<span v-bind:class="[statusOwner(status) ? 'd-none' : '']">
+									<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
+								</span>
+								<span  v-bind:class="[statusOwner(status) ? '' : 'd-none']">
+									<a class="dropdown-item font-weight-bold" :href="editUrl(status)">Edit</a>
+									<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div v-if="status.pf_type === 'photo'">
+					<div v-if="status.sensitive == true">
+						<details class="details-animated">
+							<summary>
+								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
+								<p class="font-weight-light">(click to show)</p>
+							</summary>
+							<a class="max-hide-overflow" :href="status.url">
+								<img class="card-img-top" :src="status.media_attachments[0].url">
+							</a>
+						</details>
+					</div>
+					<div v-else>
+						<div>
+							<img class="card-img-top" :src="status.media_attachments[0].url">
+						</div>
+					</div>
+				</div>
+
+				<div v-else-if="status.pf_type === 'video'">
+					<div v-if="status.sensitive == true">
+						<details class="details-animated">
+							<summary>
+								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
+								<p class="font-weight-light">(click to show)</p>
+							</summary>
+							<a class="max-hide-overflow" :href="status.url">
+								<img class="card-img-top" :src="status.media_attachments[0].url">
+							</a>
+						</details>
+						<details class="details-animated">
+							<summary>
+								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
+								<p class="font-weight-light">(click to show)</p>
+							</summary>
+							<div class="embed-responsive embed-responsive-16by9">
+								<video class="video" preload="none" controls loop>
+									<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
+								</video>
+							</div>
+						</details>
+					</div>
+					<div v-else>
+						<div class="embed-responsive embed-responsive-16by9">
+							<video class="video" preload="none" controls loop>
+								<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
+							</video>
+						</div>
+					</div>
+				</div>
+
+				<div v-else-if="status.pf_type === 'photo:album'">
+					<b-carousel id="carousel1"
+						style="text-shadow: 1px 1px 2px #333;"
+						controls
+						indicators
+						background="#ffffff"
+						:interval="4000"
+					>
+						<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
+							<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
+						</b-carousel-slide>
+					</b-carousel>
+				</div>
+
+				<div v-else>
+					<p class="text-center p-0">No preview for this post</p>
+				</div>
+
+				<div class="card-body">
+					<div class="reactions my-1">
+						<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
+						<h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+						<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+					</div>
+
+					<div class="likes font-weight-bold">
+						<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
+					</div>
+					<div class="caption">
+						<p class="mb-2 read-more" style="overflow: hidden;">
+							<span class="username font-weight-bold">
+								<bdi><a class="text-dark" :href="status.account.url">{{status.account.username}}</a></bdi>
+							</span>
+							<span v-html="status.content"></span>
+						</p>
+					</div>
+					<div class="comments">
+					</div>
+					<div class="timestamp pt-1">
+						<p class="small text-uppercase mb-0">
+							<a :href="status.url" class="text-muted">
+								<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+							</a>
+						</p>
+					</div>
+				</div>
+
+				<div class="card-footer bg-white d-none">
+					<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
+						<input type="hidden" name="item" value="">
+						<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-lg-4 pt-4 my-3">
+			<div class="media d-flex align-items-center mb-4">
+				<a :href="profile.url">
+					<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar" alt="avatar" width="64px">
+				</a>
+				<div class="media-body">
+					<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url">&commat;{{profile.username}}</a></p>
+					<p class="mb-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+				</div>
+			</div>
+			<div class="mb-4">
+				<ul class="nav nav-pills flex-column timeline-sidenav" style="max-width: 240px;">
+					<li class="nav-item">
+						<a v-bind:class="[scope == '/' ? 'nav-link font-weight-bold active' : 'nav-link font-weight-bold']" href="/" data-type="personal">
+							<i class="far fa-user pr-1"></i> My Timeline
+						</a>
+					</li>
+					<li class="nav-item">
+						<a v-bind:class="[scope == '/timeline/public' ? 'nav-link font-weight-bold active' : 'nav-link font-weight-bold']" href="/timeline/public" data-type="local">
+							<i class="fas fa-bars pr-1"></i> Local Timeline
+						</a>
+					</li>
+					<li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="The network timeline is not available yet.">
+						<span class="nav-link font-weight-bold">
+							<i class="fas fa-globe pr-1"></i> Network Timeline
+						</span>
+					</li>
+				</ul>
+			</div>
+			<footer>
+				<div class="container pb-5">
+					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
+						<a href="/site/about" class="text-dark pr-2">About Us</a>
+						<a href="/site/help" class="text-dark pr-2">Support</a>
+						<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
+						<a href="/site/language" class="text-dark pr-2">Language</a>
+						<a href="/site/terms" class="text-dark pr-2">Terms</a>
+						<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
+						<a href="/site/platform" class="text-dark pr-2">API</a>
+					</p>
+					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
+						<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by PixelFed</a>
+					</p>
+				</div>
+			</footer>
+		</div>
+	</div>
+</div>
+</template>
+
+<style type="text/css">
+	.cursor-pointer {
+		cursor: pointer;
+	}
+</style>
+
+<script type="text/javascript">
+	export default {
+		data() {
+			return {
+				page: 1,
+				feed: [],
+				profile: {},
+				scope: window.location.pathname,
+				min_id: 0,
+				max_id: 0,
+			}
+		},
+
+		beforeMount() {
+			this.fetchTimelineApi();
+			this.fetchProfile();
+		},
+
+		mounted() {
+		},
+
+		updated() {
+			this.scroll();
+		},
+
+		methods: {
+			fetchProfile() {
+				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+					this.profile = res.data;
+				}).catch(err => {
+					swal(
+						'Oops, something went wrong',
+						'Please reload the page.',
+						'error'
+					);
+				});
+			},
+
+			fetchTimelineApi() {
+				let homeTimeline = '/api/v1/timelines/home?page=' + this.page;
+				let localTimeline = '/api/v1/timelines/public?page=' + this.page;
+				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				axios.get(apiUrl).then(res => {
+					let data = res.data;
+					this.feed.push(...data);
+					let ids = data.map(status => status.id);
+					this.min_id = Math.min(...ids);
+					if(this.page == 1) {
+						this.max_id = Math.max(...ids);
+					}
+					this.page++;
+				}).catch(err => {
+				});
+			},
+
+			scroll() {
+				window.onscroll = () => {
+				  let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight == document.documentElement.offsetHeight;
+
+				  if (bottomOfWindow) {
+				  	this.fetchTimelineApi();
+				  }
+				};
+			},
+
+			reportUrl(status) {
+				let type = status.in_reply_to ? 'comment' : 'post';
+				let id = status.id;
+				return '/i/report?type=' + type + '&id=' + id;
+			},
+
+			commentFocus(status, $event) {
+				let el = event.target;
+				let card = el.parentElement.parentElement.parentElement;
+				let comments = card.getElementsByClassName('comments')[0];
+				if(comments.children.length == 0) {
+					comments.classList.add('mb-2');
+					this.fetchStatusComments(status, card);
+				}
+				let footer = card.querySelectorAll('.card-footer')[0];
+				let input = card.querySelectorAll('.status-reply-input')[0];
+				if(footer.classList.contains('d-none') == true) {
+					footer.classList.remove('d-none');
+					input.focus();
+				} else {
+					footer.classList.add('d-none');
+					input.blur();
+				}
+			},
+
+			likeStatus(status, $event) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+				
+				axios.post('/i/like', {
+					item: status.id
+				}).then(res => {
+					status.favourites_count = res.data.count;
+					if(status.favourited == true) {
+						status.favourited = false;
+					} else {
+						status.favourited = true;
+					}
+				}).catch(err => {
+					swal('Error', 'Something went wrong, please try again later.', 'error');
+				});
+			},
+
+			shareStatus(status, $event) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+
+				axios.post('/i/share', {
+					item: status.id
+				}).then(res => {
+					status.reblogs_count = res.data.count;
+					if(status.reblogged == true) {
+						status.reblogged = false;
+					} else {
+						status.reblogged = true;
+					}
+				}).catch(err => {
+					swal('Error', 'Something went wrong, please try again later.', 'error');
+				});
+			},
+
+			timestampFormat(timestamp) {
+				let ts = new Date(timestamp);
+				return ts.toDateString() + ' ' + ts.toLocaleTimeString();
+			},
+
+			editUrl(status) {
+				return status.url + '/edit';
+			},
+
+			statusOwner(status) {
+				let sid = status.account.id;
+				let uid = this.profile.id;
+				if(sid == uid) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+
+			fetchStatusComments(status, card) {
+				axios.get('/api/v2/status/'+status.id+'/replies')
+				.then(res => {
+					let comments = card.querySelectorAll('.comments')[0];
+					let data = res.data;
+					data.forEach(function(i, k) {
+						let username = document.createElement('a');
+						username.classList.add('font-weight-bold');
+						username.classList.add('text-dark');
+						username.classList.add('mr-2');
+						username.setAttribute('href', i.account.url);
+						username.textContent = i.account.username;
+
+						let text = document.createElement('span');
+						text.innerHTML = i.content;
+
+						let comment = document.createElement('p');
+						comment.classList.add('read-more');
+						comment.classList.add('mb-0');
+						comment.appendChild(username);
+						comment.appendChild(text);
+						comments.appendChild(comment);
+					});
+				}).catch(err => {
+				})
+			},
+
+			muteProfile(status) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+
+				axios.post('/i/mute', {
+					type: 'user',
+					item: status.account.id
+				}).then(res => {
+					swal('Success', 'You have successfully muted ' + status.account.acct, 'success');
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
+
+			blockProfile(status) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+
+				axios.post('/i/block', {
+					type: 'user',
+					item: status.account.id
+				}).then(res => {
+					swal('Success', 'You have successfully blocked ' + status.account.acct, 'success.');
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
+
+			deletePost(status, index) {
+				if($('body').hasClass('loggedIn') == false || status.account.id !== this.profile.id) {
+					return;
+				}
+
+				axios.post('/i/delete', {
+					type: 'status',
+					item: status.id
+				}).then(res => {
+					swal('Success', 'You have successfully deleted this post', 'success');
+					this.feed.splice(index,1);
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
+
+			commentSubmit(status, $event) {
+				let id = status.id;
+				let form = $event.target;
+				let input = $(form).find('input[name="comment"]');
+				let comment = input.val();
+				let comments = form.parentElement.parentElement.getElementsByClassName('comments')[0];
+				axios.post('/i/comment', {
+					item: id,
+					comment: comment
+				}).then(res => {
+					input.val('');
+					input.blur();
+
+					let username = document.createElement('a');
+					username.classList.add('font-weight-bold');
+					username.classList.add('text-dark');
+					username.classList.add('mr-2');
+					username.setAttribute('href', this.profile.url);
+					username.textContent = this.profile.username;
+
+					let text = document.createElement('span');
+					text.innerHTML = comment;
+
+					let wrapper = document.createElement('p');
+					wrapper.classList.add('read-more');
+					wrapper.classList.add('mb-0');
+					wrapper.appendChild(username);
+					wrapper.appendChild(text);
+					comments.insertBefore(wrapper, comments.firstChild);
+				});
+			}
+
+		}
+	}
+</script>
