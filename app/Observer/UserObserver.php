@@ -20,25 +20,27 @@ class UserObserver
     public function saved(User $user)
     {
         if (empty($user->profile)) {
-            $profile = new Profile();
-            $profile->user_id = $user->id;
-            $profile->username = $user->username;
-            $profile->name = $user->name;
-            $pkiConfig = [
-                'digest_alg'       => 'sha512',
-                'private_key_bits' => 2048,
-                'private_key_type' => OPENSSL_KEYTYPE_RSA,
-            ];
-            $pki = openssl_pkey_new($pkiConfig);
-            openssl_pkey_export($pki, $pki_private);
-            $pki_public = openssl_pkey_get_details($pki);
-            $pki_public = $pki_public['key'];
+            DB::transaction(function() use($user) {
+                $profile = new Profile();
+                $profile->user_id = $user->id;
+                $profile->username = $user->username;
+                $profile->name = $user->name;
+                $pkiConfig = [
+                    'digest_alg'       => 'sha512',
+                    'private_key_bits' => 2048,
+                    'private_key_type' => OPENSSL_KEYTYPE_RSA,
+                ];
+                $pki = openssl_pkey_new($pkiConfig);
+                openssl_pkey_export($pki, $pki_private);
+                $pki_public = openssl_pkey_get_details($pki);
+                $pki_public = $pki_public['key'];
 
-            $profile->private_key = $pki_private;
-            $profile->public_key = $pki_public;
-            $profile->save();
+                $profile->private_key = $pki_private;
+                $profile->public_key = $pki_public;
+                $profile->save();
 
-            CreateAvatar::dispatch($profile);
+                CreateAvatar::dispatch($profile);
+            });
         }
 
         if (empty($user->settings)) {
