@@ -47,7 +47,7 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function accounts(Request $request, $id)
@@ -56,7 +56,7 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function accountFollowers(Request $request, $id)
@@ -66,7 +66,7 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function accountFollowing(Request $request, $id)
@@ -76,7 +76,7 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function accountStatuses(Request $request, $id)
@@ -92,7 +92,7 @@ class BaseApiController extends Controller
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function followSuggestions(Request $request)
@@ -140,13 +140,13 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function showTempMedia(Request $request, $profileId, $mediaId)
+    public function showTempMedia(Request $request, int $profileId, $mediaId)
     {
         if (!$request->hasValidSignature()) {
             abort(401);
         }
         $profile = Auth::user()->profile;
-        if($profile->id !== (int) $profileId) {
+        if($profile->id !== $profileId) {
             abort(403);
         }
         $media = Media::whereProfileId($profile->id)->findOrFail($mediaId);
@@ -237,6 +237,15 @@ class BaseApiController extends Controller
             'meta'        => $media->metadata,
             'description' => null,
         ];
+
+        return response()->json($res);
+    }
+
+    public function verifyCredentials(Request $request)
+    {
+        $profile = Auth::user()->profile;
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
