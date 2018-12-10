@@ -45,6 +45,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'mention' => 'mention',
 			'reblog' => 'share',
 			'like' => 'favourite',
+			'comment' => 'comment',
 		];
 		return $verbs[$verb];
 	}
