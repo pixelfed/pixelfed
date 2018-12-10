@@ -72,7 +72,7 @@
 					</div>
 
 					<div v-else-if="status.pf_type === 'photo:album'">
-						<b-carousel id="carousel1"
+						<b-carousel :id="status.id + '-carousel'"
 							style="text-shadow: 1px 1px 2px #333;"
 							controls
 							indicators
@@ -81,6 +81,44 @@
 						>
 							<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
 								<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
+							</b-carousel-slide>
+						</b-carousel>
+					</div>
+
+					<div v-else-if="status.pf_type === 'video:album'" class="w-100">
+						<b-carousel :id="status.id + '-carousel'"
+							style="text-shadow: 1px 1px 2px #333; background-color: #000;"
+							controls
+							img-blank
+							background="#ffffff"
+							:interval="4000"
+						>
+							<b-carousel-slide v-for="(vid, index) in status.media_attachments" :key="vid.id + '-media'">
+								<video slot="img" class="embed-responsive-item" preload="none" controls loop :alt="vid.description" width="100%" height="100%">
+									<source :src="vid.url" :type="vid.mime">
+								</video>
+							</b-carousel-slide>
+						</b-carousel>
+					</div>
+
+					<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+						<b-carousel :id="status.id + '-carousel'"
+							style="text-shadow: 1px 1px 2px #333; background-color: #000;"
+							controls
+							img-blank
+							background="#ffffff"
+							:interval="4000"
+						>
+							<b-carousel-slide v-for="(media, index) in status.media_attachments" :key="media.id + '-media'">
+
+								<video v-if="media.type == 'Video'" slot="img" class="embed-responsive-item" preload="none" controls loop :alt="media.description" width="100%" height="100%">
+									<source :src="media.url" :type="media.mime">
+								</video>
+
+								<img v-else-if="media.type == 'Image'" slot="img" class="d-block img-fluid w-100" :src="media.url" :alt="media.description">
+
+								<p v-else class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+
 							</b-carousel-slide>
 						</b-carousel>
 					</div>
