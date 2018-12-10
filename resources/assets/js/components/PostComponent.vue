@@ -5,10 +5,6 @@
   overflow-y: scroll;
 }
 
-.postPresenterContainer {
-  background: #000;
-}
-
 .status-comments,
 .reactions,
 .col-md-4 {
@@ -16,6 +12,7 @@
 }
 
 .postPresenterContainer {
+  background: #000;
   min-height: 600px;
 }
 </style>
