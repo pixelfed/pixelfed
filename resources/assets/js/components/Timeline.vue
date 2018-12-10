@@ -30,73 +30,64 @@
 					</div>
 				</div>
 
-				<div v-if="status.pf_type === 'photo'">
-					<div v-if="status.sensitive == true">
-						<details class="details-animated">
-							<summary>
-								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
-								<p class="font-weight-light">(click to show)</p>
-							</summary>
-							<a class="max-hide-overflow" :href="status.url">
+				<div class="postPresenterContainer">
+					<div v-if="status.pf_type === 'photo'" class="w-100">
+						<div v-if="status.sensitive == true">
+							<details class="details-animated">
+								<summary>
+									<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
+									<p class="font-weight-light">(click to show)</p>
+								</summary>
+								<a class="max-hide-overflow" :href="status.url">
+									<img class="card-img-top" :src="status.media_attachments[0].url">
+								</a>
+							</details>
+						</div>
+						<div v-else>
+							<div>
 								<img class="card-img-top" :src="status.media_attachments[0].url">
-							</a>
-						</details>
-					</div>
-					<div v-else>
-						<div>
-							<img class="card-img-top" :src="status.media_attachments[0].url">
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<div v-else-if="status.pf_type === 'video'">
-					<div v-if="status.sensitive == true">
-						<details class="details-animated">
-							<summary>
-								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
-								<p class="font-weight-light">(click to show)</p>
-							</summary>
-							<a class="max-hide-overflow" :href="status.url">
-								<img class="card-img-top" :src="status.media_attachments[0].url">
-							</a>
-						</details>
-						<details class="details-animated">
-							<summary>
-								<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
-								<p class="font-weight-light">(click to show)</p>
-							</summary>
-							<div class="embed-responsive embed-responsive-16by9">
-								<video class="video" preload="none" controls loop>
-									<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
-								</video>
-							</div>
-						</details>
-					</div>
-					<div v-else>
-						<div class="embed-responsive embed-responsive-16by9">
+					<div v-else-if="status.pf_type === 'video'" class="w-100">
+						<div v-if="status.sensitive == true">
+							<details class="details-animated">
+								<summary>
+									<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
+									<p class="font-weight-light">(click to show)</p>
+								</summary>
+								<div class="embed-responsive embed-responsive-16by9">
+									<video class="video" preload="none" controls loop>
+										<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
+									</video>
+								</div>
+							</details>
+						</div>
+						<div v-else class="embed-responsive embed-responsive-16by9">
 							<video class="video" preload="none" controls loop>
 								<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
 							</video>
 						</div>
 					</div>
-				</div>
 
-				<div v-else-if="status.pf_type === 'photo:album'">
-					<b-carousel id="carousel1"
-						style="text-shadow: 1px 1px 2px #333;"
-						controls
-						indicators
-						background="#ffffff"
-						:interval="4000"
-					>
-						<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
-							<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
-						</b-carousel-slide>
-					</b-carousel>
-				</div>
+					<div v-else-if="status.pf_type === 'photo:album'">
+						<b-carousel id="carousel1"
+							style="text-shadow: 1px 1px 2px #333;"
+							controls
+							indicators
+							background="#ffffff"
+							:interval="4000"
+						>
+							<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
+								<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
+							</b-carousel-slide>
+						</b-carousel>
+					</div>
 
-				<div v-else>
-					<p class="text-center p-0">No preview for this post</p>
+					<div v-else class="w-100">
+						<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+					</div>
 				</div>
 
 				<div class="card-body">
@@ -187,6 +178,12 @@
 </template>
 
 <style type="text/css">
+	.postPresenterContainer {
+		display: flex;
+		align-items: center;
+		background: #000;
+		min-height: 600px;
+	}
 	.cursor-pointer {
 		cursor: pointer;
 	}
