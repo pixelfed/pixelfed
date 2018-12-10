@@ -405,11 +405,11 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-
 				axios.post('/i/mute', {
 					type: 'user',
 					item: status.account.id
 				}).then(res => {
+					this.feed = this.feed.filter(s => s.account.id !== status.account.id);
 					swal('Success', 'You have successfully muted ' + status.account.acct, 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
@@ -425,7 +425,8 @@
 					type: 'user',
 					item: status.account.id
 				}).then(res => {
-					swal('Success', 'You have successfully blocked ' + status.account.acct, 'success.');
+					this.feed = this.feed.filter(s => s.account.id !== status.account.id);
+					swal('Success', 'You have successfully blocked ' + status.account.acct, 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
@@ -440,8 +441,8 @@
 					type: 'status',
 					item: status.id
 				}).then(res => {
-					swal('Success', 'You have successfully deleted this post', 'success');
 					this.feed.splice(index,1);
+					swal('Success', 'You have successfully deleted this post', 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
