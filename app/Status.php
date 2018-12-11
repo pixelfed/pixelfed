@@ -77,9 +77,9 @@ class Status extends Model
     public function thumb($showNsfw = false)
     {
         return Cache::remember('status:thumb:'.$this->id, 40320, function() use ($showNsfw) {
-            $type = $this->viewType();
+            $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['image', 'album', 'video'])) {
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album'])) {
                 return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
             }
 
