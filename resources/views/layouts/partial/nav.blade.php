@@ -19,32 +19,19 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
-                    <li class="nav-item pr-2">
-                        <a class="nav-link" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom"><i class="far fa-compass fa-lg"></i></a>
+                    <li class="pr-2">
+                        <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
+                        {{ __('Home') }}
+                        </a>
+                    </li>
+                    <li class="pr-2">
+                        <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public" title="Local Timeline">
+                        {{ __('Local') }}
+                        </a>
                     </li>
                     <li class="nav-item pr-2">
-                        <a class="nav-link" href="{{route('notifications')}}" title="Notifications" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-inbox fa-lg text"></i></a>
+                        <a class="nav-link font-weight-bold" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">{{ __('Discover')}}</i></a>
                     </li>
-                    {{-- <li class="nav-item dropdown d-none d-md-block pr-2">
-                        <a class="nav-link dropdown-toggle nav-notification" href="{{route('notifications')}}" id="nav-notification" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-inbox fa-lg text"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-right nav-notification-dropdown" aria-labelledby="nav-notification">
-                        <div class="loader text-center">
-                            <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
-                        </div>
-                        <div class="dropdown-item disabled bg-light py-2">
-                            <a href="{{route('notifications')}}" class="font-weight-bold mr-4" data-toggle="tooltip" title="Notifications"><i class="fas fa-inbox"></i></a>
-                            {{-- <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Direct Messages"><i class="far fa-envelope"></i></a>
-                            <a href="#" class="text-muted font-weight-bold mr-4" data-toggle="tooltip" title="Following Activity"><i class="fas fa-users"></i></a> -}}
-                            <a href="{{route('follow-requests')}}" class="text-muted font-weight-bold" data-toggle="tooltip" title="Follow Requests"><i class="fas fa-user-plus"></i></a>
-
-                            <span class="float-right">
-                                <a class="btn btn-sm btn-outline-secondary py-0 notification-action" data-type="mark_read" href="#">Mark as Read</a>
-                            </span>
-                        </div>
-                      </div>
-                    </li> --}}
                     <li class="nav-item pr-2">
                         <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                             <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
@@ -65,22 +52,14 @@
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">
-                                <span class="fas fa-list-alt pr-1"></span>
+                                <span class="fas fa-home pr-1"></span>
                                 {{__('navmenu.myTimeline')}}
                             </a>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
-                                <span class="far fa-list-alt pr-1"></span>
+                                <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
-                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('messages')}}">
-                                <span class="far fa-envelope pr-1"></span>
-                                {{__('navmenu.directMessages')}}
-                            </a> --}}
                             <div class="dropdown-divider"></div>
-                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
-                                <span class="fas fa-user-plus pr-1"></span>
-                                {{__('navmenu.remoteFollow')}}
-                            </a> --}}
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
