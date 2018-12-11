@@ -38,15 +38,16 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
+            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
-            Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:250,1440');
+            Route::post('media', 'ApiController@uploadMedia')->middleware('throttle:500,1440');
+            Route::get('notifications', 'ApiController@notifications');
+            Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+            Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
         });
         Route::group(['prefix' => 'v2'], function() {
-            Route::get('notifications', 'InternalApiController@notifications');
-            Route::post('notifications', 'InternalApiController@notificationMarkAllRead');
             Route::get('discover', 'InternalApiController@discover');
-            // Route::get('discover/people', 'InternalApiController@discoverPeople');
             Route::get('discover/posts', 'InternalApiController@discoverPosts');
             Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
             Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
@@ -56,7 +57,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
             Route::post('i/more-comments', 'ApiController@loadMoreComments');
-            Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:250,1440');
+            Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:500,1440');
         });
     });
 
@@ -67,8 +68,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('compose', 'StatusController@compose')->name('compose');
         Route::post('comment', 'CommentController@store')->middleware('throttle:1000,1440');
         Route::post('delete', 'StatusController@delete')->middleware('throttle:1000,1440');
-        Route::post('mute', 'AccountController@mute')->middleware('throttle:100,1440');
-        Route::post('block', 'AccountController@block')->middleware('throttle:100,1440');
+        Route::post('mute', 'AccountController@mute');
+        Route::post('block', 'AccountController@block');
         Route::post('like', 'LikeController@store')->middleware('throttle:1000,1440');
         Route::post('share', 'StatusController@storeShare')->middleware('throttle:1000,1440');
         Route::post('follow', 'FollowerController@store')->middleware('throttle:250,1440');

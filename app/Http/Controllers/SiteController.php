@@ -31,28 +31,7 @@ class SiteController extends Controller
 
     public function homeTimeline()
     {
-        $pid = Auth::user()->profile->id;
-        // TODO: Use redis for timelines
-
-        $following = Follower::whereProfileId($pid)->pluck('following_id');
-        $following->push($pid)->toArray();
-
-        $filtered = UserFilter::whereUserId($pid)
-                    ->whereFilterableType('App\Profile')
-                    ->whereIn('filter_type', ['mute', 'block'])
-                    ->pluck('filterable_id')->toArray();
-
-        $timeline = Status::whereIn('profile_id', $following)
-                  ->whereNotIn('profile_id', $filtered)
-                  ->whereHas('media')
-                  ->whereVisibility('public')
-                  ->orderBy('created_at', 'desc')
-                  ->withCount(['comments', 'likes', 'shares'])
-                  ->simplePaginate(20);
-                  
-        $type = 'personal';
-
-        return view('timeline.template', compact('timeline', 'type'));
+        return view('timeline.home');
     }
 
     public function changeLocale(Request $request, $locale)
