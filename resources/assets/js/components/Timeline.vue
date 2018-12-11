@@ -1,7 +1,10 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div class="col-md-8 col-lg-8 pt-4 px-0 my-3">
+		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline">
+			<div class="loader text-center">
+				<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+			</div>
 			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
 				<div class="card-header d-inline-flex align-items-center bg-white">
@@ -238,35 +241,80 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-4 col-lg-4 pt-4 my-3">
-			<div class="media d-flex align-items-center mb-4">
-				<a :href="profile.url">
-					<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar" alt="avatar" width="64px">
-				</a>
-				<div class="media-body">
-					<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url">&commat;{{profile.username}}</a></p>
-					<p class="mb-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+
+		<div class="col-md-4 col-lg-4 pt-2 my-3">
+			<div class="mb-4">
+				<div class="card profile-card">
+					<div class="card-body loader text-center">
+						<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+					</div>
+					<div class="card-body contents d-none">
+						<div class="media d-flex align-items-center">
+							<a :href="profile.url">
+								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px">
+							</a>
+							<div class="media-body">
+								<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
+								<p class="my-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer bg-white py-1 d-none">
+						<div class="d-flex justify-content-between text-center">
+							<span class="pl-3">
+								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
+								<p class="mb-0 small text-muted">Posts</p>
+							</span>
+							<span>
+								<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
+								<p class="mb-0 small text-muted">Followers</p>
+							</span>
+							<span class="pr-3">
+								<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
+								<p class="mb-0 small text-muted">Following</p>
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
+
 			<div class="mb-4">
-				<ul class="nav nav-pills flex-column timeline-sidenav" style="max-width: 240px;">
-					<li class="nav-item">
-						<a v-bind:class="[scope == '/' ? 'nav-link font-weight-bold active' : 'nav-link font-weight-bold']" href="/" data-type="personal">
-							<i class="far fa-user pr-1"></i> My Timeline
-						</a>
-					</li>
-					<li class="nav-item">
-						<a v-bind:class="[scope == '/timeline/public' ? 'nav-link font-weight-bold active' : 'nav-link font-weight-bold']" href="/timeline/public" data-type="local">
-							<i class="fas fa-bars pr-1"></i> Local Timeline
-						</a>
-					</li>
-					<li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="The network timeline is not available yet.">
-						<span class="nav-link font-weight-bold">
-							<i class="fas fa-globe pr-1"></i> Network Timeline
-						</span>
-					</li>
-				</ul>
+				<div class="card notification-card">
+					<div class="card-header bg-white">
+						<p class="mb-0 d-flex align-items-center justify-content-between">
+							<span class="text-muted font-weight-bold">Notifications</span>
+							<a class="text-dark small" href="/account/activity">See All</a>
+						</p>
+					</div>
+					<div class="card-body loader text-center" style="height: 300px;">
+						<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+					</div>
+					<div class="card-body pt-2 contents" style="max-height: 300px; overflow-y: scroll;">
+						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">
+							<img class="mr-2 rounded-circle img-thumbnail" :src="n.account.avatar" alt="" width="32px">
+							<div class="media-body font-weight-light small">
+								<div v-if="n.type == 'favourite'">
+									<p class="my-0">
+										<span class="font-weight-bold">{{n.account.username}}</span> liked your post.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'comment'">
+									<p class="my-0">
+										<span class="font-weight-bold">{{n.account.username}}</span> commented on your post.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'mention'">
+									<p class="my-0">
+										<span class="font-weight-bold">{{n.account.username}}</span> mentioned you.
+									</p>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
 			</div>
+
 			<footer>
 				<div class="container pb-5">
 					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
@@ -310,6 +358,9 @@
 				scope: window.location.pathname,
 				min_id: 0,
 				max_id: 0,
+				notifications: {},
+				stories: {},
+				suggestions: {},
 			}
 		},
 
@@ -329,6 +380,10 @@
 			fetchProfile() {
 				axios.get('/api/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;
+					$('.profile-card .loader').addClass('d-none');
+					$('.profile-card .contents').removeClass('d-none');
+					$('.profile-card .card-footer').removeClass('d-none');
+					this.fetchNotifications();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -343,6 +398,7 @@
 				let localTimeline = '/api/v1/timelines/public?page=' + this.page;
 				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
 				axios.get(apiUrl).then(res => {
+					$('.timeline .loader').addClass('d-none');
 					let data = res.data;
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
@@ -352,6 +408,15 @@
 					}
 					this.page++;
 				}).catch(err => {
+				});
+			},
+
+			fetchNotifications() {
+				axios.get('/api/v1/notifications')
+				.then(res => {
+					this.notifications = res.data;
+					$('.notification-card .loader').addClass('d-none');
+					$('.notification-card .contents').removeClass('d-none');
 				});
 			},
 
