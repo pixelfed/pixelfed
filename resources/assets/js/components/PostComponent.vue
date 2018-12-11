@@ -4,12 +4,23 @@
   max-height: 70vh;
   overflow-y: scroll;
 }
+
+.status-comments,
+.reactions,
+.col-md-4 {
+  background: #fff;
+}
+
+.postPresenterContainer {
+  background: #000;
+  min-height: 600px;
+}
 </style>
 <template>
 <div class="postComponent d-none">
   <div class="container px-0 mt-md-4">
     <div class="card card-md-rounded-0 status-container orientation-unknown">
-      <div class="row mx-0">
+      <div class="row px-0 mx-0">
       <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
         <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
           <div class="status-avatar mr-2">
@@ -40,7 +51,7 @@
           </div>
         </div>
        </div>
-        <div class="col-12 col-md-8 status-photo px-0">
+        <div class="col-12 col-md-8 status-photo px-0 mx-0">
             <div class="postPresenterLoader text-center">
               <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
             </div>
@@ -204,14 +215,17 @@ pixelfed.presenter = {
         .removeClass('orientation-unknown')
         .addClass('orientation-' + media[0]['orientation']);
       let wrapper = $('<div>');
-      wrapper.addClass(media[0]['filter_class']);
+      container.addClass('d-flex align-items-center');
+      if(media[0]['filter_class']) {
+        wrapper.addClass(media[0]['filter_class']);
+      }
       let el = $('<img>');
       el.attr('src', media[0]['url']);
       el.attr('title', media[0]['description']);
       wrapper.append(el);
       if(status.sensitive == true) {
         let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated');
+        let cw = $('<details>').addClass('details-animated w-100');
         let summary = $('<summary>');
         let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
         let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
@@ -225,7 +239,7 @@ pixelfed.presenter = {
 
     video: function(container, media, status) {
       let wrapper = $('<div>');
-      wrapper.addClass('');
+      container.addClass('d-flex align-items-center');
       let el = $('<video>');
       el.addClass('embed-responsive-item');
       el.attr('controls', '');
@@ -235,7 +249,7 @@ pixelfed.presenter = {
       wrapper.append(el);
       if(status.sensitive == true) {
         let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated');
+        let cw = $('<details>').addClass('details-animated w-100');
         let summary = $('<summary>');
         let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
         let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
@@ -268,6 +282,7 @@ pixelfed.presenter = {
         .addClass('orientation-' + media[0]['orientation']);
       let id = 'photo-carousel-wrapper-' + status.id;
       let wrapper = $('<div>');
+      container.addClass('d-flex align-items-center');
       wrapper.addClass('carousel slide carousel-fade');
       wrapper.attr('data-ride', 'carousel');
       wrapper.attr('id', id);
@@ -325,7 +340,7 @@ pixelfed.presenter = {
       wrapper.append(indicators, inner, prev, next);
       if(status.sensitive == true) {
         let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated');
+        let cw = $('<details>').addClass('details-animated w-100');
         let summary = $('<summary>');
         let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
         let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
@@ -387,6 +402,7 @@ export default {
         $('head title').text(title);
       }
     },
+    
     methods: {
       authCheck() {
         let authed = $('body').hasClass('loggedIn');

@@ -94,37 +94,6 @@ class InternalApiController extends Controller
         return $status->url();
     }
 
-    public function notifications(Request $request)
-    {
-        $this->validate($request, [
-          'page' => 'nullable|min:1|max:3',
-        ]);
-        
-        $profile = Auth::user()->profile;
-        $timeago = Carbon::now()->subMonths(6);
-        $notifications = Notification::with('actor')
-        ->whereProfileId($profile->id)
-        ->whereDate('created_at', '>', $timeago)
-        ->orderBy('id', 'desc')
-        ->simplePaginate(30);
-        $notifications = $notifications->map(function($k, $v) {
-            return [
-                'id' => $k->id,
-                'action' => $k->action,
-                'message' => $k->message,
-                'rendered' => $k->rendered,
-                'actor' => [
-                    'avatar' => $k->actor->avatarUrl(),
-                    'username' => $k->actor->username,
-                    'url' => $k->actor->url(),
-                ],
-                'url' => $k->item->url(),
-                'read_at' => $k->read_at,
-            ];
-        });
-        return response()->json($notifications, 200, [], JSON_PRETTY_PRINT);
-    }
-
     // deprecated
     public function discover(Request $request)
     {
@@ -287,5 +256,20 @@ class InternalApiController extends Controller
         }
 
         return;
+    }
+
+    public function statusReplies(Request $request, int $id)
+    {
+        $parent = Status::findOrFail($id);
+
+        $children = Status::whereInReplyToId($parent->id)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        $resource = new Fractal\Resource\Collection($children, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
     }
 }

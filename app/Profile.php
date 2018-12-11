@@ -156,6 +156,7 @@ class Profile extends Model
     public function statusCount()
     {
         return $this->statuses()
+        ->getQuery()
         ->whereHas('media')
         ->whereNull('in_reply_to_id')
         ->whereNull('reblog_of_id')
