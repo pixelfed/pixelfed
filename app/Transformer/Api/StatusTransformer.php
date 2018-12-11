@@ -41,7 +41,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'language'                  => null,
             'pinned'                    => null,
 
-            'pf_type'          => $status->type,
+            'pf_type'          => $status->type ?? $status->setType(),
         ];
     }
 
