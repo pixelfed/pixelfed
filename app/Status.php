@@ -53,30 +53,24 @@ class Status extends Model
     // todo: deprecate after 0.6.0
     public function viewType()
     {
-        return Cache::remember('status:view-type:'.$this->id, 10080, function() {
-            $this->setType();
-            $media = $this->firstMedia();
-            $mime = explode('/', $media->mime)[0];
-            $count = $this->media()->count();
-            $type = ($mime == 'image') ? 'image' : 'video';
-            if($count > 1) {
-                $type = ($type == 'image') ? 'album' : 'video-album';
-            }
-            return $type;
-        });
+        if($this->type) {
+            return $this->type;
+        }
+        return $this->setType();
     }
 
     // todo: deprecate after 0.6.0
     public function setType()
     {
         if(in_array($this->type, self::STATUS_TYPES)) {
-            return;
+            return $this->type;
         }
         $mimes = $this->media->pluck('mime')->toArray();
         $type = StatusController::mimeTypeCheck($mimes);
         if($type) {
             $this->type = $type;
             $this->save();
+            return $type;
         }
     }
 
