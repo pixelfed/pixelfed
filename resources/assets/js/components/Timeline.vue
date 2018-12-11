@@ -308,6 +308,11 @@
 										<span class="font-weight-bold">{{n.account.username}}</span> mentioned you.
 									</p>
 								</div>
+								<div v-else-if="n.type == 'follow'">
+									<p class="my-0">
+										<span class="font-weight-bold">{{n.account.username}}</span> followed you.
+									</p>	
+								</div>
 							</div>
 							
 						</div>
