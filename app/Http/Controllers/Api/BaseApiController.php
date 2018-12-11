@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     AvatarController
 };
 use Auth, Cache, URL;
+use Carbon\Carbon;
 use App\{
     Avatar,
     Notification,
@@ -45,6 +46,21 @@ class BaseApiController extends Controller
     {
         $notification = Notification::findOrFail($id);
         $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    public function notifications(Request $request)
+    {
+        $pid = Auth::user()->profile->id;
+        $timeago = Carbon::now()->subMonths(6);
+        $notifications = Notification::with('actor')
+            ->whereProfileId($pid)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('created_at','desc')
+            ->paginate(10);
+        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
