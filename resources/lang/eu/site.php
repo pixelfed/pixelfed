@@ -5,9 +5,9 @@ return [
 	'language'		=> 'Hizkuntza',
 	'fediverse'		=> 'Fedibertsoa',
 	'opensource'	=> 'Kode irekia',
-	'terms'			=> 'Lege oharra',
+	'terms'			=> 'Baldintzak',
 	'privacy'		=> 'Pribatutasuna',
 	'l10nWip'		=> 'Oraindik lokalizazioen sustenguan lanean ari gara',
-	'currentLocale' => 'Uneko hizkuntza',
+	'currentLocale' => 'Uneko lokalizazioa',
 	'selectLocale'  => 'Aukeratu onartutako hizkuntzetako bat',
 ];
