@@ -22,6 +22,7 @@ class Status extends Model
     protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id'];
 
     const STATUS_TYPES = [
+        'text',
         'photo',
         'photo:album',
         'video',
