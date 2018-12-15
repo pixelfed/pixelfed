@@ -15,9 +15,6 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://w3id.org/security/v1',
             [
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
-              'featured'                  => [
-                'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
-              ],
             ],
           ],
           'id'                        => $profile->permalink(),
@@ -26,7 +23,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'followers'                 => $profile->permalink('/followers'),
           'inbox'                     => $profile->permalink('/inbox'),
           'outbox'                    => $profile->permalink('/outbox'),
-          'featured'                  => $profile->permalink('/collections/featured'),
+          //'featured'                  => $profile->permalink('/collections/featured'),
           'preferredUsername'         => $profile->username,
           'name'                      => $profile->name,
           'summary'                   => $profile->bio,

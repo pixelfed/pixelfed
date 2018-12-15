@@ -30,12 +30,6 @@ class CreateNote extends Fractal\TransformerAbstract
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
-				[
-					'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
-					'featured'                  => [
-						'https://pixelfed.org/ns#featured' => ['@type' => '@id'],
-					],
-				],
 			],
 			'id' 					=> $status->permalink(),
 			'type' 					=> 'Create',
@@ -57,7 +51,7 @@ class CreateNote extends Fractal\TransformerAbstract
 				'sensitive'       	=> (bool) $status->is_nsfw,
 				'attachment'      	=> $status->media->map(function ($media) {
 					return [
-						'type'      => 'Document',
+						'type'      => $media->activityVerb(),
 						'mediaType' => $media->mime,
 						'url'       => $media->url(),
 						'name'      => null,

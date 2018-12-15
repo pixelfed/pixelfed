@@ -3,7 +3,6 @@
   font-size: 14px;
  }
  .comment-text {
-  word-break: break-all;
  }
  .comment-text p {
   display: inline;
@@ -33,7 +32,7 @@
             </template>
             <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
             <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
-            <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item>
+            <!-- <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item> -->
             <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>

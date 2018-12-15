@@ -167,7 +167,7 @@ XML;
 
     public function userInbox(Request $request, $username)
     {
-        // todo
+        return;
     }
 
     public function userFollowing(Request $request, $username)
@@ -175,7 +175,10 @@ XML;
         if (config('pixelfed.activitypub_enabled') == false) {
             abort(403);
         }
-        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+        $profile = Profile::whereNull('remote_url')
+            ->whereUsername($username)
+            ->whereIsPrivate(false)
+            ->firstOrFail();
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),
@@ -193,7 +196,10 @@ XML;
         if (config('pixelfed.activitypub_enabled') == false) {
             abort(403);
         }
-        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+        $profile = Profile::whereNull('remote_url')
+            ->whereUsername($username)
+            ->whereIsPrivate(false)
+            ->firstOrFail();
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),

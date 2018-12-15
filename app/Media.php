@@ -46,7 +46,12 @@ class Media extends Model
     {
         $verb = 'Image';
         switch ($this->mimeType()) {
+            case 'audio':
+                $verb = 'Audio';
+                break;
+                
             case 'image':
+                $verb = 'Image';
                 break;
 
             case 'video':
