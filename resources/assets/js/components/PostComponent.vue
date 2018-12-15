@@ -11,9 +11,11 @@
   background: #fff;
 }
 
-.postPresenterContainer {
-  background: #000;
-  min-height: 600px;
+@media(min-width: 720px) {
+  .postPresenterContainer {
+    background: #000;
+    min-height: 600px;
+  }
 }
 </style>
 <template>
@@ -51,7 +53,7 @@
           </div>
         </div>
        </div>
-        <div class="col-12 col-md-8 status-photo px-0 mx-0">
+        <div class="col-12 col-md-8 px-0 mx-0">
             <div class="postPresenterLoader text-center">
               <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
             </div>
@@ -222,6 +224,7 @@ pixelfed.presenter = {
       let el = $('<img>');
       el.attr('src', media[0]['url']);
       el.attr('title', media[0]['description']);
+      el.addClass('img-fluid');
       wrapper.append(el);
       if(status.sensitive == true) {
         let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';

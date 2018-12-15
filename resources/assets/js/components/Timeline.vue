@@ -346,7 +346,11 @@
 		display: flex;
 		align-items: center;
 		background: #000;
-		min-height: 600px;
+	}
+	@media(min-width: 720px) {
+		.postPresenterContainer {
+			min-height: 600px;
+		}
 	}
 	.cursor-pointer {
 		cursor: pointer;
