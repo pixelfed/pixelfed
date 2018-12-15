@@ -41,13 +41,13 @@
 									<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
 									<p class="font-weight-light">(click to show)</p>
 								</summary>
-								<a class="max-hide-overflow" :href="status.url">
+								<a class="max-hide-overflow" :href="status.url" :class="status.media_attachments[0].filter_class">
 									<img class="card-img-top" :src="status.media_attachments[0].url">
 								</a>
 							</details>
 						</div>
 						<div v-else>
-							<div>
+							<div :class="status.media_attachments[0].filter_class">
 								<img class="card-img-top" :src="status.media_attachments[0].url">
 							</div>
 						</div>
@@ -74,7 +74,7 @@
 						</div>
 					</div>
 
-					<div v-else-if="status.pf_type === 'photo:album'">
+					<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
 						<div v-if="status.sensitive == true">
 							<details class="details-animated">
 								<summary>
@@ -251,7 +251,7 @@
 					<div class="card-body contents d-none">
 						<div class="media d-flex align-items-center">
 							<a :href="profile.url">
-								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px">
+								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
 							</a>
 							<div class="media-body">
 								<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
@@ -291,7 +291,7 @@
 					</div>
 					<div class="card-body pt-2 contents" style="max-height: 300px; overflow-y: scroll;">
 						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">
-							<img class="mr-2 rounded-circle img-thumbnail" :src="n.account.avatar" alt="" width="32px">
+							<img class="mr-2 rounded-circle img-thumbnail" :src="n.account.avatar" alt="" width="32px" height="32px">
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
 									<p class="my-0">
