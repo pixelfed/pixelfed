@@ -28,7 +28,7 @@
     <entry>
         <title>{{ $item->caption }}</title>
         <link rel="alternate" href="{{ $item->url() }}" />
-        <id>{{ url($item->id) }}</id>
+        <id>{{ $item->url() }}</id>
         <author>
             <name> <![CDATA[{{ $item->profile->username }}]]></name>
         </author>
