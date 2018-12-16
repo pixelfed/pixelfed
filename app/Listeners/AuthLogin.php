@@ -5,11 +5,13 @@ namespace App\Listeners;
 use DB, Cache;
 use App\{
     Follower,
+    Profile,
     User,
     UserFilter,
     UserSetting
 };
 use Illuminate\Queue\InteractsWithQueue;
+use App\Jobs\AvatarPipeline\CreateAvatar;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class AuthLogin
