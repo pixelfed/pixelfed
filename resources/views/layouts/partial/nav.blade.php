@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
             <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2">
-            <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config('app.name', 'Laravel') }}</span>
+            <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config('app.name', 'pixelfed') }}</span>
         </a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -19,20 +19,44 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
-                    <li class="pr-2">
+                    <li class="pr-md-2">
                         <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
-                        {{ __('Home') }}
+                        <span class="d-block d-md-none">
+                            <i class="fas fa-home fa-lg"></i>
+                        </span>
+                        <span class="d-none d-md-block">
+                            {{ __('Home') }}
+                        </span>
                         </a>
                     </li>
-                    <li class="pr-2">
+                    <li class="pr-md-2">
                         <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public" title="Local Timeline">
-                        {{ __('Local') }}
+                        <span class="d-block d-md-none">
+                            <i class="far fa-map fa-lg"></i>
+                        </span>
+                        <span class="d-none d-md-block">
+                            {{ __('Local') }}
+                        </span> 
                         </a>
                     </li>
-                    <li class="nav-item pr-2">
-                        <a class="nav-link font-weight-bold" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">{{ __('Discover')}}</i></a>
+                    <li class="d-block d-md-none">
+                        <a class="nav-link" href="/account/activity">
+                            <i class="fas fa-inbox fa-lg"></i>
+                        </a>
                     </li>
-                    <li class="nav-item pr-2">
+                    {{-- <li class="pr-2">
+                        <a class="nav-link font-weight-bold" href="/" title="Home">
+                        {{ __('Network') }}
+                        </a>
+                    </li> --}}
+                    <li class="nav-item pr-md-2">
+                        <a class="nav-link font-weight-bold" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
+                        <span class="d-none d-md-block">
+                            {{ __('Discover')}}</i>
+                        </span>
+                        </a>
+                    </li>
+                    <li class="nav-item pr-md-2">
                         <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                             <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
                               <i class="fas fa-camera-retro fa-lg text-primary"></i>
@@ -59,7 +83,20 @@
                                 <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
+
+                            <a class="d-block d-md-none dropdown-item font-weight-bold" href="/i/discover">
+                                <span class="far fa-compass pr-1"></span>
+                                {{__('Discover')}}
+                            </a>
+                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('messages')}}">
+                                <span class="far fa-envelope pr-1"></span>
+                                {{__('navmenu.directMessages')}}
+                            </a> --}}
                             <div class="dropdown-divider"></div>
+                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
+                                <span class="fas fa-user-plus pr-1"></span>
+                                {{__('navmenu.remoteFollow')}}
+                            </a> --}}
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
