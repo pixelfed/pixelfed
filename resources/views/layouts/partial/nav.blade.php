@@ -84,7 +84,7 @@
                                 {{__('navmenu.publicTimeline')}}
                             </a>
 
-                            <a class="d-block d-md-none dropdown-item font-weight-bold" href="/i/discover">
+                            <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
                                 <span class="far fa-compass pr-1"></span>
                                 {{__('Discover')}}
                             </a>
