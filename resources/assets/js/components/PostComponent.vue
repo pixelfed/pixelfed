@@ -10,10 +10,11 @@
 .col-md-4 {
   background: #fff;
 }
-
+.postPresenterContainer {
+  background: #fff;
+}
 @media(min-width: 720px) {
   .postPresenterContainer {
-    background: #000;
     min-height: 600px;
   }
 }
@@ -57,8 +58,30 @@
             <div class="postPresenterLoader text-center">
               <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
             </div>
-            <div class="postPresenterContainer d-none">
+            <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
+              <div v-if="status.pf_type === 'photo'" class="w-100">
+                <photo-presenter :status="status"></photo-presenter>  
+              </div>
 
+              <div v-else-if="status.pf_type === 'video'" class="w-100">
+                <video-presenter :status="status"></video-presenter>
+              </div>
+
+              <div v-else-if="status.pf_type === 'photo:album'" class="w-100">
+                <photo-album-presenter :status="status"></photo-album-presenter>
+              </div>
+
+              <div v-else-if="status.pf_type === 'video:album'" class="w-100">
+                <video-album-presenter :status="status"></video-album-presenter>
+              </div>
+
+              <div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+                <mixed-album-presenter :status="status"></mixed-album-presenter>
+              </div>
+
+              <div v-else class="w-100">
+                <p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+              </div>
             </div>
         </div>
 
@@ -210,153 +233,6 @@
 
 pixelfed.postComponent = {};
 
-pixelfed.presenter = {
-  show: {
-    image: function(container, media, status) {
-      $('.status-container')
-        .removeClass('orientation-unknown')
-        .addClass('orientation-' + media[0]['orientation']);
-      let wrapper = $('<div>');
-      container.addClass('d-flex align-items-center');
-      if(media[0]['filter_class']) {
-        wrapper.addClass(media[0]['filter_class']);
-      }
-      let el = $('<img>');
-      el.attr('src', media[0]['url']);
-      el.attr('title', media[0]['description']);
-      el.addClass('img-fluid');
-      wrapper.append(el);
-      if(status.sensitive == true) {
-        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated w-100');
-        let summary = $('<summary>');
-        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
-        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
-        summary.append(text, direction);
-        cw.append(summary, wrapper);
-        container.append(cw);
-      } else {
-        container.append(wrapper);
-      }
-    },
-
-    video: function(container, media, status) {
-      let wrapper = $('<div>');
-      container.addClass('d-flex align-items-center');
-      let el = $('<video>');
-      el.addClass('embed-responsive-item');
-      el.attr('controls', '');
-      el.attr('loop', '');
-      el.attr('src', media[0]['url']);
-      el.attr('title', media[0]['description']);
-      wrapper.append(el);
-      if(status.sensitive == true) {
-        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated w-100');
-        let summary = $('<summary>');
-        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
-        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
-        summary.append(text, direction);
-        cw.append(summary, wrapper);
-        container.append(cw);
-      } else {
-        container.append(wrapper);
-      }
-      
-      const player = new Plyr(el, {
-        controls: [
-            'restart', // Restart playback
-            'play', // Play/pause playback
-            'progress', // The progress bar and scrubber for playback and buffering
-            'current-time', // The current time of playback
-            'duration', // The full duration of the media
-            'volume', // Volume control
-            'captions', // Toggle captions
-            'settings', // Settings menu
-            'fullscreen', // Toggle fullscreen
-        ]
-      });
-      player.volume = 0.75;
-    },
-
-    imageAlbum: function(container, media, status) {
-      $('.status-container')
-        .removeClass('orientation-unknown')
-        .addClass('orientation-' + media[0]['orientation']);
-      let id = 'photo-carousel-wrapper-' + status.id;
-      let wrapper = $('<div>');
-      container.addClass('d-flex align-items-center');
-      wrapper.addClass('carousel slide carousel-fade');
-      wrapper.attr('data-ride', 'carousel');
-      wrapper.attr('id', id);
-      let indicators = $('<ol>');
-      indicators.addClass('carousel-indicators');
-      let prev = $('<a>');
-      prev.addClass('carousel-control-prev');
-      prev.attr('href', '#' + id);
-      prev.attr('role', 'button');
-      prev.attr('data-slide', 'prev');
-      let prevIcon = $('<span>').addClass('carousel-control-prev-icon').attr('aria-hidden', 'true');
-      let prevSr = $('<span>').addClass('sr-only');
-      prev.append(prevIcon, prevSr);
-      let next = $('<a>');
-      next.addClass('carousel-control-next');
-      next.attr('href', '#' + id);
-      next.attr('role', 'button');
-      next.attr('data-slide', 'next');
-      let nextIcon = $('<span>').addClass('carousel-control-next-icon').attr('aria-hidden', 'true');
-      let nextSr = $('<span>').addClass('sr-only');
-      let inner = $('<div>').addClass('carousel-inner');
-      next.append(nextIcon, nextSr);
-      for(let i = 0; i < media.length; i++) {
-        let li = $('<li>');
-        li.attr('data-target', '#' + id);
-        li.attr('data-slide-to', i);
-        if(i == 0) {
-          li.addClass('active');
-        }
-        indicators.append(li);
-        let item = media[i];
-        let carouselItem = $('<div>').addClass('carousel-item');
-        if(i == 0) {
-          carouselItem.addClass('active');
-        }
-        let figure = $('<figure>');
-        if(item['filter_class']) {
-          figure.addClass(item['filter_class']);
-        }
-
-        let badge = $('<span>');
-        badge.addClass('float-right mr-3 badge badge-dark');
-        badge.style = 'position:fixed;top:8px;right:0;margin-bottom:-20px;';
-        badge.text(i+1 + '/' + media.length);
-
-        let img = $('<img>');
-        img.addClass('d-block w-100');
-        img.attr('src', item['url']);
-
-        figure.append(badge, img);
-        carouselItem.append(figure);
-
-        inner.append(carouselItem);
-      }
-      wrapper.append(indicators, inner, prev, next);
-      if(status.sensitive == true) {
-        let spoilerText = status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media';
-        let cw = $('<details>').addClass('details-animated w-100');
-        let summary = $('<summary>');
-        let text = $('<p>').addClass('mb-0 lead font-weight-bold').text(spoilerText);
-        let direction = $('<p>').addClass('font-weight-light').text('(click to show)');
-        summary.append(text, direction);
-        cw.append(summary, wrapper);
-        container.append(cw);
-      } else {
-        container.append(wrapper);
-      }
-    }
-  }
-};
-
 export default {
     props: ['status-id', 'status-username', 'status-template', 'status-url', 'status-profile-url', 'status-avatar'],
     data() {
@@ -454,10 +330,13 @@ export default {
                 self.shares = response.data.shares;
                 self.likesPage = 2;
                 self.sharesPage = 2;
-                this.buildPresenter();
+                //this.buildPresenter();
                 this.showMuteBlock();
                 loader.hide();
+                pixelfed.readmore();
                 $('.postComponent').removeClass('d-none');
+                $('.postPresenterLoader').addClass('d-none');
+                $('.postPresenterContainer').removeClass('d-none');
             }).catch(error => {
               if(!error.response) {
                 $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
@@ -527,56 +406,6 @@ export default {
             $state.complete();
           }
         });
-      },
-
-      buildPresenter() {
-        let container = $('.postPresenterContainer');
-        let status = this.status;
-        let media = this.media;
-
-        $('input[name="item"]').each(function(k, v) {
-            let el = $(v);
-            el.val(status.account.id);
-        });
-
-        if(container.children().length != 0) {
-          return;
-        }
-
-        let template = this.status.pf_type ? this.status.pf_type : this.statusTemplate;
-        switch(template) {
-          case 'image':
-          case 'photo':
-            pixelfed.presenter.show.image(container, media, this.status);
-          break;
-
-          case 'album':
-          case 'photo:album':
-            pixelfed.presenter.show.imageAlbum(container, media, this.status);
-          break;
-
-          case 'video':
-            pixelfed.presenter.show.video(container, media, this.status);
-          break;
-
-          case 'video:album':
-          case 'photo:video:album':
-              $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('We cannot load this post properly. We\'re working on a fix!');
-                return;
-          break;
-
-          default:
-              $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
-          break;
-
-        }
-        if(container.children().length == 0) {
-          $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
-          return;
-        }
-        pixelfed.readmore();
-        $('.postPresenterLoader').addClass('d-none');
-        $('.postPresenterContainer').removeClass('d-none');
       },
 
       likeStatus(event) {
