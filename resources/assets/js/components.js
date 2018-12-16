@@ -59,6 +59,32 @@ require('./components/notifications');
 window.pixelfed.n = {};
 
 Vue.component(
+    'photo-presenter',
+    require('./components/presenter/PhotoPresenter.vue')
+);
+
+Vue.component(
+    'video-presenter',
+    require('./components/presenter/VideoPresenter.vue')
+);
+
+Vue.component(
+    'photo-album-presenter',
+    require('./components/presenter/PhotoAlbumPresenter.vue')
+);
+
+Vue.component(
+    'video-album-presenter',
+    require('./components/presenter/VideoAlbumPresenter.vue')
+);
+
+
+Vue.component(
+    'mixed-album-presenter',
+    require('./components/presenter/MixedAlbumPresenter.vue')
+);
+
+Vue.component(
     'follow-suggestions',
     require('./components/FollowSuggestions.vue')
 );
@@ -87,6 +113,11 @@ Vue.component(
     'timeline',
     require('./components/Timeline.vue')
 );
+
+// Vue.component(
+//     'micro',
+//     require('./components/Micro.vue')
+// );
 
 Vue.component(
     'passport-clients',
