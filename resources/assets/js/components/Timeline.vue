@@ -146,7 +146,7 @@
 					</div>
 					<div class="card-body pt-2 contents" style="max-height: 300px; overflow-y: scroll;">
 						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">
-							<img class="mr-2 rounded-circle img-thumbnail" :src="n.account.avatar" alt="" width="32px" height="32px">
+							<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
 									<p class="my-0">
