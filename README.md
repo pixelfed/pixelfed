@@ -29,6 +29,7 @@ testing and development.
  - XML PHP Extension
  - Ctype PHP Extension
  - JSON PHP Extension
+ - BCMath PHP Extension
  - JpegOptim
  - Optipng
  - Pngquant 2
