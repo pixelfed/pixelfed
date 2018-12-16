@@ -4,8 +4,8 @@ $(document).ready(function() {
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-      url: process.env.MIX_API_SEARCH + '/%QUERY',
-      wildcard: '%QUERY'
+      url: process.env.MIX_API_SEARCH + '/%QUERY%',
+      wildcard: '%QUERY%'
     }
   });
 
@@ -25,7 +25,7 @@ $(document).ready(function() {
         let res = false;
         switch(type) {
           case 'hashtag':
-            res = '<a href="'+data.url+'">' +
+            res = '<a href="'+data.url+'?src=search">' +
             '<div class="media d-flex align-items-center">' +
             '<div class="mr-3 h4 text-muted"><span class="fas fa-hashtag"></span></div>' +
             '<div class="media-body text-truncate">' +
@@ -36,7 +36,7 @@ $(document).ready(function() {
             '</a>';
           break;
           case 'profile':
-            res = '<a href="'+data.url+'">' +
+            res = '<a href="'+data.url+'?src=search">' +
             '<div class="media d-flex align-items-center">' +
             '<div class="mr-3 h4 text-muted"><span class="far fa-user"></span></div>' +
             '<div class="media-body text-truncate">' +
@@ -47,7 +47,7 @@ $(document).ready(function() {
             '</a>';
           break;
           case 'status':
-            res = '<a href="'+data.url+'">' +
+            res = '<a href="'+data.url+'?src=search">' +
             '<div class="media d-flex align-items-center">' +
             '<div class="mr-3 h4 text-muted"><img src="'+data.thumb+'" width="32px"></div>' +
             '<div class="media-body text-truncate">' +

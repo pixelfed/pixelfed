@@ -1,7 +1,7 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline">
+		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline order-2 order-md-1">
 			<div class="loader text-center">
 				<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
 			</div>
@@ -97,7 +97,7 @@
 			</div>
 		</div>
 
-		<div class="col-md-4 col-lg-4 pt-2 my-3">
+		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2">
 			<div class="mb-4">
 				<div class="card profile-card">
 					<div class="card-body loader text-center">
@@ -116,15 +116,15 @@
 					</div>
 					<div class="card-footer bg-white py-1 d-none">
 						<div class="d-flex justify-content-between text-center">
-							<span class="pl-3">
+							<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
 								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
 								<p class="mb-0 small text-muted">Posts</p>
 							</span>
-							<span>
+							<span class="cursor-pointer" v-on:click="redirect(profile.url + '/followers')">
 								<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
 								<p class="mb-0 small text-muted">Followers</p>
 							</span>
-							<span class="pr-3">
+							<span class="pr-3 cursor-pointer" v-on:click="redirect(profile.url + '/following')">
 								<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
 								<p class="mb-0 small text-muted">Following</p>
 							</span>
@@ -150,22 +150,22 @@
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
 									<p class="my-0">
-										<span class="font-weight-bold">{{n.account.username}}</span> liked your post.
+										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'comment'">
 									<p class="my-0">
-										<span class="font-weight-bold">{{n.account.username}}</span> commented on your post.
+										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'mention'">
 									<p class="my-0">
-										<span class="font-weight-bold">{{n.account.username}}</span> mentioned you.
+										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'follow'">
 									<p class="my-0">
-										<span class="font-weight-bold">{{n.account.username}}</span> followed you.
+										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> followed you.
 									</p>	
 								</div>
 							</div>
@@ -359,6 +359,23 @@
 
 			editUrl(status) {
 				return status.url + '/edit';
+			},
+
+			redirect(url) {
+				window.location.href = url;
+				return;
+			},
+
+			replyUrl(status) {
+				let username = this.profile.username;
+				let id = status.account.id == this.profile.id ? status.id : status.in_reply_to_id;
+				return '/p/' + username + '/' + id;
+			},
+
+			mentionUrl(status) {
+				let username = status.account.username;
+				let id = status.id;
+				return '/p/' + username + '/' + id;
 			},
 
 			statusOwner(status) {
