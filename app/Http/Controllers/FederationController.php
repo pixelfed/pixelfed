@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
 
 class FederationController extends Controller
 {
@@ -113,7 +114,9 @@ class FederationController extends Controller
         ];
         });
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res, 200, [
+            'Access-Control-Allow-Origin' => '*'
+        ]);
     }
 
     public function webfinger(Request $request)
