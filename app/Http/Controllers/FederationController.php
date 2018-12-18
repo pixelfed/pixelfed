@@ -170,6 +170,29 @@ XML;
 
     public function userInbox(Request $request, $username)
     {
+        if (config('pixelfed.activitypub_enabled') == false) {
+            abort(403);
+        }
+
+        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        $body = $request->getContent();
+        $bodyDecoded = json_decode($body, true);
+        $signature = $request->header('signature');
+        if(!$signature) {
+            abort(400, 'Missing signature header');
+        }
+        $signatureData = HttpSignature::parseSignatureHeader($signature);
+        $actor = Profile::whereKeyId($signatureData['keyId'])->first();
+        if(!$actor) {
+            $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
+        }
+        $pkey = openssl_pkey_get_public($actor->public_key);
+        $inboxPath = "/users/{$profile->username}/inbox";
+        list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
+        if($verified !== 1) { 
+            abort(400, 'Invalid signature.');
+        }
+        InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
         return;
     }
 
