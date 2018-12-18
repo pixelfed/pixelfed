@@ -19,7 +19,7 @@ class AvatarController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-          'avatar' => 'required|mimes:jpeg,png|max:2000',
+          'avatar' => 'required|mimes:jpeg,png|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {
