@@ -4,7 +4,7 @@ namespace App\Util\ActivityPub;
 
 use Log;
 use App\Profile;
-use DateTime;
+use \DateTime;
 
 class HttpSignature {
 
