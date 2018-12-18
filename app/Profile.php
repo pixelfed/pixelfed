@@ -2,27 +2,16 @@
 
 namespace App;
 
+use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
-use Auth;
-use Cache;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Storage;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 class Profile extends Model
 {
     use SoftDeletes;
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = ['deleted_at'];
-    protected $hidden = [
-        'private_key',
-    ];
-
+    protected $hidden = ['private_key'];
     protected $visible = ['username', 'name'];
 
     public function user()
@@ -30,26 +19,19 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function url($suffix = '')
+    public function url($suffix = null)
     {
-        if ($this->remote_url) {
-            return $this->remote_url;
-        } else {
-            return url($this->username.$suffix);
-        }
+        return $this->remote_url ?? url($this->username . $suffix);
     }
 
-    public function localUrl($suffix = '')
+    public function localUrl($suffix = null)
     {
-        return url($this->username.$suffix);
+        return url($this->username . $suffix);
     }
 
-    public function permalink($suffix = '')
+    public function permalink($suffix = null)
     {
-        if($this->remote_url) {
-            return $this->remote_url;
-        }
-        return url('users/'.$this->username.$suffix);
+        return $this->remote_url ?? url('users/' . $this->username . $suffix);
     }
 
     public function emailUrl()
