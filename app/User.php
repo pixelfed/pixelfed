@@ -54,6 +54,14 @@ class User extends Authenticatable
         return $this->hasOne(UserSetting::class);
     }
 
+    public function statuses()
+    {
+        return $this->hasManyThrough(
+            Status::class,
+            Profile::class
+        );
+    }
+
     public function receivesBroadcastNotificationsOn()
     {
         return 'App.User.'.$this->id;
