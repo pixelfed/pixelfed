@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12 col-md-4 d-flex">
         <div class="profile-avatar mx-auto">
-          <img class="img-thumbnail" src="{{$user->avatarUrl()}}" style="border-radius:100%;" width="172px">
+          <img class="rounded-circle box-shadow" src="{{$user->avatarUrl()}}" width="172px" height="172px">
         </div>
       </div>
       <div class="col-12 col-md-8 d-flex align-items-center">
