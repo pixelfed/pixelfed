@@ -22,10 +22,30 @@
   	<p>
       <form method="post">
         @csrf
-        <button class="btn btn-danger font-weight-bold py-0">Permanently delete my account</button>
+        <div class="custom-control custom-checkbox mb-3">
+          <input type="checkbox" class="custom-control-input" id="confirm-check">
+          <label class="custom-control-label font-weight-bold" for="confirm-check">I confirm that this action is not reversible, and will result in the permanent deletion of my account.</label>
+        </div>
+        <button type="submit" class="btn btn-danger font-weight-bold py-0 delete-btn" disabled="">Permanently delete my account</button>
       </form>
   	</p>
   </div>
 
 
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#confirm-check').on('change', function() {
+    let el = $(this);
+    let state = el.prop('checked');
+    if(state == true) {
+      $('.delete-btn').removeAttr('disabled');
+    } else {
+      $('.delete-btn').attr('disabled', '');
+    }
+  });
+});
+</script>
+@endpush
