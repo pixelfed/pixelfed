@@ -36,6 +36,8 @@ class DiscoverController extends Controller
           ->firstOrFail();
 
         $posts = $tag->posts()
+          ->whereNull('url')
+          ->whereNull('uri')
           ->whereHas('media')
           ->withCount(['likes', 'comments'])
           ->whereIsNsfw(false)
