@@ -15,6 +15,7 @@ use App\Http\Controllers\Settings\{
     PrivacySettings,
     SecuritySettings
 };
+use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 
 class SettingsController extends Controller
 {
@@ -43,7 +44,7 @@ class SettingsController extends Controller
           'optimize_screen_reader',
           'high_contrast_mode',
           'video_autoplay',
-      ];
+        ];
         foreach ($fields as $field) {
             $form = $request->input($field);
             if ($form == 'on') {
@@ -129,6 +130,27 @@ class SettingsController extends Controller
     public function developers()
     {
         return view('settings.developers');
+    }
+
+    public function removeAccountTemporary(Request $request)
+    {
+        return view('settings.remove.temporary');
+    }
+
+    public function removeAccountPermanent(Request $request)
+    {
+        return view('settings.remove.permanent');
+    }
+
+    public function removeAccountPermanentSubmit(Request $request)
+    {
+        $user = Auth::user();
+        if($user->is_admin == true) {
+            return abort(400, 'You cannot delete an admin account.');
+        }
+        DeleteAccountPipeline::dispatch($user);
+        Auth::logout();
+        return redirect('/');
     }
 }
 
