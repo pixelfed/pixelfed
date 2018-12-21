@@ -68,8 +68,12 @@ class DeleteAccountPipeline implements ShouldQueue
         $this->deleteMedia($user);
         $this->deleteMentions($user);
         $this->deleteNotifications($user);
+        $this->deleteStatuses($user);
+        $this->deleteReports($user);
+        $this->deleteProfile($user);
+        $this->deleteUser($user);
 
-        // todo send Delete to every known instance sharedInbox   
+        // TODO: send Delete to every known instance sharedInbox   
     }
 
     public function deleteAccountLogs($user)
@@ -77,7 +81,7 @@ class DeleteAccountPipeline implements ShouldQueue
         AccountLog::chunk(200, function($logs) use ($user) {
             foreach($logs as $log) {
                 if($log->user_id == $user->id) {
-                    $log->delete();
+                    $log->forceDelete();
                 }
             }
         });
@@ -85,7 +89,7 @@ class DeleteAccountPipeline implements ShouldQueue
 
     public function deleteActivities($user)
     {
-        // todo after AP
+        // deprecated, removed inbox activity logger
     }
 
     public function deleteAvatar($user)
@@ -100,35 +104,35 @@ class DeleteAccountPipeline implements ShouldQueue
             unlink($avatar->thumb_path);
         }
 
-        $avatar->delete();
+        $avatar->forceDelete();
     }
 
     public function deleteBookmarks($user)
     {
-        Bookmark::whereProfileId($user->profile->id)->delete();
+        Bookmark::whereProfileId($user->profile->id)->forceDelete();
     }
 
     public function deleteEmailVerification($user)
     {
-        EmailVerification::whereUserId($user->id)->delete();
+        EmailVerification::whereUserId($user->id)->forceDelete();
     }
 
     public function deleteFollowRequests($user)
     {
         $id = $user->profile->id;
-        FollowRequest::whereFollowingId($id)->orWhere('follower_id', $id)->delete();
+        FollowRequest::whereFollowingId($id)->orWhere('follower_id', $id)->forceDelete();
     }
 
     public function deleteFollowers($user)
     {
         $id = $user->profile->id;
-        Follower::whereProfileId($id)->orWhere('following_id', $id)->delete();
+        Follower::whereProfileId($id)->orWhere('following_id', $id)->forceDelete();
     }
 
     public function deleteLikes($user)
     {
         $id = $user->profile->id;
-        Like::whereProfileId($id)->delete();
+        Like::whereProfileId($id)->forceDelete();
     }
 
     public function deleteMedia($user)
@@ -143,23 +147,36 @@ class DeleteAccountPipeline implements ShouldQueue
             if(is_file($thumb)) {
                 unlink($thumb);
             }
-            $media->delete();
+            $media->forceDelete();
         }
     }
 
     public function deleteMentions($user)
     {
-        Mention::whereProfileId($user->profile->id)->delete();
+        Mention::whereProfileId($user->profile->id)->forceDelete();
     }
 
     public function deleteNotifications($user)
     {
         $id = $user->profile->id;
-        Notification::whereProfileId($id)->orWhere('actor_id', $id)->delete();
+        Notification::whereProfileId($id)->orWhere('actor_id', $id)->forceDelete();
     }
 
-    public function deleteProfile($user) {}
-    public function deleteReports($user) {}
-    public function deleteStatuses($user) {}
-    public function deleteUser($user) {}
+    public function deleteStatuses($user) {
+        Status::whereProfileId($user->profile->id)->forceDelete();
+    }
+
+    public function deleteProfile($user) {
+        Profile::whereUserId($user->id)->delete();
+    }
+
+    public function deleteReports($user) {
+        Report::whereUserId($user->id)->forceDelete();
+    }
+
+    public function deleteUser($user) {
+        UserFilter::find($user->id)->forceDelete();
+        UserSetting::find($user->id)->forceDelete();
+        User::find($user->id)->forceDelete();
+    }
 }
