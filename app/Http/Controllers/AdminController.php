@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Media;
+use App\Like;
 use App\Profile;
 use App\Report;
 use App\Status;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Jackiedo\DotenvEditor\DotenvEditor;
 use App\Http\Controllers\Admin\{
-  AdminReportController
+  AdminReportController,
+  AdminSettingsController
 };
+use App\Util\Lexer\PrettyNumber;
 
 class AdminController extends Controller
 {
-    use AdminReportController;
+    use AdminReportController, AdminSettingsController;
 
     public function __construct()
     {
@@ -30,15 +34,16 @@ class AdminController extends Controller
 
     public function users(Request $request)
     {
-        $stats = [];
-        $users = User::orderBy('id', 'desc')->paginate(10);
+        $col = $request->query('col') ?? 'id';
+        $dir = $request->query('dir') ?? 'desc';
+        $stats = $this->collectUserStats($request);
+        $users = User::withCount('statuses')->orderBy($col, $dir)->paginate(10);
         return view('admin.users.home', compact('users', 'stats'));
     }
 
-
     public function editUser(Request $request, $id)
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id);
         $profile = $user->profile;
         return view('admin.users.edit', compact('user', 'profile'));
     }
@@ -98,7 +103,7 @@ class AdminController extends Controller
         'remote' => Profile::whereNotNull('remote_url')->count()
       ];
       $stats['avg'] = [
-        'age' => 0,
+        'likes' => floor(Like::average('profile_id')),
         'posts' => floor(Status::avg('profile_id'))
       ];
       return $stats;
