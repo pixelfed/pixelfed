@@ -14,7 +14,7 @@
     </div>
     <div class="col-12 col-md-7 offset-md-1">
       <div class="card">
-        <div class="card-header font-weight-bold bg-white">Update Avatar</div>
+        <div class="card-header font-weight-bold">Update Avatar</div>
         <div class="card-body">
         <form method="post" enctype="multipart/form-data">
           @csrf

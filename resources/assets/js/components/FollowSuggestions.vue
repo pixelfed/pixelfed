@@ -4,7 +4,7 @@
 
 <template>
     <div class="card mb-4">
-      <div class="card-header bg-white">
+      <div class="card-header">
         <span class="font-weight-bold h5">Who to follow</span>
         <span class="small float-right font-weight-bold">
           <a href="javascript:void(0);" class="pr-2" v-on:click="fetchData">Refresh</a>

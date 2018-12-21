@@ -22,7 +22,7 @@
   			Added {{$user->{'2fa_setup_at'}->diffForHumans()}}
   		</p>
   	</div>
-  	<div class="card-footer bg-white text-right">
+  	<div class="card-footer text-right">
   		<a class="btn btn-outline-secondary btn-sm px-4 font-weight-bold mr-3" href="{{route('settings.security.2fa.recovery')}}">View Recovery Codes</a>
   		<a class="btn btn-outline-danger btn-sm px-4 font-weight-bold remove-device" href="#">Remove</a>
   	</div>

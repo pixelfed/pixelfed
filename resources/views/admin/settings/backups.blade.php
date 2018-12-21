@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-md-7">
       <div class="card">
-        <div class="card-header bg-white font-weight-bold">Settings</div>
+        <div class="card-header font-weight-bold">Settings</div>
         <div class="card-body">
           <form>
             <div class="form-group pt-3">
@@ -49,7 +49,7 @@
     </div>
     <div class="col-md-5">
       <div class="card">
-        <div class="card-header bg-white font-weight-bold">Current Backups</div>
+        <div class="card-header font-weight-bold">Current Backups</div>
         <div class="list-group list-group-flush">
           @foreach($files as $file)
           @if($file->isFile())

@@ -1,5 +1,5 @@
 <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
-  <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
+  <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3">
     <a href="{{$user->url()}}" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" title="{{$user->username}}">
       <div class="status-avatar mr-2">
         <img src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">
@@ -106,7 +106,7 @@
       </div>
     </div>
   </div>
-  <div class="card-footer bg-white sticky-md-bottom">
+  <div class="card-footer sticky-md-bottom">
     <form class="comment-form" method="post" action="/i/comment" data-id="{{$status->id}}" data-truncate="false">
       @csrf
       <input type="hidden" name="item" value="{{$status->id}}">

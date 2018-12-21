@@ -7,7 +7,7 @@
 			</div>
 			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
-				<div class="card-header d-inline-flex align-items-center bg-white">
+				<div class="card-header d-inline-flex align-items-center">
 					<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
 					<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
 						{{status.account.username}}
@@ -88,7 +88,7 @@
 					</div>
 				</div>
 
-				<div class="card-footer bg-white d-none">
+				<div class="card-footer d-none">
 					<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
 						<input type="hidden" name="item" value="">
 						<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
@@ -114,7 +114,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="card-footer bg-white py-1 d-none">
+					<div class="card-footer py-1 d-none">
 						<div class="d-flex justify-content-between text-center">
 							<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
 								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
@@ -135,7 +135,7 @@
 
 			<div class="mb-4">
 				<div class="card notification-card">
-					<div class="card-header bg-white">
+					<div class="card-header">
 						<p class="mb-0 d-flex align-items-center justify-content-between">
 							<span class="text-muted font-weight-bold">Notifications</span>
 							<a class="text-dark small" href="/account/activity">See All</a>

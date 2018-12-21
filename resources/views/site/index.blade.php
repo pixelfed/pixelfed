@@ -77,7 +77,7 @@
 <div class="py-5 d-none d-md-block"></div>
 <div class="container slim d-flex justify-content-center">
   <div class="card" style="width:500px;">
-    <div class="card-header d-inline-flex align-items-center bg-white">
+    <div class="card-header d-inline-flex align-items-center">
         <img src="/storage/avatars/default.png" width="32px" height="32px" style="border-radius: 32px; border: 1px solid #ccc">
         <span class="username font-weight-bold pl-2 text-dark">
           username
@@ -86,7 +86,7 @@
     <div class="card-body p-0">
       <img class="img-fluid" src="/img/sample-post.jpeg">
     </div>
-    <div class="card-footer bg-white">
+    <div class="card-footer">
       <div class="likes font-weight-bold mb-2">
         <span class="like-count">124k</span> likes
       </div>

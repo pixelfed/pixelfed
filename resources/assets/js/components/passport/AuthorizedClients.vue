@@ -8,7 +8,7 @@
     <div>
         <div v-if="tokens.length > 0">
             <div class="card card-default mb-4">
-                <div class="card-header font-weight-bold bg-white">Authorized Applications</div>
+                <div class="card-header font-weight-bold">Authorized Applications</div>
 
                 <div class="card-body">
                     <!-- Authorized Tokens -->

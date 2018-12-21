@@ -6,7 +6,7 @@
 
 <template>
 	<div class="card mb-4">
-		<div class="card-header py-1 bg-white d-flex align-items-center justify-content-between">
+		<div class="card-header py-1 d-flex align-items-center justify-content-between">
 			<span class="font-weight-bold h5 mb-0">Circles</span>
 
 	        <b-dropdown variant="link" no-caret right>

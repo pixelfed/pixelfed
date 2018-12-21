@@ -5,7 +5,7 @@
 <div class="container px-0 mt-md-4">
   <div class="card card-md-rounded-0 status-container orientation-video">
     <div class="row mx-0">
-    <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
+    <div class="d-flex d-md-none align-items-center justify-content-between card-header w-100">
       <a href="{{$user->url()}}" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" title="{{$user->username}}">
         <div class="status-avatar mr-2">
           <img src="{{$user->avatarUrl()}}" width="24px" height="24px" style="border-radius:12px;">

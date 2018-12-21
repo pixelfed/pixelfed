@@ -7,7 +7,7 @@
 <template>
     <div>
         <div class="card card-default mb-4">
-            <div class="card-header font-weight-bold bg-white">
+            <div class="card-header font-weight-bold">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span>
                         OAuth Clients

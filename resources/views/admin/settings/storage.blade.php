@@ -23,7 +23,7 @@
 			</span>
 		</div>
   	</div>
-  	<div class="card-footer bg-white font-weight-bold text-center">
+  	<div class="card-footer font-weight-bold text-center">
   		Total Disk Space
   	</div>
   </div>

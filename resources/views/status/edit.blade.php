@@ -6,7 +6,7 @@
   <div class="col-12 col-md-8 offset-md-2 pt-4">
 
     <div class="card">
-      <div class="card-header bg-white font-weight-bold d-flex justify-content-between align-items-center">
+      <div class="card-header font-weight-bold d-flex justify-content-between align-items-center">
         <span>Edit Status</span>
         <a class="btn btn-outline-primary btn-sm font-weight-bold" href="{{$status->url()}}">Back to post</a>
       </div>
@@ -24,7 +24,7 @@
 
     @foreach($status->media()->orderBy('order')->get() as $media)
     <div class="card mt-4 media-card">
-      <div class="card-header bg-white font-weight-bold">
+      <div class="card-header font-weight-bold">
         Media #{{$media->order}}
       </div>
       <div class="card-body p-0">

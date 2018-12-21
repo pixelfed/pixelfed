@@ -6,7 +6,7 @@
   <div class="col-12 col-md-8 offset-md-2">
 
     <div class="card">
-      <div class="card-header lead font-weight-bold bg-white">
+      <div class="card-header lead font-weight-bold">
         Report
       </div>
       <div class="card-body">

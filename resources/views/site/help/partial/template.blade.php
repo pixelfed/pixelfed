@@ -5,7 +5,7 @@
 <div class="container">
   <div class="col-12">
     <div class="card mt-5">
-      <div class="card-header font-weight-bold text-muted bg-white py-4">
+      <div class="card-header font-weight-bold text-muted py-4">
         <a href="{{route('site.help')}}" class="text-muted">Help Center</a>
         <span class="px-2 font-weight-light">&mdash;</span>
         {{ $breadcrumb ?? ''}}

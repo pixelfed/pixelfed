@@ -24,7 +24,7 @@
   <div class="container px-0 mt-md-4">
     <div class="card card-md-rounded-0 status-container orientation-unknown">
       <div class="row px-0 mx-0">
-      <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
+      <div class="d-flex d-md-none align-items-center justify-content-between card-header w-100">
         <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
           <div class="status-avatar mr-2">
             <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
@@ -86,7 +86,7 @@
         </div>
 
         <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
-          <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
+          <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3">
             <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
               <div class="status-avatar mr-2">
                 <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
@@ -148,7 +148,7 @@
               </div>
             </div>
           </div>
-          <div class="card-footer bg-white sticky-md-bottom">
+          <div class="card-footer sticky-md-bottom">
             <div class="comment-form-guest">
               <a href="/login">Login</a> to like or comment.
             </div>

@@ -30,7 +30,7 @@
 
   <div class="accordion mt-3" id="accordianBackground">
     <div class="card">
-      <div class="card-header bg-white" id="headingOne">
+      <div class="card-header" id="headingOne">
         <h5 class="mb-0">
           <button class="btn btn-link font-weight-bold text-dark" type="button" data-toggle="collapse" data-target="#background" aria-expanded="true" aria-controls="background">
             Background
@@ -42,7 +42,7 @@
           <div class="row">
             <div class="col-12 col-md-6">
               <div class="card">
-                <div class="card-header bg-white font-weight-bold">
+                <div class="card-header font-weight-bold">
                   Reporter
                 </div>
                 <ul class="list-group list-group-flush">
@@ -54,7 +54,7 @@
             </div>
             <div class="col-12 col-md-6">
               <div class="card">
-                <div class="card-header bg-white font-weight-bold">
+                <div class="card-header font-weight-bold">
                   Reported
                 </div>
                 <ul class="list-group list-group-flush">
@@ -72,7 +72,7 @@
 
 {{--   <div class="accordion mt-3" id="accordianLog">
     <div class="card">
-      <div class="card-header bg-white" id="headingTwo">
+      <div class="card-header" id="headingTwo">
         <h5 class="mb-0">
           <button class="btn btn-link font-weight-bold text-dark" type="button" data-toggle="collapse" data-target="#log" aria-expanded="true" aria-controls="log">
             Activity Log
@@ -98,7 +98,7 @@
 
 {{--   <div class="accordion mt-3" id="accordianComments">
     <div class="card">
-      <div class="card-header bg-white" id="headingThree">
+      <div class="card-header" id="headingThree">
         <h5 class="mb-0">
           <button class="btn btn-link font-weight-bold text-dark" type="button" data-toggle="collapse" data-target="#comments" aria-expanded="true" aria-controls="comments">
             Comments

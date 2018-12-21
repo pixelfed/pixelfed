@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="">
-{{--       <div class="card-header bg-white">
+{{--       <div class="card-header">
         <span class="font-weight-bold lead">Notifications</span>
         <span class="small float-right font-weight-bold">
           <a href="?a=comment" class="pr-4 text-muted" title="Commented on your post"><i class="fas fa-comment fa-2x"></i></a>

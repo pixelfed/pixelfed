@@ -4,7 +4,7 @@
 <div class="container my-5">
   <div class="col-12 col-lg-8 offset-lg-2">
     <div class="card mt-4">
-      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <div class="card-header d-flex justify-content-between align-items-center">
         <span><a href="{{route('timeline.personal')}}" class="text-muted"><i class="fas fa-times fa-lg"></i></a></span>
         <span>
           <div class="media">

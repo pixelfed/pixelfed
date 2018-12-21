@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-6 col-lg-5">
             <div class="card">
-                <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Register a new account') }}</div>
+                <div class="card-header p-3 text-center font-weight-bold">{{ __('Register a new account') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}" class="px-5">

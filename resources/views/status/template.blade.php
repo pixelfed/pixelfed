@@ -1,5 +1,5 @@
 <div class="card mb-4 status-card card-md-rounded-0" data-id="{{$item->id}}" data-comment-max-id="0" data-profile-username="{{$item->profile->username}}" data-profile-name="{{$item->profile->name}}" data-timestamp="{{$item->created_at}}">
-  <div class="card-header d-inline-flex align-items-center bg-white">
+  <div class="card-header d-inline-flex align-items-center">
     <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
     <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
       {{$item->profile->username}}
@@ -104,7 +104,7 @@
       <p class="small text-uppercase mb-0"><a href="{{$item->url()}}" class="text-muted">{{$item->created_at->diffForHumans()}}</a></p>
     </div>
   </div>
-  <div class="card-footer bg-white">
+  <div class="card-footer">
     <form class="comment-form" method="post" action="/i/comment" data-id="{{$item->id}}" data-truncate="true">
       @csrf
       <input type="hidden" name="item" value="{{$item->id}}">

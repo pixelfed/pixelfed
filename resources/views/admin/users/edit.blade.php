@@ -48,7 +48,7 @@
   			<div class="card-body text-center">
   				<img src="{{$profile->avatarUrl()}}" class="img-thumbnail rounded-circle" width="128px" height="128px">
   			</div>
-  			<div class="card-footer bg-white">
+  			<div class="card-footer">
   				<p class="font-weight-bold mb-0 small">Last updated: {{$profile->avatar->updated_at->diffForHumans()}}</p>
   			</div>
   		</div>
