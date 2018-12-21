@@ -16,6 +16,8 @@ class Notification extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $fillable = ['*'];
+
     public function actor()
     {
         return $this->belongsTo(Profile::class, 'actor_id', 'id');
