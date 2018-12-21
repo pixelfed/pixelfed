@@ -35,9 +35,9 @@ class CommentController extends Controller
             abort(403);
         }
         $this->validate($request, [
-        'item'    => 'required|integer',
-        'comment' => 'required|string|max:500',
-      ]);
+            'item'    => 'required|integer',
+            'comment' => 'required|string|max:500',
+        ]);
         $comment = $request->input('comment');
         $statusId = $request->item;
 
