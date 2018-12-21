@@ -132,6 +132,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate')->middleware('throttle:100,1440');
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
 
+        Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
+            // Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
+            Route::get('request/permanent', 'SettingsController@removeAccountPermanent')->name('settings.remove.permanent');
+            Route::post('request/permanent', 'SettingsController@removeAccountPermanentSubmit');
+        });
+
         Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function() {
             Route::get(
                 '/', 
