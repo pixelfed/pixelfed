@@ -22,7 +22,7 @@ class SearchController extends Controller
             return;
         }
         $hash = hash('sha256', $tag);
-        $tokens = Cache::remember('api:search:tag:'.$hash, 60, function () use ($tag) {
+        $tokens = Cache::remember('api:search:tag:'.$hash, 5, function () use ($tag) {
             $tokens = collect([]);
             $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->limit(20)->get();
             if($hashtags->count() > 0) {
@@ -39,6 +39,7 @@ class SearchController extends Controller
                 $tokens->push($tags);
             }
             $users = Profile::select('username', 'name', 'id')
+                ->whereNull('status')
                 ->where('username', 'like', '%'.$tag.'%')
                 ->limit(20)
                 ->get();
