@@ -90,6 +90,9 @@ class Status extends Model
 
     public function url()
     {
+        if($this->url) {
+            return $this->url;
+        }
         $id = $this->id;
         $username = $this->profile->username;
         $path = config('app.url')."/p/{$username}/{$id}";

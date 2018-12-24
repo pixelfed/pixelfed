@@ -70,9 +70,9 @@
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item font-weight-ultralight text-truncate" href="{{Auth::user()->url()}}">
-                                <img class="img-thumbnail rounded-circle pr-1" src="{{Auth::user()->profile->avatarUrl()}}" width="32px">
+                                <img class="rounded-circle box-shadow mr-1" src="{{Auth::user()->profile->avatarUrl()}}" width="26px" height="26px">
                                 &commat;{{Auth::user()->username}}
-                                <p class="small mb-0 text-muted">{{__('navmenu.viewMyProfile')}}</p>
+                                <p class="small mb-0 text-muted text-center">{{__('navmenu.viewMyProfile')}}</p>
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">

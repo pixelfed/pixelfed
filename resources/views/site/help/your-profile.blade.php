@@ -16,7 +16,7 @@
     <div class="collapse" id="collapse1">
       <div>
         To create an account using a web browser:
-        <ol>
+        <ol class="font-weight-light">
           <li>Go to <a href="{{route('settings')}}">{{route('settings')}}</a>.</li>
           <li>You should see the <span class="font-weight-bold">Name</span>, <span class="font-weight-bold">Website</span>, and  <span class="font-weight-bold">Bio</span> fields.</li>
           <li>Change the desired fields, and then click the <span class="font-weight-bold">Submit</span> button.</li>
@@ -45,7 +45,7 @@
     <div class="collapse" id="collapse3">
       <div>
         To change your account visibility:
-        <ol>
+        <ol class="font-weight-light">
           <li>Go to <a href="{{route('settings.privacy')}}">{{route('settings.privacy')}}</a>.</li>
           <li>Check the <span class="font-weight-bold">Private Account</span> checkbox.</li>
           <li>The confirmation modal will popup and ask you if you want to keep existing followers and disable new follow requests</li>
@@ -99,7 +99,7 @@
     </div>
   </p> --}}
   <hr>
-  <p class="h5 text-muted font-weight-light">Security</p>
+  <p class="h5 text-muted font-weight-light" id="security">Security</p>
   <p> 
     <a class="text-dark font-weight-bold" data-toggle="collapse" href="#sec-collapse8" role="button" aria-expanded="false" aria-controls="sec-collapse8">
       <i class="fas fa-chevron-down mr-2"></i>
@@ -108,7 +108,7 @@
     <div class="collapse" id="sec-collapse8">
       <div>
         Here are some recommendations to keep your account secure:
-        <ul class="font-weight-bold">
+        <ul class="font-weight-light">
           <li>Pick a strong password, don't re-use it on other websites</li>
           <li>Never share your password</li>
           <li>Remember to log out on public computers or devices</li>
@@ -140,4 +140,43 @@
       </div>
     </div>
   </p>
+  {{-- <hr>
+  <p class="h5 text-muted font-weight-light" id="delete-your-account">Delete Your Account</p>
+  <p> 
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#del-collapse1" role="button" aria-expanded="false" aria-controls="del-collapse1">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How do I temporarily disable my account?
+    </a>
+    <div class="collapse" id="del-collapse1">
+      <div>
+        <p>If you temporarily disable your account, your profile, photos, comments and likes will be hidden until you reactivate it by logging back in. To temporarily disable your account:</p>
+        <ol class="font-weight-light">
+          <li>Log into <a href="{{config('app.url')}}">{{config('pixelfed.domain.app')}}</a></li>
+          <li>Tap or click the <i class="far fa-user text-dark"></i> menu and select <span class="font-weight-bold text-dark"><i class="fas fa-cog pr-1"></i> Settings</span></li>
+          <li>Scroll down and click on the <span class="font-weight-bold">Temporarily Disable Account</span> link.</li>
+          <li>Follow the instructions on the next page.</li>
+        </ol>
+      </div>
+    </div>
+  </p>
+  <p> 
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#del-collapse2" role="button" aria-expanded="false" aria-controls="del-collapse2">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How do I delete my account?
+    </a>
+    <div class="collapse" id="del-collapse2">
+      <div>
+        <div class="bg-light p-3 mb-4">
+          <p class="mb-0">When you delete your account, your profile, photos, videos, comments, likes and followers will be permanently removed. If you'd just like to take a break, you can <a href="{{route('settings.remove.temporary')}}">temporarily disable</a> your account instead.</p>
+        </div>
+        <p>After you delete your account, you can't sign up again with the same username on this instance or add that username to another account on this instance, and we can't reactivate deleted accounts.</p>
+        <p>To permanently delete your account:</p>
+        <ol class="font-weight-light">
+          <li>Go to <a href="{{route('settings.remove.permanent')}}">the <span class="font-weight-bold">Delete Your Account</span> page</a>.  If you're not logged into pixelfed on the web, you'll be asked to log in first. You can't delete your account from within a mobile app.</li>
+          <li>Confirm your account password.</li>
+          <li>On the <span class="font-weight-bold">Delete Your Account</span> page click or tap on the <span>Permanently Delete My Account</span> button.</li>
+        </ol>
+      </div>
+    </div>
+  </p> --}}
 @endsection

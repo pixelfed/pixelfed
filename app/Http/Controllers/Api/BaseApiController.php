@@ -123,7 +123,7 @@ class BaseApiController extends Controller
     public function avatarUpdate(Request $request)
     {
         $this->validate($request, [
-            'upload'   => 'required|mimes:jpeg,png,gif|max:2000',
+            'upload'   => 'required|mimes:jpeg,png,gif|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {

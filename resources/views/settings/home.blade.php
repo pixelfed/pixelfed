@@ -10,11 +10,12 @@
     @csrf
     <div class="form-group row">
       <div class="col-sm-3">
-        <img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" class="rounded-circle img-thumbnail float-right">
+        <img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" height="38px" class="rounded-circle float-right">
       </div>
       <div class="col-sm-9">
         <p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
-        <p><a href="#" class="font-weight-bold change-profile-photo">Change Profile Photo</a></p>
+        <p class="mb-0"><a href="#" class="font-weight-bold change-profile-photo">Change Profile Photo</a></p>
+        <p><span class="small font-weight-bold">Max avatar size: <span id="maxAvatarSize"></span></span></p>
       </div>
     </div>
     <div class="form-group row">
@@ -60,6 +61,25 @@
         </p>
       </div>
     </div>
+    <div class="pt-5">
+      <p class="font-weight-bold text-muted text-center">Storage Usage</p>
+    </div>
+    <div class="form-group row">
+      <label for="email" class="col-sm-3 col-form-label font-weight-bold text-right">Storage Used</label>
+      <div class="col-sm-9">
+        <div class="progress mt-2">
+          <div class="progress-bar" role="progressbar" style="width: {{$storage['percentUsed']}}%"  aria-valuenow="{{$storage['percentUsed']}}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="help-text">
+          <span class="small text-muted">
+            {{$storage['percentUsed']}}% used
+          </span>
+          <span class="small text-muted float-right">
+            {{$storage['usedPretty']}} / {{$storage['limitPretty']}}
+          </span>
+        </div>
+      </div>
+    </div>
     <hr>
     <div class="form-group row">
       <div class="col-12 text-right">
@@ -96,6 +116,8 @@
     $('.bio-counter').html(val);
   });
 
+  $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
+
   $(document).on('click', '.change-profile-photo', function(e) {
     e.preventDefault();
     swal({
@@ -103,7 +125,7 @@
       content: {
         element: 'input',
         attributes: {
-          placeholder: 'Upload your photo',
+          placeholder: 'Upload your photo.',
           type: 'file',
           name: 'photoUpload',
           id: 'photoUploadInput'

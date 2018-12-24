@@ -25,6 +25,11 @@ class AuthLogin
     public function handle($event)
     {
         $user = $event->user;
+
+        if(!$user) {
+            return;
+        }
+
         if (empty($user->settings)) {
             DB::transaction(function() use($user) {
                 UserSetting::firstOrCreate([

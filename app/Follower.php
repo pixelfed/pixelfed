@@ -26,7 +26,7 @@ class Follower extends Model
 
     public function permalink($append = null)
     {
-        $path = $this->actor->permalink("/follow/{$this->id}{$append}");
+        $path = $this->actor->permalink("#accepts/follows/{$this->id}{$append}");
         return url($path);
     }
 

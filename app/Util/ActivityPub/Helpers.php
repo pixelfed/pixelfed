@@ -22,6 +22,7 @@ use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\HttpSignatures\{GuzzleHttpSignatures, KeyStore, Context, Verifier};
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use App\Util\ActivityPub\HttpSignature;
 
 class Helpers {
 
@@ -215,13 +216,14 @@ class Helpers {
 			} else {
 				$reply_to = null;
 			}
-
+			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
 			$status = new Status;
 			$status->profile_id = $profile->id;
 			$status->url = $url;
+			$status->uri = $url;
 			$status->caption = strip_tags($res['content']);
 			$status->rendered = Purify::clean($res['content']);
-			$status->created_at = Carbon::parse($res['published']);
+			$status->created_at = Carbon::parse($ts);
 			$status->in_reply_to_id = $reply_to;
 			$status->local = false;
 			$status->save();
@@ -307,72 +309,24 @@ class Helpers {
 
     public static function sendSignedObject($senderProfile, $url, $body)
     {
-        $profile = $senderProfile;
-        $keyId = $profile->keyId();
+        $payload = json_encode($body);
+        $headers = HttpSignature::sign($senderProfile, $url, $body);
 
-        $date = new \DateTime('UTC');
-        $date = $date->format('D, d M Y H:i:s \G\M\T');
-        $host = parse_url($url, PHP_URL_HOST);
-        $path = parse_url($url, PHP_URL_PATH);
-        $headers = [
-            'date'         => $date,
-            'host'		   => $host,
-            'content-type' => 'application/activity+json',
-        ];
-
-        $context = new Context([
-            'keys' => [$profile->keyId() => $profile->private_key],
-            'algorithm' => 'rsa-sha256',
-            'headers' => ['(request-target)', 'date', 'host', 'content-type'],
-        ]);
-
-        $handlerStack = GuzzleHttpSignatures::defaultHandlerFromContext($context);
-        $client = new Client(['handler' => $handlerStack]);
-
-        $response = $client->request('POST', $url, ['headers' => $headers, 'json' => $body]);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        $response = curl_exec($ch);
         return;
     }
 
     private static function _headersToSigningString($headers) {
-    	return implode("\n", array_map(function($k, $v){
-    		return strtolower($k).': '.$v;
-    	}, array_keys($headers), $headers));
     }
 
     public static function validateSignature($request, $payload = null)
     {
-        $date = Carbon::parse($request['date']);
-        $min = Carbon::now()->subHours(13);
-        $max = Carbon::now()->addHours(13);
 
-        if($date->gt($min) == false || $date->lt($max) == false) {
-        	return false;
-        }
-        $json = json_encode($payload);
-        $digest = base64_encode(hash('sha256', $json, true));
-	    $parts = explode(',', $request['signature']);
-	    $signatureData = [];
-	    foreach($parts as $part) {
-	      if(preg_match('/(.+)="(.+)"/', $part, $match)) {
-	        $signatureData[$match[1]] = $match[2];
-	      }
-	    }
-
-        $actor = $payload['actor'];
-        $profile = self::profileFirstOrNew($actor, true);
-        if(!$profile) {
-        	return false;
-        }
-        $publicKey = $profile->public_key;
-	    $path = $request['path'];
-	    $host = $request['host'];
-        $signingString = "(request-target): post {$path}".PHP_EOL.
-        "host: {$host}".PHP_EOL.
-        "date: {$request['date']}".PHP_EOL.
-        "digest: {$request['digest']}".PHP_EOL.
-        "content-type: {$request['contentType']}";
-		$verified = openssl_verify($signingString, base64_decode($signatureData['signature']), $publicKey, OPENSSL_ALGO_SHA256);
-		return (bool) $verified;
     }
 
     public static function fetchPublicKey()
