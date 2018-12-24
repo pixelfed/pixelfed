@@ -20,7 +20,11 @@ class ProfileController extends Controller
     public function show(Request $request, $username)
     {
         $user = Profile::whereUsername($username)->firstOrFail();
-        return $this->buildProfile($request, $user);
+        if($user->status != null) {
+            return $this->accountCheck($user);
+        } else {
+            return $this->buildProfile($request, $user);
+        }
     }
 
     // TODO: refactor this mess
@@ -30,7 +34,11 @@ class ProfileController extends Controller
         $loggedIn = Auth::check();
         $isPrivate = false;
         $isBlocked = false;
-        
+
+        if($user->status != null) {
+            return ProfileController::accountCheck($user);
+        }
+
         if ($user->remote_url) {
             $settings = new \StdClass;
             $settings->crawlable = false;
@@ -118,8 +126,27 @@ class ProfileController extends Controller
         return false;
     }
 
+    public static function accountCheck(Profile $profile)
+    {
+        switch ($profile->status) {
+            case 'disabled':
+            case 'delete':
+                return view('profile.disabled');
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return abort(404);
+    }
+
     public function showActivityPub(Request $request, $user)
     {
+        if($user->status != null) {
+            return ProfileController::accountCheck($user);
+        }
         $fractal = new Fractal\Manager();
         $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
         $res = $fractal->createData($resource)->toArray();
@@ -129,6 +156,9 @@ class ProfileController extends Controller
     public function showAtomFeed(Request $request, $user)
     {
         $profile = $user = Profile::whereUsername($user)->firstOrFail();
+        if($profile->status != null) {
+            return $this->accountCheck($profile);
+        }
         if($profile->is_private || Auth::check()) {
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
@@ -144,7 +174,9 @@ class ProfileController extends Controller
     public function followers(Request $request, $username)
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
-
+        if($profile->status != null) {
+            return $this->accountCheck($profile);
+        }
         // TODO: fix $profile/$user mismatch in profile & follower templates
         $owner = Auth::check() && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
@@ -155,7 +187,7 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user', 'is_following'));
             }
         }
-        $followers = $profile->followers()->orderBy('created_at', 'desc')->simplePaginate(12);
+        $followers = $profile->followers()->whereNull('status')->orderBy('created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
             $settings = new \StdClass;
@@ -172,6 +204,9 @@ class ProfileController extends Controller
     public function following(Request $request, $username)
     {
         $profile = $user = Profile::whereUsername($username)->firstOrFail();
+        if($profile->status != null) {
+            return $this->accountCheck($profile);
+        }
         // TODO: fix $profile/$user mismatch in profile & follower templates
         $owner = Auth::check() && Auth::id() === $user->user_id;
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
@@ -182,7 +217,7 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user', 'is_following'));
             }
         }
-        $following = $profile->following()->orderBy('created_at', 'desc')->simplePaginate(12);
+        $following = $profile->following()->whereNull('status')->orderBy('created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
             $settings = new \StdClass;
@@ -201,7 +236,10 @@ class ProfileController extends Controller
         if (Auth::check() === false || $username !== Auth::user()->username) {
             abort(403);
         }
-        $user = Auth::user()->profile;
+        $user = $profile = Auth::user()->profile;
+        if($profile->status != null) {
+            return $this->accountCheck($profile);
+        }
         $settings = User::whereUsername($username)->firstOrFail()->settings;
         $owner = true;
         $following = false;
