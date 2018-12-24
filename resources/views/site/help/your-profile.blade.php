@@ -140,9 +140,9 @@
       </div>
     </div>
   </p>
-  <hr>
+  {{-- <hr>
   <p class="h5 text-muted font-weight-light" id="delete-your-account">Delete Your Account</p>
-  {{-- <p> 
+  <p> 
     <a class="text-dark font-weight-bold" data-toggle="collapse" href="#del-collapse1" role="button" aria-expanded="false" aria-controls="del-collapse1">
       <i class="fas fa-chevron-down mr-2"></i>
       How do I temporarily disable my account?
@@ -158,7 +158,7 @@
         </ol>
       </div>
     </div>
-  </p> --}}
+  </p>
   <p> 
     <a class="text-dark font-weight-bold" data-toggle="collapse" href="#del-collapse2" role="button" aria-expanded="false" aria-controls="del-collapse2">
       <i class="fas fa-chevron-down mr-2"></i>
@@ -166,9 +166,9 @@
     </a>
     <div class="collapse" id="del-collapse2">
       <div>
-        {{-- <div class="bg-light p-3 mb-4">
+        <div class="bg-light p-3 mb-4">
           <p class="mb-0">When you delete your account, your profile, photos, videos, comments, likes and followers will be permanently removed. If you'd just like to take a break, you can <a href="{{route('settings.remove.temporary')}}">temporarily disable</a> your account instead.</p>
-        </div> --}}
+        </div>
         <p>After you delete your account, you can't sign up again with the same username on this instance or add that username to another account on this instance, and we can't reactivate deleted accounts.</p>
         <p>To permanently delete your account:</p>
         <ol class="font-weight-light">
@@ -178,5 +178,5 @@
         </ol>
       </div>
     </div>
-  </p>
+  </p> --}}
 @endsection
