@@ -55,13 +55,16 @@ class RegisterController extends Controller
         $this->validateUsername($data['username']);
         $usernameRules = [
             'required',
-            'alpha_dash',
             'min:2',
             'max:15',
             'unique:users',
             function ($attribute, $value, $fail) {
                 if (!ctype_alpha($value[0])) {
                     return $fail($attribute.' is invalid. Username must be alpha-numeric and start with a letter.');
+                }
+                $val = str_replace(['-', '_'], '', $value);
+                if(!ctype_alnum($val)) {
+                    return $fail($attribute . ' is invalid. Username must be alpha-numeric.');
                 }
             },
         ];
