@@ -11,15 +11,12 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Jackiedo\DotenvEditor\DotenvEditor;
-use App\Http\Controllers\Admin\{
-  AdminReportController,
-  AdminSettingsController
-};
+use App\Http\Controllers\Admin\AdminReportController;
 use App\Util\Lexer\PrettyNumber;
 
 class AdminController extends Controller
 {
-    use AdminReportController, AdminSettingsController;
+    use AdminReportController;
 
     public function __construct()
     {
