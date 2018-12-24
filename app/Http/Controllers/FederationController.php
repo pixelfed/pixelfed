@@ -48,8 +48,8 @@ class FederationController extends Controller
     {
         $this->authCheck();
         $this->validate($request, [
-        'url' => 'required|string',
-      ]);
+            'url' => 'required|string',
+        ]);
 
         if (config('pixelfed.remote_follow_enabled') !== true) {
             abort(403);
@@ -123,16 +123,15 @@ class FederationController extends Controller
     {
         $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
 
-        $hash = hash('sha256', $request->input('resource'));
-
-        $webfinger = Cache::remember('api:webfinger:'.$hash, 1440, function () use ($request) {
-            $resource = $request->input('resource');
-            $parsed = Nickname::normalizeProfileUrl($resource);
-            $username = $parsed['username'];
-            $user = Profile::whereUsername($username)->firstOrFail();
-
-            return (new Webfinger($user))->generate();
-        });
+        $resource = $request->input('resource');
+        $hash = hash('sha256', $resource);
+        $parsed = Nickname::normalizeProfileUrl($resource);
+        $username = $parsed['username'];
+        $profile = Profile::whereUsername($username)->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
+        $webfinger = (new Webfinger($profile))->generate();
 
         return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT);
     }
@@ -156,13 +155,16 @@ XML;
             abort(403);
         }
 
-        $user = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
-        if($user->is_private) {
+        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
+        if($profile->is_private) {
             return response()->json(['error'=>'403', 'msg' => 'private profile'], 403);
         }
-        $timeline = $user->statuses()->whereVisibility('public')->orderBy('created_at', 'desc')->paginate(10);
+        $timeline = $profile->statuses()->whereVisibility('public')->orderBy('created_at', 'desc')->paginate(10);
         $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Item($user, new ProfileOutbox());
+        $resource = new Fractal\Resource\Item($profile, new ProfileOutbox());
         $res = $fractal->createData($resource)->toArray();
 
         return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
@@ -175,6 +177,9 @@ XML;
         }
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
         $body = $request->getContent();
         $bodyDecoded = json_decode($body, true);
         $signature = $request->header('signature');
@@ -205,6 +210,9 @@ XML;
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),
@@ -226,6 +234,9 @@ XML;
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),
