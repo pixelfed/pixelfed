@@ -14,7 +14,7 @@ class CreateStoriesTable extends Migration
     public function up()
     {
         Schema::create('stories', function (Blueprint $table) {
-            $table->increments('bigIncrements');
+            $table->bigIncrements('id');
             $table->bigInteger('profile_id')->unsigned();
             $table->timestamp('published_at')->nullable();
             $table->timestamp('expires_at')->nullable();
