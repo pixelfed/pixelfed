@@ -19,7 +19,7 @@ class Status extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id'];
+    protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id', 'type'];
 
     const STATUS_TYPES = [
         'text',
@@ -90,13 +90,13 @@ class Status extends Model
 
     public function url()
     {
-        if($this->url) {
-            return $this->url;
+        if($this->uri) {
+            return $this->uri;
         }
         $id = $this->id;
         $username = $this->profile->username;
-        $path = config('app.url')."/p/{$username}/{$id}";
-        return url($path);
+        $path = url(config('app.url')."/p/{$username}/{$id}");
+        return $path;
     }
 
     public function permalink($suffix = '/activity')
