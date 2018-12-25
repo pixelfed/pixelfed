@@ -271,7 +271,19 @@ class Inbox
 
     public function handleDeleteActivity()
     {
+        $actor = $this->payload['actor'];
+        $obj = $this->payload['object'];
+        if(is_string($obj) && Helpers::validateUrl($obj)) {
+            // actor object detected
 
+        } else if (is_array($obj) && isset($obj['type']) && $obj['type'] == 'Tombstone') {
+            // tombstone detected
+            $status = Status::whereUri($obj['id'])->first();
+            if($status == null) {
+                return;
+            }
+            $status->forceDelete();
+        }
     }
 
     public function handleLikeActivity()
@@ -311,7 +323,21 @@ class Inbox
                 $status = Helpers::statusFirstOrFetch($obj['object']);
                 Like::whereProfileId($profile->id)
                     ->whereStatusId($status->id)
-                    ->delete();
+                    ->forceDelete();
+                break;
+                
+            case 'Announce':
+                $parent = Helpers::statusFirstOrFetch($obj['object']);
+                $status = Status::whereProfileId($profile->id)
+                    ->whereReblogOfId($parent->id)
+                    ->first();
+                Notification::whereProfileId($parent->profile->id)
+                    ->whereActorId($profile->id)
+                    ->whereAction('share')
+                    ->whereItemId($status->id)
+                    ->whereItemType('App\Status')
+                    ->forceDelete();
+                $status->forceDelete();
                 break;
         }
 
