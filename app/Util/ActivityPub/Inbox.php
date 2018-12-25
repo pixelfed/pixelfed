@@ -168,9 +168,10 @@ class Inbox
         }
 
         $status = DB::transaction(function() use($activity, $actor) {
+            $caption = str_limit(strip_tags($activity['content']), config('pixelfed.max_caption_length'));
             $status = new Status;
             $status->profile_id = $actor->id;
-            $status->caption = strip_tags($activity['content']);
+            $status->caption = $caption;
             $status->visibility = $status->scope = 'public';
             $status->url = $url;
             $status->save();
