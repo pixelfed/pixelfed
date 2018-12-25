@@ -131,6 +131,7 @@ class PublicApiController extends Controller
             }
         } else {
             $replies = $status->comments()
+            ->whereNull('reblog_of_id')
             ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
