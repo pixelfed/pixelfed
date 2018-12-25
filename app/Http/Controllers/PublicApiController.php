@@ -72,6 +72,9 @@ class PublicApiController extends Controller
             return [];
         } else {
             $profile = Auth::user()->profile;
+            if($profile->status) {
+                return [];
+            }
             $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
@@ -112,6 +115,7 @@ class PublicApiController extends Controller
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
                 $replies = $status->comments()
+                ->whereNull('reblog_of_id')
                 ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
@@ -119,6 +123,7 @@ class PublicApiController extends Controller
             }
             if($request->filled('max_id')) {
                 $replies = $status->comments()
+                ->whereNull('reblog_of_id')
                 ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
