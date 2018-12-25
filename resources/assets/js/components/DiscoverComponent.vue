@@ -70,7 +70,7 @@ export default {
       }).catch(err => {
         swal(
           'Whoops! Something went wrong...',
-          'An error occured, please try again later.',
+          'An error occurred, please try again later.',
           'error'
         );
       });

@@ -55,7 +55,7 @@ require('./components/statusform');
 //     });
 // }
 
-// Initalize Notification Helper
+// Initialize Notification Helper
 window.pixelfed.n = {};
 
 Vue.component(

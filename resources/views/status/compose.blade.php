@@ -354,7 +354,7 @@ $(document).on('change', '.file-input', function(e) {
         el.remove();
       }
     }).catch(function(e) {
-      swal('Oops, something went wrong!', 'An unexpected error occured.', 'error');
+      swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
     });
     io.value = null;
   });
@@ -478,7 +478,7 @@ $(document).on('click', '#create', function(e) {
       let data = res.data;
       window.location.href = data;
     }).catch(err => {
-      swal('Oops, something went wrong!', 'An unexpected error occured.', 'error');
+      swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
     });
 })
 
