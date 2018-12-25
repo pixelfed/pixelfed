@@ -7,6 +7,7 @@ use App\{
     Activity,
     Follower,
     Like,
+    Media,
     Notification,
     Profile,
     Status
