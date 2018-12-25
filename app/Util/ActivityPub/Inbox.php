@@ -205,15 +205,15 @@ class Inbox
                 return;
             }
             // send notification
-            $notification = new Notification();
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'follow';
-            $notification->message = $follower->toText();
-            $notification->rendered = $follower->toHtml();
-            $notification->item_id = $target->id;
-            $notification->item_type = "App\Profile";
-            $notification->save();
+            Notification::firstOrCreate([
+                'profile_id' => $target->id,
+                'actor_id' => $actor->id,
+                'action' => 'follow',
+                'message' => $follower->toText(),
+                'rendered' => $follower->toHtml(),
+                'item_id' => $target->id,
+                'item_type' => 'App\Profile'
+            ]);
 
             // send Accept to remote profile
             $accept = [
@@ -251,17 +251,15 @@ class Inbox
             'in_reply_to_id' => $parent->id,
             'type' => 'reply'
         ]);
-        if($status->wasRecentlyCreated) {
-            $notification = new Notification();
-            $notification->profile_id = $parent->profile->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'comment';
-            $notification->message = $status->toText();
-            $notification->rendered = $status->toHtml();
-            $notification->item_id = $parent->id;
-            $notification->item_type = "App\Status";
-            $notification->save();
-        }
+        Notification::firstOrCreate([
+            'profile_id' => $parent->profile->id,
+            'actor_id' => $actor->id,
+            'action' => 'share',
+            'message' => $status->replyToText(),
+            'rendered' => $status->replyToHtml(),
+            'item_id' => $parent->id,
+            'item_type' => 'App\Status'
+        ]);
     }
 
     public function handleAcceptActivity()
