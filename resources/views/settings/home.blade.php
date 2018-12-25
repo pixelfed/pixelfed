@@ -82,8 +82,9 @@
     </div>
     <hr>
     <div class="form-group row">
-      <div class="col-12 text-right">
-        <button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
+      <div class="col-12 d-flex align-items-center justify-content-between">
+        <a class="font-weight-bold" href="{{route('settings.remove.temporary')}}">Temporarily Disable Account</a>
+        <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
       </div>
     </div>
   </form>
