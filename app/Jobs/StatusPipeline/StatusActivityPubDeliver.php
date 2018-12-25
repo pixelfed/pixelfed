@@ -38,6 +38,10 @@ class StatusActivityPubDeliver implements ShouldQueue
     {
         $status = $this->status;
 
+        if($status->local == true || $status->url || $status->uri) {
+            return;
+        }
+
         $audience = $status->profile->getAudienceInbox();
         $profile = $status->profile;
 
@@ -49,7 +53,5 @@ class StatusActivityPubDeliver implements ShouldQueue
         foreach($audience as $url) {
             Helpers::sendSignedObject($profile, $url, $activity);
         }
-
-        // todo: fanout on write
     }
 }
