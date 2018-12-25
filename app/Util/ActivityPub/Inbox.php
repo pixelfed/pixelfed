@@ -328,7 +328,7 @@ class Inbox
                 $parent = Helpers::statusFirstOrFetch($obj['object']);
                 $status = Status::whereProfileId($profile->id)
                     ->whereReblogOfId($parent->id)
-                    ->first();
+                    ->firstOrFail();
                 Notification::whereProfileId($parent->profile->id)
                     ->whereActorId($profile->id)
                     ->whereAction('share')
