@@ -267,6 +267,26 @@ body, button, input, textarea {
 .card {
   box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
   border: none;
+
+  .comment-submit {
+      display: none;
+      position: absolute;
+      bottom: 12px;
+      right: 20px;
+      width: 60px;
+      text-align: center;
+      border-radius: 0 3px 3px 0;
+  }
+}
+
+.touch .card {
+    input[name="comment"] {
+        padding-right: 70px;
+    }
+
+    .comment-submit {
+        display: block;
+    }
 }
 
 .box-shadow {
@@ -319,7 +339,7 @@ details summary::-webkit-details-marker {
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
   border-radius: 5px;
   padding: .5em 1em .5em .5em;
-} 
+}
 
 .input-elevated::placeholder {
   color: #838D99;
@@ -417,7 +437,7 @@ details summary::-webkit-details-marker {
     background: rgba(0,0,0,0.04);
 }
 
-.timeline-sidenav.nav-pills .nav-link.active, 
+.timeline-sidenav.nav-pills .nav-link.active,
 .timeline-sidenav.nav-pills .show > .nav-link {
     color: #08d;
     background: transparent;
