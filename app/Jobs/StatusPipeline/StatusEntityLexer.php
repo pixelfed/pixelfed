@@ -48,6 +48,7 @@ class StatusEntityLexer implements ShouldQueue
     public function parseEntities()
     {
         $this->extractEntities();
+        StatusActivityPubDeliver::dispatch($this->status);
     }
 
     public function extractEntities()
@@ -72,7 +73,6 @@ class StatusEntityLexer implements ShouldQueue
             $status->entities = json_encode($this->entities);
             $status->save();
         });
-        StatusActivityPubDeliver::dispatch($this->status);
     }
 
     public function storeHashtags()
