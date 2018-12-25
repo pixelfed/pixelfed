@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\AccountLog;
 use App\Following;
 use App\UserFilter;
-use Auth;
-use DB;
-use Cache;
-use Purify;
+use Auth, DB, Cache, Purify;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Settings\{
     HomeSettings,
@@ -137,6 +135,18 @@ class SettingsController extends Controller
         return view('settings.remove.temporary');
     }
 
+    public function removeAccountTemporarySubmit(Request $request)
+    {
+        $user = Auth::user();
+        $profile = $user->profile;
+        $user->status = 'disabled';
+        $profile->status = 'disabled';
+        $user->save();
+        $profile->save();
+        Auth::logout();
+        return redirect('/');
+    }
+
     public function removeAccountPermanent(Request $request)
     {
         return view('settings.remove.permanent');
@@ -148,7 +158,14 @@ class SettingsController extends Controller
         if($user->is_admin == true) {
             return abort(400, 'You cannot delete an admin account.');
         }
-        DeleteAccountPipeline::dispatch($user);
+        $profile = $user->profile;
+        $ts = Carbon::now()->addMonth();
+        $user->status = 'delete';
+        $profile->status = 'delete';
+        $user->delete_after = $ts;
+        $profile->delete_after = $ts;
+        $user->save();
+        $profile->save();
         Auth::logout();
         return redirect('/');
     }
