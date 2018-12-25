@@ -61,5 +61,30 @@ class AuthLogin
                 CreateAvatar::dispatch($profile);
             });
         }
+
+        if($user->status != null) {
+            $profile = $user->profile;
+            switch ($user->status) {
+                case 'disabled':
+                    $profile->status = null;
+                    $user->status = null;
+                    $profile->save();
+                    $user->save();
+                    break;
+
+                case 'delete':
+                    $profile->status = null;
+                    $profile->delete_after = null;
+                    $user->status = null;
+                    $user->delete_after = null;
+                    $profile->save();
+                    $user->save();
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        }
     }
 }

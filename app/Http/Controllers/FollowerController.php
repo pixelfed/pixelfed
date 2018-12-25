@@ -37,7 +37,7 @@ class FollowerController extends Controller
     protected function handleFollowRequest($item)
     {
         $user = Auth::user()->profile;
-        $target = Profile::where('id', '!=', $user->id)->findOrFail($item);
+        $target = Profile::where('id', '!=', $user->id)->whereNull('status')->findOrFail($item);
         $private = (bool) $target->is_private;
         $blocked = UserFilter::whereUserId($target->id)
                 ->whereFilterType('block')

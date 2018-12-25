@@ -112,6 +112,7 @@ class InternalApiController extends Controller
 
         $people = Profile::select('id', 'name', 'username')
             ->with('avatar')
+            ->whereNull('status')
             ->orderByRaw('rand()')
             ->whereHas('statuses')
             ->whereNull('domain')
@@ -206,6 +207,9 @@ class InternalApiController extends Controller
 
         $posts = Status::select('id', 'caption', 'profile_id')
               ->whereHas('media')
+              ->whereHas('profile', function($q) {
+                return $q->whereNull('status');
+              })
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)

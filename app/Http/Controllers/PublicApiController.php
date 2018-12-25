@@ -43,6 +43,9 @@ class PublicApiController extends Controller
     		return [];
     	} else {
 	        $profile = Auth::user()->profile;
+            if($profile->status) {
+                return [];
+            }
 	        $user = new Fractal\Resource\Item($profile, new AccountTransformer());
         	return $this->fractal->createData($user)->toArray();
     	}
@@ -54,6 +57,9 @@ class PublicApiController extends Controller
             return [];
         } else {
             $profile = Auth::user()->profile;
+            if($profile->status) {
+                return [];
+            }
             $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
@@ -74,8 +80,8 @@ class PublicApiController extends Controller
 
     public function status(Request $request, $username, int $postid)
     {
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($postid);
+        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($postid);
         $this->scopeCheck($profile, $status);
         $item = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = [
@@ -100,8 +106,8 @@ class PublicApiController extends Controller
             'limit'     => 'nullable|integer|min:5|max:50'
         ]);
         $limit = $request->limit ?? 10;
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($postId);
+        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
@@ -133,8 +139,8 @@ class PublicApiController extends Controller
 
     public function statusLikes(Request $request, $username, $id)
     {
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($id);
+        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($id);
         $this->scopeCheck($profile, $status);
         $likes = $this->getLikes($status);
         return response()->json([
@@ -144,8 +150,8 @@ class PublicApiController extends Controller
 
     public function statusShares(Request $request, $username, $id)
     {
-        $profile = Profile::whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->find($id);
+        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($id);
         $this->scopeCheck($profile, $status);
         $shares = $this->getShares($status);
         return response()->json([
@@ -210,7 +216,7 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+        $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
@@ -272,7 +278,7 @@ class PublicApiController extends Controller
         $following = Follower::whereProfileId($pid)->pluck('following_id');
         $following->push($pid)->toArray();
 
-        $private = Profile::whereIsPrivate(true)->where('id', '!=', $pid)->pluck('id');
+        $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])

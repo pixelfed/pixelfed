@@ -76,6 +76,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('follow', 'FollowerController@store')->middleware('throttle:250,1440');
         Route::post('bookmark', 'BookmarkController@store')->middleware('throttle:250,1440');
         Route::get('lang/{locale}', 'SiteController@changeLocale');
+        Route::get('restored', 'AccountController@accountRestored');
 
         Route::get('verify-email', 'AccountController@verifyEmail');
         Route::post('verify-email', 'AccountController@sendVerifyEmail')->middleware('throttle:10,1440');
@@ -133,12 +134,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
 
         // Todo: Release in 0.7.2
-        // Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
-        //     Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
-        //     Route::post('request/temporary', 'SettingsController@removeAccountTemporarySubmit');
-        //     Route::get('request/permanent', 'SettingsController@removeAccountPermanent')->name('settings.remove.permanent');
-        //     Route::post('request/permanent', 'SettingsController@removeAccountPermanentSubmit');
-        // });
+        Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
+            Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
+            Route::post('request/temporary', 'SettingsController@removeAccountTemporarySubmit');
+            Route::get('request/permanent', 'SettingsController@removeAccountPermanent')->name('settings.remove.permanent');
+            Route::post('request/permanent', 'SettingsController@removeAccountPermanentSubmit');
+        });
 
         Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function() {
             Route::get(

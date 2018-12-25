@@ -3,7 +3,9 @@
 	<div class="row">
 		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline order-2 order-md-1">
 			<div class="loader text-center">
-				<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+				<div class="spinner-border" role="status">
+				  <span class="sr-only">Loading...</span>
+				</div>
 			</div>
 			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
@@ -101,7 +103,9 @@
 			<div class="mb-4">
 				<div class="card profile-card">
 					<div class="card-body loader text-center">
-						<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+						<div class="spinner-border" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
 					</div>
 					<div class="card-body contents d-none">
 						<div class="media d-flex align-items-center">
@@ -142,7 +146,9 @@
 						</p>
 					</div>
 					<div class="card-body loader text-center" style="height: 300px;">
-						<div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+						<div class="spinner-border" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
 					</div>
 					<div class="card-body pt-2 contents" style="max-height: 300px; overflow-y: scroll;">
 						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">

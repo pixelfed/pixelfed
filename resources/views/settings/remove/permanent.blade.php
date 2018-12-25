@@ -22,7 +22,7 @@
   	<p>
       <form method="post">
         @csrf
-        <div class="custom-control custom-checkbox mb-3">
+        <div class="custom-control custom-switch mb-3">
           <input type="checkbox" class="custom-control-input" id="confirm-check">
           <label class="custom-control-label font-weight-bold" for="confirm-check">I confirm that this action is not reversible, and will result in the permanent deletion of my account.</label>
         </div>

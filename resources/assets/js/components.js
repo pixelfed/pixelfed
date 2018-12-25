@@ -2,7 +2,7 @@ window.Vue = require('vue');
 import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
-import VueTimeago from 'vue-timeago'
+import VueTimeago from 'vue-timeago';
 
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
@@ -36,8 +36,8 @@ require('./components/commentform');
 require('./components/searchform');
 require('./components/bookmarkform');
 require('./components/statusform');
-require('./components/embed');
-require('./components/notifications');
+//require('./components/embed');
+//require('./components/notifications');
 
 // import Echo from "laravel-echo"
 
@@ -78,11 +78,15 @@ Vue.component(
     require('./components/presenter/VideoAlbumPresenter.vue')
 );
 
-
 Vue.component(
     'mixed-album-presenter',
     require('./components/presenter/MixedAlbumPresenter.vue')
 );
+
+// Vue.component(
+//     'micro',
+//     require('./components/Micro.vue')
+// );
 
 Vue.component(
     'follow-suggestions',
@@ -113,11 +117,6 @@ Vue.component(
     'timeline',
     require('./components/Timeline.vue')
 );
-
-// Vue.component(
-//     'micro',
-//     require('./components/Micro.vue')
-// );
 
 Vue.component(
     'passport-clients',
