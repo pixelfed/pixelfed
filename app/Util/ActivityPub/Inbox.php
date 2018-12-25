@@ -248,7 +248,7 @@ class Inbox
         }
         $status = Status::firstOrCreate([
             'profile_id' => $actor->id,
-            'in_reply_to_id' => $parent->id,
+            'reblog_of_id' => $parent->id,
             'type' => 'reply'
         ]);
         Notification::firstOrCreate([
