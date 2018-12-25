@@ -281,11 +281,11 @@ class Helpers {
 	public static function profileFirstOrNew($url, $runJobs = false)
 	{
  		$res = self::fetchProfileFromUrl($url);
- 		$domain = parse_url($res['url'], PHP_URL_HOST);
+ 		$domain = parse_url($res['id'], PHP_URL_HOST);
         $username = $res['preferredUsername'];
         $remoteUsername = "@{$username}@{$domain}";
 
-		$profile = Profile::whereRemoteUrl($res['url'])->first();
+		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
 	        $profile = new Profile;
 	        $profile->domain = $domain;
@@ -295,7 +295,7 @@ class Helpers {
 	        $profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 	        $profile->inbox_url = $res['inbox'];
 	        $profile->outbox_url = $res['outbox'];
-	        $profile->remote_url = $res['url'];
+	        $profile->remote_url = $res['id'];
 	        $profile->public_key = $res['publicKey']['publicKeyPem'];
 	        $profile->key_id = $res['publicKey']['id'];
 	        $profile->save();
