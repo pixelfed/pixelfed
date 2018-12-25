@@ -48,7 +48,6 @@ class StatusEntityLexer implements ShouldQueue
     public function parseEntities()
     {
         $this->extractEntities();
-        StatusActivityPubDeliver::dispatch($this->status);
     }
 
     public function extractEntities()
