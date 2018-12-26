@@ -92,7 +92,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
-            Route::post('/', 'ReportController@formStore')->middleware('throttle:100,1440');
+            Route::post('/', 'ReportController@formStore')->middleware('throttle:10,5');
             Route::get('not-interested', 'ReportController@notInterestedForm')->name('report.not-interested');
             Route::get('spam', 'ReportController@spamForm')->name('report.spam');
             Route::get('spam/comment', 'ReportController@spamCommentForm')->name('report.spam.comment');
@@ -120,7 +120,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         ->name('settings');
         Route::post('home', 'SettingsController@homeUpdate')->middleware('throttle:250,1440');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
-        Route::post('avatar', 'AvatarController@store')->middleware('throttle:50,1440');
+        Route::post('avatar', 'AvatarController@store');
         Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
         Route::post('password', 'SettingsController@passwordUpdate')->middleware(['throttle:2,1440','dangerzone']);
         Route::get('email', 'SettingsController@email')->name('settings.email');
