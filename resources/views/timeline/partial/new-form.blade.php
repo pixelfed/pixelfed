@@ -53,6 +53,10 @@
                   <input type="checkbox" class="switch" id="cw-switch" name="cw">
                   <label for="cw-switch" class="small font-weight-bold">(Default off)</label>
                 </div>
+                <div class="cw-reason">
+                    <label for="cw_summary" class="font-weight-bold text-muted small">Content Warning</label>
+                    <input type="text" name="cw_summary" id="cw-summary" class="form-control" />
+                </div>
                 <small class="form-text text-muted">
                   Please mark all NSFW and controversial content, as per our content policy.
                 </small>
@@ -71,10 +75,10 @@
                 <select class="form-control" id="filterSelectDropdown">
                   <option value="none" selected="">No Filter</option>
                 </select>
-              </div>  
+              </div>
             </div>
-          </div>  
+          </div>
           <button type="submit" class="btn btn-outline-primary btn-block font-weight-bold">Create Post</button>
         </form>
-      </div>  
+      </div>
     </div>

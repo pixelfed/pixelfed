@@ -77,6 +77,7 @@ class StatusController extends Controller
           'photo.*'      => 'required|mimetypes:' . config('pixelfed.media_types').'|max:' . config('pixelfed.max_photo_size'),
           'caption'      => 'string|max:'.config('pixelfed.max_caption_length'),
           'cw'           => 'nullable|string',
+          'cw_summary'    => 'nullable|string',
           'filter_class' => 'nullable|string',
           'filter_name'  => 'nullable|string',
           'visibility'   => 'required|string|min:5|max:10',
@@ -95,6 +96,7 @@ class StatusController extends Controller
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);
         $status->is_nsfw = $cw;
+        $status->cw_summary = $cw ? $request->cw_summary : '';
 
         // TODO: remove deprecated visibility in favor of scope
         $status->visibility = $visibility;
@@ -172,7 +174,7 @@ class StatusController extends Controller
     public function storeShare(Request $request)
     {
         $this->authCheck();
-        
+
         $this->validate($request, [
           'item'    => 'required|integer',
         ]);

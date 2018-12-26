@@ -302,6 +302,7 @@ class Status extends Model
                 'to' => $to,
                 'cc' => $cc,
                 'sensitive' => (bool) $this->is_nsfw,
+                'subject' => $this->cw_summary,
                 'content' => $this->rendered,
                 'attachment' => $this->media->map(function($media) {
                     return [
@@ -317,7 +318,7 @@ class Status extends Model
 
     public function scopeToAudience($audience)
     {
-        if(!in_array($audience, ['to', 'cc']) || $this->local == false) { 
+        if(!in_array($audience, ['to', 'cc']) || $this->local == false) {
             return;
         }
         $res = [];
