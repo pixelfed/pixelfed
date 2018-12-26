@@ -210,7 +210,7 @@ class Helpers {
 				$activity = ['object' => $res];
 			}
 
-			$idDomain = parse_url($activity['id'], PHP_URL_HOST);
+			$idDomain = parse_url($res['id'], PHP_URL_HOST);
 			$urlDomain = parse_url($url, PHP_URL_HOST);
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
 
