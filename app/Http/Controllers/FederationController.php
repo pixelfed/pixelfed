@@ -181,13 +181,20 @@ XML;
             return ProfileController::accountCheck($profile);
         }
         $body = $request->getContent();
-        $bodyDecoded = json_decode($body, true);
+        $bodyDecoded = json_decode($body, true, 8);
         $signature = $request->header('signature');
         if(!$signature) {
             abort(400, 'Missing signature header');
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
-        $actor = Profile::whereKeyId($signatureData['keyId'])->first();
+        $keyId = Helpers::validateUrl($signatureData['keyId']);
+        $id = Helpers::validateUrl($bodyDecoded['id']);
+        $keyDomain = parse_url($keyId, PHP_URL_HOST);
+        $idDomain = parse_url($id, PHP_URL_HOST);
+        if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
+            abort(400, 'Invalid request');
+        }
+        $actor = Profile::whereKeyId($keyId)->first();
         if(!$actor) {
             $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
         }

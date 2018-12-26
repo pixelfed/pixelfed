@@ -167,12 +167,13 @@ class Inbox
             return;
         }
 
-        $status = DB::transaction(function() use($activity, $actor) {
+        $status = DB::transaction(function() use($activity, $actor, $url) {
             $caption = str_limit(strip_tags($activity['content']), config('pixelfed.max_caption_length'));
             $status = new Status;
             $status->profile_id = $actor->id;
             $status->caption = $caption;
             $status->visibility = $status->scope = 'public';
+            $status->uri = $url;
             $status->url = $url;
             $status->save();
             return $status;
