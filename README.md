@@ -8,8 +8,7 @@ which is used by [Mastodon](http://joinmastodon.org/), [PeerTube](https://joinpe
 [Pleroma](https://pleroma.social/), and more. Through ActivityPub PixelFed can share
 and interact with these platforms, as well as other instances of PixelFed. 
 
-**_Please note this is alpha software, not recommended for production use,
-and federation is not supported yet._**
+**_Please note this is alpha software, not recommended for production use._**
 
 PixelFed is very early into the development stage. If you would like to have a
 permanent instance with minimal breakage, **do not use this software until
