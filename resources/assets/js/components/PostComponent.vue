@@ -340,7 +340,7 @@ export default {
                 $('.postPresenterContainer').removeClass('d-none');
             }).catch(error => {
               if(!error.response) {
-                $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+                $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
               } else {
                 switch(error.response.status) {
                   case 401:
@@ -351,7 +351,7 @@ export default {
                   break;
 
                   default:
-                  $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+                  $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
                   break;
                 }
               }
