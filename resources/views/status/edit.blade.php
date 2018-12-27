@@ -14,7 +14,7 @@
           @csrf
           <div class="form-group mb-0">
             <label class="font-weight-bold text-muted small">Caption</label>
-            <input type="text" class="form-control" name="caption" id="caption" value="{{$status->caption}}" />
+            <input type="text" class="form-control" name="caption" id="caption" value="{{$status->caption}}"  //>
           </div>
           <div class="form-group mb-0">
             <label class="font-weight-bold text-muted small">CW/NSFW</label>
