@@ -13,6 +13,10 @@
       <div class="card-body">
           @csrf
           <div class="form-group mb-0">
+            <label class="font-weight-bold text-muted small">Caption</label>
+            <input type="text" class="form-control" name="caption" id="caption" value="{{$status->caption}}" />
+          </div>
+          <div class="form-group mb-0">
             <label class="font-weight-bold text-muted small">CW/NSFW</label>
             <div class="switch switch-sm">
               <input type="checkbox" class="switch" id="cw-switch" name="cw" {{$status->is_nsfw==true?'checked=""':''}} disabled="">
@@ -47,7 +51,7 @@
           <div class="form-group d-flex justify-content-between align-items-center mb-0">
             <p class="text-muted font-weight-bold mb-0 small">Last Updated: {{$media->updated_at->diffForHumans()}}</p>
             <button type="submit" class="btn btn-primary btn-sm font-weight-bold px-4">Update</button>
-          </div>  
+          </div>
         </div>
       </form>
       </div>
@@ -60,7 +64,7 @@
 
 @push('scripts')
 <script type="text/javascript">
-  
+
   $('.form-filters').each(function(i,d) {
     let el = $(d);
     let filter = el.data('filter');
