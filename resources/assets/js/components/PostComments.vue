@@ -104,7 +104,7 @@ export default {
                 $('.postCommentsLoader .lds-ring')
                   .attr('style','width:100%')
                   .addClass('pt-4 font-weight-bold text-muted')
-                  .text('An error occured, cannot fetch comments. Please try again later.');
+                  .text('An error occurred, cannot fetch comments. Please try again later.');
               } else {
                 switch(error.response.status) {
                   case 401:
@@ -118,7 +118,7 @@ export default {
                     $('.postCommentsLoader .lds-ring')
                       .attr('style','width:100%')
                       .addClass('pt-4 font-weight-bold text-muted')
-                      .text('An error occured, cannot fetch comments. Please try again later.');
+                      .text('An error occurred, cannot fetch comments. Please try again later.');
                   break;
                 }
               }
