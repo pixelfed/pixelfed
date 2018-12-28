@@ -103,6 +103,7 @@ class StatusController extends Controller
         $status->save();
 
         $photos = $request->file('photo');
+        $descriptions = $request->descriptions;
         $order = 1;
         $mimes = [];
         $medias = 0;
@@ -125,6 +126,7 @@ class StatusController extends Controller
             $media->original_sha256 = $hash;
             $media->size = $v->getSize();
             $media->mime = $v->getMimeType();
+            $media->caption = $descriptions[$k];
             $media->filter_class = $request->input('filter_class');
             $media->filter_name = $request->input('filter_name');
             $media->order = $order;
@@ -172,7 +174,7 @@ class StatusController extends Controller
     public function storeShare(Request $request)
     {
         $this->authCheck();
-        
+
         $this->validate($request, [
           'item'    => 'required|integer',
         ]);

@@ -8,56 +8,59 @@ $(document).ready(function() {
     pixelfed.create.currentFilterClass = false;
 
     pixelfed.filters.list = [
-        ['1977','filter-1977'], 
-        ['Aden','filter-aden'], 
-        ['Amaro','filter-amaro'], 
-        ['Ashby','filter-ashby'], 
-        ['Brannan','filter-brannan'], 
-        ['Brooklyn','filter-brooklyn'], 
-        ['Charmes','filter-charmes'], 
-        ['Clarendon','filter-clarendon'], 
-        ['Crema','filter-crema'], 
-        ['Dogpatch','filter-dogpatch'], 
-        ['Earlybird','filter-earlybird'], 
-        ['Gingham','filter-gingham'], 
-        ['Ginza','filter-ginza'], 
-        ['Hefe','filter-hefe'], 
-        ['Helena','filter-helena'], 
-        ['Hudson','filter-hudson'], 
-        ['Inkwell','filter-inkwell'], 
-        ['Kelvin','filter-kelvin'], 
-        ['Kuno','filter-juno'], 
-        ['Lark','filter-lark'], 
-        ['Lo-Fi','filter-lofi'], 
-        ['Ludwig','filter-ludwig'], 
-        ['Maven','filter-maven'], 
-        ['Mayfair','filter-mayfair'], 
-        ['Moon','filter-moon'], 
-        ['Nashville','filter-nashville'], 
-        ['Perpetua','filter-perpetua'], 
-        ['Poprocket','filter-poprocket'], 
-        ['Reyes','filter-reyes'], 
-        ['Rise','filter-rise'], 
-        ['Sierra','filter-sierra'], 
-        ['Skyline','filter-skyline'], 
-        ['Slumber','filter-slumber'], 
-        ['Stinson','filter-stinson'], 
-        ['Sutro','filter-sutro'], 
-        ['Toaster','filter-toaster'], 
-        ['Valencia','filter-valencia'], 
-        ['Vesper','filter-vesper'], 
-        ['Walden','filter-walden'], 
-        ['Willow','filter-willow'], 
+        ['1977','filter-1977'],
+        ['Aden','filter-aden'],
+        ['Amaro','filter-amaro'],
+        ['Ashby','filter-ashby'],
+        ['Brannan','filter-brannan'],
+        ['Brooklyn','filter-brooklyn'],
+        ['Charmes','filter-charmes'],
+        ['Clarendon','filter-clarendon'],
+        ['Crema','filter-crema'],
+        ['Dogpatch','filter-dogpatch'],
+        ['Earlybird','filter-earlybird'],
+        ['Gingham','filter-gingham'],
+        ['Ginza','filter-ginza'],
+        ['Hefe','filter-hefe'],
+        ['Helena','filter-helena'],
+        ['Hudson','filter-hudson'],
+        ['Inkwell','filter-inkwell'],
+        ['Kelvin','filter-kelvin'],
+        ['Kuno','filter-juno'],
+        ['Lark','filter-lark'],
+        ['Lo-Fi','filter-lofi'],
+        ['Ludwig','filter-ludwig'],
+        ['Maven','filter-maven'],
+        ['Mayfair','filter-mayfair'],
+        ['Moon','filter-moon'],
+        ['Nashville','filter-nashville'],
+        ['Perpetua','filter-perpetua'],
+        ['Poprocket','filter-poprocket'],
+        ['Reyes','filter-reyes'],
+        ['Rise','filter-rise'],
+        ['Sierra','filter-sierra'],
+        ['Skyline','filter-skyline'],
+        ['Slumber','filter-slumber'],
+        ['Stinson','filter-stinson'],
+        ['Sutro','filter-sutro'],
+        ['Toaster','filter-toaster'],
+        ['Valencia','filter-valencia'],
+        ['Vesper','filter-vesper'],
+        ['Walden','filter-walden'],
+        ['Willow','filter-willow'],
         ['X-Pro II','filter-xpro-ii']
     ];
 
     function previewImage(input) {
         if (input.files && input.files[0]) {
           var reader = new FileReader();
+          $('.filterContainer').empty();
           reader.onload = function(e) {
-            $('.filterPreview').attr('src', e.target.result);
+            $('.filterContainer').append('<img class="filterPreview img-fluid" src="' + e.target.result + '" /><label for="description[]" class="font-weight-bold text-muted small">Description</label><input type="text" name="description[]" value="" class="form-control" />');
           }
-          reader.readAsDataURL(input.files[0]);
+          for (var i = 0; i < input.files.length; i++) {
+            reader.readAsDataURL(input.files[i]);
+          }
         }
     }
 
