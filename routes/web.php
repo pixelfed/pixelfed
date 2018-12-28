@@ -166,6 +166,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 '2fa/recovery-codes',
                 'SettingsController@securityTwoFactorRecoveryCodes'
             )->name('settings.security.2fa.recovery');
+            Route::post(
+                '2fa/recovery-codes',
+                'SettingsController@securityTwoFactorRecoveryCodesRegenerate'
+            );
         });
 
         Route::get('applications', 'SettingsController@applications')->name('settings.applications');
