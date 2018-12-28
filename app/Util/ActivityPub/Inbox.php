@@ -220,7 +220,7 @@ class Inbox
             // send Accept to remote profile
             $accept = [
                 '@context' => 'https://www.w3.org/ns/activitystreams',
-                'id'       => $target->permalink().'#accepts/follows/',
+                'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
                 'type'     => 'Accept',
                 'actor'    => $target->permalink(),
                 'object'   => [
