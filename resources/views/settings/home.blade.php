@@ -6,18 +6,30 @@
     <h3 class="font-weight-bold">Account Settings</h3>
   </div>
   <hr>
-  <form method="post">
-    @csrf
-    <div class="form-group row">
-      <div class="col-sm-3">
-        <img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" height="38px" class="rounded-circle float-right">
-      </div>
-      <div class="col-sm-9">
-        <p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
-        <p class="mb-0"><a href="#" class="font-weight-bold change-profile-photo">Change Profile Photo</a></p>
-        <p><span class="small font-weight-bold">Max avatar size: <span id="maxAvatarSize"></span></span></p>
+  <div class="form-group row">
+    <div class="col-sm-3">
+      <img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" height="38px" class="rounded-circle float-right">
+    </div>
+    <div class="col-sm-9">
+      <p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
+      <p><a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">Change Profile Photo</a></p>
+      <div class="collapse" id="avatarCollapse">
+        <form method="post" action="/settings/avatar" enctype="multipart/form-data">
+        @csrf
+        <div class="card card-body">
+          <div class="custom-file mb-1">
+            <input type="file" name="avatar" class="custom-file-input" id="avatarInput">
+            <label class="custom-file-label" for="avatarInput">Select a profile photo</label>
+          </div>
+          <p><span class="small font-weight-bold">Must be a jpeg or png. Max avatar size: <span id="maxAvatarSize"></span></span></p>
+          <p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">Upload</button></p>
+        </div>
+        </form>
       </div>
     </div>
+  </div>
+  <form method="post">
+    @csrf
     <div class="form-group row">
       <label for="name" class="col-sm-3 col-form-label font-weight-bold text-right">Name</label>
       <div class="col-sm-9">
@@ -118,45 +130,5 @@
   });
 
   $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
-
-  $(document).on('click', '.change-profile-photo', function(e) {
-    e.preventDefault();
-    swal({
-      title: 'Upload Photo',
-      content: {
-        element: 'input',
-        attributes: {
-          placeholder: 'Upload your photo.',
-          type: 'file',
-          name: 'photoUpload',
-          id: 'photoUploadInput'
-        }
-      },
-      buttons: {
-        confirm: {
-          text: 'Upload'
-        }
-      }
-    }).then((res) => {
-      if(!res) {
-        return;
-      }
-      const input = $('#photoUploadInput')[0];
-      const photo = input.files[0];
-      const form = new FormData();
-      form.append("upload", photo);
-
-      axios.post('/api/v1/avatar/update', form, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-      }).then((res) => {
-        swal('Success', 'Your photo has been successfully updated! It may take a few minutes to update across the site.', 'success');
-      }).catch((res) => {
-        let msg = res.response.data.errors.upload[0];
-        swal('Something went wrong', msg, 'error');
-      });
-    });
-  });
 </script>
 @endpush
