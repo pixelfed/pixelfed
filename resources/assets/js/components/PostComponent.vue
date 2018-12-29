@@ -56,11 +56,11 @@
        </div>
         <div class="col-12 col-md-8 px-0 mx-0">
             <div class="postPresenterLoader text-center">
-              <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+              <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
             </div>
             <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
               <div v-if="status.pf_type === 'photo'" class="w-100">
-                <photo-presenter :status="status"></photo-presenter>  
+                <photo-presenter :status="status"></photo-presenter>
               </div>
 
               <div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -164,10 +164,10 @@
     </div>
   </div>
 
-  <b-modal ref="likesModal" 
+  <b-modal ref="likesModal"
     id="l-modal"
-    hide-footer 
-    centered 
+    hide-footer
+    centered
     title="Likes"
     body-class="list-group-flush p-0">
     <div class="list-group">
@@ -195,10 +195,10 @@
       </infinite-loading>
     </div>
   </b-modal>
-  <b-modal ref="sharesModal" 
+  <b-modal ref="sharesModal"
     id="s-modal"
-    hide-footer 
-    centered 
+    hide-footer
+    centered
     title="Shares"
     body-class="list-group-flush p-0">
     <div class="list-group">
@@ -281,7 +281,7 @@ export default {
         $('head title').text(title);
       }
     },
-    
+
     methods: {
       authCheck() {
         let authed = $('body').hasClass('loggedIn');
@@ -495,18 +495,21 @@ export default {
       },
 
       deletePost() {
-        if($('body').hasClass('loggedIn') == false) {
-          return;
-        }
+        var result = confirm('Are you sure you want to delete this post?');
+        if (result) {
+            if($('body').hasClass('loggedIn') == false) {
+            return;
+            }
 
-        axios.post('/i/delete', {
-          type: 'status',
-          item: this.status.id
-        }).then(res => {
-          swal('Success', 'You have successfully deleted this post', 'success');
-        }).catch(err => {
-          swal('Error', 'Something went wrong. Please try again later.', 'error');
-        });
+            axios.post('/i/delete', {
+            type: 'status',
+            item: this.status.id
+            }).then(res => {
+            swal('Success', 'You have successfully deleted this post', 'success');
+            }).catch(err => {
+            swal('Error', 'Something went wrong. Please try again later.', 'error');
+            });
+        }
       }
     }
 }
