@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.7.6',
+    'version' => '0.7.7',
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +59,7 @@ return [
     */
     'restricted_names' => [
       'reserved_routes' => true,
-      'use_blacklist'   => false,
+      'use_blacklist'   => env('USERNAME_BLACKLIST', false),
     ],
 
     /*
