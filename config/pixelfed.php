@@ -177,6 +177,28 @@ return [
     */
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion
+    |--------------------------------------------------------------------------
+    |
+    | Enable account deletion.
+    |
+    */
+    'account_deletion' => env('ACCOUNT_DELETION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion after X days
+    |--------------------------------------------------------------------------
+    |
+    | Set account deletion queue after X days, set to false to delete accounts
+    | immediately.
+    |
+    */
+    'account_delete_after' => env('ACCOUNT_DELETE_AFTER', false),
+
+
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
     'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
