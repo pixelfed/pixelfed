@@ -319,7 +319,7 @@ details summary::-webkit-details-marker {
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
   border-radius: 5px;
   padding: .5em 1em .5em .5em;
-} 
+}
 
 .input-elevated::placeholder {
   color: #838D99;
@@ -417,7 +417,7 @@ details summary::-webkit-details-marker {
     background: rgba(0,0,0,0.04);
 }
 
-.timeline-sidenav.nav-pills .nav-link.active, 
+.timeline-sidenav.nav-pills .nav-link.active,
 .timeline-sidenav.nav-pills .show > .nav-link {
     color: #08d;
     background: transparent;
@@ -434,4 +434,14 @@ details summary::-webkit-details-marker {
 
 .notification-tooltip .arrow::before {
   border-bottom-color:#dc3545 !important;
+}
+
+.img-thumbnail {
+    box-sizing: content-box;
+}
+
+.reply-container {
+    .post-thumbnail {
+        object-fit: cover;
+    }
 }
