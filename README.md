@@ -17,7 +17,7 @@ there is a stable release**. The following setup instructions are intended for
 testing and development.
 
 ## Requirements
- - PHP >= 7.1.3 (7.2+ recommended for stable version)
+ - PHP >= 7.1.3 < 7.3 (7.2.x recommended for stable version)
  - MySQL >= 5.7, Postgres (MariaDB and sqlite are not supported yet)
  - Redis
  - Composer

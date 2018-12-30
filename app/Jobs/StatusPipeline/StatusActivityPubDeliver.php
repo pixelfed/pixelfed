@@ -38,7 +38,7 @@ class StatusActivityPubDeliver implements ShouldQueue
     {
         $status = $this->status;
 
-        if($status->local == true || $status->url || $status->uri) {
+        if($status->local == false || $status->url || $status->uri) {
             return;
         }
 

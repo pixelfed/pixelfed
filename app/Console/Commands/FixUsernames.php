@@ -39,11 +39,6 @@ class FixUsernames extends Command
      */
     public function handle()
     {
-        if(version_compare(config('pixelfed.version'), '0.7.2') !== -1) {
-            $this->info('This command is only for versions lower than 0.7.2');
-            return;
-        }
-
         $this->info('Collecting data ...');
 
         $affected = collect([]);
