@@ -1,4 +1,4 @@
-<style>
+<style scoped>
  span {
   font-size: 14px;
  }

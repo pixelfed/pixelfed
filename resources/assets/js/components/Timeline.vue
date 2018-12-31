@@ -185,7 +185,7 @@
 				<div class="container pb-5">
 					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
 						<a href="/site/about" class="text-dark pr-2">About Us</a>
-						<a href="/site/help" class="text-dark pr-2">Support</a>
+						<a href="/site/help" class="text-dark pr-2">Help</a>
 						<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
 						<a href="/site/language" class="text-dark pr-2">Language</a>
 						<a href="/site/terms" class="text-dark pr-2">Terms</a>
@@ -202,7 +202,7 @@
 </div>
 </template>
 
-<style type="text/css">
+<style type="text/css" scoped>
 	.postPresenterContainer {
 		display: flex;
 		align-items: center;

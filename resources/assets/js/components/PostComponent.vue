@@ -1,4 +1,4 @@
-<style>
+<style scoped>
 #l-modal .modal-body,
 #s-modal .modal-body {
   max-height: 70vh;
