@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
-use Cache, DB, Log, Redis, Validator;
+use Cache, DB, Log, Purify, Redis, Validator;
 use App\{
     Activity,
     Follower,
@@ -32,30 +32,6 @@ class Inbox
 
     public function handle()
     {
-        $this->handleVerb();
-    }
-
-    public function authenticatePayload()
-    {
-        try {
-           $signature = Helpers::validateSignature($this->headers, $this->payload);
-           $payload = Helpers::validateObject($this->payload);
-           if($signature == false) {
-            return;
-           }
-        } catch (Exception $e) {
-           return; 
-        }
-        $this->payloadLogger(); 
-    }
-
-    public function payloadLogger()
-    {
-        $logger = new Activity;
-        $logger->data = json_encode($this->payload);
-        $logger->save();
-        $this->logger = $logger;
-        Log::info('AP:inbox:activity:new:'.$this->logger->id);
         $this->handleVerb();
     }
 
@@ -171,7 +147,7 @@ class Inbox
             $caption = str_limit(strip_tags($activity['content']), config('pixelfed.max_caption_length'));
             $status = new Status;
             $status->profile_id = $actor->id;
-            $status->caption = $caption;
+            $status->caption = Purify::clean($caption);
             $status->visibility = $status->scope = 'public';
             $status->uri = $url;
             $status->url = $url;
@@ -275,13 +251,10 @@ class Inbox
         $obj = $this->payload['object'];
         if(is_string($obj) && Helpers::validateUrl($obj)) {
             // actor object detected
-
+            // todo delete actor
         } else if (is_array($obj) && isset($obj['type']) && $obj['type'] == 'Tombstone') {
             // tombstone detected
-            $status = Status::whereUri($obj['id'])->first();
-            if($status == null) {
-                return;
-            }
+            $status = Status::whereUri($obj['id'])->firstOrFail();
             $status->forceDelete();
         }
     }
