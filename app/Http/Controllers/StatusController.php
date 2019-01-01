@@ -19,7 +19,7 @@ class StatusController extends Controller
 {
     public function show(Request $request, $username, int $id)
     {
-        $user = Profile::whereUsername($username)->firstOrFail();
+        $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
         if($user->status != null) {
             return ProfileController::accountCheck($user);
