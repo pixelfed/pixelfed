@@ -19,6 +19,7 @@
         "lodash": "^4.17.11",
         "popper.js": "^1.14.6",
         "vue": "^2.5.21",
+        "vue-loader": "^14.2.2",
         "vue-template-compiler": "^2.5.21"
     },
     "dependencies": {

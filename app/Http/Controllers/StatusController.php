@@ -103,7 +103,7 @@ class StatusController extends Controller
         $status->save();
 
         $photos = $request->file('photo');
-        $descriptions = $request->descriptions;
+        $descriptions = $request->description;
         $order = 1;
         $mimes = [];
         $medias = 0;

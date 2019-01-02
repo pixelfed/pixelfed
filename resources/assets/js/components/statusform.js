@@ -53,13 +53,16 @@ $(document).ready(function() {
 
     function previewImage(input) {
         if (input.files && input.files[0]) {
-          var reader = new FileReader();
+          var readers = [];
           $('.filterContainer').empty();
-          reader.onload = function(e) {
-            $('.filterContainer').append('<img class="filterPreview img-fluid" src="' + e.target.result + '" /><label for="description[]" class="font-weight-bold text-muted small">Description</label><input type="text" name="description[]" value="" class="form-control" />');
-          }
+
           for (var i = 0; i < input.files.length; i++) {
-            reader.readAsDataURL(input.files[i]);
+            readers.push(new FileReader());
+            readers[i].onload = function (e) {
+                var img = '<div class="imageItem"><div class="imageWrapper"><img class="filterPreview img-fluid" src="' + e.target.result + '" /></div><label for="description[]" class="font-weight-bold text-muted small">Description</label><input type="text" name="description[]" value="" class="form-control" /></div>';
+                $('.filterContainer').append(img);
+            }
+            readers[i].readAsDataURL(input.files[i]);
           }
         }
     }
@@ -94,13 +97,13 @@ $(document).ready(function() {
         if(filter == 'none') {
             $('input[name=filter_class]').val('');
             $('input[name=filter_name]').val('');
-            $('.filterContainer').removeClass(oldFilter);
+            $('.filterContainer .imageWrapper').removeClass(oldFilter);
             pixelfed.create.currentFilterClass = false;
             pixelfed.create.currentFilterName = 'None';
             $('.form-group.form-preview .form-text').text('Current Filter: No filter selected');
             return;
         } else {
-            $('.filterContainer').removeClass(oldFilter).addClass(filter);
+            $('.filterContainer .imageWrapper').removeClass(oldFilter).addClass(filter);
             pixelfed.create.currentFilterClass = filter;
             pixelfed.create.currentFilterName = el.find(':selected').text();
             $('.form-group.form-preview .form-text').text('Current Filter: ' + pixelfed.create.currentFilterName);
