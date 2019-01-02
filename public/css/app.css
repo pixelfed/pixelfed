@@ -16420,6 +16420,24 @@ span.twitter-typeahead .nav-topbar .tt-menu {
   border: none;
 }
 
+.card .comment-submit {
+  display: none;
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  width: 60px;
+  text-align: center;
+  border-radius: 0 3px 3px 0;
+}
+
+.touch .card input[name="comment"] {
+  padding-right: 70px;
+}
+
+.touch .card .comment-submit {
+  display: block;
+}
+
 .box-shadow {
   -webkit-box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
           box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
@@ -16626,7 +16644,7 @@ details summary::-webkit-details-marker {
 }
 
 .imageItem {
-  margin-bottom: 1em;
+  margin-bottom: 2em;
 }
 
 .imageItem .imageWrapper {

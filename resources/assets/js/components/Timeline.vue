@@ -156,22 +156,22 @@
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'comment'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'mention'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'follow'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark">{{n.account.username}}</a> followed you.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> followed you.
 									</p>	
 								</div>
 							</div>
@@ -210,6 +210,9 @@
 	}
 	.cursor-pointer {
 		cursor: pointer;
+	}
+	.word-break {
+		word-break: break-all;
 	}
 </style>
 

@@ -139,7 +139,7 @@
         el.addClass('btn-outline-secondary').removeClass('btn-primary');
         el.text('Unfollow');
       }).catch(function (err) {
-        swal('Whoops! Something went wrong...', 'An error occured, please try again later.', 'error');
+        swal('Whoops! Something went wrong...', 'An error occurred, please try again later.', 'error');
       });
     },
     fetchData: function fetchData() {
@@ -342,7 +342,7 @@
         $('.postCommentsContainer').removeClass('d-none');
       }).catch(function (error) {
         if (!error.response) {
-          $('.postCommentsLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch comments. Please try again later.');
+          $('.postCommentsLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch comments. Please try again later.');
         } else {
           switch (error.response.status) {
             case 401:
@@ -350,7 +350,7 @@
               break;
 
             default:
-              $('.postCommentsLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch comments. Please try again later.');
+              $('.postCommentsLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch comments. Please try again later.');
               break;
           }
         }
@@ -387,6 +387,7 @@
 "use strict";
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+//
 //
 //
 //
@@ -723,7 +724,7 @@ pixelfed.postComponent = {};
         $('.postPresenterContainer').removeClass('d-none');
       }).catch(function (error) {
         if (!error.response) {
-          $('.postPresenterLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+          $('.postPresenterLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
         } else {
           switch (error.response.status) {
             case 401:
@@ -731,7 +732,7 @@ pixelfed.postComponent = {};
               break;
 
             default:
-              $('.postPresenterLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+              $('.postPresenterLoader .lds-ring').attr('style', 'width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
               break;
           }
         }
@@ -911,6 +912,9 @@ pixelfed.postComponent = {};
 "use strict";
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+//
+//
+//
 //
 //
 //
@@ -17708,7 +17712,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.postPresenterContainer {\n\tdisplay: -webkit-box;\n\tdisplay: -ms-flexbox;\n\tdisplay: flex;\n\t-webkit-box-align: center;\n\t    -ms-flex-align: center;\n\t        align-items: center;\n\tbackground: #fff;\n}\n.cursor-pointer {\n\tcursor: pointer;\n}\n", ""]);
+exports.push([module.i, "\n.postPresenterContainer {\n\tdisplay: -webkit-box;\n\tdisplay: -ms-flexbox;\n\tdisplay: flex;\n\t-webkit-box-align: center;\n\t    -ms-flex-align: center;\n\t        align-items: center;\n\tbackground: #fff;\n}\n.cursor-pointer {\n\tcursor: pointer;\n}\n.word-break {\n\tword-break: break-all;\n}\n", ""]);
 
 // exports
 
@@ -26835,6 +26839,11 @@ var render = function() {
                               placeholder: "Add a comment...",
                               autocomplete: "off"
                             }
+                          }),
+                          _vm._v(" "),
+                          _c("input", {
+                            staticClass: "btn btn-primary comment-submit",
+                            attrs: { type: "submit", value: "Send" }
                           })
                         ]
                       )
@@ -27777,7 +27786,8 @@ var render = function() {
                                   _c(
                                     "a",
                                     {
-                                      staticClass: "font-weight-bold text-dark",
+                                      staticClass:
+                                        "font-weight-bold text-dark word-break",
                                       attrs: { href: n.account.url }
                                     },
                                     [_vm._v(_vm._s(n.account.username))]
@@ -27801,7 +27811,7 @@ var render = function() {
                                       "a",
                                       {
                                         staticClass:
-                                          "font-weight-bold text-dark",
+                                          "font-weight-bold text-dark word-break",
                                         attrs: { href: n.account.url }
                                       },
                                       [_vm._v(_vm._s(n.account.username))]
@@ -27825,7 +27835,7 @@ var render = function() {
                                         "a",
                                         {
                                           staticClass:
-                                            "font-weight-bold text-dark",
+                                            "font-weight-bold text-dark word-break",
                                           attrs: { href: n.account.url }
                                         },
                                         [_vm._v(_vm._s(n.account.username))]
@@ -27851,7 +27861,7 @@ var render = function() {
                                           "a",
                                           {
                                             staticClass:
-                                              "font-weight-bold text-dark",
+                                              "font-weight-bold text-dark word-break",
                                             attrs: { href: n.account.url }
                                           },
                                           [_vm._v(_vm._s(n.account.username))]
@@ -41564,6 +41574,11 @@ pixelfed.readmore = function () {
     });
 };
 
+try {
+    document.createEvent("TouchEvent");
+    $('body').addClass('touch');
+} catch (e) {}
+
 window.InfiniteScroll = __webpack_require__("./node_modules/infinite-scroll/js/index.js");
 window.filesize = __webpack_require__("./node_modules/filesize/lib/filesize.js");
 window.Plyr = __webpack_require__("./node_modules/plyr/dist/plyr.min.js");
@@ -41594,7 +41609,7 @@ __webpack_require__("./resources/assets/js/components/statusform.js");
 //     });
 // }
 
-// Initalize Notification Helper
+// Initialize Notification Helper
 window.pixelfed.n = {};
 
 Vue.component('photo-presenter', __webpack_require__("./resources/assets/js/components/presenter/PhotoPresenter.vue"));
