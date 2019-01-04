@@ -171,6 +171,8 @@ class RestrictedNames
      'tour',
      'user',
      'users',
+     'username',
+     'usernames',
      'vendor',
      'ws',
      'wss',

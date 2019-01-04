@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\{Profile, User};
 use DB;
+use App\Util\Lexer\RestrictedNames;
 
 class FixUsernames extends Command
 {
@@ -43,8 +44,13 @@ class FixUsernames extends Command
 
         $affected = collect([]);
 
-        $users = User::chunk(100, function($users) use($affected) {
+        $restricted = RestrictedNames::get();
+
+        $users = User::chunk(100, function($users) use($affected, $restricted) {
             foreach($users as $user) {
+                if(in_array($user->username, $restricted)) {
+                    $affected->push($user);
+                }
                 $val = str_replace(['-', '_'], '', $user->username);
                 if(!ctype_alnum($val)) {
                     $this->info('Found invalid username: ' . $user->username);
@@ -58,11 +64,13 @@ class FixUsernames extends Command
             $opts = [
                 'Random replace (assigns random username)',
                 'Best try replace (assigns alpha numeric username)',
-                'Manual replace (manually set username)'
+                'Manual replace (manually set username)',
+                'Skip (do not replace. Use at your own risk)'
             ];
 
             foreach($affected as $u) {
                 $old = $u->username;
+                $this->info("Found user: {$old}");
                 $opt = $this->choice('Select fix method:', $opts, 0);
 
                 switch ($opt) {
@@ -83,23 +91,31 @@ class FixUsernames extends Command
                         $new = $this->ask('Enter new username:');
                         $this->info('New username: ' . $new);
                         break;
+
+                    case $opts[3]:
+                        $new = false;
+                        break;
                     
                     default:
                         $new = "user_" . str_random(6);
                         break;
                 }
 
-                DB::transaction(function() use($u, $new) {
-                    $profile = $u->profile;
-                    $profile->username = $new;
-                    $u->username = $new;
-                    $u->save();
-                    $profile->save();
-                });
+                if($new) {
+                    DB::transaction(function() use($u, $new) {
+                        $profile = $u->profile;
+                        $profile->username = $new;
+                        $u->username = $new;
+                        $u->save();
+                        $profile->save();
+                    });
+                }
                 $this->info('Selected: ' . $opt);
             }
 
             $this->info('Fixed ' . $affected->count() . ' usernames!');
+        } else {
+            $this->info('No affected usernames found!');
         }
     }
 }
