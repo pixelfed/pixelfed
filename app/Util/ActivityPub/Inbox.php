@@ -16,6 +16,10 @@ use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
 
+use App\Util\ActivityPub\Validator\{
+    Follow
+};
+
 class Inbox
 {
     protected $headers;
@@ -52,6 +56,7 @@ class Inbox
                 break;
 
             case 'Accept':
+                if(Accept::validate($this->payload) == false) { return; }
                 $this->handleAcceptActivity();
                 break;
 
@@ -147,7 +152,8 @@ class Inbox
             $caption = str_limit(strip_tags($activity['content']), config('pixelfed.max_caption_length'));
             $status = new Status;
             $status->profile_id = $actor->id;
-            $status->caption = Purify::clean($caption);
+            $status->caption = strip_tags($caption);
+            $status->rendered = Purify::clean($caption);
             $status->visibility = $status->scope = 'public';
             $status->uri = $url;
             $status->url = $url;
