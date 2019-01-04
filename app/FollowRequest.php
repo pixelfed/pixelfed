@@ -17,4 +17,14 @@ class FollowRequest extends Model
     {
         return $this->belongsTo(Profile::class, 'following_id', 'id');
     }
+
+    public function actor()
+    {
+        return $this->belongsTo(Profile::class, 'follower_id', 'id');
+    }
+
+    public function target()
+    {
+        return $this->belongsTo(Profile::class, 'following_id', 'id');
+    }
 }

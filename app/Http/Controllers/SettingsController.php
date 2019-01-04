@@ -149,11 +149,17 @@ class SettingsController extends Controller
 
     public function removeAccountPermanent(Request $request)
     {
+        if(config('pixelfed.account_deletion') == false) {
+            abort(404);
+        }
         return view('settings.remove.permanent');
     }
 
     public function removeAccountPermanentSubmit(Request $request)
     {
+        if(config('pixelfed.account_deletion') == false) {
+            abort(404);
+        }
         $user = Auth::user();
         if($user->is_admin == true) {
             return abort(400, 'You cannot delete an admin account.');
