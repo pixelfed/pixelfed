@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
+use \Zttp\Zttp;
 
 class FederationController extends Controller
 {
