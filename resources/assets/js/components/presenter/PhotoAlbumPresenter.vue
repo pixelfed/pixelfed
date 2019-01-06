@@ -13,7 +13,7 @@
 				:interval="0"
 			>
 				<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
-					<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
+					<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description" :title="img.description">
 				</b-carousel-slide>
 			</b-carousel>
 		</details>
@@ -27,7 +27,7 @@
 			:interval="0"
 		>
 			<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
-				<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description">
+				<img slot="img" class="d-block img-fluid w-100" :src="img.url" :alt="img.description" :title="img.description">
 			</b-carousel-slide>
 		</b-carousel>
 	</div>
