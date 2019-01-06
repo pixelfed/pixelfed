@@ -219,7 +219,7 @@
 	export default {
 		data() {
 			return {
-				page: 1,
+				page: 2,
 				feed: [],
 				profile: {},
 				scope: window.location.pathname,
@@ -228,6 +228,7 @@
 				notifications: {},
 				stories: {},
 				suggestions: {},
+				loading: true,
 			}
 		},
 
@@ -260,8 +261,8 @@
 			},
 
 			fetchTimelineApi() {
-				let homeTimeline = '/api/v1/timelines/home?page=' + this.page;
-				let localTimeline = '/api/v1/timelines/public?page=' + this.page;
+				let homeTimeline = '/api/v1/timelines/home?page=1';
+				let localTimeline = '/api/v1/timelines/public?page=1';
 				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
 				axios.get(apiUrl).then(res => {
 					$('.timeline .loader').addClass('d-none');
@@ -272,7 +273,7 @@
 					if(this.page == 1) {
 						this.max_id = Math.max(...ids);
 					}
-					this.page++;
+					this.loading = false;
 				}).catch(err => {
 				});
 			},
@@ -286,8 +287,7 @@
 						page: this.page,
 					},
 				}).then(res => {
-					if (res.data.length) {
-						$('.timeline .loader').addClass('d-none');
+					if (res.data.length && this.loading == false) {
 						let data = res.data;
 						this.feed.push(...data);
 						let ids = data.map(status => status.id);
@@ -297,6 +297,7 @@
 						}
 						this.page += 1;
 						$state.loaded();
+						this.loading = false;
 					} else {
 						$state.complete();
 					}
