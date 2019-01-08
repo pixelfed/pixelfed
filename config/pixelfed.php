@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.7.2',
+    'version' => '0.7.9',
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +59,7 @@ return [
     */
     'restricted_names' => [
       'reserved_routes' => true,
-      'use_blacklist'   => false,
+      'use_blacklist'   => env('USERNAME_BLACKLIST', false),
     ],
 
     /*
@@ -176,6 +176,28 @@ return [
     |
     */
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion
+    |--------------------------------------------------------------------------
+    |
+    | Enable account deletion.
+    |
+    */
+    'account_deletion' => env('ACCOUNT_DELETION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion after X days
+    |--------------------------------------------------------------------------
+    |
+    | Set account deletion queue after X days, set to false to delete accounts
+    | immediately.
+    |
+    */
+    'account_delete_after' => env('ACCOUNT_DELETE_AFTER', false),
+
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),

@@ -110,6 +110,19 @@ trait SecuritySettings
 		return view('settings.security.2fa.recovery-codes', compact('user', 'codes'));
 	}
 
+	public function securityTwoFactorRecoveryCodesRegenerate(Request $request)
+	{
+		$user = Auth::user();
+
+		if(!$user->{'2fa_enabled'} || !$user->{'2fa_secret'}) {
+			abort(403);
+		}
+		$backups = $this->generateBackupCodes();
+		$user->{'2fa_backup_codes'} = json_encode($backups);
+		$user->save();
+		return redirect(route('settings.security.2fa.recovery'));
+	}
+
 	public function securityTwoFactorUpdate(Request $request)
 	{
 		$user = Auth::user();

@@ -1,4 +1,4 @@
-<style>
+<style scoped>
  span {
   font-size: 14px;
  }
@@ -92,7 +92,7 @@ export default {
           axios.get(url)
             .then(response => {
                 let self = this;
-                this.results = response.data.data;
+                this.results = _.reverse(response.data.data);
                 this.pagination = response.data.meta.pagination;
                 if(this.results.length > 0) {
                   $('.load-more-link').removeClass('d-none');
@@ -104,7 +104,7 @@ export default {
                 $('.postCommentsLoader .lds-ring')
                   .attr('style','width:100%')
                   .addClass('pt-4 font-weight-bold text-muted')
-                  .text('An error occured, cannot fetch comments. Please try again later.');
+                  .text('An error occurred, cannot fetch comments. Please try again later.');
               } else {
                 switch(error.response.status) {
                   case 401:
@@ -118,7 +118,7 @@ export default {
                     $('.postCommentsLoader .lds-ring')
                       .attr('style','width:100%')
                       .addClass('pt-4 font-weight-bold text-muted')
-                      .text('An error occured, cannot fetch comments. Please try again later.');
+                      .text('An error occurred, cannot fetch comments. Please try again later.');
                   break;
                 }
               }

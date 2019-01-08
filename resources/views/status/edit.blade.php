@@ -83,7 +83,7 @@
     }).then((res) => {
       swal('Success!', 'You have successfully updated your post', 'success');
     }).catch((err) => {
-      swal('Something went wrong', 'An error occured, please try again later', 'error');
+      swal('Something went wrong', 'An error occurred, please try again later', 'error');
     });
   });
 

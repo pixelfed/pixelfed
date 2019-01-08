@@ -7,7 +7,7 @@ use League\Fractal;
 
 class Follow extends Fractal\TransformerAbstract
 {
-    public function transform(Follower $follower)
+    public function transform($follower)
     {
     	return [
     		'@context'  => 'https://www.w3.org/ns/activitystreams',

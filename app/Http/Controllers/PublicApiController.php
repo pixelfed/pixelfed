@@ -300,7 +300,7 @@ class PublicApiController extends Controller
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
-                      ->whereVisibility('public')
+                      ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
@@ -311,7 +311,7 @@ class PublicApiController extends Controller
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
-                      ->whereVisibility('public')
+                      ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);

@@ -1,4 +1,4 @@
-<style>
+<style scoped>
 #l-modal .modal-body,
 #s-modal .modal-body {
   max-height: 70vh;
@@ -56,11 +56,11 @@
        </div>
         <div class="col-12 col-md-8 px-0 mx-0">
             <div class="postPresenterLoader text-center">
-              <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+              <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
             </div>
             <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
               <div v-if="status.pf_type === 'photo'" class="w-100">
-                <photo-presenter :status="status"></photo-presenter>  
+                <photo-presenter :status="status"></photo-presenter>
               </div>
 
               <div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -156,6 +156,7 @@
               <input type="hidden" name="_token" value="">
               <input type="hidden" name="item" :value="statusId">
               <input class="form-control" name="comment" placeholder="Add a comment..." autocomplete="off">
+              <input type="submit" value="Send" class="btn btn-primary comment-submit" />
             </form>
           </div>
         </div>
@@ -164,10 +165,10 @@
     </div>
   </div>
 
-  <b-modal ref="likesModal" 
+  <b-modal ref="likesModal"
     id="l-modal"
-    hide-footer 
-    centered 
+    hide-footer
+    centered
     title="Likes"
     body-class="list-group-flush p-0">
     <div class="list-group">
@@ -195,10 +196,10 @@
       </infinite-loading>
     </div>
   </b-modal>
-  <b-modal ref="sharesModal" 
+  <b-modal ref="sharesModal"
     id="s-modal"
-    hide-footer 
-    centered 
+    hide-footer
+    centered
     title="Shares"
     body-class="list-group-flush p-0">
     <div class="list-group">
@@ -281,7 +282,7 @@ export default {
         $('head title').text(title);
       }
     },
-    
+
     methods: {
       authCheck() {
         let authed = $('body').hasClass('loggedIn');
@@ -339,7 +340,7 @@ export default {
                 $('.postPresenterContainer').removeClass('d-none');
             }).catch(error => {
               if(!error.response) {
-                $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+                $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
               } else {
                 switch(error.response.status) {
                   case 401:
@@ -350,7 +351,7 @@ export default {
                   break;
 
                   default:
-                  $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occured, cannot fetch media. Please try again later.');
+                  $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
                   break;
                 }
               }
@@ -495,18 +496,21 @@ export default {
       },
 
       deletePost() {
-        if($('body').hasClass('loggedIn') == false) {
-          return;
-        }
+        var result = confirm('Are you sure you want to delete this post?');
+        if (result) {
+            if($('body').hasClass('loggedIn') == false) {
+            return;
+            }
 
-        axios.post('/i/delete', {
-          type: 'status',
-          item: this.status.id
-        }).then(res => {
-          swal('Success', 'You have successfully deleted this post', 'success');
-        }).catch(err => {
-          swal('Error', 'Something went wrong. Please try again later.', 'error');
-        });
+            axios.post('/i/delete', {
+            type: 'status',
+            item: this.status.id
+            }).then(res => {
+            swal('Success', 'You have successfully deleted this post', 'success');
+            }).catch(err => {
+            swal('Error', 'Something went wrong. Please try again later.', 'error');
+            });
+        }
       }
     }
 }
