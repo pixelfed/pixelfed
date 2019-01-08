@@ -2,11 +2,6 @@
 <div class="container" style="">
 	<div class="row">
 		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline order-2 order-md-1">
-			<div class="loader text-center">
-				<div class="spinner-border" role="status">
-				  <span class="sr-only">Loading...</span>
-				</div>
-			</div>
 			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
 				<div class="card-header d-inline-flex align-items-center bg-white">
@@ -97,6 +92,10 @@
 					</form>
 				</div>
 			</div>
+			<infinite-loading @infinite="infiniteTimeline">
+				<div slot="no-more" class="font-weight-bold text-light">No more posts to load</div>
+				<div slot="no-results" class="font-weight-bold text-light">No posts found</div>
+			</infinite-loading>
 		</div>
 
 		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2">
@@ -185,7 +184,7 @@
 				<div class="container pb-5">
 					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
 						<a href="/site/about" class="text-dark pr-2">About Us</a>
-						<a href="/site/help" class="text-dark pr-2">Support</a>
+						<a href="/site/help" class="text-dark pr-2">Help</a>
 						<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
 						<a href="/site/language" class="text-dark pr-2">Language</a>
 						<a href="/site/terms" class="text-dark pr-2">Terms</a>
@@ -202,7 +201,7 @@
 </div>
 </template>
 
-<style type="text/css">
+<style type="text/css" scoped>
 	.postPresenterContainer {
 		display: flex;
 		align-items: center;
@@ -220,7 +219,7 @@
 	export default {
 		data() {
 			return {
-				page: 1,
+				page: 2,
 				feed: [],
 				profile: {},
 				scope: window.location.pathname,
@@ -229,6 +228,7 @@
 				notifications: {},
 				stories: {},
 				suggestions: {},
+				loading: true,
 			}
 		},
 
@@ -241,7 +241,6 @@
 		},
 
 		updated() {
-			this.scroll();
 		},
 
 		methods: {
@@ -262,8 +261,8 @@
 			},
 
 			fetchTimelineApi() {
-				let homeTimeline = '/api/v1/timelines/home?page=' + this.page;
-				let localTimeline = '/api/v1/timelines/public?page=' + this.page;
+				let homeTimeline = '/api/v1/timelines/home?page=1';
+				let localTimeline = '/api/v1/timelines/public?page=1';
 				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
 				axios.get(apiUrl).then(res => {
 					$('.timeline .loader').addClass('d-none');
@@ -274,8 +273,34 @@
 					if(this.page == 1) {
 						this.max_id = Math.max(...ids);
 					}
-					this.page++;
+					this.loading = false;
 				}).catch(err => {
+				});
+			},
+
+			infiniteTimeline($state) {
+				let homeTimeline = '/api/v1/timelines/home';
+				let localTimeline = '/api/v1/timelines/public';
+				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				axios.get(apiUrl, {
+					params: {
+						page: this.page,
+					},
+				}).then(res => {
+					if (res.data.length && this.loading == false) {
+						let data = res.data;
+						this.feed.push(...data);
+						let ids = data.map(status => status.id);
+						this.min_id = Math.min(...ids);
+						if(this.page == 1) {
+							this.max_id = Math.max(...ids);
+						}
+						this.page += 1;
+						$state.loaded();
+						this.loading = false;
+					} else {
+						$state.complete();
+					}
 				});
 			},
 
@@ -286,16 +311,6 @@
 					$('.notification-card .loader').addClass('d-none');
 					$('.notification-card .contents').removeClass('d-none');
 				});
-			},
-
-			scroll() {
-				window.onscroll = () => {
-				  let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight == document.documentElement.offsetHeight;
-
-				  if (bottomOfWindow) {
-				  	this.fetchTimelineApi();
-				  }
-				};
 			},
 
 			reportUrl(status) {

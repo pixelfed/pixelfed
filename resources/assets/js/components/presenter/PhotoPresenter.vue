@@ -6,13 +6,13 @@
 				<p class="font-weight-light">(click to show)</p>
 			</summary>
 			<a class="max-hide-overflow" :href="status.url" :class="status.media_attachments[0].filter_class">
-				<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].caption">
+				<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].caption" :title="status.media_attachments[0].caption">
 			</a>
 		</details>
 	</div>
 	<div v-else>
 		<div :class="status.media_attachments[0].filter_class">
-			<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].caption">
+			<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].caption" :title="status.media_attachments[0].caption">
 		</div>
 	</div>
 </template>

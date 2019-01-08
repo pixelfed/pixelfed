@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Auth;
+
 use App\Comment;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Profile;
 use App\Status;
-use Auth;
-use Illuminate\Http\Request;
+use League\Fractal;
+use App\Transformer\Api\StatusTransformer;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class CommentController extends Controller
 {
@@ -57,7 +62,19 @@ class CommentController extends Controller
         CommentPipeline::dispatch($status, $reply);
 
         if ($request->ajax()) {
-            $response = ['code' => 200, 'msg' => 'Comment saved', 'username' => $profile->username, 'url' => $reply->url(), 'profile' => $profile->url(), 'comment' => $reply->caption];
+            $fractal = new Fractal\Manager();
+            $fractal->setSerializer(new ArraySerializer());
+            $entity = new Fractal\Resource\Item($reply, new StatusTransformer());
+            $entity = $fractal->createData($entity)->toArray();
+            $response = [
+                'code' => 200, 
+                'msg' => 'Comment saved', 
+                'username' => $profile->username, 
+                'url' => $reply->url(), 
+                'profile' => $profile->url(), 
+                'comment' => $reply->caption,
+                'entity' => $entity,
+            ];
         } else {
             $response = redirect($status->url());
         }

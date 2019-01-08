@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
+use \Zttp\Zttp;
 
 class FederationController extends Controller
 {
@@ -238,7 +239,7 @@ XML;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
-        $actor = Profile::whereKeyId($keyId)->first();
+        $actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->firstOrFail();
         $res = Zttp::timeout(5)->withHeaders([
           'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
           'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org',

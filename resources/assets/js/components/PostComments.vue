@@ -1,4 +1,4 @@
-<style>
+<style scoped>
  span {
   font-size: 14px;
  }
@@ -92,7 +92,7 @@ export default {
           axios.get(url)
             .then(response => {
                 let self = this;
-                this.results = response.data.data;
+                this.results = _.reverse(response.data.data);
                 this.pagination = response.data.meta.pagination;
                 if(this.results.length > 0) {
                   $('.load-more-link').removeClass('d-none');
