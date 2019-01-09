@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
-    StatusTransformer,
+    StatusTransformer
 };
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
@@ -169,7 +169,7 @@ class PublicApiController extends Controller
     {
         if($profile->is_private == true && Auth::check() == false) {
             abort(404);
-        } 
+        }
 
         switch ($status->scope) {
             case 'public':
@@ -193,7 +193,7 @@ class PublicApiController extends Controller
             case 'draft':
                 abort(404);
                 break;
-            
+
             default:
                 abort(404);
                 break;

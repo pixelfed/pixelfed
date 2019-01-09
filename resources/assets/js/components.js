@@ -120,6 +120,10 @@ Vue.component(
     require('./components/PostComponent.vue').default
 );
 
+$('body').on('dblclick', '.postComponent', function() {
+    $(this).find('.like-btn').trigger('click');
+});
+
 Vue.component(
     'post-comments',
     require('./components/PostComments.vue').default
@@ -129,6 +133,10 @@ Vue.component(
     'timeline',
     require('./components/Timeline.vue').default
 );
+
+$('body').on('dblclick', '.timeline .card', function() {
+    $(this).find('.like-btn').trigger('click');
+});
 
 // Vue.component(
 //     'passport-clients',
