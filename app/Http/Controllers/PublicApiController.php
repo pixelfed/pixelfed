@@ -233,6 +233,8 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::whereHas('media')
+                      ->whereLocal(true)
+                      ->whereNull('uri')
                       ->where('id', $dir, $id)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
@@ -244,6 +246,8 @@ class PublicApiController extends Controller
                       ->get();
         } else {
             $timeline = Status::whereHas('media')
+                      ->whereLocal(true)
+                      ->whereNull('uri')
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
@@ -295,6 +299,8 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::whereHas('media')
+                      ->whereLocal(true)
+                      ->whereNull('uri')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
@@ -307,6 +313,8 @@ class PublicApiController extends Controller
                       ->get();
         } else {
             $timeline = Status::whereHas('media')
+                      ->whereLocal(true)
+                      ->whereNull('uri')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
