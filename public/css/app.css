@@ -15668,6 +15668,7 @@ details summary::-webkit-details-marker {
   text-indent: -999px;
   overflow: hidden;
   border: none;
+  padding: 0;
   background-color: transparent;
 }
 
