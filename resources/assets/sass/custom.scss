@@ -455,3 +455,12 @@ details summary::-webkit-details-marker {
 .notification-tooltip .arrow::before {
   border-bottom-color:#dc3545 !important;
 }
+
+.reactions {
+  button {
+    text-indent: -999px;
+    overflow: hidden;
+    border: none;
+    background-color: transparent;
+  }
+}
