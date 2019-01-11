@@ -43,7 +43,6 @@ require('./components/commentform');
 require('./components/searchform');
 require('./components/bookmarkform');
 require('./components/statusform');
-require('./components/settingspage');
 //require('./components/embed');
 //require('./components/notifications');
 
