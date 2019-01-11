@@ -32,7 +32,7 @@
 
 				<div class="postPresenterContainer">
 					<div v-if="status.pf_type === 'photo'" class="w-100">
-						<photo-presenter :status="status"></photo-presenter>	
+						<photo-presenter :status="status"></photo-presenter>
 					</div>
 
 					<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -171,10 +171,10 @@
 								<div v-else-if="n.type == 'follow'">
 									<p class="my-0">
 										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> followed you.
-									</p>	
+									</p>
 								</div>
 							</div>
-							
+
 						</div>
 					</div>
 				</div>
@@ -320,7 +320,7 @@
 			},
 
 			commentFocus(status, $event) {
-				let el = event.target;
+				let el = $event.target;
 				let card = el.parentElement.parentElement.parentElement;
 				let comments = card.getElementsByClassName('comments')[0];
 				if(comments.children.length == 0) {
@@ -342,7 +342,7 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				
+
 				axios.post('/i/like', {
 					item: status.id
 				}).then(res => {

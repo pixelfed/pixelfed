@@ -169,7 +169,7 @@ class PublicApiController extends Controller
     {
         if($profile->is_private == true && Auth::check() == false) {
             abort(404);
-        } 
+        }
 
         switch ($status->scope) {
             case 'public':
@@ -193,7 +193,7 @@ class PublicApiController extends Controller
             case 'draft':
                 abort(404);
                 break;
-            
+
             default:
                 abort(404);
                 break;
