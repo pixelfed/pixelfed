@@ -125,6 +125,9 @@ class StatusController extends Controller
         $profile = $user->profile;
         $visibility = $this->validateVisibility($request->visibility);
 
+        $cw = $profile->cw == true ? true : $cw;
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+
         $status = new Status();
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);

@@ -455,3 +455,10 @@ details summary::-webkit-details-marker {
 .notification-tooltip .arrow::before {
   border-bottom-color:#dc3545 !important;
 }
+
+#previewAvatar {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
