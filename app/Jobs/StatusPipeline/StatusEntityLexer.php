@@ -42,7 +42,10 @@ class StatusEntityLexer implements ShouldQueue
      */
     public function handle()
     {
-        $this->parseEntities();
+        $profile = $this->status->profile;
+        if($profile->no_autolink == false) {
+            $this->parseEntities();
+        }
     }
 
     public function parseEntities()
