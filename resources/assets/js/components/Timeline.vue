@@ -92,10 +92,15 @@
 					</form>
 				</div>
 			</div>
-			<infinite-loading @infinite="infiniteTimeline">
+			<!--
+				<infinite-loading @infinite="infiniteTimeline">
 				<div slot="no-more" class="font-weight-bold text-light">No more posts to load</div>
 				<div slot="no-results" class="font-weight-bold text-light">No posts found</div>
-			</infinite-loading>
+				</infinite-loading>
+			-->
+			<div class="pagination d-none">
+				<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
+			</div>
 		</div>
 
 		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2">
@@ -265,7 +270,6 @@
 				let localTimeline = '/api/v1/timelines/public?page=1';
 				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
 				axios.get(apiUrl).then(res => {
-					$('.timeline .loader').addClass('d-none');
 					let data = res.data;
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
@@ -273,6 +277,7 @@
 					if(this.page == 1) {
 						this.max_id = Math.max(...ids);
 					}
+					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
 				}).catch(err => {
 				});
@@ -300,6 +305,30 @@
 						this.loading = false;
 					} else {
 						$state.complete();
+					}
+				});
+			},
+
+			loadMore() {
+				let homeTimeline = '/api/v1/timelines/home';
+				let localTimeline = '/api/v1/timelines/public';
+				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				axios.get(apiUrl, {
+					params: {
+						page: this.page,
+					},
+				}).then(res => {
+					if (res.data.length && this.loading == false) {
+						let data = res.data;
+						this.feed.push(...data);
+						let ids = data.map(status => status.id);
+						this.min_id = Math.min(...ids);
+						if(this.page == 1) {
+							this.max_id = Math.max(...ids);
+						}
+						this.page += 1;
+						this.loading = false;
+					} else {
 					}
 				});
 			},
