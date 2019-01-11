@@ -9,7 +9,7 @@ use App\Media;
 use App\Profile;
 use App\Status;
 use App\Transformer\ActivityPub\StatusTransformer;
-use App\Transformer\ActivityPub\Verb\CreateNote;
+use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
 use Auth;
 use Cache;
@@ -250,7 +250,7 @@ class StatusController extends Controller
     public function showActivityPub(Request $request, $status)
     {
         $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Item($status, new CreateNote());
+        $resource = new Fractal\Resource\Item($status, new Note());
         $res = $fractal->createData($resource)->toArray();
 
         return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
