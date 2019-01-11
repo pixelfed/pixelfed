@@ -54,6 +54,7 @@ class InternalApiController extends Controller
         $attachments = [];
         $status = new Status;
         $mimes = [];
+        $cw = false;
 
         foreach($medias as $k => $media) {
             $m = Media::findOrFail($media['id']);
@@ -64,7 +65,8 @@ class InternalApiController extends Controller
             $m->license = $media['license'];
             $m->caption = strip_tags($media['alt']);
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-            if($media['cw'] == true) {
+            if($media['cw'] == true || $profile->cw == true) {
+                $cw = true;
                 $m->is_nsfw = true;
                 $status->is_nsfw = true;
             }
@@ -84,6 +86,9 @@ class InternalApiController extends Controller
             $media->save();
         }
 
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+        $cw = $profile->cw == true ? true : $cw;
+        $status->is_nsfw = $cw;
         $status->visibility = $visibility;
         $status->scope = $visibility;
         $status->type = StatusController::mimeTypeCheck($mimes);
