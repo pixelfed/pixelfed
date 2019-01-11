@@ -22,6 +22,7 @@
             <label class="custom-file-label" for="avatarInput">Select a profile photo</label>
           </div>
           <p><span class="small font-weight-bold">Must be a jpeg or png. Max avatar size: <span id="maxAvatarSize"></span></span></p>
+          <div id="previewAvatar"></div>
           <p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">Upload</button></p>
         </div>
         </form>
