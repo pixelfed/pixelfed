@@ -198,6 +198,16 @@ return [
     */
     'account_delete_after' => env('ACCOUNT_DELETE_AFTER', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Cloud Storage
+    |--------------------------------------------------------------------------
+    |
+    | Store media on object storage like S3, Digital Ocean Spaces, Rackspace
+    |
+    */
+    'cloud_storage' => env('PF_ENABLE_CLOUD', false),
+
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
