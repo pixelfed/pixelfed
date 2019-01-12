@@ -14,7 +14,7 @@ class Follow {
 			'id' => 'required|string',
 			'type' => [
 				'required',
-				Rule::in(['Like'])
+				Rule::in(['Follow'])
 			],
 			'actor' => 'required|url|active_url',
 			'object' => 'required|url|active_url'
