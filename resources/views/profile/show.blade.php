@@ -38,13 +38,14 @@
           <div class="square {{$status->firstMedia()->filter_class}}">
             @switch($status->viewType())
             @case('album')
-            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-images fa-2x"></i></span>
+            @case('photo:album')
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6;text-shadow: 3px 3px 16px #272634;"><i class="fas fa-images fa-2x"></i></span>
             @break
             @case('video')
-            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-video fa-2x"></i></span>
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6;text-shadow: 3px 3px 16px #272634;"><i class="fas fa-video fa-2x"></i></span>
             @break
             @case('video-album')
-            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6"><i class="fas fa-film fa-2x"></i></span>
+            <span class="float-right mr-3" style="color:#fff;position:relative;margin-top:10px;z-index: 999999;opacity:0.6;text-shadow: 3px 3px 16px #272634;"><i class="fas fa-film fa-2x"></i></span>
             @break
             @endswitch
             <div class="square-content" style="background-image: url('{{$status->thumb()}}')">
@@ -109,7 +110,7 @@
     let elem = document.querySelector('.profile-timeline');
     let infScroll = new InfiniteScroll( elem, {
       path: '.pagination__next',
-      append: '.profile-timeline',
+      append: '.profile-timeline .row',
       status: '.page-load-status',
       history: false,
     });
