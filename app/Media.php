@@ -23,7 +23,7 @@ class Media extends Model
             $url = $this->remote_url;
         } else {
             $path = $this->media_path;
-            $url = Storage::url($path);
+            $url = $this->cdn_url ?? Storage::url($path);
         }
 
         return url($url);
