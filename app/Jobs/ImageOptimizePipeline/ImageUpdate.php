@@ -24,6 +24,13 @@ class ImageUpdate implements ShouldQueue
     ];
 
     /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+    
+    /**
      * Create a new job instance.
      *
      * @return void
