@@ -20,6 +20,13 @@ class SharePipeline implements ShouldQueue
     protected $like;
 
     /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+
+    /**
      * Create a new job instance.
      *
      * @return void
@@ -45,10 +52,10 @@ class SharePipeline implements ShouldQueue
             return;
         }
 
-        $exists = Notification::whereProfileId($status->profile_id)
-                  ->whereActorId($actor->id)
-                  ->whereAction('like')
-                  ->whereItemId($status->id)
+        $exists = Notification::whereProfileId($target->id)
+                  ->whereActorId($status->profile_id)
+                  ->whereAction('share')
+                  ->whereItemId($status->in_reply_to_id)
                   ->whereItemType('App\Status')
                   ->count();
 
@@ -57,10 +64,12 @@ class SharePipeline implements ShouldQueue
         }
 
         try {
+            $text = "{$actor->username} " . __('notification.likedPhoto');
+            $html = '';
             $notification = new Notification();
             $notification->profile_id = $status->profile_id;
             $notification->actor_id = $actor->id;
-            $notification->action = 'like';
+            $notification->action = 'share';
             $notification->message = $like->toText();
             $notification->rendered = $like->toHtml();
             $notification->item_id = $status->id;
