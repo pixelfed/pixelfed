@@ -28,6 +28,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'moved' => null,
 			'fields' => null,
 			'bot' => null,
+			'software' => 'pixelfed'
 		];
 	}
 }
