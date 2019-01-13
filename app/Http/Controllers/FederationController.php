@@ -82,37 +82,38 @@ class FederationController extends Controller
     {
         $res = Cache::remember('api:nodeinfo', 60, function () {
             return [
-          'metadata' => [
-            'nodeName' => config('app.name'),
-            'software' => [
-              'homepage' => 'https://pixelfed.org',
-              'github'   => 'https://github.com/pixelfed',
-              'follow'   => 'https://mastodon.social/@pixelfed',
-            ],
-          ],
-          'openRegistrations' => config('pixelfed.open_registration'),
-          'protocols'         => [
-            'activitypub',
-          ],
-          'services' => [
-            'inbound'  => [],
-            'outbound' => [],
-          ],
-          'software' => [
-            'name'    => 'pixelfed',
-            'version' => config('pixelfed.version'),
-          ],
-          'usage' => [
-            'localPosts'    => \App\Status::whereLocal(true)->whereHas('media')->count(),
-            'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
-            'users'         => [
-              'total'          => \App\User::count(),
-              'activeHalfyear' => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
-              'activeMonth'    => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
-            ],
-          ],
-          'version' => '2.0',
-        ];
+                'metadata' => [
+                    'nodeName' => config('app.name'),
+                    'software' => [
+                        'homepage' => 'https://pixelfed.org',
+                        'github'   => 'https://github.com/pixelfed',
+                        'follow'   => 'https://mastodon.social/@pixelfed',
+                    ],
+                    'captcha' => (bool) config('pixelfed.recaptcha'),
+                ],
+                'openRegistrations' => config('pixelfed.open_registration'),
+                'protocols'         => [
+                    'activitypub',
+                ],
+                'services' => [
+                    'inbound'  => [],
+                    'outbound' => [],
+                ],
+                'software' => [
+                    'name'    => 'pixelfed',
+                    'version' => config('pixelfed.version'),
+                ],
+                'usage' => [
+                    'localPosts'    => \App\Status::whereLocal(true)->whereHas('media')->count(),
+                    'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
+                    'users'         => [
+                        'total'          => \App\User::count(),
+                        'activeHalfyear' => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
+                        'activeMonth'    => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
+                    ],
+                ],
+                'version' => '2.0',
+            ];
         });
 
         return response()->json($res, 200, [
