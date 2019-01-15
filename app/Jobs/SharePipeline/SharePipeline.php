@@ -17,7 +17,7 @@ class SharePipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $like;
+    protected $status;
 
     /**
      * Delete the job if its models no longer exist.
@@ -44,10 +44,10 @@ class SharePipeline implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
-        $actor = $this->status->profile;
-        $target = $this->status->parent()->profile;
+        $actor = $status->profile;
+        $target = $status->parent()->profile;
 
-        if ($status->url !== null) {
+        if ($status->uri !== null) {
             // Ignore notifications to remote statuses
             return;
         }
@@ -55,23 +55,21 @@ class SharePipeline implements ShouldQueue
         $exists = Notification::whereProfileId($target->id)
                   ->whereActorId($status->profile_id)
                   ->whereAction('share')
-                  ->whereItemId($status->in_reply_to_id)
+                  ->whereItemId($status->reblog_of_id)
                   ->whereItemType('App\Status')
                   ->count();
 
-        if ($actor->id === $status->profile_id || $exists !== 0) {
+        if ($target->id === $status->profile_id || $exists !== 0) {
             return true;
         }
 
         try {
-            $text = "{$actor->username} " . __('notification.likedPhoto');
-            $html = '';
-            $notification = new Notification();
-            $notification->profile_id = $status->profile_id;
+            $notification = new Notification;
+            $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'share';
-            $notification->message = $like->toText();
-            $notification->rendered = $like->toHtml();
+            $notification->message = $status->shareToText();
+            $notification->rendered = $status->shareToHtml();
             $notification->item_id = $status->id;
             $notification->item_type = "App\Status";
             $notification->save();
