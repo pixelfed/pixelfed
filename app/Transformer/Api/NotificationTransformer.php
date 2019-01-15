@@ -44,6 +44,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'follow' => 'follow',
 			'mention' => 'mention',
 			'reblog' => 'share',
+			'share' => 'share',
 			'like' => 'favourite',
 			'comment' => 'comment',
 		];
