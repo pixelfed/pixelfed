@@ -54,34 +54,6 @@ $ sudo sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" 
 $ sudo apt-get update
 ```
 
-Install Erlang Solutions repo
-```sh
-$ sudo wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && ${SUDO} dpkg -i erlang-solutions_1.0_all.deb        
-$ sudo apt-get update
-```
-
-Install Elixir   
-```sh
-$ sudo apt-get install -y erlang-dev erlang-xmerl erlang-parsetools elixir
-```
-
-Install Node.js 10.x
-```sh
-$ sudo wget -qO- https://deb.nodesource.com/setup_10.x | ${SUDO} -E bash -
-$ sudo apt-get install -y nodejs build-essential
-```
-
-Install Erlang Solutions repo
-```sh
-$ sudo wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && ${SUDO} dpkg -i erlang-solutions_1.0_all.deb        
-$ sudo apt-get update
-```
-
-Install Elixir   
-```sh
-$ sudo apt-get install -y erlang-dev erlang-xmerl erlang-parsetools elixir
-```
-
 Install Node.js 10.x
 ```sh
 $ sudo wget -qO- https://deb.nodesource.com/setup_10.x | ${SUDO} -E bash -
@@ -93,147 +65,25 @@ Install Yarn
 $ sudo apt-get update && ${SUDO} apt-get install yarn
 ```
 
-Install htop, bmon, mc and misc tools required by pixelfed
+Install misc tools required by pixelfed
 ```sh
-$ sudo apt-get install -y htop bmon mc pngquant optipng jpegoptim gifsicle
+$ sudo apt-get install -y pngquant optipng jpegoptim gifsicle
 ```
 
 Install PHP 7.2 FPM + additional extensions requiredd by pixelfed
 ```sh
-$ sudo apt-get install -y php7.2-fpm php7.2 php7.2-common php7.2-cli php7.2-gd php7.2-mbstring php7.2-xml php7.2-json php7.2-bcmath php7.2-pgsql php7.2-curl
+$ sudo apt-get install -y php7.2-fpm php7.2 php7.2-common php7.2-cli php7.2-gd php7.2-mbstring php7.2-xml php7.2-json php7.2-bcmath php7.2-curl
 ```
 
-Install Nginx, Redis and Postgres
+Install Nginx & Redis
 ```sh
-$ sudo apt-get install -y nginx redis-server postgresql
+$ sudo apt-get install -y nginx redis-server
 ```
 
 Configure Redis supervised by systemd
 ```sh
 $ sudo sed -i "s/supervised no/supervised systemd/" /etc/redis/redis.conf
 $ sudo systemctl restart redis
-```
-
-Install svgo required by pixelfed, also curl
-```sh
-$ sudo npm install -g svgo
-$ sudo apt install curl
-```
-
-Install Erlang Solutions repo
-```sh
-$ sudo wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && ${SUDO} dpkg -i erlang-solutions_1.0_all.deb        
-$ sudo apt-get update
-```
-
-Install Elixir   
-```sh
-$ sudo apt-get install -y erlang-dev erlang-xmerl erlang-parsetools elixir
-```
-
-Install Node.js 10.x
-```sh
-$ sudo wget -qO- https://deb.nodesource.com/setup_10.x | ${SUDO} -E bash -
-$ sudo apt-get install -y nodejs build-essential
-```
-
-Install Yarn
-```sh
-$ sudo apt-get update && ${SUDO} apt-get install yarn
-```
-
-Install htop, bmon, mc and misc tools required by pixelfed
-```sh
-$ sudo apt-get install -y htop bmon mc pngquant optipng jpegoptim gifsicle
-```
-
-Install PHP 7.2 FPM + additional extensions requiredd by pixelfed
-```sh
-$ sudo apt-get install -y php7.2-fpm php7.2 php7.2-common php7.2-cli php7.2-gd php7.2-mbstring php7.2-xml php7.2-json php7.2-bcmath php7.2-pgsql php7.2-curl
-```
-
-Install Nginx, Redis and Postgres
-```sh
-$ sudo apt-get install -y nginx redis-server postgresql
-```
-
-Configure Redis supervised by systemd
-```sh
-$ sudo sed -i "s/supervised no/supervised systemd/" /etc/redis/redis.conf
-$ sudo systemctl restart redis
-```
-
-Install svgo required by pixelfed, also curl
-```sh
-$ sudo npm install -g svgo
-$ sudo apt install curl
-```
-
-Install composer
-```sh
-$ sudo curl -s https://getcomposer.org/installer | php
-$ sudo mv composer.phar /usr/local/bin/composer
-$ sudo chmod +x /usr/local/bin/composer
-```
-
-Restart php7.2-fpm (might not be needed)
-```sh
-$ sudo systemctl restart php7.2-fpm
-```
-
-Create pixelfed vhost directory
-```sh
-$ sudo mkdir /var/www/vhosts
-$ sudo mkdir /var/www/vhosts/pixelfed
-```
-
-Install Erlang Solutions repo
-```sh
-$ sudo wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb && ${SUDO} dpkg -i erlang-solutions_1.0_all.deb        
-$ sudo apt-get update
-```
-
-Install Elixir   
-```sh
-$ sudo apt-get install -y erlang-dev erlang-xmerl erlang-parsetools elixir
-```
-
-Install Node.js 10.x
-```sh
-$ sudo wget -qO- https://deb.nodesource.com/setup_10.x | ${SUDO} -E bash -
-$ sudo apt-get install -y nodejs build-essential
-```
-
-Install Yarn
-```sh
-$ sudo apt-get update && ${SUDO} apt-get install yarn
-```
-
-Install htop, bmon, mc and misc tools required by pixelfed
-```sh
-$ sudo apt-get install -y htop bmon mc pngquant optipng jpegoptim gifsicle
-```
-
-Install PHP 7.2 FPM + additional extensions requiredd by pixelfed
-```sh
-$ sudo apt-get install -y php7.2-fpm php7.2 php7.2-common php7.2-cli php7.2-gd php7.2-mbstring php7.2-xml php7.2-json php7.2-bcmath php7.2-pgsql php7.2-curl
-```
-
-Install Nginx, Redis and Postgres
-```sh
-$ sudo apt-get install -y nginx redis-server postgresql
-```
-
-Configure Redis supervised by systemd
-```sh
-$ sudo sed -i "s/supervised no/supervised systemd/" /etc/redis/redis.conf
-$ sudo systemctl restart redis
-```
-
-Install svgo required by pixelfed, also curl
-```sh
-$ sudo npm install -g svgo
-$ sudo apt install curl
 ```
 
 Install composer
@@ -277,7 +127,7 @@ cd /var/www/vhosts/pixelfed && php artisan key:generate
 cd /var/www/vhosts/pixelfed && php artisan storage:link        
 ```
 
-Create pixelfed database user and database
+Create pixelfed mysql database user and database
 ```sh
 cd /tmp
 wget https://dev.mysql.com/get/mysql-apt-config_0.8.11-1_all.deb
