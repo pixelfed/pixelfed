@@ -60,4 +60,9 @@ class Instance extends Model
 			'id'
 		);
 	}
+
+	public function getUrl()
+	{
+		return url("/i/admin/instances/show/{$this->id}");
+	}
 }
