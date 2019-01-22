@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
-    StatusTransformer,
+    StatusTransformer
 };
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;

@@ -13,14 +13,14 @@ use App\{
     Profile,
     StatusHashtag,
     Status,
-    UserFilter,
+    UserFilter
 };
 use Auth,Cache;
 use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
-    StatusTransformer,
+    StatusTransformer
 };
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
@@ -238,8 +238,8 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
 
-        if($profileId != $profile->id) { 
-            abort(403); 
+        if($profileId != $profile->id) {
+            abort(403);
         }
 
         $msg = DirectMessage::whereToId($profile->id)

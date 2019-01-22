@@ -6,7 +6,7 @@ use App\{
     Notification,
     Report,
     Status,
-    StatusHashtag,
+    StatusHashtag
 };
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
