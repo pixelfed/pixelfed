@@ -50,7 +50,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
               'type'      => 'Document',
               'mediaType' => $media->mime,
               'url'       => $media->url(),
-              'name'      => null,
+              'name'      => $media->caption
             ];
           }),
           'tag' => [],
