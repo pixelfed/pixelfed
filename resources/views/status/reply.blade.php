@@ -2,12 +2,12 @@
 
 @section('content')
 
-<div class="container">
+<div class="container reply-container">
   <div class="col-12 col-md-8 offset-md-2 mt-4">
       <div class="card">
         <div class="card-body p-0 m-0 bg-light">
           <div class="d-flex p-0 m-0 align-items-center">
-            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px">
+            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
             <div class="p-4">
               <div>
                 <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-1" width="30px">
@@ -54,6 +54,6 @@
     $('.reactions').hide();
     $('.more-comments').hide();
     $('.card-footer').hide();
-  }); 
+  });
 </script>
 @endpush
