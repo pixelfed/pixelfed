@@ -14,6 +14,7 @@ use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
 use Auth;
 use Cache;
+use Storage;
 use Illuminate\Http\Request;
 use League\Fractal;
 
@@ -154,12 +155,16 @@ class StatusController extends Controller
 
             $storagePath = "public/m/{$monthHash}/{$userHash}";
             $path = $v->store($storagePath);
+            preg_match('/\/([a-zA-Z0-9]+)\.([a-zA-Z]+)$/', $path, $matches);
+            $orig_path_assemble = $matches[1]."_orig.".$matches[2];
+            $orig_path = $v->storeAs($storagePath, $orig_path_assemble);
             $hash = \hash_file('sha256', $v);
             $media = new Media();
             $media->status_id = $status->id;
             $media->profile_id = $profile->id;
             $media->user_id = $user->id;
             $media->media_path = $path;
+            $media->original_path = $orig_path;
             $media->original_sha256 = $hash;
             $media->size = $v->getSize();
             $media->mime = $v->getMimeType();
@@ -210,7 +215,7 @@ class StatusController extends Controller
     public function storeShare(Request $request)
     {
         $this->authCheck();
-        
+
         $this->validate($request, [
           'item'    => 'required|integer',
         ]);
@@ -301,6 +306,17 @@ class StatusController extends Controller
 
         if ($media->filter_class != $filter) {
             $media->filter_class = $filter;
+            $path = $media->media_path;
+            if (file_exists('/'.storage_path('app/'.$media->media_path))){
+                unlink('/'.storage_path('app/'.$media->media_path));
+            }
+            if ($media->thumbnail_path && file_exists('/'.storage_path('app/'.$media->thumbnail_path))) {
+                unlink('/'.storage_path('app/'.$media->thumbnail_path));
+            }
+            $orig_path = $media->original_path;
+            $media_path = $path;
+            Storage::copy($orig_path, $media_path);
+            ImageOptimize::dispatch($media);
             $changed = true;
         }
 

@@ -35,8 +35,9 @@ class Instagraph
     public function tempfile()
     {
         # copy original file and assign temporary name
-        $this->_tmp = $this->_prefix.rand();
-        $this->_tmp2 = $this->_prefix.rand().".png";
+        $this->_tmp = 'tmp/'.$this->_prefix.rand();
+        # second tmpfile is for stuff that needs the alpha channel
+        $this->_tmp2 = 'tmp/'.$this->_prefix.rand().".png";
         copy($this->_image, $this->_tmp);
         copy($this->_image, $this->_tmp2);
     }

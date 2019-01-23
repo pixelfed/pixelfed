@@ -4,7 +4,6 @@ namespace App\Util\Media;
 
 use App\Media;
 use Image as Intervention;
-use App\Util\Instagraph as Instagraph;
 use Storage;
 
 class Image
@@ -128,130 +127,6 @@ class Image
 
             $quality = config('pixelfed.image_quality');
             $img->save($newPath, $quality);
-            $ig = new Instagraph($newPath, $newPath);
-
-            switch($media->filter_name) {
-                case '1977':
-                    $ig->nineteenseventyseven();
-                    break;
-                case 'Aden':
-                    $ig->aden();
-                    break;
-                case 'Amaro':
-                    $ig->amaro();
-                    break;
-                case 'Ashby':
-                    $ig->ashby();
-                    break;
-                case 'Brannan':
-                    $ig->brannan();
-                    break;
-                case 'Brooklyn':
-                    $ig->brooklyn();
-                    break;
-                case 'Charmes':
-                    $ig->charmes();
-                    break;
-                case 'Clarendon':
-                    $ig->clarendon();
-                    break;
-                case 'Crema':
-                    $ig->crema();
-                    break;
-                case 'Dogpatch':
-                    $ig->dogpatch();
-                    break;
-                case 'Earlybird':
-                    $ig->earlybird();
-                    break;
-                case 'Gingham':
-                    $ig->gingham();
-                    break;
-                case 'Ginza':
-                    $ig->ginza();
-                    break;
-                case 'Hefe':
-                    $ig->hefe();
-                    break;
-                case 'Helena':
-                    $ig->helena();
-                    break;
-                case 'Hudson':
-                    $ig->hudson();
-                    break;
-                case 'Inkwell':
-                    $ig->inkwell();
-                    break;
-                case 'Juno':
-                    $ig->juno();
-                    break;
-                case 'Kelvin':
-                    $ig->kelvin();
-                    break;
-                case 'Lark':
-                    $ig->lark();
-                    break;
-                case 'Lo-Fi':
-                    $ig->lofi();
-                    break;
-                case 'Ludwig':
-                    $ig->ludwig();
-                    break;
-                case 'Maven':
-                    $ig->maven();
-                    break;
-                case 'Mayfair':
-                    $ig->mayfair();
-                    break;
-                case 'Moon':
-                    $ig->moon();
-                    break;
-                case 'Nashville':
-                    $ig->nashville();
-                    break;
-                case 'Perpetua':
-                    $ig->perpetua();
-                    break;
-                case 'Poprocket':
-                    $ig->poprocket();
-                    break;
-                case 'Reyes':
-                    $ig->reyes();
-                    break;
-                case 'Rise':
-                    $ig->rise();
-                    break;
-                case 'Sierra':
-                    $ig->sierra();
-                    break;
-                case 'Skyline':
-                    $ig->skyline();
-                    break;
-                case 'Slumber':
-                    $ig->slumber();
-                    break;
-                case 'Stinson':
-                    $ig->stinson();
-                    break;
-                case 'Sutro':
-                    $ig->sutro();
-                    break;
-                case 'Toaster':
-                    $ig->toaster();
-                    break;
-                case 'Valencia':
-                    $ig->valencia();
-                    break;
-                case 'Vesper':
-                    $ig->vesper();
-                    break;
-                case 'Willow':
-                    $ig->willow();
-                    break;
-                case 'X-Pro II':
-                    $ig->xpro();
-                    break;
-            }
 
             if (!$thumbnail) {
                 $media->orientation = $orientation;
