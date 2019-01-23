@@ -16,7 +16,14 @@ class NewStatusPipeline implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
-
+    
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+    
     /**
      * Create a new job instance.
      *
@@ -37,7 +44,10 @@ class NewStatusPipeline implements ShouldQueue
         $status = $this->status;
 
         StatusEntityLexer::dispatch($status);
-        StatusActivityPubDeliver::dispatch($status);
+
+        if(config('pixelfed.activitypub_enabled') == true) {
+            StatusActivityPubDeliver::dispatch($status);
+        }
         
         // Cache::forever('post.'.$status->id, $status);
         // $redis = Redis::connection();

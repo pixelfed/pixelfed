@@ -3,6 +3,7 @@ import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
+//import {Howl, Howler} from 'howler';
 
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
@@ -29,7 +30,6 @@ try {
     document.createEvent("TouchEvent");
     $('body').addClass('touch');
 } catch (e) {
-    return false;
 }
 
 window.InfiniteScroll = require('infinite-scroll');
@@ -67,43 +67,48 @@ window.pixelfed.n = {};
 
 Vue.component(
     'photo-presenter',
-    require('./components/presenter/PhotoPresenter.vue')
+    require('./components/presenter/PhotoPresenter.vue').default
 );
 
 Vue.component(
     'video-presenter',
-    require('./components/presenter/VideoPresenter.vue')
+    require('./components/presenter/VideoPresenter.vue').default
 );
 
 Vue.component(
     'photo-album-presenter',
-    require('./components/presenter/PhotoAlbumPresenter.vue')
+    require('./components/presenter/PhotoAlbumPresenter.vue').default
 );
 
 Vue.component(
     'video-album-presenter',
-    require('./components/presenter/VideoAlbumPresenter.vue')
+    require('./components/presenter/VideoAlbumPresenter.vue').default
 );
 
 Vue.component(
     'mixed-album-presenter',
-    require('./components/presenter/MixedAlbumPresenter.vue')
+    require('./components/presenter/MixedAlbumPresenter.vue').default
 );
 
 // Vue.component(
 //     'micro',
-//     require('./components/Micro.vue')
+//     require('./components/Micro.vue').default
 // );
 
 Vue.component(
     'follow-suggestions',
-    require('./components/FollowSuggestions.vue')
+    require('./components/FollowSuggestions.vue').default
 );
 
 Vue.component(
     'discover-component',
-    require('./components/DiscoverComponent.vue')
+    require('./components/DiscoverComponent.vue').default
 );
+
+// Vue.component(
+//     'profile',
+//     require('./components/Profile.vue').default
+// );
 
 // Vue.component(
 //     'circle-panel',
@@ -112,53 +117,55 @@ Vue.component(
 
 Vue.component(
     'post-component',
-    require('./components/PostComponent.vue')
+    require('./components/PostComponent.vue').default
 );
 
 Vue.component(
     'post-comments',
-    require('./components/PostComments.vue')
+    require('./components/PostComments.vue').default
 );
 
 Vue.component(
     'timeline',
-    require('./components/Timeline.vue')
+    require('./components/Timeline.vue').default
 );
 
-Vue.component(
-    'passport-clients',
-    require('./components/passport/Clients.vue')
-);
+// Vue.component(
+//     'passport-clients',
+//     require('./components/passport/Clients.vue').default
+// );
 
-Vue.component(
-    'passport-authorized-clients',
-    require('./components/passport/AuthorizedClients.vue')
-);
+// Vue.component(
+//     'passport-authorized-clients',
+//     require('./components/passport/AuthorizedClients.vue').default
+// );
 
-Vue.component(
-    'passport-personal-access-tokens',
-    require('./components/passport/PersonalAccessTokens.vue')
-);
+// Vue.component(
+//     'passport-personal-access-tokens',
+//     require('./components/passport/PersonalAccessTokens.vue').default
+// );
 
-window.pixelfed.copyToClipboard = (str) => {
-  const el = document.createElement('textarea');
-  el.value = str;
-  el.setAttribute('readonly', '');
-  el.style.position = 'absolute';
-  el.style.left = '-9999px';
-  document.body.appendChild(el);
-  const selected =
-    document.getSelection().rangeCount > 0
-      ? document.getSelection().getRangeAt(0)
-      : false;
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-  if (selected) {
-    document.getSelection().removeAllRanges();
-    document.getSelection().addRange(selected);
-  }
-};
+//import 'promise-polyfill/src/polyfill';
+
+// window.pixelfed.copyToClipboard = (str) => {
+//   const el = document.createElement('textarea');
+//   el.value = str;
+//   el.setAttribute('readonly', '');
+//   el.style.position = 'absolute';
+//   el.style.left = '-9999px';
+//   document.body.appendChild(el);
+//   const selected =
+//     document.getSelection().rangeCount > 0
+//       ? document.getSelection().getRangeAt(0)
+//       : false;
+//   el.select();
+//   document.execCommand('copy');
+//   document.body.removeChild(el);
+//   if (selected) {
+//     document.getSelection().removeAllRanges();
+//     document.getSelection().addRange(selected);
+//   }
+// };
 
 $(document).ready(function() {
   $(function () {

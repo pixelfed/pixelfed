@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.7.7',
+    'version' => '0.7.10',
 
     /*
     |--------------------------------------------------------------------------
@@ -176,6 +176,38 @@ return [
     |
     */
     'image_quality'  => (int) env('IMAGE_QUALITY', 80),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion
+    |--------------------------------------------------------------------------
+    |
+    | Enable account deletion.
+    |
+    */
+    'account_deletion' => env('ACCOUNT_DELETION', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Account deletion after X days
+    |--------------------------------------------------------------------------
+    |
+    | Set account deletion queue after X days, set to false to delete accounts
+    | immediately.
+    |
+    */
+    'account_delete_after' => env('ACCOUNT_DELETE_AFTER', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable Cloud Storage
+    |--------------------------------------------------------------------------
+    |
+    | Store media on object storage like S3, Digital Ocean Spaces, Rackspace
+    |
+    */
+    'cloud_storage' => env('PF_ENABLE_CLOUD', false),
+
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),

@@ -1,4 +1,4 @@
-<style>
+<style scoped>
 #l-modal .modal-body,
 #s-modal .modal-body {
   max-height: 70vh;
@@ -496,18 +496,21 @@ export default {
       },
 
       deletePost() {
-        if($('body').hasClass('loggedIn') == false) {
-          return;
-        }
+        var result = confirm('Are you sure you want to delete this post?');
+        if (result) {
+            if($('body').hasClass('loggedIn') == false) {
+            return;
+            }
 
-        axios.post('/i/delete', {
-          type: 'status',
-          item: this.status.id
-        }).then(res => {
-          swal('Success', 'You have successfully deleted this post', 'success');
-        }).catch(err => {
-          swal('Error', 'Something went wrong. Please try again later.', 'error');
-        });
+            axios.post('/i/delete', {
+            type: 'status',
+            item: this.status.id
+            }).then(res => {
+            swal('Success', 'You have successfully deleted this post', 'success');
+            }).catch(err => {
+            swal('Error', 'Something went wrong. Please try again later.', 'error');
+            });
+        }
       }
     }
 }

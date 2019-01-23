@@ -12,7 +12,7 @@ class Profile extends Model
 
     protected $dates = ['deleted_at'];
     protected $hidden = ['private_key'];
-    protected $visible = ['username', 'name'];
+    protected $visible = ['id', 'user_id', 'username', 'name'];
 
     public function user()
     {

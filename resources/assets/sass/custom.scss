@@ -456,6 +456,13 @@ details summary::-webkit-details-marker {
   border-bottom-color:#dc3545 !important;
 }
 
+#previewAvatar {
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
 .img-thumbnail {
     box-sizing: content-box;
 }

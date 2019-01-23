@@ -22,6 +22,7 @@
             <label class="custom-file-label" for="avatarInput">Select a profile photo</label>
           </div>
           <p><span class="small font-weight-bold">Must be a jpeg or png. Max avatar size: <span id="maxAvatarSize"></span></span></p>
+          <div id="previewAvatar"></div>
           <p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">Upload</button></p>
         </div>
         </form>
@@ -130,5 +131,18 @@
   });
 
   $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
+
+  $('#avatarInput').on('change', function(e) {
+      var file = document.getElementById('avatarInput').files[0];
+      var reader = new FileReader();
+
+      reader.addEventListener("load", function() {
+          $('#previewAvatar').html('<img src="' + reader.result + '" class="rounded-circle box-shadow mb-3" width="100%" height="100%"/>');
+      }, false);
+
+      if (file) {
+          reader.readAsDataURL(file);
+      }
+  });
 </script>
 @endpush
