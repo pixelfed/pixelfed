@@ -17,7 +17,15 @@ RUN apt-get update \
  && docker-php-ext-install pdo_mysql pcntl gd exif bcmath \
  && pecl install imagick \
  && docker-php-ext-enable imagick pcntl imagick gd exif \
- && a2enmod rewrite \
+ && a2enmod rewrite remoteip \
+ && {\
+     echo RemoteIPHeader X-Real-IP ;\
+     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+     echo SetEnvIf X-Forwarded-Proto "https" HTTPS=on ;\
+    } > /etc/apache2/conf-available/remoteip.conf \
+ && a2enconf remoteip \
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
  && echo "${COMPOSER_CHECKSUM}  /usr/bin/composer" | sha256sum -c - \
  && chmod 755 /usr/bin/composer \
