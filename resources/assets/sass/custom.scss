@@ -61,6 +61,59 @@ body, button, input, textarea {
   opacity: .4;
 }
 
+.status-card,
+.card.status-container {
+    .carousel {
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            height: 25px;
+        }
+
+        .carousel-control-prev-icon {
+            background-image: url("data:image/svg+xml;charset=utf-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cdefs%3e%3cfilter id='shadow' x='0' y='0' width='300%' height='300%'%3e%3cfeOffset result='offOut' in='SourceAlpha' dx='0.5' dy='0.5' /%3e%3cfeGaussianBlur result='blurOut' in='offOut' stdDeviation='0.25' /%3e%3cfeBlend in='SourceGraphic' in2='blurOut' mode='normal' /%3e%3c/filter%3e%3c/defs%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z' stroke='rgba(0,0,0,.5)' stroke-width='0.25' fill='%23FFF' filter='url(%23shadow)' /%3e%3c/svg%3e");
+        }
+
+        .carousel-control-next-icon {
+            background-image: url("data:image/svg+xml;charset=utf-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cdefs%3e%3cfilter id='shadow2' x='0' y='0' width='300%' height='300%'%3e%3cfeOffset result='offOut' in='SourceAlpha' dx='0.5' dy='0.5' /%3e%3cfeGaussianBlur result='blurOut' in='offOut' stdDeviation='0.25' /%3e%3cfeBlend in='SourceGraphic' in2='blurOut' mode='normal' /%3e%3c/filter%3e%3c/defs%3e%3cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z' stroke='rgba(0,0,0,.5)' stroke-width='0.25' fill='%23FFF' filter='url(%23shadow2)' /%3e%3c/svg%3e");
+        }
+
+        .carousel-indicators {
+            li {
+                text-indent: 0;
+                height: 30px;
+                border-top: none;
+                border-bottom: none;
+                background-color: transparent;
+                background-clip: none;
+                opacity: 1;
+                position: relative;
+
+                &:before {
+                    content: "";
+                    width: 100%;
+                    height: 5px;
+                    background-color: white;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    left: 0;
+                    display: block;
+                    border: 1px rgba(black, .5) solid;
+                    box-shadow: 1px 1px 1px rgba(black, .5);
+                }
+
+                &:hover,
+                &:focus {
+                    &:before {
+                        border: 1px black solid;
+                        box-shadow: 1px 1px 1px black;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .card.status-container {
 }
 
