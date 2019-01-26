@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\ImageOptimizePipeline\ImageFilter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\SharePipeline\SharePipeline;
@@ -174,6 +175,9 @@ class StatusController extends Controller
             $media->save();
             array_push($mimes, $media->mime);
             ImageOptimize::dispatch($media);
+            if ($media->filter_name) {
+                ImageFilter::dispatch($media);
+            }
             $order++;
             $medias++;
         }
@@ -317,6 +321,9 @@ class StatusController extends Controller
             $media_path = $path;
             Storage::copy($orig_path, $media_path);
             ImageOptimize::dispatch($media);
+            if ($media->filter_name) {
+                ImageFilter::dispatch($media);
+            }
             $changed = true;
         }
 

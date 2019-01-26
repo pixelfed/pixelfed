@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use ImageOptimizer;
-use App\Util\Media\Instagraph as Instagraph;
 use Illuminate\Http\File;
 
 class ImageUpdate implements ShouldQueue
@@ -54,9 +53,7 @@ class ImageUpdate implements ShouldQueue
 
         if (in_array($media->mime, $this->protectedMimes) == true) {
             ImageOptimizer::optimize($thumb);
-            $this->filter($thumb, $media->filter_name);
             ImageOptimizer::optimize($path);
-            $this->filter($path, $media->filter_name);
         }
 
         if (!is_file($path) || !is_file($thumb)) {
@@ -80,132 +77,6 @@ class ImageUpdate implements ShouldQueue
             $media->cdn_url = $url;
             $media->optimized_url = $url;
             $media->save();
-        }
-    }
-
-    public function filter($img, $filtername) {
-        $ig = new Instagraph($img, $img);
-        switch($filtername) {
-            case '1977':
-                $ig->nineteenseventyseven();
-                break;
-            case 'Aden':
-                $ig->aden();
-                break;
-            case 'Amaro':
-                $ig->amaro();
-                break;
-            case 'Ashby':
-                $ig->ashby();
-                break;
-            case 'Brannan':
-                $ig->brannan();
-                break;
-            case 'Brooklyn':
-                $ig->brooklyn();
-                break;
-            case 'Charmes':
-                $ig->charmes();
-                break;
-            case 'Clarendon':
-                $ig->clarendon();
-                break;
-            case 'Crema':
-                $ig->crema();
-                break;
-            case 'Dogpatch':
-                $ig->dogpatch();
-                break;
-            case 'Earlybird':
-                $ig->earlybird();
-                break;
-            case 'Gingham':
-                $ig->gingham();
-                break;
-            case 'Ginza':
-                $ig->ginza();
-                break;
-            case 'Hefe':
-                $ig->hefe();
-                break;
-            case 'Helena':
-                $ig->helena();
-                break;
-            case 'Hudson':
-                $ig->hudson();
-                break;
-            case 'Inkwell':
-                $ig->inkwell();
-                break;
-            case 'Juno':
-                $ig->juno();
-                break;
-            case 'Kelvin':
-                $ig->kelvin();
-                break;
-            case 'Lark':
-                $ig->lark();
-                break;
-            case 'Lo-Fi':
-                $ig->lofi();
-                break;
-            case 'Ludwig':
-                $ig->ludwig();
-                break;
-            case 'Maven':
-                $ig->maven();
-                break;
-            case 'Mayfair':
-                $ig->mayfair();
-                break;
-            case 'Moon':
-                $ig->moon();
-                break;
-            case 'Nashville':
-                $ig->nashville();
-                break;
-            case 'Perpetua':
-                $ig->perpetua();
-                break;
-            case 'Poprocket':
-                $ig->poprocket();
-                break;
-            case 'Reyes':
-                $ig->reyes();
-                break;
-            case 'Rise':
-                $ig->rise();
-                break;
-            case 'Sierra':
-                $ig->sierra();
-                break;
-            case 'Skyline':
-                $ig->skyline();
-                break;
-            case 'Slumber':
-                $ig->slumber();
-                break;
-            case 'Stinson':
-                $ig->stinson();
-                break;
-            case 'Sutro':
-                $ig->sutro();
-                break;
-            case 'Toaster':
-                $ig->toaster();
-                break;
-            case 'Valencia':
-                $ig->valencia();
-                break;
-            case 'Vesper':
-                $ig->vesper();
-                break;
-            case 'Willow':
-                $ig->willow();
-                break;
-            case 'X-Pro II':
-                $ig->xpro();
-                break;
         }
     }
 }
