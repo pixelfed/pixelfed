@@ -5,13 +5,13 @@
 				<p class="mb-0 lead font-weight-bold">{{ status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
 				<p class="font-weight-light">(click to show)</p>
 			</summary>
-			<a class="max-hide-overflow" :href="status.url" :class="status.media_attachments[0].filter_class">
+			<a class="max-hide-overflow" :href="status.url">
 				<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].description" :title="status.media_attachments[0].description">
 			</a>
 		</details>
 	</div>
 	<div v-else>
-		<div :class="status.media_attachments[0].filter_class">
+		<div>
 			<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].description" :title="status.media_attachments[0].description">
 		</div>
 	</div>

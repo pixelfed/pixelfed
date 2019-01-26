@@ -30,9 +30,6 @@ class ImageFilter implements ShouldQueue {
         preg_match('/\/([a-zA-Z0-9_\-]+).([a-z]+)$/', $img, $matches);
         try {
             $f = str_replace("-", "_", str_replace(" ", "_", strtolower($filtername)));
-            if ($f == 'kuno') {
-                $f = 'juno';
-            }
             if (!file_exists('tmp/'.$matches[1])) {
                 exec('mkdir tmp/'.$matches[1]);
             }
