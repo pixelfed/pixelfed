@@ -462,3 +462,13 @@ details summary::-webkit-details-marker {
         height: auto;
     }
 }
+
+.img-thumbnail {
+    box-sizing: content-box;
+}
+
+.reply-container {
+    .post-thumbnail {
+        object-fit: cover;
+    }
+}
