@@ -14,7 +14,7 @@ class StoryTransformer extends Fractal\TransformerAbstract
     public function transform(Story $story)
     {
         return [
-            'id'                        => $story->id,
+            'id'                        => (string) $story->id,
             'photo'                     => $story->profile->avatarUrl(),
             'name'                      => '',
             'link'                      => '',

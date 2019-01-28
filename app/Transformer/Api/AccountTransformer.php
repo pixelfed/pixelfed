@@ -9,8 +9,9 @@ class AccountTransformer extends Fractal\TransformerAbstract
 {
 	public function transform(Profile $profile)
 	{
+		$is_admin = $profile->domain ? false : $profile->user->is_admin;
 		return [
-			'id' => $profile->id,
+			'id' => (string) $profile->id,
 			'username' => $profile->username,
 			'acct' => $profile->username,
 			'display_name' => $profile->name,
@@ -28,7 +29,8 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'moved' => null,
 			'fields' => null,
 			'bot' => null,
-			'software' => 'pixelfed'
+			'software' => 'pixelfed',
+			'is_admin' => (bool) $is_admin
 		];
 	}
 }

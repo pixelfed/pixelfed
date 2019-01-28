@@ -15,7 +15,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 	public function transform(Notification $notification)
 	{
 		return [
-			'id'       		=> $notification->id,
+			'id'       		=> (string) $notification->id,
 			'type'       	=> $this->replaceTypeVerb($notification->action),
 			'created_at' 	=> (string) $notification->created_at,
 			'account' 		=> null,
