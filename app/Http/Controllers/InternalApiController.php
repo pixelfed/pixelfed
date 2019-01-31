@@ -281,4 +281,9 @@ class InternalApiController extends Controller
 
         return response()->json($res);
     }
+
+    public function stories(Request $request)
+    {
+        
+    }
 }
