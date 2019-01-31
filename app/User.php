@@ -62,6 +62,11 @@ class User extends Authenticatable
         );
     }
 
+    public function filters()
+    {
+        return $this->hasMany(UserFilter::class);
+    }
+
     public function receivesBroadcastNotificationsOn()
     {
         return 'App.User.'.$this->id;
