@@ -21,12 +21,16 @@ class UserFilter extends Model
     		->pluck('filterable_id');
     }
 
-
     public function blockedUserIds($profile_id)
     {
     	return $this->whereUserId($profile_id)
     		->whereFilterableType('App\Profile')
     		->whereFilterType('block')
     		->pluck('filterable_id');
+    }
+
+    public function instance()
+    {
+        return $this->belongsTo(Instance::class, 'filterable_id');
     }
 }
