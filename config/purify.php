@@ -54,7 +54,7 @@ return [
         |
         */
 
-        'HTML.Doctype' => 'XHTML 1.0 Strict',
+        'HTML.Doctype' => 'XHTML 1.0 Transitional',
 
         /*
         |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ return [
         |
         */
 
-        'HTML.Allowed' => 'a[href|title|rel],p',
+        'HTML.Allowed' => 'a[href|title|rel],p,strong,em,i,u,h1,h2,h3,h4,h5,ul,ol,li',
 
         /*
         |--------------------------------------------------------------------------
