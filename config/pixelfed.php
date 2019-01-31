@@ -208,6 +208,16 @@ return [
     */
     'cloud_storage' => env('PF_ENABLE_CLOUD', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Max User Limit
+    |--------------------------------------------------------------------------
+    |
+    | Allow a maximum number of user accounts. Default: off
+    |
+    */
+    'max_users' => env('PF_MAX_USERS', false),
+
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
