@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\AccountLog;
 use App\EmailVerification;
+use App\Instance;
 use App\Media;
 use App\Profile;
 use App\User;
@@ -121,7 +122,56 @@ trait PrivacySettings
 
     public function blockedInstances()
     {
-        $settings = Auth::user()->settings;
-        return view('settings.privacy.blocked-instances');
+        $pid = Auth::user()->profile->id;
+        $filters = UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Instance')
+            ->whereFilterType('block')
+            ->orderByDesc('id')
+            ->paginate(10);
+        return view('settings.privacy.blocked-instances', compact('filters'));
+    }
+
+    public function blockedInstanceStore(Request $request)
+    {
+        $this->validate($request, [
+            'domain'    => [
+                'required',
+                'min:3',
+                'max:100',
+                function($attribute, $value, $fail) {
+                    if(!filter_var($value, FILTER_VALIDATE_DOMAIN)) {
+                        $fail($attribute. 'is invalid');
+                    }
+                }
+            ]
+        ]);
+        $domain = $request->input('domain');
+        $instance = Instance::firstOrCreate(['domain' => $domain]);
+        $filter = new UserFilter;
+        $filter->user_id = Auth::user()->profile->id;
+        $filter->filterable_id = $instance->id;
+        $filter->filterable_type = 'App\Instance';
+        $filter->filter_type = 'block';
+        $filter->save();
+        return response()->json(['msg' => 200]);
+    }
+
+    public function blockedInstanceUnblock(Request $request)
+    {
+        $this->validate($request, [
+            'id'    => 'required|integer|min:1'
+        ]);
+        $pid = Auth::user()->profile->id;
+
+        $filter = UserFilter::whereFilterableType('App\Instance')
+            ->whereUserId($pid)
+            ->findOrFail($request->input('id'));
+        $filter->delete();
+        return redirect(route('settings.privacy.blocked-instances'));
+    }
+
+    public function blockedKeywords()
+    {
+        return view('settings.privacy.blocked-keywords');
     }
 }
