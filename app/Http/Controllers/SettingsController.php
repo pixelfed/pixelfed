@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AccountLog;
 use App\Following;
+use App\Report;
 use App\UserFilter;
 use Auth, DB, Cache, Purify;
 use Carbon\Carbon;
@@ -160,6 +161,7 @@ class SettingsController extends Controller
         if(config('pixelfed.account_deletion') == false) {
             abort(404);
         }
+        
         $user = Auth::user();
         if($user->is_admin == true) {
             return abort(400, 'You cannot delete an admin account.');
@@ -174,6 +176,19 @@ class SettingsController extends Controller
         $profile->save();
         Auth::logout();
         return redirect('/');
+    }
+
+    public function requestFullExport(Request $request)
+    {
+        $user = Auth::user();
+        return view('settings.export.show');
+    }
+
+    public function reportsHome(Request $request)
+    {
+        $profile = Auth::user()->profile;
+        $reports = Report::whereProfileId($profile->id)->orderByDesc('created_at')->paginate(10);
+        return view('settings.reports', compact('reports'));
     }
 }
 
