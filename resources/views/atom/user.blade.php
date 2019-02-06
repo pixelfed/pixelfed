@@ -35,6 +35,9 @@
         <summary type="html">
             {{ $item->caption }}
         </summary>
+        <content:encoded>
+            <![CDATA[<img alt="{{ $item->caption }}" src="{{ $item->thumb() }}" />
+        </content:encoded>
         <updated>{{ $item->updated_at->toAtomString() }}</updated>
     </entry>
 @endforeach
