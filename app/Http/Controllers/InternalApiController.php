@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\{
     DirectMessage,
+    DiscoverCategory,
     Hashtag,
     Follower,
     Like,
@@ -285,5 +286,18 @@ class InternalApiController extends Controller
     public function stories(Request $request)
     {
         
+    }
+
+    public function discoverCategories(Request $request)
+    {
+        $categories = DiscoverCategory::whereActive(true)->orderBy('order')->take(10)->get();
+        $res = $categories->map(function($item) {
+            return [
+                'name' => $item->name,
+                'url' => $item->url(),
+                'thumb' => $item->thumb()
+            ];
+        });
+        return response()->json($res);
     }
 }
