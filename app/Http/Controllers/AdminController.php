@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Jackiedo\DotenvEditor\DotenvEditor;
 use App\Http\Controllers\Admin\{
+  AdminDiscoverController,
   AdminInstanceController,
   AdminReportController,
   AdminMediaController,
@@ -29,6 +30,7 @@ use App\Util\Lexer\PrettyNumber;
 class AdminController extends Controller
 {
     use AdminReportController, 
+        AdminDiscoverController, 
         AdminMediaController, 
         AdminSettingsController, 
         AdminInstanceController;
