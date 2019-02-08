@@ -29,6 +29,12 @@ class DiscoverCategory extends Model
     	return $this->media->thumb();
     }
 
+    public function mediaUrl()
+    {
+        return $this->media->url();
+    }
+
+
     public function items()
     {
     	return $this->hasMany(DiscoverCategoryHashtag::class, 'discover_category_id');
