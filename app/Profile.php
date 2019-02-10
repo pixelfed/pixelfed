@@ -274,4 +274,9 @@ class Profile extends Model
             ->unique()
             ->toArray();
     }
+
+    public function circles()
+    {
+        return $this->hasMany(Circle::class);
+    }
 }
