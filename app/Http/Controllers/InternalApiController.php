@@ -26,6 +26,7 @@ use App\Transformer\Api\{
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Validation\Rule;
 
 class InternalApiController extends Controller
 {
@@ -200,14 +201,21 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, 15, function() use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
-            return UserFilter::whereUserId($pid)
-            ->whereFilterableType('App\Profile')
-            ->whereIn('filter_type', ['mute', 'block'])
-            ->pluck('filterable_id')->toArray();
+        $filters = Cache::remember("user:filter:list:$pid", 15, function() use($pid) {
+            $private = Profile::whereIsPrivate(true)
+                ->orWhere('unlisted', true)
+                ->orWhere('status', '!=', null)
+                ->pluck('id')
+                ->toArray();
+            $filters = UserFilter::whereUserId($pid)
+                ->whereFilterableType('App\Profile')
+                ->whereIn('filter_type', ['mute', 'block'])
+                ->pluck('filterable_id')
+                ->toArray();
+            return array_merge($private, $filters);
         });
         $following = array_merge($following, $filters);
 
@@ -299,5 +307,77 @@ class InternalApiController extends Controller
             ];
         });
         return response()->json($res);
+    }
+
+    public function modAction(Request $request)
+    {
+        abort_unless(Auth::user()->is_admin, 403);
+        $this->validate($request, [
+            'action' => [
+                'required',
+                'string',
+                Rule::in([
+                    'autocw',
+                    'noautolink',
+                    'unlisted',
+                    'disable',
+                    'suspend'
+                ])
+            ],
+            'item_id' => 'required|integer|min:1',
+            'item_type' => [
+                'required',
+                'string',
+                Rule::in(['status'])
+            ]
+        ]);
+
+        $action = $request->input('action');
+        $item_id = $request->input('item_id');
+        $item_type = $request->input('item_type');
+
+        switch($action) {
+            case 'autocw':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->cw = true;
+                $profile->save();
+            break;
+
+            case 'noautolink':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->no_autolink = true;
+                $profile->save();
+            break;
+
+            case 'unlisted':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->unlisted = true;
+                $profile->save();
+            break;
+
+            case 'disable':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $user = $profile->user;
+                $profile->status = 'disabled';
+                $user->status = 'disabled';
+                $profile->save();
+                $user->save();
+            break;
+
+
+            case 'suspend':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $user = $profile->user;
+                $profile->status = 'suspended';
+                $user->status = 'suspended';
+                $profile->save();
+                $user->save();
+            break;
+            
+            default:
+                # code...
+                break;
+        }
+        return ['msg' => 200];
     }
 }
