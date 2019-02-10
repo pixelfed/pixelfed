@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
+    RelationshipTransformer,
     StatusTransformer,
 };
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -329,5 +330,22 @@ class PublicApiController extends Controller
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
 
+    }
+
+    public function relationships(Request $request)
+    {
+        abort_if(!Auth::check(), 403);
+
+        $this->validate($request, [
+            'id'    => 'required|array|min:1|max:20'
+        ]);
+        $ids = collect($request->input('id'));
+        $filtered = $ids->filter(function($v) { 
+            return $v != Auth::user()->profile->id;
+        });
+        $relations = Profile::findOrFail($filtered->all());
+        $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
     }
 }
