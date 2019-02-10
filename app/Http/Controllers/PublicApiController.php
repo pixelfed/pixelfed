@@ -33,7 +33,6 @@ class PublicApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('throttle:3000, 30');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
@@ -223,7 +222,11 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
+        $private = Profile::whereIsPrivate(true)
+            ->orWhere('unlisted', true)
+            ->orWhere('status', '!=', null)
+            ->where('id', '!=', $pid)
+            ->pluck('id');
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
