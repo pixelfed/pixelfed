@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.7.10',
+    'version' => '0.8.0rc1',
 
     /*
     |--------------------------------------------------------------------------
@@ -217,6 +217,26 @@ return [
     |
     */
     'max_users' => env('PF_MAX_USERS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Optimize Images
+    |--------------------------------------------------------------------------
+    |
+    | Resize and optimize image uploads. Default: on
+    |
+    */
+    'optimize_image' => env('PF_OPTIMIZE_IMAGES', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Optimize Videos
+    |--------------------------------------------------------------------------
+    |
+    | Resize and optimize video uploads. Default: on
+    |
+    */
+    'optimize_video' => env('PF_OPTIMIZE_VIDEOS', true),
 
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
