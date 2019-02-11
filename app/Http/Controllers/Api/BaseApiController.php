@@ -141,10 +141,9 @@ class BaseApiController extends Controller
             $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
-        //$resource->setPaginator(new IlluminatePaginatorAdapter($statuses));
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function followSuggestions(Request $request)
@@ -302,12 +301,4 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function showAccount(Request $request, $id)
-    {
-        $profile = Profile::whereNull('domain')->whereNull('status')->findOrFail($id);
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
 }
