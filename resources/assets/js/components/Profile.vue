@@ -19,11 +19,10 @@
 								<span class="pl-4" v-if="profile.is_admin">
 									<span class="btn btn-outline-danger font-weight-bold py-0">ADMIN</span>
 								</span>
-								<!-- @if($owner == true) -->
 								<span class="pl-4" v-if="owner">
 									<a class="fas fa-cog fa-lg text-muted" href="/settings/home"></a>
 								</span>
-								<span v-else>
+								<span v-if="!owner && user.hasOwnProperty('id')">
 									<span class="pl-4" v-if="relationship.following == true">
 										<button type="button"  class="btn btn-outline-secondary font-weight-bold px-4 py-0" v-on:click="followProfile()">Unfollow</button>
 									</span>
@@ -292,12 +291,6 @@ export default {
 			});
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.user = res.data;
-			}).catch(err => {
-				swal(
-					'Oops, something went wrong',
-					'Please reload the page.',
-					'error'
-				);
 			});
 			axios.get('/api/v1/accounts/relationships', {
 				params: {
