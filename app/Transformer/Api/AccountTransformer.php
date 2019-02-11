@@ -29,6 +29,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'moved' => null,
 			'fields' => null,
 			'bot' => null,
+			'website' => $profile->website,
 			'software' => 'pixelfed',
 			'is_admin' => (bool) $is_admin
 		];
