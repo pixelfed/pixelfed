@@ -462,3 +462,24 @@ details summary::-webkit-details-marker {
         height: auto;
     }
 }
+
+.img-thumbnail {
+    box-sizing: content-box;
+}
+
+.reply-container {
+    .post-thumbnail {
+        object-fit: cover;
+    }
+}
+
+#l-modal .modal-body,
+#s-modal .modal-body {
+  height: 60vh;
+  overflow-y: scroll;
+}
+
+#l-modal .modal-content,
+#s-modal .modal-content {
+  border-radius: 0;
+}

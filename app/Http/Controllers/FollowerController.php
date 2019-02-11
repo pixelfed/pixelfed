@@ -39,6 +39,7 @@ class FollowerController extends Controller
         $user = Auth::user()->profile;
         $target = Profile::where('id', '!=', $user->id)->whereNull('status')->findOrFail($item);
         $private = (bool) $target->is_private;
+        $remote = (bool) $target->domain;
         $blocked = UserFilter::whereUserId($target->id)
                 ->whereFilterType('block')
                 ->whereFilterableId($user->id)
@@ -51,7 +52,7 @@ class FollowerController extends Controller
 
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
 
-        if($private == true && $isFollowing == 0) {
+        if($private == true && $isFollowing == 0 || $remote == true) {
             $follow = FollowRequest::firstOrCreate([
                 'follower_id' => $user->id,
                 'following_id' => $target->id

@@ -17,13 +17,23 @@ class Media extends Model
      */
     protected $dates = ['deleted_at'];
 
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
+
     public function url()
     {
         if(!empty($this->remote_media) && $this->remote_url) {
             $url = $this->remote_url;
         } else {
             $path = $this->media_path;
-            $url = Storage::url($path);
+            $url = $this->cdn_url ?? Storage::url($path);
         }
 
         return url($url);
@@ -35,6 +45,11 @@ class Media extends Model
         $url = Storage::url($path);
 
         return url($url);
+    }
+
+    public function thumb()
+    {
+        return $this->thumbnailUrl();
     }
 
     public function mimeType()

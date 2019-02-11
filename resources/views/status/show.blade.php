@@ -1,8 +1,14 @@
 @extends('layouts.app',['title' => $user->username . " posted a photo: " . $status->likes_count . " likes, " . $status->comments_count . " comments" ])
 
 @section('content')
-
-
+<noscript>
+  <div class="card">
+    <div class="card-body container text-center font-weight-bold">
+      This website requires javascript, please enable it and refresh the page.
+    </div>
+  </div>
+</noscript>
+<div class="mt-md-4"></div>
 <post-component status-template="{{$status->viewType()}}" status-id="{{$status->id}}" status-username="{{$status->profile->username}}" status-url="{{$status->url()}}" status-profile-url="{{$status->profile->url()}}" status-avatar="{{$status->profile->avatarUrl()}}"></post-component>
 
 
@@ -15,6 +21,7 @@
 @endpush
 
 @push('scripts')
+<script type="text/javascript" src="{{ mix('js/status.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   new Vue({ 

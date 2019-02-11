@@ -17,33 +17,26 @@
   <div class="postCommentsContainer d-none">
     <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p class="mb-1" v-for="(comment, index) in results" :data-id="comment.id" :key="comment.id">
-        <span class="d-flex justify-content-between align-items-center">
-          <span class="pr-3" style="overflow: hidden;">
-            <div class="font-weight-bold pr-1"><bdi><a class="text-dark" :href="comment.account.url" :title="comment.account.username">{{l(comment.account.username)}}</a></bdi>
-            </div>
-            <div class="read-more" style="overflow: hidden;" :id="comment.id + '-reply-readmore'">
-              <span class="comment-text" v-html="comment.content" style="overflow: hidden;"></span>
-            </div>
-          </span>
-          <b-dropdown :id="comment.uri" variant="link" no-caret right class="float-right">
-            <template slot="button-content">
-                <i class="fas fa-ellipsis-v text-muted"></i><span class="sr-only">Options</span>
-            </template>
-            <b-dropdown-item class="font-weight-bold" v-on:click="reply(comment)">Reply</b-dropdown-item>
-            <b-dropdown-item class="font-weight-bold" :href="comment.url">Permalink</b-dropdown-item>
-            <!-- <b-dropdown-item class="font-weight-bold" v-on:click="embed(comment)">Embed</b-dropdown-item> -->
-            <b-dropdown-item class="font-weight-bold" :href="comment.account.url">Profile</b-dropdown-item>
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-item class="font-weight-bold" :href="'/i/report?type=post&id='+comment.id">Report</b-dropdown-item>
-            <b-dropdown-item class="font-weight-bold" v-on:click="deleteComment(comment.id, index)" v-if="comment.account.id == user.id">Delete</b-dropdown-item>
-          </b-dropdown>
+      <p v-for="(reply, index) in results" class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+        <span>
+          <a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
+          <span v-html="reply.content" class=""></span>
+        </span>
+        <span class="" style="min-width:38px">
+          <span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+            <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2"></post-menu>
         </span>
       </p>
     </div>
   </div>
 </div>
 </template>
+
+<style type="text/css" scoped>
+  .text-lighter {
+    color:#B8C2CC !important;
+  }
+</style>
 
 <script>
 export default {
@@ -142,7 +135,25 @@ export default {
                 }
                 this.pagination = response.data.meta.pagination;
             });
+      },
+      likeStatus(status, $event) {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+        
+        axios.post('/i/like', {
+          item: status.id
+        }).then(res => {
+          status.favourites_count = res.data.count;
+          if(status.favourited == true) {
+            status.favourited = false;
+          } else {
+            status.favourited = true;
+          }
+        }).catch(err => {
+          swal('Error', 'Something went wrong, please try again later.', 'error');
+        });
       }
-    }
+    },
 }
 </script>

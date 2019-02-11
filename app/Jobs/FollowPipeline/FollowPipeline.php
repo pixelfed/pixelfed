@@ -19,6 +19,13 @@ class FollowPipeline implements ShouldQueue
     protected $follower;
 
     /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+    
+    /**
      * Create a new job instance.
      *
      * @return void

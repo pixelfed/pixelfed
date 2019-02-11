@@ -49,7 +49,7 @@ class VideoThumbnail implements ShouldQueue
             } elseif($video->getDurationInSeconds() < 5) {
                 $video->getFrameFromSeconds(4);
             }
-                $video->export()
+            $video->export()
                 ->save($save);
 
             $media->thumbnail_path = $save;

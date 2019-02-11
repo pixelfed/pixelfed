@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Collection extends Model
 {
-    //
+	public function profile()
+	{
+		return $this->belongsTo(Profile::class);
+	}
 }

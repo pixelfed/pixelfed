@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
+    RelationshipTransformer,
     StatusTransformer,
 };
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -32,7 +33,6 @@ class PublicApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('throttle:3000, 30');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
@@ -222,7 +222,11 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
+        $private = Profile::whereIsPrivate(true)
+            ->orWhere('unlisted', true)
+            ->orWhere('status', '!=', null)
+            ->where('id', '!=', $pid)
+            ->pluck('id');
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
@@ -329,5 +333,101 @@ class PublicApiController extends Controller
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
 
+    }
+
+    public function relationships(Request $request)
+    {
+        abort_if(!Auth::check(), 403);
+
+        $this->validate($request, [
+            'id'    => 'required|array|min:1|max:20',
+            'id.*'  => 'required|integer'
+        ]);
+        $ids = collect($request->input('id'));
+        $filtered = $ids->filter(function($v) { 
+            return $v != Auth::user()->profile->id;
+        });
+        $relations = Profile::findOrFail($filtered->all());
+        $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+    }
+
+    public function account(Request $request, $id)
+    {
+        $profile = Profile::whereNull('status')->findOrFail($id);
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    public function accountFollowers(Request $request, $id)
+    {
+        $profile = Profile::findOrFail($id);
+        $followers = $profile->followers;
+        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    public function accountFollowing(Request $request, $id)
+    {
+        $profile = Profile::findOrFail($id);
+        $following = $profile->following;
+        $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    public function accountStatuses(Request $request, $id)
+    {
+        $this->validate($request, [
+            'only_media' => 'nullable',
+            'pinned' => 'nullable',
+            'exclude_replies' => 'nullable',
+            'max_id' => 'nullable|integer|min:1',
+            'since_id' => 'nullable|integer|min:1',
+            'min_id' => 'nullable|integer|min:1',
+            'limit' => 'nullable|integer|min:1|max:24'
+        ]);
+        $limit = $request->limit ?? 20;
+        $max_id = $request->max_id ?? false;
+        $min_id = $request->min_id ?? false;
+        $since_id = $request->since_id ?? false;
+        $only_media = $request->only_media ?? false;
+        $user = Auth::user();
+        $account = Profile::findOrFail($id);
+        $statuses = $account->statuses()->getQuery(); 
+        if($only_media == true) {
+            $statuses = $statuses
+                ->whereHas('media')
+                ->whereNull('in_reply_to_id')
+                ->whereNull('reblog_of_id');
+        }
+        if($id == $account->id && !$max_id && !$min_id && !$since_id) {
+            $statuses = $statuses->orderBy('id', 'desc')
+                ->paginate($limit);
+        } else if($since_id) {
+            $statuses = $statuses->where('id', '>', $since_id)
+                ->orderBy('id', 'DESC')
+                ->paginate($limit);
+        } else if($min_id) {
+            $statuses = $statuses->where('id', '>', $min_id)
+                ->orderBy('id', 'ASC')
+                ->paginate($limit);
+        } else if($max_id) {
+            $statuses = $statuses->where('id', '<', $max_id)
+                ->orderBy('id', 'DESC')
+                ->paginate($limit);
+        } else {
+            $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
+        }
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
     }
 }

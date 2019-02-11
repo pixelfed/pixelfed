@@ -116,7 +116,13 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        $view = config('pixelfed.open_registration') == true ? 'auth.register' : 'site.closed-registration';
+        $count = User::count();
+        $limit = config('pixelfed.max_users');
+        if($limit && $limit <= $count) {
+            $view = 'site.closed-registration';
+        } else {
+            $view = config('pixelfed.open_registration') == true ? 'auth.register' : 'site.closed-registration';
+        }
         return view($view);
     }
 
@@ -128,7 +134,9 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        if(false == config('pixelfed.open_registration')) {
+        $count = User::count();
+        $limit = config('pixelfed.max_users');
+        if(false == config('pixelfed.open_registration') || $limit && $limit <= $count) {
             return abort(403);
         }
 

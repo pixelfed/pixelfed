@@ -11,11 +11,38 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::redirect('statuses', '/statuses/list');
     Route::get('statuses/list', 'AdminController@statuses')->name('admin.statuses');
     Route::get('statuses/show/{id}', 'AdminController@showStatus');
+    Route::redirect('profiles', '/i/admin/profiles/list');
+    Route::get('profiles/list', 'AdminController@profiles')->name('admin.profiles');
     Route::redirect('users', '/users/list');
     Route::get('users/list', 'AdminController@users')->name('admin.users');
     Route::get('users/edit/{id}', 'AdminController@editUser');
-    Route::redirect('media', '/media/list');
-    Route::get('media/list', 'AdminController@media')->name('admin.media');
+    Route::get('media', 'AdminController@media')->name('admin.media');
+    Route::redirect('media/list', '/i/admin/media');
+    Route::get('media/show/{id}', 'AdminController@mediaShow');
+    Route::get('settings', 'AdminController@settings')->name('admin.settings');
+    Route::post('settings', 'AdminController@settingsHomeStore');
+    Route::get('settings/config', 'AdminController@settingsConfig')->name('admin.settings.config');
+    Route::get('settings/features', 'AdminController@settingsFeatures')->name('admin.settings.features');
+    Route::get('settings/pages', 'AdminController@settingsPages')->name('admin.settings.pages');
+    Route::get('settings/pages/edit', 'PageController@edit')->name('admin.settings.pages.edit');
+    Route::post('settings/pages/edit', 'PageController@store');
+    Route::get('settings/maintenance', 'AdminController@settingsMaintenance')->name('admin.settings.maintenance');
+    Route::get('settings/backups', 'AdminController@settingsBackups')->name('admin.settings.backups');
+    Route::get('settings/storage', 'AdminController@settingsStorage')->name('admin.settings.storage');
+    Route::get('settings/system', 'AdminController@settingsSystem')->name('admin.settings.system');
+
+    Route::get('instances', 'AdminController@instances')->name('admin.instances');
+    Route::post('instances', 'AdminController@instanceScan');
+    Route::get('instances/show/{id}', 'AdminController@instanceShow');
+    Route::post('instances/edit/{id}', 'AdminController@instanceEdit');
+    Route::get('apps/home', 'AdminController@appsHome')->name('admin.apps');
+    Route::get('hashtags/home', 'AdminController@hashtagsHome')->name('admin.hashtags');
+    Route::get('discover/home', 'AdminController@discoverHome')->name('admin.discover');
+    Route::get('discover/category/create', 'AdminController@discoverCreateCategory')->name('admin.discover.create-category');
+    Route::post('discover/category/create', 'AdminController@discoverCreateCategoryStore');
+    Route::get('discover/category/edit/{id}', 'AdminController@discoverCategoryEdit');
+    Route::post('discover/category/edit/{id}', 'AdminController@discoverCategoryUpdate');
+    Route::post('discover/category/hashtag/create', 'AdminController@discoveryCategoryTagStore')->name('admin.discover.create-hashtag');
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
@@ -34,11 +61,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::group(['prefix' => 'api'], function () {
         Route::get('search/{tag}', 'SearchController@searchAPI')
+          //->where('tag', '.*');
           ->where('tag', '[A-Za-z0-9]+');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
             Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+            Route::get('accounts/{id}', 'PublicApiController@account');
+            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia');
@@ -54,6 +84,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
             Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
+            Route::post('moderator/action', 'InternalApiController@modAction');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
@@ -132,7 +163,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
         Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
+        Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore');
+        Route::post('privacy/blocked-instances/unblock', 'SettingsController@blockedInstanceUnblock')->name('settings.privacy.blocked-instances.unblock');
+        Route::get('privacy/blocked-keywords', 'SettingsController@blockedKeywords')->name('settings.privacy.blocked-keywords');
 
+        Route::get('reports', 'SettingsController@reportsHome')->name('settings.reports');
         // Todo: Release in 0.7.2
         Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
             Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
@@ -172,9 +207,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             );
         });
 
-        Route::get('applications', 'SettingsController@applications')->name('settings.applications');
+        Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
         Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
-        Route::get('developers', 'SettingsController@developers')->name('settings.developers');
+        Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
     });
 
     Route::group(['prefix' => 'site'], function () {
@@ -203,7 +238,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('what-is-the-fediverse', 'site.help.what-is-fediverse')->name('help.what-is-fediverse');
             Route::view('safety-tips', 'site.help.safety-tips')->name('help.safety-tips');
 
-            Route::view('community-guidelines', 'site.help.community-guidelines')->name('help.community-guidelines');
+            Route::get('community-guidelines', 'SiteController@communityGuidelines')->name('help.community-guidelines');
             Route::view('controlling-visibility', 'site.help.controlling-visibility')->name('help.controlling-visibility');
             Route::view('abusive-activity', 'site.help.abusive-activity')->name('help.abusive-activity');
             Route::view('blocking-accounts', 'site.help.blocking-accounts')->name('help.blocking-accounts');
@@ -231,9 +266,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
+    // Route::get('p/{username}/{id}.json', 'StatusController@showObject');
     Route::get('p/{username}/{id}', 'StatusController@show');
     Route::get('{username}/saved', 'ProfileController@savedBookmarks');
     Route::get('{username}/followers', 'ProfileController@followers')->middleware('auth');
     Route::get('{username}/following', 'ProfileController@following')->middleware('auth');
     Route::get('{username}', 'ProfileController@show');
+    // Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
+    // Route::get('{username}', 'ProfileController@showVue');
 });

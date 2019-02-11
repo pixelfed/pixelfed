@@ -32,13 +32,11 @@ try {
 } catch (e) {
 }
 
-window.InfiniteScroll = require('infinite-scroll');
 window.filesize = require('filesize');
 window.Plyr = require('plyr');
 import swal from 'sweetalert';
 
 require('./components/localstorage');
-require('./components/likebutton');
 require('./components/commentform');
 require('./components/searchform');
 require('./components/bookmarkform');
@@ -90,24 +88,30 @@ Vue.component(
     require('./components/presenter/MixedAlbumPresenter.vue').default
 );
 
-// Vue.component(
-//     'micro',
-//     require('./components/Micro.vue').default
-// );
+Vue.component(
+    'post-menu',
+    require('./components/PostMenu.vue').default
+);
+
 
 Vue.component(
-    'follow-suggestions',
-    require('./components/FollowSuggestions.vue').default
+    'passport-clients',
+    require('./components/passport/Clients.vue').default
 );
 
 Vue.component(
-    'discover-component',
-    require('./components/DiscoverComponent.vue').default
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue').default
 );
 
 // Vue.component(
-//     'profile',
-//     require('./components/Profile.vue').default
+//     'follow-suggestions',
+//     require('./components/FollowSuggestions.vue').default
 // );
 
 // Vue.component(
@@ -115,34 +119,9 @@ Vue.component(
 //     require('./components/CirclePanel.vue')
 // );
 
-Vue.component(
-    'post-component',
-    require('./components/PostComponent.vue').default
-);
-
-Vue.component(
-    'post-comments',
-    require('./components/PostComments.vue').default
-);
-
-Vue.component(
-    'timeline',
-    require('./components/Timeline.vue').default
-);
-
 // Vue.component(
-//     'passport-clients',
-//     require('./components/passport/Clients.vue').default
-// );
-
-// Vue.component(
-//     'passport-authorized-clients',
-//     require('./components/passport/AuthorizedClients.vue').default
-// );
-
-// Vue.component(
-//     'passport-personal-access-tokens',
-//     require('./components/passport/PersonalAccessTokens.vue').default
+//     'story-compose',
+//     require('./components/StoryCompose.vue').default
 // );
 
 //import 'promise-polyfill/src/polyfill';

@@ -17,7 +17,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
     public function transform(Status $status)
     {
         return [
-            'id'                        => $status->id,
+            'id'                        => (string) $status->id,
             'uri'                       => $status->url(),
             'url'                       => $status->url(),
             'in_reply_to_id'            => $status->in_reply_to_id,
