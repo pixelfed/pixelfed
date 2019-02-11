@@ -43,7 +43,7 @@ class AdminController extends Controller
 
     public function home()
     {
-        $data = Cache::remember('admin:dashboard:home:data', 1, function() {
+        $data = Cache::remember('admin:dashboard:home:data', 15, function() {
           return [
             'failedjobs' => [
               'count' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
@@ -100,6 +100,7 @@ class AdminController extends Controller
         $dir = $request->query('dir') ?? 'desc';
         $stats = $this->collectUserStats($request);
         $users = User::withCount('statuses')->orderBy($col, $dir)->paginate(10);
+
         return view('admin.users.home', compact('users', 'stats'));
     }
 
