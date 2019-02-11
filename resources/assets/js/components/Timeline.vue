@@ -10,22 +10,43 @@
 						{{status.account.username}}
 					</a>
 					<div class="text-right" style="flex-grow:1;">
-						<div class="dropdown">
-							<button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-								<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
-							</button>
-							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-								<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
-								<span v-bind:class="[statusOwner(status) ? 'd-none' : '']">
-									<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
-									<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
-									<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
-								</span>
-								<span  v-bind:class="[statusOwner(status) ? '' : 'd-none']">
-									<a class="dropdown-item font-weight-bold" :href="editUrl(status)">Edit</a>
-									<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-								</span>
-							</div>
+						<button class="btn btn-link text-dark no-caret dropdown-toggle py-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+							<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
+						</button>
+						<div class="dropdown-menu dropdown-menu-right">
+							<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
+							<!-- <a class="dropdown-item font-weight-bold" href="#">Share</a>
+							<a class="dropdown-item font-weight-bold" href="#">Embed</a> -->
+							<span v-if="statusOwner(status) == false">
+								<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
+							</span>
+							<span v-if="statusOwner(status) == true">
+								<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+							</span>
+							<span v-if="profile.is_admin == true && modes.mod == true">
+								<div class="dropdown-divider"></div>
+								<a v-if="!statusOwner(status)" class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+								<div class="dropdown-divider"></div>
+								<h6 class="dropdown-header">Mod Tools</h6>
+								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'autocw')">
+									<p class="mb-0" data-toggle="tooltip" data-placement="bottom" title="Adds a CW to every post made by this account.">Enforce CW</p>
+								</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'noautolink')">
+									<p class="mb-0" title="Do not transform mentions, hashtags or urls into HTML.">No Autolinking</p>
+								</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'unlisted')">
+									<p class="mb-0" title="Removes account from public/network timelines.">Unlisted Posts</p>
+								</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'disable')">
+									<p class="mb-0" title="Temporarily disable account until next time user log in.">Disable Account</p>
+								</a>
+								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'suspend')">
+									<p class="mb-0" title="This prevents any new interactions, without deleting existing data.">Suspend Account</p>
+								</a>
+
+							</span>
 						</div>
 					</div>
 				</div>
@@ -74,9 +95,19 @@
 							<span v-html="status.content"></span>
 						</p>
 					</div>
-					<div class="comments">
+					<div class="comments" v-if="status.id == replyId">
+						<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
+							<span>
+								<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
+								<span v-html="reply.content"></span>
+							</span>
+							<span class="mb-0" style="min-width:38px">
+								<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+								<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
+							</span>
+						</p>
 					</div>
-					<div class="timestamp pt-1">
+					<div class="timestamp mt-2">
 						<p class="small text-uppercase mb-0">
 							<a :href="status.url" class="text-muted">
 								<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
@@ -85,20 +116,20 @@
 					</div>
 				</div>
 
-				<div class="card-footer bg-white d-none">
+				<div class="card-footer bg-white" v-if="status.id == replyId">
 					<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
 						<input type="hidden" name="item" value="">
 						<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
 					</form>
 				</div>
 			</div>
-			<!--
+			<div v-if="modes.infinite == true">
 				<infinite-loading @infinite="infiniteTimeline">
 				<div slot="no-more" class="font-weight-bold text-light">No more posts to load</div>
 				<div slot="no-results" class="font-weight-bold text-light">No posts found</div>
 				</infinite-loading>
-			-->
-			<div class="pagination d-none">
+			</div>
+			<div v-if="modes.infinite == false" class="pagination d-none">
 				<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
 			</div>
 		</div>
@@ -116,9 +147,14 @@
 							<a :href="profile.url">
 								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
 							</a>
-							<div class="media-body">
-								<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
-								<p class="my-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+							<div class="media-body d-flex justify-content-between">
+								<div>
+									<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
+									<p class="my-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+								</div>
+								<div>
+									<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -141,7 +177,30 @@
 				</div>
 			</div>
 
-			<div class="mb-4">
+			<div v-if="optionMenuState == true" class="mb-4">
+				<div class="card options-card">
+					<div class="card-body small">
+						<div v-if="profile.is_admin" class="custom-control custom-switch mb-3">
+							<input type="checkbox" class="custom-control-input" id="mode-mod" v-on:click="modeModToggle()" v-model="modes.mod">
+							<label class="custom-control-label font-weight-bold" for="mode-mod">Moderator Mode</label>
+						</div>
+						<!-- <div class="custom-control custom-switch mb-3">
+							<input type="checkbox" class="custom-control-input" id="mode-dark" v-on:click="modeDarkToggle()" v-model="modes.dark">
+							<label class="custom-control-label font-weight-bold" for="mode-dark">Dark Mode</label>
+						</div> -->
+						<div class="custom-control custom-switch mb-3">
+							<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
+							<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
+						</div>
+						<div class="custom-control custom-switch">
+							<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
+							<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div v-show="modes.notify == true" class="mb-4">
 				<div class="card notification-card">
 					<div class="card-header bg-white">
 						<p class="mb-0 d-flex align-items-center justify-content-between">
@@ -149,12 +208,12 @@
 							<a class="text-dark small" href="/account/activity">See All</a>
 						</p>
 					</div>
-					<div class="card-body loader text-center" style="height: 300px;">
+					<div class="card-body loader text-center" style="height: 170px;">
 						<div class="spinner-border" role="status">
 							<span class="sr-only">Loading...</span>
 						</div>
 					</div>
-					<div class="card-body pt-2 contents" style="max-height: 300px; overflow-y: scroll;">
+					<div class="card-body pt-2 contents" style="max-height: 170px; overflow-y: scroll;">
 						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">
 							<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 							<div class="media-body font-weight-light small">
@@ -176,6 +235,11 @@
 								<div v-else-if="n.type == 'follow'">
 									<p class="my-0">
 										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> followed you.
+									</p>	
+								</div>
+								<div v-else-if="n.type == 'share'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
 									</p>	
 								</div>
 							</div>
@@ -207,6 +271,9 @@
 </template>
 
 <style type="text/css" scoped>
+	.text-lighter {
+		color:#B8C2CC !important;
+	}
 	.postPresenterContainer {
 		display: flex;
 		align-items: center;
@@ -217,6 +284,9 @@
 	}
 	.word-break {
 		word-break: break-all;
+	}
+	.small .custom-control-label {
+		padding-top: 3px;
 	}
 </style>
 
@@ -234,6 +304,15 @@
 				stories: {},
 				suggestions: {},
 				loading: true,
+				replies: [],
+				replyId: null,
+				optionMenuState: false,
+				modes: {
+					'mod': false,
+					'dark': false,
+					'notify': true,
+					'infinite': false
+				}
 			}
 		},
 
@@ -243,9 +322,19 @@
 		},
 
 		mounted() {
+			this.$nextTick(function () {
+				$('[data-toggle="tooltip"]').tooltip()
+				let cachedSettings = window.ls.get('pixelfed-classicui-settings');
+				if(cachedSettings.hasOwnProperty('notify')) {
+					this.modes = cachedSettings;
+				} else {
+					window.ls.set('pixelfed-classicui-settings', this.modes);
+				}
+			});
 		},
 
 		updated() {
+			pixelfed.readmore();
 		},
 
 		methods: {
@@ -349,22 +438,12 @@
 			},
 
 			commentFocus(status, $event) {
-				let el = event.target;
-				let card = el.parentElement.parentElement.parentElement;
-				let comments = card.getElementsByClassName('comments')[0];
-				if(comments.children.length == 0) {
-					comments.classList.add('mb-2');
-					this.fetchStatusComments(status, card);
+				if(this.replyId == status.id) {
+					return;
 				}
-				let footer = card.querySelectorAll('.card-footer')[0];
-				let input = card.querySelectorAll('.status-reply-input')[0];
-				if(footer.classList.contains('d-none') == true) {
-					footer.classList.remove('d-none');
-					input.focus();
-				} else {
-					footer.classList.add('d-none');
-					input.blur();
-				}
+				this.replies = {};
+				this.replyId = status.id;
+				this.fetchStatusComments(status, '');
 			},
 
 			likeStatus(status, $event) {
@@ -376,11 +455,7 @@
 					item: status.id
 				}).then(res => {
 					status.favourites_count = res.data.count;
-					if(status.favourited == true) {
-						status.favourited = false;
-					} else {
-						status.favourited = true;
-					}
+					status.favourited = !status.favourited;
 				}).catch(err => {
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
@@ -395,11 +470,7 @@
 					item: status.id
 				}).then(res => {
 					status.reblogs_count = res.data.count;
-					if(status.reblogged == true) {
-						status.reblogged = false;
-					} else {
-						status.reblogged = true;
-					}
+					status.reblogged = !status.reblogged;
 				}).catch(err => {
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
@@ -444,26 +515,8 @@
 			fetchStatusComments(status, card) {
 				axios.get('/api/v2/status/'+status.id+'/replies')
 				.then(res => {
-					let comments = card.querySelectorAll('.comments')[0];
 					let data = res.data;
-					data.forEach(function(i, k) {
-						let username = document.createElement('a');
-						username.classList.add('font-weight-bold');
-						username.classList.add('text-dark');
-						username.classList.add('mr-2');
-						username.setAttribute('href', i.account.url);
-						username.textContent = i.account.username;
-
-						let text = document.createElement('span');
-						text.innerHTML = i.content;
-
-						let comment = document.createElement('p');
-						comment.classList.add('read-more');
-						comment.classList.add('mb-0');
-						comment.appendChild(username);
-						comment.appendChild(text);
-						comments.appendChild(comment);
-					});
+					this.replies = _.reverse(data);
 				}).catch(err => {
 				})
 			},
@@ -525,28 +578,196 @@
 					item: id,
 					comment: comment
 				}).then(res => {
-					input.val('');
-					input.blur();
-
-					let username = document.createElement('a');
-					username.classList.add('font-weight-bold');
-					username.classList.add('text-dark');
-					username.classList.add('mr-2');
-					username.setAttribute('href', this.profile.url);
-					username.textContent = this.profile.username;
-
-					let text = document.createElement('span');
-					text.innerHTML = comment;
-
-					let wrapper = document.createElement('p');
-					wrapper.classList.add('read-more');
-					wrapper.classList.add('mb-0');
-					wrapper.appendChild(username);
-					wrapper.appendChild(text);
-					comments.insertBefore(wrapper, comments.firstChild);
+					form.reset();
+					form.blur();
+					this.replies.push(res.data.entity);
 				});
-			}
+			},
 
+			moderatePost(status, action, $event) {
+				let username = status.account.username;
+				console.log('action: ' + action + ' status id' + status.id);
+				switch(action) {
+					case 'autocw':
+						let msg = 'Are you sure you want to enforce CW for ' + username + ' ?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully enforced CW for ' + username, 'success');
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+									);
+								});
+							}
+						});
+					break;
+
+					case 'noautolink':
+						msg = 'Are you sure you want to disable auto linking for ' + username + ' ?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully disabled autolinking for ' + username, 'success');
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+									);
+								});
+							}
+						});
+					break;
+					case 'unlisted':
+						msg = 'Are you sure you want to unlist from timelines for ' + username + ' ?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully unlisted for ' + username, 'success');
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+									);
+								});
+							}
+						});
+					break;
+
+					case 'disable':
+						msg = 'Are you sure you want to disable ' + username + '\'s account ?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully disabled ' + username + '\'s account', 'success');
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+									);
+								});
+							}
+						});
+					break;
+
+					case 'suspend':
+						msg = 'Are you sure you want to suspend ' + username + '\'s account ?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully suspend ' + username + '\'s account', 'success');
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+									);
+								});
+							}
+						});
+					break;
+				}
+			},
+
+			toggleOptionsMenu() {
+				this.optionMenuState = !this.optionMenuState;
+			},
+
+			modeModToggle() {
+				this.modes.mod = !this.modes.mod;
+				window.ls.set('pixelfed-classicui-settings', this.modes);
+			},
+
+			modeNotifyToggle() {
+				this.modes.notify = !this.modes.notify;
+				window.ls.set('pixelfed-classicui-settings', this.modes);
+			},
+
+			modeDarkToggle() {
+				// todo: more graceful stylesheet change
+				if(this.modes.dark == true) {
+					this.modes.dark = false;
+					$('link[rel=stylesheet]').remove();
+					let head = document.head;
+					let link = document.createElement("link");
+					link.type = "text/css";
+					link.rel = "stylesheet";
+					link.href = "/css/app.css";
+					head.appendChild(link);
+				} else {
+					this.modes.dark = true;
+					$('link[rel=stylesheet]').remove();
+					let head = document.head;
+					let link = document.createElement("link");
+					link.id = "darkModeSheet";
+					link.type = "text/css";
+					link.rel = "stylesheet";
+					link.href = "/css/appdark.css";
+
+					head.appendChild(link);
+				}
+				window.ls.set('pixelfed-classicui-settings', this.modes);
+			},
+
+			modeInfiniteToggle() {
+				this.modes.infinite = !this.modes.infinite
+				window.ls.set('pixelfed-classicui-settings', this.modes);
+			}
 		}
 	}
 </script>
