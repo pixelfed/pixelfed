@@ -100,11 +100,14 @@
 	.text-lighter {
 		color:#B8C2CC !important;
 	}
+	.modal-body {
+		padding: 0;
+	}
 </style>
 
 <script type="text/javascript">
 	export default {
-		props: ['status', 'profile', 'size', 'modal'],
+		props: ['feed', 'status', 'profile', 'size', 'modal'],
 
 		methods: {
 			reportUrl(status) {
@@ -151,35 +154,6 @@
 
 
 			deletePost(status, index) {
-				if($('body').hasClass('loggedIn') == false || status.account.id !== this.profile.id) {
-					return;
-				}
-
-				axios.post('/i/delete', {
-					type: 'status',
-					item: status.id
-				}).then(res => {
-					this.feed.splice(index,1);
-					swal('Success', 'You have successfully deleted this post', 'success');
-				}).catch(err => {
-					swal('Error', 'Something went wrong. Please try again later.', 'error');
-				});
-			},
-
-			commentSubmit(status, $event) {
-				let id = status.id;
-				let form = $event.target;
-				let input = $(form).find('input[name="comment"]');
-				let comment = input.val();
-				let comments = form.parentElement.parentElement.getElementsByClassName('comments')[0];
-				axios.post('/i/comment', {
-					item: id,
-					comment: comment
-				}).then(res => {
-					form.reset();
-					form.blur();
-					this.replies.unshift(res.data.entity);
-				});
 			},
 
 			moderatePost(status, action, $event) {
