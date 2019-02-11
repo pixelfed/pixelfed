@@ -1,30 +1,24 @@
 @extends('admin.partial.template')
 
-@section('section')
-  <div class="title">
-    <h3 class="font-weight-bold">Storage</h3>
-  </div>
-  <hr>
+@include('admin.settings.sidebar')
 
-  <div class="card">
-  	<div class="card-body">
-		<div class="progress">
-		  <div class="progress-bar" role="progressbar" style="width: {{$storage->percentUsed}}%" aria-valuenow="{{$storage->percentUsed}}" aria-valuemin="0" aria-valuemax="100"></div>
-		</div>
-		<div class="d-flex justify-content-between">
-			<span class="font-weight-bold">
-			 Used: {{$storage->prettyTotal}}
-			</span>
-			<span class="font-weight-bold">
-			{{$storage->percentUsed}}% Used	
-			</span>
-			<span class="font-weight-bold">
-			  Free: {{$storage->prettyFree}}
-			</span>
-		</div>
-  	</div>
-  	<div class="card-footer bg-white font-weight-bold text-center">
-  		Total Disk Space
-  	</div>
-  </div>
+@section('section')
+<div class="title">
+	<h3 class="font-weight-bold">Storage</h3>
+	<p class="lead">Filesystem storage stats</p>
+</div>
+<hr>
+<p class="alert alert-warning">
+	<strong>Feature Unavailable:</strong> This feature will be released in v0.9.0.
+</p>
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+	$('.human-size').each(function(d,a) {
+		let el = $(a);
+		let size = el.data('bytes');
+		el.text(filesize(size, {round: 0}));
+	});
+</script>
+@endpush

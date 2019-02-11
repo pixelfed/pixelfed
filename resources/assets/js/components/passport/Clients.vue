@@ -21,7 +21,7 @@
 
             <div class="card-body">
                 <!-- Current Clients -->
-                <p class="mb-0" v-if="clients.length === 0">
+                <p class="mb-0 font-weight-bold text-center lead p-5" v-if="clients.length === 0">
                     You have not created any OAuth clients.
                 </p>
 
@@ -55,14 +55,14 @@
 
                             <!-- Edit Button -->
                             <td style="vertical-align: middle;">
-                                <a class="action-link" tabindex="-1" @click="edit(client)">
+                                <a class="btn btn-outline-secondary btn-sm py-1" tabindex="-1" @click="edit(client)">
                                     Edit
                                 </a>
                             </td>
 
                             <!-- Delete Button -->
                             <td style="vertical-align: middle;">
-                                <a class="action-link text-danger" @click="destroy(client)">
+                                <a class="btn btn-outline-danger btn-sm py-1" @click="destroy(client)" href="">
                                     Delete
                                 </a>
                             </td>
@@ -112,6 +112,30 @@
                                 </div>
                             </div>
 
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Description</label>
+
+                                <div class="col-md-9">
+                                    <textarea class="form-control" rows="3"></textarea>
+
+                                    <span class="form-text text-muted">
+                                        A brief description of your app
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Website</label>
+
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" autocomplete="off">
+
+                                    <span class="form-text text-muted">
+                                        Your website url
+                                    </span>
+                                </div>
+                            </div>
+
                             <!-- Redirect URL -->
                             <div class="form-group row">
                                 <label class="col-md-3 col-form-label">Redirect URL</label>
@@ -122,6 +146,26 @@
 
                                     <span class="form-text text-muted">
                                         Your application's authorization callback URL.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-3 col-form-label">Scopes</label>
+
+                                <div class="col-md-9">
+                                    <div class="custom-control custom-switch">
+                                      <input type="checkbox" class="custom-control-input" id="customSwitch1">
+                                      <label class="custom-control-label" for="customSwitch1">Read</label>
+                                    </div>
+
+                                    <div class="custom-control custom-switch">
+                                      <input type="checkbox" class="custom-control-input" id="customSwitch2">
+                                      <label class="custom-control-label" for="customSwitch2">Write</label>
+                                    </div>
+
+                                    <span class="form-text text-muted">
+                                        Your application's scopes.
                                     </span>
                                 </div>
                             </div>

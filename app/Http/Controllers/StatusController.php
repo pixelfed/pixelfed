@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\SharePipeline\SharePipeline;
 use App\Media;
 use App\Profile;
 use App\Status;
@@ -234,8 +235,10 @@ class StatusController extends Controller
             $share = new Status();
             $share->profile_id = $profile->id;
             $share->reblog_of_id = $status->id;
+            $share->in_reply_to_profile_id = $status->profile_id;
             $share->save();
             $count++;
+            SharePipeline::dispatch($share);
         }
 
         if ($request->ajax()) {

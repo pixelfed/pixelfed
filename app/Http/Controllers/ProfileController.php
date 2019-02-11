@@ -187,7 +187,7 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user', 'is_following'));
             }
         }
-        $followers = $profile->followers()->whereNull('status')->orderBy('created_at', 'desc')->simplePaginate(12);
+        $followers = $profile->followers()->whereNull('status')->orderBy('followers.created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
             $settings = new \StdClass;
@@ -217,7 +217,7 @@ class ProfileController extends Controller
                 return view('profile.private', compact('user', 'is_following'));
             }
         }
-        $following = $profile->following()->whereNull('status')->orderBy('created_at', 'desc')->simplePaginate(12);
+        $following = $profile->following()->whereNull('status')->orderBy('followers.created_at', 'desc')->simplePaginate(12);
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         if ($user->remote_url) {
             $settings = new \StdClass;

@@ -1,19 +1,42 @@
-@extends('admin.partial.template')
+@extends('admin.partial.template-full')
 
 @section('section')
-  <div class="title font-weight-bold">
-    <h3 class="font-weight-bold">Reports</h3>
-    <p>
-      <span class="pr-3">
-        <span>Open:</span>
-        <span class="text-danger">{{App\Report::whereNull('admin_seen')->count()}}</span>
-      </span>
-      <span class="">
-        <span>Closed:</span>
-        <span class="text-success">{{App\Report::whereNotNull('admin_seen')->count()}}</span>
-      </span>
-    </p>
-  </div>
+<div class="title">
+  <h3 class="font-weight-bold d-inline-block">Reports</h3>
+  <span class="float-right">
+    <a class="btn btn-{{request()->input('layout')!=='list'?'primary':'light'}} btn-sm" href="{{route('admin.reports')}}">
+      <i class="fas fa-th"></i>
+    </a>
+    <a class="btn btn-{{request()->input('layout')=='list'?'primary':'light'}} btn-sm mr-3" href="{{route('admin.reports',['layout'=>'list', 'page' => request()->input('page') ?? 1])}}">
+      <i class="fas fa-list"></i>
+    </a>
+    <div class="dropdown d-inline-block">
+      <button class="btn btn-light btn-sm dropdown-toggle font-weight-bold" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-filter"></i>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterDropdown" style="width: 300px;">
+        {{-- <div class="dropdown-item">
+          <form>
+            <input type="hidden" name="layout" value="{{request()->input('layout')}}"></input>
+            <input type="hidden" name="page" value="{{request()->input('page')}}"></input>
+            <div class="input-group input-group-sm">
+              <input class="form-control" name="search" placeholder="Filter by username" autocomplete="off"></input>
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit">Filter</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="dropdown-divider"></div> --}}
+        <a class="dropdown-item font-weight-light {{request()->filter=='open'?'active':''}}" href="?filter=open&layout={{request()->input('layout')}}">Open Reports Only</a>
+        <a class="dropdown-item font-weight-light {{request()->filter=='closed'?'active':''}}" href="?filter=closed&layout={{request()->layout}}">Closed Reports Only</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item font-weight-light" href="?layout={{request()->input('layout')}}">Show all</a>
+      </div>
+    </div>
+  </span>
+</div>
 
   <hr>
 
@@ -38,14 +61,14 @@
       </span>
     </div>
   </div>
-
-  <table class="table table-responsive">
+@if(request()->input('layout') == 'list')
+  <table class="table w-100">
     <thead class="bg-light">
       <tr>
         <th scope="col">
           <div class="">
             <div class="custom-control custom-checkbox table-check">
-              <input type="checkbox" class="custom-control-input" id="row-check-all">
+              <input type="checkbox" class="custom-control-input row-check-item" id="row-check-all">
               <label class="custom-control-label" for="row-check-all"></label>
             </div>
           </div>
@@ -61,7 +84,7 @@
     <tbody>
       @foreach($reports as $report)
       <tr>
-        <td class="py-0">
+        <td class="">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input row-check-item" id="row-check-{{$report->id}}" data-resolved="{{$report->admin_seen?'true':'false'}}" data-id="{{$report->id}}">
             <label class="custom-control-label" for="row-check-{{$report->id}}"></label>
@@ -75,7 +98,7 @@
         </td>
         <td class="font-weight-bold"><a href="{{$report->reporter->url()}}">{{$report->reporter->username}}</a></td>
         <td class="font-weight-bold">{{$report->type}}</td>
-        <td class="font-weight-bold"><a href="{{$report->reported()->url()}}">{{str_limit($report->reported()->url(), 25)}}</a></td>
+        <td class="font-weight-bold"><a href="{{$report->reported()->url()}}" title="{{$report->reported()->url()}}">{{str_limit($report->reported()->url(), 25)}}</a></td>
         @if(!$report->admin_seen)
         <td><span class="text-danger font-weight-bold">Unresolved</span></td>
         @else
@@ -86,8 +109,30 @@
       @endforeach
     </tbody>
   </table>
+@else
+  <div class="row">
+    @foreach($reports as $report)
+      <div class="col-md-4 col-12 mb-3">
+        <div class="card bg-light">
+          <div class="card-body py-3">
+            <p class="font-weight-lighter h2">{{$report->type}} <a href="{{$report->url()}}" class="h6 float-right text-primary"># {{$report->id}}</a></p>
+            <p class="small text-truncate mb-0"><a href="{{$report->reported()->url()}}" title="{{$report->reported()->url()}}">{{$report->reported()->url()}}</a></p>
+          </div>
+          <div class="card-footer py-1 d-flex align-items-center justify-content-between">
+              <div class="badge badge-light">local report</div>
+              @if($report->admin_seen)
+              <div class="badge badge-light">closed</div>
+              @else
+              <div class="badge badge-danger">open</div>
+              @endif
+          </div>
+        </div>
+      </div>
+    @endforeach
+  </div>
+@endif
   <div class="d-flex justify-content-center mt-5 small">
-    {{$reports->links()}}
+    {{$reports->appends(['layout'=>request()->layout, 'filter' => request()->filter])->links()}}
   </div>
 @endsection
 
@@ -96,9 +141,6 @@
   .custom-control-label:after, .custom-control-label:before {
     top: auto;
     bottom: auto;
-  }
-  .table-check .custom-control-label {
-    top: -11px;
   }
 </style>
 @endpush
@@ -121,19 +163,25 @@
           $('.row-check-item[data-resolved=false]').attr('checked', '').prop('checked', true);
         }
 
-        let len = $('.row-check-item[checked]').length;
+        let len = $('.row-check-item:checked').length;
         $('.bulk-count').text(len).attr('data-count', len);
       });
 
       $(document).on('click', '.row-check-item', function(e) {
         var el = $(this)[0];
         let len = $('.bulk-count').attr('data-count');
+        console.log(el.checked);
         if(el.checked == true) {
+          $('.bulk-actions').removeClass('d-none');
           len++;
           $('.bulk-count').text(len).attr('data-count', len);
         } else {
-          len--;
-          $('.bulk-count').text(len).attr('data-count', len);   
+          if(len == 0) {
+            $('.bulk-actions').addClass('d-none');
+          } else {
+            len--;
+            $('.bulk-count').text(len).attr('data-count', len);   
+          }
         }
         if(len == 0) {
           $('.bulk-actions').addClass('d-none');

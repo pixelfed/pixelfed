@@ -124,7 +124,7 @@ trait Instagram
     		->firstOrFail();
     	$media = $request->file('media');
     	$file = file_get_contents($media);
-		$json = json_decode($file, true);
+		$json = json_decode($file, true, 5);
 		if(!$json || !isset($json['photos'])) {
 			return abort(500);
 		}

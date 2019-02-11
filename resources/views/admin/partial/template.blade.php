@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('admin.partial.topnav')
+
 <div class="container">
   <div class="col-12 mt-5">
     <div class="card">

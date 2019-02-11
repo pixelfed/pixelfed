@@ -1,10 +1,4 @@
 <style scoped>
-#l-modal .modal-body,
-#s-modal .modal-body {
-  max-height: 70vh;
-  overflow-y: scroll;
-}
-
 .status-comments,
 .reactions,
 .col-md-4 {
@@ -21,7 +15,7 @@
 </style>
 <template>
 <div class="postComponent d-none">
-  <div class="container px-0 mt-md-4">
+  <div class="container px-0">
     <div class="card card-md-rounded-0 status-container orientation-unknown">
       <div class="row px-0 mx-0">
       <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
@@ -46,8 +40,9 @@
                   <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
                 </span>
                 <span class="menu-author d-none">
+                  <!-- <a class="dropdown-item font-weight-bold" :href="editUrl()">Disable Comments</a> -->
                   <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                  <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
+                  <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
                 </span>
               </div>
             </div>
@@ -108,6 +103,8 @@
                           <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
                         </span>
                         <span class="menu-author d-none">
+                          <!-- <a class="dropdown-item font-weight-bold" :href="editUrl()">Mute Comments</a>
+                          <a class="dropdown-item font-weight-bold" :href="editUrl()">Disable Comments</a> -->
                           <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                           <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
                         </span>
@@ -172,7 +169,7 @@
     title="Likes"
     body-class="list-group-flush p-0">
     <div class="list-group">
-      <div class="list-group-item border-0" v-for="user in likes">
+      <div class="list-group-item border-0" v-for="(user, index) in likes" :key="'modal_likes_'+index">
         <div class="media">
           <a :href="user.url">
             <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
@@ -203,21 +200,24 @@
     title="Shares"
     body-class="list-group-flush p-0">
     <div class="list-group">
-      <div class="list-group-item border-0" v-for="user in shares">
+      <div class="list-group-item border-0" v-for="(user, index) in shares" :key="'modal_shares_'+index">
         <div class="media">
           <a :href="user.url">
             <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
           </a>
           <div class="media-body">
-            <p class="mb-0" style="font-size: 14px">
-              <a :href="user.url" class="font-weight-bold text-dark">
-                {{user.username}}
-              </a>
-            </p>
-            <p class="text-muted mb-0" style="font-size: 14px">
-                {{user.display_name}}
-              </a>
-            </p>
+            <div class="d-inline-block">
+              <p class="mb-0" style="font-size: 14px">
+                <a :href="user.url" class="font-weight-bold text-dark">
+                  {{user.username}}
+                </a>
+              </p>
+              <p class="text-muted mb-0" style="font-size: 14px">
+                  {{user.display_name}}
+                </a>
+              </p>
+            </div>
+            <p class="float-right"><a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a></p>
           </div>
         </div>
       </div>
@@ -245,9 +245,9 @@ export default {
               liked: false,
               shared: false
             },
-            likes: {},
+            likes: [],
             likesPage: 1,
-            shares: {},
+            shares: [],
             sharesPage: 1,
           }
     },
@@ -267,13 +267,13 @@ export default {
 
       if(this.reactions) {
         if(this.reactions.bookmarked == true) {
-          $('.far.fa-bookmark').removeClass('far').addClass('fas text-warning');
+          $('.postComponent .far.fa-bookmark').removeClass('far').addClass('fas text-warning');
         }
         if(this.reactions.shared == true) {
-          $('.far.fa-share-square').addClass('text-primary');
+          $('.postComponent .far.fa-share-square').addClass('text-primary');
         }
         if(this.reactions.liked == true) {
-          $('.far.fa-heart ').removeClass('far text-dark').addClass('fas text-danger');
+          $('.postComponent .far.fa-heart').removeClass('far text-dark').addClass('fas text-danger');
         }
       }
 
@@ -383,9 +383,9 @@ export default {
             page: this.likesPage,
           },
         }).then(({ data }) => {
-          if (data.data.length) {
-            this.likesPage += 1;
+          if (data.data.length > 0) {
             this.likes.push(...data.data);
+            this.likesPage++;
             $state.loaded();
           } else {
             $state.complete();
@@ -399,9 +399,9 @@ export default {
             page: this.sharesPage,
           },
         }).then(({ data }) => {
-          if (data.data.length) {
-            this.sharesPage += 1;
+          if (data.data.length > 0) {
             this.shares.push(...data.data);
+            this.sharesPage++;
             $state.loaded();
           } else {
             $state.complete();
@@ -420,10 +420,17 @@ export default {
           this.status.favourites_count = res.data.count;
           if(this.reactions.liked == true) {
             this.reactions.liked = false;
+            let user = this.user.id;
+            this.likes = this.likes.filter(function(like) {
+              return like.id !== user;
+            });
           } else {
             this.reactions.liked = true;
+            let user = this.user;
+            this.likes.push(user);
           }
         }).catch(err => {
+          console.error(err);
           swal('Error', 'Something went wrong, please try again later.', 'error');
         });
       },
@@ -439,10 +446,17 @@ export default {
           this.status.reblogs_count = res.data.count;
           if(this.reactions.shared == true) {
             this.reactions.shared = false;
+            let user = this.user.id;
+            this.shares = this.shares.filter(function(reaction) {
+              return reaction.id !== user;
+            });
           } else {
             this.reactions.shared = true;
+            let user = this.user;
+            this.shares.push(user);
           }
         }).catch(err => {
+          console.error(err);
           swal('Error', 'Something went wrong, please try again later.', 'error');
         });
       },
@@ -495,20 +509,19 @@ export default {
         });
       },
 
-      deletePost() {
+      deletePost(status) {
         var result = confirm('Are you sure you want to delete this post?');
         if (result) {
             if($('body').hasClass('loggedIn') == false) {
             return;
             }
-
             axios.post('/i/delete', {
-            type: 'status',
-            item: this.status.id
+              type: 'status',
+              item: status.id
             }).then(res => {
-            swal('Success', 'You have successfully deleted this post', 'success');
+              swal('Success', 'You have successfully deleted this post', 'success');
             }).catch(err => {
-            swal('Error', 'Something went wrong. Please try again later.', 'error');
+              swal('Error', 'Something went wrong. Please try again later.', 'error');
             });
         }
       }

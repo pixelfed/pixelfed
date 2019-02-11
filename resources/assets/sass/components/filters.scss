@@ -1,9 +1,9 @@
 /*! Instagram.css v0.1.3 | MIT License | github.com/picturepan2/instagram.css */
-[class*="filter"] {
+[class*="filter-"] {
   position: relative;
 }
 
-[class*="filter"]::before {
+[class*="filter-"]::before {
   display: block;
   height: 100%;
   left: 0;
