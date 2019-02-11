@@ -13,7 +13,7 @@
   	<div class="col-12 col-md-3">
   		<div class="card mb-3 border-left-blue">
   			<div class="card-body text-center">
-  				<p class="font-weight-ultralight h2 mb-0">{{$sys['pixelfed']}}</p>
+  				<p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['pixelfed']}}</p>
   			</div>
   			<div class="card-footer font-weight-bold py-0 text-center bg-white">Pixelfed</div>
       </div>
@@ -21,7 +21,7 @@
     <div class="col-12 col-md-3">
       <div class="card mb-3 border-left-blue">
         <div class="card-body text-center">
-          <p class="font-weight-ultralight h2 mb-0">{{$sys['mysql']}}</p>
+          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['mysql']}}</p>
         </div>
         <div class="card-footer font-weight-bold py-0 text-center bg-white">MySQL</div>
       </div>
@@ -29,7 +29,7 @@
     <div class="col-12 col-md-3">
       <div class="card mb-3 border-left-blue">
         <div class="card-body text-center">
-          <p class="font-weight-ultralight h2 mb-0">{{$sys['php']}}</p>
+          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['php']}}</p>
         </div>
         <div class="card-footer font-weight-bold py-0 text-center bg-white">PHP</div>
       </div>    
@@ -37,7 +37,7 @@
   	<div class="col-12 col-md-3">
   		<div class="card mb-3 border-left-blue">
   			<div class="card-body text-center">
-  				<p class="font-weight-ultralight h2 mb-0">{{$sys['redis']}}</p>
+  				<p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['redis']}}</p>
   			</div>
   			<div class="card-footer font-weight-bold py-0 text-center bg-white">Redis</div>
   		</div>
