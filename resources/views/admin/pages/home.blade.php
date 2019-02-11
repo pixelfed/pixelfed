@@ -8,8 +8,10 @@
     <p class="lead">Set custom page content</p>
   </div>
   <hr>
-  
-  <div class="table-responsive">
+  <p class="alert alert-warning">
+    <strong>Feature Unavailable:</strong> This feature will be released in v0.9.0.
+  </p>
+  {{--< div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
         <tr class="text-center">
@@ -43,5 +45,5 @@
   </div>
   <div class="d-flex justify-content-center mt-5 small">
     {{$pages->links()}}
-  </div>
+  </div> --}}
 @endsection
