@@ -8,11 +8,11 @@
         <li class="nav-item mx-2 {{request()->is('*admin/dashboard')?'active':''}}">
           <a class="nav-link" href="{{route('admin.home')}}">Dashboard</a>
         </li>
-        <li class="nav-item mx-2">
-          <a class="nav-link font-weight-lighter text-muted" href="#">Apps</a>
+        <li class="nav-item mx-2 {{request()->is('*apps*')?'active':''}}">
+          <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.apps')}}">Apps</a>
         </li>
-        <li class="nav-item mx-2">
-          <a class="nav-link font-weight-lighter text-muted" href="#">Hashtags</a>
+        <li class="nav-item mx-2 {{request()->is('*hashtags*')?'active':''}}">
+          <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.hashtags')}}">Hashtags</a>
         </li>
         <li class="nav-item mx-2 {{request()->is('*instances*')?'active':''}}">
           <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.instances')}}">Instances</a>
@@ -32,13 +32,15 @@
         <li class="nav-item mx-2 {{request()->is('*users*')?'active':''}}">
           <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.users')}}">Users</a>
         </li>
-        <li class="nav-item dropdown mx-2 {{request()->is('*settings*')?'active':''}}">
+        <li class="nav-item dropdown mx-2 {{request()->is(['*settings*','*discover*'])?'active':''}}">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             More
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item font-weight-bold {{request()->is('*discover*')?'active':''}}" href="{{route('admin.discover')}}">Discover</a>
+            <div class="dropdown-divider"></div>
             <a class="dropdown-item font-weight-bold" href="/horizon">Horizon</a>
-            <a class="dropdown-item font-weight-bold" href="#">Websockets</a>
+            {{-- <a class="dropdown-item font-weight-bold" href="#">Websockets</a> --}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item font-weight-bold {{request()->is('*settings*')?'active':''}}" href="{{route('admin.settings')}}">Settings</a>
           </div>
