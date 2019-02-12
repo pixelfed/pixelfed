@@ -8,9 +8,9 @@
                 <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
+                    @if (session('status') || $errors->has('email'))
                         <div class="alert alert-success">
-                            {{ session('status') }}
+                            {{ session('status') ?? $errors->first('email') }}
                         </div>
                     @endif
 
@@ -19,13 +19,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" placeholder="{{ __('E-Mail Address') }}" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="invalid-feedback">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
+                                <input id="email" type="email" class="form-control" name="email" placeholder="{{ __('E-Mail Address') }}" value="{{ old('email') }}" required>
                             </div>
                         </div>
 
