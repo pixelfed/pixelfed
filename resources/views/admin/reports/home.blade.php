@@ -66,12 +66,10 @@
     <thead class="bg-light">
       <tr>
         <th scope="col">
-          <div class="">
             <div class="custom-control custom-checkbox table-check">
               <input type="checkbox" class="custom-control-input row-check-item" id="row-check-all">
               <label class="custom-control-label" for="row-check-all"></label>
             </div>
-          </div>
         </th>
         <th scope="col">#</th>
         <th scope="col">Reporter</th>
@@ -84,14 +82,14 @@
     <tbody>
       @foreach($reports as $report)
       <tr>
-        <td class="">
+        <td scope="row">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input row-check-item" id="row-check-{{$report->id}}" data-resolved="{{$report->admin_seen?'true':'false'}}" data-id="{{$report->id}}">
             <label class="custom-control-label" for="row-check-{{$report->id}}"></label>
           </div>
         </td>
         <td>
-          <a href="{{$report->url()}}" class="btn btn-sm btn-outline-primary">
+          <a href="{{$report->url()}}" class="btn btn-sm btn-outline-primary my-0 py-0">
             {{$report->id}}
           </a>
           

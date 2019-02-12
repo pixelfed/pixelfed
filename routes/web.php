@@ -13,6 +13,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('statuses/show/{id}', 'AdminController@showStatus');
     Route::redirect('profiles', '/i/admin/profiles/list');
     Route::get('profiles/list', 'AdminController@profiles')->name('admin.profiles');
+    Route::get('profiles/edit/{id}', 'AdminController@profileShow');
     Route::redirect('users', '/users/list');
     Route::get('users/list', 'AdminController@users')->name('admin.users');
     Route::get('users/edit/{id}', 'AdminController@editUser');

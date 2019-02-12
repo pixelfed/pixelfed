@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\{
   AdminSettingsController
 };
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -181,8 +182,45 @@ class AdminController extends Controller
 
     public function profiles(Request $request)
     {
-      $profiles = Profile::orderBy('id','desc')->paginate(10);
+      $this->validate($request, [
+        'search' => 'nullable|string|max:250',
+        'filter' => [
+          'nullable',
+          'string',
+          Rule::in(['id','username','statuses_count','followers_count','likes_count'])
+        ],
+        'order' => [
+          'nullable',
+          'string',
+          Rule::in(['asc','desc'])
+        ],
+        'layout' => [
+          'nullable',
+          'string',
+          Rule::in(['card','list'])
+        ],
+        'limit' => 'nullable|integer|min:1|max:50'
+      ]);
+      $search = $request->input('search');
+      $filter = $request->input('filter');
+      $order = $request->input('order') ?? 'desc';
+      $limit = $request->input('limit') ?? 12;
+      if($search) {
+        $profiles = Profile::where('username','like', "%$search%")->orderBy('id','desc')->paginate($limit);
+      } else if($filter && $order) {
+        $profiles = Profile::withCount(['likes','statuses','followers'])->orderBy($filter, $order)->paginate($limit);
+      } else {
+        $profiles = Profile::orderBy('id','desc')->paginate($limit);
+      }
+
       return view('admin.profiles.home', compact('profiles'));
+    }
+
+    public function profileShow(Request $request, $id)
+    {
+      $profile = Profile::findOrFail($id);
+      $user = $profile->user;
+      return view('admin.profiles.edit', compact('profile', 'user'));
     }
 
     public function appsHome(Request $request)

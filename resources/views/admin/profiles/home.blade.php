@@ -4,10 +4,22 @@
 <div class="title">
 	<h3 class="font-weight-bold d-inline-block">Profiles</h3>
 	<span class="float-right">
-		<a class="btn btn-{{request()->input('layout')!=='list'?'primary':'light'}} btn-sm" href="{{route('admin.profiles')}}">
+		<a class="btn btn-{{request()->input('layout')=='card'?'primary':'light'}} btn-sm" href="{{route('admin.profiles',[
+			'layout'=>'card', 
+			'search' => request()->input('search'),
+			'page' => request()->input('page') ?? 1,
+			'filter' => request()->filter,
+			'order' => request()->order
+			])}}">
 			<i class="fas fa-th"></i>
 		</a>
-		<a class="btn btn-{{request()->input('layout')=='list'?'primary':'light'}} btn-sm mr-3" href="{{route('admin.profiles',['layout'=>'list', 'page' => request()->input('page') ?? 1])}}">
+		<a class="btn btn-{{request()->input('layout')!=='card'?'primary':'light'}} btn-sm mr-3" href="{{route('admin.profiles',[
+			'layout'=>'list', 
+			'search' => request()->input('search'),
+			'page' => request()->input('page') ?? 1,
+			'filter' => request()->filter,
+			'order' => request()->order
+			])}}">
 			<i class="fas fa-list"></i>
 		</a>
 		<div class="dropdown d-inline-block">
@@ -20,63 +32,155 @@
 						<input type="hidden" name="layout" value="{{request()->input('layout')}}"></input>
 						<input type="hidden" name="page" value="{{request()->input('page')}}"></input>
 						<div class="input-group input-group-sm">
-							<input class="form-control" name="search" placeholder="Filter by username, mime type" autocomplete="off"></input>
+							<input class="form-control" name="search" placeholder="Filter by username" autocomplete="off" value="{{request()->input('search')}}">
 							<div class="input-group-append">
 								<button class="btn btn-outline-primary" type="submit">Filter</button>
 							</div>
 						</div>
 					</form>
 				</div>
-				<div class="dropdown-divider"></div>
-				<p class="text-wrap p-1 p-md-3 text-center">
-					<a class="badge badge-primary p-1 btn-filter" href="#" data-filter="cw" data-filter-state="true" data-toggle="tooltip" title="Show Content Warning media">CW</a> 
-					<a class="badge badge-primary p-1 btn-filter" href="#" data-filter="remote" data-filter-state="true" data-toggle="tooltip" title="Show remote media">Remote Media</a> 
-					<a class="badge badge-primary p-1 btn-filter" href="#" data-filter="images" data-filter-state="true" data-toggle="tooltip" title="Show image media">Images</a> 
-					<a class="badge badge-primary p-1 btn-filter" href="#" data-filter="videos" data-filter-state="true" data-toggle="tooltip" title="Show video media">Videos</a> 
-					<a class="badge badge-light p-1 btn-filter" href="#" data-filter="stories" data-filter-state="false" data-toggle="tooltip" title="Show stories media">Stories</a> 
-					<a class="badge badge-light p-1 btn-filter" href="#" data-filter="banned" data-filter-state="false" data-toggle="tooltip" title="Show banned media">Banned</a> 
-					<a class="badge badge-light p-1 btn-filter" href="#" data-filter="reported" data-filter-state="false" data-toggle="tooltip" title="Show reported media">Reported</a> 
-					<a class="badge badge-light p-1 btn-filter" href="#" data-filter="unlisted" data-filter-state="false" data-toggle="tooltip" title="Show unlisted media">Unlisted</a> 
-				</p>
 			</div>
 		</div>
 	</span>
 </div>
 <hr>
-@if(request()->input('layout') == 'list')
+@if(request()->input('layout') !== 'card')
+<div class="mb-3 bulk-actions d-none">
+	<div class="d-flex justify-content-between">
+		<span>
+			<span class="bulk-count font-weight-bold" data-count="0">
+				0
+			</span>
+			<span class="bulk-desc"> items selected</span>
+		</span>
+		<span class="d-inline-flex">
+			<select class="custom-select custom-select-sm font-weight-bold bulk-action">
+				<option selected disabled="">Select Bulk Action</option>
+				<option value="1" disabled="">Review (Coming in v0.9.0)</option>
+				<option value="2">Add C/W</option>
+				<option value="3">Unlist from timelines</option>
+				<option value="4">No Autolinking</option>
+				<option value="5">Suspend</option>
+				<option value="6">Delete</option>
+			</select>
+			<a class="btn btn-outline-primary btn-sm ml-3 font-weight-bold apply-bulk" href="#">
+				Apply
+			</a>
+		</span>
+	</div>
+</div>
 <div class="table-responsive">
 	<table class="table">
 		<thead class="bg-light">
-			<tr class="text-center">
+			<tr>
+				<th class="border-0" width="5%">
+					<div class="custom-control custom-checkbox table-check">
+						<input type="checkbox" class="custom-control-input row-check-item row-check-all" id="row-check-all">
+						<label class="custom-control-label" for="row-check-all"></label>
+					</div>
+				</th>
 				<th scope="col" class="border-0" width="10%">
-					<span>ID</span> 
-				</th>
-				<th scope="col" class="border-0" width="30%">
-					<span>Username</span>
+					<span>
+						ID
+						@if(request()->filter && request()->filter == 'id' && request()->order == 'asc')
+						<a href="#" class="col-ord" data-col="id" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
+						@else
+						<a href="#" class="col-ord" data-col="id" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
+						@endif
+					</span> 
 				</th>
 				<th scope="col" class="border-0" width="15%">
-					<span>Statuses</span>
+					<span>
+						Username
+						@if(request()->filter && request()->filter == 'username' && request()->order == 'asc')
+						<a href="#" class="col-ord" data-col="username" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
+						@else
+						<a href="#" class="col-ord" data-col="username" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
+						@endif
+					</span>
 				</th>
-				<th scope="col" class="border-0" width="15%">
-					<span>Storage</span>
+				<th scope="col" class="border-0" width="20%">
+					<span>
+						Followers
+						@if(request()->filter && request()->filter == 'followers_count' && request()->order == 'asc')
+						<a href="#" class="col-ord" data-col="followers_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
+						@else
+						<a href="#" class="col-ord" data-col="followers_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
+						@endif
+					</span>
 				</th>
-				<th scope="col" class="border-0" width="30%">
+				<th scope="col" class="border-0" width="20%">
+					<span>
+						Likes
+						@if(request()->filter && request()->filter == 'likes_count' && request()->order == 'asc')
+						<a href="#" class="col-ord" data-col="likes_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
+						@else
+						<a href="#" class="col-ord" data-col="likes_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
+						@endif
+					</span>
+				</th>
+				<th scope="col" class="border-0" width="20%">
+					<span>
+						Statuses
+						@if(request()->filter && request()->filter == 'statuses_count' && request()->order == 'asc')
+						<a href="#" class="col-ord" data-col="statuses_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
+						@else
+						<a href="#" class="col-ord" data-col="statuses_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
+						@endif
+					</span>
+				</th>
+				<th scope="col" class="border-0" width="10%">
+					<span>
+						Storage
+					</span>
+				</th>
+				<th scope="col" class="border-0" width="10%">
 					<span>Actions</span>
 				</th>
 			</tr>
 		</thead>
 		@foreach($profiles as $profile)
 		<tr class="font-weight-bold text-center user-row">
-			<th scope="row">
-				{{$profile->id}}
+			<th scope="">
+				<div class="custom-control custom-checkbox">
+					<input type="checkbox" class="custom-control-input row-check-item" id="row-check-{{$profile->id}}" data-id="{{$profile->id}}">
+					<label class="custom-control-label" for="row-check-{{$profile->id}}"></label>
+				</div>
 			</th>
+			<td>
+				{{$profile->id}}
+			</td>
+			<td class="text-truncate" data-toggle="tooltip" data-placement="bottom" title="{{$profile->username}}" style="max-width: 150px;">
+				{{$profile->username}}
+			</td>
+			<td>
+				{{$profile->followers()->count()}}
+			</td>
+			<td>
+				{{$profile->likes()->count()}}
+			</td>
+			<td>
+				{{$profile->statuses()->count()}}
+			</td>
+			<td>
+				<div class="filesize" data-size="{{$profile->media()->sum('size')}}">{{$profile->media()->sum('size')}} bytes</div>
+				
+			</td>
+			<td>
+				<a class="btn btn-outline-secondary btn-sm py-0 mr-3" href="/i/admin/profiles/edit/{{$profile->id}}">Edit</a>
+			</td>
 		</tr>
 		@endforeach
 	</tbody>
 </table>
 </div>
 <div class="d-flex justify-content-center mt-5 small">
-	{{$profiles->links()}}
+	{{$profiles->appends([
+		'layout'=>request()->layout,
+		'search'=>request()->search,
+		'filter'=>request()->filter,
+		'order'=>request()->order
+		])->links()}}
 </div>
 @else
 <div class="row">
@@ -84,7 +188,7 @@
 	<div class="col-12 col-md-4 mb-4">
 		<div class="card">
 			<div class="card-header bg-white text-center" style="min-height: 80px">
-				<img class="box-shadow rounded-circle mb-3" src="{{$profile->avatarUrl()}}" width="64px">
+				<img class="box-shadow rounded-circle mb-3" src="{{$profile->avatarUrl()}}" width="64px" height="64px">
 				<p class="font-weight-bold mb-0 text-truncate">{{$profile->username}}</p>
 			</div>
 			<ul class="list-group list-group-flush small">
@@ -104,7 +208,7 @@
 				</li>
 				<li class="list-group-item text-center">
 					<a class="btn btn-outline-primary btn-sm py-0" href="{{$profile->url()}}">View</a>
-					<a class="btn btn-outline-secondary btn-sm py-0" href="#">Actions</a>
+					<a class="btn btn-outline-secondary btn-sm py-0" href="/i/admin/profiles/edit/{{$profile->id}}">Edit</a>
 				</li>
 			</ul>
 		</div>
@@ -112,7 +216,12 @@
 	@endforeach
 </div>
 <div class="d-flex justify-content-center mt-5 small">
-	{{$profiles->links()}}
+	{{$profiles->appends([
+		'layout'=>request()->layout,
+		'search'=>request()->search,
+		'filter'=>request()->filter,
+		'order'=>request()->order
+		])->links()}}
 </div>
 @endif
 @endsection
@@ -124,7 +233,8 @@
 	display: none;
 }
 
-.user-row:hover {
+.user-row:hover,
+.user-row-active {
 	background-color: #eff8ff;
 }
 .user-row:hover .action-row {
@@ -139,6 +249,129 @@
 <script type="text/javascript">
 	$('.filesize').each(function(k,v) {
 		$(this).text(filesize(v.getAttribute('data-size'), {unix:true, round:0}))
+	});
+	$('.col-ord').on('click', function(e) {
+		e.preventDefault();
+		let el = $(this);
+		let ord = el.data('dir');
+		let col = el.data('col');
+		let wurl = new URL(window.location.href);
+		let query_string = wurl.search;
+		let search_params = new URLSearchParams(query_string); 
+
+		if(ord == 'asc') {
+			search_params.set('filter', col);
+			search_params.set('order', ord);
+			wurl.search = search_params.toString();
+			el.find('i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+			el.data('dir', 'desc');
+		} else {
+			search_params.set('filter', col);
+			search_params.set('order', ord);
+			wurl.search = search_params.toString();
+			el.find('i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+			el.data('dir', 'asc');
+		}
+		window.location.href = wurl.toString();
+	});
+
+
+	$(document).on('click', '#row-check-all', function(e) {
+		return;
+		let el = $(this);
+		let attr = el.attr('checked');
+
+		if (typeof attr !== typeof undefined && attr !== false) {
+			$('tbody .user-row').removeClass('user-row-active');
+			$('.bulk-actions').addClass('d-none');
+			$('.row-check-item').removeAttr('checked').prop('checked', false);
+			el.removeAttr('checked').prop('checked', false);
+		} else {
+			$('tbody .user-row').addClass('user-row-active');
+			$('.bulk-actions').removeClass('d-none');
+			el.attr('checked', '').prop('checked', true);
+			$('.row-check-item').attr('checked', '').prop('checked', true);
+		}
+
+		let len = $('.row-check-item:checked').length;
+		if(attr == true) {
+			len--;
+		}
+		$('.bulk-count').text(len).attr('data-count', len);
+	});
+
+
+	$(document).on('click', '.row-check-item', function(e) {
+		return;
+		var el = $(this)[0];
+		let len = $('.row-check-item:checked').length;
+		if($('#row-check-all:checked').length > 0) {
+			len--;
+		}
+		if($(this).hasClass('row-check-all')) {
+			return;
+		};
+		if(el.checked == true) {
+			$(this).parents().eq(2).addClass('user-row-active');
+			$('.bulk-actions').removeClass('d-none');
+			$('.bulk-count').text(len).attr('data-count', len);
+		} else {
+			$(this).parents().eq(2).removeClass('user-row-active');
+			if(len == 0) {
+				$('.bulk-actions').addClass('d-none');
+			} else {
+				$('.bulk-count').text(len).attr('data-count', len);   
+			}
+		}
+		if(len == 0) {
+			$('.bulk-actions').addClass('d-none');
+			$('#row-check-all').prop('checked', false);
+		} else {
+			$('.bulk-actions').removeClass('d-none');
+		}
+	});
+
+	$(document).on('click', '.apply-bulk', function(e) {
+		return;
+		e.preventDefault();
+		let len = $('.row-check-item:checked').length;
+		if($('#row-check-all:checked').length > 0) {
+			len--;
+		}
+		if(len == 0) {
+			return;
+		}
+		let action = $('.bulk-action').val();
+		let ids = $('.row-check-item:checked').get().filter(i => {
+			let el = $(i);
+			if(el.hasClass('row-check-all')) {
+				return false;
+			}
+			return true;
+		}).map(i => {
+			return $(i).data('id');
+		});
+		let actions = [
+			'',
+			'review',
+			'cw',
+			'unlist',
+			'noautolink',
+			'suspend',
+			'delete'
+		];
+		action = actions[action];
+		if(!action) {
+			return;
+		}
+		swal(
+			'Confirm', 
+			'Are you sure you want to perform this action?',
+			'warning'
+		).then(res => {
+			console.log(action);
+			console.log(ids);
+		})
 	});
 </script>
 @endpush
