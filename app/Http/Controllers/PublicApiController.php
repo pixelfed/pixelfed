@@ -400,7 +400,7 @@ class PublicApiController extends Controller
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
         $account = Profile::findOrFail($id);
-        $statuses = $account->statuses()->getQuery(); 
+        $statuses = $account->statuses()->getQuery()->whereNull('uri'); 
         if($only_media == true) {
             $statuses = $statuses
                 ->whereHas('media')

@@ -220,6 +220,7 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $posts = Status::select('id', 'caption', 'profile_id')
+              ->whereNull('uri')
               ->whereHas('media')
               ->whereHas('profile', function($q) {
                 return $q->whereNull('status');
