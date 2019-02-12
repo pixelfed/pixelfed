@@ -45,7 +45,7 @@ class FixDuplicateProfiles extends Command
      */
     public function handle()
     {
-        $profiles = Profile::selectRaw('count(user_id) as count,user_id,id')->whereNotNull('user_id')->groupBy('user_id')->orderBy('user_id', 'desc')->get()->where('count', '>', 1);
+        $profiles = Profile::selectRaw('count(user_id) as count,user_id')->whereNotNull('user_id')->groupBy('user_id')->orderBy('user_id', 'desc')->get()->where('count', '>', 1);
         $count = $profiles->count();
         if($count == 0) {
             $this->info("No duplicate profiles found!");
