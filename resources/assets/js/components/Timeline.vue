@@ -138,7 +138,7 @@
 					</div>
 				</div>
 			</div>
-			<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination d-none">
+			<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination">
 				<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
 			</div>
 			<div v-if="!loading && scope == 'home' && feed.length == 0">
@@ -421,10 +421,11 @@
 				});
 			},
 
-			loadMore() {
+			loadMore(event) {
 				let homeTimeline = '/api/v1/timelines/home';
 				let localTimeline = '/api/v1/timelines/public';
 				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
+				event.target.innerText = 'Loading...';
 				axios.get(apiUrl, {
 					params: {
 						page: this.page,
@@ -440,6 +441,7 @@
 						}
 						this.page += 1;
 						this.loading = false;
+						event.target.innerText = 'Load more posts';
 					} else {
 					}
 				});
