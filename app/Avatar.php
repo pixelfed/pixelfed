@@ -15,4 +15,9 @@ class Avatar extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    public function profile()
+    {
+    	return $this->belongsTo(Profile::class);
+    }
 }

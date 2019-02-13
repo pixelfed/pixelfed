@@ -20,11 +20,12 @@ class DirectMessageController extends Controller
     public function inbox(Request $request)
     {
     	$profile = Auth::user()->profile;
-    	$inbox = DirectMessage::whereToId($profile->id)
+    	$inbox = DirectMessage::selectRaw('*, max(created_at) as createdAt')
+            ->whereToId($profile->id)
     		->with(['author','status'])
-    		->orderBy('created_at', 'desc')
-    		->groupBy('from_id')
-    		->paginate(10);
+            ->orderBy('createdAt', 'desc')
+            ->groupBy('from_id')
+    		->paginate(12);
     	return view('account.messages', compact('inbox'));
 
     }
@@ -40,10 +41,12 @@ class DirectMessageController extends Controller
     	$msg = DirectMessage::whereToId($profile->id)
     		->findOrFail($mid);
 
-    	$thread = DirectMessage::whereToId($profile->id)
-    		->orWhere([['from_id', $profile->id],['to_id', $msg->from_id]])
+    	$thread = DirectMessage::whereIn('to_id', [$profile->id, $msg->from_id])
+    		->whereIn('from_id', [$profile->id,$msg->from_id])
     		->orderBy('created_at', 'desc')
-    		->paginate(10);
+    		->paginate(30);
+
+        $thread = $thread->reverse();
 
     	return view('account.message', compact('msg', 'profile', 'thread'));
     }

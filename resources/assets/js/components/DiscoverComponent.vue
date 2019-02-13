@@ -1,29 +1,24 @@
 <template>
 <div class="container">
-  <!-- <section class="mb-5 section-people">
-    <p class="lead text-muted font-weight-bold mb-0">Discover People</p>
-    <div class="loader text-center">
-    	<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+
+  <section class="mb-5 pb-3 px-2 d-flex" style="overflow-x: hidden;" v-if="categories.length > 0">
+    <a class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow" style="width:160px;height:100px;" href="/discover/personal">
+      <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;border-bottom: 2px solid #fff;">For You</p>
+    </a>
+
+    <div v-show="categoryCursor > 5" class="text-dark d-inline-flex align-items-center pr-3" v-on:click="categoryPrev()">
+      <i class="fas fa-chevron-circle-left fa-lg text-muted"></i>
     </div>
-    <div class="row d-none">
-      <div class="col-4 p-0 p-sm-2 p-md-3" v-for="profile in people">
-        <div class="card card-md-border-0">
-          <div class="card-body p-4 text-center">
-            <div class="avatar pb-3">
-              <a :href="profile.url">
-                <img :src="profile.avatar" class="img-thumbnail rounded-circle" width="64px">
-              </a>
-            </div>
-            <p class="lead font-weight-bold mb-0 text-truncate"><a :href="profile.url" class="text-dark">{{profile.username}}</a></p>
-            <p class="text-muted text-truncate">{{profile.name}}</p>
-            <button class="btn btn-primary font-weight-bold px-4 py-0" v-on:click="followUser(profile.id, $event)">Follow</button>
-          </div>
-        </div>
-      </div>
+
+    <a v-for="(category, index) in categories" :key="index+'_cat_'" class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" :href="category.url" :style="'width:160px;height:100px;background: linear-gradient(rgba(0, 0, 0, 0.3),rgba(0, 0, 0, 0.3)),url('+category.thumb+');'">
+      <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;">{{category.name}}</p>
+    </a>
+
+    <div v-show="allCategories.length != categoryCursor" class="text-dark d-flex align-items-center" v-on:click="categoryNext()">
+      <i class="fas fa-chevron-circle-right fa-lg text-muted"></i>
     </div>
-  </section> -->
+  </section>
   <section class="mb-5 section-explore">
-    <p class="lead text-muted font-weight-bold mb-0">Explore</p>
     <div class="profile-timeline">
 	    <div class="loader text-center">
 	    	<div class="lds-ring"><div></div><div></div><div></div><div></div></div>
@@ -45,17 +40,27 @@
 </div>
 </template>
 
+<style type="text/css" scoped>
+  .card-disc {
+    background-size: cover !important;
+  }
+</style>
+
 <script type="text/javascript">
 export default {
 	data() {
 		return {
 			people: {},
 			posts: {},
-			trending: {}
+			trending: {},
+      categories: {},
+      allCategories: {},
+      categoryCursor: 5,
 		}
 	},
 	mounted() {
     this.fetchData();
+    this.fetchCategories();
 	},
 
 	methods: {
@@ -98,7 +103,37 @@ export default {
           $('.section-explore .row.d-none').removeClass('d-none');
         }
       });
-		}
+		},
+
+    fetchCategories() {
+      axios.get('/api/v2/discover/categories')
+        .then(res => {
+          this.allCategories = res.data;
+          this.categories = _.slice(res.data, 0, 5);
+      });
+    },
+
+    categoryNext() {
+      if(this.categoryCursor > this.allCategories.length - 1) {
+        return;
+      }
+      this.categoryCursor++;
+      let cursor = this.categoryCursor;
+      let start = cursor - 5;
+      let end = cursor;
+      this.categories = _.slice(this.allCategories, start, end);
+    },
+
+    categoryPrev() {
+      if(this.categoryCursor == 5) {
+        return;
+      }
+      this.categoryCursor--;
+      let cursor = this.categoryCursor;
+      let start = cursor - 5;
+      let end = cursor;
+      this.categories = _.slice(this.allCategories, start, end);
+    },
 	}
 }
 </script>

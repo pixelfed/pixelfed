@@ -1,4 +1,4 @@
-@extends('admin.partial.template')
+@extends('admin.partial.template-full')
 
 @section('section')
   <div class="title">
@@ -21,7 +21,7 @@
       @foreach($statuses as $status)
       <tr>
         <th scope="row">
-          <a href="/statuses/show/{{$status->id}}">
+          <a href="{{$status->url()}}">
             {{$status->id}}
           </a>
         </th>

@@ -1,19 +1,37 @@
 @extends('admin.partial.template')
 
+@include('admin.settings.sidebar')
+
 @section('section')
   <div class="title">
     <h3 class="font-weight-bold">Edit Page</h3>
-    <p class="lead">{{request()->query('page')}}</p>
+    <p class="lead">{{$page->slug}}</p>
   </div>
   <hr>
 
   <div>
-    <div id="editor" style="height: 400px">
-      <p class="lead">PixelFed is a federated image sharing platform, powered by the <a href="#">ActivityPub</a> protocol.</p>
-    </div>
-    <p class="mt-3 text-right mb-0">
-      <a class="btn btn-primary font-weight-bold" href="#">Save</a>
+    <input type="hidden" id="slug" name="slug" value="{{$page->slug}}">
+    <input class="form-control form-control-lg" id="title" name="title" placeholder="Title">
+    <p class="small text-muted">
+      Page URL: <span class="page-url font-weight-bold">{{$page->url()}}</span>
+      <span class="pl-1"><a href="#" class="font-weight-bold">Edit</a></span>
     </p>
+    <div id="editor" style="height: 400px">
+      {!!$page->content!!}
+    </div>
+    <div class="mt-3 d-flex justify-content-between">
+      <div>
+        <div class="custom-control custom-switch d-inline pr-3">
+          <input type="checkbox" class="custom-control-input" id="activeSwitch" {{$page->active?'checked="true"':''}}>
+          <label class="custom-control-label font-weight-bold" for="activeSwitch">Active</label>
+        </div>
+        <a class="btn btn-light font-weight-bold py-0" href="#">Set Expire Date</a>
+      </div>
+      <div>
+        <a class="btn btn-light font-weight-bold py-0" href="#">Preview</a>
+        <a class="btn btn-primary font-weight-bold py-0 btn-save" href="#">Save</a>
+      </div>
+    </div>
   </div>
 
 @endsection
@@ -38,8 +56,29 @@
 
 <!-- Initialize Quill editor -->
 <script>
-  var quill = new Quill('#editor', {
+  window.editor = new Quill('#editor', {
     theme: 'snow'
   });
+  $('.btn-save').on('click', function(e) {
+    e.preventDefault();
+    let html = editor.container.firstChild.innerHTML;
+    let title = $('#title').val();
+    let active = $('#activeSwitch')[0].checked;
+    axios.post(window.location.href, {
+      slug: '{{$page->slug}}',
+      title: title,
+      content: html,
+      active: active      
+    }).then((res) => {
+      window.location.href = '{{$page->url()}}';
+    }).catch((err) => {
+      console.log(err)
+    });
+  });
+
+  $('#title').on('change input', function(e) {
+    e.preventDefault();
+    let title = this.value.split(' ').join('-').toLowerCase();
+  })
 </script>
 @endpush

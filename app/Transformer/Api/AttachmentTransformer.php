@@ -9,7 +9,7 @@ class AttachmentTransformer extends Fractal\TransformerAbstract
 	public function transform(Media $media)
 	{
 		return [
-			'id'			=> $media->id,
+			'id'			=> (string) $media->id,
 			'type'			=> $media->activityVerb(),
 			'url'			=> $media->url(),
 			'remote_url' 	=> null,

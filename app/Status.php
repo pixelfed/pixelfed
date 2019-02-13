@@ -118,7 +118,11 @@ class Status extends Model
         $media = $this->firstMedia();
         $path = $media->media_path;
         $hash = is_null($media->processed_at) ? md5('unprocessed') : md5($media->created_at);
-        $url = Storage::url($path)."?v={$hash}";
+        if(config('pixelfed.cloud_storage') == true) {
+            $url = Storage::disk(config('filesystems.cloud'))->url($path)."?v={$hash}";
+        } else {
+            $url = Storage::url($path)."?v={$hash}";
+        }
 
         return url($url);
     }
@@ -268,6 +272,22 @@ class Status extends Model
 
         return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
           __('notification.commented');
+    }
+
+    public function shareToText()
+    {
+        $actorName = $this->profile->username;
+
+        return "{$actorName} ".__('notification.shared');
+    }
+
+    public function shareToHtml()
+    {
+        $actorName = $this->profile->username;
+        $actorUrl = $this->profile->url();
+
+        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
+          __('notification.shared');
     }
 
     public function recentComments()

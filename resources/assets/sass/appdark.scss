@@ -1,0 +1,48 @@
+
+// Fonts
+@import "fonts";
+@import "lib/fontawesome";
+
+// Variables
+@import "dark";
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+@import "custom";
+
+.text-dark {
+    color: #ADAFAE !important;
+}
+
+.bg-white {
+	background: #282828 !important;
+}
+.navbar-laravel {
+	background: #282828 !important;
+}
+
+.far, .fas,
+.navbar-laravel .navbar-brand span,
+.navbar-laravel .nav-link .d-md-block,
+.navbar-laravel .nav-link.dropdown-toggle .far,
+.navbar-laravel .nav-link.dropdown-toggle::after {
+	color: #ADAFAE !important;
+}
+
+.form-control.search-form-input {
+	background: #060606 !important;
+	color: #888 !important;
+}
+
+@import "components/filters";
+
+@import "components/typeahead";
+
+@import "components/notifications";
+
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+
+@import '~plyr/dist/plyr.css';
+
+@import '~vue-loading-overlay/dist/vue-loading.css';

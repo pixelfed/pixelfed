@@ -155,8 +155,5 @@ $(document).ready(function() {
 		})
 	}
 
-	if($('body').hasClass('loggedIn') == true) {
-		pixelfed.n.fetch();
-	}
 
 });

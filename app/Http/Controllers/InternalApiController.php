@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\{
     DirectMessage,
+    DiscoverCategory,
     Hashtag,
     Follower,
     Like,
@@ -25,6 +26,7 @@ use App\Transformer\Api\{
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use Illuminate\Validation\Rule;
 
 class InternalApiController extends Controller
 {
@@ -54,6 +56,7 @@ class InternalApiController extends Controller
         $attachments = [];
         $status = new Status;
         $mimes = [];
+        $cw = false;
 
         foreach($medias as $k => $media) {
             $m = Media::findOrFail($media['id']);
@@ -64,7 +67,8 @@ class InternalApiController extends Controller
             $m->license = $media['license'];
             $m->caption = strip_tags($media['alt']);
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-            if($media['cw'] == true) {
+            if($media['cw'] == true || $profile->cw == true) {
+                $cw = true;
                 $m->is_nsfw = true;
                 $status->is_nsfw = true;
             }
@@ -74,7 +78,6 @@ class InternalApiController extends Controller
         }
 
         $status->caption = strip_tags($request->caption);
-        $status->visibility = 'draft';
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
         $status->save();
@@ -84,6 +87,9 @@ class InternalApiController extends Controller
             $media->save();
         }
 
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+        $cw = $profile->cw == true ? true : $cw;
+        $status->is_nsfw = $cw;
         $status->visibility = $visibility;
         $status->scope = $visibility;
         $status->type = StatusController::mimeTypeCheck($mimes);
@@ -194,18 +200,26 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, 15, function() use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
-            return UserFilter::whereUserId($pid)
-            ->whereFilterableType('App\Profile')
-            ->whereIn('filter_type', ['mute', 'block'])
-            ->pluck('filterable_id')->toArray();
+        $filters = Cache::remember("user:filter:list:$pid", 15, function() use($pid) {
+            $private = Profile::whereIsPrivate(true)
+                ->orWhere('unlisted', true)
+                ->orWhere('status', '!=', null)
+                ->pluck('id')
+                ->toArray();
+            $filters = UserFilter::whereUserId($pid)
+                ->whereFilterableType('App\Profile')
+                ->whereIn('filter_type', ['mute', 'block'])
+                ->pluck('filterable_id')
+                ->toArray();
+            return array_merge($private, $filters);
         });
         $following = array_merge($following, $filters);
 
         $posts = Status::select('id', 'caption', 'profile_id')
+              ->whereNull('uri')
               ->whereHas('media')
               ->whereHas('profile', function($q) {
                 return $q->whereNull('status');
@@ -275,5 +289,95 @@ class InternalApiController extends Controller
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
+    }
+
+    public function stories(Request $request)
+    {
+        
+    }
+
+    public function discoverCategories(Request $request)
+    {
+        $categories = DiscoverCategory::whereActive(true)->orderBy('order')->take(10)->get();
+        $res = $categories->map(function($item) {
+            return [
+                'name' => $item->name,
+                'url' => $item->url(),
+                'thumb' => $item->thumb()
+            ];
+        });
+        return response()->json($res);
+    }
+
+    public function modAction(Request $request)
+    {
+        abort_unless(Auth::user()->is_admin, 403);
+        $this->validate($request, [
+            'action' => [
+                'required',
+                'string',
+                Rule::in([
+                    'autocw',
+                    'noautolink',
+                    'unlisted',
+                    'disable',
+                    'suspend'
+                ])
+            ],
+            'item_id' => 'required|integer|min:1',
+            'item_type' => [
+                'required',
+                'string',
+                Rule::in(['status'])
+            ]
+        ]);
+
+        $action = $request->input('action');
+        $item_id = $request->input('item_id');
+        $item_type = $request->input('item_type');
+
+        switch($action) {
+            case 'autocw':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->cw = true;
+                $profile->save();
+            break;
+
+            case 'noautolink':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->no_autolink = true;
+                $profile->save();
+            break;
+
+            case 'unlisted':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $profile->unlisted = true;
+                $profile->save();
+            break;
+
+            case 'disable':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $user = $profile->user;
+                $profile->status = 'disabled';
+                $user->status = 'disabled';
+                $profile->save();
+                $user->save();
+            break;
+
+
+            case 'suspend':
+                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
+                $user = $profile->user;
+                $profile->status = 'suspended';
+                $user->status = 'suspended';
+                $profile->save();
+                $user->save();
+            break;
+            
+            default:
+                # code...
+                break;
+        }
+        return ['msg' => 200];
     }
 }

@@ -3,23 +3,23 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class InstalledTest extends TestCase
 {
-    public function testLandingTest()
+    /** @test */
+    public function landing_page()
     {
         $response = $this->get('/');
-        $response
-          ->assertStatus(200)
-          ->assertSeeText('Image Sharing for Everyone');
+        $response->assertSeeText('Image Sharing for Everyone');
     }
 
-    public function testNodeinfoTest()
+    /** @test */
+    public function nodeinfo_api()
     {
         $response = $this->get('/.well-known/nodeinfo');
-        $response
-          ->assertStatus(200)
-          ->assertJson([
+        $response->assertJson([
             'links' => [
               ['rel' => 'http://nodeinfo.diaspora.software/ns/schema/2.0'],
           ], ]);

@@ -7,6 +7,7 @@ use App\Hashtag;
 use App\Profile;
 use App\Status;
 use Illuminate\Http\Request;
+use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
 
 class SearchController extends Controller
@@ -24,6 +25,35 @@ class SearchController extends Controller
         $hash = hash('sha256', $tag);
         $tokens = Cache::remember('api:search:tag:'.$hash, 5, function () use ($tag) {
             $tokens = collect([]);
+            if(Helpers::validateUrl($tag)) {
+                $remote = Helpers::fetchFromUrl($tag);
+                if(isset($remote['type']) && in_array($remote['type'], ['Create', 'Person']) == true) {
+                    $type = $remote['type'];
+                    if($type == 'Person') {
+                        $item = Helpers::profileFirstOrNew($tag);
+                        $tokens->push([[
+                            'count'  => 1,
+                            'url'    => $item->url(),
+                            'type'   => 'profile',
+                            'value'  => $item->username,
+                            'tokens' => [$item->username],
+                            'name'   => $item->name,
+                        ]]);
+                    } else if ($type == 'Create') {
+                        $item = Helpers::statusFirstOrFetch($tag, false);
+                        $tokens->push([[
+                            'count'  => 0,
+                            'url'    => $item->url(),
+                            'type'   => 'status',
+                            'value'  => "by {$item->profile->username} <span class='float-right'>{$item->created_at->diffForHumans(null, true, true)}</span>",
+                            'tokens' => [$item->caption],
+                            'name'   => $item->caption,
+                            'thumb'  => $item->thumb(),
+                        ]]);
+                    }
+                }
+
+            }
             $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->limit(20)->get();
             if($hashtags->count() > 0) {
                 $tags = $hashtags->map(function ($item, $key) {
@@ -41,6 +71,7 @@ class SearchController extends Controller
             $users = Profile::select('username', 'name', 'id')
                 ->whereNull('status')
                 ->where('username', 'like', '%'.$tag.'%')
+                ->orWhere('remote_url', $tag)
                 ->limit(20)
                 ->get();
 
@@ -66,6 +97,7 @@ class SearchController extends Controller
                     ->whereNull('reblog_of_id')
                     ->whereProfileId(Auth::user()->profile->id)
                     ->where('caption', 'like', '%'.$tag.'%')
+                    ->orWhere('uri', $tag)
                     ->orderBy('created_at', 'desc')
                     ->get();
 

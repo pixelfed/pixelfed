@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\SharePipeline\SharePipeline;
 use App\Media;
 use App\Profile;
 use App\Status;
 use App\Transformer\ActivityPub\StatusTransformer;
-use App\Transformer\ActivityPub\Verb\CreateNote;
+use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
 use Auth;
 use Cache;
@@ -125,6 +126,9 @@ class StatusController extends Controller
         $profile = $user->profile;
         $visibility = $this->validateVisibility($request->visibility);
 
+        $cw = $profile->cw == true ? true : $cw;
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+
         $status = new Status();
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);
@@ -233,8 +237,10 @@ class StatusController extends Controller
             $share = new Status();
             $share->profile_id = $profile->id;
             $share->reblog_of_id = $status->id;
+            $share->in_reply_to_profile_id = $status->profile_id;
             $share->save();
             $count++;
+            SharePipeline::dispatch($share);
         }
 
         if ($request->ajax()) {
@@ -249,7 +255,7 @@ class StatusController extends Controller
     public function showActivityPub(Request $request, $status)
     {
         $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Item($status, new CreateNote());
+        $resource = new Fractal\Resource\Item($status, new Note());
         $res = $fractal->createData($resource)->toArray();
 
         return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
