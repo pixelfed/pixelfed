@@ -398,7 +398,7 @@
 			infiniteTimeline($state) {
 				let homeTimeline = '/api/v1/timelines/home';
 				let localTimeline = '/api/v1/timelines/public';
-				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
 				axios.get(apiUrl, {
 					params: {
 						page: this.page,
@@ -424,7 +424,7 @@
 			loadMore() {
 				let homeTimeline = '/api/v1/timelines/home';
 				let localTimeline = '/api/v1/timelines/public';
-				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
 				axios.get(apiUrl, {
 					params: {
 						page: this.page,
