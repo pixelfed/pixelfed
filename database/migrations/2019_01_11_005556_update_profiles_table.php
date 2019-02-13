@@ -27,8 +27,10 @@ class UpdateProfilesTable extends Migration
      */
     public function down()
     {
-        $table->dropColumn('unlisted');
-        $table->dropColumn('cw');
-        $table->dropColumn('no_autolink');
+        Schema::table('profiles', function (Blueprint $table) {
+            $table->dropColumn('unlisted');
+            $table->dropColumn('cw');
+            $table->dropColumn('no_autolink');
+        });
     }
 }
