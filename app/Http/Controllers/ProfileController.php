@@ -68,7 +68,7 @@ class ProfileController extends Controller
         } 
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         $profile = $user;
-        return view('profile.show', compact('user', 'profile', 'settings', 'owner', 'is_following', 'is_admin', 'timeline'));
+        return view('profile.show', compact('user', 'profile', 'settings', 'owner', 'is_following', 'is_admin'));
     }
 
     public function permalinkRedirect(Request $request, $username)
