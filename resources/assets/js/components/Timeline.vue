@@ -2,6 +2,11 @@
 <div class="container" style="">
 	<div class="row">
 		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline order-2 order-md-1">
+			<div v-if="loading" class="text-center">
+				<div class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
 			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
 				<div class="card-header d-inline-flex align-items-center bg-white">
@@ -123,14 +128,28 @@
 					</form>
 				</div>
 			</div>
-			<div v-if="modes.infinite == true">
-				<infinite-loading @infinite="infiniteTimeline">
-				<div slot="no-more" class="font-weight-bold text-light">No more posts to load</div>
-				<div slot="no-results" class="font-weight-bold text-light">No posts found</div>
-				</infinite-loading>
+			<div v-if="modes.infinite == true && !loading && feed.length > 0">
+				<div class="card">
+					<div class="card-body">
+						<infinite-loading @infinite="infiniteTimeline">
+						<div slot="no-more" class="font-weight-bold">No more posts to load</div>
+						<div slot="no-results" class="font-weight-bold">No posts found</div>
+						</infinite-loading>
+					</div>
+				</div>
 			</div>
-			<div v-if="modes.infinite == false" class="pagination d-none">
+			<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination d-none">
 				<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
+			</div>
+			<div v-if="!loading && scope == 'home' && feed.length == 0">
+				<div class="card">
+					<div class="card-body text-center">
+						<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
+						<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
+						<p class="h3 font-weight-lighter p-5">Start following people to build your timeline.</p>
+						<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Discover new people and posts</a></p>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -214,7 +233,7 @@
 						</div>
 					</div>
 					<div class="card-body pt-2 contents" style="max-height: 170px; overflow-y: scroll;">
-						<div class="media mb-3 align-items-center" v-for="(n, index) in notifications">
+						<div v-if="notifications.length > 0" class="media mb-3 align-items-center" v-for="(n, index) in notifications">
 							<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
@@ -244,6 +263,10 @@
 								</div>
 							</div>
 							
+						</div>
+						<div v-if="notifications.length == 0" class="text-lighter text-center py-3">
+							<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
+							<p class="mb-0 small font-weight-bold">0 Notifications!</p>
 						</div>
 					</div>
 				</div>
@@ -297,7 +320,7 @@
 				page: 2,
 				feed: [],
 				profile: {},
-				scope: window.location.pathname,
+				scope: window.location.pathname == '/' ? 'home' : 'local',
 				min_id: 0,
 				max_id: 0,
 				notifications: {},
@@ -357,7 +380,7 @@
 			fetchTimelineApi() {
 				let homeTimeline = '/api/v1/timelines/home?page=1';
 				let localTimeline = '/api/v1/timelines/public?page=1';
-				let apiUrl = this.scope == '/' ? homeTimeline : localTimeline;
+				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
 				axios.get(apiUrl).then(res => {
 					let data = res.data;
 					this.feed.push(...data);
