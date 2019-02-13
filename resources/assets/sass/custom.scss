@@ -306,11 +306,19 @@ details summary::-webkit-details-marker {
 }
 
 .details-animated > summary {
-  display: block;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
   background-color: #ECF0F1;
   padding-top: 50px;
   padding-bottom: 50px;
   text-align: center;
+}
+
+@media (min-width: 720px) {
+  .details-animated > summary {
+    min-height: 600px;
+  }
 }
 
 .details-animated[open] > summary {
