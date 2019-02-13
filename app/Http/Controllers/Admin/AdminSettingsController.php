@@ -105,10 +105,31 @@ trait AdminSettingsController
   {
     $sys = [
       'pixelfed' => config('pixelfed.version'),
-      'mysql' => DB::select( DB::raw("select version()") )[0]->{'version()'},
       'php' => phpversion(),
       'redis' => explode(' ',exec('redis-cli -v'))[1],
     ];
+    switch (config('database.default')) {
+      case 'pgsql':
+        $sys['database'] = [
+          'name' => 'Postgres',
+          'version' => explode(' ', DB::select(DB::raw('select version();'))[0]->version)[1]
+        ];
+        break;
+
+      case 'mysql':
+        $sys['database'] = [
+          'name' => 'MySQL',
+          'version' => DB::select( DB::raw("select version()") )[0]->{'version()'}
+        ];
+        break;
+      
+      default:
+        $sys['database'] = [
+          'name' => 'Unknown',
+          'version' => '?'
+        ];
+        break;
+    }
     return view('admin.settings.system', compact('sys'));
   }
 }

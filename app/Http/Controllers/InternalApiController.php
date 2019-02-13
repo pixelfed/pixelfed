@@ -78,7 +78,6 @@ class InternalApiController extends Controller
         }
 
         $status->caption = strip_tags($request->caption);
-        $status->visibility = 'draft';
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
         $status->save();
