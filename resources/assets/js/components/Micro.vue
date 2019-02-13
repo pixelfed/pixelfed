@@ -3,7 +3,6 @@
 </template>
 
 <style type="text/css" scoped>
-	@import '~quill/dist/quill.snow.css';
 	body {
 		background-color: #ECECEC;
 	}
@@ -19,7 +18,6 @@
 </style>
 
 <script type="text/javascript">
-import Quill from 'quill';
 
 export default {
 	data() {
