@@ -43,7 +43,8 @@ trait AdminInstanceController
 	public function instanceScan(Request $request)
 	{
 		DB::transaction(function() {
-			Profile::whereNotNull('domain')
+			Profile::select('domain')->whereNotNull('domain')
+				->groupBy('id')
 				->groupBy('domain')
 				->chunk(50, function($domains) {
 					foreach($domains as $domain) {
