@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use App\Observers\UserObserver;
-use App\User;
-use Auth;
-use Horizon;
+use App\Observers\{
+    AvatarObserver,
+    UserObserver
+};
+use App\{Avatar,User};
+use Auth, Horizon, URL;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 
+        Avatar::observe(AvatarObserver::class);
         User::observe(UserObserver::class);
 
         Horizon::auth(function ($request) {
@@ -43,17 +46,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('prettySize', function ($expression) {
-            $size = intval($expression);
-            $precision = 0;
-            $short = true;
-            $units = $short ?
-                ['B', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'] :
-                ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-            for ($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {
-            }
-            $res = round($size, $precision).$units[$i];
-
-            return "<?php echo '$res'; ?>";
+            $size = \App\Util\Lexer\PrettyNumber::size($expression);
+            return "<?php echo '$size'; ?>";
         });
 
         Blade::directive('maxFileSize', function () {

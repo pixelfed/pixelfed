@@ -78,7 +78,6 @@ class InternalApiController extends Controller
         }
 
         $status->caption = strip_tags($request->caption);
-        $status->visibility = 'draft';
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
         $status->save();
@@ -220,6 +219,7 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $posts = Status::select('id', 'caption', 'profile_id')
+              ->whereNull('uri')
               ->whereHas('media')
               ->whereHas('profile', function($q) {
                 return $q->whereNull('status');

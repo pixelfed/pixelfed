@@ -216,7 +216,7 @@ class PublicApiController extends Controller
         $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit') ?? 10;
+        $limit = $request->input('limit') ?? 5;
 
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
@@ -283,7 +283,7 @@ class PublicApiController extends Controller
         $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit') ?? 10;
+        $limit = $request->input('limit') ?? 5;
 
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
@@ -400,7 +400,7 @@ class PublicApiController extends Controller
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
         $account = Profile::findOrFail($id);
-        $statuses = $account->statuses()->getQuery(); 
+        $statuses = $account->statuses()->getQuery()->whereNull('uri'); 
         if($only_media == true) {
             $statuses = $statuses
                 ->whereHas('media')

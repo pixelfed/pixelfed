@@ -66,18 +66,9 @@ class ProfileController extends Controller
         if ($isPrivate == true || $isBlocked == true) {
             return view('profile.private', compact('user', 'is_following'));
         } 
-
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-        $timeline = $user->statuses()
-              ->whereHas('media')
-              ->whereNull('in_reply_to_id')
-              ->whereNull('reblog_of_id')
-              ->whereIn('visibility', ['public', 'unlisted'])
-              ->orderBy('created_at', 'desc')
-              ->withCount(['comments', 'likes'])
-              ->simplePaginate(21);
-
-        return view('profile.show', compact('user', 'settings', 'owner', 'is_following', 'is_admin', 'timeline'));
+        $profile = $user;
+        return view('profile.show', compact('user', 'profile', 'settings', 'owner', 'is_following', 'is_admin'));
     }
 
     public function permalinkRedirect(Request $request, $username)
@@ -130,6 +121,7 @@ class ProfileController extends Controller
     {
         switch ($profile->status) {
             case 'disabled':
+            case 'suspended':
             case 'delete':
                 return view('profile.disabled');
                 break;
@@ -246,6 +238,15 @@ class ProfileController extends Controller
         $timeline = $user->bookmarks()->withCount(['likes','comments'])->orderBy('created_at', 'desc')->simplePaginate(10);
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-        return view('profile.show', compact('user', 'settings', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
+        return view('profile.bookmarks', compact('user', 'profile', 'settings', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
+    }
+
+    public function createCollection(Request $request)
+    {
+    }
+
+
+    public function collections(Request $request)
+    {
     }
 }

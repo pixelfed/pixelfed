@@ -21,9 +21,9 @@
     <div class="col-12 col-md-3">
       <div class="card mb-3 border-left-blue">
         <div class="card-body text-center">
-          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['mysql']}}</p>
+          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['database']['version']}}</p>
         </div>
-        <div class="card-footer font-weight-bold py-0 text-center bg-white">MySQL</div>
+        <div class="card-footer font-weight-bold py-0 text-center bg-white">{{$sys['database']['name']}}</div>
       </div>
     </div>
     <div class="col-12 col-md-3">

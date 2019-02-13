@@ -19,10 +19,10 @@
     <div class="comments" data-min-id="0" data-max-id="0">
       <p v-for="(reply, index) in results" class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
         <span>
-          <a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
-          <span v-html="reply.content" class=""></span>
+          <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+          <span class="text-break" v-html="reply.content"></span>
         </span>
-        <span class="" style="min-width:38px">
+        <span class="pl-2" style="min-width:38px">
           <span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
             <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2"></post-menu>
         </span>
@@ -36,9 +36,13 @@
   .text-lighter {
     color:#B8C2CC !important;
   }
+  .text-break {
+    word-break: break-all !important;
+  }
 </style>
 
 <script>
+
 export default {
     props: ['post-id', 'post-username', 'user'],
     data() {
@@ -153,7 +157,13 @@ export default {
         }).catch(err => {
           swal('Error', 'Something went wrong, please try again later.', 'error');
         });
+      },
+      truncate(str,lim) {
+        return _.truncate(str,{
+          length: lim
+        });
       }
     },
+
 }
 </script>

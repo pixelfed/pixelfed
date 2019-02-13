@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\{
   AdminSettingsController
 };
 use App\Util\Lexer\PrettyNumber;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -44,50 +45,51 @@ class AdminController extends Controller
     public function home()
     {
         $data = Cache::remember('admin:dashboard:home:data', 15, function() {
+          $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';
           return [
             'failedjobs' => [
               'count' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
-              'graph' => FailedJob::selectRaw('count(*) as count, day(failed_at) as d')->groupBy('d')->whereBetween('failed_at',[now()->subDays(24), now()])->orderBy('d')->pluck('count')
+              'graph' => FailedJob::selectRaw('count(*) as count, '.$day.'failed_at) as d')->groupBy('d')->whereBetween('failed_at',[now()->subDays(24), now()])->orderBy('d')->pluck('count')
             ],
             'reports' => [
               'count' => PrettyNumber::convert(Report::whereNull('admin_seen')->count()),
-              'graph' => Report::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Report::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'statuses' => [
               'count' => PrettyNumber::convert(Status::whereNull('in_reply_to_id')->whereNull('reblog_of_id')->count()),
-              'graph' => Status::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Status::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'replies' => [
               'count' => PrettyNumber::convert(Status::whereNotNull('in_reply_to_id')->count()),
-              'graph' => Status::whereNotNull('in_reply_to_id')->selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Status::whereNotNull('in_reply_to_id')->selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'shares' => [
               'count' => PrettyNumber::convert(Status::whereNotNull('reblog_of_id')->count()),
-              'graph' => Status::whereNotNull('reblog_of_id')->selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Status::whereNotNull('reblog_of_id')->selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'likes' => [
               'count' => PrettyNumber::convert(Like::count()),
-              'graph' => Like::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Like::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'profiles' => [
               'count' => PrettyNumber::convert(Profile::count()),
-              'graph' => Profile::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Profile::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'users' => [
               'count' => PrettyNumber::convert(User::count()),
-              'graph' => User::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => User::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'instances' => [
               'count' => PrettyNumber::convert(Instance::count()),
-              'graph' => Instance::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(28), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Instance::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(28), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'media' => [
               'count' => PrettyNumber::convert(Media::count()),
-              'graph' => Media::selectRaw('count(*) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Media::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ],
             'storage' => [
               'count' => Media::sum('size'),
-              'graph' => Media::selectRaw('sum(size) as count, day(created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+              'graph' => Media::selectRaw('sum(size) as count, '.$day.'created_at) as day')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
             ]
           ];
         });
@@ -158,11 +160,11 @@ class AdminController extends Controller
       $stats = [];
       $stats['total'] = [
         'count' => User::where('created_at', '>', Carbon::now()->subDays($total_duration))->count(),
-        'points' => 0//User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
+        'points' => 0//User::selectRaw(''.$day.'created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
       ];
       $stats['new'] = [
         'count' => User::where('created_at', '>', Carbon::now()->subDays($new_duration))->count(),
-        'points' => 0//User::selectRaw('day(created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
+        'points' => 0//User::selectRaw(''.$day.'created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
       ];
       $stats['active'] = [
         'count' => Status::groupBy('profile_id')->count()
@@ -181,8 +183,45 @@ class AdminController extends Controller
 
     public function profiles(Request $request)
     {
-      $profiles = Profile::orderBy('id','desc')->paginate(10);
+      $this->validate($request, [
+        'search' => 'nullable|string|max:250',
+        'filter' => [
+          'nullable',
+          'string',
+          Rule::in(['id','username','statuses_count','followers_count','likes_count'])
+        ],
+        'order' => [
+          'nullable',
+          'string',
+          Rule::in(['asc','desc'])
+        ],
+        'layout' => [
+          'nullable',
+          'string',
+          Rule::in(['card','list'])
+        ],
+        'limit' => 'nullable|integer|min:1|max:50'
+      ]);
+      $search = $request->input('search');
+      $filter = $request->input('filter');
+      $order = $request->input('order') ?? 'desc';
+      $limit = $request->input('limit') ?? 12;
+      if($search) {
+        $profiles = Profile::where('username','like', "%$search%")->orderBy('id','desc')->paginate($limit);
+      } else if($filter && $order) {
+        $profiles = Profile::withCount(['likes','statuses','followers'])->orderBy($filter, $order)->paginate($limit);
+      } else {
+        $profiles = Profile::orderBy('id','desc')->paginate($limit);
+      }
+
       return view('admin.profiles.home', compact('profiles'));
+    }
+
+    public function profileShow(Request $request, $id)
+    {
+      $profile = Profile::findOrFail($id);
+      $user = $profile->user;
+      return view('admin.profiles.edit', compact('profile', 'user'));
     }
 
     public function appsHome(Request $request)
