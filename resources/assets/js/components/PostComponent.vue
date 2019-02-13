@@ -27,23 +27,23 @@
             <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
           </div>
         </a>
-        <div class="float-right">
+        <div v-if="user != false" class="float-right">
           <div class="post-actions">
           <div class="dropdown">
             <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
             <span class="fas fa-ellipsis-v text-muted"></span>
             </button>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                <span class="menu-user d-none">
+                <div v-if="!owner()">
                   <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                  <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
-                  <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
-                </span>
-                <span class="menu-author d-none">
+                  <a class="dropdown-item font-weight-bold" v-on:click="muteProfile()">Mute Profile</a>
+                  <a class="dropdown-item font-weight-bold" v-on:click="blockProfile()">Block Profile</a>
+                </div>
+                <div v-if="ownerOrAdmin()">
                   <!-- <a class="dropdown-item font-weight-bold" :href="editUrl()">Disable Comments</a> -->
                   <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                   <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-                </span>
+                </div>
               </div>
             </div>
           </div>
@@ -238,9 +238,9 @@ export default {
     props: ['status-id', 'status-username', 'status-template', 'status-url', 'status-profile-url', 'status-avatar'],
     data() {
         return {
-            status: {},
+            status: false,
             media: {},
-            user: {},
+            user: false,
             reactions: {
               liked: false,
               shared: false
@@ -517,14 +517,28 @@ export default {
             }
             axios.post('/i/delete', {
               type: 'status',
-              item: status.id
+              item: this.status.id
             }).then(res => {
               swal('Success', 'You have successfully deleted this post', 'success');
+              window.location.href = '/';
             }).catch(err => {
               swal('Error', 'Something went wrong. Please try again later.', 'error');
             });
         }
+      },
+      
+      owner() {
+        return this.user.id === this.status.account.id;
+      },
+
+      admin() {
+        return this.user.is_admin == true;
+      },
+
+      ownerOrAdmin() {
+        return this.owner() || this.admin();
       }
-    }
+
+    },
 }
 </script>
