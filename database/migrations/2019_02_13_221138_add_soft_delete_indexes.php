@@ -54,35 +54,35 @@ class AddSoftDeleteIndexes extends Migration
     public function down()
     {
         Schema::table('avatars', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','avatars_deleted_at_index');
+            $table->dropIndex('avatars_deleted_at_index');
         });
 
         Schema::table('profiles', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','profiles_deleted_at_index');
+            $table->dropIndex('profiles_deleted_at_index');
         });
 
         Schema::table('mentions', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','mentions_deleted_at_index');
+            $table->dropIndex('mentions_deleted_at_index');
         });
 
         Schema::table('likes', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','likes_deleted_at_index');
+            $table->dropIndex('likes_deleted_at_index');
         });
 
         Schema::table('statuses', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','statuses_deleted_at_index');
+            $table->dropIndex('statuses_deleted_at_index');
         });
 
         Schema::table('media', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','media_deleted_at_index');
+            $table->dropIndex('media_deleted_at_index');
         });
 
         Schema::table('notifications', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','notifications_deleted_at_index');
+            $table->dropIndex('notifications_deleted_at_index');
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->dropIndex('deleted_at','users_deleted_at_index');
+            $table->dropIndex('users_deleted_at_index');
         });
     }
 }
