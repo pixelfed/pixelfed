@@ -15,7 +15,7 @@
     </a>
     <div class="collapse" id="collapse1">
       <div>
-        To create an account using a web browser:
+        To edit your account using a web browser:
         <ol class="font-weight-light">
           <li>Go to <a href="{{route('settings')}}">{{route('settings')}}</a>.</li>
           <li>You should see the <span class="font-weight-bold">Name</span>, <span class="font-weight-bold">Website</span>, and  <span class="font-weight-bold">Bio</span> fields.</li>
@@ -31,7 +31,7 @@
     </a>
     <div class="collapse" id="collapse2">
       <div>
-        Pixelfed is a federated application, changing your username is not supported in every <a href="">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username.
+        Pixelfed is a federated application, changing your username is not supported in every <a href="https://en.wikipedia.org/wiki/Federated_architecture">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username.
       </div>
     </div>
   </p>
@@ -112,7 +112,7 @@
           <li>Pick a strong password, don't re-use it on other websites</li>
           <li>Never share your password</li>
           <li>Remember to log out on public computers or devices</li>
-          <li>Periodically check your <a href="{{route('settings.security')}}">Account Log</a> for any suspcious activity</li>
+          <li>Periodically check your <a href="{{route('settings.security')}}">Account Log</a> for any suspicious activity</li>
           <li><a href="{{route('settings.security.2fa.setup')}}">Setup Two Factor Authentication</a></li>
         </ul>
       </div>
