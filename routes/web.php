@@ -68,8 +68,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'v1'], function () {
             Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
-            Route::get('accounts/{id}', 'PublicApiController@account');
+            Route::get('accounts/relationships', 'PublicApiController@relationships');
             Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+            Route::get('accounts/{id}', 'PublicApiController@account');
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia');
