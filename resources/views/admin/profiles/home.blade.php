@@ -102,21 +102,11 @@
 				<th scope="col" class="border-0" width="20%">
 					<span>
 						Followers
-						@if(request()->filter && request()->filter == 'followers_count' && request()->order == 'asc')
-						<a href="#" class="col-ord" data-col="followers_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
-						@else
-						<a href="#" class="col-ord" data-col="followers_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
-						@endif
 					</span>
 				</th>
 				<th scope="col" class="border-0" width="20%">
 					<span>
 						Likes
-						@if(request()->filter && request()->filter == 'likes_count' && request()->order == 'asc')
-						<a href="#" class="col-ord" data-col="likes_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
-						@else
-						<a href="#" class="col-ord" data-col="likes_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
-						@endif
 					</span>
 				</th>
 				<th scope="col" class="border-0" width="20%">

@@ -207,11 +207,11 @@ class AdminController extends Controller
       $order = $request->input('order') ?? 'desc';
       $limit = $request->input('limit') ?? 12;
       if($search) {
-        $profiles = Profile::where('username','like', "%$search%")->orderBy('id','desc')->paginate($limit);
+        $profiles = Profile::select('id','username')->where('username','like', "%$search%")->orderBy('id','desc')->paginate($limit);
       } else if($filter && $order) {
-        $profiles = Profile::withCount(['likes','statuses','followers'])->orderBy($filter, $order)->paginate($limit);
+        $profiles = Profile::select('id','username')->withCount(['likes','statuses','followers'])->orderBy($filter, $order)->paginate($limit);
       } else {
-        $profiles = Profile::orderBy('id','desc')->paginate($limit);
+        $profiles = Profile::select('id','username')->orderBy('id','desc')->paginate($limit);
       }
 
       return view('admin.profiles.home', compact('profiles'));
