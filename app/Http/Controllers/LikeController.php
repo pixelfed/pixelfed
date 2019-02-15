@@ -26,6 +26,8 @@ class LikeController extends Controller
         $profile = Auth::user()->profile;
         $status = Status::withCount('likes')->findOrFail($request->input('item'));
 
+        Cache::forget('transform:status:'.$status->url());
+
         $count = $status->likes_count;
 
         if ($status->likes()->whereProfileId($profile->id)->count() !== 0) {
