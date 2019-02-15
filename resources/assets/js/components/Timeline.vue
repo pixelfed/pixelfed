@@ -166,12 +166,12 @@
 							<a :href="profile.url">
 								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
 							</a>
-							<div class="media-body d-flex justify-content-between">
+							<div class="media-body d-flex justify-content-between word-break">
 								<div>
 									<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
-									<p class="my-0 text-muted text-truncate pb-0">{{profile.display_name}}</p>
+									<p class="my-0 text-muted pb-0">{{profile.display_name}}</p>
 								</div>
-								<div>
+								<div class="ml-2">
 									<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
 								</div>
 							</div>
@@ -353,6 +353,9 @@
 				} else {
 					window.ls.set('pixelfed-classicui-settings', this.modes);
 				}
+				if(cachedSettings.notify == true) {
+					this.fetchNotifications();
+				}
 			});
 		},
 
@@ -367,7 +370,6 @@
 					$('.profile-card .loader').addClass('d-none');
 					$('.profile-card .contents').removeClass('d-none');
 					$('.profile-card .card-footer').removeClass('d-none');
-					this.fetchNotifications();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
