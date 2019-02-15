@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use Cache;
 
 use App\Comment;
 use App\Jobs\CommentPipeline\CommentPipeline;
@@ -49,6 +50,8 @@ class CommentController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
+
+        Cache::forget('transform:status:'.$status->url());
 
         $reply = new Status();
         $reply->profile_id = $profile->id;
