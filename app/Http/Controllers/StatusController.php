@@ -218,6 +218,8 @@ class StatusController extends Controller
         $profile = Auth::user()->profile;
         $status = Status::withCount('shares')->findOrFail($request->input('item'));
 
+        Cache::forget('transform:status:'.$status->url());
+
         $count = $status->shares_count;
 
         $exists = Status::whereProfileId(Auth::user()->profile->id)
