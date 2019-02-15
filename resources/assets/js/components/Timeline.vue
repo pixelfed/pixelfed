@@ -450,7 +450,12 @@
 			fetchNotifications() {
 				axios.get('/api/v1/notifications')
 				.then(res => {
-					this.notifications = res.data;
+					this.notifications = res.data.filter(n => {
+						if(n.type == 'share' && !status) {
+							return false;
+						}
+						return true;
+					});
 					$('.notification-card .loader').addClass('d-none');
 					$('.notification-card .contents').removeClass('d-none');
 				});
