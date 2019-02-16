@@ -108,6 +108,29 @@ class Status extends Model
         return url($path);
     }
 
+    public function cache_tags()
+    {
+        // allows flushing of
+        // - all cached statuses
+        // - every cached status of a user
+        // - single status with all states
+        return [
+            'status',
+            'username:' . $this->profile->username,
+            'status_id:' . (string) $this->id,
+        ];
+    }
+
+    public function cache_key()
+    {
+        // encode both individual status and it's liked/shared/bookmarked state for a user
+        return 'username:' . $this->profile->username .
+               ':status_id:' . (string) $this->id .
+               ':shared:'. (string) $this->shared() .
+               ':liked:' . (string) $this->liked() .
+               ':bookmarked:' . (string) $this->bookmarked();
+    }
+
     public function editUrl()
     {
         return $this->url().'/edit';
