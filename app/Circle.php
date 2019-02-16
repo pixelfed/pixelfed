@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Circle extends Model
 {
     protected $fillable = [
+        'profile_id',
     	'name',
     	'description',
     	'bcc',
