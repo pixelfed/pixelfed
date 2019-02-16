@@ -17,7 +17,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 
     public function transform(Status $status)
     {
-        return Cache::remember('transform:status:'. $status->url(), 60, function() use($status) {
+        return Cache::tags($status->cache_tags())->remember($status->cache_key(), 60, function() use($status) {
             return [
                 'id'                        => (string) $status->id,
                 'uri'                       => $status->url(),

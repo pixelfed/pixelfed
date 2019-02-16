@@ -218,7 +218,7 @@ class StatusController extends Controller
         $profile = Auth::user()->profile;
         $status = Status::withCount('shares')->findOrFail($request->input('item'));
 
-        Cache::forget('transform:status:'.$status->url());
+        Cache::tags($status->cache_tags())->flush();
 
         $count = $status->shares_count;
 

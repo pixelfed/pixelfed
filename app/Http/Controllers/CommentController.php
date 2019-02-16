@@ -51,7 +51,7 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        Cache::forget('transform:status:'.$status->url());
+        Cache::tags($status->cache_tags())->flush();
 
         $reply = new Status();
         $reply->profile_id = $profile->id;
