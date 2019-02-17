@@ -250,7 +250,7 @@
 		color: #fff;
 		position:relative;
 		margin-top: 10px;
-		z-index: 999999;
+		z-index: 10;
 		opacity: 0.6;
 		text-shadow: 3px 3px 16px #272634;
 	}
