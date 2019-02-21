@@ -15,8 +15,8 @@ return [
 
     'password' => 'Hesla musí být alespoň šest znaků dlouhá a shodovat se s potvrzením.',
     'reset'    => 'Vaše heslo bylo obnoveno!',
-    'sent'     => 'Poslali jsme vám e-mailem odkaz pro obnovu hesla!',
+    'sent'     => 'Pokud vaše e-mailová adresa existuje v naší databázi, obdržíte za pár minut na vaší e-mailové adrese odkaz pro obnovu hesla. Pokud tento e-mail neobdržíte, prosím zkontrolujte svou složku „spam“.',
     'token'    => 'Tento token pro obnovu hesla je neplatný.',
-    'user'     => "Nemůžeme najít uživatele s touto e-mailovou adresou.",
+    'user'     => "Pokud vaše e-mailová adresa existuje v naší databázi, obdržíte za pár minut na vaší e-mailové adrese odkaz pro obnovu hesla. Pokud tento e-mail neobdržíte, prosím zkontrolujte svou složku „spam“.",
 
 ];
