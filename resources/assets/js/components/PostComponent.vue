@@ -217,7 +217,7 @@
                 </a>
               </p>
             </div>
-            <p class="float-right"><a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a></p>
+            <p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
           </div>
         </div>
       </div>
