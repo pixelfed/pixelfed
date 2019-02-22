@@ -206,11 +206,11 @@
 						<!-- <div class="custom-control custom-switch mb-3">
 							<input type="checkbox" class="custom-control-input" id="mode-dark" v-on:click="modeDarkToggle()" v-model="modes.dark">
 							<label class="custom-control-label font-weight-bold" for="mode-dark">Dark Mode</label>
-						</div> -->
+						</div>
 						<div class="custom-control custom-switch mb-3">
 							<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
 							<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
-						</div>
+						</div> -->
 						<div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
 							<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
@@ -341,15 +341,7 @@
 		mounted() {
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip()
-				let cachedSettings = window.ls.get('pixelfed-classicui-settings');
-				if(cachedSettings.length && cachedSettings.hasOwnProperty('notify')) {
-					this.modes = cachedSettings;
-				} else {
-					window.ls.set('pixelfed-classicui-settings', this.modes);
-				}
-				if(cachedSettings.notify == true) {
-					this.fetchNotifications();
-				}
+				this.fetchNotifications();
 			});
 		},
 
