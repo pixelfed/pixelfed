@@ -294,16 +294,10 @@
 </template>
 
 <style type="text/css" scoped>
-	.text-lighter {
-		color:#B8C2CC !important;
-	}
 	.postPresenterContainer {
 		display: flex;
 		align-items: center;
 		background: #fff;
-	}
-	.cursor-pointer {
-		cursor: pointer;
 	}
 	.word-break {
 		word-break: break-all;
@@ -348,7 +342,7 @@
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 				let cachedSettings = window.ls.get('pixelfed-classicui-settings');
-				if(cachedSettings.hasOwnProperty('notify')) {
+				if(cachedSettings.length && cachedSettings.hasOwnProperty('notify')) {
 					this.modes = cachedSettings;
 				} else {
 					window.ls.set('pixelfed-classicui-settings', this.modes);
