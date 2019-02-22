@@ -121,4 +121,13 @@ class SearchController extends Controller
         }
         return response()->json($tokens);
     }
+
+    public function results(Request $request)
+    {
+        $this->validate($request, [
+            'q' => 'required|string|min:1',
+        ]);
+        
+        return view('search.results');
+    }
 }
