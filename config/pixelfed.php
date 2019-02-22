@@ -238,6 +238,25 @@ return [
     */
     'optimize_video' => env('PF_OPTIMIZE_VIDEOS', true),
 
+    /*
+    |--------------------------------------------------------------------------
+    | User invites
+    |--------------------------------------------------------------------------
+    |
+    | Allow users to invite others via email. 
+    | Will respect max user limit and prevent invites after the
+    | limit is reached. Default: off
+    |
+    */ 
+    'user_invites' => [
+        'enabled' => env('PF_USER_INVITES', false),
+        'limit' => [
+            'total' => (int) env('PF_USER_INVITES_TOTAL_LIMIT', 0),
+            'daily' => (int) env('PF_USER_INVITES_DAILY_LIMIT', 0),
+            'monthly' => (int) env('PF_USER_INVITES_MONTHLY_LIMIT', 0),
+        ]
+    ],
+
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
