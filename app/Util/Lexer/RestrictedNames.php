@@ -174,6 +174,7 @@ class RestrictedNames
      'privacy',
      'reset',
      'report',
+     'results',
      'reports',
      'robot',
      'robots',
