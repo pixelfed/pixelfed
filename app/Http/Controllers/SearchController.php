@@ -70,8 +70,9 @@ class SearchController extends Controller
             }
             $users = Profile::select('username', 'name', 'id')
                 ->whereNull('status')
+                ->whereNull('domain')
                 ->where('username', 'like', '%'.$tag.'%')
-                ->orWhere('remote_url', $tag)
+                //->orWhere('remote_url', $tag)
                 ->limit(20)
                 ->get();
 
