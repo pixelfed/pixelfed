@@ -41,10 +41,10 @@ class SiteController extends Controller
 
     public function about()
     {
-        $res = Cache::remember('site:about', 120, function() {
+        $res = Cache::remember('site:about', now()->addMinutes(120), function() {
             $custom = Page::whereSlug('/site/about')->whereActive(true)->exists();
             if($custom) {
-              $stats = Cache::remember('site:about:stats', 60, function() {
+              $stats = Cache::remember('site:about:stats', now()->addMinutes(60), function() {
                     return [
                         'posts' => Status::whereLocal(true)->count(),
                         'users' => User::count(),
@@ -53,7 +53,7 @@ class SiteController extends Controller
                 });
                 return View::make('site.about')->with('stats', $stats)->render();
             } else {
-                $stats = Cache::remember('site:about:stats', 60, function() {
+                $stats = Cache::remember('site:about:stats', now()->addMinutes(60), function() {
                     return [
                         'posts' => Status::whereLocal(true)->count(),
                         'users' => User::count(),

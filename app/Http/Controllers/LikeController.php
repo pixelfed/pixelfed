@@ -48,7 +48,7 @@ class LikeController extends Controller
                ->take(1000)
                ->pluck('status_id');
 
-        Cache::put('api:like-ids:user:'.$profile->id, $likes, 1440);
+        Cache::put('api:like-ids:user:'.$profile->id, $likes, now()->addMinutes(1440));
 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];

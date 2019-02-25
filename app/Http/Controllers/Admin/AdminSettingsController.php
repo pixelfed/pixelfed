@@ -36,16 +36,16 @@ trait AdminSettingsController
 
     public function settingsStorage(Request $request)
     {
-      $databaseSum = Cache::remember('admin:settings:storage:db:storageUsed', 360, function() {
+      $databaseSum = Cache::remember('admin:settings:storage:db:storageUsed', now()->addMinutes(360), function() {
         $q = 'SELECT sum(ROUND(((data_length + index_length)), 0)) AS size FROM information_schema.TABLES WHERE table_schema = ?';
         $db = config('database.default');
         $db = config("database.connections.{$db}.database");
         return DB::select($q, [$db])[0]->size;
       });
-      $mediaSum = Cache::remember('admin:settings:storage:media:storageUsed', 360, function() {
+      $mediaSum = Cache::remember('admin:settings:storage:media:storageUsed', now()->addMinutes(360), function() {
         return Media::sum('size');
       });
-      $backupSum = Cache::remember('admin:settings:storage:backups:storageUsed', 360, function() {
+      $backupSum = Cache::remember('admin:settings:storage:backups:storageUsed', now()->addMinutes(360), function() {
         $dir = storage_path('app/'.config('app.name'));
         $size = 0;
         foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {

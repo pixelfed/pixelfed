@@ -57,7 +57,7 @@ class BaseApiController extends Controller
     {
         $pid = Auth::user()->profile->id;
         $page = $request->input('page') ?? 1;
-        $res = Cache::remember('profile:notifications:'.$pid.':page:'.$page, 5, function() use($pid) {
+        $res = Cache::remember('profile:notifications:'.$pid.':page:'.$page, now()->addMinutes(5), function() use($pid) {
             $timeago = Carbon::now()->subMonths(6);
             $notifications = Notification::whereHas('actor')
                 ->whereProfileId($pid)

@@ -2,11 +2,10 @@
 
 namespace App;
 
-use Auth, Cache;
+use Auth, Cache, Hashids, Storage;
 use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Storage;
 
 class Status extends Model
 {
@@ -77,7 +76,7 @@ class Status extends Model
 
     public function thumb($showNsfw = false)
     {
-        return Cache::remember('status:thumb:'.$this->id, 40320, function() use ($showNsfw) {
+        return Cache::remember('status:thumb:'.$this->id, now()->addMinutes(15), function() use ($showNsfw) {
             $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
             if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album'])) {

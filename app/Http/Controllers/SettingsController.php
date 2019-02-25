@@ -74,7 +74,7 @@ class SettingsController extends Controller
 
     public function exportFollowing()
     {
-        $data = Cache::remember('account:export:profile:following:'.Auth::user()->profile->id, 1440, function() {
+        $data = Cache::remember('account:export:profile:following:'.Auth::user()->profile->id, now()->addMinutes(1440), function() {
             return Auth::user()->profile->following()->get()->map(function($i) {
                 return $i->url();
             });
@@ -86,7 +86,7 @@ class SettingsController extends Controller
 
     public function exportFollowers()
     {
-        $data = Cache::remember('account:export:profile:followers:'.Auth::user()->profile->id, 1440, function() {
+        $data = Cache::remember('account:export:profile:followers:'.Auth::user()->profile->id, now()->addMinutes(1440), function() {
             return Auth::user()->profile->followers()->get()->map(function($i) {
                 return $i->url();
             });
@@ -105,7 +105,7 @@ class SettingsController extends Controller
         if(!$exists) {
             return redirect()->back();
         }
-        $data = Cache::remember('account:export:profile:muteblocklist:'.Auth::user()->profile->id, 1440, function() use($profile) {
+        $data = Cache::remember('account:export:profile:muteblocklist:'.Auth::user()->profile->id, now()->addMinutes(1440), function() use($profile) {
             return json_encode([
                 'muted' => $profile->mutedProfileUrls(),
                 'blocked' => $profile->blockedProfileUrls()

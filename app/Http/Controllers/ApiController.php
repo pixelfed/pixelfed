@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 class ApiController extends BaseApiController
 {
+    // todo: deprecate and remove
     public function hydrateLikes(Request $request)
     {
         $this->validate($request, [
@@ -18,7 +19,7 @@ class ApiController extends BaseApiController
         ]);
 
         $profile = Auth::user()->profile;
-        $res = Cache::remember('api:like-ids:user:'.$profile->id, 1440, function () use ($profile) {
+        $res = Cache::remember('api:like-ids:user:'.$profile->id, now()->addDays(1), function () use ($profile) {
             return Like::whereProfileId($profile->id)
                  ->orderBy('id', 'desc')
                  ->take(1000)
