@@ -260,7 +260,6 @@ class PublicApiController extends Controller
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
-                      ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -286,7 +285,6 @@ class PublicApiController extends Controller
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
-                      ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
@@ -362,7 +360,6 @@ class PublicApiController extends Controller
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
-                      ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -389,7 +386,6 @@ class PublicApiController extends Controller
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
-                      ->withCount(['comments', 'likes'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
