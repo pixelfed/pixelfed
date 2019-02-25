@@ -217,7 +217,7 @@ class PublicApiController extends Controller
         $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit') ?? 5;
+        $limit = $request->input('limit') ?? 10;
 
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
@@ -314,7 +314,7 @@ class PublicApiController extends Controller
         $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        $limit = $request->input('limit') ?? 5;
+        $limit = $request->input('limit') ?? 10;
 
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
