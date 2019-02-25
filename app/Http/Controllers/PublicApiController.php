@@ -266,7 +266,21 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get();
         } else {
-            $timeline = Status::whereHas('media')
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'created_at',
+                        'updated_at'
+                      )->whereHas('media')
                       ->whereLocal(true)
                       ->whereNull('uri')
                       ->whereNotIn('profile_id', $filtered)
@@ -355,7 +369,21 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get();
         } else {
-            $timeline = Status::whereHas('media')
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'created_at',
+                        'updated_at'
+                      )->whereHas('media')
                       ->whereLocal(true)
                       ->whereNull('uri')
                       ->whereIn('profile_id', $following)
