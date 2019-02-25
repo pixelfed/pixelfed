@@ -4,7 +4,7 @@ namespace App\Util\Media;
 
 use App\Media;
 use Image as Intervention;
-use Storage;
+use Cache, Storage;
 
 class Image
 {
@@ -141,6 +141,7 @@ class Image
             }
 
             $media->save();
+            Cache::forget('status:thumb:'.$media->status_id);
         } catch (Exception $e) {
         }
     }
