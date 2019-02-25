@@ -185,19 +185,18 @@ class Inbox
                 'following_id' => $target->id,
                 'local_profile' => empty($actor->domain)
             ]);
-            if($follower->wasRecentlyCreated == false) {
-                return;
+            if($follower->wasRecentlyCreated == true) {
+                // send notification
+                Notification::firstOrCreate([
+                    'profile_id' => $target->id,
+                    'actor_id' => $actor->id,
+                    'action' => 'follow',
+                    'message' => $follower->toText(),
+                    'rendered' => $follower->toHtml(),
+                    'item_id' => $target->id,
+                    'item_type' => 'App\Profile'
+                ]);
             }
-            // send notification
-            Notification::firstOrCreate([
-                'profile_id' => $target->id,
-                'actor_id' => $actor->id,
-                'action' => 'follow',
-                'message' => $follower->toText(),
-                'rendered' => $follower->toHtml(),
-                'item_id' => $target->id,
-                'item_type' => 'App\Profile'
-            ]);
 
             // send Accept to remote profile
             $accept = [
@@ -248,7 +247,28 @@ class Inbox
 
     public function handleAcceptActivity()
     {
-
+        $actor = $this->payload['actor'];
+        $obj = $this->payload['object'];
+        switch ($obj['type']) {
+            case 'Follow':
+                $accept = [
+                    '@context' => 'https://www.w3.org/ns/activitystreams',
+                    'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
+                    'type'     => 'Accept',
+                    'actor'    => $target->permalink(),
+                    'object'   => [
+                        'id' => $actor->permalink('#follows/'.$target->id),
+                        'type'  => 'Follow',
+                        'actor' => $actor->permalink(),
+                        'object' => $target->permalink()
+                    ]
+                ];
+                break;
+            
+            default:
+                # code...
+                break;
+        }
     }
 
     public function handleDeleteActivity()
@@ -298,11 +318,7 @@ class Inbox
         $obj = $this->payload['object'];
 
         switch ($obj['type']) {
-            case 'Like':
-                $status = Helpers::statusFirstOrFetch($obj['object']);
-                Like::whereProfileId($profile->id)
-                    ->whereStatusId($status->id)
-                    ->forceDelete();
+            case 'Accept':
                 break;
                 
             case 'Announce':
@@ -317,6 +333,29 @@ class Inbox
                     ->whereItemType('App\Status')
                     ->forceDelete();
                 $status->forceDelete();
+                break;
+
+            case 'Block':
+                break;
+
+            case 'Follow':
+                $following = self::actorFirstOrCreate($obj['object']);
+                Follower::whereProfileId($profile->id)
+                    ->whereFollowingId($following->id)
+                    ->delete();
+                break;
+                
+            case 'Like':
+                $status = Helpers::statusFirstOrFetch($obj['object']);
+                Like::whereProfileId($profile->id)
+                    ->whereStatusId($status->id)
+                    ->forceDelete();
+                Notification::whereProfileId($status->profile->id)
+                    ->whereActorId($profile->id)
+                    ->whereAction('like')
+                    ->whereItemId($status->id)
+                    ->whereItemType('App\Status')
+                    ->forceDelete();
                 break;
         }
 
