@@ -41,7 +41,7 @@ class Helpers {
 			'actor' => 'required|string',
 			'object' => 'required',
 			'object.type' => 'required_if:type,Create',
-			//'object.attachment' => 'required_if:type,Create',
+			'object.attachment' => 'required_if:type,Create',
 			'object.attributedTo' => 'required_if:type,Create',
 			'published' => 'required_if:type,Create|date'
 		])->passes();
