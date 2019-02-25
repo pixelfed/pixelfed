@@ -185,19 +185,18 @@ class Inbox
                 'following_id' => $target->id,
                 'local_profile' => empty($actor->domain)
             ]);
-            if($follower->wasRecentlyCreated == false) {
-                return;
+            if($follower->wasRecentlyCreated == true) {
+                // send notification
+                Notification::firstOrCreate([
+                    'profile_id' => $target->id,
+                    'actor_id' => $actor->id,
+                    'action' => 'follow',
+                    'message' => $follower->toText(),
+                    'rendered' => $follower->toHtml(),
+                    'item_id' => $target->id,
+                    'item_type' => 'App\Profile'
+                ]);
             }
-            // send notification
-            Notification::firstOrCreate([
-                'profile_id' => $target->id,
-                'actor_id' => $actor->id,
-                'action' => 'follow',
-                'message' => $follower->toText(),
-                'rendered' => $follower->toHtml(),
-                'item_id' => $target->id,
-                'item_type' => 'App\Profile'
-            ]);
 
             // send Accept to remote profile
             $accept = [
