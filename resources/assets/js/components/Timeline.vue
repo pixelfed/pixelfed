@@ -328,7 +328,7 @@
 					'mod': false,
 					'dark': false,
 					'notify': true,
-					'infinite': false
+					'infinite': true
 				}
 			}
 		},
