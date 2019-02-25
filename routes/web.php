@@ -55,6 +55,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('.well-known/webfinger', 'FederationController@webfinger')->name('well-known.webfinger');
     Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->name('well-known.nodeinfo');
     Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
+    Route::redirect('.well-known/change-password', '/settings/password');
 
     Route::get('/home', 'HomeController@index')->name('home');
 
