@@ -8,7 +8,7 @@ use App\{
     Profile,
     UserFilter
 };
-use Auth;
+use Auth, Cache;
 use Illuminate\Http\Request;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
@@ -67,5 +67,8 @@ class FollowerController extends Controller
             $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
             $follower->delete();
         }
+
+        Cache::forget('profile:followers:'.$target->id);
+        Cache::forget('profile:following:'.$user->id);
     }
 }
