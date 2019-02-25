@@ -80,7 +80,7 @@ class FederationController extends Controller
 
     public function nodeinfo()
     {
-        $res = Cache::remember('api:nodeinfo', 60, function () {
+        $res = Cache::remember('api:nodeinfo', now()->addHours(1), function () {
             return [
                 'metadata' => [
                     'nodeName' => config('app.name'),

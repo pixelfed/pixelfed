@@ -30,7 +30,7 @@ class Helpers {
 	public static function validateObject($data)
 	{
 		// todo: undo
-		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject'];
+		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo'];
 
 		$valid = Validator::make($data, [
 			'type' => [
@@ -136,7 +136,7 @@ class Helpers {
 	      '127.0.0.1', 'localhost', '::1'
 	    ];
 
-	    $valid = filter_var($url, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED|FILTER_FLAG_HOST_REQUIRED);
+	    $valid = filter_var($url, FILTER_VALIDATE_URL);
 
 	    if(in_array(parse_url($valid, PHP_URL_HOST), $localhosts)) {
 	    	return false;
@@ -232,8 +232,8 @@ class Helpers {
 			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
 			$status = new Status;
 			$status->profile_id = $profile->id;
-			$status->url = $url;
-			$status->uri = $url;
+			$status->url = isset($res['url']) ? $res['url'] : $url;
+			$status->uri = isset($res['url']) ? $res['url'] : $url;
 			$status->caption = strip_tags($res['content']);
 			$status->rendered = Purify::clean($res['content']);
 			$status->created_at = Carbon::parse($ts);

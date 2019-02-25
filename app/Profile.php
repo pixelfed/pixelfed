@@ -124,7 +124,7 @@ class Profile extends Model
 
     public function avatarUrl()
     {
-        $url = Cache::remember("avatar:{$this->id}", 1440, function () {
+        $url = Cache::remember("avatar:{$this->id}", now()->addDays(1), function () {
             $path = optional($this->avatar)->media_path;
             $version = hash('sha1', $this->avatar->updated_at);
             $path = "{$path}?v={$version}";

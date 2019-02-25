@@ -11,7 +11,7 @@ class InstanceApiController extends Controller {
 
 	protected function getData()
 	{
-		$contact = Cache::remember('api:v1:instance:contact', 1440, function() {
+		$contact = Cache::remember('api:v1:instance:contact', now()->addMinutes(1440), function() {
 			$admin = User::whereIsAdmin(true)->first()->profile;
 			return [
 				'id' 			  => $admin->id,
@@ -56,7 +56,7 @@ class InstanceApiController extends Controller {
 
 	public function instance()
 	{
-		$res = Cache::remember('api:v1:instance', 60, function() {
+		$res = Cache::remember('api:v1:instance', now()->addMinutes(60), function() {
 			return json_encode($this->getData());
 		});
 

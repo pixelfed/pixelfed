@@ -223,7 +223,7 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $private = Cache::remember('profiles:private', 1440, function() {
+        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
             return Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)
@@ -317,7 +317,7 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $following = Cache::remember('profile:following:'.$pid, 1440, function() use($pid) {
+        $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
             $following = Follower::whereProfileId($pid)->pluck('following_id');
             return $following->push($pid)->toArray();
         });

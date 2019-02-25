@@ -44,7 +44,7 @@ class AdminController extends Controller
 
     public function home()
     {
-        $data = Cache::remember('admin:dashboard:home:data', 15, function() {
+        $data = Cache::remember('admin:dashboard:home:data', now()->addMinutes(15), function() {
           $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';
           return [
             'failedjobs' => [

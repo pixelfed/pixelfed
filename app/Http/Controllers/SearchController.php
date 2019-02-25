@@ -23,7 +23,7 @@ class SearchController extends Controller
             return;
         }
         $hash = hash('sha256', $tag);
-        $tokens = Cache::remember('api:search:tag:'.$hash, 5, function () use ($tag) {
+        $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = collect([]);
             if(Helpers::validateUrl($tag)) {
                 $remote = Helpers::fetchFromUrl($tag);
@@ -85,6 +85,7 @@ class SearchController extends Controller
                         'value'  => $item->username,
                         'tokens' => [$item->username],
                         'name'   => $item->name,
+                        'id'     =>  $item->id
                     ];
                 });
                 $tokens->push($profiles);

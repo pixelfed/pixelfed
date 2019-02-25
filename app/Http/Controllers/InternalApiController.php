@@ -105,10 +105,10 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(60), function() use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
+        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(60), function() use($pid) {
             return UserFilter::whereUserId($pid)
             ->whereFilterableType('App\Profile')
             ->whereIn('filter_type', ['mute', 'block'])
@@ -161,10 +161,10 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, 60, function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(60), function() use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", 60, function() use($pid) {
+        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(60), function() use($pid) {
             return UserFilter::whereUserId($pid)
             ->whereFilterableType('App\Profile')
             ->whereIn('filter_type', ['mute', 'block'])
@@ -200,10 +200,10 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, 15, function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(15), function() use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", 15, function() use($pid) {
+        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(15), function() use($pid) {
             $private = Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)
