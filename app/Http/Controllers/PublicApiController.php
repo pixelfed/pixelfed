@@ -223,11 +223,12 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $private = Profile::whereIsPrivate(true)
-            ->orWhere('unlisted', true)
-            ->orWhere('status', '!=', null)
-            ->where('id', '!=', $pid)
-            ->pluck('id');
+        $private = Cache::remember('profiles:private', 1440, function() {
+            return Profile::whereIsPrivate(true)
+                ->orWhere('unlisted', true)
+                ->orWhere('status', '!=', null)
+                ->pluck('id');
+        });
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
@@ -310,7 +311,12 @@ class PublicApiController extends Controller
             return $following->push($pid)->toArray();
         });
 
-        $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
+        $private = Cache::remember('profiles:private', 1440, function() {
+            return Profile::whereIsPrivate(true)
+                ->orWhere('unlisted', true)
+                ->orWhere('status', '!=', null)
+                ->pluck('id');
+        });
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])

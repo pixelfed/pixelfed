@@ -145,6 +145,7 @@ class SettingsController extends Controller
         $user->save();
         $profile->save();
         Auth::logout();
+        Cache::forget('profiles:private');
         return redirect('/');
     }
 
@@ -161,7 +162,6 @@ class SettingsController extends Controller
         if(config('pixelfed.account_deletion') == false) {
             abort(404);
         }
-        
         $user = Auth::user();
         if($user->is_admin == true) {
             return abort(400, 'You cannot delete an admin account.');
@@ -174,6 +174,7 @@ class SettingsController extends Controller
         $profile->delete_after = $ts;
         $user->save();
         $profile->save();
+        Cache::forget('profiles:private');
         Auth::logout();
         return redirect('/');
     }
