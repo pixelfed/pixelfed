@@ -341,7 +341,6 @@
 		mounted() {
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip()
-				this.fetchNotifications();
 			});
 		},
 
@@ -379,6 +378,7 @@
 					}
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
+					this.fetchNotifications();
 				}).catch(err => {
 				});
 			},
