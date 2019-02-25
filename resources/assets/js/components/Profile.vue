@@ -39,13 +39,13 @@
 									</a>
 								</div>
 								<div class="font-weight-light pr-5">
-									<a class="text-dark" :href="profile.url + '/followers'">
+									<a class="text-dark cursor-pointer" v-on:click="followersModal()">
 										<span class="font-weight-bold">{{profile.followers_count}}</span> 
 										Followers
 									</a>
 								</div>
 								<div class="font-weight-light pr-5">
-									<a class="text-dark" :href="profile.url + '/following'">
+									<a class="text-dark cursor-pointer" v-on:click="followingModal()">
 										<span class="font-weight-bold">{{profile.following_count}}</span> 
 										Following
 									</a>
@@ -223,6 +223,64 @@
 	<!-- <b-modal id="statusModal" ref="statusModalRef" hide-footer hide-header v-if="modalStatus" size="lg" v-on:hide.native="closeModal()" lazy class="border-0">
 			<post-component v-bind:status-template="modalStatus.pf_type" v-bind:status-id="modalStatus.id" v-bind:status-username="modalStatus.account.username" v-bind:status-url="modalStatus.url" v-bind:status-profile-url="modalStatus.account.url" v-bind:status-avatar="modalStatus.account.avatar"></post-component>
 	</b-modal> -->
+  <b-modal ref="followingModal"
+    id="following-modal"
+    hide-footer
+    centered
+    title="Following"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+      </div>
+    </div>
+  </b-modal>
+  <b-modal ref="followerModal"
+    id="follower-modal"
+    hide-footer
+    centered
+    title="Followers"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
+	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+      </div>
+    </div>
+  </b-modal>
 </div>
 </template>
 <!-- <style type="text/css" scoped="">
@@ -271,7 +329,13 @@ export default {
 			mode: 'grid',
 			modes: ['grid', 'list', 'masonry'],
 			modalStatus: false,
-			relationship: {}
+			relationship: {}, 
+			followers: [],
+			followerCursor: 1,
+			followerMore: true,
+			following: [],
+			followingCursor: 1,
+			followingMore: true
 		}
 	},
 	beforeMount() {
@@ -591,6 +655,73 @@ export default {
 					this.profile.followers_count++;
 				}
 				this.relationship.following = !this.relationship.following;
+			});
+		},
+
+		followingModal() {
+			if(this.following.length > 0) {
+				this.$refs.followingModal.show();
+				return;
+			}
+			axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+				params: {
+					page: this.followingCursor
+				}
+			})
+			.then(res => {
+				this.following = res.data;
+				this.followingCursor++;
+			});
+			this.$refs.followingModal.show();
+		},
+
+		followersModal() {
+			if(this.followers.length > 0) {
+				this.$refs.followerModal.show();
+				return;
+			}
+			axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+				params: {
+					page: this.followerCursor
+				}
+			})
+			.then(res => {
+				this.followers = res.data;
+				this.followerCursor++;
+			})	
+			this.$refs.followerModal.show();
+		},
+
+		followingLoadMore() {
+			axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+				params: {
+					page: this.followingCursor
+				}
+			})
+			.then(res => {
+				if(res.data.length > 0) {
+					this.following.push(...res.data);
+					this.followingCursor++;
+				} else {
+					this.followingMore = false;
+				}
+			});
+		},
+
+
+		followersLoadMore() {
+			axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+				params: {
+					page: this.followerCursor
+				}
+			})
+			.then(res => {
+				if(res.data.length > 0) {
+					this.followers.push(...res.data);
+					this.followerCursor++;
+				} else {
+					this.followerMore = false;
+				}
 			});
 		}
 	}

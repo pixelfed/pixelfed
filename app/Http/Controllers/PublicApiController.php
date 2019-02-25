@@ -395,8 +395,12 @@ class PublicApiController extends Controller
 
     public function accountFollowers(Request $request, $id)
     {
-        $profile = Profile::findOrFail($id);
-        $followers = $profile->followers;
+        abort_unless(Auth::check(), 403);
+        $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
+        if($profile->is_private || !$profile->user->settings->show_profile_followers) {
+            return [];
+        }
+        $followers = $profile->followers()->orderByDesc('followers.created_at')->paginate(10);
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
@@ -405,8 +409,12 @@ class PublicApiController extends Controller
 
     public function accountFollowing(Request $request, $id)
     {
-        $profile = Profile::findOrFail($id);
-        $following = $profile->following;
+        abort_unless(Auth::check(), 403);
+        $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
+        if($profile->is_private || !$profile->user->settings->show_profile_following) {
+            return [];
+        }
+        $following = $profile->following()->orderByDesc('followers.created_at')->paginate(10);
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
@@ -468,4 +476,5 @@ class PublicApiController extends Controller
 
         return response()->json($res);
     }
+
 }
