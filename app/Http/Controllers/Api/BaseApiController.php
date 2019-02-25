@@ -56,14 +56,17 @@ class BaseApiController extends Controller
     public function notifications(Request $request)
     {
         $pid = Auth::user()->profile->id;
-        $timeago = Carbon::now()->subMonths(6);
-        $notifications = Notification::with('actor')
-            ->whereProfileId($pid)
-            ->whereDate('created_at', '>', $timeago)
-            ->orderBy('created_at','desc')
-            ->paginate(10);
-        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+        $page = $request->input('page') ?? 1;
+        $res = Cache::remember('profile:notifications:'.$pid.':page:'.$page, 5, function() use($pid) {
+            $timeago = Carbon::now()->subMonths(6);
+            $notifications = Notification::whereHas('actor')
+                ->whereProfileId($pid)
+                ->whereDate('created_at', '>', $timeago)
+                ->orderBy('created_at','desc')
+                ->paginate(10);
+            $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
+            return $this->fractal->createData($resource)->toArray();
+        });
 
         return response()->json($res);
     }
@@ -215,6 +218,8 @@ class BaseApiController extends Controller
                     'max:' . config('pixelfed.max_photo_size'),
                 ];
               },
+              'filter_name' => 'nullable|string|max:24',
+              'filter_class' => 'nullable|alpha_dash|max:24'
         ]);
 
         $user = Auth::user();
@@ -256,8 +261,8 @@ class BaseApiController extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $photo->getMimeType();
-        $media->filter_class = null;
-        $media->filter_name = null;
+        $media->filter_class = $request->input('filter_class') ?? 'filter_1977';
+        $media->filter_name = $request->input('filter_name');
         $media->save();
 
         $url = URL::temporarySignedRoute(
@@ -278,17 +283,10 @@ class BaseApiController extends Controller
                 break;
         }
 
-        $res = [
-            'id'          => $media->id,
-            'type'        => $media->activityVerb(),
-            'url'         => $url,
-            'remote_url'  => null,
-            'preview_url' => $url,
-            'text_url'    => null,
-            'meta'        => $media->metadata,
-            'description' => null,
-        ];
-
+        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['preview_url'] = $url;
+        $res['url'] = $url;
         return response()->json($res);
     }
 
