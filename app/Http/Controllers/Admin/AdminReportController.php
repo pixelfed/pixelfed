@@ -57,6 +57,7 @@ trait AdminReportController
             case 'unlist':
                 $item->visibility = 'unlisted';
                 $item->save();
+                Cache::forget('profiles:private');
                 break;
 
             case 'delete':

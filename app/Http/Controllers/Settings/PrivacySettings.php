@@ -10,8 +10,7 @@ use App\Profile;
 use App\User;
 use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
-use Auth;
-use DB;
+use Auth, Cache, DB;
 use Illuminate\Http\Request;
 
 trait PrivacySettings
@@ -48,6 +47,7 @@ trait PrivacySettings
                     $profile->{$field} = false;
                     $profile->save();
                 }
+                Cache::forget('profiles:private');
             } elseif ($field == 'crawlable') {
                 if ($form == 'on') {
                     $settings->{$field} = false;
