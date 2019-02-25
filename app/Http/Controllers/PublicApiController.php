@@ -305,8 +305,10 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $following = Follower::whereProfileId($pid)->pluck('following_id');
-        $following->push($pid)->toArray();
+        $following = Cache::remember('profile:following:'.$pid, 1440, function() use($pid) {
+            $following = Follower::whereProfileId($pid)->pluck('following_id');
+            return $following->push($pid)->toArray();
+        });
 
         $private = Profile::whereIsPrivate(true)->orWhereNotNull('status')->where('id', '!=', $pid)->pluck('id');
         $filters = UserFilter::whereUserId($pid)
