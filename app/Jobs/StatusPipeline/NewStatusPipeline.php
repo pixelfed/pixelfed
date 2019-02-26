@@ -41,16 +41,6 @@ class NewStatusPipeline implements ShouldQueue
      */
     public function handle()
     {
-        $status = $this->status;
-
-        StatusEntityLexer::dispatch($status);
-
-        if(config('pixelfed.activitypub_enabled') == true) {
-            StatusActivityPubDeliver::dispatch($status);
-        }
-        
-        // Cache::forever('post.'.$status->id, $status);
-        // $redis = Redis::connection();
-        // $redis->lpush(config('cache.prefix').':user.'.$status->profile_id.'.posts', $status->id);
+        StatusEntityLexer::dispatch($this->status);
     }
 }

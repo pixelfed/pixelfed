@@ -75,7 +75,6 @@ class StatusEntityLexer implements ShouldQueue
     public function storeEntities()
     {
         $this->storeHashtags();
-        $this->storeMentions();
         DB::transaction(function () {
             $status = $this->status;
             $status->rendered = nl2br($this->autolink);
@@ -100,6 +99,7 @@ class StatusEntityLexer implements ShouldQueue
                 );
             });
         }
+        $this->storeMentions();
     }
 
     public function storeMentions()
@@ -122,6 +122,14 @@ class StatusEntityLexer implements ShouldQueue
 
                 MentionPipeline::dispatch($status, $m);
             });
+        }
+        $this->deliver();
+    }
+
+    public function deliver()
+    {
+        if(config('pixelfed.activitypub_enabled') == true) {
+            StatusActivityPubDeliver::dispatch($this->status);
         }
     }
 }
