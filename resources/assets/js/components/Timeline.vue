@@ -204,16 +204,18 @@
 							<label class="custom-control-label font-weight-bold" for="mode-mod">Moderator Mode</label>
 						</div>
 						<!-- <div class="custom-control custom-switch mb-3">
-							<input type="checkbox" class="custom-control-input" id="mode-dark" v-on:click="modeDarkToggle()" v-model="modes.dark">
-							<label class="custom-control-label font-weight-bold" for="mode-dark">Dark Mode</label>
-						</div>
-						<div class="custom-control custom-switch mb-3">
 							<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
 							<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
 						</div> -->
 						<div class="custom-control custom-switch">
 							<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
 							<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
+						</div>
+						<hr>
+						<p class="font-weight-bold">BETA FEATURES</p>
+						<div class="custom-control custom-switch">
+							<input type="checkbox" class="custom-control-input" id="mode-dark" v-on:click="modeDarkToggle()" v-model="modes.dark">
+							<label class="custom-control-label font-weight-bold" for="mode-dark">Dark Mode</label>
 						</div>
 					</div>
 				</div>
@@ -793,23 +795,15 @@
 				// todo: more graceful stylesheet change
 				if(this.modes.dark == true) {
 					this.modes.dark = false;
-					$('link[rel=stylesheet]').remove();
-					let head = document.head;
-					let link = document.createElement("link");
-					link.type = "text/css";
-					link.rel = "stylesheet";
-					link.href = "/css/app.css";
-					head.appendChild(link);
+					$('link[data-stylesheet=dark]').remove();
 				} else {
 					this.modes.dark = true;
-					$('link[rel=stylesheet]').remove();
 					let head = document.head;
 					let link = document.createElement("link");
-					link.id = "darkModeSheet";
 					link.type = "text/css";
 					link.rel = "stylesheet";
 					link.href = "/css/appdark.css";
-
+					link.setAttribute('data-stylesheet','dark');
 					head.appendChild(link);
 				}
 				window.ls.set('pixelfed-classicui-settings', this.modes);
