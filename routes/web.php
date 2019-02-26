@@ -68,7 +68,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
-            Route::get('instance', 'Api\InstanceApiController@instance');
             Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
             Route::get('accounts/relationships', 'PublicApiController@relationships');
             Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
