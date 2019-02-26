@@ -261,7 +261,7 @@ class BaseApiController extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $photo->getMimeType();
-        $media->filter_class = $request->input('filter_class') ?? 'filter_1977';
+        $media->filter_class = $request->input('filter_class');
         $media->filter_name = $request->input('filter_name');
         $media->save();
 
