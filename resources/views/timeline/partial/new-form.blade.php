@@ -22,7 +22,7 @@
             </small>
           </div>
           <div class="form-group">
-            <textarea class="form-control" name="caption" placeholder="Add a caption here" autocomplete="off" data-limit="{{config('pixelfed.max_caption_length')}}" rows="1"></textarea>
+            <textarea class="form-control" name="caption" placeholder="Add optional caption here" autocomplete="off" data-limit="{{config('pixelfed.max_caption_length')}}" rows="1"></textarea>
             <p class="form-text text-muted small text-right">
               <span class="caption-counter">0</span>
               <span>/</span>
