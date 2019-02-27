@@ -14,7 +14,7 @@ class StatusLexerTest extends TestCase
     public $entities;
 	public $autolink;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
     	$this->status = "@pixelfed hi, really like the website! #píxelfed";
@@ -60,7 +60,6 @@ class StatusLexerTest extends TestCase
     public function testAutolink()
     {
         $expected = '@<a class="u-url mention" href="https://pixelfed.dev/pixelfed" rel="external nofollow noopener" target="_blank">pixelfed</a> hi, really like the website! <a href="https://pixelfed.dev/discover/tags/píxelfed?src=hash" title="#píxelfed" class="u-url hashtag" rel="external nofollow noopener">#píxelfed</a>';
-
         $this->assertEquals($this->autolink, $expected);
     }
 }

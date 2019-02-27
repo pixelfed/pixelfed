@@ -9,7 +9,7 @@ use App\Util\ActivityPub\Helpers;
 
 class AudienceScopeTest extends TestCase
 {
-	public function setUp()
+	public function setUp(): void
 	{
 		parent::setUp();
 
