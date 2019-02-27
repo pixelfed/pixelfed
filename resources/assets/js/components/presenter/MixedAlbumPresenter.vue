@@ -18,7 +18,9 @@
 						<source :src="media.url" :type="media.mime">
 					</video>
 
-					<img v-else-if="media.type == 'Image'" slot="img" class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description">
+					<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class">
+						<img class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description">
+					</div>
 
 					<p v-else class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
 
@@ -40,7 +42,9 @@
 					<source :src="media.url" :type="media.mime">
 				</video>
 
-				<img v-else-if="media.type == 'Image'" slot="img" class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description">
+				<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class">
+					<img class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description">
+				</div>
 
 				<p v-else class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
 
