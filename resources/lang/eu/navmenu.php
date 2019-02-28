@@ -2,6 +2,10 @@
 
 return [
 
+    'search'		 => 'Bilatu',
+	'home'			 => 'Sarrera',
+	'local'			 => 'Lokala',
+	'discover'		 => 'Esploratu',
     'viewMyProfile'  => 'Ikusi nire profila',
     'myTimeline'     => 'Nire denboralerroa',
     'publicTimeline' => 'Denboralerro publikoa',
