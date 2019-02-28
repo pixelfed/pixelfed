@@ -13,7 +13,7 @@
                 <span class="font-weight-bold">Compose</span>
               </p>
             </div>
-          </div>   
+          </div>
         </span>
         <div>
           <button class="btn btn-link text-muted" type="button" id="composeMenu">
@@ -23,7 +23,7 @@
       </div>
       <div class="card-body bg-light">
         <div class="composeLoader d-none text-center">
-          <div class="lds-ring"><div></div><div></div><div></div><div></div></div> 
+          <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
         </div>
         <div class="d-none preview-pagination">
           <div class="d-flex justify-content-between align-items-center">
@@ -37,14 +37,14 @@
           </div>
           <div class="preview-thumbs">
             <div class="d-flex justify-content-center" style="overflow-x: auto;">
-              
+
             </div>
           </div>
         </div>
         <div class="preview row"></div>
         <div class="preview-meta mb-4 d-none form-inline">
           <div class="form-group">
-            
+
             <div class="btn-group mr-3" role="group" aria-label="First group">
               <button type="button" class="btn btn-outline-secondary btn-sm py-1" id="cw" data-toggle="tooltip" data-placement="bottom" title="A content warning or nsfw warning is required for certain content."><i class="far fa-eye d-none d-md-block"></i> CW/NSFW</button>
               <button type="button" class="btn btn-outline-secondary btn-sm py-1" id="alt"><i class="fab fa-accessible-icon d-none d-md-block"></i> Media Description</button>
@@ -83,33 +83,33 @@
                 <div class="row">
                   <div class="col-12 col-sm-2 px-0 text-center">
                     <i class="fas fa-globe"></i>
-                  </div> 
+                  </div>
                   <div class="col-12 col-sm-10 pl-2">
                     <p class="font-weight-bold mb-0">Public</p>
                     <p class="small mb-0">Anyone can see</p>
-                  </div> 
+                  </div>
                 </div>
               </a>
               <a class="dropdown-item" href="#" data-id="private" data-title="Followers Only">
                 <div class="row">
                   <div class="col-12 col-sm-2 px-0 text-center">
                     <i class="fas fa-lock"></i>
-                  </div> 
+                  </div>
                   <div class="col-12 col-sm-10 pl-2">
                     <p class="font-weight-bold mb-0">Followers Only</p>
                     <p class="small mb-0">Only followers can see</p>
-                  </div> 
+                  </div>
                 </div>
               </a>
               {{-- <a class="dropdown-item" href="#" data-id="direct" data-title="Direct Message">
                 <div class="row">
                   <div class="col-12 col-sm-2 px-0 text-center">
                     <i class="fas fa-envelope"></i>
-                  </div> 
+                  </div>
                   <div class="col-12 col-sm-10 pl-2">
                     <p class="font-weight-bold mb-0">Direct Message</p>
                     <p class="small mb-0">Recipients only</p>
-                  </div> 
+                  </div>
                 </div>
               </a> --}}
             </div>
@@ -280,7 +280,7 @@ pixelfed.uploader.loadMeta = function() {
     if(pixelfed.uploader.ids.length > 1) {
       $('.next').removeClass('text-light');
     }
-  } 
+  }
   if(cursor > 1) {
       $('.prev').removeClass('text-light');
     if(pixelfed.uploader.ids.length > cursor) {
@@ -490,14 +490,14 @@ $('.visibility .dropdown-item').on('click', function(e) {
   });
   el.addClass('active');
   $('#visibility').text(el.data('title'));
-  pixelfed.uploader.visibility = el.data('id'); 
+  pixelfed.uploader.visibility = el.data('id');
 });
 
 $('#composeMenu').on('click', function(e) {
   e.preventDefault();
   swal(
     'Experimental Feature',
-    'We\'re still working on this feature.',
+    'We’re still working on this feature.',
     'info'
   );
 });
