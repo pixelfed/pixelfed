@@ -54,7 +54,7 @@ class SearchController extends Controller
                 }
 
             }
-            $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->limit(20)->get();
+            $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->whereHas('posts')->limit(20)->get();
             if($hashtags->count() > 0) {
                 $tags = $hashtags->map(function ($item, $key) {
                     return [
