@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App, Auth, Cache, View;
 use App\Util\Lexer\PrettyNumber;
 use App\{Follower, Page, Profile, Status, User, UserFilter};
+use App\Util\Localization\Localization;
 
 class SiteController extends Controller
 {
@@ -31,7 +32,7 @@ class SiteController extends Controller
     public function changeLocale(Request $request, $locale)
     {
         // todo: add other locales after pushing new l10n strings
-        $locales = ['en'];
+        $locales = Localization::languages();
         if(in_array($locale, $locales)) {
           session()->put('locale', $locale);
         }
