@@ -702,7 +702,8 @@ export default {
 				if(res.data.length > 0) {
 					this.following.push(...res.data);
 					this.followingCursor++;
-				} else {
+				}
+                if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 			});
@@ -719,7 +720,8 @@ export default {
 				if(res.data.length > 0) {
 					this.followers.push(...res.data);
 					this.followerCursor++;
-				} else {
+				}
+                if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 			});
