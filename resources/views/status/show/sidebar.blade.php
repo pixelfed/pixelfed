@@ -111,7 +111,7 @@
       @csrf
       <input type="hidden" name="item" value="{{$status->id}}">
 
-      <input class="form-control" name="comment" placeholder="Add a comment..." autocomplete="off">
+      <input class="form-control" name="comment" placeholder="Add a comment…" autocomplete="off">
     </form>
   </div>
 </div>

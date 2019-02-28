@@ -2,7 +2,7 @@
 <div class="container">
 	<div v-if="loading" class="pt-5 text-center">
 		<div class="spinner-border" role="status">
-			<span class="sr-only">Loading...</span>
+			<span class="sr-only">Loading…</span>
 		</div>
 	</div>
 	<div v-if="networkError" class="pt-5 text-center">
@@ -10,7 +10,7 @@
 	</div>
 
 	<div v-if="!loading && !networkError" class="mt-5 row">
-		
+
 		<div class="col-12 col-md-3">
 			<div>
 				<p class="font-weight-bold">Filters</p>
@@ -31,7 +31,7 @@
 		<div class="col-12 col-md-9">
 			<p class="h3 font-weight-lighter">Showing results for <i>{{query}}</i></p>
 			<hr>
-			
+
 			<div v-if="filters.hashtags && results.hashtags.length" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Hashtags</p>
 				<a v-for="(hashtag, index) in results.hashtags" class="col-12 col-md-4" style="text-decoration: none;" :href="hashtag.url">
@@ -76,7 +76,7 @@
 </template>
 
 <style type="text/css" scoped>
-	
+
 </style>
 
 <script type="text/javascript">

@@ -64,7 +64,7 @@ export default {
 	},
 
 	methods: {
-    
+
     followUser(id, event) {
       axios.post('/i/follow', {
         item: id
@@ -74,7 +74,7 @@ export default {
         el.text('Unfollow');
       }).catch(err => {
         swal(
-          'Whoops! Something went wrong...',
+          'Whoops! Something went wrong…',
           'An error occurred, please try again later.',
           'error'
         );
