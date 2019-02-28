@@ -11,7 +11,7 @@
   <p class="font-weight-light">{{__('site.selectLocale')}}:</p>
   <ul class="list-group">
     @foreach(App\Util\Localization\Localization::languages() as $lang)
-    <a class="list-group-item font-weight-bold" href="/i/lang/{{$lang}}">{{locale_get_display_language($lang)}}</a>
+    <a class="list-group-item font-weight-bold" href="/i/lang/{{$lang}}">{{locale_get_display_language($lang, $lang)}}</a>
     @endforeach
   </ul>
 @endsection
