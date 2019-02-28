@@ -9,7 +9,7 @@
             @auth
             <ul class="navbar-nav ml-auto d-none d-md-block">
               <form class="form-inline search-form">
-                <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-2 search-form-input" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
               </form>
             </ul>
             @endauth
@@ -25,7 +25,7 @@
                             <i class="fas fa-home fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
-                            {{ __('Home') }}
+                            {{__('navmenu.home')}}
                         </span>
                         </a>
                     </li>
@@ -35,7 +35,7 @@
                             <i class="far fa-map fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
-                            {{ __('Local') }}
+                             {{__('navmenu.local')}}
                         </span> 
                         </a>
                     </li>
@@ -50,9 +50,9 @@
                         </a>
                     </li> --}}
                     <li class="nav-item pr-md-2">
-                        <a class="nav-link font-weight-bold" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
+                        <a class="nav-link font-weight-bold {{request()->is('*discover*') ?'text-primary':''}}" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
                         <span class="d-none d-md-block">
-                            {{ __('Discover')}}</i>
+                             {{__('navmenu.discover')}}</i>
                         </span>
                         </a>
                     </li>
@@ -86,17 +86,17 @@
 
                             <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
                                 <span class="far fa-compass pr-1"></span>
-                                {{__('Discover')}}
+                                {{__('navmenu.discover')}}
                             </a>
                             {{-- <a class="dropdown-item font-weight-bold" href="{{route('messages')}}">
                                 <span class="far fa-envelope pr-1"></span>
                                 {{__('navmenu.directMessages')}}
-                            </a> --}}
+                            </a> 
+                            <a class="dropdown-item font-weight-bold" href="{{route('account.circles')}}">
+                                <span class="far fa-circle pr-1"></span>
+                                {{__('Circles')}}
+                            </a>--}}
                             <div class="dropdown-divider"></div>
-                            {{-- <a class="dropdown-item font-weight-bold" href="{{route('remotefollow')}}">
-                                <span class="fas fa-user-plus pr-1"></span>
-                                {{__('navmenu.remoteFollow')}}
-                            </a> --}}
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
@@ -128,7 +128,7 @@
 @auth
 <nav class="breadcrumb d-md-none d-flex">
   <form class="form-inline search-form mx-auto">
-   <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="Search" aria-label="Search">
+   <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="{{__('navmenu.search')}}" aria-label="Search">
   </form>
 </nav>
 @endauth
