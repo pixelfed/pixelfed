@@ -671,6 +671,9 @@ export default {
 			.then(res => {
 				this.following = res.data;
 				this.followingCursor++;
+                if(res.data.length < 10) {
+					this.followingMore = false;
+				}
 			});
 			this.$refs.followingModal.show();
 		},
@@ -688,6 +691,9 @@ export default {
 			.then(res => {
 				this.followers = res.data;
 				this.followerCursor++;
+                if(res.data.length < 10) {
+					this.followerMore = false;
+				}
 			})	
 			this.$refs.followerModal.show();
 		},
