@@ -34,25 +34,25 @@
 							<div class="profile-stats pb-3 d-inline-flex lead">
 								<div class="font-weight-light pr-5">
 									<a class="text-dark" :href="profile.url">
-										<span class="font-weight-bold">{{profile.statuses_count}}</span> 
+										<span class="font-weight-bold">{{profile.statuses_count}}</span>
 										Posts
 									</a>
 								</div>
 								<div class="font-weight-light pr-5">
 									<a class="text-dark cursor-pointer" v-on:click="followersModal()">
-										<span class="font-weight-bold">{{profile.followers_count}}</span> 
+										<span class="font-weight-bold">{{profile.followers_count}}</span>
 										Followers
 									</a>
 								</div>
 								<div class="font-weight-light pr-5">
 									<a class="text-dark cursor-pointer" v-on:click="followingModal()">
-										<span class="font-weight-bold">{{profile.following_count}}</span> 
+										<span class="font-weight-bold">{{profile.following_count}}</span>
 										Following
 									</a>
 								</div>
 							</div>
 							<p class="lead mb-0 d-flex align-items-center">
-								<span class="font-weight-bold pr-3">{{profile.display_name}}</span> 
+								<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
 							</p>
 							<div v-if="profile.note" class="mb-0 lead" v-html="profile.note"></div>
 							<p v-if="profile.website" class="mb-0"><a :href="profile.website" class="font-weight-bold" rel="me external nofollow noopener" target="_blank">{{profile.website}}</a></p>
@@ -144,7 +144,7 @@
 
 							<div class="postPresenterContainer">
 								<div v-if="status.pf_type === 'photo'" class="w-100">
-									<photo-presenter :status="status"></photo-presenter>	
+									<photo-presenter :status="status"></photo-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -233,7 +233,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -262,7 +262,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -329,7 +329,7 @@ export default {
 			mode: 'grid',
 			modes: ['grid', 'list', 'masonry'],
 			modalStatus: false,
-			relationship: {}, 
+			relationship: {},
 			followers: [],
 			followerCursor: 1,
 			followerMore: true,
@@ -456,7 +456,7 @@ export default {
 			if($('body').hasClass('loggedIn') == false) {
 				return;
 			}
-			
+
 			axios.post('/i/like', {
 				item: status.id
 			}).then(res => {
@@ -671,7 +671,7 @@ export default {
 			.then(res => {
 				this.following = res.data;
 				this.followingCursor++;
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 			});
@@ -691,7 +691,7 @@ export default {
 			.then(res => {
 				this.followers = res.data;
 				this.followerCursor++;
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 			})	
@@ -709,7 +709,7 @@ export default {
 					this.following.push(...res.data);
 					this.followingCursor++;
 				}
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 			});
@@ -727,7 +727,7 @@ export default {
 					this.followers.push(...res.data);
 					this.followerCursor++;
 				}
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 			});

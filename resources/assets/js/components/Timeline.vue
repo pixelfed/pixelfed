@@ -58,7 +58,7 @@
 
 				<div class="postPresenterContainer">
 					<div v-if="status.pf_type === 'photo'" class="w-100">
-						<photo-presenter :status="status"></photo-presenter>	
+						<photo-presenter :status="status"></photo-presenter>
 					</div>
 
 					<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -256,12 +256,12 @@
 								<div v-else-if="n.type == 'follow'">
 									<p class="my-0">
 										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> followed you.
-									</p>	
+									</p>
 								</div>
 								<div v-else-if="n.type == 'share'">
 									<p class="my-0">
 										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
-									</p>	
+									</p>
 								</div>
 							</div>
 						</div>
@@ -307,7 +307,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -336,7 +336,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -567,7 +567,7 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				
+
 				axios.post('/i/like', {
 					item: status.id
 				}).then(res => {
@@ -786,7 +786,7 @@
 					break;
 
 					case 'disable':
-						msg = 'Are you sure you want to disable ' + username + '\'s account ?';
+						msg = 'Are you sure you want to disable ' + username + '’s account ?';
 						swal({
 							title: 'Confirm',
 							text: msg,
@@ -800,7 +800,7 @@
 									item_id: status.id,
 									item_type: 'status'
 								}).then(res => {
-									swal('Success', 'Successfully disabled ' + username + '\'s account', 'success');
+									swal('Success', 'Successfully disabled ' + username + '’s account', 'success');
 								}).catch(err => {
 									swal(
 										'Error',
@@ -813,7 +813,7 @@
 					break;
 
 					case 'suspend':
-						msg = 'Are you sure you want to suspend ' + username + '\'s account ?';
+						msg = 'Are you sure you want to suspend ' + username + '’s account ?';
 						swal({
 							title: 'Confirm',
 							text: msg,
@@ -827,7 +827,7 @@
 									item_id: status.id,
 									item_type: 'status'
 								}).then(res => {
-									swal('Success', 'Successfully suspend ' + username + '\'s account', 'success');
+									swal('Success', 'Successfully suspend ' + username + '’s account', 'success');
 								}).catch(err => {
 									swal(
 										'Error',
@@ -892,7 +892,7 @@
 					this.following = res.data;
 					this.followingCursor++;
 				});
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 				this.$refs.followingModal.show();
@@ -912,7 +912,7 @@
 					this.followers = res.data;
 					this.followerCursor++;
 				})
-                if(res.data.length < 10) {
+        if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 				this.$refs.followerModal.show();
@@ -929,7 +929,7 @@
 						this.following.push(...res.data);
 						this.followingCursor++;
 					}
-                    if(res.data.length < 10) {
+          if(res.data.length < 10) {
 						this.followingMore = false;
 					}
 				});
@@ -947,7 +947,7 @@
 						this.followers.push(...res.data);
 						this.followerCursor++;
 					}
-                    if(res.data.length < 10) {
+          if(res.data.length < 10) {
 						this.followerMore = false;
 					}
 				});

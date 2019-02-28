@@ -9,12 +9,12 @@
 			</div>
 			<div class="card-body loader text-center" style="height: 120px;">
 				<div class="spinner-border" role="status">
-					<span class="sr-only">Loading...</span>
+					<span class="sr-only">Loading…</span>
 				</div>
 			</div>
 			<div class="card-body pt-2 contents" style="max-height: 120px; overflow-y: scroll;">
 				<div id="stories">
-					
+
 				</div>
 			</div>
 		</div>
@@ -22,7 +22,7 @@
 </template>
 
 <style type="text/css" scoped>
-	
+
 </style>
 
 <script type="text/javascript">

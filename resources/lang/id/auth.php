@@ -14,6 +14,6 @@ return [
     */
 
     'failed'   => 'Kredensial ini tidak cocok dengan data kami.',
-    'throttle' => 'Terlalu banyak percobaan login. COba lagi setelah :seconds detik.',
+    'throttle' => 'Terlalu banyak percobaan login. Coba lagi setelah :seconds detik.',
 
 ];

@@ -152,7 +152,7 @@
             <form class="comment-form d-none" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
               <input type="hidden" name="_token" value="">
               <input type="hidden" name="item" :value="statusId">
-              <input class="form-control" name="comment" placeholder="Add a comment..." autocomplete="off">
+              <input class="form-control" name="comment" placeholder="Add a comment…" autocomplete="off">
               <input type="submit" value="Send" class="btn btn-primary comment-submit" />
             </form>
           </div>
@@ -172,7 +172,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in likes" :key="'modal_likes_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + ’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -203,7 +203,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in shares" :key="'modal_shares_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
             <div class="d-inline-block">
@@ -526,7 +526,7 @@ export default {
             });
         }
       },
-      
+
       owner() {
         return this.user.id === this.status.account.id;
       },
