@@ -676,7 +676,7 @@ class Autolink extends Regex
         $hash = StringUtils::substr($tweet, $entity['indices'][0], 1);
         $linkText = $hash.$entity['hashtag'];
 
-        $attributes['href'] = $this->url_base_hash.$entity['hashtag'].'?src=hash';
+        $attributes['href'] = $this->url_base_hash.str_slug($entity['hashtag']).'?src=hash';
         $attributes['title'] = '#'.$entity['hashtag'];
         if (!empty($this->class_hash)) {
             $class[] = $this->class_hash;
