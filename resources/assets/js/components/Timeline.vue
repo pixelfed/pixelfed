@@ -183,11 +183,11 @@
 								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
 								<p class="mb-0 small text-muted">Posts</p>
 							</span>
-							<span class="cursor-pointer" v-on:click="redirect(profile.url + '/followers')">
+							<span class="cursor-pointer" v-on:click="followersModal()">
 								<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
 								<p class="mb-0 small text-muted">Followers</p>
 							</span>
-							<span class="pr-3 cursor-pointer" v-on:click="redirect(profile.url + '/following')">
+							<span class="pr-3 cursor-pointer" v-on:click="followingModal()">
 								<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
 								<p class="mb-0 small text-muted">Following</p>
 							</span>
@@ -297,6 +297,64 @@
 			</footer>
 		</div>
 	</div>
+  <b-modal ref="followingModal"
+    id="following-modal"
+    hide-footer
+    centered
+    title="Following"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+      </div>
+    </div>
+  </b-modal>
+  <b-modal ref="followerModal"
+    id="follower-modal"
+    hide-footer
+    centered
+    title="Followers"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
+        <div class="media">
+          <a :href="user.url">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '\'s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="mb-0" style="font-size: 14px">
+              <a :href="user.url" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+            <p class="text-muted mb-0" style="font-size: 14px">
+                {{user.display_name}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
+	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+      </div>
+    </div>
+  </b-modal>
 </div>
 </template>
 
@@ -337,7 +395,13 @@
 					'dark': false,
 					'notify': true,
 					'infinite': true
-				}
+				},
+				followers: [],
+				followerCursor: 1,
+				followerMore: true,
+				following: [],
+				followingCursor: 1,
+				followingMore: true
 			}
 		},
 
@@ -812,6 +876,73 @@
 			modeInfiniteToggle() {
 				this.modes.infinite = !this.modes.infinite
 				window.ls.set('pixelfed-classicui-settings', this.modes);
+			},
+
+			followingModal() {
+				if(this.following.length > 0) {
+					this.$refs.followingModal.show();
+					return;
+				}
+				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+					params: {
+						page: this.followingCursor
+					}
+				})
+				.then(res => {
+					this.following = res.data;
+					this.followingCursor++;
+				});
+				this.$refs.followingModal.show();
+			},
+
+			followersModal() {
+				if(this.followers.length > 0) {
+					this.$refs.followerModal.show();
+					return;
+				}
+				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+					params: {
+						page: this.followerCursor
+					}
+				})
+				.then(res => {
+					this.followers = res.data;
+					this.followerCursor++;
+				})	
+				this.$refs.followerModal.show();
+			},
+
+			followingLoadMore() {
+				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+					params: {
+						page: this.followingCursor
+					}
+				})
+				.then(res => {
+					if(res.data.length > 0) {
+						this.following.push(...res.data);
+						this.followingCursor++;
+					} else {
+						this.followingMore = false;
+					}
+				});
+			},
+
+
+			followersLoadMore() {
+				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+					params: {
+						page: this.followerCursor
+					}
+				})
+				.then(res => {
+					if(res.data.length > 0) {
+						this.followers.push(...res.data);
+						this.followerCursor++;
+					} else {
+						this.followerMore = false;
+					}
+				});
 			}
 		}
 	}
