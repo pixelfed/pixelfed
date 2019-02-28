@@ -37,7 +37,7 @@ class SiteController extends Controller
           session()->put('locale', $locale);
         }
 
-        return redirect()->back();
+        return redirect(route('site.language'));
     }
 
     public function about()
