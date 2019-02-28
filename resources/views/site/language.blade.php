@@ -3,14 +3,16 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Language</h3>
+    <h3 class="font-weight-bold">{{__('site.language')}}</h3>
   </div>
   <hr>
-  <div class="alert alert-info font-weight-bold">We’re still working on localization support!</div>
-  <p class="lead">Current Locale: <span class="font-weight-bold">{{App::getLocale()}}</span></p>
-  <p class="lead">Select from one of the supported languages:</p>
+  <div class="alert alert-info font-weight-bold">{{__('site.l10nWip')}}!</div>
+  <p class="font-weight-light">{{__('site.currentLocale')}}: <span class="font-weight-bold">{{App::getLocale()}}</span></p>
+  <p class="font-weight-light">{{__('site.selectLocale')}}:</p>
   <ul class="list-group">
-    <a class="list-group-item font-weight-bold" href="/i/lang/en">English</a>
+    @foreach(App\Util\Localization\Localization::languages() as $lang)
+    <a class="list-group-item font-weight-bold" href="/i/lang/{{$lang}}">{{locale_get_display_language($lang)}}</a>
+    @endforeach
   </ul>
 @endsection
 
