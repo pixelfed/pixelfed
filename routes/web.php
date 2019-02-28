@@ -77,6 +77,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('avatar/update', 'ApiController@avatarUpdate');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia');
+            Route::delete('media', 'ApiController@deleteMedia');
             Route::get('notifications', 'ApiController@notifications');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
@@ -214,6 +215,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
         Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
+        Route::post('data-export/following', 'SettingsController@exportFollowing');
+        Route::post('data-export/followers', 'SettingsController@exportFollowers');
+        Route::post('data-export/mute-block-list', 'SettingsController@exportMuteBlockList');
         Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
     });
 

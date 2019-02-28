@@ -7,7 +7,7 @@ use App\Http\Controllers\{
     Controller,
     AvatarController
 };
-use Auth, Cache, URL;
+use Auth, Cache, Storage, URL;
 use Carbon\Carbon;
 use App\{
     Avatar,
@@ -288,6 +288,27 @@ class BaseApiController extends Controller
         $res['preview_url'] = $url;
         $res['url'] = $url;
         return response()->json($res);
+    }
+
+    public function deleteMedia(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|integer|min:1|exists:media,id'
+        ]);
+
+        $media = Media::whereNull('status_id')
+            ->whereUserId(Auth::id())
+            ->findOrFail($request->input('id'));
+
+        Storage::delete($media->media_path);
+        Storage::delete($media->thumbnail_path);
+
+        $media->forceDelete();
+
+        return response()->json([
+            'msg' => 'Successfully deleted',
+            'code' => 200
+        ]);
     }
 
     public function verifyCredentials(Request $request)
