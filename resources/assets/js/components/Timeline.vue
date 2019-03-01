@@ -892,6 +892,9 @@
 					this.following = res.data;
 					this.followingCursor++;
 				});
+        if(res.data.length < 10) {
+					this.followingMore = false;
+				}
 				this.$refs.followingModal.show();
 			},
 
@@ -909,6 +912,9 @@
 					this.followers = res.data;
 					this.followerCursor++;
 				})
+        if(res.data.length < 10) {
+					this.followerMore = false;
+				}
 				this.$refs.followerModal.show();
 			},
 
@@ -922,7 +928,8 @@
 					if(res.data.length > 0) {
 						this.following.push(...res.data);
 						this.followingCursor++;
-					} else {
+					}
+          if(res.data.length < 10) {
 						this.followingMore = false;
 					}
 				});
@@ -939,7 +946,8 @@
 					if(res.data.length > 0) {
 						this.followers.push(...res.data);
 						this.followerCursor++;
-					} else {
+					}
+          if(res.data.length < 10) {
 						this.followerMore = false;
 					}
 				});
