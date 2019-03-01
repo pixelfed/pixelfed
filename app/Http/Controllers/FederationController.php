@@ -242,8 +242,15 @@ XML;
     protected function blindKeyRotation(Request $request, Profile $profile)
     {
         $signature = $request->header('signature');
+        $date = $request->header('date');
         if(!$signature) {
             abort(400, 'Missing signature header');
+        }
+        if(!$date) {
+            abort(400, 'Missing date header');
+        }
+        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
+            abort(400, 'Invalid date');
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
