@@ -33,7 +33,7 @@ class AvatarController extends Controller
             $currentAvatar = storage_path('app/'.$profile->avatar->media_path);
             $loc = $request->file('avatar')->storeAs($public, $name);
 
-            $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
+            $avatar = Avatar::firstOrNew(['profile_id' => $profile->id]);
             $opath = $avatar->media_path;
             $avatar->media_path = "$public/$name";
             $avatar->thumb_path = null;
