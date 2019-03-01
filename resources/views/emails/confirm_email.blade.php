@@ -8,5 +8,5 @@ Confirm Email
 @endcomponent
 
 Thanks,<br>
-{{ config('app.name') }}
+{{ config('pixelfed.domain.app') }}
 @endcomponent
