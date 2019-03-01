@@ -19,8 +19,8 @@ trait AdminSettingsController
 
     public function settingsBackups(Request $request)
     {
-      $path = storage_path('app/PixelFed');
-      $files = new \DirectoryIterator($path);
+      $path = storage_path('app/'.config('app.name'));
+      $files = is_dir($path) ? new \DirectoryIterator($path) : [];
       return view('admin.settings.backups', compact('files'));
     }
 
