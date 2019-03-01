@@ -19,7 +19,7 @@
         "greggilbert/recaptcha": "dev-master",
         "intervention/image": "^2.4",
         "laravel/framework": "5.8.*",
-        "laravel/horizon": "^1.2",
+        "laravel/horizon": "^3.0",
         "laravel/passport": "^7.0",
         "laravel/tinker": "^1.0",
         "league/flysystem-aws-s3-v3": "~1.0",
@@ -42,7 +42,7 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^2.0",
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^7.5"
     },
     "autoload": {
         "classmap": [
@@ -69,11 +69,11 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate"
+            "@php artisan key:generate --ansi"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover --ansi"
         ]
     },
     "config": {
