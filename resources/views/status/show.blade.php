@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . " posted a photo: " . $status->likes_count . " likes, " . $status->comments_count . " comments" ])
+@extends('layouts.app',['title' => "A post by " . $user->username])
 
 @section('content')
 <noscript>
@@ -18,6 +18,7 @@
   <meta property="og:description" content="{{ $status->caption }}">
   <meta property="og:image" content="{{$status->mediaUrl()}}">
   <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>
+  <meta name="twitter:card" content="summary_large_image">
 @endpush
 
 @push('scripts')
