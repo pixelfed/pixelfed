@@ -30,11 +30,10 @@ class AvatarController extends Controller
             $dir = $path['root'];
             $name = $path['name'];
             $public = $path['storage'];
-            $currentAvatar = storage_path('app/'.$profile->avatar->media_path);
             $loc = $request->file('avatar')->storeAs($public, $name);
 
             $avatar = Avatar::firstOrNew(['profile_id' => $profile->id]);
-            $opath = $avatar->media_path;
+            $currentAvatar = $avatar->recentlyCreated ? null : storage_path('app/'.$profile->avatar->media_path);
             $avatar->media_path = "$public/$name";
             $avatar->thumb_path = null;
             $avatar->change_count = ++$avatar->change_count;
