@@ -106,7 +106,7 @@ trait AdminSettingsController
     $sys = [
       'pixelfed' => config('pixelfed.version'),
       'php' => phpversion(),
-      'redis' => explode(' ',exec('redis-cli -v'))[1],
+      'laravel' => app()->version(),
     ];
     switch (config('database.default')) {
       case 'pgsql':
