@@ -49,7 +49,7 @@ class UpdateCommand extends Command
             $this->info('No updates found.');
             return;
         }
-        $bar = $this->output->createProgressBar(\App\StatusHashtag::count());
+        $bar = $this->output->createProgressBar(\App\StatusHashtag::whereNull('profile_id')->count());
         \App\StatusHashtag::whereNull('profile_id')->with('status')->chunk(50, function($sh) use ($bar) {
             foreach($sh as $status_hashtag) {
                 if(!$status_hashtag->status) {
