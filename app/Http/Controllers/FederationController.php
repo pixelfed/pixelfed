@@ -102,7 +102,7 @@ class FederationController extends Controller
                 $count = $count->merge($statuses);
                 $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
                 $count = $count->merge($profiles);
-                return $count->count();
+                return $count->unique()->count();
             });
             $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(12), function() {
                 $count = collect([]);
@@ -112,7 +112,7 @@ class FederationController extends Controller
                 $count = $count->merge($statuses);
                 $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
                 $count = $count->merge($profiles);
-                return $count->count();
+                return $count->unique()->count();
             });
             return [
                 'metadata' => [
@@ -140,7 +140,7 @@ class FederationController extends Controller
                     'localPosts'    => \App\Status::whereLocal(true)->whereHas('media')->count(),
                     'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
                     'users'         => [
-                        'total'          => \App\User::count(),
+                        'total'          => \App\Profile::whereNull('status')->whereNull('domain')->count(),
                         'activeHalfyear' => $activeHalfYear,
                         'activeMonth'    => $activeMonth,
                     ],
