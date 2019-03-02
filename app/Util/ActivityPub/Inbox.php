@@ -322,17 +322,6 @@ class Inbox
                 break;
                 
             case 'Announce':
-                $parent = Helpers::statusFirstOrFetch($obj['object']);
-                $status = Status::whereProfileId($profile->id)
-                    ->whereReblogOfId($parent->id)
-                    ->firstOrFail();
-                Notification::whereProfileId($parent->profile->id)
-                    ->whereActorId($profile->id)
-                    ->whereAction('share')
-                    ->whereItemId($status->id)
-                    ->whereItemType('App\Status')
-                    ->forceDelete();
-                $status->forceDelete();
                 break;
 
             case 'Block':
