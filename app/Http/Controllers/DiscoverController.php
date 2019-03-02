@@ -32,9 +32,7 @@ class DiscoverController extends Controller
           'page' => 'nullable|integer|min:1|max:20',
         ]);
 
-        $tag = Hashtag::with('posts')
-          ->withCount('posts')
-          ->whereSlug($hashtag)
+        $tag = Hashtag::whereSlug($hashtag)
           ->firstOrFail();
 
         $page = $request->input('page') ?? 1;
