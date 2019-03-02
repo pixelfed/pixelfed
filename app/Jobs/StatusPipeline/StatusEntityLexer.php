@@ -95,7 +95,11 @@ class StatusEntityLexer implements ShouldQueue
                     ['name' => $tag, 'slug' => $slug]
                 );
                 StatusHashtag::firstOrCreate(
-                    ['status_id' => $status->id, 'hashtag_id' => $hashtag->id]
+                    [
+                        'status_id' => $status->id, 
+                        'hashtag_id' => $hashtag->id,
+                        'profile_id' => $status->profile_id
+                    ]
                 );
             });
         }
