@@ -67,7 +67,7 @@ class AvatarOptimize implements ShouldQueue
 
     protected function deleteOldAvatar($new, $current)
     {
-        if (storage_path('app/'.$new) == $current) {
+        if (storage_path('app/'.$new) == $current || $current == 'public/avatars/default.png') {
             return;
         }
         if (is_file($current)) {
