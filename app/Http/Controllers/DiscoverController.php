@@ -29,7 +29,7 @@ class DiscoverController extends Controller
     public function showTags(Request $request, $hashtag)
     {
         $this->validate($request, [
-          'page' => 'nullable|integer|min:1|max:10',
+          'page' => 'nullable|integer|min:1|max:20',
         ]);
 
         $tag = Hashtag::with('posts')
@@ -37,7 +37,12 @@ class DiscoverController extends Controller
           ->whereSlug($hashtag)
           ->firstOrFail();
 
-        $posts = $tag->posts()
+        $page = $request->input('page') ?? 1;
+        $key = 'discover:tag-'.$tag->id.':page-'.$page;
+        $keyMinutes = $page > 1 ? 5 : 2;
+
+        $posts = Cache::remember($key, now()->addMinutes($keyMinutes), function() use ($tag, $request) {
+          return $tag->posts()
           ->whereNull('url')
           ->whereNull('uri')
           ->whereHas('media')
@@ -45,7 +50,8 @@ class DiscoverController extends Controller
           ->whereIsNsfw(false)
           ->whereVisibility('public')
           ->orderBy('id', 'desc')
-          ->simplePaginate(12);
+          ->simplePaginate(24);
+        });
 
         if($posts->count() == 0) {
           abort(404);
