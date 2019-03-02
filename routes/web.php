@@ -59,8 +59,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::get('/home', 'HomeController@index')->name('home');
 
+    Route::get('discover/c/{slug}', 'DiscoverController@showCategory');
+    Route::get('discover/personal', 'DiscoverController@showPersonal');
     Route::get('discover', 'DiscoverController@home')->name('discover');
-
+    
     Route::group(['prefix' => 'api'], function () {
         Route::get('search/{tag}', 'SearchController@searchAPI')
           //->where('tag', '.*');
@@ -91,6 +93,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
             Route::post('moderator/action', 'InternalApiController@modAction');
+            Route::get('discover/categories', 'InternalApiController@discoverCategories');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');

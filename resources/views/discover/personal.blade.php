@@ -18,10 +18,12 @@ background: linear-gradient(to right, #FFC371, #FF5F6D); /* W3C, IE 10+/ Edge, F
 <div class="container">
   <div class="pt-4 d-flex justify-content-between align-items-center">
     <p>
+      @if($tags->count() > 0)
       <span class="font-weight-lighter pr-3">Related hashtags:</span> 
       @foreach($tags as $hashtag)
         <a class="btn btn-outline-secondary btn-sm py-0 pr-2" href="{{$hashtag->url()}}">#{{$hashtag->name}}</a>
       @endforeach
+      @endif
     </p>
     <p class="font-weight-lighter">
       {{$posts->post_count}} posts
@@ -50,27 +52,6 @@ background: linear-gradient(to right, #FFC371, #FF5F6D); /* W3C, IE 10+/ Edge, F
       @endforeach
     </div>
   </div>
-  <div class="d-flex justify-content-center pagination-container mt-4">
-    {{$posts->links()}}
-  </div>
 </div>
 
 @endsection
-
-@push('scripts')
-<script type="text/javascript">
-
-  $(document).ready(function() {
-    $('.pagination-container').hide();
-    $('.pagination').hide();
-    let elem = document.querySelector('.tag-timeline');
-    let infScroll = new InfiniteScroll( elem, {
-      path: '.pagination__next',
-      append: '.tag-timeline',
-      status: '.page-load-status',
-      history: true,
-    });
-  });
-
-</script>
-@endpush

@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="profile-header bg-light {{$tag->bgd ?? 'bgd-2'}}">
+<div class="profile-header bg-light bgd-2">
   <div class="container py-5">
     <div class="row">
       <div class="col-12 col-md-3">
@@ -24,10 +24,12 @@
 <div class="container">
   <div class="pt-4 d-flex justify-content-between align-items-center">
     <p>
+      @if($tag->hashtags->count() > 0)
       <span class="font-weight-lighter pr-3">Related hashtags:</span> 
       @foreach($tag->hashtags as $hashtag)
         <a class="btn btn-outline-secondary btn-sm py-0 pr-2" href="{{$hashtag->url()}}">#{{$hashtag->name}}</a>
       @endforeach
+      @endif
     </p>
     <p class="font-weight-lighter">
       {{$tag->posts_count}} posts
@@ -56,9 +58,6 @@
       @endforeach
     </div>
   </div>
-  <div class="d-flex justify-content-center pagination-container mt-4">
-    {{$posts->links()}}
-  </div>
 </div>
 
 @endsection
@@ -83,22 +82,4 @@
     background: linear-gradient(to right, #38ef7d, #11998e); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   }
 </style>
-@endpush
-
-@push('scripts')
-<script type="text/javascript">
-
-  $(document).ready(function() {
-    $('.pagination-container').hide();
-    $('.pagination').hide();
-    let elem = document.querySelector('.tag-timeline');
-    let infScroll = new InfiniteScroll( elem, {
-      path: '.pagination__next',
-      append: '.tag-timeline',
-      status: '.page-load-status',
-      history: true,
-    });
-  });
-
-</script>
 @endpush

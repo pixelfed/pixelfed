@@ -60,23 +60,34 @@ class DiscoverController extends Controller
         ->whereSlug($slug)
         ->firstOrFail();
 
-      // todo refactor this mess
-      $tagids = $tag->hashtags->pluck('id')->toArray();
-      $sids = StatusHashtag::whereIn('hashtag_id', $tagids)->orderByDesc('status_id')->take(500)->pluck('status_id')->toArray();
-      $posts = Status::whereIn('id', $sids)->whereNull('uri')->whereType('photo')->whereNull('in_reply_to_id')->whereNull('reblog_of_id')->orderByDesc('created_at')->paginate(21);
-      $tag->posts_count = $tag->posts()->count();
+      $posts = Cache::remember('discover:category-'.$tag->id.':posts', now()->addMinutes(15), function() use ($tag) {
+          $tagids = $tag->hashtags->pluck('id')->toArray();
+          $sids = StatusHashtag::whereIn('hashtag_id', $tagids)->orderByDesc('status_id')->take(500)->pluck('status_id')->toArray();
+          $posts = Status::whereScope('public')->whereIn('id', $sids)->whereNull('uri')->whereType('photo')->whereNull('in_reply_to_id')->whereNull('reblog_of_id')->orderByDesc('created_at')->take(39)->get();
+          return $posts;
+      });
+      $tag->posts_count = Cache::remember('discover:category-'.$tag->id.':posts_count', now()->addMinutes(30), function() use ($tag) {
+        return $tag->posts()->whereScope('public')->count();
+      });
       return view('discover.tags.category', compact('tag', 'posts'));
     }
 
     public function showPersonal(Request $request)
     {
       $profile = Auth::user()->profile;
-      // todo refactor this mess
-      $tags = Hashtag::whereHas('posts')->orderByRaw('rand()')->take(5)->get();
-      $following = $profile->following->pluck('id');
-      $following = $following->push($profile->id)->toArray();
-      $posts = Status::withCount(['likes','comments'])->whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->orderByDesc('created_at')->paginate(21);
-      $posts->post_count = Status::whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->count();
+
+      $tags = Cache::remember('profile-'.$profile->id.':hashtags', now()->addMinutes(15), function() use ($profile){
+          return $profile->hashtags()->groupBy('hashtag_id')->inRandomOrder()->take(8)->get();
+      });
+      $following = Cache::remember('profile:following:'.$profile->id, now()->addMinutes(60), function() use ($profile) {
+          $res = Follower::whereProfileId($profile->id)->pluck('following_id');
+          return $res->push($profile->id)->toArray();
+      });
+      $posts = Cache::remember('profile-'.$profile->id.':hashtag-posts', now()->addMinutes(5), function() use ($profile, $following) {
+          $posts = Status::whereScope('public')->withCount(['likes','comments'])->whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->orderByDesc('created_at')->take(39)->get();
+          $posts->post_count = Status::whereScope('public')->whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->count();
+          return $posts;
+      });
       return view('discover.personal', compact('posts', 'tags'));
     }
 }
