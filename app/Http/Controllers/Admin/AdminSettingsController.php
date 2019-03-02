@@ -36,41 +36,7 @@ trait AdminSettingsController
 
     public function settingsStorage(Request $request)
     {
-      $databaseSum = Cache::remember('admin:settings:storage:db:storageUsed', now()->addMinutes(360), function() {
-        $q = 'SELECT sum(ROUND(((data_length + index_length)), 0)) AS size FROM information_schema.TABLES WHERE table_schema = ?';
-        $db = config('database.default');
-        $db = config("database.connections.{$db}.database");
-        return DB::select($q, [$db])[0]->size;
-      });
-      $mediaSum = Cache::remember('admin:settings:storage:media:storageUsed', now()->addMinutes(360), function() {
-        return Media::sum('size');
-      });
-      $backupSum = Cache::remember('admin:settings:storage:backups:storageUsed', now()->addMinutes(360), function() {
-        $dir = storage_path('app/'.config('app.name'));
-        $size = 0;
-        foreach (glob(rtrim($dir, '/').'/*', GLOB_NOSORT) as $each) {
-          $size += is_file($each) ? filesize($each) : folderSize($each);
-        }
-        return $size;
-      });
-      $storage = new \StdClass;
-      $storage->total = disk_total_space(base_path());
-      $storage->free = disk_free_space(base_path());
-      $storage->prettyTotal = PrettyNumber::size($storage->total, false, false);
-      $storage->prettyFree = PrettyNumber::size($storage->free, false, false);
-      $storage->percentFree = ceil($storage->free / $storage->total * 100);
-      $storage->percentUsed = ceil(100 - $storage->percentFree);
-      $storage->media = [
-        'used' => $mediaSum,
-        'prettyUsed' => PrettyNumber::size($mediaSum),
-        'percentUsed' => ceil($mediaSum / $storage->total * 100)
-      ];
-      $storage->backups = [
-        'used' => $backupSum
-      ];
-      $storage->database = [
-        'used' => $databaseSum
-      ];
+      $storage = [];
       return view('admin.settings.storage', compact('storage'));
     }
 
