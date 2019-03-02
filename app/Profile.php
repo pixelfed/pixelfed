@@ -279,4 +279,16 @@ class Profile extends Model
     {
         return $this->hasMany(Circle::class);
     }
+
+    public function hashtags()
+    {
+        return $this->hasManyThrough(
+            Hashtag::class,
+            StatusHashtag::class,
+            'profile_id',
+            'id',
+            'id',
+            'hashtag_id'
+        );
+    }
 }
