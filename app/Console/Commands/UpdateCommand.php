@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Schema;
-use App\{Media, Status};
 use Illuminate\Console\Command;
 use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
 
@@ -23,21 +22,6 @@ class UpdateCommand extends Command
      */
     protected $description = 'Run pixelfed schema updates between versions.';
 
-    protected $versions = [
-        '0.1.0',
-        '0.1.2',
-        '0.1.3',
-        '0.1.4',
-        '0.1.5',
-        '0.1.6',
-        '0.1.7',
-        '0.1.8',
-        '0.1.9',
-        '0.2.1',
-    ];
-
-    protected $version;
-
     /**
      * Create a new command instance.
      *
@@ -55,150 +39,45 @@ class UpdateCommand extends Command
      */
     public function handle()
     {
-        $this->verifyVersion();
+        $this->update();
     }
 
-    public function verifyVersion()
+    public function update()
     {
-        $this->callSilent('config:cache');
-        $this->version = config('pixelfed.version');
-
-        $known = in_array($this->version, $this->versions);
-        if($known == false) {
-            $this->error('Unknown version found, aborting...');
-            exit;   
-        }
-        $this->updateStrategy($this->version);
-    }
-
-    public function updateStrategy($version)
-    {
-        switch ($version) {
-            case '0.1.8':
-                $this->info('You are running an older version that doesn\'t require any updates!');
-                break;
-
-            case '0.1.9':
-                $this->update019();
-                break;
-
-            case '0.2.1':
-                $this->update021();
-                break;
-
-            default:
-                # code...
-                break;
-        }
-    }
-
-    public function update019()
-    {
-        $this->buildVersionFile();
         $v = $this->getVersionFile();
-        if($v['updated'] == true) {
-            $this->info('Already up to date!');
-            exit;
+        if($v && isset($v['commit_hash']) && $v['commit_hash'] == exec('git rev-parse HEAD') && \App\StatusHashtag::whereNull('profile_id')->count() == 0) {
+            $this->info('No updates found.');
+            return;
         }
-        $exists = Schema::hasColumn('statuses','scope');
-        if(!$exists) {
-            $this->error('You need to run the migrations before you proceed with this update.');
-            if($this->confirm('Do you want to run the migrations?')) {
-                $this->callSilent('migrate');
-            } else {
-                exit;
-            }
-        }
-        $statusCount = Status::count();
-        $this->info('Running updates ...');
-        $bar = $this->output->createProgressBar($statusCount);
-        Status::chunk(200, function($statuses) use ($bar) {
-
-            foreach($statuses as $status) {
-                $ts = $status->updated_at;
-                $status->scope = $status->visibility;
-                $status->updated_at = $ts;
-                $status->save();
-
-                if($status->firstMedia()) {
-                    $media = $status->firstMedia();
-                    if(in_array($media->mime, ['image/jpeg', 'image/png'])) {
-                        ImageThumbnail::dispatch($media);
-                    }
+        $bar = $this->output->createProgressBar(\App\StatusHashtag::count());
+        \App\StatusHashtag::whereNull('profile_id')->with('status')->chunk(50, function($sh) use ($bar) {
+            foreach($sh as $status_hashtag) {
+                if(!$status_hashtag->status) {
+                    $status_hashtag->delete();
+                } else {
+                    $status_hashtag->profile_id = $status_hashtag->status->profile_id;
+                    $status_hashtag->save();
                 }
                 $bar->advance();
             }
         });
-        $this->updateVersionFile('0.1.9', true);
+        $this->updateVersionFile();
         $bar->finish();
-    }
-
-    public function update021()
-    {
-        $this->buildVersionFile();
-        $v = $this->getVersionFile();
-        if($v['updated'] == true) {
-            $this->info('Already up to date!');
-            exit;
-        }
-
-        $statusCount = Status::count();
-        $this->info('Running updates ...');
-        $bar = $this->output->createProgressBar($statusCount);
-        Status::has('media')->chunk(200, function($statuses) use ($bar) {
-
-            foreach($statuses as $status) {
-                if($status->firstMedia()) {
-                    $media = $status->firstMedia();
-                    if(in_array($media->mime, ['image/jpeg', 'image/png'])) {
-                        ImageThumbnail::dispatch($media);
-                    }
-                }
-                $bar->advance();
-            }
-        });
-        $this->updateVersionFile('0.2.1', true);
-        $bar->finish();
-    }
-
-    protected function buildVersionFile()
-    {
-        $path = storage_path('app/version.json');
-        if(is_file($path) == false) {
-            $contents = json_encode([
-                'version' => $this->version,
-                'updated' => false,
-                'timestamp' => date('c')
-            ], JSON_PRETTY_PRINT);
-            file_put_contents($path, $contents);
-        }
     }
 
     protected function getVersionFile()
     {
         $path = storage_path('app/version.json');
-        if(is_file($path) == false) {
-            $contents = [
-                'version' => $this->version,
-                'updated' => false,
-                'timestamp' => date('c')
-            ];
-            $json = json_encode($contents, JSON_PRETTY_PRINT);
-            file_put_contents($path, $json);
-            return $contents;
-        } else {
-            return json_decode(file_get_contents($path), true);
-        }
+        return is_file($path) ? 
+            json_decode(file_get_contents($path), true) :
+            false;
     }
 
-    protected function updateVersionFile($version, $updated = false) {
+    protected function updateVersionFile() {
         $path = storage_path('app/version.json');
-        if(is_file($path) == false) {
-            return;
-        }
         $contents = [
-            'version' => $version,
-            'updated' => $updated,
+            'commit_hash' => exec('git rev-parse HEAD'),
+            'version' => config('pixelfed.version'),
             'timestamp' => date('c')
         ];
         $json = json_encode($contents, JSON_PRETTY_PRINT);
