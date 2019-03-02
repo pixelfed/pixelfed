@@ -37,7 +37,7 @@ class DiscoverController extends Controller
 
         $page = $request->input('page') ?? 1;
         $key = 'discover:tag-'.$tag->id.':page-'.$page;
-        $keyMinutes = $page > 1 ? 5 : 2;
+        $keyMinutes = $page == 1 ? 15 : 5;
 
         $posts = Cache::remember($key, now()->addMinutes($keyMinutes), function() use ($tag, $request) {
           return $tag->posts()
