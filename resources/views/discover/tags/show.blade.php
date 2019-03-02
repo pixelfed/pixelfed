@@ -15,9 +15,6 @@
         <div class="username-bar pb-2  d-flex align-items-center">
           <span class="h1">{{$tag->name}}</span>
         </div>
-        <p class="font-weight-bold">
-          {{$tag->posts_count}} posts
-        </p>
       </div>
     </div>
   </div>
