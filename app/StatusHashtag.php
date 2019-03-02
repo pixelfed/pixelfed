@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class StatusHashtag extends Model
 {
-    public $fillable = ['status_id', 'hashtag_id'];
+    public $fillable = [
+    	'status_id', 
+    	'hashtag_id', 
+    	'profile_id'
+    ];
 
 	public function status()
 	{
@@ -16,5 +20,10 @@ class StatusHashtag extends Model
 	public function hashtag()
 	{
 		return $this->belongsTo(Hashtag::class);
+	}
+
+	public function profile()
+	{
+		return $this->belongsTo(Profile::class);
 	}
 }
