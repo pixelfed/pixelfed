@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Jobs\InboxPipeline\InboxWorker;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
-use App\Profile;
+use App\{
+    AccountLog,
+    Like,
+    Profile,
+    Status
+};
 use App\Transformer\ActivityPub\ProfileOutbox;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
@@ -80,14 +85,42 @@ class FederationController extends Controller
 
     public function nodeinfo()
     {
-        $res = Cache::remember('api:nodeinfo', now()->addHours(1), function () {
+        $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
+            $git = Cache::remember('api:nodeinfo:git', now()->addHours(1), function() {
+                $hash = exec('git rev-parse HEAD');
+                $gitUrl = 'https://github.com/pixelfed/pixelfed/commit/' . $hash;
+                return [
+                    'commit_hash' => $hash,
+                    'url'  => $gitUrl
+                ];
+            });
+            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
+                $count = collect([]);
+                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($likes);
+                $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($statuses);
+                $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
+                $count = $count->merge($profiles);
+                return $count->count();
+            });
+            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(12), function() {
+                $count = collect([]);
+                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($likes);
+                $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($statuses);
+                $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
+                $count = $count->merge($profiles);
+                return $count->count();
+            });
             return [
                 'metadata' => [
                     'nodeName' => config('app.name'),
                     'software' => [
-                        'homepage' => 'https://pixelfed.org',
-                        'github'   => 'https://github.com/pixelfed',
-                        'follow'   => 'https://mastodon.social/@pixelfed',
+                        'homepage'  => 'https://pixelfed.org',
+                        'repo'      => 'https://github.com/pixelfed/pixelfed',
+                        'git'       => $git
                     ],
                     'captcha' => (bool) config('pixelfed.recaptcha'),
                 ],
@@ -100,16 +133,16 @@ class FederationController extends Controller
                     'outbound' => [],
                 ],
                 'software' => [
-                    'name'    => 'pixelfed',
-                    'version' => config('pixelfed.version'),
+                    'name'          => 'pixelfed',
+                    'version'       => config('pixelfed.version'),
                 ],
                 'usage' => [
                     'localPosts'    => \App\Status::whereLocal(true)->whereHas('media')->count(),
                     'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
                     'users'         => [
                         'total'          => \App\User::count(),
-                        'activeHalfyear' => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(6)->toDateTimeString())->groupBy('user_id')->get()->count(),
-                        'activeMonth'    => \App\AccountLog::select('user_id')->whereAction('auth.login')->where('updated_at', '>',Carbon::now()->subMonths(1)->toDateTimeString())->groupBy('user_id')->get()->count(),
+                        'activeHalfyear' => $activeHalfYear,
+                        'activeMonth'    => $activeMonth,
                     ],
                 ],
                 'version' => '2.0',
