@@ -44,31 +44,7 @@
       @endforeach
     </div>
   </div>
-  <div class="d-flex justify-content-center pagination-container mt-4">
-    {{$posts->links()}}
-  </div>
 </div>
 
 @endsection
 
-@push('meta')
-<meta property="og:description" content="Discover {{$tag->name}}">
-@endpush
-
-@push('scripts')
-<script type="text/javascript">
-
-  $(document).ready(function() {
-    $('.pagination-container').hide();
-    $('.pagination').hide();
-    let elem = document.querySelector('.tag-timeline');
-    let infScroll = new InfiniteScroll( elem, {
-      path: '.pagination__next',
-      append: '.tag-timeline',
-      status: '.page-load-status',
-      history: true,
-    });
-  });
-
-</script>
-@endpush
