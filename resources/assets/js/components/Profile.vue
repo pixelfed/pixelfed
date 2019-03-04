@@ -22,7 +22,7 @@
 								<span class="pl-4" v-if="owner">
 									<a class="fas fa-cog fa-lg text-muted" href="/settings/home"></a>
 								</span>
-								<span v-if="!owner && user.hasOwnProperty('id')">
+								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 									<span class="pl-4" v-if="relationship.following == true">
 										<button type="button"  class="btn btn-outline-secondary font-weight-bold px-4 py-0" v-on:click="followProfile()">Unfollow</button>
 									</span>
@@ -213,10 +213,12 @@
 						</a>
 					</div>
 				</div>
-				<infinite-loading @infinite="infiniteTimeline">
-					<div slot="no-more"></div>
-					<div slot="no-results"></div>
-				</infinite-loading>
+				<div v-if="timeline.length">
+					<infinite-loading @infinite="infiniteTimeline">
+						<div slot="no-more"></div>
+						<div slot="no-results"></div>
+					</infinite-loading>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -324,6 +326,8 @@ export default {
 			user: {},
 			timeline: [],
 			timelinePage: 2,
+			min_id: 0,
+			max_id: 0,
 			loading: true,
 			owner: false,
 			mode: 'grid',
@@ -368,11 +372,15 @@ export default {
 			axios.get(apiUrl, {
 				params: {
 					only_media: true,
-					page: 1,
+					min_id: 1,
 				}
 			})
 			.then(res => {
-				this.timeline = res.data;
+				let data = res.data;
+				this.timeline = data;
+				let ids = data.map(status => status.id);
+				this.min_id = Math.max(...ids);
+				this.max_id = Math.min(...ids);
 				this.modalStatus = _.first(res.data);
 				this.loading = false;
 				this.ownerCheck();
@@ -393,14 +401,16 @@ export default {
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 			axios.get(apiUrl, {
 				params: {
-					page: this.timelinePage,
-					only_media: true
+					only_media: true,
+					max_id: this.max_id
 				},
 			}).then(res => {
 				if (res.data.length && this.loading == false) {
 					let data = res.data;
 					this.timeline.push(...data);
-					this.timelinePage += 1;
+					let ids = data.map(status => status.id);
+					this.max_id = Math.min(...ids);
+					this.loading = false;
 					$state.loaded();
 				} else {
 					$state.complete();
@@ -651,6 +661,9 @@ export default {
 			}).then(res => {
 				if(this.relationship.following) {
 					this.profile.followers_count--;
+					if(this.profile.locked == true) {
+						window.location.href = '/';
+					}
 				} else {
 					this.profile.followers_count++;
 				}
