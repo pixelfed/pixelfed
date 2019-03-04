@@ -14,14 +14,14 @@
             </ul>
             @endauth
 
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav mx-auto">
                 @guest
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
-                    <li class="pr-md-2">
+                    <li class="">
                         <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
-                        <span class="d-block d-md-none">
+                        <span class="d-block d-md-none" data-toggle="tooltip" title="Home Timeline">
                             <i class="fas fa-home fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
@@ -29,10 +29,10 @@
                         </span>
                         </a>
                     </li>
-                    <li class="pr-md-2">
-                        <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public" title="Local Timeline">
-                        <span class="d-block d-md-none">
-                            <i class="far fa-map fa-lg"></i>
+                    <li class="px-sm-3">
+                        <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public">
+                        <span class="d-block d-md-none" data-toggle="tooltip" title="Local Timeline">
+                            <i class="fas fa-align-justify fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
                              {{__('navmenu.local')}}
@@ -40,10 +40,11 @@
                         </a>
                     </li>
                     <li class="d-block d-md-none">
-                        <a class="nav-link" href="/account/activity">
-                            <i class="fas fa-inbox fa-lg"></i>
+                        <a class="nav-link" href="/account/activity" data-toggle="tooltip" title="Notifications">
+                            <i class="far fa-bell fa-lg"></i>
                         </a>
                     </li>
+
                     {{-- <li class="pr-2">
                         <a class="nav-link font-weight-bold" href="/" title="Home">
                         {{ __('Network') }}
@@ -56,16 +57,20 @@
                         </span>
                         </a>
                     </li>
-                    <li class="nav-item pr-md-2">
-                        <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
-                            <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
-                              <i class="fas fa-camera-retro fa-lg text-primary"></i>
-                            </a>
-                        </div>
-                    </li>
+                    <div class="d-none d-md-block">
+                        <li class="nav-item pr-md-2">
+                            <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
+                                <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
+                                  <i class="fas fa-camera-retro fa-lg text-primary"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </div>
+                </ul>
+                <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
-                            <i class="far fa-user fa-lg"></i>
+                            <img class="rounded-circle box-shadow mr-1" src="{{Auth::user()->profile->avatarUrl()}}" width="26px" height="26px">
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -125,10 +130,3 @@
         </div>
     </div>
 </nav>
-@auth
-<nav class="breadcrumb d-md-none d-flex">
-  <form class="form-inline search-form mx-auto">
-   <input class="form-control mr-sm-2 search-form-input" type="search" placeholder="{{__('navmenu.search')}}" aria-label="Search">
-  </form>
-</nav>
-@endauth
