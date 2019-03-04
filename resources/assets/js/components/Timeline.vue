@@ -153,7 +153,7 @@
 			</div>
 		</div>
 
-		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2">
+		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2  d-none d-md-block">
 			<div class="mb-4">
 				<div class="card profile-card">
 					<div class="card-body loader text-center">
