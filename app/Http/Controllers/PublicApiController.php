@@ -328,6 +328,7 @@ class PublicApiController extends Controller
                 ->orWhere('status', '!=', null)
                 ->pluck('id');
         });
+
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
@@ -457,51 +458,72 @@ class PublicApiController extends Controller
             'only_media' => 'nullable',
             'pinned' => 'nullable',
             'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:1',
-            'since_id' => 'nullable|integer|min:1',
-            'min_id' => 'nullable|integer|min:1',
+            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'limit' => 'nullable|integer|min:1|max:24'
         ]);
-        $limit = $request->limit ?? 20;
-        $max_id = $request->max_id ?? false;
-        $min_id = $request->min_id ?? false;
-        $since_id = $request->since_id ?? false;
-        $only_media = $request->only_media ?? false;
-        $user = Auth::user();
-        $account = Profile::whereNull('status')->findOrFail($id);
-        $statuses = Status::whereProfileId($id)
-            ->whereNull('uri');
 
-        if(!$user || $user->profile->id != $account->id && !$user->profile->follows($account)) {
-            $statuses = $statuses->whereVisibility('public');
+        $profile = Profile::whereNull('status')->findOrFail($id);
+
+        $limit = $request->limit ?? 9;
+        $max_id = $request->max_id;
+        $min_id = $request->min_id;
+        $scope = $request->only_media == true ? 
+            ['photo', 'photo:album', 'video', 'video:album'] :
+            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+       
+        if($profile->is_private) {
+            if(!Auth::check()) {
+                return response()->json([]);
+            }
+            $pid = Auth::user()->profile->id;
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Follower::whereProfileId($pid)->pluck('following_id');
+                return $following->push($pid)->toArray();
+            });
+            $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
         } else {
-            $statuses = $statuses->whereIn('visibility', ['public', 'unlisted', 'private']);
+            if(Auth::check()) {
+                $pid = Auth::user()->profile->id;
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                    $following = Follower::whereProfileId($pid)->pluck('following_id');
+                    return $following->push($pid)->toArray();
+                });
+                $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : ['public'];
+            } else {
+                $visibility = ['public'];
+            }
         }
-        if($only_media == true) {
-            $statuses = $statuses
-                ->whereHas('media')
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id');
-        }
-        if($id == $account->id && !$max_id && !$min_id && !$since_id) {
-            $statuses = $statuses->orderBy('id', 'desc')
-                ->simplePaginate($limit);
-        } else if($since_id) {
-            $statuses = $statuses->where('id', '>', $since_id)
-                ->orderBy('id', 'DESC')
-                ->simplePaginate($limit);
-        } else if($min_id) {
-            $statuses = $statuses->where('id', '>', $min_id)
-                ->orderBy('id', 'ASC')
-                ->simplePaginate($limit);
-        } else if($max_id) {
-            $statuses = $statuses->where('id', '<', $max_id)
-                ->orderBy('id', 'DESC')
-                ->simplePaginate($limit);
-        } else {
-            $statuses = $statuses->orderBy('id', 'desc')->simplePaginate($limit);
-        }
-        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+
+
+        $dir = $min_id ? '>' : '<';
+        $id = $min_id ?? $max_id;
+        $timeline = Status::select(
+            'id', 
+            'uri',
+            'caption',
+            'rendered',
+            'profile_id', 
+            'type',
+            'in_reply_to_id',
+            'reblog_of_id',
+            'is_nsfw',
+            'scope',
+            'local',
+            'created_at',
+            'updated_at'
+          )->whereProfileId($profile->id)
+          ->whereIn('type', $scope)
+          ->whereLocal(true)
+          ->whereNull('uri')
+          ->where('id', $dir, $id)
+          ->whereIn('visibility',$visibility)
+          ->orderBy('created_at', 'desc')
+          ->limit($limit)
+          ->get();
+
+        $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);

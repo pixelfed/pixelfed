@@ -68,7 +68,9 @@ class FollowerController extends Controller
             $follower->delete();
         }
 
+        Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
         Cache::forget('profile:following:'.$user->id);
+        Cache::forget('profile:followers:'.$user->id);
     }
 }
