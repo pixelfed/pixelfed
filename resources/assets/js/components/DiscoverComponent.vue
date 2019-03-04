@@ -1,7 +1,7 @@
 <template>
 <div class="container">
 
-  <section class="mb-5 pb-3 px-2 d-flex" style="overflow-x: hidden;" v-if="categories.length > 0">
+  <section class="mb-5 pb-3 px-2 d-xs-none d-md-block" style="overflow-x: hidden;" v-if="categories.length > 0">
     <a class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow" style="width:160px;height:100px;" href="/discover/personal">
       <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;border-bottom: 2px solid #fff;">For You</p>
     </a>
