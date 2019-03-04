@@ -80,7 +80,7 @@ class Status extends Model
             $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
             if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album'])) {
-                return 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+                return url(Storage::url('public/no-preview.png'));
             }
 
             return url(Storage::url($this->firstMedia()->thumbnail_path));
