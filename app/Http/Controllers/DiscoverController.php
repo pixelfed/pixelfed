@@ -36,15 +36,39 @@ class DiscoverController extends Controller
         $keyMinutes = 15;
 
         $posts = Cache::remember($key, now()->addMinutes($keyMinutes), function() use ($tag, $request) {
-          return $tag->posts()
+          $tags = StatusHashtag::select('status_id')
+            ->whereHashtagId($tag->id)
+            ->orderByDesc('id')
+            ->take(48)
+            ->pluck('status_id');
+
+          return Status::select(
+            'id', 
+            'uri',
+            'caption',
+            'rendered',
+            'profile_id', 
+            'type',
+            'in_reply_to_id',
+            'reblog_of_id',
+            'is_nsfw',
+            'scope',
+            'local',
+            'created_at',
+            'updated_at'
+          )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+          ->with('media')
+          ->whereLocal(true)
+          ->whereNull('uri')
+          ->whereIn('id', $tags)
+          ->whereNull('in_reply_to_id')
+          ->whereNull('reblog_of_id')
           ->whereNull('url')
           ->whereNull('uri')
-          ->whereHas('media')
           ->withCount(['likes', 'comments'])
           ->whereIsNsfw(false)
           ->whereVisibility('public')
           ->orderBy('id', 'desc')
-          ->take(24)
           ->get();
         });
 
