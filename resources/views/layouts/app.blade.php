@@ -39,7 +39,7 @@
     @if(Auth::check())
   <div class="d-block d-sm-none fixed-bottom">
     <div class="float-right m-3">
-      <button class="bg-primary p-3 rounded-circle text-white box-shadow border-0 align-middle" data-toggle="modal" data-target="#composeModal"><i class="fas fa-plus fa-2x"></i></button>
+      <button class="bg-primary rounded-circle text-white box-shadow border-0" data-toggle="modal" data-target="#composeModal" style="width:60px;height: 60px;"><i class="fas fa-plus fa-2x mb-0"></i></button>
     </div>
   </div>
     <div class="modal" tabindex="-1" role="dialog" id="composeModal">
