@@ -468,10 +468,10 @@ class PublicApiController extends Controller
         $since_id = $request->since_id ?? false;
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
-        $account = Profile::findOrFail($id);
-        $statuses = $account->statuses()
-            ->getQuery()
+        $account = Profile::whereNull('status')->findOrFail($id);
+        $statuses = Status::whereProfileId($id)
             ->whereNull('uri');
+
         if(!$user || $user->profile->id != $account->id && !$user->profile->follows($account)) {
             $statuses = $statuses->whereVisibility('public');
         } else {
@@ -485,21 +485,21 @@ class PublicApiController extends Controller
         }
         if($id == $account->id && !$max_id && !$min_id && !$since_id) {
             $statuses = $statuses->orderBy('id', 'desc')
-                ->paginate($limit);
+                ->simplePaginate($limit);
         } else if($since_id) {
             $statuses = $statuses->where('id', '>', $since_id)
                 ->orderBy('id', 'DESC')
-                ->paginate($limit);
+                ->simplePaginate($limit);
         } else if($min_id) {
             $statuses = $statuses->where('id', '>', $min_id)
                 ->orderBy('id', 'ASC')
-                ->paginate($limit);
+                ->simplePaginate($limit);
         } else if($max_id) {
             $statuses = $statuses->where('id', '<', $max_id)
                 ->orderBy('id', 'DESC')
-                ->paginate($limit);
+                ->simplePaginate($limit);
         } else {
-            $statuses = $statuses->orderBy('id', 'desc')->paginate($limit);
+            $statuses = $statuses->orderBy('id', 'desc')->simplePaginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
