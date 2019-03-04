@@ -356,7 +356,6 @@ export default {
 		fetchProfile() {
 			axios.get('/api/v1/accounts/' + this.profileId).then(res => {
 				this.profile = res.data;
-				this.loading = false;
 			});
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.user = res.data;
