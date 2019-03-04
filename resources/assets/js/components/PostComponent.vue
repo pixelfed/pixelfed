@@ -277,10 +277,6 @@ export default {
         }
       }
 
-      if(this.status) {
-        let title = this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes';
-        $('head title').text(title);
-      }
     },
 
     methods: {
@@ -338,6 +334,7 @@ export default {
                 $('.postComponent').removeClass('d-none');
                 $('.postPresenterLoader').addClass('d-none');
                 $('.postPresenterContainer').removeClass('d-none');
+                $('head title').text(this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes');
             }).catch(error => {
               if(!error.response) {
                 $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');

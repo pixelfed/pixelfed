@@ -437,17 +437,20 @@
 			},
 
 			fetchTimelineApi() {
-				let homeTimeline = '/api/v1/timelines/home?page=1';
-				let localTimeline = '/api/v1/timelines/public?page=1';
+				let homeTimeline = '/api/v1/timelines/home';
+				let localTimeline = '/api/v1/timelines/public';
 				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
-				axios.get(apiUrl).then(res => {
+				axios.get(apiUrl, {
+					params: {
+						max_id: 0,
+						limit: 4
+					}
+				}).then(res => {
 					let data = res.data;
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
-					this.min_id = Math.min(...ids);
-					if(this.page == 1) {
-						this.max_id = Math.max(...ids);
-					}
+					this.min_id = Math.max(...ids);
+					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
 					this.fetchNotifications();
@@ -461,17 +464,16 @@
 				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
 				axios.get(apiUrl, {
 					params: {
-						page: this.page,
+						max_id: this.max_id,
+						limit: 4
 					},
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
 						this.feed.push(...data);
 						let ids = data.map(status => status.id);
-						this.min_id = Math.min(...ids);
-						if(this.page == 1) {
-							this.max_id = Math.max(...ids);
-						}
+						this.min_id = Math.max(...ids);
+						this.max_id = Math.min(...ids);
 						this.page += 1;
 						$state.loaded();
 						this.loading = false;

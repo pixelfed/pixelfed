@@ -209,8 +209,8 @@ class PublicApiController extends Controller
 
         $this->validate($request,[
           'page'        => 'nullable|integer|max:40',
-          'min_id'      => 'nullable|integer',
-          'max_id'      => 'nullable|integer',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'limit'       => 'nullable|integer|max:20'
         ]);
 
@@ -252,10 +252,10 @@ class PublicApiController extends Controller
                         'local',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->where('id', $dir, $id)
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereLocal(true)
                       ->whereNull('uri')
-                      ->where('id', $dir, $id)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
@@ -303,8 +303,8 @@ class PublicApiController extends Controller
 
         $this->validate($request,[
           'page'        => 'nullable|integer|max:40',
-          'min_id'      => 'nullable|integer',
-          'max_id'      => 'nullable|integer',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'limit'       => 'nullable|integer|max:20'
         ]);
 
