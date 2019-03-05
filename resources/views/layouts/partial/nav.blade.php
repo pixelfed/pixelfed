@@ -21,7 +21,7 @@
                 @else
                     <li class="">
                         <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
-                        <span class="d-block d-md-none" data-toggle="tooltip" title="Home Timeline">
+                        <span class="d-block d-md-none mr-1" data-toggle="tooltip" title="Home Timeline">
                             <i class="fas fa-home fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
@@ -29,10 +29,10 @@
                         </span>
                         </a>
                     </li>
-                    <li class="px-sm-3">
+                    <li>
                         <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public">
-                        <span class="d-block d-md-none" data-toggle="tooltip" title="Local Timeline">
-                            <i class="fas fa-align-justify fa-lg"></i>
+                        <span class="d-block d-md-none mx-2" data-toggle="tooltip" title="Local Timeline">
+                            <i class="far fa-map fa-lg"></i>
                         </span>
                         <span class="d-none d-md-block">
                              {{__('navmenu.local')}}
@@ -40,7 +40,7 @@
                         </a>
                     </li>
                     <li class="d-block d-md-none">
-                        <a class="nav-link" href="/account/activity" data-toggle="tooltip" title="Notifications">
+                        <a class="nav-link ml-1" href="/account/activity" data-toggle="tooltip" title="Notifications">
                             <i class="far fa-bell fa-lg"></i>
                         </a>
                     </li>
