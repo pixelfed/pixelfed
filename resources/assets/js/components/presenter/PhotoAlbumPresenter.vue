@@ -13,8 +13,8 @@
 				:interval="0"
 			>
 				<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
-					<div slot="img" :class="img.filter_class">
-						<img class="d-block img-fluid w-100" :src="img.url" :alt="img.description" :title="img.description">
+					<div slot="img" :class="img.filter_class + ' d-block mx-auto text-center'" style="max-height: 600px;">
+						<img class="img-fluid" style="max-height: 600px;" :src="img.url" :alt="img.description" :title="img.description">
 					</div>
 				</b-carousel-slide>
 			</b-carousel>
@@ -29,8 +29,8 @@
 			:interval="0"
 		>
 			<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
-				<div slot="img" :class="img.filter_class">
-					<img class="d-block img-fluid w-100" :src="img.url" :alt="img.description" :title="img.description">
+				<div slot="img" :class="img.filter_class + ' d-block mx-auto text-center'" style="max-height: 600px;">
+					<img class="img-fluid" style="max-height: 600px;" :src="img.url" :alt="img.description" :title="img.description">
 				</div>
 			</b-carousel-slide>
 		</b-carousel>
