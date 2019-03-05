@@ -14,11 +14,12 @@
             </ul>
             @endauth
 
-            <ul class="navbar-nav mx-auto">
                 @guest
+            <ul class="navbar-nav ml-auto">
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
+            <ul class="navbar-nav mx-auto">
                     <li class="">
                         <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
                         <span class="d-block d-md-none mr-1" data-toggle="tooltip" title="Home Timeline">
