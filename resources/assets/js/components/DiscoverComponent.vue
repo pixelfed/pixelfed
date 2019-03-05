@@ -1,8 +1,8 @@
 <template>
 <div class="container">
 
-  <section class="mb-5 pb-3 px-2 d-flex" style="overflow-x: hidden;" v-if="categories.length > 0">
-    <a class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow" style="width:160px;height:100px;" href="/discover/personal">
+  <section class="d-none d-md-flex mb-md-5 pb-md-3 px-2" style="overflow-x: hidden;" v-if="categories.length > 0">
+    <a class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" href="/discover/personal">
       <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;border-bottom: 2px solid #fff;">For You</p>
     </a>
 
@@ -10,7 +10,7 @@
       <i class="fas fa-chevron-circle-left fa-lg text-muted"></i>
     </div>
 
-    <a v-for="(category, index) in categories" :key="index+'_cat_'" class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" :href="category.url" :style="'width:160px;height:100px;background: linear-gradient(rgba(0, 0, 0, 0.3),rgba(0, 0, 0, 0.3)),url('+category.thumb+');'">
+    <a v-for="(category, index) in categories" :key="index+'_cat_'" class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" :href="category.url" :style="'background: linear-gradient(rgba(0, 0, 0, 0.3),rgba(0, 0, 0, 0.3)),url('+category.thumb+');'">
       <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;">{{category.name}}</p>
     </a>
 
@@ -42,6 +42,8 @@
 
 <style type="text/css" scoped>
   .card-disc {
+    width:160px;
+    height:100px;
     background-size: cover !important;
   }
 </style>
