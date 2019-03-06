@@ -17,8 +17,8 @@ class DeleteNote extends Fractal\TransformerAbstract
 			'type' 					=> 'Delete',
 			'actor' 				=> $status->profile->permalink(),
 			'object' 				=> [
-				'id' 				=> $status->permalink()
-				'type' 				=> 'Tombstone',
+				'id' 				=> $status->permalink(),
+				'type' 				=> 'Tombstone'
 			]
 	}
 
