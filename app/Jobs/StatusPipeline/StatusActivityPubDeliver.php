@@ -52,6 +52,7 @@ class StatusActivityPubDeliver implements ShouldQueue
         $audience = $status->profile->getAudienceInbox();
         $profile = $status->profile;
 
+        Cache::forget('status:transformer:media:attachments:'.$status->id);
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($status, new CreateNote());
