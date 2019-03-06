@@ -71,4 +71,9 @@ class User extends Authenticatable
     {
         return 'App.User.'.$this->id;
     }
+
+    public function devices()
+    {
+        return $this->hasMany(UserDevice::class);
+    }
 }
