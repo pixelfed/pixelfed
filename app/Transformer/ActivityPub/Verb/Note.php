@@ -47,7 +47,7 @@ class Note extends Fractal\TransformerAbstract
 					'type'      => $media->activityVerb(),
 					'mediaType' => $media->mime,
 					'url'       => $media->url(),
-					'name'      => null,
+					'name'      => $media->caption,
 				];
 			})->toArray(),
 			'tag' 				=> $tags,
