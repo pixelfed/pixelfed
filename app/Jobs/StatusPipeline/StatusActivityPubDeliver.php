@@ -2,6 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
+use Cache;
 use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
