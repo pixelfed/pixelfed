@@ -13,6 +13,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use App\Transformer\ActivityPub\Verb\DeleteNote;
+use App\Util\ActivityPub\Helpers;
 
 class StatusDelete implements ShouldQueue
 {
@@ -46,7 +50,12 @@ class StatusDelete implements ShouldQueue
     {
         $status = $this->status;
 
-        $this->unlinkRemoveMedia($status);
+        if(config('pixelfed.activitypub_enabled') == true) {
+            $this->fanoutDelete($status);
+        } else {
+            $this->unlinkRemoveMedia($status);
+        }
+
     }
 
     public function unlinkRemoveMedia($status)
@@ -86,5 +95,23 @@ class StatusDelete implements ShouldQueue
         $status->delete();
 
         return true;
+    }
+
+    protected function fanoutDelete($status)
+    {
+        $audience = $status->profile->getAudienceInbox();
+        $profile = $status->profile;
+
+        $fractal = new Fractal\Manager();
+        $fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Item($status, new DeleteNote());
+        $activity = $fractal->createData($resource)->toArray();
+
+        $this->unlinkRemoveMedia($status);
+        
+        foreach($audience as $url) {
+            Helpers::sendSignedObject($profile, $url, $activity);
+        }
+
     }
 }
