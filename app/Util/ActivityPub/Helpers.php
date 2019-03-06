@@ -293,6 +293,14 @@ class Helpers {
 
 	public static function profileFirstOrNew($url, $runJobs = false)
 	{
+		$url = self::validateUrl($url);
+		$host = parse_url($url, PHP_URL_HOST);
+		$local = config('pixelfed.domain.app') == $host ? true : false;
+
+		if($local == true) {
+			$id = last(explode('/', $url));
+			return Profile::whereUsername($id)->firstOrFail();
+		}
  		$res = self::fetchProfileFromUrl($url);
  		$domain = parse_url($res['id'], PHP_URL_HOST);
         $username = $res['preferredUsername'];
