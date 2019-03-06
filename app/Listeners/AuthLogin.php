@@ -7,6 +7,7 @@ use App\{
     Follower,
     Profile,
     User,
+    UserDevice,
     UserFilter,
     UserSetting
 };
@@ -30,6 +31,13 @@ class AuthLogin
             return;
         }
 
+        $this->userSettings($user);
+        $this->userState($user);
+        $this->userDevice($user);
+    }
+
+    protected function userSettings($user)
+    {
         if (empty($user->settings)) {
             DB::transaction(function() use($user) {
                 UserSetting::firstOrCreate([
@@ -37,7 +45,10 @@ class AuthLogin
                 ]);
             });
         }
-        
+    }
+
+    protected function userState($user)
+    {
         if($user->status != null) {
             $profile = $user->profile;
             if(!$profile) {
@@ -65,5 +76,16 @@ class AuthLogin
                     break;
             }
         }
+    }
+
+    protected function userDevice($user)
+    {
+        $device = DB::transaction(function() use($user) {
+            return UserDevice::firstOrCreate([
+                'user_id'       => $user->id,
+                'ip'            => request()->ip(),
+                'user_agent'    => request()->userAgent(),
+            ]);
+        });
     }
 }
