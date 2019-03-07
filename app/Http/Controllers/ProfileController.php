@@ -68,6 +68,17 @@ class ProfileController extends Controller
         } 
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         $profile = $user;
+        $settings = [
+            'crawlable' => $settings->crawlable,
+            'following' => [
+                'count' => $settings->show_profile_following_count,
+                'list' => $settings->show_profile_following
+            ], 
+            'followers' => [
+                'count' => $settings->show_profile_follower_count,
+                'list' => $settings->show_profile_followers
+            ]
+        ];
         return view('profile.show', compact('user', 'profile', 'settings', 'owner', 'is_following', 'is_admin'));
     }
 

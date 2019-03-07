@@ -38,13 +38,13 @@
 										Posts
 									</a>
 								</div>
-								<div class="font-weight-light pr-5">
+								<div v-if="profileSettings.followers.count" class="font-weight-light pr-5">
 									<a class="text-dark cursor-pointer" v-on:click="followersModal()">
 										<span class="font-weight-bold">{{profile.followers_count}}</span>
 										Followers
 									</a>
 								</div>
-								<div class="font-weight-light pr-5">
+								<div v-if="profileSettings.following.count" class="font-weight-light pr-5">
 									<a class="text-dark cursor-pointer" v-on:click="followingModal()">
 										<span class="font-weight-bold">{{profile.following_count}}</span>
 										Following
@@ -318,7 +318,8 @@
 <script type="text/javascript">
 export default {
 	props: [
-		'profile-id'
+		'profile-id',
+		'profile-settings'
 	],
 	data() {
 		return {
@@ -671,6 +672,9 @@ export default {
 		},
 
 		followingModal() {
+			if(this.profileSettings.following.list == false) {
+				return;
+			}
 			if(this.following.length > 0) {
 				this.$refs.followingModal.show();
 				return;
@@ -691,6 +695,9 @@ export default {
 		},
 
 		followersModal() {
+			if(this.profileSettings.followers.list == false) {
+				return;
+			}
 			if(this.followers.length > 0) {
 				this.$refs.followerModal.show();
 				return;
