@@ -24,7 +24,7 @@
         </span>
         <span class="pl-2" style="min-width:38px">
           <span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-            <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2"></post-menu>
+            <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
         </span>
       </p>
     </div>
