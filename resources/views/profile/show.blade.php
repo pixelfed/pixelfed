@@ -7,14 +7,14 @@
     </div>
 @endif
 
-<profile profile-id="{{$profile->id}}"></profile>
+<profile profile-id="{{$profile->id}}" :profile-settings="{{json_encode($settings)}}"></profile>
 
 @endsection
 
 @push('meta')<meta property="og:description" content="{{$profile->bio}}">
     <meta property="og:image" content="{{$profile->avatarUrl()}}">
     <link href="{{$profile->permalink('.atom')}}" rel="alternate" title="{{$profile->username}} on PixelFed" type="application/atom+xml">
-  @if(false == $settings->crawlable || $profile->remote_url)
+  @if(false == $settings['crawlable'] || $profile->remote_url)
   <meta name="robots" content="noindex, nofollow">
   @endif
 @endpush
