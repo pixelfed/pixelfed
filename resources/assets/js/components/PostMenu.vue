@@ -62,7 +62,7 @@
 									<a class="list-group-item font-weight-bold" v-on:click="blockProfile(status)" href="#">Block Profile</a>
 								</span>
 								<span v-if="statusOwner(status) == true || profile.is_admin == true">
-									<a class="list-group-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+									<a class="list-group-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
 								</span>
 								<span v-if="profile.is_admin == true">
 									<a class="list-group-item font-weight-bold" v-on:click="moderatePost(status, 'autocw')" href="#">
@@ -152,8 +152,9 @@
 				}
 			},
 
-
-			deletePost(status, index) {
+			deletePost() {
+				this.$emit('deletePost');
+				$('#mt_pid_'+this.status.id).modal('hide');
 			},
 
 			moderatePost(status, action, $event) {
