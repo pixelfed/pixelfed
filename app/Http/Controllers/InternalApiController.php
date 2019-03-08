@@ -23,6 +23,7 @@ use App\Transformer\Api\{
     AccountTransformer,
     StatusTransformer,
 };
+use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -63,7 +64,7 @@ class InternalApiController extends Controller
             if($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
             }
-            $m->filter_class = $media['filter'];
+            $m->filter_class = in_array($media['filter'], Filter::classes()) ? $media['filter'] : null;
             $m->license = $media['license'];
             $m->caption = strip_tags($media['alt']);
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
