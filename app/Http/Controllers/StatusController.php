@@ -16,6 +16,7 @@ use Auth;
 use Cache;
 use Illuminate\Http\Request;
 use League\Fractal;
+use App\Util\Media\Filter;
 
 class StatusController extends Controller
 {
@@ -151,6 +152,8 @@ class StatusController extends Controller
             if(in_array($v->getMimeType(), $allowedMimes) == false) {
                 continue;
             }
+            $filter_class = $request->input('filter_class');
+            $filter_name = $request->input('filter_name');
 
             $storagePath = "public/m/{$monthHash}/{$userHash}";
             $path = $v->store($storagePath);
@@ -163,8 +166,9 @@ class StatusController extends Controller
             $media->original_sha256 = $hash;
             $media->size = $v->getSize();
             $media->mime = $v->getMimeType();
-            $media->filter_class = $request->input('filter_class');
-            $media->filter_name = $request->input('filter_name');
+            
+            $media->filter_class = in_array($filter_class, Filter::classes()) ? $filter_class : null;
+            $media->filter_name = in_array($filter_name, Filter::names()) ? $filter_name : null;
             $media->order = $order;
             $media->save();
             array_push($mimes, $media->mime);
