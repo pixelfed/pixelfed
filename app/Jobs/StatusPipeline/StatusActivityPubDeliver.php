@@ -94,10 +94,10 @@ class StatusActivityPubDeliver implements ShouldQueue
         $pool = new Pool($client, $requests, [
             'concurrency' => config('pixelfed.ap_delivery_concurrency'),
             'fulfilled' => function ($response, $index) {
-                Log::info('AP:deliver:success - ' . $response);
+                Log::info('AP:deliver:success - ' . json_encode($response));
             },
             'rejected' => function ($reason, $index) {
-                Log::info('AP:deliver:rejected - ' . $reason);
+                Log::info('AP:deliver:rejected - ' . json_encode($reason));
             }
         ]);
         $promise = $pool->promise();
