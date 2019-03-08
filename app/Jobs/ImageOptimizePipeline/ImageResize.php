@@ -41,6 +41,9 @@ class ImageResize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
+        if(!$media) {
+            return;
+        }
         $path = storage_path('app/'.$media->media_path);
         if (!is_file($path)) {
             return;
