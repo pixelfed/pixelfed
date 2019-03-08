@@ -45,7 +45,7 @@ class InternalApiController extends Controller
             'caption' => 'nullable|string',
             'media.*'   => 'required',
             'media.*.id' => 'required|integer|min:1',
-            'media.*.filter' => 'nullable|string|max:30',
+            'media.*.filter' => 'nullable|alpha_dash|max:30',
             'media.*.license' => 'nullable|string|max:80',
             'visibility' => 'required|string|in:public,private|min:2|max:10'
         ]);

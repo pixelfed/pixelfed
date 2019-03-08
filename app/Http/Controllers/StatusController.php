@@ -112,7 +112,7 @@ class StatusController extends Controller
           'photo.*'      => 'required|mimetypes:' . config('pixelfed.media_types').'|max:' . config('pixelfed.max_photo_size'),
           'caption'      => 'nullable|string|max:'.config('pixelfed.max_caption_length'),
           'cw'           => 'nullable|string',
-          'filter_class' => 'nullable|string',
+          'filter_class' => 'nullable|alpha_dash|max:30',
           'filter_name'  => 'nullable|string',
           'visibility'   => 'required|string|min:5|max:10',
         ]);
