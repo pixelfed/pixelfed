@@ -2,7 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use Cache;
+use Cache, Log;
 use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -94,8 +94,10 @@ class StatusActivityPubDeliver implements ShouldQueue
         $pool = new Pool($client, $requests, [
             'concurrency' => config('pixelfed.ap_delivery_concurrency'),
             'fulfilled' => function ($response, $index) {
+                Log::info('AP:deliver:success - ' . $response);
             },
             'rejected' => function ($reason, $index) {
+                Log::info('AP:deliver:rejected - ' . $reason);
             }
         ]);
         $promise = $pool->promise();
