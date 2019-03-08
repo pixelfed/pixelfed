@@ -262,6 +262,9 @@ XML;
         if(!$actor) {
             $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
         }
+        if(!$actor) {
+            return false;
+        }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
         list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
