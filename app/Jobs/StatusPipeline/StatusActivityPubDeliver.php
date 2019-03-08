@@ -76,7 +76,7 @@ class StatusActivityPubDeliver implements ShouldQueue
             'timeout'  => config('pixelfed.ap_delivery_timeout')
         ]);
 
-        $requests = function() use ($audience, $client, $activity, $profile, $payload) {
+        $requests = function($audience) use ($client, $activity, $profile, $payload) {
             foreach($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
                 yield function() use ($client, $url, $headers, $payload) {
@@ -91,7 +91,7 @@ class StatusActivityPubDeliver implements ShouldQueue
             }
         };
 
-        $pool = new Pool($client, $requests, [
+        $pool = new Pool($client, $requests($audience), [
             'concurrency' => config('pixelfed.ap_delivery_concurrency'),
             'fulfilled' => function ($response, $index) {
                 Log::info('AP:deliver:success - ' . json_encode($response));
@@ -100,6 +100,7 @@ class StatusActivityPubDeliver implements ShouldQueue
                 Log::info('AP:deliver:rejected - ' . json_encode($reason));
             }
         ]);
+        
         $promise = $pool->promise();
 
         $promise->wait();
