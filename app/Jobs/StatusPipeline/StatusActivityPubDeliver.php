@@ -63,8 +63,6 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $profile = $status->profile;
 
-        Cache::forget('status:transformer:media:attachments:'.$status->id);
-
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());
         $resource = new Fractal\Resource\Item($status, new CreateNote());
@@ -94,10 +92,8 @@ class StatusActivityPubDeliver implements ShouldQueue
         $pool = new Pool($client, $requests($audience), [
             'concurrency' => config('pixelfed.ap_delivery_concurrency'),
             'fulfilled' => function ($response, $index) {
-                Log::info('AP:deliver:success - ' . json_encode($response));
             },
             'rejected' => function ($reason, $index) {
-                Log::info('AP:deliver:rejected - ' . json_encode($reason));
             }
         ]);
         
