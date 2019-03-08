@@ -79,7 +79,7 @@ class StatusActivityPubDeliver implements ShouldQueue
         $requests = function() use ($client, $activity, $profile) {
             foreach($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function() use ($client, $url, $activity) {
+                yield function() use ($client, $url, $activity, $headers) {
                     return $client->requestAsync('POST', $url, [
                         'curl' => [
                             CURLOPT_HTTPHEADER => $headers, 
