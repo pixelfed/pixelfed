@@ -262,4 +262,6 @@ return [
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
     'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
     'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
+    'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
+    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10)
 ];
