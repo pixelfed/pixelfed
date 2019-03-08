@@ -76,11 +76,11 @@ class StatusActivityPubDeliver implements ShouldQueue
             'timeout'  => config('pixelfed.ap_delivery_timeout')
         ]);
 
-        $requests = function() use ($client, $activity, $profile, $payload) {
+        $requests = function() use ($audience, $client, $activity, $profile, $payload) {
             foreach($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function() use ($client, $url, $activity, $headers, $payload) {
-                    return $client->requestAsync('POST', $url, [
+                yield function() use ($client, $url, $headers, $payload) {
+                    return $client->postAsync($url, [
                         'curl' => [
                             CURLOPT_HTTPHEADER => $headers, 
                             CURLOPT_POSTFIELDS => $payload,
