@@ -198,7 +198,6 @@ class Inbox
                 ]);
             }
             $payload = $this->payload;
-            $payload = unset($payload['@context']);
             // send Accept to remote profile
             $accept = [
                 '@context' => 'https://www.w3.org/ns/activitystreams',
