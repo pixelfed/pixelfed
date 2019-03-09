@@ -49,7 +49,7 @@ class CreateNote extends Fractal\TransformerAbstract
 				'to'           		=> $status->scopeToAudience('to'),
 				'cc' 				=> $status->scopeToAudience('cc'),
 				'sensitive'       	=> (bool) $status->is_nsfw,
-				'attachment'      	=> $status->media->map(function ($media) {
+				'attachment'      	=> $status->media()->orderBy('order')->get()->map(function ($media) {
 					return [
 						'type'      => $media->activityVerb(),
 						'mediaType' => $media->mime,
