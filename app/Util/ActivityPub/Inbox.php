@@ -197,19 +197,15 @@ class Inbox
                     'item_type' => 'App\Profile'
                 ]);
             }
-
+            $payload = $this->payload;
+            $payload = unset($payload['@context']);
             // send Accept to remote profile
             $accept = [
                 '@context' => 'https://www.w3.org/ns/activitystreams',
                 'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
                 'type'     => 'Accept',
                 'actor'    => $target->permalink(),
-                'object'   => [
-                    'id' => $this->payload['id'],
-                    'type'  => 'Follow',
-                    'actor' => $actor->permalink(),
-                    'object' => $target->permalink()
-                ]
+                'object'   => $payload
             ];
             Helpers::sendSignedObject($target, $actor->inbox_url, $accept);
         }
