@@ -55,7 +55,7 @@
             </div>
             <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
               <div v-if="status.pf_type === 'photo'" class="w-100">
-                <photo-presenter :status="status"></photo-presenter>
+                <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
               </div>
 
               <div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -227,6 +227,19 @@
       </infinite-loading>
     </div>
   </b-modal>
+  <b-modal 
+    id="lightbox" 
+    ref="lightboxModal"
+    :hide-header="true"
+    :hide-footer="true"
+    centered
+    size="lg"
+    body-class="p-0"
+    >
+    <div v-if="lightboxMedia" :class="lightboxMedia.filter_class">
+      <img :src="lightboxMedia.url" class="img-fluid">
+    </div>
+  </b-modal>
 </div>
 </template>
 
@@ -249,6 +262,7 @@ export default {
             likesPage: 1,
             shares: [],
             sharesPage: 1,
+            lightboxMedia: false
           }
     },
 
@@ -534,6 +548,11 @@ export default {
 
       ownerOrAdmin() {
         return this.owner() || this.admin();
+      },
+
+      lightbox(src) {
+        this.lightboxMedia = src;
+        this.$refs.lightboxModal.show();
       }
 
     },

@@ -11,7 +11,7 @@
 		</details>
 	</div>
 	<div v-else>
-		<div :class="status.media_attachments[0].filter_class">
+		<div :class="status.media_attachments[0].filter_class" v-on:click="showLightbox(status.media_attachments[0])">
 			<img class="card-img-top" :src="status.media_attachments[0].url" :alt="status.media_attachments[0].description" :title="status.media_attachments[0].description">
 		</div>
 	</div>
@@ -19,6 +19,12 @@
 
 <script type="text/javascript">
 	export default {
-		props: ['status']
+		props: ['status'],
+
+		methods: {
+			showLightbox(src) {
+				this.$emit('lightbox', src);
+			}
+		}
 	}
 </script>
