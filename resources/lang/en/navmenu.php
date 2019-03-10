@@ -5,6 +5,7 @@ return [
 	'search'			=> 'Search',
 	'home'				=> 'Home',
 	'local'				=> 'Local',
+	'network'			=> 'Network',
 	'discover'			=> 'Discover',
 	'viewMyProfile'		=> 'View my profile',
 	'myTimeline'		=> 'My Timeline',
