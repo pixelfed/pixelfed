@@ -39,8 +39,24 @@
     @if(Auth::check())
     <div class="d-block d-sm-none mt-5"></div>
     <div class="d-block d-sm-none fixed-bottom">
-        <div class="float-right m-3">
-          <button class="bg-primary rounded-circle text-white box-shadow border-0" data-toggle="modal" data-target="#composeModal" style="width:60px;height: 60px;"><i class="fas fa-plus fa-lg mb-0"></i></button>
+        <div class="card card-body rounded-0 py-2 d-flex align-middle">
+            <ul class="nav nav-pills nav-fill">
+              <li class="nav-item">
+                <a class="nav-link text-muted" href="/"><i class="fas fa-home fa-lg"></i></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-muted" href="/timeline/public"><i class="far fa-map fa-lg"></i></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-primary" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera-retro fa-2x"></i></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-muted" href="{{route('discover')}}"><i class="far fa-compass fa-lg"></i></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-muted" href="{{Auth::user()->url()}}"><i class="far fa-user fa-lg"></i></a>
+              </li>
+            </ul>
         </div>
     </div>
     <div class="modal" tabindex="-1" role="dialog" id="composeModal">
