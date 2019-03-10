@@ -66,7 +66,7 @@
 					</div>
 
 					<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-						<photo-album-presenter :status="status"></photo-album-presenter>
+						<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
 					</div>
 
 					<div v-else-if="status.pf_type === 'video:album'" class="w-100">
@@ -74,7 +74,7 @@
 					</div>
 
 					<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-						<mixed-album-presenter :status="status"></mixed-album-presenter>
+						<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
 					</div>
 
 					<div v-else class="w-100">
