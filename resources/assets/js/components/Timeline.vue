@@ -58,7 +58,7 @@
 
 				<div class="postPresenterContainer">
 					<div v-if="status.pf_type === 'photo'" class="w-100">
-						<photo-presenter :status="status"></photo-presenter>
+						<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 					</div>
 
 					<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -355,6 +355,19 @@
       </div>
     </div>
   </b-modal>
+  <b-modal 
+  	id="lightbox" 
+  	ref="lightboxModal"
+  	hide-header="true"
+  	hide-footer="true"
+  	centered
+  	size="lg"
+  	body-class="p-0"
+  	>
+  	<div v-if="lightboxMedia" :class="lightboxMedia.filter_class">
+  		<img :src="lightboxMedia.url" class="img-fluid">
+  	</div>
+  </b-modal>
 </div>
 </template>
 
@@ -374,12 +387,12 @@
 
 <script type="text/javascript">
 	export default {
+		props: ['scope'],
 		data() {
 			return {
 				page: 2,
 				feed: [],
 				profile: {},
-				scope: window.location.pathname == '/' ? 'home' : 'local',
 				min_id: 0,
 				max_id: 0,
 				notifications: {},
@@ -401,7 +414,8 @@
 				followerMore: true,
 				following: [],
 				followingCursor: 1,
-				followingMore: true
+				followingMore: true,
+				lightboxMedia: false
 			}
 		},
 
@@ -437,12 +451,23 @@
 			},
 
 			fetchTimelineApi() {
-				let homeTimeline = '/api/v1/timelines/home';
-				let localTimeline = '/api/v1/timelines/public';
-				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
+				let apiUrl = false;
+				switch(this.scope) {
+					case 'home':
+					apiUrl = '/api/v1/timelines/home';
+					break;
+
+					case 'local':
+					apiUrl = '/api/v1/timelines/public';
+					break;
+
+					case 'network':
+					apiUrl = '/api/v1/timelines/network';
+					break;
+				}
 				axios.get(apiUrl, {
 					params: {
-						max_id: 0,
+						max_id: this.max_id,
 						limit: 4
 					}
 				}).then(res => {
@@ -459,9 +484,20 @@
 			},
 
 			infiniteTimeline($state) {
-				let homeTimeline = '/api/v1/timelines/home';
-				let localTimeline = '/api/v1/timelines/public';
-				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
+				let apiUrl = false;
+				switch(this.scope) {
+					case 'home':
+					apiUrl = '/api/v1/timelines/home';
+					break;
+
+					case 'local':
+					apiUrl = '/api/v1/timelines/public';
+					break;
+
+					case 'network':
+					apiUrl = '/api/v1/timelines/network';
+					break;
+				}
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
@@ -894,7 +930,7 @@
 					this.following = res.data;
 					this.followingCursor++;
 				});
-        if(res.data.length < 10) {
+        		if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 				this.$refs.followingModal.show();
@@ -914,7 +950,7 @@
 					this.followers = res.data;
 					this.followerCursor++;
 				})
-        if(res.data.length < 10) {
+        		if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 				this.$refs.followerModal.show();
@@ -931,12 +967,11 @@
 						this.following.push(...res.data);
 						this.followingCursor++;
 					}
-          if(res.data.length < 10) {
+          			if(res.data.length < 10) {
 						this.followingMore = false;
 					}
 				});
 			},
-
 
 			followersLoadMore() {
 				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
@@ -949,10 +984,15 @@
 						this.followers.push(...res.data);
 						this.followerCursor++;
 					}
-          if(res.data.length < 10) {
+          			if(res.data.length < 10) {
 						this.followerMore = false;
 					}
 				});
+			},
+
+			lightbox(src) {
+				this.lightboxMedia = src;
+				this.$refs.lightboxModal.show();
 			}
 		}
 	}
