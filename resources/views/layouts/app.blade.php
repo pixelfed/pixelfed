@@ -48,7 +48,7 @@
                 <a class="nav-link {{request()->is('timeline/public')?'text-primary':'text-muted'}}" href="/timeline/public"><i class="far fa-map fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-primary" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera-retro fa-2x"></i></a>
+                <a class="nav-link text-black" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera-retro fa-lg"></i></a>
               </li>
               <li class="nav-item">
                 <a class="nav-link {{request()->is('discover')?'text-primary':'text-muted'}}" href="{{route('discover')}}"><i class="far fa-compass fa-lg"></i></a>
