@@ -2,7 +2,7 @@
 
 return [
   'emptyTimeline'         => 'Tento uživatel ještě nemá žádné příspěvky!',
-  'emptyFollowers'        => 'Tento uživatel ještě nemá žádné sledovatele!',
+  'emptyFollowers'        => 'Tento uživatel ještě nemá žádné sledující!',
   'emptyFollowing'        => 'Tento uživatel ještě nikoho nesleduje!',
   'emptySaved'            => 'Ještě jste neuložil/a žádné příspěvky!',
   'savedWarning'          => 'Pouze vy můžete vidět, co máte uložené',
