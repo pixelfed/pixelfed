@@ -5,6 +5,7 @@ return [
 	'search'			=> 'Hledat',
 	'home'				=> 'Domů',
 	'local'				=> 'Místní',
+	'network'			=> 'Síť',
 	'discover'			=> 'Objevovat',
 	'viewMyProfile'		=> 'Zobrazit můj profil',
 	'myTimeline'		=> 'Moje časová osa',
