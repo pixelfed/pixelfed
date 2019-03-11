@@ -158,7 +158,7 @@ class ProfileController extends Controller
 
     public function showAtomFeed(Request $request, $user)
     {
-        $profile = $user = Profile::whereUsername($user)->firstOrFail();
+        $profile = $user = Profile::whereNull('status')->whereNull('domain')->whereUsername($user)->whereIsPrivate(false)->firstOrFail();
         if($profile->status != null) {
             return $this->accountCheck($profile);
         }
