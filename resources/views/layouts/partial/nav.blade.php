@@ -7,7 +7,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
-            <ul class="navbar-nav ml-auto d-none d-md-block">
+            <ul class="navbar-nav ml-auto">
               <form class="form-inline search-form">
                 <input class="form-control mr-sm-2 search-form-input" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
               </form>
@@ -36,9 +36,7 @@
                     </li>
                     
                     <li class="d-block d-md-none">
-                        <a class="nav-link" href="/account/activity" data-toggle="tooltip" title="Notifications">
-                            <i class="far fa-bell fa-lg"></i>
-                        </a>
+
                     </li>
 
                     {{-- <li class="pr-2">
