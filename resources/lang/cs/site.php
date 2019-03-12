@@ -9,8 +9,8 @@ return [
 	'opensource'	=> 'Otevřený zdroj',
 	'terms'			=> 'Podmínky',
 	'privacy'		=> 'Soukromí',
-	'l10nWip'		=> 'Pořád pracujeme na podpoře lokalizace',
-	'currentLocale' => 'Aktuální překlad',
-	'selectLocale'  => 'Vyberte si jeden z podporovaných překladů',
+	'l10nWip'		=> 'Stále pracujeme na podpoře lokalizací',
+	'currentLocale' => 'Aktuální jazyk',
+	'selectLocale'  => 'Vyberte si jeden z podporovaných jazyků',
 
 ];
