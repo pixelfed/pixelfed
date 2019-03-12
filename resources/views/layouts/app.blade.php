@@ -39,7 +39,7 @@
     @if(Auth::check())
     <div class="d-block d-sm-none mt-5"></div>
     <div class="d-block d-sm-none fixed-bottom">
-        <div class="card card-body rounded-0 py-2 d-flex align-items-middle">
+        <div class="card card-body rounded-0 py-2 d-flex align-items-middle box-shadow" style="border-top:1px solid #F1F5F8">
             <ul class="nav nav-pills nav-fill">
               <li class="nav-item">
                 <a class="nav-link {{request()->is('/')?'text-primary':'text-muted'}}" href="/"><i class="fas fa-home fa-lg"></i></a>
@@ -48,13 +48,13 @@
                 <a class="nav-link {{request()->is('timeline/public')?'text-primary':'text-muted'}}" href="/timeline/public"><i class="far fa-map fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <div class="nav-link text-black cursor-pointer" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera-retro fa-lg"></i></div>
+                <div class="nav-link text-black cursor-pointer" data-toggle="modal" data-target="#composeModal"><i class="far fa-plus-square fa-lg"></i></div>
               </li>
               <li class="nav-item">
                 <a class="nav-link {{request()->is('discover')?'text-primary':'text-muted'}}" href="{{route('discover')}}"><i class="far fa-compass fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is(Auth::user()->username)?'text-primary':'text-muted'}}" href="{{Auth::user()->url()}}"><i class="far fa-user fa-lg"></i></a>
+                <a class="nav-link {{request()->is('account/activity')?'text-primary':'text-muted'}} tooltip-notification" href="/account/activity"><i class="far fa-bell fa-lg"></i></a>
               </li>
             </ul>
         </div>

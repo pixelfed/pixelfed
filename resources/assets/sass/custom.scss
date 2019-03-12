@@ -38,8 +38,7 @@ body, button, input, textarea {
 }
 
 .search-form {
-  min-width: 125px;
-  width: 265px;
+  width: 100%;
 }
 
 .search-form input,
@@ -538,4 +537,17 @@ details summary::-webkit-details-marker {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.tooltip-notification .tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #fff;
+    text-align: center;
+    background-color: #dc3545;
+    border-radius: .25rem;
+}
+
+.tooltip-notification .tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before, .tooltip.bs-tooltip-top .arrow::before {
+    border-top-color: #dc3545; 
 }
