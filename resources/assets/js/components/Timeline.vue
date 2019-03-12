@@ -1,13 +1,13 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div class="col-md-8 col-lg-8 pt-2 px-0 my-3 timeline order-2 order-md-1">
+		<div class="col-md-8 col-lg-8 pt-md-2 px-0 my-md-3 timeline order-2 order-md-1">
 			<div v-if="loading" class="text-center">
 				<div class="spinner-border" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
+			<div class="card mb-md-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
 
 				<div class="card-header d-inline-flex align-items-center bg-white">
 					<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
