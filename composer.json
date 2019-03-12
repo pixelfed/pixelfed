@@ -31,6 +31,7 @@
         "pixelfed/dotenv-editor": "^2.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/google2fa": "^4.0",
+        "pixelfed/laravel-snowflake": "^2.0",
         "pixelfed/zttp": "^0.4",
         "predis/predis": "^1.1",
         "spatie/laravel-backup": "^6.0.0",
