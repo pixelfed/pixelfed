@@ -17,8 +17,11 @@
 							<div class="username-bar pb-2 d-flex align-items-center">
 								<span class="font-weight-ultralight h1">{{profile.username}}</span>
 								<span class="pl-4" v-if="profile.is_admin">
-									<span class="btn btn-outline-danger font-weight-bold py-0">ADMIN</span>
+									<span class="btn btn-outline-secondary font-weight-bold py-0">ADMIN</span>
 								</span>
+								<span class="pl-4">
+									<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted"></a>
+								</span>	
 								<span class="pl-4" v-if="owner">
 									<a class="fas fa-cog fa-lg text-muted" href="/settings/home"></a>
 								</span>
@@ -44,7 +47,7 @@
 										Followers
 									</a>
 								</div>
-								<div v-if="profileSettings.following.count" class="font-weight-light pr-5">
+								<div v-if="profileSettings.following.count" class="font-weight-light">
 									<a class="text-dark cursor-pointer" v-on:click="followingModal()">
 										<span class="font-weight-bold">{{profile.following_count}}</span>
 										Following
