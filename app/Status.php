@@ -3,13 +3,21 @@
 namespace App;
 
 use Auth, Cache, Hashids, Storage;
-use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\Model;
+use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Status extends Model
 {
-    use SoftDeletes;
+    use HasSnowflakePrimary, SoftDeletes;
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     /**
      * The attributes that should be mutated to dates.
