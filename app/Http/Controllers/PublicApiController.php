@@ -203,10 +203,6 @@ class PublicApiController extends Controller
 
     public function publicTimelineApi(Request $request)
     {
-        if(!Auth::check()) {
-            return abort(403);
-        }
-
         $this->validate($request,[
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -219,21 +215,23 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
 
-        // TODO: Use redis for timelines
-        // $timeline = Timeline::build()->local();
-        $pid = Auth::user()->profile->id;
-
         $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
             return Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)
                 ->pluck('id');
         });
-        $filters = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id')->toArray();
-        $filtered = array_merge($private->toArray(), $filters);
+
+        if(Auth::check()) {
+            $pid = Auth::user()->profile->id;
+            $filters = UserFilter::whereUserId($pid)
+                      ->whereFilterableType('App\Profile')
+                      ->whereIn('filter_type', ['mute', 'block'])
+                      ->pluck('filterable_id')->toArray();
+            $filtered = array_merge($private->toArray(), $filters);
+        } else {
+            $filtered = $private->toArray();
+        }
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -387,6 +385,96 @@ class PublicApiController extends Controller
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->orderBy('created_at', 'desc')
+                      ->simplePaginate($limit);
+        }
+
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+
+    }
+
+
+    public function networkTimelineApi(Request $request)
+    {
+        if(!Auth::check()) {
+            return abort(403);
+        }
+
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'limit'       => 'nullable|integer|max:20'
+        ]);
+
+        $page = $request->input('page');
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit') ?? 3;
+
+        // TODO: Use redis for timelines
+        // $timeline = Timeline::build()->local();
+        $pid = Auth::user()->profile->id;
+
+        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
+            return Profile::whereIsPrivate(true)
+                ->orWhere('unlisted', true)
+                ->orWhere('status', '!=', null)
+                ->pluck('id');
+        });
+        $filters = UserFilter::whereUserId($pid)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+        $filtered = array_merge($private->toArray(), $filters);
+
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'created_at',
+                        'updated_at'
+                      )->where('id', $dir, $id)
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
+                      ->orderBy('created_at', 'desc')
+                      ->limit($limit)
+                      ->get();
+        } else {
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'created_at',
+                        'updated_at'
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
+                      ->whereNull('reblog_of_id')
+                      ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
