@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.anon')
 
 @section('content')
 <div class="jumbotron jumbotron-fluid bg-primary text-white mb-0 py-4">
