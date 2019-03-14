@@ -42,30 +42,14 @@ class SiteController extends Controller
 
     public function about()
     {
-        $res = Cache::remember('site:about', now()->addMinutes(120), function() {
-            $custom = Page::whereSlug('/site/about')->whereActive(true)->exists();
-            if($custom) {
-              $stats = Cache::remember('site:about:stats', now()->addMinutes(60), function() {
-                    return [
-                        'posts' => Status::whereLocal(true)->count(),
-                        'users' => User::count(),
-                        'admin' => User::whereIsAdmin(true)->first()
-                    ];
-                });
-                return View::make('site.about')->with('stats', $stats)->render();
-            } else {
-                $stats = Cache::remember('site:about:stats', now()->addMinutes(60), function() {
-                    return [
-                        'posts' => Status::whereLocal(true)->count(),
-                        'users' => User::count(),
-                        'admin' => User::whereIsAdmin(true)->first()
-                    ];
-                });
-                //return view('site.about', compact('stats'));
-                return View::make('site.about')->with('stats', $stats)->render();
-            }
+        $stats = Cache::remember('site:about', now()->addMinutes(120), function() {
+            return [
+                'posts' => Status::whereLocal(true)->count(),
+                'users' => User::count(),
+                'admin' => User::whereIsAdmin(true)->first()
+            ];
         });
-        return $res;
+        return view('site.about', compact('stats'));
     }
 
     public function language()
