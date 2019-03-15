@@ -6,9 +6,6 @@
 		<h3 class="font-weight-bold">Sharing Photos & Videos</h3>
 	</div>
 	<hr>
-	<p class="font-weight-light">Welcome to Pixelfed.</p>
-	<p class="font-weight-light">Pixelfed is a federated media sharing platform inspired by Instagram and 500px.</p>
-	<hr>
 	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
 			<i class="fas fa-chevron-down mr-2"></i>
@@ -16,13 +13,26 @@
 		</a>
 		<div class="collapse" id="collapse1">
 			<div>
-				To create an account using a web browser:
+				To create a post using a desktop web browser:
 				<ol>
 					<li>Go to <a href="{{config('app.url')}}">{{config('app.url')}}</a>.</li>
 					<li>Click on the <i class="fas fa-camera-retro text-primary"></i> link at the top of the page.</li>
-					<li>Upload your photo(s) or video(s), add a caption and set other options.</li>
+					<li>Upload your photo(s) or video(s), add an optional caption and set other options.</li>
 					<li>Click on the <span class="font-weight-bold">Create Post</span> button.</li>
 				</ol>
+			</div>
+			<div class="pt-3">
+				To create a post using a mobile web browser:
+				<ol>
+					<li>Go to <a href="{{config('app.url')}}">{{config('app.url')}}</a>.</li>
+					<li>Click on the <i class="far fa-plus-square fa-lg"></i> button at the bottom of the page.</li>
+					<li>Upload your photo(s) or video(s), add an optional caption and set other options.</li>
+					<li>Click on the <span class="font-weight-bold">Create Post</span> button.</li>
+				</ol>
+			</div>
+			<div class="py-3">
+				To create a post using a mobile app:
+				<p class="mb-0 pl-4 font-weight-bold text-muted">We do not support any mobile apps yet.</p>
 			</div>
 		</div>
 	</p>
@@ -48,28 +58,47 @@
 			</div>
 		</div>
 	</p>
-	{{-- <p>	
+	<p>	
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse4" role="button" aria-expanded="false" aria-controls="collapse4">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I add a filter to my photos?
 		</a>
 		<div class="collapse" id="collapse4">
 			<div>
-				
+				<p class="text-center">
+					<span class="alert alert-warning py-2 font-weight-bold">This is an experimental feature, filters are not federated yet!</span>
+				</p>
+				To add a filter to media during the compose post process:
+				<ol>
+					<li>
+						Click the <span class="btn btn-sm btn-outline-primary py-0">Options <i class="fas fa-chevron-down fa-sm"></i></span> button if media preview is not displayed.
+					</li>
+					<li>Select a filter from the <span class="font-weight-bold small text-muted">Select Filter</span> dropdown.</li>
+				</ol>
 			</div>
 		</div>
-	</p> --}}
-	{{-- <p>	
+	</p>
+	<p>	
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse5" role="button" aria-expanded="false" aria-controls="collapse5">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I add a description to each photo or video for the visually impaired?
 		</a>
 		<div class="collapse" id="collapse5">
 			<div>
-
+				<p class="text-center">
+					<span class="alert alert-warning py-2 font-weight-bold">This is an experimental feature!</span>
+				</p>
+				<p>
+					You need to use the experimental compose UI found <a href="/i/compose">here</a>.
+				</p>
+				<ol>
+					<li>Add media by clicking the <span class="btn btn-outline-secondary btn-sm py-0">Add Photo/Video</span> button.</li>
+					<li>Set a image description by clicking the <span class="btn btn-outline-secondary btn-sm py-0">Media Description</span> button.</li>
+				</ol>
+				<p class="small text-muted"><i class="fas fa-info-circle mr-1"></i> Image descriptions are federated to instances where supported.</p>
 			</div>
 		</div>
-	</p> --}}	
+	</p>	
 	<p>	
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse6" role="button" aria-expanded="false" aria-controls="collapse6">
 			<i class="fas fa-chevron-down mr-2"></i>
@@ -77,7 +106,7 @@
 		</a>
 		<div class="collapse" id="collapse6">
 			<div>
-				You can upload the following file types:
+				You can upload the following media types:
 				<ul>
 					@foreach(explode(',', config('pixelfed.media_types')) as $type)
 					<li class="font-weight-bold">{{$type}}</li>
