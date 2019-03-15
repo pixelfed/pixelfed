@@ -6,8 +6,7 @@
 	<h3 class="font-weight-bold">Getting Started</h3>
 </div>
 <hr>
-<p class="font-weight-light">Welcome to Pixelfed.</p>
-<p class="font-weight-light">Pixelfed is a federated media sharing platform inspired by Instagram.</p>
+<p class="lead font-weight-light">Welcome to Pixelfed!</p>
 <hr>
 <p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
@@ -57,7 +56,7 @@
 	</a>
 	<div class="collapse" id="collapse4">
 		<div class="mt-2">
-			Pixelfed is a federated application, changing your username is not supported in every <a href="#">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username. 
+			Pixelfed is a federated application, changing your username is not supported in every <a href="https://en.wikipedia.org/wiki/ActivityPub">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username. 
 		</div>
 	</div>
 </p>
@@ -68,7 +67,7 @@
 	</a>
 	<div class="collapse" id="collapse5">
 		<div class="mt-2">
-			Someone may have registered your email by mistake. If you would like your email to be removed from the account please <a href="#">contact</a> us.
+			Someone may have registered your email by mistake. If you would like your email to be removed from the account please contact an admin of this instance.
 		</div>
 	</div>
 </p>
@@ -79,7 +78,7 @@
 	</a>
 	<div class="collapse" id="collapse6">
 		<div class="mt-2">
-			You might have registered before, or someone may have used your email by mistake. You can <a href="#">contact</a> us to help you resolve this.
+			You might have registered before, or someone may have used your email by mistake. Please contact an admin of this instance.
 		</div>
 	</div>
 </p>
