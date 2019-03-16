@@ -5,7 +5,7 @@ return [
 	'about'			=> 'O nás',
 	'help'			=> 'Nápověda',
 	'language'		=> 'Jazyk',
-	'fediverse'		=> 'Fediverse',
+	'fediverse'		=> 'Fedivesmír',
 	'opensource'	=> 'Otevřený zdroj',
 	'terms'			=> 'Podmínky',
 	'privacy'		=> 'Soukromí',

@@ -17,7 +17,7 @@
   <div class="postCommentsContainer d-none">
     <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
     <div class="comments" data-min-id="0" data-max-id="0">
-      <p v-for="(reply, index) in results" class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+      <p v-for="(reply, index) in results" class="mb-1 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
         <span>
           <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
           <span class="text-break" v-html="reply.content"></span>
@@ -38,6 +38,9 @@
   }
   .text-break {
     word-break: break-all !important;
+  }
+  .comments p {
+    margin-bottom: 0;
   }
 </style>
 
