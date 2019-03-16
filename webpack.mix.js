@@ -14,6 +14,7 @@ let mix = require('laravel-mix');
 mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/activity.js', 'public/js')
 .js('resources/assets/js/components.js', 'public/js')
+//.js('resources/assets/js/embed.js', 'public')
 
 // Discover component
 .js('resources/assets/js/discover.js', 'public/js')
@@ -29,6 +30,9 @@ mix.js('resources/assets/js/app.js', 'public/js')
 
 // MicroUI component
 .js('resources/assets/js/micro.js', 'public/js')
+
+// LandingPage component
+.js('resources/assets/js/landing.js', 'public/js')
 
 .sass('resources/assets/sass/app.scss', 'public/css', {
 	implementation: require('node-sass')
