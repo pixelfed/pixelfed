@@ -12,7 +12,7 @@ class InstalledTest extends TestCase
     public function landing_page()
     {
         $response = $this->get('/');
-        $response->assertSeeText('Image Sharing for Everyone');
+        $response->assertStatus(200);
     }
 
     /** @test */
