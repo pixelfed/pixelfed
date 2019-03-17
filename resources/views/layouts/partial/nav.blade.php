@@ -7,7 +7,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto d-none d-md-block">
               <form class="form-inline search-form">
                 <input class="form-control mr-sm-2 search-form-input" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
               </form>
@@ -19,21 +19,21 @@
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
                     <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
                 @else
-            <ul class="navbar-nav mx-auto">
-                    <li class="">
-                        <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline">
-                        <span class="d-none d-md-block">
-                            {{__('navmenu.home')}}
-                        </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public">
-                        <span class="d-none d-md-block">
-                             {{__('navmenu.local')}}
-                        </span> 
-                        </a>
-                    </li>
+            <ul class="navbar-nav ml-auto">
+                    <div class="d-none d-md-block">
+                        <li class="nav-item px-md-2">
+                            <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline" data-toggle="tooltip" data-placement="bottom">
+                                <i class="fas fa-home fa-lg"></i>
+                            </a>
+                        </li>
+                    </div>
+                    <div class="d-none d-md-block">
+                        <li class="nav-item px-md-2">
+                            <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public" title="Public Timeline" data-toggle="tooltip" data-placement="bottom">
+                               <i class="far fa-map fa-lg"></i>
+                           </a>
+                       </li>
+                   </div> 
                     
                     <li class="d-block d-md-none">
 
@@ -44,18 +44,18 @@
                         {{ __('Network') }}
                         </a>
                     </li> --}}
-                    <li class="nav-item pr-md-2">
-                        <a class="nav-link font-weight-bold {{request()->is('*discover*') ?'text-primary':''}}" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
-                        <span class="d-none d-md-block">
-                             {{__('navmenu.discover')}}</i>
-                        </span>
-                        </a>
-                    </li>
                     <div class="d-none d-md-block">
-                        <li class="nav-item pr-md-2">
+                        <li class="nav-item px-md-2">
+                            <a class="nav-link font-weight-bold {{request()->is('*discover*') ?'text-primary':''}}" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
+                                <i class="far fa-compass fa-lg"></i>
+                            </a>
+                        </li>
+                    </div>
+                    <div class="d-none d-md-block">
+                        <li class="nav-item px-md-2">
                             <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                                 <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
-                                  <i class="fas fa-camera-retro fa-lg text-primary"></i>
+                                  <i class="far fa-plus-square fa-lg text-dark"></i>
                                 </a>
                             </div>
                         </li>
