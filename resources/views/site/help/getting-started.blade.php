@@ -1,9 +1,9 @@
-@extends('site.help.partial.template', ['breadcrumb'=>'Getting Started'])
+@extends('site.help.partial.template', ['breadcrumb'=>__('helpcenter.gettingStarted')])
 
 @section('section')
 
 <div class="title">
-	<h3 class="font-weight-bold">Getting Started</h3>
+	<h3 class="font-weight-bold">{{__('helpcenter.gettingStarted')}}</h3>
 </div>
 <hr>
 <p class="lead font-weight-light">Welcome to Pixelfed!</p>

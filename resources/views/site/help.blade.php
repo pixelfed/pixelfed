@@ -43,7 +43,7 @@
             <p class="py-1 text-center">
               <i class="fas fa-hashtag text-lighter fa-2x"></i>
             </p>
-            <p class="text-center text-muted font-weight-bold h4 mb-0">Hashtags</p>
+            <p class="text-center text-muted font-weight-bold h4 mb-0">{{__('helpcenter.hashtags')}}</p>
             <div class="text-center pt-3">
               <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
               <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>

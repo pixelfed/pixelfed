@@ -13,6 +13,7 @@ return [
 	'discover' => 'Discover',
 	'directMessages' => 'Direct Messages',
 	'timelines' => 'Timelines',
+	'embed'	=> 'Embed',
 
 	'communityGuidelines' => 'Community Guidelines',
 	'whatIsTheFediverse' => 'What is the fediverse?',
