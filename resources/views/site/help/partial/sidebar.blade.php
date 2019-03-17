@@ -43,11 +43,6 @@
           Controlling Visibility
         </a>
       </li>
-      <li class="nav-item {{request()->is('*/abusive-activity')?'active':''}}">
-        <a class="nav-link font-weight-light text-muted" href="{{route('help.abusive-activity')}}">
-          Abusive Activity
-        </a>
-      </li>
       <li class="nav-item {{request()->is('*/blocking-accounts')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.blocking-accounts')}}">
           Blocking Accounts
