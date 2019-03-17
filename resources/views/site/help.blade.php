@@ -6,7 +6,7 @@
     <h3 class="font-weight-bold">{{__('helpcenter.helpcenter')}}</h3>
   </div>
   <hr>
-  <div class="row pb-5">
+  {{-- <div class="row pb-5">
     <div class="col-12">
       <p class="font-weight-bold">{{__('helpcenter.whatsnew')}}</p>
       <ul class="small">
@@ -18,7 +18,7 @@
         </li>
       </ul>
     </div>
-  </div>
+  </div> --}}
   <div class="row">
     <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.getting-started')}}" class="text-decoration-none">
