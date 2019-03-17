@@ -252,7 +252,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
             Route::get('community-guidelines', 'SiteController@communityGuidelines')->name('help.community-guidelines');
             Route::view('controlling-visibility', 'site.help.controlling-visibility')->name('help.controlling-visibility');
-            Route::view('abusive-activity', 'site.help.abusive-activity')->name('help.abusive-activity');
             Route::view('blocking-accounts', 'site.help.blocking-accounts')->name('help.blocking-accounts');
             Route::view('report-something', 'site.help.report-something')->name('help.report-something');
             Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
