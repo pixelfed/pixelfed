@@ -50,6 +50,10 @@ class ImportInstagram implements ShouldQueue
      */
     public function handle()
     {
+        if(config('pixelfed.import.instagram.enabled') != true) {
+            return;
+        }
+        
         $job = $this->job;
         $profile = $this->job->profile;
         $json = $job->mediaJson();
