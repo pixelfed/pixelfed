@@ -79,7 +79,7 @@
                                 {{__('navmenu.myTimeline')}}
                             </a>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
-                                <span class="fas fa-align-justify pr-1"></span>
+                                <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
 
