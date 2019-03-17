@@ -8,7 +8,8 @@
   <hr>
   <section>
     <p class="lead">Account Import allows you to import your data from a supported service.</p>
-    <p class="alert alert-warning">Importing from another service will not impact existing data by default however you may choose to update avatar, bio or nickname fields during the process.</p>
+    <p class="alert alert-warning"><strong>Warning: </strong> This is an experimental beta feature. Use at your own risk!</p>
+    <p class="alert alert-warning"><strong>Warning: </strong> Imported posts will not appear on timelines or be delivered to followers.</p>
   </section>
   <section class="mt-5">
     <p class="small text-muted font-weight-bold text-uppercase mb-3">Supported Services</p>
@@ -21,10 +22,7 @@
       <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from Mastodon</a>
     </p>
     <p class="">
-      <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from Pleroma</a>
-    </p>
-    <p class="">
-      <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from GNU/Social</a>
+      <a class="btn btn-outline-secondary font-weight-bold disabled" href="#">Import from Tumblr</a>
     </p>
   </section>
 @endsection
