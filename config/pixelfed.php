@@ -263,5 +263,15 @@ return [
     'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
     'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
     'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
-    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10)
+    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
+
+    'import' => [
+        'instagram' => [
+            'enabled' => env('IMPORT_INSTAGRAM_ENABLED', false),
+            'limits' => [
+                'posts' => (int) env('IMPORT_INSTAGRAM_POST_LIMIT', 100),
+                'size' => (int) env('IMPORT_INSTAGRAM_SIZE_LIMIT', 250)
+            ]
+        ]
+    ],
 ];
