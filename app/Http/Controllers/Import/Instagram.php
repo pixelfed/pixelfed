@@ -22,6 +22,13 @@ trait Instagram
 
     public function instagramStart(Request $request)
     {	
+        $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
+            ->whereService('instagram')
+            ->whereNotNull('completed_at')
+            ->exists();
+        if($completed == true) {
+            return redirect(route('settings'))->with(['errors' => ['You can only import from Instagram once.']]);
+        }
     	$job = $this->instagramRedirectOrNew();
     	return redirect($job->url());
     }
