@@ -24,7 +24,7 @@ class ImportInstagram implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
-    protected $job;
+    protected $import;
     
     /**
      * Delete the job if its models no longer exist.
@@ -38,9 +38,9 @@ class ImportInstagram implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ImportJob $job)
+    public function __construct(ImportJob $import)
     {
-        $this->job = $job;
+        $this->import = $import;
     }
 
     /**
@@ -53,9 +53,9 @@ class ImportInstagram implements ShouldQueue
         if(config('pixelfed.import.instagram.enabled') != true) {
             return;
         }
-        
-        $job = $this->job;
-        $profile = $this->job->profile;
+
+        $job = ImportJob::findOrFail($this->import->id);
+        $profile = Profile::findOrFail($job->profile_id);
         $json = $job->mediaJson();
         $collection = $json['photos'];
         $files = $job->files;
@@ -78,9 +78,9 @@ class ImportInstagram implements ShouldQueue
             $filename = last( explode('/', $import['path']) );
             $importData = ImportData::whereJobId($job->id)
                 ->whereOriginalName($filename)
-                ->firstOrFail();
+                ->first();
 
-            if(is_file(storage_path("app/$importData->path")) == false) {
+            if(empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
                 continue;
             }
 
@@ -92,6 +92,8 @@ class ImportInstagram implements ShouldQueue
                 $status->profile_id = $profile->id;
                 $status->caption = strip_tags($caption);
                 $status->is_nsfw = false;
+                $status->type = 'photo';
+                $status->scope = 'unlisted';
                 $status->visibility = 'unlisted';
                 $status->created_at = $taken_at;
                 $status->save();
