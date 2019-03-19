@@ -1,4 +1,4 @@
-  <div class="col-12 col-md-3 py-3" style="border-right:1px solid #ccc;">
+  <div class="col-12 col-md-3 py-3 d-none d-md-block" style="border-right:1px solid #ccc;">
     <ul class="nav flex-column settings-nav">
       <li class="nav-item {{request()->is('*/getting-started')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.getting-started')}}">{{__('helpcenter.gettingStarted')}}</a>
