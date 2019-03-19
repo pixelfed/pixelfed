@@ -11,6 +11,7 @@ use App\{
 	Profile, 
 	User
 };
+use App\Jobs\ImportPipeline\ImportInstagram;
 
 trait Instagram
 {
@@ -21,6 +22,13 @@ trait Instagram
 
     public function instagramStart(Request $request)
     {	
+        $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
+            ->whereService('instagram')
+            ->whereNotNull('completed_at')
+            ->exists();
+        if($completed == true) {
+            return redirect(route('settings'))->with(['errors' => ['You can only import from Instagram once.']]);
+        }
     	$job = $this->instagramRedirectOrNew();
     	return redirect($job->url());
     }
@@ -134,8 +142,6 @@ trait Instagram
         $job->stage = 3;
         $job->save();
         return redirect($job->url());
-		return $json;
-
     }
 
     public function instagramStepThree(Request $request, $uuid)
@@ -147,5 +153,20 @@ trait Instagram
     		->whereStage(3)
     		->firstOrFail();
     	return view('settings.import.instagram.step-three', compact('profile', 'job'));
+    }
+
+    public function instagramStepThreeStore(Request $request, $uuid)
+    {
+        $profile = Auth::user()->profile;
+
+        $job = ImportJob::whereProfileId($profile->id)
+            ->whereNull('completed_at')
+            ->whereUuid($uuid)
+            ->whereStage(3)
+            ->firstOrFail();
+
+        ImportInstagram::dispatchNow($job);
+
+        return redirect($profile->url());
     }
 }
