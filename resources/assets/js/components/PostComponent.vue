@@ -237,7 +237,7 @@
     body-class="p-0"
     >
     <div v-if="lightboxMedia" :class="lightboxMedia.filter_class">
-      <img :src="lightboxMedia.url" class="img-fluid">
+      <img :src="lightboxMedia.url" class="img-fluid" style="min-height: 100%; min-width: 100%">
     </div>
   </b-modal>
 </div>
