@@ -58,7 +58,7 @@
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Make your account or posts private</p>
-      <p class="mb-0">You can limit the visibility of your content to specific people, followers, public and more.</p>
+      <p class="mb-0">You can make your account private and vet new follow requests to control who your posts are shared with.</p>
     </div>
   </div>
 @endsection
