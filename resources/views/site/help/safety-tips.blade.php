@@ -29,28 +29,28 @@
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Know the rules</p>
-      <p class="mb-0">To keep yourself safe, it is important to know the terms of service rules. You can find them <a href="#">here</a>.</p>
+      <p class="mb-0">To keep yourself safe, it is important to know the <a href="{{route('site.terms')}}">terms of service</a> rules.</p>
     </div>
   </div>
 
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Know the age guidelines</p>
-      <p class="mb-0">Please keep in mind that Pixelfed is meant for people over the age of 16 or 13 depending on where you live. For more information click <a href="#">here</a>.</p>
+      <p class="mb-0">Please keep in mind that Pixelfed is meant for people over the age of 16 or 13 depending on where you live.</p>
     </div>
   </div>
 
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Report problematic content</p>
-      <p class="mb-0">You can report content that you think is in violation of our policies. For more information click <a href="#">here</a>.</p>
+      <p class="mb-0">You can report content that you think is in violation of our policies.</p>
     </div>
   </div>
 
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Understanding content visibility</p>
-      <p class="mb-0">You can limit the visibility of your content to specific people, followers, public and more. For more information about visibility, click <a href="#">here</a>.</p>
+      <p class="mb-0">You can limit the visibility of your content to specific people, followers, public and more.</p>
     </div>
   </div>
 
@@ -58,7 +58,7 @@
   <div class="card border-left-blue mb-3">
     <div class="card-body">
       <p class="h5">Make your account or posts private</p>
-      <p class="mb-0">You can limit the visibility of your content to specific people, followers, public and more. For more information about visibility, click <a href="#">here</a>.</p>
+      <p class="mb-0">You can limit the visibility of your content to specific people, followers, public and more.</p>
     </div>
   </div>
 @endsection
