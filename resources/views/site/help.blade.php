@@ -45,8 +45,8 @@
             </p>
             <p class="text-center text-muted font-weight-bold h4 mb-0">{{__('helpcenter.hashtags')}}</p>
             <div class="text-center pt-3">
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
+              <p class="small text-dark font-weight-bold mb-0">What are hashtags?</p>
+              <p class="small text-dark font-weight-bold mb-0">Hashtag Tips</p>
             </div>
           </div>
         </div>
