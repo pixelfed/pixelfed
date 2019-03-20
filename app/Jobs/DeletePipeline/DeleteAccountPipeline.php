@@ -30,6 +30,7 @@ use App\{
     StatusHashtag,
     Status,
     User,
+    UserDevice,
     UserFilter,
     UserSetting,
 };
@@ -66,7 +67,9 @@ class DeleteAccountPipeline implements ShouldQueue
                     }
                 }
             });
+        });
 
+        DB::transaction(function() use ($user) {
             if($user->profile) {
                 $avatar = $user->profile->avatar;
 
@@ -90,7 +93,9 @@ class DeleteAccountPipeline implements ShouldQueue
             Follower::whereProfileId($id)->orWhere('following_id', $id)->forceDelete();
 
             Like::whereProfileId($id)->forceDelete();
+        });
 
+        DB::transaction(function() use ($user) {
             $medias = Media::whereUserId($user->id)->get();
             foreach($medias as $media) {
                 $path = $media->media_path;
@@ -103,31 +108,52 @@ class DeleteAccountPipeline implements ShouldQueue
                 }
                 $media->forceDelete();
             }
+        });
 
+        DB::transaction(function() use ($user) {
             Mention::whereProfileId($user->profile->id)->forceDelete();
+            Notification::whereProfileId($user->profile->id)->orWhere('actor_id', $user->profile->id)->forceDelete();
+        });
 
-            Notification::whereProfileId($id)->orWhere('actor_id', $id)->forceDelete();
-
+        DB::transaction(function() use ($user) {
             Status::whereProfileId($user->profile->id)->forceDelete();
-
             Report::whereUserId($user->id)->forceDelete();
             $this->deleteProfile($user);
         });
     }
 
-    public function deleteProfile($user) {
+    protected function deleteProfile($user) {
         DB::transaction(function() use ($user) {
             Profile::whereUserId($user->id)->delete();
-            $this->deleteUser($user);
+            $this->deleteUserSettings($user);
         });
     }
 
-    public function deleteUser($user) {
+    protected function deleteUserSettings($user) {
 
         DB::transaction(function() use ($user) {
+            UserDevice::whereUserId($user->id)->forceDelete();
             UserFilter::whereUserId($user->id)->forceDelete();
             UserSetting::whereUserId($user->id)->forceDelete();
-            $user->forceDelete();
+            $this->deleteUserColumns($user);
         });
+    }
+
+    protected function deleteUserColumns($user)
+    {
+        DB::transaction(function() use ($user) {
+            $user->status = 'deleted';
+            $user->name = 'deleted';
+            $user->email = $user->id;
+            $user->password = '';
+            $user->remember_token = null;
+            $user->is_admin = false;
+            $user->{'2fa_enabled'} = false;
+            $user->{'2fa_secret'} = null;
+            $user->{'2fa_backup_codes'} = null;
+            $user->{'2fa_setup_at'} = null;
+            $user->save();
+        });
+
     }
 }
