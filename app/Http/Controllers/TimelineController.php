@@ -22,4 +22,9 @@ class TimelineController extends Controller
     {
         return view('timeline.local');
     }
+
+    public function network(Request $request)
+    {
+        return view('timeline.network');
+    }
 }
