@@ -50,7 +50,7 @@ class LoginController extends Controller
     {
         $rules = [
             $this->username() => 'required|email',
-            'password'        => 'required|string',
+            'password'        => 'required|string|min:6',
         ];
 
         if (config('pixelfed.recaptcha')) {
