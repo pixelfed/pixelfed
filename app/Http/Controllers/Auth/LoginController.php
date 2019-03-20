@@ -49,7 +49,7 @@ class LoginController extends Controller
     public function validateLogin($request)
     {
         $rules = [
-            $this->username() => 'required|string',
+            $this->username() => 'required|email',
             'password'        => 'required|string',
         ];
 
@@ -70,6 +70,10 @@ class LoginController extends Controller
      */
     protected function authenticated($request, $user)
     {
+        if($user->status == 'deleted') {
+            return;
+        }
+
         $log = new AccountLog();
         $log->user_id = $user->id;
         $log->item_id = $user->id;
