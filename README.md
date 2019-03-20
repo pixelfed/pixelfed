@@ -33,35 +33,11 @@ Matrix](https://matrix.to/#/#freenode_#pixelfed:matrix.org))
 * Project on Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
 * E-mail: [hello@pixelfed.org](mailto:hello@pixelfed.org)
 
-## Support
 
-The lead maintainer is on Patreon! You can become a Patron at
-https://www.patreon.com/dansup
+## Pixelfed Sponsors
 
-### Contributors
+We would like to extend our thanks to the following sponsors for funding Pixelfed development. If you are interested in becoming a sponsor, please visit the Pixelfed [Patreon Page](https://www.patreon.com/dansup/overview)
 
-This project exists thanks to all the people who contribute. 
-<a href="https://github.com/pixelfed/pixelfed/graphs/contributors"><img src="https://opencollective.com/pixelfed/contributors.svg?width=890&button=false" /></a>
+- [<img src="https://s3.amazonaws.com/td-misc-public/OscillasLogo.png" width="100px">](https://oscillas.com/)
 
-
-### Backers
-
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/pixelfed#backer)]
-
-<a href="https://opencollective.com/pixelfed#backers" target="_blank"><img src="https://opencollective.com/pixelfed/backers.svg?width=890"></a>
-
-
-### Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/pixelfed#sponsor)]
-
-<a href="https://opencollective.com/pixelfed/sponsor/0/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/1/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/2/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/3/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/4/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/5/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/6/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/7/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/8/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/pixelfed/sponsor/9/website" target="_blank"><img src="https://opencollective.com/pixelfed/sponsor/9/avatar.svg"></a>
+- **[What5Words](https://opencollective.com/dzheymsd1)**
