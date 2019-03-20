@@ -176,6 +176,7 @@ class SettingsController extends Controller
         $profile->save();
         Cache::forget('profiles:private');
         Auth::logout();
+        DeleteAccountPipeline::dispatch($user);
         return redirect('/');
     }
 
