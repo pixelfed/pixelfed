@@ -6,7 +6,7 @@
 	<h3 class="font-weight-bold">{{__('helpcenter.gettingStarted')}}</h3>
 </div>
 <hr>
-<p class="lead font-weight-light">Welcome to Pixelfed!</p>
+<p class="lead ">Welcome to Pixelfed!</p>
 <hr>
 <p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
