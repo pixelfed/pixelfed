@@ -15,9 +15,9 @@
       <li class="nav-item {{request()->is('*/hashtags')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.hashtags')}}">{{__('helpcenter.hashtags')}}</a>
       </li>
-      {{-- <li class="nav-item {{request()->is('*/discover')?'active':''}}">
+      <li class="nav-item {{request()->is('*/discover')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.discover')}}">{{__('helpcenter.discover')}}</a>
-      </li> --}}
+      </li>
       {{-- <li class="nav-item {{request()->is('*/direct-messages')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.dm')}}">{{__('helpcenter.directMessages')}}</a>
       </li> --}}
