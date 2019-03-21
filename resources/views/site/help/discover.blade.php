@@ -6,21 +6,39 @@
     <h3 class="font-weight-bold">Discover</h3>
   </div>
   <hr>
-  <div class="card">
-  	<div class="card-body">
-  		<div class="row">
-  			<div class="col-12 col-md-3 text-center">
-  				<div class="icon-wrapper">
-  					<i class="far fa-question-circle fa-3x text-light"></i>
-  				</div>
-  			</div>
-  			<div class="col-12 col-md-9 d-flex align-items-center">
-  				<div class="text-center">
-	  				<p class="h3 font-weight-bold mb-0">This page isn't available</p>
-	  				<p class="font-weight-light mb-0">We haven't finished it yet, it will be updated soon!</p>
-  				</div>
-  			</div>
-  		</div>
-  	</div>
+  <p class="lead">Discover new posts, people and topics.</p>
+  <div class="py-4">
+    <p class="font-weight-bold h5 pb-3">How to use Discover</p>
+    <ul>
+      <li class="mb-3 font-weight-lighter">Click the <i class="far fa-compass fa-sm"></i> icon.</li>
+      <li class="mb-3 font-weight-lighter">View the latest posts from accounts you don't already follow.</li>
+    </ul>
+  </div>
+  <div class="py-4">
+    <p class="font-weight-bold h5 pb-3">Discover Categories <span class="badge badge-success">NEW</span></p>
+    <p>Discover Categories are a new feature that may not be supported on every Pixelfed instance.</p>
+    <ul>
+      <li class="mb-3 font-weight-lighter">Click the <i class="far fa-compass fa-sm"></i> icon.</li>
+      <li class="mb-3 font-weight-lighter">On the discover page, you will see a list of Category cards that links to each Discover Category.</li>
+    </ul>
+  </div>
+  <div class="py-4">
+    <p class="font-weight-bold h5 pb-3">Personalized Discover <span class="badge badge-success">NEW</span></p>
+    <p>Discover posts based on hashtags you've used before. This feature might not be supported on every Pixelfed instance.</p>
+    <ul>
+      <li class="mb-3 font-weight-lighter">Click the <i class="far fa-compass fa-sm"></i> icon.</li>
+      <li class="mb-3 font-weight-lighter">Click on the card that says "For You" or <a href="/discover/personal">click here</a>.</li>
+    </ul>
+  </div>
+  <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
+    <div class="card-header text-light font-weight-bold h4 p-4">Discover Tips</div>
+    <div class="card-body bg-white p-3">
+      <ul class="pt-3">
+        <li class="lead font-weight-lighter mb-4">To make your posts more discoverable, add hashtags to your posts.</li>
+        <li class="lead font-weight-lighter mb-4">Any public posts that contain a hashtag may be included in discover pages.</li>
+        <li class="lead font-weight-lighter">No algorithms or behavioral tracking are used in the Discover feature. It may be less personalized than other platforms.</li>
+
+      </ul>
+    </div>
   </div>
 @endsection

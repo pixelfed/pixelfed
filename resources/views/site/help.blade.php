@@ -68,7 +68,7 @@
         </div>
       </a>
     </div>
-    {{-- <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.discover')}}" class="text-decoration-none">
         <div class="card">
           <div class="card-body">
@@ -83,7 +83,7 @@
           </div>
         </div>
       </a>
-    </div> --}}
+    </div>
     <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.your-profile')}}" class="text-decoration-none">
         <div class="card">
