@@ -84,9 +84,9 @@
 
 				<div class="card-body">
 					<div class="reactions my-1">
-						<button v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></button>
-						<button class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></button>
-						<button v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></button>
+						<button v-bind:class="[status.favourited ? 'fas fa-heart btn btn-link text-danger mr-2 m-0 cursor-pointer' : 'far fa-heart mr-2 m-0 like-btn btn btn-link text-dark cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></button>
+						<button class="far fa-comment mr-2 m-0 btn btn-link text-dark cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></button>
+						<button v-bind:class="[status.reblogged ? 'far fa-share-square mr-2 m-0 btn btn-link text-primary cursor-pointer' : 'far fa-share-square mr-2 m-0 share-btn btn btn-link text-dark cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></button>
 					</div>
 
 					<div class="likes font-weight-bold">
