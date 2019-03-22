@@ -125,10 +125,10 @@
             </div>
             <div class="card-body flex-grow-0 py-1">
               <div class="reactions my-1">
-                <button v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0' : 'far fa-heart pr-3 m-0 like-btn']" title="Like" v-on:click="likeStatus"></button>
-                <button class="far fa-comment pr-3 m-0" title="Comment" v-on:click="commentFocus"></button>
-                <button v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary' : 'far fa-share-square pr-3 m-0 share-btn']" title="Share" v-on:click="shareStatus"></button>
-                <button v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right' : 'far fa-bookmark m-0 float-right']" title="Bookmark" v-on:click="bookmarkStatus"></button>
+                <button v-bind:class="[reactions.liked ? 'fas fa-heart btn btn-link text-danger px-0 mr-2 m-0' : 'far fa-heart px-0 mr-2 m-0 like-btn btn btn-link text-dark']" title="Like" v-on:click="likeStatus"></button>
+                <button class="far fa-comment px-0 mr-2 m-0 btn btn-link text-dark" title="Comment" v-on:click="commentFocus"></button>
+                <button v-bind:class="[reactions.shared ? 'far fa-share-square px-0 mr-2 m-0 btn btn-link text-primary' : 'far fa-share-square px-0 mr-2 m-0 share-btn btn btn-link text-dark']" title="Share" v-on:click="shareStatus"></button>
+                <button v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark btn btn-link text-warning px-0 m-0 float-right' : 'far fa-bookmark btn btn-link text-dark px-0 m-0 float-right']" title="Bookmark" v-on:click="bookmarkStatus"></button>
               </div>
               <div class="reaction-counts font-weight-bold mb-0">
                 <span style="cursor:pointer;" v-on:click="likesModal">

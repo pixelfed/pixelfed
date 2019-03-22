@@ -317,8 +317,14 @@ body, button, input, textarea {
   }
   
   .reactions button {
-      font-size: 1.575rem
+      font-size: 1.575rem;
+      line-height: 1;
   }
+  
+  .reactions button:hover {
+      text-decoration: none
+  }
+  
 }
 
 .touch .card {
