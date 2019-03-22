@@ -280,7 +280,6 @@ body, button, input, textarea {
   background-position: 50%;
 }
 
-
 .status-photo img {
     object-fit: contain;
     width: 100%;
@@ -315,6 +314,10 @@ body, button, input, textarea {
       width: 60px;
       text-align: center;
       border-radius: 0 3px 3px 0;
+  }
+  
+  .reactions button {
+      font-size: 1.575rem
   }
 }
 
