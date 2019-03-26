@@ -43,66 +43,7 @@ class InternalApiController extends Controller
     // deprecated v2 compose api
     public function compose(Request $request)
     {
-        $this->validate($request, [
-            'caption' => 'nullable|string',
-            'media.*'   => 'required',
-            'media.*.id' => 'required|integer|min:1',
-            'media.*.filter' => 'nullable|alpha_dash|max:30',
-            'media.*.license' => 'nullable|string|max:80',
-            'visibility' => 'required|string|in:public,private|min:2|max:10'
-        ]);
-
-        $profile = Auth::user()->profile;
-        $visibility = $request->input('visibility');
-        $medias = $request->input('media');
-        $attachments = [];
-        $status = new Status;
-        $mimes = [];
-        $cw = false;
-
-        foreach($medias as $k => $media) {
-            if($k + 1 > config('pixelfed.max_album_length')) {
-                continue;
-            }
-            $m = Media::findOrFail($media['id']);
-            if($m->profile_id !== $profile->id || $m->status_id) {
-                abort(403, 'Invalid media id');
-            }
-            $m->filter_class = in_array($media['filter'], Filter::classes()) ? $media['filter'] : null;
-            $m->license = $media['license'];
-            $m->caption = strip_tags($media['alt']);
-            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-            if($media['cw'] == true || $profile->cw == true) {
-                $cw = true;
-                $m->is_nsfw = true;
-                $status->is_nsfw = true;
-            }
-            $m->save();
-            $attachments[] = $m;
-            array_push($mimes, $m->mime);
-        }
-
-        $status->caption = strip_tags($request->caption);
-        $status->scope = 'draft';
-        $status->profile_id = $profile->id;
-        $status->save();
-
-        foreach($attachments as $media) {
-            $media->status_id = $status->id;
-            $media->save();
-        }
-
-        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
-        $cw = $profile->cw == true ? true : $cw;
-        $status->is_nsfw = $cw;
-        $status->visibility = $visibility;
-        $status->scope = $visibility;
-        $status->type = StatusController::mimeTypeCheck($mimes);
-        $status->save();
-
-        NewStatusPipeline::dispatch($status);
-
-        return $status->url();
+        return redirect('/');
     }
 
     // deprecated

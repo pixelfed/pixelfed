@@ -95,7 +95,7 @@ class StatusController extends Controller
     {
         $this->authCheck();
 
-        return view('status.compose');
+        return redirect('/');
     }
 
     public function store(Request $request)
