@@ -40,6 +40,7 @@ class InternalApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
+    // deprecated v2 compose api
     public function compose(Request $request)
     {
         $this->validate($request, [
@@ -60,6 +61,9 @@ class InternalApiController extends Controller
         $cw = false;
 
         foreach($medias as $k => $media) {
+            if($k + 1 > config('pixelfed.max_album_length')) {
+                continue;
+            }
             $m = Media::findOrFail($media['id']);
             if($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
@@ -380,5 +384,69 @@ class InternalApiController extends Controller
                 break;
         }
         return ['msg' => 200];
+    }
+
+    public function composePost(Request $request)
+    {
+        $this->validate($request, [
+            'caption' => 'nullable|string',
+            'media.*'   => 'required',
+            'media.*.id' => 'required|integer|min:1',
+            'media.*.filter_class' => 'nullable|alpha_dash|max:30',
+            'media.*.license' => 'nullable|string|max:80',
+            'cw' => 'nullable|boolean',
+            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10'
+        ]);
+
+        $profile = Auth::user()->profile;
+        $visibility = $request->input('visibility');
+        $medias = $request->input('media');
+        $attachments = [];
+        $status = new Status;
+        $mimes = [];
+        $cw = $request->input('cw');
+
+        foreach($medias as $k => $media) {
+            if($k + 1 > config('pixelfed.max_album_length')) {
+                continue;
+            }
+            $m = Media::findOrFail($media['id']);
+            if($m->profile_id !== $profile->id || $m->status_id) {
+                abort(403, 'Invalid media id');
+            }
+            $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
+            $m->license = $media['license'];
+            $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
+            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
+            if($cw == true || $profile->cw == true) {
+                $m->is_nsfw = $cw;
+                $status->is_nsfw = $cw;
+            }
+            $m->save();
+            $attachments[] = $m;
+            array_push($mimes, $m->mime);
+        }
+
+        $status->caption = strip_tags($request->caption);
+        $status->scope = 'draft';
+        $status->profile_id = $profile->id;
+        $status->save();
+
+        foreach($attachments as $media) {
+            $media->status_id = $status->id;
+            $media->save();
+        }
+
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+        $cw = $profile->cw == true ? true : $cw;
+        $status->is_nsfw = $cw;
+        $status->visibility = $visibility;
+        $status->scope = $visibility;
+        $status->type = StatusController::mimeTypeCheck($mimes);
+        $status->save();
+
+        NewStatusPipeline::dispatch($status);
+
+        return $status->url();
     }
 }

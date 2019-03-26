@@ -13,23 +13,28 @@ class ApiController extends BaseApiController
     // todo: deprecate and remove
     public function hydrateLikes(Request $request)
     {
-        $this->validate($request, [
-            'min' => 'nullable|integer|min:1',
-            'max' => 'nullable|integer',
-        ]);
+        return response()->json([]);
+    }
 
-        $profile = Auth::user()->profile;
-        $res = Cache::remember('api:like-ids:user:'.$profile->id, now()->addDays(1), function () use ($profile) {
-            return Like::whereProfileId($profile->id)
-                 ->orderBy('id', 'desc')
-                 ->take(1000)
-                 ->pluck('status_id');
+    public function siteConfiguration(Request $request)
+    {
+        $res = Cache::remember('api:site:configuration', now()->addMinutes(30), function() {
+            return [
+                'uploader' => [
+                    'max_photo_size' => config('pixelfed.max_photo_size'),
+                    'max_caption_length' => config('pixelfed.max_caption_length'),
+                    'album_limit' => config('pixelfed.max_album_length'),
+                    'image_quality' => config('pixelfed.image_quality'),
+
+                    'optimize_image' => config('pixelfed.optimize_image'),
+                    'optimize_video' => config('pixelfed.optimize_video'),
+
+                    'media_types' => config('pixelfed.media_types'),
+                    'enforce_account_limit' => config('pixelfed.enforce_account_limit')
+                ]
+            ];
         });
-
         return response()->json($res);
     }
 
-    public function loadMoreComments(Request $request)
-    {
-    }
 }
