@@ -83,3 +83,10 @@
   }
 </style>
 @endpush
+
+@push('scripts')
+<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){new Vue({el: '#content'});});
+</script>
+@endpush
