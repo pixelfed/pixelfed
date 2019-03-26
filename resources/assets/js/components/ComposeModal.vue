@@ -244,7 +244,7 @@ export default {
 				}
 			},
 			profile: {},
-			composeText: 'Add optional caption...',
+			composeText: '',
 			composeTextLength: 0,
 			nsfw: false,
 			filters: [],
