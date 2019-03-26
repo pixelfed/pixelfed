@@ -24,3 +24,15 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+$(document).ready(function() {
+  $('a[data-target="#composeModal"]').on('click', function() {
+    $('#composeModal').modal('hide');
+    swal('Not Supported', 'You cannot compose a post from the admin dashboard.', 'error');
+    return;
+  });
+});
+</script>
+@endpush

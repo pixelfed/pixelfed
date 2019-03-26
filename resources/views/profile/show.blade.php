@@ -21,6 +21,7 @@
 
 @push('scripts')
 <script type="text/javascript" src="{{ mix('js/profile.js') }}"></script>
+<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
 <script type="text/javascript">
   new Vue({
     el: '#content'

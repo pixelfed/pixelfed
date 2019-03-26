@@ -1,9 +1,8 @@
 <template>
 	<div>
-		<input type="file" name="media" class="d-none file-input" multiple="">
+		<input type="file" name="media" class="d-none file-input" multiple="" v-bind:accept="config.uploader.media_types">
 		<div class="timeline">
 			<div class="card status-card card-md-rounded-0">
-
 				<div class="card-header d-inline-flex align-items-center bg-white">
 					<img v-bind:src="profile.avatar" width="32px" height="32px" style="border-radius: 32px;" class="box-shadow">
 					<a class="username font-weight-bold pl-2 text-dark" v-bind:href="profile.url">
@@ -15,16 +14,16 @@
 								<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
 							</button>
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-								<div class="dropdown-item small font-weight-bold" v-on:click="mediaDrawer = !mediaDrawer">Show Media Toolbar</div>
+								<div v-show="media.length > 0" class="dropdown-item small font-weight-bold" v-on:click="mediaDrawer = !mediaDrawer">{{mediaDrawer ? 'Hide' : 'Show'}} Media Toolbar</div>
+								<div class="dropdown-item small font-weight-bold" v-on:click="about">About</div>
 								<div class="dropdown-divider"></div>
+								<div class="dropdown-item small font-weight-bold" v-on:click="closeModal">Close</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div class="postPresenterContainer">
-
-
 					<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia()">
 						<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos.</p>
 					</div>
@@ -45,21 +44,41 @@
 							</b-carousel-slide>
 						</b-carousel>
 					</div>
-
+					<div v-if="mediaDrawer" class="bg-dark align-items-center">
+						<ul class="nav media-drawer-filters text-center">
+							<li class="nav-item">
+								<div class="p-1 pt-3">
+									<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+								</div>
+								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+							</li>
+							<li class="nav-item" v-for="(filter, index) in filters">
+								<div class="p-1 pt-3">
+									<div :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+										<img :src="media[carouselCursor].url" width="100px" height="60px" class="">
+									</div>
+								</div>
+								<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
+							</li>
+						</ul>
+					</div>
 					<div v-if="mediaDrawer" class="bg-lighter p-2 row">
-						<div class="col-4">
-							<select class="form-control form-control-sm" id="filterSelectDropdown" v-on:change="toggleFilter($event)">
-								<option value="none">No filter</option>
-								<option v-for="(filter, index) in filters" :value="filter[1]" :selected="filter[1]==media[carouselCursor].filter_class?'selected':''">{{filter[0]}}</option>
-							</select>
+						<div class="col-12">
+							<div class="form-group">
+								<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Optional image description">
+							</div>
+
+							<div class="form-group">
+								<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="Optional media license">
+							</div>
 						</div>
-						<div class="col-5">
-							<button class="btn btn-outline-primary btn-sm mr-1" v-on:click="mediaAltText()">Alt Text</button>
-							<button class="btn btn-outline-primary btn-sm mr-1" v-on:click="mediaLicense()">License</button>
+						<div class="col-6 pt-2">
+							<!-- <button class="btn btn-outline-secondary btn-sm mr-1"><i class="fas fa-map-marker-alt"></i></button>
+							<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-tools"></i></button> -->
 						</div>
-						<div class="col-3 text-right">
+						<div class="col-6 text-right pt-2">
 							<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()"><i class="fas fa-trash"></i></button>
-							<button class="btn btn-outline-secondary btn-sm font-weight-bold" v-on:click="updateMedia()"><i class="fas fa-times"></i></button>
+							<button class="btn btn-outline-secondary btn-sm font-weight-bold" v-on:click="updateMedia()">Close</button>
 						</div>
 					</div>
 				</div>
@@ -101,12 +120,12 @@
 							</div>
 							<div class="dropdown d-inline">
 								<button class="btn btn-outline-secondary btn-sm py-0 dropdown-toggle" type="button" id="visibility" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									Public
+									{{visibility[0].toUpperCase() + visibility.slice(1)}}
 								</button>
 								<div class="dropdown-menu" aria-labelledby="visibility" style="width: 200px;">
-									<a class="dropdown-item active" href="#" data-id="public" data-title="Public">
+									<a :class="[visibility=='public'?'dropdown-item active':'dropdown-item']" href="#" data-id="public" data-title="Public" v-on:click.prevent="visibility = 'public'">
 										<div class="row">
-											<div class="col-12 col-sm-2 px-0 text-center">
+											<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 												<i class="fas fa-globe"></i>
 											</div> 
 											<div class="col-12 col-sm-10 pl-2">
@@ -115,9 +134,9 @@
 											</div> 
 										</div>
 									</a>
-									<a class="dropdown-item" href="#" data-id="private" data-title="Followers Only">
+									<a :class="[visibility=='private'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Followers Only" v-on:click.prevent="visibility = 'private'">
 										<div class="row">
-											<div class="col-12 col-sm-2 px-0 text-center">
+											<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 												<i class="fas fa-lock"></i>
 											</div> 
 											<div class="col-12 col-sm-10 pl-2">
@@ -126,8 +145,18 @@
 											</div> 
 										</div>
 									</a>
-
-									<a class="dropdown-item" href="#" data-id="circle" data-title="Circle">
+									<a :class="[visibility=='private'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Followers Only" v-on:click.prevent="visibility = 'unlisted'">
+										<div class="row">
+											<div class="d-none d-block-sm col-sm-2 px-0 text-center">
+												<i class="fas fa-lock"></i>
+											</div> 
+											<div class="col-12 col-sm-10 pl-2">
+												<p class="font-weight-bold mb-0">Unlisted</p>
+												<p class="small mb-0">Not listed on public timelines</p>
+											</div> 
+										</div>
+									</a>
+									<!-- <a class="dropdown-item" href="#" data-id="circle" data-title="Circle">
 										<div class="row">
 											<div class="col-12 col-sm-2 px-0 text-center">
 												<i class="far fa-circle"></i>
@@ -148,7 +177,7 @@
 												<p class="small mb-0">Recipients only</p>
 											</div> 
 										</div>
-									</a>
+									</a> -->
 								</div>
 							</div>
 						</div>
@@ -163,10 +192,10 @@
 								</button>
 								<div class="dropdown-menu dropdown-menu-right">
 									<a :class="[composeState == 'publish' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'publish'">Publish now</a>
-									<a :class="[composeState == 'draft' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'draft'">Save as draft</a>
+									<!-- <a :class="[composeState == 'draft' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'draft'">Save as draft</a>
 									<a :class="[composeState == 'schedule' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'schedule'">Schedule for later</a>
 									<div class="dropdown-divider"></div>
-									<a :class="[composeState == 'delete' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'delete'">Delete</a>
+									<a :class="[composeState == 'delete' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'delete'">Delete</a> -->
 								</div>
 							</div>
 						</div>
@@ -179,59 +208,57 @@
 </template>
 
 <style type="text/css" scoped>
-.glass {
-	-webkit-filter: blur(2px);
-	-moz-filter: blur(2px);
-	-o-filter: blur(2px);
-	-ms-filter: blur(2px);
-	filter: blur(2px);
-	width: 100%;
-	height: 100%;
-}
+	.glass {
+		-webkit-filter: blur(2px);
+		-moz-filter: blur(2px);
+		-o-filter: blur(2px);
+		-ms-filter: blur(2px);
+		filter: blur(2px);
+		width: 100%;
+		height: 100%;
+	}
+	.media-drawer-filters {
+		overflow-x: scroll;
+		flex-wrap:unset;
+	}
+	.media-drawer-filters .nav-link {
+		min-width:100px;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+	}
+	.media-drawer-filters .active {
+		color: #fff;
+		font-weight: bold;
+	}
+	.media-drawer-filters::-webkit-scrollbar {
+	    display: none;
+	}
 </style>
 <script type="text/javascript">
 export default {
 	data() {
 		return {
-			profile: {},
-			create: {
-				hasGeneratedSelect: false, 
-				selectedFilter: false, 
-				currentFilterName: false, 
-				currentFilterClass: false
+			config: {
+				uploader: {
+					media_types: '',
+				}
 			},
+			profile: {},
 			composeText: '',
-			composeTextLength: 27,
+			composeTextLength: 0,
 			nsfw: false,
 			filters: [],
 			ids: [],
 			media: [],
-			meta: {
-				'id': false,
-				'cursor': false,
-				'cw': false,
-				'alt': null,
-				'filter': null,
-				'license': null,
-				'preserve_exif': false,
-			},
-			cursor: 1,
 			carouselCursor: 0,
 			visibility: 'public',
-			cropmode: false,
-			croppie: false,
-			limit: pixelfed.settings.maxAlbumLength,
-			acceptedMimes: pixelfed.settings.acceptedMimes,
 			mediaDrawer: false,
-			composeState: 'publish',
-			filter: {
-				name: null,
-				class: null
-			}
+			composeState: 'publish'
 		}
 	},
 
 	beforeMount() {
+		this.fetchConfig();
 		this.fetchProfile();
 	},
 
@@ -294,6 +321,12 @@ export default {
 
 	methods: {
 
+		fetchConfig() {
+			axios.get('/api/v2/config').then(res => {
+				this.config = res.data;
+			});
+		},
+
 		fetchProfile() {
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.profile = res.data;
@@ -321,31 +354,34 @@ export default {
 			$(document).on('change', '.file-input', function(e) {
 				let io = document.querySelector('.file-input');
 				Array.prototype.forEach.call(io.files, function(io, i) {
-					if(self.media && self.media.length + i >= self.limit) {
+					if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
+						swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
 						return;
 					}
 					let type = io.type;
-					let acceptedMimes = pixelfed.settings.acceptedMimes.split(',');
+					let acceptedMimes = self.config.uploader.media_types.split(',');
 					let validated = $.inArray(type, acceptedMimes);
 					if(validated == -1) {
-						swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+pixelfed.uploader.acceptedMimes+' only.', 'error');
+						swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+self.config.uploader.media_types+' only.', 'error');
 						return;
 					}
 
 					let form = new FormData();
 					form.append('file', io);
 
-					let config = {
+					let xhrConfig = {
 						onUploadProgress: function(e) {
 							let progress = Math.round( (e.loaded * 100) / e.total );
 						}
 					};
 
-					axios.post('/api/v1/media', form, config)
+					axios.post('/api/v1/media', form, xhrConfig)
 					.then(function(e) {
 						self.ids.push(e.data.id);
 						self.media.push(e.data);
-						self.mediaDrawer = true;
+						setTimeout(function() {
+							self.mediaDrawer = true;
+						}, 1000);
 					}).catch(function(e) {
 						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
 					});
@@ -354,16 +390,8 @@ export default {
 			});
 		},
 
-		toggleFilter(e) {
-			this.media[this.carouselCursor].filter_class = e.target.value;
-
-			// todo: deprecate
-			this.create.selectedFilter = true;
-			this.create.filterName = val;
-			this.create.filterClass = val;
-			this.create.currentFilterName = val;
-			this.create.currentFilterClass = val;
-			this.filter.class = val;
+		toggleFilter(e, filter) {
+			this.media[this.carouselCursor].filter_class = filter;
 		},
 
 		updateMedia() {
@@ -371,14 +399,20 @@ export default {
 		},
 
 		deleteMedia() {
+			if(window.confirm('Are you sure you want to delete this photo?') == false) {
+				return;
+			}
 			let id = this.media[this.carouselCursor].id;
 			axios.delete('/api/v1/media', {
 				params: {
 					id: id
 				}
 			}).then(res => {
-				if(this.media.length == 0) {
+				if(this.media.length == 1) {
 					this.mediaDrawer = false;
+					this.ids = [];
+					this.media = [];
+					this.carouselCursor = 0;
 				}
 				this.ids.splice(this.carouselCursor, 1);
 				this.media.splice(this.carouselCursor, 1);
@@ -388,6 +422,8 @@ export default {
 		},
 
 		mediaAltText() {
+			return;
+			// deprecate 
 			swal({
 				text: 'Add a media description',
 				content: "input"
@@ -399,6 +435,8 @@ export default {
 		},
 
 		mediaLicense() {
+			return;
+			// deprecate
 			swal({
 				text: 'Add a media license',
 				content: "input",
@@ -414,23 +452,60 @@ export default {
 		},
 
 		compose() {
-			if(this.media.length == 0) {
-				swal('Whoops!', 'You need to add media before you can save this!', 'warning');
-				return;
+			let state = this.composeState;
+
+			switch(state) {
+				case 'publish' :
+					if(this.media.length == 0) {
+						swal('Whoops!', 'You need to add media before you can save this!', 'warning');
+						return;
+					}
+					if(this.composeText == 'Add optional caption...') {
+						this.composeText = '';
+					}
+					let data = {
+						media: this.media,
+						caption: this.composeText,
+						visibility: this.visibility,
+						cw: this.nsfw
+					};
+					axios.post('/api/v2/status/compose', data)
+					.then(res => {
+						let data = res.data;
+						window.location.href = data;
+					}).catch(err => {
+						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+					});
+					return;
+				break;
+
+				case 'delete' :
+					this.mediaDrawer = false;
+					this.ids = [];
+					this.media = [];
+					this.carouselCursor = 0;
+					this.composeText = '';
+					this.composeTextLength = 0;
+					$('#composeModal').modal('hide');
+					return;
+				break;
 			}
-			let data = {
-				media: this.media,
-				caption: this.composeText,
-				visibility: this.visibility,
-				cw: this.nsfw
-			};
-			axios.post('/api/local/status/compose', data)
-			.then(res => {
-				let data = res.data;
-				window.location.href = data;
-			}).catch(err => {
-				swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+		},
+
+		about() {
+			let text = document.createElement('div');
+			text.innerHTML = `
+				<p class="small font-weight-bold">Please visit the <a href="/site/kb/sharing-media">Sharing Media</a> page for more info.</p>
+			`;
+			swal({
+				title: 'Compose UI v3', 
+				content: text, 
+				icon: 'info'
 			});
+		},
+
+		closeModal() {
+			$('#composeModal').modal('hide');
 		}
 	}
 }

@@ -32,6 +32,15 @@
     @include('layouts.partial.nav')
     <main id="content">
         @yield('content')
+        @if(Auth::check())
+        <div class="modal pr-0" tabindex="-1" role="dialog" id="composeModal">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <compose-modal></compose-modal>
+            </div>
+          </div>
+        </div>
+        @endif
     </main>
     @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
@@ -59,13 +68,6 @@
               </li>
             </ul>
         </div>
-    </div>
-    <div class="modal" tabindex="-1" role="dialog" id="composeModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          @include('timeline.partial.new-form')
-        </div>
-      </div>
     </div>
     @endif
 </body>
