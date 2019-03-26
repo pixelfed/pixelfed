@@ -84,9 +84,9 @@
 
 				<div class="card-body">
 					<div class="reactions my-1">
-						<button v-bind:class="[status.favourited ? 'btn-lg h3 fas fa-heart btn btn-link text-decoration-none text-danger px-0 mr-2 m-0' : 'btn-lg h3 far fa-heart px-0 mr-2 m-0 text-decoration-none like-btn btn btn-link text-dark']" title="Like" v-on:click="likeStatus(status, $event)"></button>
-						<button class="far fa-comment px-0 mr-2 m-0 btn btn-link text-dark text-decoration-none" title="Comment" v-on:click="commentFocus(status, $event)"></button>
-						<button v-bind:class="[status.reblogged ? 'far fa-share-square px-0 mr-2 m-0 btn btn-link text-decoration-none text-primary' : 'far fa-share-square px-0 mr-2 m-0 share-btn btn btn-link text-decoration-none text-dark']" title="Share" v-on:click="shareStatus(status, $event)"></button>
+						<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
+						<h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+						<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 					</div>
 
 					<div class="likes font-weight-bold">
@@ -358,8 +358,8 @@
   <b-modal 
   	id="lightbox" 
   	ref="lightboxModal"
-  	hide-header="true"
-  	hide-footer="true"
+  	hide-header
+  	hide-footer
   	centered
   	size="lg"
   	body-class="p-0"
