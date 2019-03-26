@@ -73,32 +73,21 @@
 								<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="Optional media license">
 							</div>
 						</div>
-						<div class="col-6 pt-2">
-							<!-- <button class="btn btn-outline-secondary btn-sm mr-1"><i class="fas fa-map-marker-alt"></i></button>
-							<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-tools"></i></button> -->
-						</div>
-						<div class="col-6 text-right pt-2">
-							<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()"><i class="fas fa-trash"></i></button>
-							<button class="btn btn-outline-secondary btn-sm font-weight-bold" v-on:click="updateMedia()">Close</button>
+						<!-- <div class="col-6 pt-2">
+							<button class="btn btn-outline-secondary btn-sm mr-1"><i class="fas fa-map-marker-alt"></i></button>
+							<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-tools"></i></button>
+						</div> -->
+						<div class="col-12 text-right pt-2">
+							<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()">Delete Photo</button>
+							<button class="btn btn-outline-secondary btn-sm font-weight-bold" v-on:click="updateMedia()">Hide Media Toolbar</button>
 						</div>
 					</div>
 				</div>
 
-				<div :class="[mediaDrawer?'glass card-body disabled':'card-body']">
-					<div class="reactions my-1">
-						<h3 class="far fa-heart pr-3 m-0 text-lighter" title="Like"></h3>
-						<h3 class="far fa-comment pr-3 m-0 text-lighter" title="Comment"></h3>
-					</div>
-
-					<div class="likes font-weight-bold">
-						<span class="like-count">0</span> likes
-					</div>
+				<div :class="[mediaDrawer?'d-none':'card-body']">
 					<div class="caption">
-						<p class="mb-2 read-more" style="overflow: hidden;">
-							<span class="username font-weight-bold d-inline-block clearfix">
-								<bdi><a class="text-dark" :href="profile.url">{{profile.username}}</a></bdi>
-							</span>
-							<span contenteditable="" style="outline:none;" v-on:keyup="textWatcher"></span>
+						<p class="mb-2">
+							<textarea class="form-control d-inline-block" rows="3" placeholder="Add an optional caption" v-model="composeText"></textarea>
 						</p>
 					</div>
 					<div class="comments">
@@ -112,7 +101,7 @@
 					</div>
 				</div>
 
-				<div :class="[mediaDrawer?'glass card-footer':'card-footer']">
+				<div :class="[mediaDrawer?'d-none':'card-footer']">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<div class="custom-control custom-switch d-inline mr-3">
@@ -183,7 +172,7 @@
 							</div>
 						</div>
 						<div class="small text-muted font-weight-bold">
-							{{composeTextLength}} / 500
+							{{composeText.length}} / 500
 						</div>
 						<div class="pl-md-5">
 							<div class="btn-group">
@@ -209,15 +198,6 @@
 </template>
 
 <style type="text/css" scoped>
-	.glass {
-		-webkit-filter: blur(2px);
-		-moz-filter: blur(2px);
-		-o-filter: blur(2px);
-		-ms-filter: blur(2px);
-		filter: blur(2px);
-		width: 100%;
-		height: 100%;
-	}
 	.media-drawer-filters {
 		overflow-x: scroll;
 		flex-wrap:unset;
@@ -310,16 +290,6 @@ export default {
 		];
 	},
 
-	watch: {
-		composeText: function (newComposeText, oldComposeText) {
-			this.debouncedTextWatcher();
-		}
-	},
-
-	created: function() {
-		this.debouncedTextWatcher = _.debounce(this.textWatcher, 300)
-	},
-
 	methods: {
 
 		fetchConfig() {
@@ -343,11 +313,6 @@ export default {
 			fi.trigger('click');
 			el.blur();
 			el.removeAttr('disabled');
-		},
-
-		textWatcher() {
-			this.composeText = event.target.innerText;
-			this.composeTextLength = event.target.innerText.length;
 		},
 
 		mediaWatcher() {
