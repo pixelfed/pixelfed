@@ -392,7 +392,7 @@ class InternalApiController extends Controller
             'media.*.filter_class' => 'nullable|alpha_dash|max:30',
             'media.*.license' => 'nullable|string|max:80',
             'cw' => 'nullable|boolean',
-            'visibility' => 'required|string|in:public,private|min:2|max:10'
+            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10'
         ]);
 
         $profile = Auth::user()->profile;
@@ -404,6 +404,9 @@ class InternalApiController extends Controller
         $cw = $request->input('cw');
 
         foreach($medias as $k => $media) {
+            if($k + 1 > config('pixelfed.max_album_length')) {
+                continue;
+            }
             $m = Media::findOrFail($media['id']);
             if($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
