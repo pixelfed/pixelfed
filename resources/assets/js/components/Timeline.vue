@@ -712,6 +712,10 @@
 					return;
 				}
 
+				if(window.confirm('Are you sure you want to delete this post?') == false) {
+					return;
+				}
+				
 				axios.post('/i/delete', {
 					type: 'status',
 					item: status.id
