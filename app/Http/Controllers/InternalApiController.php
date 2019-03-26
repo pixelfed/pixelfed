@@ -61,6 +61,9 @@ class InternalApiController extends Controller
         $cw = false;
 
         foreach($medias as $k => $media) {
+            if($k + 1 > config('pixelfed.max_album_length')) {
+                continue;
+            }
             $m = Media::findOrFail($media['id']);
             if($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
