@@ -16,6 +16,7 @@
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 								<div v-show="media.length > 0" class="dropdown-item small font-weight-bold" v-on:click="mediaDrawer = !mediaDrawer">{{mediaDrawer ? 'Hide' : 'Show'}} Media Toolbar</div>
 								<div class="dropdown-item small font-weight-bold" v-on:click="about">About</div>
+								<a class="dropdown-item small font-weight-bold" href="/i/compose">Classic Compose UI</a>
 								<div class="dropdown-divider"></div>
 								<div class="dropdown-item small font-weight-bold" v-on:click="closeModal">Close</div>
 							</div>
