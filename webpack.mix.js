@@ -28,9 +28,6 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // Timeline component
 .js('resources/assets/js/timeline.js', 'public/js')
 
-// MicroUI component
-.js('resources/assets/js/micro.js', 'public/js')
-
 // LandingPage component
 .js('resources/assets/js/landing.js', 'public/js')
 
