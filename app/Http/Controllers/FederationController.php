@@ -66,7 +66,7 @@ class FederationController extends Controller
 
         RemoteFollowPipeline::dispatch($follower, $url);
 
-        return redirect()->back();
+        return response(['success' => true, 'follower' => $follower]);
     }
 
     public function nodeinfoWellKnown()
@@ -124,7 +124,6 @@ class FederationController extends Controller
                     ],
                     'captcha' => (bool) config('pixelfed.recaptcha'),
                 ],
-                'openRegistrations' => config('pixelfed.open_registration'),
                 'protocols'         => [
                     'activitypub',
                 ],
@@ -148,7 +147,7 @@ class FederationController extends Controller
                 'version' => '2.0',
             ];
         });
-
+        $res['openRegistrations'] = config('pixelfed.open_registration');
         return response()->json($res, 200, [
             'Access-Control-Allow-Origin' => '*'
         ]);
