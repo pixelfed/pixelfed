@@ -17,6 +17,13 @@
 	</div>
 </template>
 
+<style type="text/css" scoped>
+  .card-img-top {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+  }
+</style>
+
 <script type="text/javascript">
 	export default {
 		props: ['status']
