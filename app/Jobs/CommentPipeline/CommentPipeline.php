@@ -51,7 +51,7 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
-        if ($actor->id === $target->id) {
+        if ($actor->id === $target->id || $status->comments_disabled == true) {
             return true;
         }
 
