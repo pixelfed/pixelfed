@@ -170,6 +170,10 @@ class Helpers {
 
 	public static function fetchFromUrl($url)
 	{
+		$url = self::validateUrl($url);
+		if($url == false) {
+			return;
+		}
 		$res = Zttp::withHeaders(self::zttpUserAgent())->get($url);
 		$res = json_decode($res->body(), true, 8);
 		if(json_last_error() == JSON_ERROR_NONE) {
