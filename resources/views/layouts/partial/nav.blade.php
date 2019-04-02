@@ -8,7 +8,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
             <ul class="navbar-nav ml-auto">
-              <form class="form-inline" method="get" action="/i/results">
+              <form class="form-inline search-bar" method="get" action="/i/results">
                 <div class="input-group mr-sm-2">
                     <input class="form-control" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
                     <div class="input-group-append">
