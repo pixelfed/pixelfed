@@ -35,8 +35,8 @@ class FederationController extends Controller
     {
         $this->authCheck();
         $this->validate($request, [
-        'acct' => 'required|string|min:3|max:255',
-      ]);
+            'acct' => 'required|string|min:3|max:255',
+        ]);
         $acct = $request->input('acct');
         $nickname = Nickname::normalizeProfileUrl($acct);
 
@@ -63,6 +63,11 @@ class FederationController extends Controller
 
         $follower = Auth::user()->profile;
         $url = $request->input('url');
+        $url = Helpers::validateUrl($url);
+
+        if(!$url) {
+            return;
+        }
 
         RemoteFollowPipeline::dispatch($follower, $url);
 
