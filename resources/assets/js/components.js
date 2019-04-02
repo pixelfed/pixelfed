@@ -63,6 +63,11 @@ require('./components/searchform');
 // Initialize Notification Helper
 window.pixelfed.n = {};
 
+Vue.component(
+    'search-results',
+    require('./components/SearchResults.vue').default
+);
+
 // Vue.component(
 //     'photo-presenter',
 //     require('./components/presenter/PhotoPresenter.vue').default
