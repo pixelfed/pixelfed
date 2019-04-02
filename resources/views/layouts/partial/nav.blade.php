@@ -7,9 +7,14 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
-            <ul class="navbar-nav ml-auto d-none d-md-block">
-              <form class="form-inline search-form">
-                <input class="form-control mr-sm-2 search-form-input" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
+            <ul class="navbar-nav ml-auto">
+              <form class="form-inline" method="get" action="/i/results">
+                <div class="input-group mr-sm-2">
+                    <input class="form-control" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
               </form>
             </ul>
             @endauth
