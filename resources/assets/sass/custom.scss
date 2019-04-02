@@ -550,3 +550,9 @@ details summary::-webkit-details-marker {
 .tooltip-notification .tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before, .tooltip.bs-tooltip-top .arrow::before {
     border-top-color: #dc3545; 
 }
+
+a:empty:hover {
+  &.fa, &.fab, &.fal, &.far, &.fas {
+    text-decoration: none;
+  }
+}
