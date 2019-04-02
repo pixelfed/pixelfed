@@ -43,6 +43,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'pinned'                    => null,
 
             'pf_type'          => $status->type ?? $status->setType(),
+            'reply_count'      => $status->reply_count,
+            'comments_disabled' => $status->comments_disabled ? true : false
         ];
     }
 

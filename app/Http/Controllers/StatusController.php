@@ -12,8 +12,7 @@ use App\Status;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
-use Auth;
-use Cache;
+use Auth, Cache;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Media\Filter;
@@ -22,6 +21,7 @@ class StatusController extends Controller
 {
     public function show(Request $request, $username, int $id)
     {
+        // $id = strlen($id) < 17 ? array_first(\Hashids::decode($id)) : $id;
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
         if($user->status != null) {
@@ -362,5 +362,28 @@ class StatusController extends Controller
         if($photos >= 1 && $videos >= 1) {
             return 'photo:video:album';
         }
+    }
+
+    public function toggleVisibility(Request $request) {
+        $this->authCheck();
+        $this->validate($request, [
+            'item' => 'required|string|min:1|max:20',
+            'disableComments' => 'required|boolean'
+        ]);
+
+        $user = Auth::user();
+        $id = $request->input('item');
+        $state = $request->input('disableComments');
+
+        $status = Status::findOrFail($id);
+
+        if($status->profile_id != $user->profile->id && $user->is_admin == false) {
+            abort(403);
+        }
+
+        $status->comments_disabled = $status->comments_disabled == true ? false : true;
+        $status->save();
+
+        return response()->json([200]);
     }
 }

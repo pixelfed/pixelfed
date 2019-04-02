@@ -135,6 +135,10 @@ class Helpers {
 			'127.0.0.1', 'localhost', '::1'
 		];
 
+		if(mb_substr($url, 0, 8) !== 'https://') {
+			return false;
+		}
+
 		$valid = filter_var($url, FILTER_VALIDATE_URL);
 
 		if(in_array(parse_url($valid, PHP_URL_HOST), $localhosts)) {
