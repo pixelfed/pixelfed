@@ -34,6 +34,9 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // ComposeModal component
 .js('resources/assets/js/compose.js', 'public/js')
 
+// SearchResults component
+.js('resources/assets/js/search.js', 'public/js')
+
 .sass('resources/assets/sass/app.scss', 'public/css', {
 	implementation: require('node-sass')
 })
