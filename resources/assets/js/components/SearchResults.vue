@@ -117,7 +117,7 @@ export default {
 		this.fetchSearchResults();
 	},
 	mounted() {
-		$('.search-form input').val(this.query);
+		$('.search-bar input').val(this.query);
 	},
 	updated() {
 
