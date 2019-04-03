@@ -13,7 +13,7 @@
   	<div class="col-12 col-md-3">
   		<div class="card mb-3 border-left-blue">
   			<div class="card-body text-center">
-  				<p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['pixelfed']}}</p>
+  				<p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['pixelfed']}}" data-toggle="tooltip">{{$sys['pixelfed']}}</p>
   			</div>
   			<div class="card-footer font-weight-bold py-0 text-center bg-white">Pixelfed</div>
       </div>
@@ -21,7 +21,7 @@
     <div class="col-12 col-md-3">
       <div class="card mb-3 border-left-blue">
         <div class="card-body text-center">
-          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['database']['version']}}</p>
+          <p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['database']['version']}}" data-toggle="tooltip">{{$sys['database']['version']}}</p>
         </div>
         <div class="card-footer font-weight-bold py-0 text-center bg-white">{{$sys['database']['name']}}</div>
       </div>
@@ -29,7 +29,7 @@
     <div class="col-12 col-md-3">
       <div class="card mb-3 border-left-blue">
         <div class="card-body text-center">
-          <p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['php']}}</p>
+          <p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['php']}}" data-toggle="tooltip">{{$sys['php']}}</p>
         </div>
         <div class="card-footer font-weight-bold py-0 text-center bg-white">PHP</div>
       </div>
@@ -37,7 +37,7 @@
   	<div class="col-12 col-md-3">
   		<div class="card mb-3 border-left-blue">
   			<div class="card-body text-center">
-  				<p class="font-weight-ultralight h2 mb-0 text-truncate">{{$sys['laravel']}}</p>
+  				<p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['laravel']}}" data-toggle="tooltip">{{$sys['laravel']}}</p>
   			</div>
   			<div class="card-footer font-weight-bold py-0 text-center bg-white">Laravel</div>
   		</div>

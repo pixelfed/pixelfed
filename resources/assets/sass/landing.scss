@@ -1,0 +1,13 @@
+// Landing Page bundle
+
+@import 'variables';
+@import '~bootstrap/scss/bootstrap';
+@import 'custom';
+@import 'landing/carousel';
+@import 'landing/devices';
+
+.container.slim {
+	width: auto;
+	max-width: 680px;
+	padding: 0 15px;
+}

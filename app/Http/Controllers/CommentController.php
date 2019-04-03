@@ -9,6 +9,7 @@ use Cache;
 use App\Comment;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Util\Lexer\Autolink;
 use App\Profile;
 use App\Status;
 use League\Fractal;
@@ -53,10 +54,11 @@ class CommentController extends Controller
 
         Cache::forget('transform:status:'.$status->url());
 
+        $autolink = Autolink::create()->autolink($comment);
         $reply = new Status();
         $reply->profile_id = $profile->id;
         $reply->caption = e($comment);
-        $reply->rendered = $comment;
+        $reply->rendered = $autolink;
         $reply->in_reply_to_id = $status->id;
         $reply->in_reply_to_profile_id = $status->profile_id;
         $reply->save();

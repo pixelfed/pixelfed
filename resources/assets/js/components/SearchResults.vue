@@ -11,7 +11,7 @@
 
 	<div v-if="!loading && !networkError" class="mt-5 row">
 
-		<div class="col-12 col-md-3">
+		<div class="col-12 col-md-3 mb-4">
 			<div>
 				<p class="font-weight-bold">Filters</p>
 				<div class="custom-control custom-checkbox">
@@ -29,14 +29,14 @@
 			</div>
 		</div>
 		<div class="col-12 col-md-9">
-			<p class="h3 font-weight-lighter">Showing results for <i>{{query}}</i></p>
+			<p class="h5 font-weight-bold">Showing results for <i>{{query}}</i></p>
 			<hr>
 
-			<div v-if="filters.hashtags && results.hashtags.length" class="row mb-4">
+			<div v-if="filters.hashtags && results.hashtags" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Hashtags</p>
-				<a v-for="(hashtag, index) in results.hashtags" class="col-12 col-md-4" style="text-decoration: none;" :href="hashtag.url">
+				<a v-for="(hashtag, index) in results.hashtags" class="col-12 col-md-3 mb-3" style="text-decoration: none;" :href="hashtag.url">
 					<div class="card card-body text-center">
-						<p class="lead mb-0 text-truncate text-dark">
+						<p class="lead mb-0 text-truncate text-dark" data-toggle="tooltip" :title="hashtag.value">
 							#{{hashtag.value}}
 						</p>
 						<p class="lead mb-0 small font-weight-bold text-dark">
@@ -46,26 +46,40 @@
 				</a>
 			</div>
 
-			<div v-if="filters.profiles && results.profiles.length" class="row mb-4">
+			<div v-if="filters.profiles && results.profiles" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Profiles</p>
-				<a v-for="(profile, index) in results.profiles" class="col-12 col-md-4" style="text-decoration: none;" :href="profile.url">
-					<div class="card card-body text-center border-left-primary">
-						<p class="lead mb-0 text-truncate text-dark">
+				<a v-for="(profile, index) in results.profiles" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="profile.url">
+					<div class="card card-body text-center">
+						<p class="text-center">
+							<img :src="profile.entity.thumb" width="32px" height="32px" class="rounded-circle box-shadow">
+						</p>
+						<p class="font-weight-bold text-truncate text-dark">
 							{{profile.value}}
 						</p>
+						<!-- <p class="mb-0 text-center">
+							 <button :class="[profile.entity.following ? 'btn btn-secondary btn-sm py-1 font-weight-bold' : 'btn btn-primary btn-sm py-1 font-weight-bold']" v-on:click="followProfile(profile.entity.id)">
+							 	{{profile.entity.following ? 'Unfollow' : 'Follow'}}
+							 </button>
+						</p> -->
 					</div>
 				</a>
 			</div>
 
-			<div v-if="filters.statuses && results.statuses.length" class="row mb-4">
+			<div v-if="filters.statuses && results.statuses" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Statuses</p>
-				<a v-for="(status, index) in results.statuses" class="col-12 col-md-4" style="text-decoration: none;" :href="status.url">
-					<div class="card card-body text-center border-left-primary">
-						<p class="lead mb-0 text-truncate text-dark">
-							{{status.value}}
-						</p>
+				<a v-for="(status, index) in results.statuses" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="status.url">
+					<div class="card">
+						<img class="card-img-top img-fluid" :src="status.thumb" style="height:180px;">
+						<div class="card-body text-center ">
+							<p class="mb-0 small text-truncate font-weight-bold text-muted" v-html="status.value">
+							</p>
+						</div>
 					</div>
 				</a>
+			</div>
+
+			<div v-if="!results.hashtags && !results.profiles && !results.statuses">
+				<p class="text-center lead">No results found!</p>
 			</div>
 
 		</div>
@@ -81,7 +95,7 @@
 
 <script type="text/javascript">
 export default {
-	props: ['query'],
+	props: ['query', 'profileId'],
 
 	data() {
 		return {
@@ -103,30 +117,34 @@ export default {
 		this.fetchSearchResults();
 	},
 	mounted() {
-		$('.search-form input').val(this.query);
+		$('.search-bar input').val(this.query);
 	},
 	updated() {
 
 	},
 	methods: {
 		fetchSearchResults() {
-			axios.get('/api/search/' + this.query)
+			axios.get('/api/search/' + encodeURI(this.query))
 				.then(res => {
 					let results = res.data;
-					this.results.hashtags = results.filter(i => {
-						return i.type == 'hashtag';
-					});
-					this.results.profiles = results.filter(i => {
-						return i.type == 'profile';
-					});
-					this.results.statuses = results.filter(i => {
-						return i.type == 'status';
-					});
+					this.results.hashtags = results.hashtags;
+					this.results.profiles = results.profiles;
+					this.results.statuses = results.posts;
 					this.loading = false;
 				}).catch(err => {
 					this.loading = false;
-					this.networkError = true;
+					// this.networkError = true;
 				})
+		},
+
+		followProfile(id) {
+			// todo: finish AP Accept handling to enable remote follows
+			return;
+			// axios.post('/i/follow', {
+			// 	item: id
+			// }).then(res => {
+			// 	window.location.href = window.location.href;
+			// });
 		},
 	}
 

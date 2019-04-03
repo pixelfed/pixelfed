@@ -38,7 +38,7 @@ import swal from 'sweetalert';
 
 // require('./components/localstorage');
 // require('./components/commentform');
-require('./components/searchform');
+//require('./components/searchform');
 // require('./components/bookmarkform');
 // require('./components/statusform');
 //require('./components/embed');
@@ -62,6 +62,11 @@ require('./components/searchform');
 
 // Initialize Notification Helper
 window.pixelfed.n = {};
+
+// Vue.component(
+//     'search-results',
+//     require('./components/SearchResults.vue').default
+// );
 
 // Vue.component(
 //     'photo-presenter',

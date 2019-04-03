@@ -9,13 +9,6 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 class InstalledTest extends TestCase
 {
     /** @test */
-    public function landing_page()
-    {
-        $response = $this->get('/');
-        $response->assertStatus(200);
-    }
-
-    /** @test */
     public function nodeinfo_api()
     {
         $response = $this->get('/.well-known/nodeinfo');
