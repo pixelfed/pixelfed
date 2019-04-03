@@ -130,6 +130,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::get('media/preview/{profileId}/{mediaId}', 'ApiController@showTempMedia')->name('temp-media');
 
+        Route::get('results', 'SearchController@results');
+        Route::post('visibility', 'StatusController@toggleVisibility');
 
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
