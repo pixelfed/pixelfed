@@ -331,7 +331,7 @@ class Helpers {
 			$profile->key_id = $res['publicKey']['id'];
 			$profile->save();
 			if($runJobs == true) {
-				RemoteFollowImportRecent::dispatch($res, $profile);
+				// RemoteFollowImportRecent::dispatch($res, $profile);
 				CreateAvatar::dispatch($profile);
 			}
 		}
