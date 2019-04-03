@@ -168,7 +168,7 @@
 				</div>
 				<div class="row" v-if="mode == 'list'">
 					<div class="col-md-8 col-lg-8 offset-md-2 px-0 mb-3 timeline">
-						<div class="card status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
+						<div class="card status-card card-md-rounded-0 my-sm-2 my-md-3 my-lg-4" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
 
 							<div class="card-header d-inline-flex align-items-center bg-white">
 								<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
