@@ -16,6 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Log;
 use Storage;
 use Zttp\Zttp;
+use App\Util\ActivityPub\Helpers;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {
@@ -60,9 +61,10 @@ class RemoteFollowImportRecent implements ShouldQueue
 
     public function fetchOutbox($url = false)
     {
-        Log::info(json_encode($url));
         $url = ($url == false) ? $this->actor['outbox'] : $url;
-
+        if(Helpers::validateUrl($url) == false) {
+            return;
+        }
         $response = Zttp::withHeaders([
             'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org',
         ])->get($url);
