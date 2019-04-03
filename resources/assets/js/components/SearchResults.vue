@@ -56,11 +56,11 @@
 						<p class="font-weight-bold text-truncate text-dark">
 							{{profile.value}}
 						</p>
-						<p class="mb-0 text-center">
+						<!-- <p class="mb-0 text-center">
 							 <button :class="[profile.entity.following ? 'btn btn-secondary btn-sm py-1 font-weight-bold' : 'btn btn-primary btn-sm py-1 font-weight-bold']" v-on:click="followProfile(profile.entity.id)">
 							 	{{profile.entity.following ? 'Unfollow' : 'Follow'}}
 							 </button>
-						</p>
+						</p> -->
 					</div>
 				</a>
 			</div>
@@ -138,11 +138,13 @@ export default {
 		},
 
 		followProfile(id) {
-			axios.post('/i/follow', {
-				item: id
-			}).then(res => {
-				window.location.href = window.location.href;
-			});
+			// todo: finish AP Accept handling to enable remote follows
+			return;
+			// axios.post('/i/follow', {
+			// 	item: id
+			// }).then(res => {
+			// 	window.location.href = window.location.href;
+			// });
 		},
 	}
 
