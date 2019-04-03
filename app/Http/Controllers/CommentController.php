@@ -52,6 +52,10 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
+        if($status->comments_disabled == true) {
+            return;
+        }
+
         Cache::forget('transform:status:'.$status->url());
 
         $autolink = Autolink::create()->autolink($comment);
