@@ -85,7 +85,8 @@ class SearchController extends Controller
             ->whereNull('status')
             ->where('id', '!=', Auth::user()->profile->id)
             ->where('username', 'like', '%'.$tag.'%')
-            ->orWhere('remote_url', $tag)
+            ->whereNull('domain')
+            //->orWhere('remote_url', $tag)
             ->limit(20)
             ->get();
 
