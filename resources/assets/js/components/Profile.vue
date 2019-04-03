@@ -8,33 +8,56 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-12 col-md-4 d-flex">
-						<div class="profile-avatar mx-auto">
-							<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px">
+						<div class="profile-avatar mx-md-auto">
+							<div class="d-block d-md-none">
+								<div class="row">
+									<div class="col-5">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="77px" height="77px">
+									</div>
+									<div class="col-7 pl-2">
+										<p class="font-weight-ultralight h3 mb-0">{{profile.username}}</p>
+										<p v-if="profile.id == user.id && user.hasOwnProperty('id')">
+											<a class="btn btn-outline-dark py-0 px-4 mt-3" href="/settings/home">Edit Profile</a>
+										</p>
+										<div v-if="profile.id != user.id && user.hasOwnProperty('id')">
+											<p class="mt-3 mb-0" v-if="relationship.following == true">
+												<button type="button"  class="btn btn-outline-dark font-weight-bold px-4 py-0" v-on:click="followProfile()" data-toggle="tooltip" title="Unfollow">Unfollow</button>
+											</p>
+											<p class="mt-3 mb-0" v-if="!relationship.following">
+												<button type="button" class="btn btn-outline-dark font-weight-bold px-4 py-0" v-on:click="followProfile()" data-toggle="tooltip" title="Follow">Follow</button>
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="d-none d-md-block">
+								<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px">
+							</div>
 						</div>
 					</div>
 					<div class="col-12 col-md-8 d-flex align-items-center">
 						<div class="profile-details">
-							<div class="username-bar pb-2 d-flex align-items-center">
-								<span class="font-weight-ultralight h1">{{profile.username}}</span>
+							<div class="d-none d-md-flex username-bar pb-2 align-items-center">
+								<span class="font-weight-ultralight h3">{{profile.username}}</span>
 								<span class="pl-4" v-if="profile.is_admin">
 									<span class="btn btn-outline-secondary font-weight-bold py-0">ADMIN</span>
 								</span>
 								<span class="pl-4">
-									<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted"></a>
+									<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
 								</span>	
 								<span class="pl-4" v-if="owner">
-									<a class="fas fa-cog fa-lg text-muted" href="/settings/home"></a>
+									<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
 								</span>
 								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 									<span class="pl-4" v-if="relationship.following == true">
-										<button type="button"  class="btn btn-outline-secondary font-weight-bold px-4 py-0" v-on:click="followProfile()">Unfollow</button>
+										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" v-on:click="followProfile()" data-toggle="tooltip" title="Unfollow"><i class="fas fa-user-minus"></i></button>
 									</span>
 									<span class="pl-4" v-if="!relationship.following">
-										<button type="button" class="btn btn-primary font-weight-bold px-4 py-0" v-on:click="followProfile()">Follow</button>
+										<button type="button" class="btn btn-primary font-weight-bold btn-sm" v-on:click="followProfile()" data-toggle="tooltip" title="Follow"><i class="fas fa-user-plus"></i></button>
 									</span>
 								</span>
 							</div>
-							<div class="profile-stats pb-3 d-inline-flex lead">
+							<div class="d-none d-md-inline-flex profile-stats pb-3 lead">
 								<div class="font-weight-light pr-5">
 									<a class="text-dark" :href="profile.url">
 										<span class="font-weight-bold">{{profile.statuses_count}}</span>
@@ -54,7 +77,7 @@
 									</a>
 								</div>
 							</div>
-							<p class="lead mb-0 d-flex align-items-center">
+							<p class="lead mb-0 d-flex align-items-center pt-3">
 								<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
 							</p>
 							<div v-if="profile.note" class="mb-0 lead" v-html="profile.note"></div>
@@ -64,22 +87,50 @@
 				</div>
 			</div>
 		</div>
-		<div>
+		<div class="d-block d-md-none bg-white my-0 py-2 border-bottom">
+			<ul class="nav d-flex justify-content-center">
+				<li class="nav-item">
+					<div class="font-weight-light">
+						<span class="text-dark text-center">
+							<p class="font-weight-bold mb-0">{{profile.statuses_count}}</p>
+							<p class="text-muted mb-0">Posts</p>
+						</span>
+					</div>
+				</li>
+				<li class="nav-item px-5">
+					<div v-if="profileSettings.followers.count" class="font-weight-light">
+						<a class="text-dark cursor-pointer text-center" v-on:click="followersModal()">
+							<p class="font-weight-bold mb-0">{{profile.followers_count}}</p>
+							<p class="text-muted mb-0">Followers</p>
+						</a>
+					</div>
+				</li>
+				<li class="nav-item">
+					<div v-if="profileSettings.following.count" class="font-weight-light">
+						<a class="text-dark cursor-pointer text-center" v-on:click="followingModal()">
+							<p class="font-weight-bold mb-0">{{profile.following_count}}</p>
+							<p class="text-muted mb-0">Following</p>
+						</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="bg-white">
 			<ul class="nav nav-topbar d-flex justify-content-center border-0">
 				<!-- 			<li class="nav-item">
 								<a class="nav-link active font-weight-bold text-uppercase" :href="profile.url">Posts</a>
 							</li>
 				 -->
 				<li class="nav-item">
-					<a :class="this.mode == 'grid' ? 'nav-link font-weight-bold text-uppercase active' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('grid')"><i class="fas fa-th"></i></a>
+					<a :class="this.mode == 'grid' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('grid')"><i class="fas fa-th fa-lg"></i></a>
 				</li>
 
 				<!-- <li class="nav-item">
 					<a :class="this.mode == 'masonry' ? 'nav-link font-weight-bold text-uppercase active' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('masonry')"><i class="fas fa-th-large"></i></a>
 				</li> -->
 
-				<li class="nav-item">
-					<a :class="this.mode == 'list' ? 'nav-link font-weight-bold text-uppercase active' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('list')"><i class="fas fa-th-list"></i></a>
+				<li class="nav-item px-3">
+					<a :class="this.mode == 'list' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('list')"><i class="fas fa-th-list fa-lg"></i></a>
 				</li>
 
 				<li class="nav-item" v-if="owner">
@@ -89,7 +140,7 @@
 		</div>
 
 		<div class="container">
-			<div class="profile-timeline mt-2 mt-md-4">
+			<div class="profile-timeline mt-md-4">
 				<div class="row" v-if="mode == 'grid'">
 					<div class="col-4 p-0 p-sm-2 p-md-3" v-for="(s, index) in timeline">
 						<a class="card info-overlay card-md-border-0" :href="s.url">
@@ -116,8 +167,8 @@
 					</div>
 				</div>
 				<div class="row" v-if="mode == 'list'">
-					<div class="col-md-8 col-lg-8 offset-md-2 pt-2 px-0 my-3 timeline">
-						<div class="card mb-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
+					<div class="col-md-8 col-lg-8 offset-md-2 px-0 mb-3 timeline">
+						<div class="card status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
 
 							<div class="card-header d-inline-flex align-items-center bg-white">
 								<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
