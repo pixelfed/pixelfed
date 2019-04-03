@@ -21,9 +21,9 @@
       {{-- <li class="nav-item {{request()->is('*/direct-messages')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.dm')}}">{{__('helpcenter.directMessages')}}</a>
       </li> --}}
-      {{-- <li class="nav-item {{request()->is('*/timelines')?'active':''}}">
+      <li class="nav-item {{request()->is('*/timelines')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.timelines')}}">{{__('helpcenter.timelines')}}</a>
-      </li> --}}
+      </li>
       {{-- <li class="nav-item {{request()->is('*/embed')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.embed')}}">{{__('helpcenter.embed')}}</a>
       </li> --}}
