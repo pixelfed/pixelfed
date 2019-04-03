@@ -1,18 +1,3 @@
-<style scoped>
-.status-comments,
-.reactions,
-.col-md-4 {
-  background: #fff;
-}
-.postPresenterContainer {
-  background: #fff;
-}
-@media(min-width: 720px) {
-  .postPresenterContainer {
-    min-height: 600px;
-  }
-}
-</style>
 <template>
 <div class="postComponent d-none">
   <div class="container px-0">
@@ -40,7 +25,7 @@
                   <a class="dropdown-item font-weight-bold" v-on:click="blockProfile()">Block Profile</a>
                 </div>
                 <div v-if="ownerOrAdmin()">
-                  <!-- <a class="dropdown-item font-weight-bold" :href="editUrl()">Disable Comments</a> -->
+                  <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
                   <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                   <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
                 </div>
@@ -92,19 +77,18 @@
             </a>
               <div class="float-right">
                 <div class="post-actions">
-                <div class="dropdown">
+                <div v-if="user != false" class="dropdown">
                   <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
                   <span class="fas fa-ellipsis-v text-muted"></span>
                   </button>
                       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <span class="menu-user d-none">
+                        <span v-if="!owner()">
                           <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
                           <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
                           <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
                         </span>
-                        <span class="menu-author d-none">
-                          <!-- <a class="dropdown-item font-weight-bold" :href="editUrl()">Mute Comments</a>
-                          <a class="dropdown-item font-weight-bold" :href="editUrl()">Disable Comments</a> -->
+                        <span v-if="ownerOrAdmin()">
+                          <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
                           <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                           <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
                         </span>
@@ -114,19 +98,49 @@
               </div>
           </div>
           <div class="d-flex flex-md-column flex-column-reverse h-100">
-            <div class="card-body status-comments">
+            <div class="card-body status-comments pb-5">
               <div class="status-comment">
                 <p class="mb-1 read-more" style="overflow: hidden;">
                   <span class="font-weight-bold pr-1">{{statusUsername}}</span>
                   <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                 </p>
-                <post-comments :user="this.user" :post-id="statusId" :post-username="statusUsername"></post-comments>
+
+                <div v-if="showComments">
+                  <div class="postCommentsLoader text-center">
+                    <div class="spinner-border" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                  <div class="postCommentsContainer d-none pt-3">
+                    <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
+                    <div class="comments" data-min-id="0" data-max-id="0">
+                      <div v-for="(reply, index) in results" class="pb-3">
+                        <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+                          <span>
+                            <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                            <span class="text-break" v-html="reply.content"></span>
+                          </span>
+                          <span class="pl-2" style="min-width:38px">
+                            <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+                              <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
+                          </span>
+                        </p>
+                        <p class="">
+                          <span class="text-muted mr-3" style="width: 20px;" v-text="timeAgo(reply.created_at)"></span>
+                          <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
+                          <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply)">Reply</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
             <div class="card-body flex-grow-0 py-1">
               <div class="reactions my-1">
                 <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
-                <h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus"></h3>
+                <h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
                 <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
                 <h3 v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
               </div>
@@ -145,15 +159,29 @@
               </div>
             </div>
           </div>
-          <div class="card-footer bg-white sticky-md-bottom">
-            <div class="comment-form-guest">
+          <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
+            <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+              <li class="nav-item" v-on:click="emojiReaction">😂</li>
+              <li class="nav-item" v-on:click="emojiReaction">💯</li>
+              <li class="nav-item" v-on:click="emojiReaction">❤️</li>
+              <li class="nav-item" v-on:click="emojiReaction">🙌</li>
+              <li class="nav-item" v-on:click="emojiReaction">👏</li>
+              <li class="nav-item" v-on:click="emojiReaction">😍</li>
+              <li class="nav-item" v-on:click="emojiReaction">😯</li>
+              <li class="nav-item" v-on:click="emojiReaction">😢</li>
+              <li class="nav-item" v-on:click="emojiReaction">😅</li>
+              <li class="nav-item" v-on:click="emojiReaction">😁</li>
+              <li class="nav-item" v-on:click="emojiReaction">🙂</li>
+              <li class="nav-item" v-on:click="emojiReaction">😎</li>
+            </ul>
+          </div>
+          <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
+            <div v-if="user.length == 0" class="comment-form-guest p-3">
               <a href="/login">Login</a> to like or comment.
             </div>
-            <form class="comment-form d-none" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
-              <input type="hidden" name="_token" value="">
-              <input type="hidden" name="item" :value="statusId">
-              <input class="form-control" name="comment" placeholder="Add a comment…" autocomplete="off">
-              <input type="submit" value="Send" class="btn btn-primary comment-submit" />
+            <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
+              <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
+              <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply"/>
             </form>
           </div>
         </div>
@@ -243,6 +271,68 @@
 </div>
 </template>
 
+<style type="text/css" scoped>
+  .status-comments,
+  .reactions,
+  .col-md-4 {
+    background: #fff;
+  }
+  .postPresenterContainer {
+    background: #fff;
+  }
+  @media(min-width: 720px) {
+    .postPresenterContainer {
+      min-height: 600px;
+    }
+  }
+  ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+  }
+  .reply-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 20px;
+    width: 60px;
+    text-align: center;
+    border-radius: 0 3px 3px 0;
+  }
+  .text-lighter {
+    color:#B8C2CC !important;
+  }
+  .text-break {
+    overflow-wrap: break-word;
+  }
+  .comments p {
+    margin-bottom: 0;
+  }
+  .comment-reaction {
+    font-size: 80%;
+  }
+  .show-reply-bar {
+    display: inline-block;
+    border-bottom: 1px solid #999;
+    height: 0;
+    margin-right: 16px;
+    vertical-align: middle;
+    width: 24px;
+  }
+  .comment-thread {
+    margin: 4px 0 0 40px;
+    width: calc(100% - 40px);
+  }
+  .emoji-reactions .nav-item {
+    font-size: 1.2rem;
+    padding: 7px;
+    cursor: pointer;
+  }
+  .emoji-reactions::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+  }
+</style>
+
 <script>
 
 pixelfed.postComponent = {};
@@ -262,7 +352,16 @@ export default {
             likesPage: 1,
             shares: [],
             sharesPage: 1,
-            lightboxMedia: false
+            lightboxMedia: false,
+            replyText: '',
+
+            results: [],
+            pagination: {},
+            min_id: 0,
+            max_id: 0,
+            reply_to_profile_id: 0,
+            thread: false,
+            showComments: false
           }
     },
 
@@ -278,6 +377,8 @@ export default {
 
     updated() {
       $('.carousel').carousel();
+
+      pixelfed.readmore();
 
       if(this.reactions) {
         if(this.reactions.bookmarked == true) {
@@ -345,6 +446,10 @@ export default {
                 this.showMuteBlock();
                 loader.hide();
                 pixelfed.readmore();
+                if(self.status.comments_disabled == false) {
+                  self.showComments = true;
+                  this.fetchComments();
+                }
                 $('.postComponent').removeClass('d-none');
                 $('.postPresenterLoader').addClass('d-none');
                 $('.postPresenterContainer').removeClass('d-none');
@@ -367,10 +472,6 @@ export default {
                 }
               }
             });
-      },
-
-      commentFocus() {
-        $('.comment-form input[name="comment"]').focus();
       },
 
       likesModal() {
@@ -422,6 +523,7 @@ export default {
 
       likeStatus(event) {
         if($('body').hasClass('loggedIn') == false) {
+          window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
           return;
         }
 
@@ -448,6 +550,7 @@ export default {
 
       shareStatus() {
         if($('body').hasClass('loggedIn') == false) {
+          window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
           return;
         }
 
@@ -474,6 +577,7 @@ export default {
 
       bookmarkStatus() {
         if($('body').hasClass('loggedIn') == false) {
+          window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname);
           return;
         }
 
@@ -521,6 +625,9 @@ export default {
       },
 
       deletePost(status) {
+        if(!this.ownerOrAdmin()) {
+          return;
+        }
         var result = confirm('Are you sure you want to delete this post?');
         if (result) {
             if($('body').hasClass('loggedIn') == false) {
@@ -553,6 +660,198 @@ export default {
       lightbox(src) {
         this.lightboxMedia = src;
         this.$refs.lightboxModal.show();
+      },
+
+      postReply() {
+        let self = this;
+        if(this.replyText.length == 0 || 
+          this.replyText.trim() == '@'+this.status.account.acct) {
+          self.replyText = null;
+          $('textarea[name="comment"]').blur();
+          return;
+        }
+        let data = {
+          item: this.statusId,
+          comment: this.replyText
+        }
+        axios.post('/i/comment', data)
+        .then(function(res) {
+          let entity = res.data.entity;
+          self.results.push(entity);
+          self.replyText = '';
+          let elem = $('.status-comments')[0];
+          elem.scrollTop = elem.clientHeight;
+        });
+      },
+
+      deleteComment(id, i) {
+        axios.post('/i/delete', {
+          type: 'comment',
+          item: id
+        }).then(res => {
+          this.results.splice(i, 1);
+        }).catch(err => {
+          swal('Something went wrong!', 'Please try again later', 'error');
+        });
+      },
+      l(e) {
+        let len = e.length;
+        if(len < 10) { return e; } 
+        return e.substr(0, 10)+'...';
+      },
+      replyFocus(e) {
+          this.reply_to_profile_id = e.account.id;
+          this.replyText = '@' + e.account.username + ' ';
+          $('textarea[name="comment"]').focus();
+      },
+      fetchComments() {
+          let url = '/api/v2/comments/'+this.statusUsername+'/status/'+this.statusId;
+          axios.get(url)
+            .then(response => {
+                let self = this;
+                this.results = _.reverse(response.data.data);
+                this.pagination = response.data.meta.pagination;
+                if(this.results.length > 0) {
+                  $('.load-more-link').removeClass('d-none');
+                }
+                $('.postCommentsLoader').addClass('d-none');
+                $('.postCommentsContainer').removeClass('d-none');
+            }).catch(error => {
+              if(!error.response) {
+                $('.postCommentsLoader .lds-ring')
+                  .attr('style','width:100%')
+                  .addClass('pt-4 font-weight-bold text-muted')
+                  .text('An error occurred, cannot fetch comments. Please try again later.');
+              } else {
+                switch(error.response.status) {
+                  case 401:
+                    $('.postCommentsLoader .lds-ring')
+                      .attr('style','width:100%')
+                      .addClass('pt-4 font-weight-bold text-muted')
+                      .text('Please login to view.');
+                  break;
+
+                  default:
+                    $('.postCommentsLoader .lds-ring')
+                      .attr('style','width:100%')
+                      .addClass('pt-4 font-weight-bold text-muted')
+                      .text('An error occurred, cannot fetch comments. Please try again later.');
+                  break;
+                }
+              }
+            });
+      },
+      loadMore(e) {
+          e.preventDefault();
+          if(this.pagination.total_pages == 1 || this.pagination.current_page == this.pagination.total_pages) {
+            $('.load-more-link').addClass('d-none');
+            return;
+          }
+          $('.postCommentsLoader').removeClass('d-none');
+          let next = this.pagination.links.next;
+          axios.get(next)
+            .then(response => {
+                let self = this;
+                let res =  response.data.data;
+                $('.postCommentsLoader').addClass('d-none');
+                for(let i=0; i < res.length; i++) {
+                  this.results.unshift(res[i]);
+                }
+                this.pagination = response.data.meta.pagination;
+            });
+      },
+      likeReply(status, $event) {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+        
+        axios.post('/i/like', {
+          item: status.id
+        }).then(res => {
+          status.favourites_count = res.data.count;
+          if(status.favourited == true) {
+            status.favourited = false;
+          } else {
+            status.favourited = true;
+          }
+        }).catch(err => {
+          swal('Error', 'Something went wrong, please try again later.', 'error');
+        });
+      },
+      truncate(str,lim) {
+        return _.truncate(str,{
+          length: lim
+        });
+      },
+      timeAgo(ts) {
+        let date = Date.parse(ts);
+        let seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+        if (interval >= 1) {
+          return interval + "y";
+        }
+        interval = Math.floor(seconds / 604800);
+        if (interval >= 1) {
+          return interval + "w";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) {
+          return interval + "d";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) {
+          return interval + "h";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) {
+          return interval + "m";
+        }
+        return Math.floor(seconds) + "s";
+      },
+
+      emojiReaction() {
+        let em = event.target.innerText;
+        if(this.replyText.length == 0) {
+          this.reply_to_profile_id = this.status.account.id;
+          this.replyText = '@' + this.status.account.username + ' ' + em;
+          $('textarea[name="comment"]').focus();
+        } else {
+          this.reply_to_profile_id = this.status.account.id;
+          this.replyText += em;
+          $('textarea[name="comment"]').focus();
+        }
+      }, 
+
+      toggleCommentVisibility() {
+        if(this.ownerOrAdmin() == false) {
+          return;
+        }
+
+        let state = this.status.comments_disabled;
+        let self = this;
+
+        if(state == true) {
+          // re-enable comments
+          axios.post('/i/visibility', {
+            item: self.status.id,
+            disableComments: false
+          }).then(function(res) {
+              window.location.href = self.status.url;
+          }).catch(function(err) {
+            return;
+          });
+        } else {
+          // disable comments
+          axios.post('/i/visibility', {
+            item: self.status.id,
+            disableComments: true
+          }).then(function(res) {
+            self.status.comments_disabled = false;
+            self.showComments = false;
+          }).catch(function(err) {
+            return;
+          });
+        }
       }
 
     },
