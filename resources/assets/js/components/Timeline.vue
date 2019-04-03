@@ -85,7 +85,7 @@
 				<div class="card-body">
 					<div class="reactions my-1">
 						<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
-						<h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+						<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 						<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 					</div>
 
@@ -100,7 +100,7 @@
 							<span v-html="status.content"></span>
 						</p>
 					</div>
-					<div class="comments" v-if="status.id == replyId">
+					<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
 						<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
 							<span>
 								<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
@@ -593,7 +593,7 @@
 			},
 
 			commentFocus(status, $event) {
-				if(this.replyId == status.id) {
+				if(this.replyId == status.id || status.comments_disabled) {
 					return;
 				}
 				this.replies = {};
