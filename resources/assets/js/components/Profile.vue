@@ -12,7 +12,7 @@
 							<div class="d-block d-md-none">
 								<div class="row">
 									<div class="col-5">
-										<img class="rounded-circle box-shadow" :src="profile.avatar" width="77px" height="77px">
+										<img class="rounded-circle box-shadow mr-3" :src="profile.avatar" width="77px" height="77px">
 									</div>
 									<div class="col-7 pl-2">
 										<p class="font-weight-ultralight h3 mb-0">{{profile.username}}</p>
