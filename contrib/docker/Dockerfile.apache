@@ -6,7 +6,7 @@ ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git gosu \
       optipng pngquant jpegoptim gifsicle \
-      libfreetype6 libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-3 \
+      libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-3 \
       libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev \
  && docker-php-source extract \
  && docker-php-ext-configure gd \
@@ -14,7 +14,7 @@ RUN apt-get update \
       --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
- && docker-php-ext-install pdo_mysql pcntl gd exif bcmath \
+ && docker-php-ext-install pdo_mysql pcntl gd exif bcmath intl \
  && pecl install imagick \
  && docker-php-ext-enable imagick pcntl imagick gd exif \
  && a2enmod rewrite remoteip \
