@@ -148,4 +148,19 @@
 			</div>
 		</div>
 	</p> --}}
+	<p>	
+		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse10" role="button" aria-expanded="false" aria-controls="collapse10">
+			<i class="fas fa-chevron-down mr-2"></i>
+			How can I disable comments/replies on my post?
+		</a>
+		<div class="collapse" id="collapse10">
+			<div>
+				To enable or disable comments/replies using a desktop or mobile browser:
+				<ul>
+					<li>Open the menu, click the <i class="fas fa-ellipsis-v text-muted mx-2 cursor-pointer"></i> button</li>
+					<li>Click on <span class="small font-weight-bold cursor-pointer">Enable Comments</span> or <span class="small font-weight-bold cursor-pointer">Disable Comments</span></li>
+				</ul>
+			</div>
+		</div>
+	</p>
 @endsection
