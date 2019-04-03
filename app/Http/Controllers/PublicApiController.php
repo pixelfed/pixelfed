@@ -248,6 +248,8 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
@@ -274,6 +276,8 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -348,6 +352,8 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -375,6 +381,8 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
