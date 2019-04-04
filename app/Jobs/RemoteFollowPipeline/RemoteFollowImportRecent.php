@@ -186,6 +186,11 @@ class RemoteFollowImportRecent implements ShouldQueue
                 Log::info('Invalid media, skipping. '.$mime);
                 continue;
             }
+            if (Helpers::validateUrl($url) == false) {
+                Log::info('Skipping invalid attachment URL: ' . $url);
+                continue;
+            }
+            
             $count++;
 
             if ($count === 1) {
