@@ -46,6 +46,10 @@ class FollowPipeline implements ShouldQueue
         $actor = $follower->actor;
         $target = $follower->target;
 
+        if($target->domain || !$target->private_key) {
+            return;
+        }
+
         try {
             $notification = new Notification();
             $notification->profile_id = $target->id;
