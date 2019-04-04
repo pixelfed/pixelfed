@@ -30,6 +30,11 @@ class CreateNote extends Fractal\TransformerAbstract
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
+				[
+					'Hashtag' 			=> 'as:Hashtag',
+					'sensitive' 		=> 'as:sensitive',
+					'commentsDisabled' 	=> 'as:commentsDisabled',
+				]
 			],
 			'id' 					=> $status->permalink(),
 			'type' 					=> 'Create',
@@ -58,6 +63,7 @@ class CreateNote extends Fractal\TransformerAbstract
 					];
 				})->toArray(),
 				'tag' 				=> $tags,
+				'commentsDisabled'  => (bool) $status->comments_disabled,
 			]
 		];
 	}
