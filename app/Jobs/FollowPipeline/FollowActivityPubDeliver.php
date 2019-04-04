@@ -49,7 +49,7 @@ class FollowActivityPubDeliver implements ShouldQueue
         $actor = $follow->actor;
         $target = $follow->target;
 
-        if($target->domain == null || $target->inbox_url == null) {
+        if($target->domain == null || $target->inbox_url == null || !$actor->private_key) {
         	return;
         }
 
