@@ -30,6 +30,11 @@ class Note extends Fractal\TransformerAbstract
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
+				[
+					'Hashtag' 			=> 'as:Hashtag',
+					'sensitive' 		=> 'as:sensitive',
+					'commentsDisabled' 	=> 'as:commentsDisabled',
+				]
 			],
 			'id' 				=> $status->url(),
 			'type' 				=> 'Note',
@@ -51,6 +56,7 @@ class Note extends Fractal\TransformerAbstract
 				];
 			})->toArray(),
 			'tag' 				=> $tags,
+			'commentsDisabled'  => (bool) $status->comments_disabled,
 		];
 	}
 }
