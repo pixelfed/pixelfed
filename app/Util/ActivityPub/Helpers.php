@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
-use Cache, Purify, Storage, Request, Validator;
+use DB, Cache, Purify, Storage, Request, Validator;
 use App\{
 	Activity,
 	Follower,
@@ -295,21 +295,24 @@ class Helpers {
 				$reply_to = null;
 			}
 			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
-			$status = new Status;
-			$status->profile_id = $profile->id;
-			$status->url = isset($res['url']) ? $res['url'] : $url;
-			$status->uri = isset($res['url']) ? $res['url'] : $url;
-			$status->caption = strip_tags($res['content']);
-			$status->rendered = Purify::clean($res['content']);
-			$status->created_at = Carbon::parse($ts);
-			$status->in_reply_to_id = $reply_to;
-			$status->local = false;
-			$status->is_nsfw = $cw;
-			$status->scope = $scope;
-			$status->visibility = $scope;
-			$status->save();
+			$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope) {
+				$status = new Status;
+				$status->profile_id = $profile->id;
+				$status->url = isset($res['url']) ? $res['url'] : $url;
+				$status->uri = isset($res['url']) ? $res['url'] : $url;
+				$status->caption = strip_tags($res['content']);
+				$status->rendered = Purify::clean($res['content']);
+				$status->created_at = Carbon::parse($ts);
+				$status->in_reply_to_id = $reply_to;
+				$status->local = false;
+				$status->is_nsfw = $cw;
+				$status->scope = $scope;
+				$status->visibility = $scope;
+				$status->save();
+				self::importNoteAttachment($res, $status);
+				return $status;
+			});
 
-			self::importNoteAttachment($res, $status);
 
 			return $status;
 		}
