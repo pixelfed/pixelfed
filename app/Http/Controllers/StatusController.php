@@ -130,6 +130,18 @@ class StatusController extends Controller
         $cw = $profile->cw == true ? true : $cw;
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
 
+        if(config('costar.enabled') == true) {
+            $blockedKeywords = config('costar.keyword.block');
+            if($blockedKeywords !== null) {
+                $keywords = config('costar.keyword.block');
+                foreach($keywords as $kw) {
+                    if(Str::contains($request->caption, $kw) == true) {
+                        abort(400, 'Invalid object');
+                    }
+                }
+            }
+        }
+        
         $status = new Status();
         $status->profile_id = $profile->id;
         $status->caption = strip_tags($request->caption);
