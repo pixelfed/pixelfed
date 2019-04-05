@@ -24,6 +24,7 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\HttpSignatures\{GuzzleHttpSignatures, KeyStore, Context, Verifier};
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use App\Util\ActivityPub\HttpSignature;
+use Illuminate\Support\Str;
 
 class Helpers {
 
@@ -232,6 +233,48 @@ class Helpers {
 				$activity = ['object' => $res];
 			}
 
+			if(isset($res['content']) == false) {
+				abort(400, 'Invalid object');
+			}
+
+			$scope = 'private';
+			$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+
+			if(isset($res['to']) == true && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
+				$scope = 'public';
+			}
+
+			if(isset($res['cc']) == true && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
+				$scope = 'unlisted';
+			}
+
+			if(config('costar.enabled') == true) {
+				$blockedKeywords = config('costar.keyword.block');
+				if($blockedKeywords !== null) {
+					$keywords = config('costar.keyword.block');
+					foreach($keywords as $kw) {
+						if(Str::contains($res['content'], $kw) == true) {
+							abort(400, 'Invalid object');
+						}
+					}
+				}
+
+				$unlisted = config('costar.domain.unlisted');
+				if(in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
+					$unlisted = true;
+					$scope = 'unlisted';
+				} else {
+					$unlisted = false;
+				}
+
+				$cw = config('costar.domain.cw');
+				if(in_array(parse_url($url, PHP_URL_HOST), $cw) == true) {
+					$cw = true;
+				} else {
+					$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+				}
+			}
+
 			$idDomain = parse_url($res['id'], PHP_URL_HOST);
 			$urlDomain = parse_url($url, PHP_URL_HOST);
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
@@ -261,6 +304,9 @@ class Helpers {
 			$status->created_at = Carbon::parse($ts);
 			$status->in_reply_to_id = $reply_to;
 			$status->local = false;
+			$status->is_nsfw = $cw;
+			$status->scope = $scope;
+			$status->visibility = $scope;
 			$status->save();
 
 			self::importNoteAttachment($res, $status);
@@ -316,6 +362,9 @@ class Helpers {
 	public static function profileFirstOrNew($url, $runJobs = false)
 	{
 		$url = self::validateUrl($url);
+		if($url == false) {
+			abort(400, 'Invalid url');
+		}
 		$host = parse_url($url, PHP_URL_HOST);
 		$local = config('pixelfed.domain.app') == $host ? true : false;
 
