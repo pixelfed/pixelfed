@@ -122,12 +122,15 @@ class Inbox
     {
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
+        if(!$actor || $actor->domain == null) {
+            return;
+        }
+
         $inReplyTo = $activity['inReplyTo'];
         $url = $activity['id'];
         
-        if(!Helpers::statusFirstOrFetch($url, true)) {
-            return;
-        }
+        Helpers::statusFirstOrFetch($url, true);
+        return;
     }
 
     public function handleNoteCreate()
@@ -139,7 +142,6 @@ class Inbox
         }
 
         if(Helpers::userInAudience($this->profile, $this->payload) == false) {
-            //Log::error('AP:inbox:userInAudience:false - Activity#'.$this->logger->id);
             return;
         }
 
@@ -147,21 +149,8 @@ class Inbox
         if(Status::whereUrl($url)->exists()) {
             return;
         }
-
-        $status = DB::transaction(function() use($activity, $actor, $url) {
-            $caption = str_limit(strip_tags($activity['content']), config('pixelfed.max_caption_length'));
-            $status = new Status;
-            $status->profile_id = $actor->id;
-            $status->caption = strip_tags($caption);
-            $status->rendered = Purify::clean($caption);
-            $status->visibility = $status->scope = 'public';
-            $status->uri = $url;
-            $status->url = $url;
-            $status->save();
-            return $status;
-        });
-
-        Helpers::importNoteAttachment($activity, $status);
+        Helpers::statusFirstOrFetch($url, false);
+        return;
     }
 
     public function handleFollowActivity()
