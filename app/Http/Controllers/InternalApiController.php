@@ -28,6 +28,7 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class InternalApiController extends Controller
 {
@@ -338,6 +339,18 @@ class InternalApiController extends Controller
             'cw' => 'nullable|boolean',
             'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10'
         ]);
+
+        if(config('costar.enabled') == true) {
+            $blockedKeywords = config('costar.keyword.block');
+            if($blockedKeywords !== null && $request->caption) {
+                $keywords = config('costar.keyword.block');
+                foreach($keywords as $kw) {
+                    if(Str::contains($request->caption, $kw) == true) {
+                        abort(400, 'Invalid object');
+                    }
+                }
+            }
+        }
 
         $profile = Auth::user()->profile;
         $visibility = $request->input('visibility');
