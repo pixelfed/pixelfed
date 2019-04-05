@@ -148,7 +148,10 @@ class Helpers {
 		$host = parse_url($valid, PHP_URL_HOST);
 
 		if(config('costar.enabled') == true) {
-			if(in_array($host, config('costar.domain.block')) == true) {
+			if(
+				(config('costar.domain.block') != null && in_array($host, config('costar.domain.block')) == true) || 
+				(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
+			) {
 				return false;
 			}
 		}
@@ -163,7 +166,7 @@ class Helpers {
 	public static function validateLocalUrl($url)
 	{
 		$url = self::validateUrl($url);
-		if($url) {
+		if($url == true) {
 			$domain = config('pixelfed.domain.app');
 			$host = parse_url($url, PHP_URL_HOST);
 			$url = $domain === $host ? $url : false;
