@@ -141,7 +141,19 @@ class Helpers {
 
 		$valid = filter_var($url, FILTER_VALIDATE_URL);
 
-		if(in_array(parse_url($valid, PHP_URL_HOST), $localhosts)) {
+		if(!$valid) {
+			return false;
+		}
+
+		$host = parse_url($valid, PHP_URL_HOST);
+
+		if(config('costar.enabled') == true) {
+			if(in_array($host, config('costar.domain.block')) == true) {
+				return false;
+			}
+		}
+
+		if(in_array($host, $localhosts)) {
 			return false;
 		}
 
