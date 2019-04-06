@@ -2,6 +2,7 @@
 
 namespace App\Jobs\AvatarPipeline;
 
+use Cache;
 use App\Avatar;
 use App\Profile;
 use Carbon\Carbon;
@@ -61,6 +62,7 @@ class AvatarOptimize implements ShouldQueue
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = Carbon::now();
             $avatar->save();
+            Cache::forget('avatar:' . $avatar->profile_id);
             $this->deleteOldAvatar($avatar->media_path, $this->current);
         } catch (Exception $e) {
         }
