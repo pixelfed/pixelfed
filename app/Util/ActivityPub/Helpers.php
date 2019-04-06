@@ -341,8 +341,8 @@ class Helpers {
 			// pleroma attachment fix
 			$url = str_replace(' ', '%20', $url);
 
-			$img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>false,"verify_peer_name"=>false]]));
-			$file = '/tmp/'.str_random(16).$info['basename'];
+			$img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
+			$file = '/tmp/'.str_random(32);
 			file_put_contents($file, $img);
 			$fdata = new File($file);
 			$path = Storage::putFile($storagePath, $fdata, 'public');
