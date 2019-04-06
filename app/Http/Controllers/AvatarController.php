@@ -96,4 +96,33 @@ class AvatarController extends Controller
 
         return $avatarpath;
     }
+
+    public function deleteAvatar(Request $request)
+    {
+        $user = Auth::user();
+        $profile = $user->profile;
+
+        $avatar = $profile->avatar;
+
+        if($avatar->media_path == 'public/avatars/default.png' || $avatar->thumb_path == 'public/avatars/default.png') {
+            return;
+        }
+
+        if(is_file(storage_path('app/' . $avatar->media_path))) {
+            @unlink(storage_path('app/' . $avatar->media_path));
+        }
+
+        if(is_file(storage_path('app/' . $avatar->thumb_path))) {
+            @unlink(storage_path('app/' . $avatar->thumb_path));
+        }
+
+        $avatar->media_path = 'public/avatars/default.png';
+        $avatar->thumb_path = 'public/avatars/default.png';
+        $avatar->change_count = $avatar->change_count + 1;
+        $avatar->save();
+
+        Cache::forget('avatar:' . $avatar->profile_id);
+
+        return response()->json(200);
+    }
 }
