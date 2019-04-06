@@ -2,6 +2,7 @@
 
 namespace App\Jobs\AvatarPipeline;
 
+use Cache;
 use App\Avatar;
 use App\Profile;
 use Carbon\Carbon;
@@ -10,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 use Image as Intervention;
 
 class AvatarOptimize implements ShouldQueue
@@ -60,6 +62,7 @@ class AvatarOptimize implements ShouldQueue
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = Carbon::now();
             $avatar->save();
+            Cache::forget('avatar:' . $avatar->profile_id);
             $this->deleteOldAvatar($avatar->media_path, $this->current);
         } catch (Exception $e) {
         }
@@ -67,7 +70,7 @@ class AvatarOptimize implements ShouldQueue
 
     protected function deleteOldAvatar($new, $current)
     {
-        if (storage_path('app/'.$new) == $current || $current == 'public/avatars/default.png') {
+        if (storage_path('app/'.$new) == $current || Str::endsWith($current, 'avatars/default.png')) {
             return;
         }
         if (is_file($current)) {

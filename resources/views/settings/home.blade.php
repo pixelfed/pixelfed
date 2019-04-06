@@ -12,7 +12,9 @@
     </div>
     <div class="col-sm-9">
       <p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
-      <p><a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">Change Profile Photo</a></p>
+      <p class="">
+        <a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">Change Profile Photo</a>
+      </p>
       <div class="collapse" id="avatarCollapse">
         <form method="post" action="/settings/avatar" enctype="multipart/form-data">
         @csrf
@@ -27,6 +29,9 @@
         </div>
         </form>
       </div>
+      <p class="">
+        <a class="font-weight-bold text-muted delete-profile-photo" href="#">Delete Profile Photo</a>
+      </p>
     </div>
   </div>
   <form method="post">
@@ -143,6 +148,18 @@
       if (file) {
           reader.readAsDataURL(file);
       }
+  });
+
+  $('.delete-profile-photo').on('click', function(e) {
+    e.preventDefault();
+    if(window.confirm('Are you sure you want to delete your profile photo.') == false) {
+      return;
+    }
+    axios.delete('/settings/avatar').then(res => {
+      window.location.href = window.location.href;
+    }).catch(err => {
+      swal('Error', 'An error occured, please try again later', 'error');
+    });
   });
 </script>
 @endpush
