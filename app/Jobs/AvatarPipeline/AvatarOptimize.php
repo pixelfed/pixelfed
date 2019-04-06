@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 use Image as Intervention;
 
 class AvatarOptimize implements ShouldQueue
@@ -67,7 +68,7 @@ class AvatarOptimize implements ShouldQueue
 
     protected function deleteOldAvatar($new, $current)
     {
-        if (storage_path('app/'.$new) == $current || $current == 'public/avatars/default.png') {
+        if (storage_path('app/'.$new) == $current || Str::endsWith($current, 'avatars/default.png')) {
             return;
         }
         if (is_file($current)) {
