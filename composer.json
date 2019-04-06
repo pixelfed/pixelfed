@@ -13,7 +13,6 @@
         "ext-mbstring": "*",
         "ext-openssl": "*",
         "beyondcode/laravel-self-diagnosis": "^1.0.2",
-        "bitverse/identicon": "^1.1",
         "doctrine/dbal": "^2.7",
         "fideloper/proxy": "^4.0",
         "greggilbert/recaptcha": "dev-master",
