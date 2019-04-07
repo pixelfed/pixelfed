@@ -56,17 +56,13 @@ class BaseApiController extends Controller
     public function notifications(Request $request)
     {
         $pid = Auth::user()->profile->id;
-        $page = $request->input('page') ?? 1;
-        $res = Cache::remember('profile:notifications:'.$pid.':page:'.$page, now()->addMinutes(5), function() use($pid) {
-            $timeago = Carbon::now()->subMonths(6);
-            $notifications = Notification::whereHas('actor')
-                ->whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->orderBy('created_at','desc')
-                ->paginate(10);
-            $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-            return $this->fractal->createData($resource)->toArray();
-        });
+        $timeago = Carbon::now()->subMonths(6);
+        $notifications = Notification::whereProfileId($pid)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderBy('created_at','desc')
+            ->paginate(10);
+        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
