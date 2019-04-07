@@ -1,17 +1,25 @@
-@extends('admin.partial.template')
+@extends('admin.partial.template-full')
+
+@section('header')
+<div class="bg-primary">
+  <div class="container">
+    <div class="my-5"></div>
+  </div>
+</div>
+@endsection
 
 @section('section')
   <div class="title">
     <h3 class="font-weight-bold">Users</h3>
   </div>
   <hr>
-  {{-- <div class="row mb-3">
-    <div class="col-12 col-md-6 mb-2">
+  <div class="row mb-3">
+    {{-- <div class="col-12 col-md-6 mb-2">
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between">
             <span class="font-weight-bold text-muted">Total Users</span>
-            {{-- <span>
+            <span>
               <select class="feature-filter form-control form-control-sm bg-light border-0" data-id="total" data-duration="{{request()->query('total_duration') ?? 30}}">
                 <option data-duration="1">1 Day</option>
                 <option data-duration="14">2 Weeks</option>
@@ -32,7 +40,7 @@
         <div class="card-body">
           <div class="d-flex justify-content-between">
             <span class="font-weight-bold text-muted">New Users</span>
-            {{-- <span>
+            <span>
               <select class="form-control form-control-sm bg-light border-0">
                 <option>1 Day</option>
                 <option>2 Weeks</option>
@@ -47,7 +55,7 @@
         </div>
         <div class="newUsers pb-2"></div>
       </div>
-    </div>
+    </div> --}}
     <div class="col-12 col-md-3 mb-2">
       <div class="card">
         <div class="card-body">
@@ -76,10 +84,10 @@
       <div class="card">
         <div class="card-body">
           <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Avg Age</span>
+            <span class="font-weight-bold text-muted">Avg Likes</span>
           </div>
           <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['avg']['age']}}</p>
+            <p class="h3 font-weight-bold mb-0">{{$stats['avg']['likes']}}</p>
           </div>
         </div>
       </div>
@@ -96,40 +104,39 @@
         </div>
       </div>
     </div>
-  </div> --}}
+  </div>
   <div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
         <tr class="text-center">
-          <th scope="col" class="border-0">
+          <th scope="col" class="border-0" width="10%">
             <span>ID</span> 
           </th>
-          <th scope="col" class="border-0">
-            <span>Avatar</span>
-          </th>
-          <th scope="col" class="border-0">
+          <th scope="col" class="border-0" width="30%">
             <span>Username</span>
           </th>
-          <th scope="col" class="border-0">
-            <span>Status Count</span>
+          <th scope="col" class="border-0" width="15%">
+            <span>Statuses</span>
           </th>
-          <th scope="col" class="border-0">
-            <span>Storage Used</span>
+          <th scope="col" class="border-0" width="15%">
+            <span>Storage</span>
           </th>
-          <th scope="col" class="border-0">
+          <th scope="col" class="border-0" width="30%">
             <span>Actions</span>
           </th>
         </tr>
       </thead>
+      <tbody>
         @foreach($users as $user)
-        <tr class="font-weight-bold text-center">
+        @if($user->status == 'deleted')
+        @continue
+        @endif
+        <tr class="font-weight-bold text-center user-row">
           <th scope="row">
             {{$user->id}}
           </th>
-          <td>
-            <img src="{{$user->profile->avatarUrl()}}" width="28px" class="rounded-circle" style="border:1px solid #ccc">
-          </td>
-          <td>
+          <td class="text-left">
+            <img src="{{$user->profile->avatarUrl()}}" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
             <span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
               {{$user->username}}
               @if($user->is_admin)
@@ -144,15 +151,17 @@
             <p class="human-size mb-0" data-bytes="{{App\Media::whereUserId($user->id)->sum('size')}}"></p>
           </td>
           <td>
-            <span>
-              <a href="#" class="pr-2 text-muted action-btn" title="View Profile" data-toggle="tooltip" data-placement="bottom" data-id="{{$user->id}}" data-action="view" data-url="{{$user->url()}}">
-                <i class="fas fa-eye"></i>
+            <span class="action-row font-weight-lighter">
+              <a href="{{$user->url()}}" class="pr-2 text-muted small font-weight-bold" title="View Profile" data-toggle="tooltip" data-placement="bottom">
+                View
               </a>
-              <a href="#" class="pr-2 text-muted action-btn" title="Edit Profile" data-toggle="tooltip" data-placement="bottom" data-id="{{$user->id}}" data-action="edit">
-                <i class="fas fa-edit"></i>
+
+              <a href="/i/admin/users/edit/{{$user->id}}" class="pr-2 text-muted small font-weight-bold" title="Edit Profile" data-toggle="tooltip" data-placement="bottom">
+                Edit
               </a>
-              <a href="#" class="text-muted action-btn" title="Delete Profile" data-toggle="tooltip" data-placement="bottom" data-id="{{$user->id}}" data-action="delete">
-                <i class="fas fa-trash"></i>
+
+              <a href="#" class="text-muted action-btn small font-weight-bold" title="Delete Profile" data-toggle="tooltip" data-placement="bottom" data-id="{{$user->id}}" data-action="delete">
+                Delete
               </a>
             </span>
           </td>
@@ -176,10 +185,23 @@
   border-radius: 2px;
   max-width: 20px;
 }
+
+.user-row .action-row {
+  display: none;
+}
+
+.user-row:hover {
+  background-color: #eff8ff;
+}
+.user-row:hover .action-row {
+  display: block;
+}
+.user-row:hover .last-active {
+  display: none;
+}
 </style>
 @endpush
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.1.2/jquery.sparkline.min.js" integrity="sha256-BuAkLaFyq4WYXbN3TFSsG1M5GltEeFehAMURi4KBpUM=" crossorigin="anonymous"></script>
   <script type="text/javascript">
     $(document).ready(function() {
 
@@ -210,14 +232,6 @@
         }
       });
 
-      let sparkopts = {
-        width: '100%',
-        height: 30,
-        lineColor: '#0083CD',
-        fillColor: false
-      };
-      {{-- $('.totalUsers').sparkline({{$stats['total']['points']}}, sparkopts);
-      $('.newUsers').sparkline({{$stats['new']['points']}}, sparkopts); --}}
     });
   </script>
 @endpush
