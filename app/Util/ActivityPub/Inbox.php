@@ -41,7 +41,7 @@ class Inbox
 
     public function handleVerb()
     {
-        $verb = $this->payload['type'];
+        $verb = (string) $this->payload['type'];
         switch ($verb) {
             case 'Create':
                 $this->handleCreateActivity();
@@ -262,9 +262,9 @@ class Inbox
         if(is_string($obj) && Helpers::validateUrl($obj)) {
             // actor object detected
             // todo delete actor
-        } else if (is_array($obj) && isset($obj['type']) && $obj['type'] == 'Tombstone') {
+        } else if (Helpers::validateUrl($obj['id']) && is_array($obj) && isset($obj['type']) && $obj['type'] == 'Tombstone') {
             // tombstone detected
-            $status = Status::whereUri($obj['id'])->firstOrFail();
+            $status = Status::whereLocal(false)->whereUri($obj['id'])->firstOrFail();
             $status->forceDelete();
         }
     }
@@ -278,6 +278,9 @@ class Inbox
             return;
         }
         $status = Helpers::statusFirstOrFetch($obj);
+        if(!$status || !$profile) {
+            return;
+        }
         $like = Like::firstOrCreate([
             'profile_id' => $profile->id,
             'status_id' => $status->id
@@ -313,6 +316,9 @@ class Inbox
 
             case 'Follow':
                 $following = self::actorFirstOrCreate($obj['object']);
+                if(!$following) {
+                    return;
+                }
                 Follower::whereProfileId($profile->id)
                     ->whereFollowingId($following->id)
                     ->delete();
@@ -320,6 +326,9 @@ class Inbox
                 
             case 'Like':
                 $status = Helpers::statusFirstOrFetch($obj['object']);
+                if(!$status) {
+                    return;
+                }
                 Like::whereProfileId($profile->id)
                     ->whereStatusId($status->id)
                     ->forceDelete();
