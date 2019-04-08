@@ -48,6 +48,9 @@
 								<span class="pl-4" v-if="owner">
 									<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
 								</span>
+								<span class="pl-4" v-if="profile.id != user.id && user.hasOwnProperty('id')">
+									<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+								</span>
 								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 									<span class="pl-4" v-if="relationship.following == true">
 										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" v-on:click="followProfile()" data-toggle="tooltip" title="Unfollow"><i class="fas fa-user-minus"></i></button>
@@ -318,7 +321,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -334,6 +337,28 @@
       </div>
       <div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
 	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+      </div>
+    </div>
+  </b-modal>
+  <b-modal ref="visitorContextMenu"
+    id="visitor-context-menu"
+    hide-footer
+    hide-header
+    centered
+    size="sm"
+    body-class="list-group-flush p-0">
+    <div class="list-group">
+      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="reportProfile">
+      	Report User
+      </div>
+      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="muteProfile">
+      	Mute
+      </div>
+      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="blockProfile">
+      	Block
+      </div>
+      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-muted" @click="$refs.visitorContextMenu.hide()">
+      	Close
       </div>
     </div>
   </b-modal>
@@ -412,16 +437,18 @@ export default {
 			axios.get('/api/v1/accounts/' + this.profileId).then(res => {
 				this.profile = res.data;
 			});
-			axios.get('/api/v1/accounts/verify_credentials').then(res => {
-				this.user = res.data;
-			});
-			axios.get('/api/v1/accounts/relationships', {
-				params: {
-					'id[]': this.profileId
-				}
-			}).then(res => {
-				this.relationship = res.data[0];
-			});
+			if($('body').hasClass('loggedIn') == true) {
+				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+					this.user = res.data;
+				});
+				axios.get('/api/v1/accounts/relationships', {
+					params: {
+						'id[]': this.profileId
+					}
+				}).then(res => {
+					this.relationship = res.data[0];
+				});
+			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 			axios.get(apiUrl, {
 				params: {
@@ -489,6 +516,11 @@ export default {
 					itemSelector: '.masonry-item'
 				});
 			}
+		},
+
+		reportProfile() {
+			let id = this.profile.id;
+			window.location.href = '/i/report?type=profile&id=' + id;
 		},
 
 		reportUrl(status) {
@@ -617,32 +649,31 @@ export default {
 			})
 		},
 
-		muteProfile(status) {
+		muteProfile(status = null) {
 			if($('body').hasClass('loggedIn') == false) {
 				return;
 			}
+			let id = this.profileId;
 			axios.post('/i/mute', {
 				type: 'user',
-				item: status.account.id
+				item: id
 			}).then(res => {
-				this.feed = this.feed.filter(s => s.account.id !== status.account.id);
-				swal('Success', 'You have successfully muted ' + status.account.acct, 'success');
+				swal('Success', 'You have successfully muted ' + this.profile.acct, 'success');
 			}).catch(err => {
 				swal('Error', 'Something went wrong. Please try again later.', 'error');
 			});
 		},
 
-		blockProfile(status) {
+		blockProfile(status = null) {
 			if($('body').hasClass('loggedIn') == false) {
 				return;
 			}
-
+			let id = this.profileId;
 			axios.post('/i/block', {
 				type: 'user',
-				item: status.account.id
+				item: id
 			}).then(res => {
-				this.feed = this.feed.filter(s => s.account.id !== status.account.id);
-				swal('Success', 'You have successfully blocked ' + status.account.acct, 'success');
+				swal('Success', 'You have successfully blocked ' + this.profile.acct, 'success');
 			}).catch(err => {
 				swal('Error', 'Something went wrong. Please try again later.', 'error');
 			});
@@ -665,6 +696,9 @@ export default {
 		},
 
 		commentSubmit(status, $event) {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
 			let id = status.id;
 			let form = $event.target;
 			let input = $(form).find('input[name="comment"]');
@@ -710,6 +744,9 @@ export default {
 		},
 
 		followProfile() {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
 			axios.post('/i/follow', {
 				item: this.profileId
 			}).then(res => {
@@ -726,6 +763,10 @@ export default {
 		},
 
 		followingModal() {
+			if($('body').hasClass('loggedIn') == false) {
+				window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
+				return;
+			}
 			if(this.profileSettings.following.list == false) {
 				return;
 			}
@@ -749,6 +790,10 @@ export default {
 		},
 
 		followersModal() {
+			if($('body').hasClass('loggedIn') == false) {
+				window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
+				return;
+			}
 			if(this.profileSettings.followers.list == false) {
 				return;
 			}
@@ -772,6 +817,10 @@ export default {
 		},
 
 		followingLoadMore() {
+			if($('body').hasClass('loggedIn') == false) {
+				window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
+				return;
+			}
 			axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
 				params: {
 					page: this.followingCursor
@@ -790,6 +839,9 @@ export default {
 
 
 		followersLoadMore() {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
 			axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
 				params: {
 					page: this.followerCursor
@@ -804,6 +856,13 @@ export default {
 					this.followerMore = false;
 				}
 			});
+		},
+
+		visitorMenu() {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
+			this.$refs.visitorContextMenu.show();
 		}
 	}
 }
