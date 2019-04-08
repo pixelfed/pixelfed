@@ -1,9 +1,15 @@
 <template>
 <div>
-	<div class="d-flex justify-content-center py-5 my-5" v-if="loading">
+	<div v-if="relationship && relationship.blocking && warning" class="bg-white pt-3 border-bottom">
+		<div class="container">
+			<p class="text-center font-weight-bold">You are blocking this account</p>
+			<p class="text-center font-weight-bold">Click <a href="#" class="cursor-pointer" @click.prevent="warning = false;">here</a> to view profile</p>
+		</div>
+	</div>
+	<div v-if="loading" class="d-flex justify-content-center py-5 my-5">
 			<img src="/img/pixelfed-icon-grey.svg" class="">
 	</div>
-	<div v-if="!loading">
+	<div v-if="!loading && !warning">
 		<div class="bg-white py-5 border-bottom">
 			<div class="container">
 				<div class="row">
@@ -15,7 +21,13 @@
 										<img class="rounded-circle box-shadow mr-5" :src="profile.avatar" width="77px" height="77px">
 									</div>
 									<div class="col-7 pl-2">
-										<p class="font-weight-ultralight h3 mb-0">{{profile.username}}</p>
+										<p class="align-middle">
+											
+										<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
+										<span class="float-right mb-0" v-if="profile.id != user.id && user.hasOwnProperty('id')">
+											<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+										</span>
+										</p>
 										<p v-if="profile.id == user.id && user.hasOwnProperty('id')">
 											<a class="btn btn-outline-dark py-0 px-4 mt-3" href="/settings/home">Edit Profile</a>
 										</p>
@@ -178,19 +190,19 @@
 								<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
 									{{status.account.username}}
 								</a>
-								<div class="text-right" style="flex-grow:1;">
+								<div v-if="user.hasOwnProperty('id')" class="text-right" style="flex-grow:1;">
 									<div class="dropdown">
 										<button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
 											<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
 										</button>
 										<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
 											<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
-											<span v-bind:class="[statusOwner(status) ? 'd-none' : '']">
+											<span v-if="status.account.id != user.id">
 												<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 												<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
 												<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
 											</span>
-											<span  v-bind:class="[statusOwner(status) ? '' : 'd-none']">
+											<span  v-if="status.account.id == user.id || user.is_admin == true">
 												<a class="dropdown-item font-weight-bold" :href="editUrl(status)">Edit</a>
 												<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
 											</span>
@@ -226,7 +238,7 @@
 							</div>
 
 							<div class="card-body">
-								<div class="reactions my-1">
+								<div class="reactions my-1" v-if="user.hasOwnProperty('id')">
 									<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 									<h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 									<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
@@ -292,7 +304,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -347,15 +359,27 @@
     centered
     size="sm"
     body-class="list-group-flush p-0">
-    <div class="list-group">
-      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="reportProfile">
-      	Report User
+    <div class="list-group" v-if="relationship">
+      <div v-if="!owner && !relationship.following" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-primary" @click="followProfile">
+      	Follow
       </div>
-      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="muteProfile">
+      <div v-if="!owner && relationship.following" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="followProfile">
+      	Unfollow
+      </div>
+      <div v-if="!owner && !relationship.muting" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="muteProfile">
       	Mute
       </div>
-      <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="blockProfile">
+      <div v-if="!owner && relationship.muting" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="unmuteProfile">
+      	Unmute
+      </div>
+      <div v-if="!owner" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="reportProfile">
+      	Report User
+      </div>
+      <div v-if="!owner && !relationship.blocking" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="blockProfile">
       	Block
+      </div>
+      <div v-if="!owner && relationship.blocking" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="unblockProfile">
+      	Unblock
       </div>
       <div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-muted" @click="$refs.visitorContextMenu.hide()">
       	Close
@@ -419,7 +443,8 @@ export default {
 			followerMore: true,
 			following: [],
 			followingCursor: 1,
-			followingMore: true
+			followingMore: true,
+			warning: false
 		}
 	},
 	beforeMount() {
@@ -441,13 +466,7 @@ export default {
 				axios.get('/api/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
 				});
-				axios.get('/api/v1/accounts/relationships', {
-					params: {
-						'id[]': this.profileId
-					}
-				}).then(res => {
-					this.relationship = res.data[0];
-				});
+				this.fetchRelationships();
 			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 			axios.get(apiUrl, {
@@ -649,6 +668,22 @@ export default {
 			})
 		},
 
+		fetchRelationships() {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
+			axios.get('/api/v1/accounts/relationships', {
+				params: {
+					'id[]': this.profileId
+				}
+			}).then(res => {
+				this.relationship = res.data[0];
+				if(res.data[0].blocking == true) {
+					this.warning = true;
+				}
+			});
+		},
+
 		muteProfile(status = null) {
 			if($('body').hasClass('loggedIn') == false) {
 				return;
@@ -658,7 +693,27 @@ export default {
 				type: 'user',
 				item: id
 			}).then(res => {
+				this.fetchRelationships();
+				this.$refs.visitorContextMenu.hide();
 				swal('Success', 'You have successfully muted ' + this.profile.acct, 'success');
+			}).catch(err => {
+				swal('Error', 'Something went wrong. Please try again later.', 'error');
+			});
+		},
+
+
+		unmuteProfile(status = null) {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
+			let id = this.profileId;
+			axios.post('/i/unmute', {
+				type: 'user',
+				item: id
+			}).then(res => {
+				this.fetchRelationships();
+				this.$refs.visitorContextMenu.hide();
+				swal('Success', 'You have successfully unmuted ' + this.profile.acct, 'success');
 			}).catch(err => {
 				swal('Error', 'Something went wrong. Please try again later.', 'error');
 			});
@@ -673,7 +728,28 @@ export default {
 				type: 'user',
 				item: id
 			}).then(res => {
+				this.warning = true;
+				this.fetchRelationships();
+				this.$refs.visitorContextMenu.hide();
 				swal('Success', 'You have successfully blocked ' + this.profile.acct, 'success');
+			}).catch(err => {
+				swal('Error', 'Something went wrong. Please try again later.', 'error');
+			});
+		},
+
+
+		unblockProfile(status = null) {
+			if($('body').hasClass('loggedIn') == false) {
+				return;
+			}
+			let id = this.profileId;
+			axios.post('/i/unblock', {
+				type: 'user',
+				item: id
+			}).then(res => {
+				this.fetchRelationships();
+				this.$refs.visitorContextMenu.hide();
+				swal('Success', 'You have successfully unblocked ' + this.profile.acct, 'success');
 			}).catch(err => {
 				swal('Error', 'Something went wrong. Please try again later.', 'error');
 			});
@@ -688,7 +764,7 @@ export default {
 				type: 'status',
 				item: status.id
 			}).then(res => {
-				this.feed.splice(index,1);
+				this.timeline.splice(index,1);
 				swal('Success', 'You have successfully deleted this post', 'success');
 			}).catch(err => {
 				swal('Error', 'Something went wrong. Please try again later.', 'error');
@@ -750,6 +826,7 @@ export default {
 			axios.post('/i/follow', {
 				item: this.profileId
 			}).then(res => {
+				this.$refs.visitorContextMenu.hide();
 				if(this.relationship.following) {
 					this.profile.followers_count--;
 					if(this.profile.locked == true) {
