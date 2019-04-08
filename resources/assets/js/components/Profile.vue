@@ -539,7 +539,7 @@ export default {
 
 		reportProfile() {
 			let id = this.profile.id;
-			window.location.href = '/i/report?type=profile&id=' + id;
+			window.location.href = '/i/report?type=user&id=' + id;
 		},
 
 		reportUrl(status) {
