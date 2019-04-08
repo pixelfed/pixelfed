@@ -111,7 +111,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('comment', 'CommentController@store');
         Route::post('delete', 'StatusController@delete');
         Route::post('mute', 'AccountController@mute');
+        Route::post('unmute', 'AccountController@unmute');
         Route::post('block', 'AccountController@block');
+        Route::post('unblock', 'AccountController@unblock');
         Route::post('like', 'LikeController@store');
         Route::post('share', 'StatusController@storeShare');
         Route::post('follow', 'FollowerController@store');
