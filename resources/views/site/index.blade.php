@@ -42,7 +42,7 @@
                             <div class="volume"></div>
                             <div class="camera"></div>
                             <div class="screen">
-                                <img src="/img/landing/android_1.jpg" class="img-fluid">
+                                <img src="/img/landing/android_1.jpg" class="img-fluid" loading="lazy">
                             </div>
                         </div>
                         <div class="marvel-device iphone-x" style="position: absolute;z-index: 20;margin: 99px 0 0 151px;">
@@ -63,10 +63,10 @@
                             <div class="inner-shadow"></div>
                             <div class="screen">
                                 <div id="iosDevice">
-                                    <img v-if="!loading" src="/img/landing/ios_4.jpg" class="img-fluid">
-                                    <img v-if="!loading" src="/img/landing/ios_3.jpg" class="img-fluid">
-                                    <img v-if="!loading" src="/img/landing/ios_2.jpg" class="img-fluid">
-                                    <img src="/img/landing/ios_1.jpg" class="img-fluid">
+                                    <img src="/img/landing/ios_4.jpg" class="img-fluid" loading="lazy">
+                                    <img src="/img/landing/ios_3.jpg" class="img-fluid" loading="lazy">
+                                    <img src="/img/landing/ios_2.jpg" class="img-fluid" loading="lazy">
+                                    <img src="/img/landing/ios_1.jpg" class="img-fluid" loading="lazy">
                                 </div>
                             </div>
                         </div>
