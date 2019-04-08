@@ -1,195 +1,202 @@
 <template>
-<div class="postComponent d-none">
-  <div class="container px-0">
-    <div class="card card-md-rounded-0 status-container orientation-unknown">
-      <div class="row px-0 mx-0">
-      <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
-        <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
-          <div class="status-avatar mr-2">
-            <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
-          </div>
-          <div class="username">
-            <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
-          </div>
-        </a>
-        <div v-if="user != false" class="float-right">
-          <div class="post-actions">
-          <div class="dropdown">
-            <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-            <span class="fas fa-ellipsis-v text-muted"></span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                <div v-if="!owner()">
-                  <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                  <a class="dropdown-item font-weight-bold" v-on:click="muteProfile()">Mute Profile</a>
-                  <a class="dropdown-item font-weight-bold" v-on:click="blockProfile()">Block Profile</a>
-                </div>
-                <div v-if="ownerOrAdmin()">
-                  <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                  <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                  <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-                </div>
-              </div>
+<div>
+  <div v-if="loaded && warning" class="bg-white pt-3 border-bottom">
+    <div class="container">
+      <p class="text-center font-weight-bold">You are blocking this account</p>
+      <p class="text-center font-weight-bold">Click <a href="#" class="cursor-pointer" @click.prevent="warning = false; fetchData()">here</a> to view this status</p>
+    </div>
+  </div>
+  <div v-if="loaded && warning == false" class="postComponent">
+    <div class="container px-0">
+      <div class="card card-md-rounded-0 status-container orientation-unknown">
+        <div class="row px-0 mx-0">
+        <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
+          <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
+            <div class="status-avatar mr-2">
+              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
             </div>
-          </div>
-        </div>
-       </div>
-        <div class="col-12 col-md-8 px-0 mx-0">
-            <div class="postPresenterLoader text-center">
-              <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+            <div class="username">
+              <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
             </div>
-            <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
-              <div v-if="status.pf_type === 'photo'" class="w-100">
-                <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
-              </div>
-
-              <div v-else-if="status.pf_type === 'video'" class="w-100">
-                <video-presenter :status="status"></video-presenter>
-              </div>
-
-              <div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-                <photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
-              </div>
-
-              <div v-else-if="status.pf_type === 'video:album'" class="w-100">
-                <video-album-presenter :status="status"></video-album-presenter>
-              </div>
-
-              <div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-                <mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
-              </div>
-
-              <div v-else class="w-100">
-                <p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
-              </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
-          <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
-            <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
-              <div class="status-avatar mr-2">
-                <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
-              </div>
-              <div class="username">
-                <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
-              </div>
-            </a>
-              <div class="float-right">
-                <div class="post-actions">
-                <div v-if="user != false" class="dropdown">
-                  <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-                  <span class="fas fa-ellipsis-v text-muted"></span>
-                  </button>
-                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <span v-if="!owner()">
-                          <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                          <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
-                          <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
-                        </span>
-                        <span v-if="ownerOrAdmin()">
-                          <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                          <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                          <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
-                        </span>
-                      </div>
+          </a>
+          <div v-if="user != false" class="float-right">
+            <div class="post-actions">
+            <div class="dropdown">
+              <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+              <span class="fas fa-ellipsis-v text-muted"></span>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                  <div v-if="!owner()">
+                    <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                    <a class="dropdown-item font-weight-bold" v-on:click="muteProfile()">Mute Profile</a>
+                    <a class="dropdown-item font-weight-bold" v-on:click="blockProfile()">Block Profile</a>
+                  </div>
+                  <div v-if="ownerOrAdmin()">
+                    <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
+                    <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                    <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
                   </div>
                 </div>
               </div>
+            </div>
           </div>
-          <div class="d-flex flex-md-column flex-column-reverse h-100">
-            <div class="card-body status-comments pb-5">
-              <div class="status-comment">
-                <p class="mb-1 read-more" style="overflow: hidden;">
-                  <span class="font-weight-bold pr-1">{{statusUsername}}</span>
-                  <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
-                </p>
+         </div>
+          <div class="col-12 col-md-8 px-0 mx-0">
+              <div class="postPresenterLoader text-center">
+                <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+              </div>
+              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
+                <div v-if="status.pf_type === 'photo'" class="w-100">
+                  <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+                </div>
 
-                <div v-if="showComments">
-                  <div class="postCommentsLoader text-center">
-                    <div class="spinner-border" role="status">
-                      <span class="sr-only">Loading...</span>
-                    </div>
-                  </div>
-                  <div class="postCommentsContainer d-none pt-3">
-                    <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
-                    <div class="comments" data-min-id="0" data-max-id="0">
-                      <div v-for="(reply, index) in results" class="pb-3">
-                        <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
-                          <span>
-                            <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
-                            <span class="text-break" v-html="reply.content"></span>
+                <div v-else-if="status.pf_type === 'video'" class="w-100">
+                  <video-presenter :status="status"></video-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'photo:album'" class="w-100">
+                  <photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'video:album'" class="w-100">
+                  <video-album-presenter :status="status"></video-album-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+                  <mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+                </div>
+
+                <div v-else class="w-100">
+                  <p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+                </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
+            <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
+              <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
+                <div class="status-avatar mr-2">
+                  <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
+                </div>
+                <div class="username">
+                  <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
+                </div>
+              </a>
+                <div class="float-right">
+                  <div class="post-actions">
+                  <div v-if="user != false" class="dropdown">
+                    <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+                    <span class="fas fa-ellipsis-v text-muted"></span>
+                    </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                          <span v-if="!owner()">
+                            <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                            <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
+                            <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
                           </span>
-                          <span class="pl-2" style="min-width:38px">
-                            <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-                              <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
+                          <span v-if="ownerOrAdmin()">
+                            <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
+                            <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                            <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
                           </span>
-                        </p>
-                        <p class="">
-                          <span class="text-muted mr-3" style="width: 20px;" v-text="timeAgo(reply.created_at)"></span>
-                          <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-                          <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply)">Reply</span>
-                        </p>
-                      </div>
+                        </div>
                     </div>
                   </div>
                 </div>
+            </div>
+            <div class="d-flex flex-md-column flex-column-reverse h-100">
+              <div class="card-body status-comments pb-5">
+                <div class="status-comment">
+                  <p class="mb-1 read-more" style="overflow: hidden;">
+                    <span class="font-weight-bold pr-1">{{statusUsername}}</span>
+                    <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
+                  </p>
 
+                  <div v-if="showComments">
+                    <div class="postCommentsLoader text-center">
+                      <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                    <div class="postCommentsContainer d-none pt-3">
+                      <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
+                      <div class="comments" data-min-id="0" data-max-id="0">
+                        <div v-for="(reply, index) in results" class="pb-3">
+                          <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+                            <span>
+                              <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                              <span class="text-break" v-html="reply.content"></span>
+                            </span>
+                            <span class="pl-2" style="min-width:38px">
+                              <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+                                <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
+                            </span>
+                          </p>
+                          <p class="">
+                            <span class="text-muted mr-3" style="width: 20px;" v-text="timeAgo(reply.created_at)"></span>
+                            <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
+                            <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply)">Reply</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="card-body flex-grow-0 py-1">
+                <div class="reactions my-1">
+                  <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
+                  <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
+                  <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+                  <h3 v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+                </div>
+                <div class="reaction-counts font-weight-bold mb-0">
+                  <span style="cursor:pointer;" v-on:click="likesModal">
+                    <span class="like-count">{{status.favourites_count || 0}}</span> likes
+                  </span>
+                  <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                    <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
+                  </span>
+                </div>
+                <div class="timestamp">
+                  <a v-bind:href="statusUrl" class="small text-muted">
+                    {{timestampFormat()}}
+                  </a>
+                </div>
               </div>
             </div>
-            <div class="card-body flex-grow-0 py-1">
-              <div class="reactions my-1">
-                <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
-                <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
-                <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
-                <h3 v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+            <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
+              <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+                <li class="nav-item" v-on:click="emojiReaction">😂</li>
+                <li class="nav-item" v-on:click="emojiReaction">💯</li>
+                <li class="nav-item" v-on:click="emojiReaction">❤️</li>
+                <li class="nav-item" v-on:click="emojiReaction">🙌</li>
+                <li class="nav-item" v-on:click="emojiReaction">👏</li>
+                <li class="nav-item" v-on:click="emojiReaction">😍</li>
+                <li class="nav-item" v-on:click="emojiReaction">😯</li>
+                <li class="nav-item" v-on:click="emojiReaction">😢</li>
+                <li class="nav-item" v-on:click="emojiReaction">😅</li>
+                <li class="nav-item" v-on:click="emojiReaction">😁</li>
+                <li class="nav-item" v-on:click="emojiReaction">🙂</li>
+                <li class="nav-item" v-on:click="emojiReaction">😎</li>
+              </ul>
+            </div>
+            <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
+              <div v-if="user.length == 0" class="comment-form-guest p-3">
+                <a href="/login">Login</a> to like or comment.
               </div>
-              <div class="reaction-counts font-weight-bold mb-0">
-                <span style="cursor:pointer;" v-on:click="likesModal">
-                  <span class="like-count">{{status.favourites_count || 0}}</span> likes
-                </span>
-                <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
-                  <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
-                </span>
-              </div>
-              <div class="timestamp">
-                <a v-bind:href="statusUrl" class="small text-muted">
-                  {{timestampFormat()}}
-                </a>
-              </div>
+              <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
+                <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
+                <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply"/>
+              </form>
             </div>
           </div>
-          <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
-            <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-              <li class="nav-item" v-on:click="emojiReaction">😂</li>
-              <li class="nav-item" v-on:click="emojiReaction">💯</li>
-              <li class="nav-item" v-on:click="emojiReaction">❤️</li>
-              <li class="nav-item" v-on:click="emojiReaction">🙌</li>
-              <li class="nav-item" v-on:click="emojiReaction">👏</li>
-              <li class="nav-item" v-on:click="emojiReaction">😍</li>
-              <li class="nav-item" v-on:click="emojiReaction">😯</li>
-              <li class="nav-item" v-on:click="emojiReaction">😢</li>
-              <li class="nav-item" v-on:click="emojiReaction">😅</li>
-              <li class="nav-item" v-on:click="emojiReaction">😁</li>
-              <li class="nav-item" v-on:click="emojiReaction">🙂</li>
-              <li class="nav-item" v-on:click="emojiReaction">😎</li>
-            </ul>
-          </div>
-          <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
-            <div v-if="user.length == 0" class="comment-form-guest p-3">
-              <a href="/login">Login</a> to like or comment.
-            </div>
-            <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
-              <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
-              <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply"/>
-            </form>
-          </div>
+
         </div>
-
       </div>
     </div>
   </div>
-
   <b-modal ref="likesModal"
     id="l-modal"
     hide-footer
@@ -338,7 +345,7 @@
 pixelfed.postComponent = {};
 
 export default {
-    props: ['status-id', 'status-username', 'status-template', 'status-url', 'status-profile-url', 'status-avatar'],
+    props: ['status-id', 'status-username', 'status-template', 'status-url', 'status-profile-url', 'status-avatar', 'status-profile-id'],
     data() {
         return {
             status: false,
@@ -354,20 +361,22 @@ export default {
             sharesPage: 1,
             lightboxMedia: false,
             replyText: '',
-
+            relationship: {},
             results: [],
             pagination: {},
             min_id: 0,
             max_id: 0,
             reply_to_profile_id: 0,
             thread: false,
-            showComments: false
+            showComments: false,
+            warning: false,
+            loaded: false,
+            loading: null
           }
     },
 
     mounted() {
-      this.fetchData();
-      this.authCheck();
+      this.fetchRelationships();
       let token = $('meta[name="csrf-token"]').attr('content');
       $('input[name="_token"]').each(function(k, v) {
           let el = $(v);
@@ -395,14 +404,6 @@ export default {
     },
 
     methods: {
-      authCheck() {
-        let authed = $('body').hasClass('loggedIn');
-        if(authed == true) {
-          $('.comment-form-guest').addClass('d-none');
-          $('.comment-form').removeClass('d-none');
-        }
-      },
-
       showMuteBlock() {
         let sid = this.status.account.id;
         let uid = this.user.id;
@@ -427,10 +428,6 @@ export default {
       },
 
       fetchData() {
-          let loader = this.$loading.show({
-            'opacity': 0,
-            'background-color': '#f5f8fa'
-          });
           axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId)
             .then(response => {
                 let self = this;
@@ -444,7 +441,6 @@ export default {
                 self.sharesPage = 2;
                 //this.buildPresenter();
                 this.showMuteBlock();
-                loader.hide();
                 pixelfed.readmore();
                 if(self.status.comments_disabled == false) {
                   self.showComments = true;
@@ -694,16 +690,19 @@ export default {
           swal('Something went wrong!', 'Please try again later', 'error');
         });
       },
+
       l(e) {
         let len = e.length;
         if(len < 10) { return e; } 
         return e.substr(0, 10)+'...';
       },
+
       replyFocus(e) {
           this.reply_to_profile_id = e.account.id;
           this.replyText = '@' + e.account.username + ' ';
           $('textarea[name="comment"]').focus();
       },
+
       fetchComments() {
           let url = '/api/v2/comments/'+this.statusUsername+'/status/'+this.statusId;
           axios.get(url)
@@ -741,6 +740,7 @@ export default {
               }
             });
       },
+
       loadMore(e) {
           e.preventDefault();
           if(this.pagination.total_pages == 1 || this.pagination.current_page == this.pagination.total_pages) {
@@ -760,6 +760,7 @@ export default {
                 this.pagination = response.data.meta.pagination;
             });
       },
+
       likeReply(status, $event) {
         if($('body').hasClass('loggedIn') == false) {
           return;
@@ -778,11 +779,13 @@ export default {
           swal('Error', 'Something went wrong, please try again later.', 'error');
         });
       },
+
       truncate(str,lim) {
         return _.truncate(str,{
           length: lim
         });
       },
+
       timeAgo(ts) {
         let date = Date.parse(ts);
         let seconds = Math.floor((new Date() - date) / 1000);
@@ -852,7 +855,45 @@ export default {
             return;
           });
         }
-      }
+      },
+
+      fetchRelationships() {
+        let loader = this.$loading.show({
+          'opacity': 0,
+          'background-color': '#f5f8fa'
+        });
+        if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == false) {
+          this.loaded = true;
+          loader.hide();
+          this.fetchData();
+          return;
+        } else {
+          axios.get('/api/v1/accounts/relationships', {
+            params: {
+              'id[]': this.statusProfileId
+            }
+          }).then(res => {
+            if(res.data[0] == null) {
+              this.loaded = true;
+              loader.hide();
+              this.fetchData();
+              return;
+            }
+            this.relationship = res.data[0];
+            if(res.data[0].blocking == true) {
+              this.loaded = true;
+              loader.hide();
+              this.warning = true;
+              return;
+            } else {
+              this.loaded = true;
+              loader.hide();
+              this.fetchData();
+              return;
+            }
+          });
+        }
+      },
 
     },
 }
