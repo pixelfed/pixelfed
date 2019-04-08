@@ -14,7 +14,7 @@
 			>
 				<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id">
 					<div slot="img" :class="img.filter_class + ' d-block mx-auto text-center'" style="max-height: 600px;" v-on:click="$emit('lightbox', img)">
-						<img class="img-fluid" style="max-height: 600px;" :src="img.url" :alt="img.description" :title="img.description">
+						<img class="img-fluid" style="max-height: 600px;" :src="img.url" :alt="img.description" :title="img.description" loading="lazy">
 					</div>
 				</b-carousel-slide>
 				<span class="badge badge-dark box-shadow" style="position: absolute;top:10px;right:10px;">
@@ -33,7 +33,7 @@
 		>
 			<b-carousel-slide v-for="(img, index) in status.media_attachments" :key="img.id" :alt="img.description" :title="img.description">
 				<div slot="img" :class="img.filter_class + ' d-block mx-auto text-center'" style="max-height: 600px;" v-on:click="$emit('lightbox', img)">
-					<img class="img-fluid" style="max-height: 600px;" :src="img.url">
+					<img class="img-fluid" style="max-height: 600px;" :src="img.url" loading="lazy">
 				</div>
 			</b-carousel-slide>
 			<span class="badge badge-dark box-shadow" style="position: absolute;top:10px;right:10px;">
