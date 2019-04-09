@@ -449,9 +449,12 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
@@ -472,6 +475,8 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
