@@ -35,6 +35,11 @@ class CreateNote extends Fractal\TransformerAbstract
 					'Hashtag' 			=> 'as:Hashtag',
 					'sensitive' 		=> 'as:sensitive',
 					'commentsEnabled' 	=> 'sc:Boolean',
+					'capabilities'		=> [
+						'announce'		=> ['@type' => '@id'],
+						'like'			=> ['@type' => '@id'],
+						'reply'			=> ['@type' => '@id']
+					]
 				]
 			],
 			'id' 					=> $status->permalink(),
@@ -65,6 +70,11 @@ class CreateNote extends Fractal\TransformerAbstract
 				})->toArray(),
 				'tag' 				=> $tags,
 				'commentsEnabled'  => (bool) !$status->comments_disabled,
+				'capabilities' => [
+					'announce' => 'https://www.w3.org/ns/activitystreams#Public',
+					'like' => 'https://www.w3.org/ns/activitystreams#Public',
+					'reply' => $status->comments_disabled == true ? null : 'https://www.w3.org/ns/activitystreams#Public'
+				]
 			]
 		];
 	}
