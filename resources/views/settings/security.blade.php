@@ -23,7 +23,7 @@
       @endif
     </div>
 
-    @include('settings.security.2fa.partial.log-panel')
+    @include('settings.security.log-panel')
   </section>
 
 @endsection

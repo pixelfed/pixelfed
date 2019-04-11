@@ -20,19 +20,14 @@ trait SecuritySettings
 
 	public function security()
 	{
-		$sessions = DB::table('sessions')
-			->whereUserId(Auth::id())
-			->limit(20)
-			->get();
+		$user = Auth::user();
 
-		$activity = AccountLog::whereUserId(Auth::id())
+		$activity = AccountLog::whereUserId($user->id)
 			->orderBy('created_at', 'desc')
 			->limit(20)
 			->get();
 
-		$user = Auth::user();
-
-		return view('settings.security', compact('sessions', 'activity', 'user'));
+		return view('settings.security', compact('activity', 'user'));
 	}
 
 	public function securityTwoFactorSetup(Request $request)
