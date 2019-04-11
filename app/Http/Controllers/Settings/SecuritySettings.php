@@ -8,6 +8,7 @@ use App\Media;
 use App\Profile;
 use App\User;
 use App\UserFilter;
+use App\UserDevice;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use DB;
@@ -27,7 +28,12 @@ trait SecuritySettings
 			->limit(20)
 			->get();
 
-		return view('settings.security', compact('activity', 'user'));
+		$devices = UserDevice::whereUserId($user->id)
+			->orderBy('created_at', 'desc')
+			->limit(5)
+			->get();
+
+		return view('settings.security', compact('activity', 'user', 'devices'));
 	}
 
 	public function securityTwoFactorSetup(Request $request)
