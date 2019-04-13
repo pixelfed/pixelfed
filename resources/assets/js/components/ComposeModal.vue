@@ -135,7 +135,7 @@
 											</div> 
 										</div>
 									</a>
-									<a :class="[visibility=='private'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Followers Only" v-on:click.prevent="visibility = 'unlisted'">
+									<a :class="[visibility=='unlisted'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Unlisted" v-on:click.prevent="visibility = 'unlisted'">
 										<div class="row">
 											<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 												<i class="fas fa-lock"></i>
@@ -301,6 +301,9 @@ export default {
 		fetchProfile() {
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.profile = res.data;
+				if(res.data.locked == true) {
+					this.visibility = 'private';
+				}
 			}).catch(err => {
 				console.log(err)
 			});
