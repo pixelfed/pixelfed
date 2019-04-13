@@ -32,7 +32,7 @@ class SearchController extends Controller
         $hash = hash('sha256', $tag);
         $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = [];
-            if(Helpers::validateUrl($tag) != false) {
+            if(Helpers::validateUrl($tag) != false && config('pixelfed.activitypub_enabled') == true) {
                 $remote = Helpers::fetchFromUrl($tag);
                 if(isset($remote['type']) && in_array($remote['type'], ['Create', 'Person']) == true) {
                     $type = $remote['type'];
