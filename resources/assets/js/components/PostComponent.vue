@@ -159,10 +159,11 @@
                     <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
                   </span>
                 </div>
-                <div class="timestamp">
+                <div class="timestamp pt-2 d-flex align-items-bottom justify-content-between">
                   <a v-bind:href="statusUrl" class="small text-muted">
                     {{timestampFormat()}}
                   </a>
+                  <span class="small text-muted text-capitalize cursor-pointer" v-on:click="visibilityModal">{{status.visibility}}</span>
                 </div>
               </div>
             </div>
@@ -894,6 +895,22 @@ export default {
           });
         }
       },
+
+      visibilityModal() {
+        switch(this.status.visibility) {
+          case 'public':
+            swal('Public Post', 'This post is visible to everyone.', 'info');
+          break;
+
+          case 'unlisted':
+            swal('Unlisted Post', 'This post is visible on profiles and with a direct links. It is not displayed on timelines.', 'info');
+          break;
+
+          case 'private':
+            swal('Private Post', 'This post is only visible to followers.', 'info');
+          break;
+        }
+      }
 
     },
 }
