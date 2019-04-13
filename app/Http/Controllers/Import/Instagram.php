@@ -82,9 +82,10 @@ trait Instagram
     		->whereStage(1)
     		->firstOrFail();
     		
+        $limit = config('pixelfed.import.instagram.limits.posts');
         foreach ($media as $k => $v) {
         	$original = $v->getClientOriginalName();
-    		if(strlen($original) < 32 || $k > 100) {
+    		if(strlen($original) < 32 || $k > $limit) {
     			continue;
     		}
             $storagePath = "import/{$job->uuid}";
@@ -105,7 +106,6 @@ trait Instagram
         	$job->save();
     	});
         return redirect($job->url());
-    	return view('settings.import.instagram.step-one', compact('profile', 'job'));
     }
 
     public function instagramStepTwo(Request $request, $uuid)
@@ -148,6 +148,7 @@ trait Instagram
     {
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
+            ->whereService('instagram')
     		->whereNull('completed_at')
     		->whereUuid($uuid)
     		->whereStage(3)
@@ -159,14 +160,21 @@ trait Instagram
     {
         $profile = Auth::user()->profile;
 
-        $job = ImportJob::whereProfileId($profile->id)
+
+        try {
+        $import = ImportJob::whereProfileId($profile->id)
+            ->where('uuid', $uuid)
+            ->whereNotNull('media_json')
             ->whereNull('completed_at')
-            ->whereUuid($uuid)
             ->whereStage(3)
             ->firstOrFail();
+            ImportInstagram::dispatch($import);
+        } catch (Exception $e) {
+            \Log::info($e);
+        }
 
-        ImportInstagram::dispatchNow($job);
-
-        return redirect($profile->url());
+        return redirect(route('settings'))->with(['status' => [
+            'Import successful! It may take a few minutes to finish.'
+        ]]);
     }
 }
