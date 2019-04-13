@@ -42,11 +42,11 @@ class StatusController extends Controller
 
         if($status->visibility == 'private' || $user->is_private) {
             if(!Auth::check()) {
-                abort(403);
+                abort(404);
             }
             $pid = Auth::user()->profile;
-            if($user->followedBy($pid) == false && $user->id !== $pid->id) {
-                abort(403);
+            if($user->followedBy($pid) == false && $user->id !== $pid->id && Auth::user()->is_admin == false) {
+                abort(404);
             }
         }
 

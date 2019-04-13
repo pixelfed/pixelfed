@@ -180,8 +180,8 @@ class PublicApiController extends Controller
                 if(!$user) {
                     abort(403);
                 } else {
-                    $follows = $profile->followedBy(Auth::user()->profile);
-                    if($follows == false && $profile->id !== $user->profile->id) {
+                    $follows = $profile->followedBy($user->profile);
+                    if($follows == false && $profile->id !== $user->profile->id && $user->is_admin == false) {
                         abort(404);
                     }
                 }
