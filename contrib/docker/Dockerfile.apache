@@ -14,7 +14,7 @@ RUN apt-get update \
       --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
- && docker-php-ext-install pdo_mysql pcntl gd exif bcmath intl \
+ && docker-php-ext-install pdo_mysql pdo_pgsql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl \
  && pecl install imagick \
  && docker-php-ext-enable imagick pcntl imagick gd exif \
  && a2enmod rewrite remoteip \
