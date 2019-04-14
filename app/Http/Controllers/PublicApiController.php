@@ -108,6 +108,7 @@ class PublicApiController extends Controller
             'max_id'    => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'limit'     => 'nullable|integer|min:5|max:50'
         ]);
+
         $limit = $request->limit ?? 10;
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
@@ -116,7 +117,7 @@ class PublicApiController extends Controller
             if($request->filled('min_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -124,7 +125,7 @@ class PublicApiController extends Controller
             if($request->filled('max_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -132,7 +133,7 @@ class PublicApiController extends Controller
         } else {
             $replies = $status->comments()
             ->whereNull('reblog_of_id')
-            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
         }
