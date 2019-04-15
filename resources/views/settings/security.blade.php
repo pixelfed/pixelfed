@@ -24,6 +24,8 @@
     </div>
 
     @include('settings.security.log-panel')
+    
+    @include('settings.security.device-panel')
   </section>
 
 @endsection
