@@ -119,7 +119,7 @@
                       </div>
                     </div>
                     <div class="postCommentsContainer d-none pt-3">
-                      <p class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
+                      <p v-if="status.reply_count > 10"class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
                       <div class="comments" data-min-id="0" data-max-id="0">
                         <div v-for="(reply, index) in results" class="pb-3">
                           <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
