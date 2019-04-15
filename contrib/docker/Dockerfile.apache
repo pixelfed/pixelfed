@@ -5,9 +5,11 @@ ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git gosu \
-      optipng pngquant jpegoptim gifsicle libpq-dev \
+      optipng pngquant jpegoptim gifsicle libpq-dev locales \
       libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-3 \
       libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev \
+ && sed -i '/en_US/s/^#//g' /etc/locale.gen \
+ && locale-gen && update-locale \
  && docker-php-source extract \
  && docker-php-ext-configure gd \
       --with-freetype-dir=/usr/lib/x86_64-linux-gnu/ \
