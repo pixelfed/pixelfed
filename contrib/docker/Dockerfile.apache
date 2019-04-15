@@ -1,7 +1,7 @@
 FROM php:7.2-apache
 
-ARG COMPOSER_VERSION="1.6.5"
-ARG COMPOSER_CHECKSUM="67bebe9df9866a795078bb2cf21798d8b0214f2e0b2fd81f2e907a8ef0be3434"
+ARG COMPOSER_VERSION="1.8.5"
+ARG COMPOSER_CHECKSUM="4e4c1cd74b54a26618699f3190e6f5fc63bb308b13fa660f71f2a2df047c0e17"
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git gosu \
@@ -43,7 +43,7 @@ COPY . /var/www/
 WORKDIR /var/www/
 RUN cp -r storage storage.skel \
  && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
- && composer install --prefer-source --no-interaction \
+ && composer install --no-dev --prefer-source --no-interaction \
  && rm -rf html && ln -s public html
 
 VOLUME ["/var/www/storage"]
