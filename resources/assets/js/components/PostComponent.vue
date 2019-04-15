@@ -137,6 +137,18 @@
                             <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
                             <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply)">Reply</span>
                           </p>
+                          <div v-if="reply.reply_count > 0" class="cursor-pointer" style="margin-left:30px;" v-on:click="toggleReplies(reply)">
+                             <span class="show-reply-bar"></span>
+                             <span class="comment-reaction font-weight-bold text-muted">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
+                          </div>
+                          <div v-if="reply.thread == true" class="comment-thread">
+                            <p class="d-flex justify-content-between align-items-top read-more pb-3" style="overflow-y: hidden;" v-for="(s, index) in reply.replies">
+                              <span>
+                                <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
+                                <span class="text-break" v-html="s.content"></span>
+                              </span>
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -331,7 +343,7 @@
   }
   .emoji-reactions .nav-item {
     font-size: 1.2rem;
-    padding: 7px;
+    padding: 9px;
     cursor: pointer;
   }
   .emoji-reactions::-webkit-scrollbar {
@@ -372,7 +384,9 @@ export default {
             showComments: false,
             warning: false,
             loaded: false,
-            loading: null
+            loading: null,
+            replyingToId: this.statusId,
+            emoji: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','😘','😗','😙','😚','☺️','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','☹️','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🙌','👏','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👌','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
           }
     },
 
@@ -668,16 +682,20 @@ export default {
           return;
         }
         let data = {
-          item: this.statusId,
+          item: this.replyingToId,
           comment: this.replyText
         }
         axios.post('/i/comment', data)
         .then(function(res) {
           let entity = res.data.entity;
-          self.results.push(entity);
+          if(entity.in_reply_to_id == self.status.id) {
+            self.results.push(entity);
+            let elem = $('.status-comments')[0];
+            elem.scrollTop = elem.clientHeight;
+          } else {
+
+          }
           self.replyText = '';
-          let elem = $('.status-comments')[0];
-          elem.scrollTop = elem.clientHeight;
         });
       },
 
@@ -699,6 +717,7 @@ export default {
       },
 
       replyFocus(e) {
+          this.replyingToId = e.id;
           this.reply_to_profile_id = e.account.id;
           this.replyText = '@' + e.account.username + ' ';
           $('textarea[name="comment"]').focus();
@@ -909,6 +928,23 @@ export default {
           case 'private':
             swal('Private Post', 'This post is only visible to followers.', 'info');
           break;
+        }
+      },
+
+      toggleReplies(reply) {
+        if(reply.thread) {
+          reply.thread = false;
+        } else {
+          if(reply.replies.length > 0) {
+            reply.thread = true;
+            return;
+          }
+          let url = '/api/v2/comments/'+reply.account.username+'/status/'+reply.id;
+          axios.get(url)
+            .then(response => {
+                reply.replies = _.reverse(response.data.data);
+                reply.thread = true;
+            });
         }
       }
 
