@@ -24,8 +24,8 @@ services:
     env_file:
       - ./.env
     volumes:
-      - "./storage:/var/www/storage"
-      - "./bootstrap:/var/www/bootstrap"
+      - "app-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
     networks:
       - external
       - internal
@@ -65,6 +65,7 @@ volumes:
   redis-data:
   db-data:
   app-storage:
+  app-bootstrap:  
 
 networks:
   internal:
