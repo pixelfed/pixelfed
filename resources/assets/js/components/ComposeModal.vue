@@ -29,13 +29,16 @@
 						<div class="w-100 h-100 bg-light py-5" style="border-bottom: 1px solid #f1f1f1">
 							<div class="p-5">
 								<b-progress :value="uploadProgress" :max="100" striped :animated="true"></b-progress>
-								<p class="text-center mb-0 font-weight-bold">Uploading...</p>
+								<p class="text-center mb-0 font-weight-bold">Uploading ... ({{uploadProgress}}%)</p>
 							</div>
 						</div>
 					</div>
 					<div v-else>
+						<div v-if="ids.length > 0 && ids.length != config.uploader.album_limit" class="card-header py-2 bg-primary m-2 rounded cursor-pointer" v-on:click="addMedia()">
+							<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Add Photo</p>
+						</div>
 						<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia()">
-							<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos.</p>
+							<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos</p>
 						</div>
 						<div v-if="ids.length > 0">
 							
@@ -48,7 +51,7 @@
 								v-model="carouselCursor"
 							>
 								<b-carousel-slide  v-if="ids.length > 0" v-for="(preview, index) in media" :key="'preview_media_'+index">
-									<div slot="img" :class="[media[index].filter_class?media[index].filter_class + ' cursor-pointer':' cursor-pointer']" v-on:click="addMedia()">
+									<div slot="img" :class="[media[index].filter_class?media[index].filter_class:'']" style="display:flex;min-height: 320px;align-items: center;">
 										<img class="d-block img-fluid w-100" :src="preview.url" :alt="preview.description" :title="preview.description">
 									</div>
 								</b-carousel-slide>
@@ -94,20 +97,9 @@
 					</div>
 				</div>
 
-				<div class="card-body">
+				<div class="card-body p-0">
 					<div class="caption">
-						<p class="mb-2">
-							<textarea class="form-control d-inline-block" rows="3" placeholder="Add an optional caption" v-model="composeText"></textarea>
-						</p>
-					</div>
-					<div class="comments">
-					</div>
-					<div class="timestamp pt-1">
-						<p class="small text-uppercase mb-0">
-							<span class="text-muted">
-								Draft
-							</span>
-						</p>
+						<textarea class="form-control mb-0 border-0 rounded-0" rows="3" placeholder="Add an optional caption" v-model="composeText"></textarea>
 					</div>
 				</div>
 
@@ -363,15 +355,19 @@ export default {
 
 					axios.post('/api/v1/media', form, xhrConfig)
 					.then(function(e) {
+						self.uploadProgress = 100;
 						self.ids.push(e.data.id);
 						self.media.push(e.data);
 						setTimeout(function() {
 							self.uploading = false;
-						}, 500);
+						}, 1000);
 					}).catch(function(e) {
+						self.uploading = false;
+						io.value = null;
 						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
 					});
 					io.value = null;
+					self.uploadProgress = 0;
 				});
 			});
 		},
