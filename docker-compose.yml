@@ -24,7 +24,8 @@ services:
     env_file:
       - ./.env
     volumes:
-      - "app-storage:/var/www/storage"
+      - "./storage:/var/www/storage"
+      - "./bootstrap:/var/www/bootstrap"
     networks:
       - external
       - internal
