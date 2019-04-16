@@ -457,10 +457,11 @@ class PublicApiController extends Controller
                       )->where('id', $dir, $id)
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereNotIn('profile_id', $filtered)
+                      ->whereNotNull('uri')
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
-                      ->orderBy('created_at', 'desc')
+                      ->latest()
                       ->limit($limit)
                       ->get();
         } else {
@@ -484,8 +485,9 @@ class PublicApiController extends Controller
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
+                      ->whereNotNull('uri')
                       ->whereVisibility('public')
-                      ->orderBy('created_at', 'desc')
+                      ->latest()
                       ->simplePaginate($limit);
         }
 
