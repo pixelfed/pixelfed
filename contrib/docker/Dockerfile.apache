@@ -43,7 +43,7 @@ COPY . /var/www/
 WORKDIR /var/www/
 RUN cp -r storage storage.skel \
  && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
- && composer install --no-dev --prefer-source --no-interaction \
+ && composer install --prefer-source --no-interaction \
  && rm -rf html && ln -s public html
 
 VOLUME ["/var/www/storage"]
