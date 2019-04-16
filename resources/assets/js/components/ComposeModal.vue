@@ -25,43 +25,53 @@
 				</div>
 
 				<div class="postPresenterContainer">
-					<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia()">
-						<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos.</p>
+					<div v-if="uploading">
+						<div class="w-100 h-100 bg-light py-5" style="border-bottom: 1px solid #f1f1f1">
+							<div class="p-5">
+								<b-progress :value="uploadProgress" :max="100" striped :animated="true"></b-progress>
+								<p class="text-center mb-0 font-weight-bold">Uploading...</p>
+							</div>
+						</div>
 					</div>
-					<div v-if="ids.length > 0">
-						
-						<b-carousel id="p-carousel"
-							style="text-shadow: 1px 1px 2px #333;"
-							controls
-							indicators
-							background="#ffffff"
-							:interval="0"
-							v-model="carouselCursor"
-						>
-							<b-carousel-slide  v-if="ids.length > 0" v-for="(preview, index) in media" :key="'preview_media_'+index">
-								<div slot="img" :class="[media[index].filter_class?media[index].filter_class + ' cursor-pointer':' cursor-pointer']" v-on:click="addMedia()">
-									<img class="d-block img-fluid w-100" :src="preview.url" :alt="preview.description" :title="preview.description">
-								</div>
-							</b-carousel-slide>
-						</b-carousel>
-					</div>
-					<div v-if="mediaDrawer" class="bg-dark align-items-center">
-						<ul class="nav media-drawer-filters text-center">
-							<li class="nav-item">
-								<div class="p-1 pt-3">
-									<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
-								</div>
-								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
-							</li>
-							<li class="nav-item" v-for="(filter, index) in filters">
-								<div class="p-1 pt-3">
-									<div :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
-										<img :src="media[carouselCursor].url" width="100px" height="60px" class="">
+					<div v-else>
+						<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia()">
+							<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos.</p>
+						</div>
+						<div v-if="ids.length > 0">
+							
+							<b-carousel id="p-carousel"
+								style="text-shadow: 1px 1px 2px #333;"
+								controls
+								indicators
+								background="#ffffff"
+								:interval="0"
+								v-model="carouselCursor"
+							>
+								<b-carousel-slide  v-if="ids.length > 0" v-for="(preview, index) in media" :key="'preview_media_'+index">
+									<div slot="img" :class="[media[index].filter_class?media[index].filter_class + ' cursor-pointer':' cursor-pointer']" v-on:click="addMedia()">
+										<img class="d-block img-fluid w-100" :src="preview.url" :alt="preview.description" :title="preview.description">
 									</div>
-								</div>
-								<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
-							</li>
-						</ul>
+								</b-carousel-slide>
+							</b-carousel>
+						</div>
+						<div v-if="ids.length > 0" class="bg-dark align-items-center">
+							<ul class="nav media-drawer-filters text-center">
+								<li class="nav-item">
+									<div class="p-1 pt-3">
+										<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+									</div>
+									<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+								</li>
+								<li class="nav-item" v-for="(filter, index) in filters">
+									<div class="p-1 pt-3">
+										<div :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+											<img :src="media[carouselCursor].url" width="100px" height="60px" class="">
+										</div>
+									</div>
+									<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
+								</li>
+							</ul>
+						</div>
 					</div>
 					<div v-if="mediaDrawer" class="bg-lighter p-2 row">
 						<div class="col-12">
@@ -84,7 +94,7 @@
 					</div>
 				</div>
 
-				<div :class="[mediaDrawer?'d-none':'card-body']">
+				<div class="card-body">
 					<div class="caption">
 						<p class="mb-2">
 							<textarea class="form-control d-inline-block" rows="3" placeholder="Add an optional caption" v-model="composeText"></textarea>
@@ -101,7 +111,7 @@
 					</div>
 				</div>
 
-				<div :class="[mediaDrawer?'d-none':'card-footer']">
+				<div class="card-footer">
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<div class="custom-control custom-switch d-inline mr-3">
@@ -192,6 +202,9 @@
 					</div>
 				</div>
 
+				<div class="card-footer py-1">
+					<p class="text-center mb-0 font-weight-bold text-muted small">Having issues? You can also use the <a href="/i/compose">Classic Compose UI</a>.</p>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -234,7 +247,9 @@ export default {
 			carouselCursor: 0,
 			visibility: 'public',
 			mediaDrawer: false,
-			composeState: 'publish'
+			composeState: 'publish',
+			uploading: false,
+			uploadProgress: 0
 		}
 	},
 
@@ -323,6 +338,7 @@ export default {
 			$(document).on('change', '.file-input', function(e) {
 				let io = document.querySelector('.file-input');
 				Array.prototype.forEach.call(io.files, function(io, i) {
+					self.uploading = true;
 					if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
 						swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
 						return;
@@ -341,6 +357,7 @@ export default {
 					let xhrConfig = {
 						onUploadProgress: function(e) {
 							let progress = Math.round( (e.loaded * 100) / e.total );
+							self.uploadProgress = progress;
 						}
 					};
 
@@ -349,8 +366,8 @@ export default {
 						self.ids.push(e.data.id);
 						self.media.push(e.data);
 						setTimeout(function() {
-							self.mediaDrawer = true;
-						}, 1000);
+							self.uploading = false;
+						}, 500);
 					}).catch(function(e) {
 						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
 					});
