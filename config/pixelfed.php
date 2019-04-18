@@ -276,4 +276,6 @@ return [
             ]
         ]
     ],
+
+    'oauth_enabled' => env('OAUTH_ENABLED', false),
 ];
