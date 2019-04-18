@@ -9,6 +9,7 @@ use App\Status;
 use Illuminate\Http\Request;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use App\Transformer\Api\{
     AccountTransformer,
     HashtagTransformer,
@@ -22,17 +23,20 @@ class SearchController extends Controller
         $this->middleware('auth');
     }
 
-    public function searchAPI(Request $request, $tag)
+    public function searchAPI(Request $request)
     {
-        if(mb_strlen($tag) < 3) {
-            return;
-        }
+        $this->validate($request, [
+            'q' => 'required|string|min:3|max:120',
+            'src' => 'required|string|in:metro',
+            'v' => 'required|integer|in:1'
+        ]);
+        $tag = $request->input('q');
         $tag = e(urldecode($tag));
 
         $hash = hash('sha256', $tag);
         $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = [];
-            if(Helpers::validateUrl($tag) != false) {
+            if(Helpers::validateUrl($tag) != false && config('pixelfed.activitypub_enabled') == true && config('pixelfed.remote_follow_enabled') == true) {
                 $remote = Helpers::fetchFromUrl($tag);
                 if(isset($remote['type']) && in_array($remote['type'], ['Create', 'Person']) == true) {
                     $type = $remote['type'];
@@ -65,7 +69,12 @@ class SearchController extends Controller
                     }
                 }
             }
-            $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->whereHas('posts')->limit(20)->get();
+            $htag = Str::startsWith($tag, '#') == true ? mb_substr($tag, 1) : $tag;
+            $hashtags = Hashtag::select('id', 'name', 'slug')
+                ->where('slug', 'like', '%'.$htag.'%')
+                ->whereHas('posts')
+                ->limit(20)
+                ->get();
             if($hashtags->count() > 0) {
                 $tags = $hashtags->map(function ($item, $key) {
                     return [
@@ -83,9 +92,9 @@ class SearchController extends Controller
         });
         $users = Profile::select('username', 'name', 'id')
             ->whereNull('status')
+            ->whereNull('domain')
             ->where('id', '!=', Auth::user()->profile->id)
             ->where('username', 'like', '%'.$tag.'%')
-            ->whereNull('domain')
             //->orWhere('remote_url', $tag)
             ->limit(20)
             ->get();
@@ -120,7 +129,6 @@ class SearchController extends Controller
                     ->whereNull('reblog_of_id')
                     ->whereProfileId(Auth::user()->profile->id)
                     ->where('caption', 'like', '%'.$tag.'%')
-                    ->orWhere('uri', $tag)
                     ->latest()
                     ->limit(10)
                     ->get();

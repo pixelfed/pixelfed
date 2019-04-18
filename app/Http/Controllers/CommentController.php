@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use DB;
 use Cache;
 
 use App\Comment;
@@ -58,14 +59,21 @@ class CommentController extends Controller
 
         Cache::forget('transform:status:'.$status->url());
 
-        $autolink = Autolink::create()->autolink($comment);
-        $reply = new Status();
-        $reply->profile_id = $profile->id;
-        $reply->caption = e($comment);
-        $reply->rendered = $autolink;
-        $reply->in_reply_to_id = $status->id;
-        $reply->in_reply_to_profile_id = $status->profile_id;
-        $reply->save();
+        $reply = DB::transaction(function() use($comment, $status, $profile) {
+            $autolink = Autolink::create()->autolink($comment);
+            $reply = new Status();
+            $reply->profile_id = $profile->id;
+            $reply->caption = e($comment);
+            $reply->rendered = $autolink;
+            $reply->in_reply_to_id = $status->id;
+            $reply->in_reply_to_profile_id = $status->profile_id;
+            $reply->save();
+
+            $status->reply_count++;
+            $status->save();
+
+            return $reply;
+        });
 
         NewStatusPipeline::dispatch($reply, false);
         CommentPipeline::dispatch($status, $reply);

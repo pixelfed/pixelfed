@@ -23,7 +23,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'url'                       => $status->url(),
             'in_reply_to_id'            => $status->in_reply_to_id,
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
-            'reblog'                    => $status->reblog_of_id || $status->in_reply_to_id ? $this->transform($status->parent()) : null,
+            'reblog'                    => null,
             'content'                   => $status->rendered ?? $status->caption,
             'created_at'                => $status->created_at->format('c'),
             'emojis'                    => [],
@@ -42,9 +42,11 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'language'                  => null,
             'pinned'                    => null,
 
-            'pf_type'          => $status->type ?? $status->setType(),
-            'reply_count'      => $status->reply_count,
-            'comments_disabled' => $status->comments_disabled ? true : false
+            'pf_type'                   => $status->type ?? $status->setType(),
+            'reply_count'               => (int) $status->reply_count,
+            'comments_disabled'         => $status->comments_disabled ? true : false,
+            'thread'                    => false,
+            'replies'                   => []
         ];
     }
 

@@ -2,11 +2,11 @@
 
 @section('content')
 
-<div class="container">
-  <div class="col-12">
-    <div class="card mt-5">
+<div class="container px-0 mt-0 mt-md-4 mb-md-5 pb-md-5">
+  <div class="col-12 px-0">
+    <div class="card mt-md-5">
       <div class="card-body p-0">
-        <div class="row">
+        <div class="row px-0">
           @include('site.partial.sidebar')
           <div class="col-12 col-md-9 p-5">
             @if (session('status'))

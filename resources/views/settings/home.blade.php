@@ -98,6 +98,22 @@
         </div>
       </div>
     </div>
+    <div class="pt-5">
+      <p class="font-weight-bold text-muted text-center">Layout</p>
+    </div>
+    <div class="form-group row">
+      <label for="email" class="col-sm-3 col-form-label font-weight-bold text-right">Profile Layout</label>
+      <div class="col-sm-9">
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="profileLayout1" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout != 'moment' ? 'checked':''}} value="metro">
+          <label class="custom-control-label" for="profileLayout1">Metro</label>
+        </div>
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="profileLayout2" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout == 'moment' ? 'checked':''}} value="moment">
+          <label class="custom-control-label" for="profileLayout2">Moment</label>
+        </div>
+      </div>
+    </div>
     <hr>
     <div class="form-group row">
       <div class="col-12 d-flex align-items-center justify-content-between">

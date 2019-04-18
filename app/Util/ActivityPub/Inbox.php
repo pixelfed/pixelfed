@@ -36,6 +36,7 @@ class Inbox
 
     public function handle()
     {
+        abort_if(!Helpers::validateObject($this->payload), 400);
         $this->handleVerb();
     }
 
@@ -135,6 +136,8 @@ class Inbox
 
     public function handleNoteCreate()
     {
+        return;
+
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         if(!$actor || $actor->domain == null) {
@@ -259,24 +262,24 @@ class Inbox
     {
         $actor = $this->payload['actor'];
         $obj = $this->payload['object'];
+        abort_if(!Helpers::validateUrl($obj), 400);
         if(is_string($obj) && Helpers::validateUrl($obj)) {
             // actor object detected
             // todo delete actor
-        } else if (Helpers::validateUrl($obj['id']) && is_array($obj) && isset($obj['type']) && $obj['type'] == 'Tombstone') {
-            // tombstone detected
-            $status = Status::whereLocal(false)->whereUri($obj['id'])->firstOrFail();
-            $status->forceDelete();
+        } else if (Helpers::validateUrl($obj['id']) && Helpers::validateObject($obj) && $obj['type'] == 'Tombstone') {
+            // todo delete status or object
         }
     }
 
     public function handleLikeActivity()
     {
         $actor = $this->payload['actor'];
+
+        abort_if(!Helpers::validateUrl($actor), 400);
+
         $profile = self::actorFirstOrCreate($actor);
         $obj = $this->payload['object'];
-        if(Helpers::validateLocalUrl($obj) == false) {
-            return;
-        }
+        abort_if(!Helpers::validateLocalUrl($obj), 400);
         $status = Helpers::statusFirstOrFetch($obj);
         if(!$status || !$profile) {
             return;
@@ -286,10 +289,11 @@ class Inbox
             'status_id' => $status->id
         ]);
 
-        if($like->wasRecentlyCreated == false) {
-            return;
+        if($like->wasRecentlyCreated == true) {
+            LikePipeline::dispatch($like);
         }
-        LikePipeline::dispatch($like);
+
+        return;
     }
 
 

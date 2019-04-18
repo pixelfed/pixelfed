@@ -128,7 +128,7 @@ class AccountController extends Controller
         }
     }
 
-    public function fetchNotifications($id)
+    public function fetchNotifications(int $id)
     {
         $key = config('cache.prefix').":user.{$id}.notifications";
         $redis = Redis::connection();
@@ -167,14 +167,14 @@ class AccountController extends Controller
     public function mute(Request $request)
     {
         $this->validate($request, [
-          'type' => 'required|string',
+          'type' => 'required|alpha_dash',
           'item' => 'required|integer|min:1',
         ]);
 
         $user = Auth::user()->profile;
         $type = $request->input('type');
         $item = $request->input('item');
-        $action = "{$type}.mute";
+        $action = $type . '.mute';
 
         if (!in_array($action, $this->filters)) {
             return abort(406);
@@ -211,17 +211,71 @@ class AccountController extends Controller
         return redirect()->back();
     }
 
-    public function block(Request $request)
+    public function unmute(Request $request)
     {
         $this->validate($request, [
-          'type' => 'required|string',
+          'type' => 'required|alpha_dash',
           'item' => 'required|integer|min:1',
         ]);
 
         $user = Auth::user()->profile;
         $type = $request->input('type');
         $item = $request->input('item');
-        $action = "{$type}.block";
+        $action = $type . '.mute';
+
+        if (!in_array($action, $this->filters)) {
+            return abort(406);
+        }
+        $filterable = [];
+        switch ($type) {
+          case 'user':
+            $profile = Profile::findOrFail($item);
+            if ($profile->id == $user->id) {
+                return abort(403);
+            }
+            $class = get_class($profile);
+            $filterable['id'] = $profile->id;
+            $filterable['type'] = $class;
+            break;
+
+          default:
+            abort(400);
+            break;
+        }
+
+        $filter = UserFilter::whereUserId($user->id)
+            ->whereFilterableId($filterable['id'])
+            ->whereFilterableType($filterable['type'])
+            ->whereFilterType('mute')
+            ->first();
+
+        if($filter) {
+            $filter->delete();
+        }
+
+        $pid = $user->id;
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
+
+        if($request->wantsJson()) {
+            return response()->json([200]);
+        } else {
+            return redirect()->back();
+        }
+    }
+
+    public function block(Request $request)
+    {
+        $this->validate($request, [
+          'type' => 'required|alpha_dash',
+          'item' => 'required|integer|min:1',
+        ]);
+
+        $user = Auth::user()->profile;
+        $type = $request->input('type');
+        $item = $request->input('item');
+        $action = $type.'.block';
         if (!in_array($action, $this->filters)) {
             return abort(406);
         }
@@ -251,6 +305,56 @@ class AccountController extends Controller
           'filterable_type' => $filterable['type'],
           'filter_type'     => 'block',
         ]);
+
+        $pid = $user->id;
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:people:$pid");
+        Cache::forget("feature:discover:posts:$pid");
+        return redirect()->back();
+    }
+
+
+    public function unblock(Request $request)
+    {
+        $this->validate($request, [
+          'type' => 'required|alpha_dash',
+          'item' => 'required|integer|min:1',
+        ]);
+
+        $user = Auth::user()->profile;
+        $type = $request->input('type');
+        $item = $request->input('item');
+        $action = $type . '.block';
+        if (!in_array($action, $this->filters)) {
+            return abort(406);
+        }
+        $filterable = [];
+        switch ($type) {
+          case 'user':
+            $profile = Profile::findOrFail($item);
+            if ($profile->id == $user->id) {
+                return abort(403);
+            }
+            $class = get_class($profile);
+            $filterable['id'] = $profile->id;
+            $filterable['type'] = $class;
+            break;
+
+          default:
+            abort(400);
+            break;
+        }
+
+
+        $filter = UserFilter::whereUserId($user->id)
+            ->whereFilterableId($filterable['id'])
+            ->whereFilterableType($filterable['type'])
+            ->whereFilterType('block')
+            ->first();
+
+        if($filter) {
+            $filter->delete();
+        }
 
         $pid = $user->id;
         Cache::forget("user:filter:list:$pid");

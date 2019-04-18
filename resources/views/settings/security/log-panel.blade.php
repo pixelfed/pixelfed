@@ -1,12 +1,12 @@
     <div class="mb-4 pb-4">
       <h4 class="font-weight-bold">Account Log</h4>
       <hr>
-      <ul class="list-group" style="max-height: 400px;overflow-y: scroll;">
+      <ul class="list-group border" style="max-height: 400px;overflow-y: auto;">
         @if($activity->count() == 0) 
         <p class="alert alert-info font-weight-bold">No activity logs found!</p>
         @endif
         @foreach($activity as $log)
-        <li class="list-group-item">
+        <li class="list-group-item rounded-0 border-0">
           <div class="media">
             <div class="media-body">
               <span class="my-0 font-weight-bold text-muted">

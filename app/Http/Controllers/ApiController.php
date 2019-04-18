@@ -31,6 +31,10 @@ class ApiController extends BaseApiController
 
                     'media_types' => config('pixelfed.media_types'),
                     'enforce_account_limit' => config('pixelfed.enforce_account_limit')
+                ],
+                'activitypub' => [
+                    'enabled' => config('pixelfed.activitypub_enabled'),
+                    'remote_follow' => config('pixelfed.remote_follow_enabled')
                 ]
             ];
         });

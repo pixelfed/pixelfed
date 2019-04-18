@@ -6,13 +6,8 @@
     <div class="card mt-3">
       <div class="card-body p-0">
         <ul class="nav nav-pills d-flex text-center">
-        
-          {{-- <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase" href="#">Following</a>
-          </li> --}} 
-        
           <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications')}}">My Notifications</a>
+            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications')}}">Notifications</a>
           </li>
           <li class="nav-item flex-fill">
             <a class="nav-link font-weight-bold text-uppercase" href="{{route('follow-requests')}}">Follow Requests</a>
@@ -93,7 +88,7 @@
             <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
           </span>
           <span class="float-right notification-action">
-            @if($notification->item_id)
+            @if(false == true && $notification->item_id && $notification->item_type == 'App\Status')
               <a href="{{$notification->status->parent()->url()}}">
                 <div class="notification-image" style="background-image: url('{{$notification->status->parent()->thumb()}}')"></div>
               </a>
@@ -142,5 +137,10 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="{{mix('js/activity.js')}}"></script>
+<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
+<script type="text/javascript">
+  new Vue({
+    el: '#content'
+  });
+</script>
 @endpush

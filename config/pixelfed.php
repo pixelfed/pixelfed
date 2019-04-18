@@ -23,7 +23,7 @@ return [
     | This value is the version of your PixelFed instance.
     |
     */
-    'version' => '0.8.6',
+    'version' => '0.9.0',
 
     /*
     |--------------------------------------------------------------------------
@@ -46,7 +46,7 @@ return [
     | default memory_limit php.ini is used for the rest of the app.
     |
     */
-    'memory_limit' => '1024M',
+    'memory_limit' => env('MEMORY_LIMIT', '1024M'),
 
     /*
     |--------------------------------------------------------------------------
@@ -259,7 +259,9 @@ return [
 
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
+
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
+
     'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
     'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
     'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
@@ -267,11 +269,13 @@ return [
 
     'import' => [
         'instagram' => [
-            'enabled' => env('IMPORT_INSTAGRAM_ENABLED', false),
+            'enabled' => false,
             'limits' => [
                 'posts' => (int) env('IMPORT_INSTAGRAM_POST_LIMIT', 100),
                 'size' => (int) env('IMPORT_INSTAGRAM_SIZE_LIMIT', 250)
             ]
         ]
     ],
+
+    'oauth_enabled' => env('OAUTH_ENABLED', false),
 ];

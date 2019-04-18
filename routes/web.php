@@ -64,9 +64,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('discover', 'DiscoverController@home')->name('discover');
     
     Route::group(['prefix' => 'api'], function () {
-        Route::get('search/{tag}', 'SearchController@searchAPI')
-          //->where('tag', '.*');
-          ->where('tag', '[A-Za-z0-9]+');
+        Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
@@ -83,6 +81,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'ApiController@notifications');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            // Route::get('timelines/network', 'PublicApiController@homeTimelineApi');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
@@ -111,7 +110,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('comment', 'CommentController@store');
         Route::post('delete', 'StatusController@delete');
         Route::post('mute', 'AccountController@mute');
+        Route::post('unmute', 'AccountController@unmute');
         Route::post('block', 'AccountController@block');
+        Route::post('unblock', 'AccountController@unblock');
         Route::post('like', 'LikeController@store');
         Route::post('share', 'StatusController@storeShare');
         Route::post('follow', 'FollowerController@store');
@@ -266,6 +267,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/');
         Route::get('public', 'TimelineController@local')->name('timeline.public');
         Route::post('public', 'StatusController@store');
+        // Route::get('network', 'TimelineController@network')->name('timeline.network');
     });
 
     Route::group(['prefix' => 'users'], function () {

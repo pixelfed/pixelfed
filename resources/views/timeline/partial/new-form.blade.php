@@ -34,9 +34,15 @@
                 <label class="font-weight-bold text-muted small">Visibility</label>
                 <div class="switch switch-sm">
                   <select class="form-control" name="visibility">
-                    <option value="public" selected="">Public</option>
-                    <option value="unlisted">Unlisted (hidden from public timelines)</option>
-                    <option value="private">Followers Only</option>
+                    @if(Auth::user()->profile->is_private)
+                      <option value="public">Public</option>
+                      <option value="unlisted">Unlisted (hidden from public timelines)</option>
+                      <option value="private" selected="">Followers Only</option>
+                    @else
+                      <option value="public" selected="">Public</option>
+                      <option value="unlisted">Unlisted (hidden from public timelines)</option>
+                      <option value="private">Followers Only</option>
+                    @endif
                   </select>
                 </div>
                 <small class="form-text text-muted">

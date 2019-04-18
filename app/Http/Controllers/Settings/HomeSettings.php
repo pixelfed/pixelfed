@@ -47,6 +47,10 @@ trait HomeSettings
         $email = $request->input('email');
         $user = Auth::user();
         $profile = $user->profile;
+        $layout = $request->input('profile_layout');
+        if($layout) {
+            $layout = !in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
+        }
 
         $validate = config('pixelfed.enforce_email_verification');
 
@@ -88,6 +92,11 @@ trait HomeSettings
             if ($profile->bio != $bio) {
                 $changes = true;
                 $profile->bio = $bio;
+            }
+
+            if ($profile->profile_layout != $layout) {
+                $changes = true;
+                $profile->profile_layout = $layout;
             }
         }
 

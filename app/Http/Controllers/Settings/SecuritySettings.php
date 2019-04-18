@@ -8,6 +8,7 @@ use App\Media;
 use App\Profile;
 use App\User;
 use App\UserFilter;
+use App\UserDevice;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
 use DB;
@@ -20,19 +21,19 @@ trait SecuritySettings
 
 	public function security()
 	{
-		$sessions = DB::table('sessions')
-			->whereUserId(Auth::id())
-			->limit(20)
-			->get();
+		$user = Auth::user();
 
-		$activity = AccountLog::whereUserId(Auth::id())
+		$activity = AccountLog::whereUserId($user->id)
 			->orderBy('created_at', 'desc')
 			->limit(20)
 			->get();
 
-		$user = Auth::user();
+		$devices = UserDevice::whereUserId($user->id)
+			->orderBy('created_at', 'desc')
+			->limit(5)
+			->get();
 
-		return view('settings.security', compact('sessions', 'activity', 'user'));
+		return view('settings.security', compact('activity', 'user', 'devices'));
 	}
 
 	public function securityTwoFactorSetup(Request $request)

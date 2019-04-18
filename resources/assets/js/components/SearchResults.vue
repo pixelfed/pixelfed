@@ -12,19 +12,19 @@
 	<div v-if="!loading && !networkError" class="mt-5 row">
 
 		<div class="col-12 col-md-3 mb-4">
-			<div>
+			<div v-if="results.hashtags || results.profiles || results.statuses">
 				<p class="font-weight-bold">Filters</p>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter1" v-model="filters.hashtags">
-					<label class="custom-control-label text-muted" for="filter1">Show Hashtags</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter1">Show Hashtags</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter2" v-model="filters.profiles">
-					<label class="custom-control-label text-muted" for="filter2">Show Profiles</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter2">Show Profiles</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter3" v-model="filters.statuses">
-					<label class="custom-control-label text-muted" for="filter3">Show Statuses</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter3">Show Statuses</label>
 				</div>
 			</div>
 		</div>
@@ -56,11 +56,11 @@
 						<p class="font-weight-bold text-truncate text-dark">
 							{{profile.value}}
 						</p>
-						<!-- <p class="mb-0 text-center">
+						<p class="mb-0 text-center">
 							 <button :class="[profile.entity.following ? 'btn btn-secondary btn-sm py-1 font-weight-bold' : 'btn btn-primary btn-sm py-1 font-weight-bold']" v-on:click="followProfile(profile.entity.id)">
 							 	{{profile.entity.following ? 'Unfollow' : 'Follow'}}
 							 </button>
-						</p> -->
+						</p>
 					</div>
 				</a>
 			</div>
@@ -124,27 +124,31 @@ export default {
 	},
 	methods: {
 		fetchSearchResults() {
-			axios.get('/api/search/' + encodeURI(this.query))
-				.then(res => {
-					let results = res.data;
-					this.results.hashtags = results.hashtags;
-					this.results.profiles = results.profiles;
-					this.results.statuses = results.posts;
-					this.loading = false;
-				}).catch(err => {
-					this.loading = false;
-					// this.networkError = true;
-				})
+			axios.get('/api/search', {
+				params: {
+					'q': this.query,
+					'src': 'metro',
+					'v': 1
+				}
+			}).then(res => {
+				let results = res.data;
+				this.results.hashtags = results.hashtags;
+				this.results.profiles = results.profiles;
+				this.results.statuses = results.posts;
+				this.loading = false;
+			}).catch(err => {
+				this.loading = false;
+				// this.networkError = true;
+			})
 		},
 
 		followProfile(id) {
 			// todo: finish AP Accept handling to enable remote follows
-			return;
-			// axios.post('/i/follow', {
-			// 	item: id
-			// }).then(res => {
-			// 	window.location.href = window.location.href;
-			// });
+			axios.post('/i/follow', {
+				item: id
+			}).then(res => {
+				window.location.href = window.location.href;
+			});
 		},
 	}
 

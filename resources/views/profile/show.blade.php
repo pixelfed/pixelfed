@@ -7,8 +7,10 @@
     </div>
 @endif
 
-<profile profile-id="{{$profile->id}}" :profile-settings="{{json_encode($settings)}}"></profile>
-
+<profile profile-id="{{$profile->id}}" :profile-settings="{{json_encode($settings)}}" profile-layout="{{$profile->profile_layout ?? 'metro'}}"></profile>
+@if($profile->website)
+<a class="d-none" href="{{$profile->website}}" rel="me">{{$profile->website}}</a>
+@endif
 @endsection
 
 @push('meta')<meta property="og:description" content="{{$profile->bio}}">

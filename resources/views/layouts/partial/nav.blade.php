@@ -45,8 +45,8 @@
                     </li>
 
                     {{-- <li class="pr-2">
-                        <a class="nav-link font-weight-bold" href="/" title="Home">
-                        {{ __('Network') }}
+                        <a class="nav-link font-weight-bold {{request()->is('timeline/network') ?'text-primary':''}}" href="{{route('timeline.network')}}" title="Network Timeline">
+                            <i class="fas fa-globe fa-lg"></i>
                         </a>
                     </li> --}}
                     <div class="d-none d-md-block">
@@ -87,7 +87,11 @@
                                 <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
-
+                           {{-- <a class="dropdown-item font-weight-bold" href="{{route('timeline.network')}}">
+                                <span class="fas fa-globe pr-1"></span>
+                                Network Timeline
+                            </a> --}}
+                            <div class="d-block d-md-none dropdown-divider"></div>
                             <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
                                 <span class="far fa-compass pr-1"></span>
                                 {{__('navmenu.discover')}}

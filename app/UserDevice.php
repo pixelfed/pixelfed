@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Agent\Agent;
 
 class UserDevice extends Model
 {
@@ -19,5 +20,15 @@ class UserDevice extends Model
     public function user()
     {
     	return $this->belongsTo(User::class);
+    }
+
+    public function getUserAgent()
+    {
+        if(!$this->user_agent) {
+            return 'Unknown';
+        }
+        $agent = new Agent();
+        $agent->setUserAgent($this->user_agent);
+        return $agent;
     }
 }

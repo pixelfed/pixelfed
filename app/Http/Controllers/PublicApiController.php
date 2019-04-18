@@ -108,6 +108,7 @@ class PublicApiController extends Controller
             'max_id'    => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'limit'     => 'nullable|integer|min:5|max:50'
         ]);
+
         $limit = $request->limit ?? 10;
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
@@ -116,7 +117,7 @@ class PublicApiController extends Controller
             if($request->filled('min_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -124,7 +125,7 @@ class PublicApiController extends Controller
             if($request->filled('max_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
-                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+                ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -132,7 +133,7 @@ class PublicApiController extends Controller
         } else {
             $replies = $status->comments()
             ->whereNull('reblog_of_id')
-            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'created_at')
+            ->select('id', 'caption', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
         }
@@ -180,8 +181,8 @@ class PublicApiController extends Controller
                 if(!$user) {
                     abort(403);
                 } else {
-                    $follows = $profile->followedBy(Auth::user()->profile);
-                    if($follows == false && $profile->id !== $user->profile->id) {
+                    $follows = $profile->followedBy($user->profile);
+                    if($follows == false && $profile->id !== $user->profile->id && $user->is_admin == false) {
                         abort(404);
                     }
                 }
@@ -357,8 +358,6 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-                      ->whereLocal(true)
-                      ->whereNull('uri')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
@@ -386,8 +385,6 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-                      ->whereLocal(true)
-                      ->whereNull('uri')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
@@ -453,14 +450,18 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereNotIn('profile_id', $filtered)
+                      ->whereNotNull('uri')
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
-                      ->orderBy('created_at', 'desc')
+                      ->latest()
                       ->limit($limit)
                       ->get();
         } else {
@@ -476,14 +477,17 @@ class PublicApiController extends Controller
                         'is_nsfw',
                         'scope',
                         'local',
+                        'reply_count',
+                        'comments_disabled',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')
                       ->whereNull('reblog_of_id')
+                      ->whereNotNull('uri')
                       ->whereVisibility('public')
-                      ->orderBy('created_at', 'desc')
+                      ->latest()
                       ->simplePaginate($limit);
         }
 
@@ -524,8 +528,8 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if($profile->is_private || !$profile->user->settings->show_profile_followers) {
-            return [];
+        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_followers) {
+            return response()->json([]);
         }
         $followers = $profile->followers()->orderByDesc('followers.created_at')->paginate(10);
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
@@ -538,8 +542,8 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if($profile->is_private || !$profile->user->settings->show_profile_following) {
-            return [];
+        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_following) {
+            return response()->json([]);
         }
         $following = $profile->following()->orderByDesc('followers.created_at')->paginate(10);
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
