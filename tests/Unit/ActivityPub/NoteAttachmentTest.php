@@ -22,12 +22,6 @@ class NoteAttachmentTest extends TestCase
 		$this->invalidMime = json_decode('{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791/activity","type":"Create","actor":"https://mastodon.social/users/dansup","published":"2018-10-13T18:43:33Z","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"object":{"id":"https://mastodon.social/users/dansup/statuses/100889802384218791","type":"Note","summary":null,"inReplyTo":null,"published":"2018-10-13T18:43:33Z","url":"https://mastodon.social/@dansup/100889802384218791","attributedTo":"https://mastodon.social/users/dansup","to":["https://www.w3.org/ns/activitystreams#Public"],"cc":["https://mastodon.social/users/dansup/followers"],"sensitive":false,"atomUri":"https://mastodon.social/users/dansup/statuses/100889802384218791","inReplyToAtomUri":null,"conversation":"tag:mastodon.social,2018-10-13:objectId=59103420:objectType=Conversation","content":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>","contentMap":{"en":"<p>Good Morning! <a href=\"https://mastodon.social/tags/coffee\" class=\"mention hashtag\" rel=\"tag\">#<span>coffee</span></a></p>"},"attachment":[{"type":"Document","mediaType":"image/webp","url":"https://files.mastodon.social/media_attachments/files/007/110/573/original/96a196885a77c9a4.jpg","name":null}],"tag":[{"type":"Hashtag","href":"https://mastodon.social/tags/coffee","name":"#coffee"}]}}', true, 9);
 	}
 
-	public function testPleroma()
-	{
-		$valid = Helpers::verifyAttachments($this->pleroma);
-		$this->assertTrue($valid);
-	}
-
 	public function testMastodon()
 	{
 		$valid = Helpers::verifyAttachments($this->mastodon);

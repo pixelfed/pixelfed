@@ -28,7 +28,7 @@ class Helpers {
 
 	public static function validateObject($data)
 	{
-		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo'];
+		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
 
 		$valid = Validator::make($data, [
 			'type' => [
@@ -63,9 +63,6 @@ class Helpers {
 		}
 
 		$attachment = $activity['attachment'];
-		if(self::validateUrl($attachment['url']) == false) {
-			return false;
-		}
 		$valid = Validator::make($attachment, [
 			'*.type' => [
 				'required',
