@@ -191,7 +191,6 @@ class Helpers {
 		$res = Zttp::withHeaders(self::zttpUserAgent())->get($url);
 		$res = json_decode($res->body(), true, 8);
 		if(json_last_error() == JSON_ERROR_NONE) {
-			abort_if(!self::validateObject($res), 422);
 			return $res;
 		} else {
 			return false;
