@@ -36,11 +36,11 @@ class Helpers {
 				Rule::in($verbs)
 			],
 			'id' => 'required|string',
-			'actor' => 'required|string',
+			'actor' => 'required|string|url',
 			'object' => 'required',
 			'object.type' => 'required_if:type,Create',
 			'object.attachment' => 'required_if:type,Create',
-			'object.attributedTo' => 'required_if:type,Create',
+			'object.attributedTo' => 'required_if:type,Create|url',
 			'published' => 'required_if:type,Create|date'
 		])->passes();
 
@@ -63,13 +63,16 @@ class Helpers {
 		}
 
 		$attachment = $activity['attachment'];
+		if(self::validateUrl($attachment['url']) == false) {
+			return false;
+		}
 		$valid = Validator::make($attachment, [
 			'*.type' => [
 				'required',
 				'string',
 				Rule::in($mediaTypes)
 			],
-			'*.url' => 'required|max:255',
+			'*.url' => 'required|url|max:255',
 			'*.mediaType'  => [
 				'required',
 				'string',
@@ -331,6 +334,8 @@ class Helpers {
 
 	public static function importNoteAttachment($data, Status $status)
 	{
+		return;
+
 		if(self::verifyAttachments($data) == false) {
 			return;
 		}
@@ -394,6 +399,10 @@ class Helpers {
 		$username = Purify::clean($res['preferredUsername']);
 		$remoteUsername = "@{$username}@{$domain}";
 
+		abort_if(!self::validateUrl($res['inbox']), 400);
+		abort_if(!self::validateUrl($res['outbox']), 400);
+		abort_if(!self::validateUrl($res['id']), 400);
+
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
 			$profile = new Profile;
@@ -418,10 +427,7 @@ class Helpers {
 
 	public static function sendSignedObject($senderProfile, $url, $body)
 	{
-		$url = self::validateUrl($url);
-		if($url == false) {
-			abort(400, 'Invalid url');
-		}
+		abort_if(!self::validateUrl($url), 400);
 
 		$payload = json_encode($body);
 		$headers = HttpSignature::sign($senderProfile, $url, $body);
@@ -433,43 +439,5 @@ class Helpers {
 		curl_setopt($ch, CURLOPT_HEADER, true);
 		$response = curl_exec($ch);
 		return;
-	}
-
-	private static function _headersToSigningString($headers) {
-	}
-
-	public static function validateSignature($request, $payload = null)
-	{
-
-	}
-
-	public static function fetchPublicKey()
-	{
-		$profile = $this->profile;
-		$is_url = $this->is_url;
-		$valid = $this->validateUrl();
-		if (!$valid) {
-			throw new \Exception('Invalid URL provided');
-		}
-		if ($is_url && isset($profile->public_key) && $profile->public_key) {
-			return $profile->public_key;
-		}
-
-		try {
-			$url = $this->profile;
-			$res = Zttp::timeout(30)->withHeaders([
-				'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-				'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org',
-			])->get($url);
-			$actor = json_decode($res->getBody(), true);
-		} catch (Exception $e) {
-			throw new Exception('Unable to fetch public key');
-		}
-		if($actor['publicKey']['owner'] != $profile) {
-			throw new Exception('Invalid key match');
-		}
-		$this->public_key = $actor['publicKey']['publicKeyPem'];
-		$this->key_id = $actor['publicKey']['id'];
-		return $this;
 	}
 }
