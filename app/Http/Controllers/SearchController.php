@@ -92,9 +92,9 @@ class SearchController extends Controller
         });
         $users = Profile::select('username', 'name', 'id')
             ->whereNull('status')
+            ->whereNull('domain')
             ->where('id', '!=', Auth::user()->profile->id)
             ->where('username', 'like', '%'.$tag.'%')
-            ->whereNull('domain')
             //->orWhere('remote_url', $tag)
             ->limit(20)
             ->get();
@@ -129,7 +129,6 @@ class SearchController extends Controller
                     ->whereNull('reblog_of_id')
                     ->whereProfileId(Auth::user()->profile->id)
                     ->where('caption', 'like', '%'.$tag.'%')
-                    ->orWhere('uri', $tag)
                     ->latest()
                     ->limit(10)
                     ->get();
