@@ -54,7 +54,7 @@ services:
       - "db-data:/var/lib/mysql"
 
   redis:
-    image: redis:4-alpine
+    image: redis:5-alpine
     volumes:
       - "redis-data:/data"
     networks:
