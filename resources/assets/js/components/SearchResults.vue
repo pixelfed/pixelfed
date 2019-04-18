@@ -12,19 +12,19 @@
 	<div v-if="!loading && !networkError" class="mt-5 row">
 
 		<div class="col-12 col-md-3 mb-4">
-			<div>
+			<div v-if="results.hashtags || results.profiles || results.statuses">
 				<p class="font-weight-bold">Filters</p>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter1" v-model="filters.hashtags">
-					<label class="custom-control-label text-muted" for="filter1">Show Hashtags</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter1">Show Hashtags</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter2" v-model="filters.profiles">
-					<label class="custom-control-label text-muted" for="filter2">Show Profiles</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter2">Show Profiles</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter3" v-model="filters.statuses">
-					<label class="custom-control-label text-muted" for="filter3">Show Statuses</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter3">Show Statuses</label>
 				</div>
 			</div>
 		</div>
