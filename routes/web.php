@@ -81,7 +81,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'ApiController@notifications');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
-            Route::get('timelines/network', 'PublicApiController@homeTimelineApi');
+            // Route::get('timelines/network', 'PublicApiController@homeTimelineApi');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
@@ -267,7 +267,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/');
         Route::get('public', 'TimelineController@local')->name('timeline.public');
         Route::post('public', 'StatusController@store');
-        Route::get('network', 'TimelineController@network')->name('timeline.network');
+        // Route::get('network', 'TimelineController@network')->name('timeline.network');
     });
 
     Route::group(['prefix' => 'users'], function () {
