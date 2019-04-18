@@ -261,7 +261,7 @@
               <div class="media align-items-center">
                 <img :src="statusAvatar" class="rounded-circle shadow-lg mr-3" alt="avatar" width="72px" height="72px">
                 <div class="media-body lead">
-                  by <a href="#">{{statusUsername}}</a>
+                  by <a :href="statusProfileUrl">{{statusUsername}}</a>
                 </div>
               </div>
               <hr>
