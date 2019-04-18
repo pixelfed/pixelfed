@@ -9,6 +9,7 @@
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
+        "ext-intl" : "*"
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
