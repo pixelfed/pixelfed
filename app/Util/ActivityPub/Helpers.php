@@ -21,8 +21,6 @@ use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowImportRecent;
 use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\Util\HttpSignatures\{GuzzleHttpSignatures, KeyStore, Context, Verifier};
-use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 
@@ -193,6 +191,7 @@ class Helpers {
 		$res = Zttp::withHeaders(self::zttpUserAgent())->get($url);
 		$res = json_decode($res->body(), true, 8);
 		if(json_last_error() == JSON_ERROR_NONE) {
+			abort_if(!self::validateObject($res), 422);
 			return $res;
 		} else {
 			return false;
@@ -238,14 +237,26 @@ class Helpers {
 			}
 
 			$scope = 'private';
+			
 			$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
 
-			if(isset($res['to']) == true && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
-				$scope = 'public';
+			if(isset($res['to']) == true) {
+				if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
+					$scope = 'public';
+				}
+				if(is_string($res['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['to']) {
+					$scope = 'public';
+				}
 			}
 
-			if(isset($res['cc']) == true && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
+			if(isset($res['cc']) == true) {
 				$scope = 'unlisted';
+				if(is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
+					$scope = 'unlisted';
+				}
+				if(is_string($res['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['cc']) {
+					$scope = 'unlisted';
+				}
 			}
 
 			if(config('costar.enabled') == true) {
@@ -309,7 +320,7 @@ class Helpers {
 				$status->scope = $scope;
 				$status->visibility = $scope;
 				$status->save();
-				self::importNoteAttachment($res, $status);
+				// self::importNoteAttachment($res, $status);
 				return $status;
 			});
 
@@ -336,28 +347,28 @@ class Helpers {
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
-			$info = pathinfo($url);
+			// $info = pathinfo($url);
 
-			// pleroma attachment fix
-			$url = str_replace(' ', '%20', $url);
+			// // pleroma attachment fix
+			// $url = str_replace(' ', '%20', $url);
 
-			$img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
-			$file = '/tmp/'.str_random(32);
-			file_put_contents($file, $img);
-			$fdata = new File($file);
-			$path = Storage::putFile($storagePath, $fdata, 'public');
-			$media = new Media();
-			$media->status_id = $status->id;
-			$media->profile_id = $status->profile_id;
-			$media->user_id = null;
-			$media->media_path = $path;
-			$media->size = $fdata->getSize();
-			$media->mime = $fdata->getMimeType();
-			$media->save();
+			// $img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
+			// $file = '/tmp/'.str_random(32);
+			// file_put_contents($file, $img);
+			// $fdata = new File($file);
+			// $path = Storage::putFile($storagePath, $fdata, 'public');
+			// $media = new Media();
+			// $media->status_id = $status->id;
+			// $media->profile_id = $status->profile_id;
+			// $media->user_id = null;
+			// $media->media_path = $path;
+			// $media->size = $fdata->getSize();
+			// $media->mime = $fdata->getMimeType();
+			// $media->save();
 
-			ImageThumbnail::dispatch($media);
-			ImageOptimize::dispatch($media);
-			unlink($file);
+			// ImageThumbnail::dispatch($media);
+			// ImageOptimize::dispatch($media);
+			// unlink($file);
 		}
 		return;
 	}
@@ -380,15 +391,15 @@ class Helpers {
 			return;
 		}
 		$domain = parse_url($res['id'], PHP_URL_HOST);
-		$username = $res['preferredUsername'];
+		$username = Purify::clean($res['preferredUsername']);
 		$remoteUsername = "@{$username}@{$domain}";
 
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
 			$profile = new Profile;
 			$profile->domain = $domain;
-			$profile->username = $remoteUsername;
-			$profile->name = strip_tags($res['name']);
+			$profile->username = Purify::clean($remoteUsername);
+			$profile->name = Purify::clean($res['name']) ?? 'user';
 			$profile->bio = Purify::clean($res['summary']);
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 			$profile->inbox_url = $res['inbox'];
@@ -407,6 +418,11 @@ class Helpers {
 
 	public static function sendSignedObject($senderProfile, $url, $body)
 	{
+		$url = self::validateUrl($url);
+		if($url == false) {
+			abort(400, 'Invalid url');
+		}
+
 		$payload = json_encode($body);
 		$headers = HttpSignature::sign($senderProfile, $url, $body);
 
