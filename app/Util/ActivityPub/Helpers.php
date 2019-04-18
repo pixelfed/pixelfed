@@ -33,13 +33,13 @@ class Helpers {
 		$valid = Validator::make($data, [
 			'type' => [
 				'required',
+				'string',
 				Rule::in($verbs)
 			],
 			'id' => 'required|string',
 			'actor' => 'required|string|url',
 			'object' => 'required',
 			'object.type' => 'required_if:type,Create',
-			'object.attachment' => 'required_if:type,Create',
 			'object.attributedTo' => 'required_if:type,Create|url',
 			'published' => 'required_if:type,Create|date'
 		])->passes();
