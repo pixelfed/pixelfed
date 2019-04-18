@@ -9,6 +9,7 @@ use App\Status;
 use Illuminate\Http\Request;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use App\Transformer\Api\{
     AccountTransformer,
     HashtagTransformer,
@@ -22,11 +23,14 @@ class SearchController extends Controller
         $this->middleware('auth');
     }
 
-    public function searchAPI(Request $request, $tag)
+    public function searchAPI(Request $request)
     {
-        if(mb_strlen($tag) < 3) {
-            return;
-        }
+        $this->validate($request, [
+            'q' => 'required|string|min:3|max:120',
+            'src' => 'required|string|in:metro',
+            'v' => 'required|integer|in:1'
+        ]);
+        $tag = $request->input('q');
         $tag = e(urldecode($tag));
 
         $hash = hash('sha256', $tag);
@@ -65,7 +69,12 @@ class SearchController extends Controller
                     }
                 }
             }
-            $hashtags = Hashtag::select('id', 'name', 'slug')->where('slug', 'like', '%'.$tag.'%')->whereHas('posts')->limit(20)->get();
+            $htag = Str::startsWith($tag, '#') == true ? mb_substr($tag, 1) : $tag;
+            $hashtags = Hashtag::select('id', 'name', 'slug')
+                ->where('slug', 'like', '%'.$htag.'%')
+                ->whereHas('posts')
+                ->limit(20)
+                ->get();
             if($hashtags->count() > 0) {
                 $tags = $hashtags->map(function ($item, $key) {
                     return [

@@ -64,9 +64,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('discover', 'DiscoverController@home')->name('discover');
     
     Route::group(['prefix' => 'api'], function () {
-        Route::get('search/{tag}', 'SearchController@searchAPI')
-          //->where('tag', '.*');
-          ->where('tag', '[A-Za-z0-9]+');
+        Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {

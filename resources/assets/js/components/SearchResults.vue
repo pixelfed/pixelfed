@@ -124,17 +124,22 @@ export default {
 	},
 	methods: {
 		fetchSearchResults() {
-			axios.get('/api/search/' + encodeURI(this.query))
-				.then(res => {
-					let results = res.data;
-					this.results.hashtags = results.hashtags;
-					this.results.profiles = results.profiles;
-					this.results.statuses = results.posts;
-					this.loading = false;
-				}).catch(err => {
-					this.loading = false;
-					// this.networkError = true;
-				})
+			axios.get('/api/search', {
+				params: {
+					'q': this.query,
+					'src': 'metro',
+					'v': 1
+				}
+			}).then(res => {
+				let results = res.data;
+				this.results.hashtags = results.hashtags;
+				this.results.profiles = results.profiles;
+				this.results.statuses = results.posts;
+				this.loading = false;
+			}).catch(err => {
+				this.loading = false;
+				// this.networkError = true;
+			})
 		},
 
 		followProfile(id) {
