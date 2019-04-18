@@ -7,7 +7,7 @@
     </div>
   </div>
   <div v-if="loaded && warning == false" class="postComponent">
-    <div class="container px-0">
+    <div v-if="profileLayout == 'metro'" class="container px-0">
       <div class="card card-md-rounded-0 status-container orientation-unknown">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
@@ -209,6 +209,76 @@
         </div>
       </div>
     </div>
+
+    <div v-if="profileLayout == 'moment'" class="momentui">
+      <div class="bg-dark mt-md-n4">
+        <div class="container">
+              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
+                <div v-if="status.pf_type === 'photo'" class="w-100">
+                  <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'video'" class="w-100">
+                  <video-presenter :status="status"></video-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'photo:album'" class="w-100">
+                  <photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'video:album'" class="w-100">
+                  <video-album-presenter :status="status"></video-album-presenter>
+                </div>
+
+                <div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+                  <mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+                </div>
+
+                <div v-else class="w-100">
+                  <p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+                </div>
+              </div>
+        </div>
+      </div>
+      <div class="bg-white">
+        <div class="container">
+          <div class="row py-5">
+            <div class="col-12 col-md-8">
+              <div class="reactions py-2">
+                <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
+                <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
+                <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary float-right cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn float-right cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+              </div>
+                <div class="reaction-counts font-weight-bold mb-0">
+                  <span style="cursor:pointer;" v-on:click="likesModal">
+                    <span class="like-count">{{status.favourites_count || 0}}</span> likes
+                  </span>
+                  <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                    <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
+                  </span>
+                </div>
+              <hr>
+              <div class="media align-items-center">
+                <img :src="statusAvatar" class="rounded-circle shadow-lg mr-3" alt="avatar" width="72px" height="72px">
+                <div class="media-body lead">
+                  by <a href="#">{{statusUsername}}</a>
+                </div>
+              </div>
+              <hr>
+              <div>
+                <p class="lead"><i class="far fa-clock"></i> {{timestampFormat()}}</p>
+                <div class="lead" v-html="status.content"></div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div v-if="status.comments_disabled" class="bg-light p-5 text-center lead">
+                <p class="mb-0">Comments have been disabled on this post.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <b-modal ref="likesModal"
     id="l-modal"
@@ -352,13 +422,31 @@
     background: transparent;
   }
 </style>
+<style type="text/css">
+  .momentui .bg-dark {
+    background: #000 !important;
+  }
+  .momentui .carousel.slide,
+  .momentui .carousel-item {
+    background: #000 !important;
+  }
+</style>
 
 <script>
 
 pixelfed.postComponent = {};
 
 export default {
-    props: ['status-id', 'status-username', 'status-template', 'status-url', 'status-profile-url', 'status-avatar', 'status-profile-id'],
+    props: [
+      'status-id', 
+      'status-username', 
+      'status-template', 
+      'status-url', 
+      'status-profile-url', 
+      'status-avatar',
+      'status-profile-id',
+      'profile-layout'
+    ],
     data() {
         return {
             status: false,
