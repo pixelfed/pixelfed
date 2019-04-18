@@ -36,7 +36,6 @@ class Inbox
 
     public function handle()
     {
-        abort_if(!Helpers::validateObject($this->payload), 400);
         $this->handleVerb();
     }
 
