@@ -37,7 +37,7 @@ RUN cp -r storage storage.skel \
  && composer install --prefer-dist --no-interaction \
  && rm -rf html && ln -s public html
 
-VOLUME ["/var/www/storage", "/var/www/public.ext"]
+VOLUME /var/www/storage /var/www/bootstrap
 
 ENV APP_ENV=production \
     APP_DEBUG=false \
