@@ -49,11 +49,15 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     $('.reactions').hide();
     $('.more-comments').hide();
     $('.card-footer').hide();
+    new Vue({ 
+      el: '#content'
+    });
   });
 </script>
 @endpush
