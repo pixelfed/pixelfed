@@ -1,12 +1,12 @@
 <template>
-<div>
+<div class="w-100 h-100">
 	<div v-if="relationship && relationship.blocking && warning" class="bg-white pt-3 border-bottom">
 		<div class="container">
 			<p class="text-center font-weight-bold">You are blocking this account</p>
 			<p class="text-center font-weight-bold">Click <a href="#" class="cursor-pointer" @click.prevent="warning = false;">here</a> to view profile</p>
 		</div>
 	</div>
-	<div v-if="loading" class="d-flex justify-content-center py-5 my-5">
+	<div v-if="loading" style="height: 80vh;" class="d-flex justify-content-center align-items-center">
 			<img src="/img/pixelfed-icon-grey.svg" class="">
 	</div>
 	<div v-if="!loading && !warning">
@@ -299,8 +299,35 @@
 			<div class="bg-white border-bottom">
 				<div class="container">
 					<div class="row">
-						<div class="col-12 d-flex justify-content-center">
-							<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px" style="margin-top:-90px; border: 5px solid #fff">
+						<div class="col-12 row mx-0">
+							<div class="col-4"></div>
+							<div class="col-4 text-center">
+								<div class="d-block d-md-none">
+									<img class="rounded-circle box-shadow" :src="profile.avatar" width="110px" height="110px" style="margin-top:-60px; border: 5px solid #fff">
+								</div>
+								<div class="d-none d-md-block">
+									<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px" style="margin-top:-90px; border: 5px solid #fff">
+								</div>
+							</div>
+							<div class="col-4 text-right mt-2">
+									<span class="d-none d-md-inline-block pl-4">
+										<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
+									</span>	
+									<span class="pl-md-4 pl-sm-2" v-if="owner">
+										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
+									</span>
+									<span class="pl-md-4 pl-sm-2" v-if="profile.id != user.id && user.hasOwnProperty('id')">
+										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+									</span>
+									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
+										<span class="pl-md-4 pl-sm-2" v-if="relationship.following == true">
+											<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()" data-toggle="tooltip" title="Unfollow">Unfollow</button>
+										</span>
+										<span class="pl-md-4 pl-sm-2" v-else>
+											<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()" data-toggle="tooltip" title="Follow">Follow</button>
+										</span>
+									</span>
+							</div>
 						</div>
 
 						<div class="col-12 text-center">
@@ -503,6 +530,7 @@ export default {
 		}
 	},
 	beforeMount() {
+		this.fetchRelationships();
 		this.fetchProfile();
 	},
 
@@ -517,11 +545,10 @@ export default {
 			axios.get('/api/v1/accounts/' + this.profileId).then(res => {
 				this.profile = res.data;
 			});
-			if($('body').hasClass('loggedIn') == true) {
+			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
 				axios.get('/api/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
 				});
-				this.fetchRelationships();
 			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 			axios.get(apiUrl, {
@@ -537,8 +564,8 @@ export default {
 				this.min_id = Math.max(...ids);
 				this.max_id = Math.min(...ids);
 				this.modalStatus = _.first(res.data);
-				this.loading = false;
 				this.ownerCheck();
+				this.loading = false;
 			}).catch(err => {
 				swal(
 					'Oops, something went wrong',
@@ -724,7 +751,7 @@ export default {
 		},
 
 		fetchRelationships() {
-			if($('body').hasClass('loggedIn') == false) {
+			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == false) {
 				return;
 			}
 			axios.get('/api/v1/accounts/relationships', {
@@ -732,12 +759,10 @@ export default {
 					'id[]': this.profileId
 				}
 			}).then(res => {
-				if(res.length) {
 					this.relationship = res.data[0];
 					if(res.data[0].blocking == true) {
 						this.warning = true;
 					}
-				}
 			});
 		},
 
