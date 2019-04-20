@@ -1,5 +1,8 @@
 <template>
 <div>
+  <div v-if="!loaded" style="height: 80vh;" class="d-flex justify-content-center align-items-center">
+      <img src="/img/pixelfed-icon-grey.svg" class="">
+  </div>
   <div v-if="loaded && warning" class="bg-white pt-3 border-bottom">
     <div class="container">
       <p class="text-center font-weight-bold">You are blocking this account</p>
@@ -42,9 +45,6 @@
           </div>
          </div>
           <div class="col-12 col-md-8 px-0 mx-0">
-              <div class="postPresenterLoader text-center">
-                <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
-              </div>
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
@@ -213,7 +213,7 @@
     <div v-if="profileLayout == 'moment'" class="momentui">
       <div class="bg-dark mt-md-n4">
         <div class="container">
-              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
+              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
                 </div>
@@ -480,30 +480,11 @@ export default {
 
     mounted() {
       this.fetchRelationships();
-      let token = $('meta[name="csrf-token"]').attr('content');
-      $('input[name="_token"]').each(function(k, v) {
-          let el = $(v);
-          el.val(token);
-      });
     },
 
     updated() {
       $('.carousel').carousel();
-
-      pixelfed.readmore();
-
-      if(this.reactions) {
-        if(this.reactions.bookmarked == true) {
-          $('.postComponent .far.fa-bookmark').removeClass('far').addClass('fas text-warning');
-        }
-        if(this.reactions.shared == true) {
-          $('.postComponent .far.fa-share-square').addClass('text-primary');
-        }
-        if(this.reactions.liked == true) {
-          $('.postComponent .far.fa-heart').removeClass('far text-dark').addClass('fas text-danger');
-        }
-      }
-
+      window.pixelfed.readmore();
     },
 
     methods: {
@@ -542,31 +523,20 @@ export default {
                 self.shares = response.data.shares;
                 self.likesPage = 2;
                 self.sharesPage = 2;
-                //this.buildPresenter();
                 this.showMuteBlock();
-                pixelfed.readmore();
                 if(self.status.comments_disabled == false) {
                   self.showComments = true;
                   this.fetchComments();
                 }
-                $('.postComponent').removeClass('d-none');
-                $('.postPresenterLoader').addClass('d-none');
-                $('.postPresenterContainer').removeClass('d-none');
+                this.loaded = true;
                 $('head title').text(this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes');
             }).catch(error => {
               if(!error.response) {
-                $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
               } else {
                 switch(error.response.status) {
                   case 401:
-                    $('.postPresenterLoader .lds-ring')
-                      .attr('style','width:100%')
-                      .addClass('pt-4 font-weight-bold text-muted')
-                      .text('Please login to view.');
                   break;
-
                   default:
-                  $('.postPresenterLoader .lds-ring').attr('style','width:100%').addClass('pt-4 font-weight-bold text-muted').text('An error occurred, cannot fetch media. Please try again later.');
                   break;
                 }
               }
@@ -966,13 +936,7 @@ export default {
       },
 
       fetchRelationships() {
-        let loader = this.$loading.show({
-          'opacity': 0,
-          'background-color': '#f5f8fa'
-        });
         if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == false) {
-          this.loaded = true;
-          loader.hide();
           this.fetchData();
           return;
         } else {
@@ -982,20 +946,15 @@ export default {
             }
           }).then(res => {
             if(res.data[0] == null) {
-              this.loaded = true;
-              loader.hide();
               this.fetchData();
               return;
             }
             this.relationship = res.data[0];
             if(res.data[0].blocking == true) {
               this.loaded = true;
-              loader.hide();
               this.warning = true;
               return;
             } else {
-              this.loaded = true;
-              loader.hide();
               this.fetchData();
               return;
             }
