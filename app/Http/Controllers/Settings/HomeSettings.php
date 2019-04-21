@@ -42,7 +42,7 @@ trait HomeSettings
 
         $changes = false;
         $name = strip_tags($request->input('name'));
-        $bio = $request->filled('bio') ? Purify::clean($request->input('bio')) : null;
+        $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $email = $request->input('email');
         $user = Auth::user();

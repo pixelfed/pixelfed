@@ -128,12 +128,8 @@
 @push('scripts')
 <script type="text/javascript">
 
-  $(document).on('click', '.modal-close', function(e) {
-    swal.close();
-  });
-
-  $('#bio').on('change keyup paste', function(e) {
-    let el = $(this);
+$(document).ready(function() {
+    let el = $('#bio');
     let len = el.val().length;
     let limit = el.data('max-length');
 
@@ -149,33 +145,57 @@
     }
 
     $('.bio-counter').html(val);
-  });
 
-  $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
+    $('#bio').on('change keyup paste', function(e) {
+      let el = $(this);
+      let len = el.val().length;
+      let limit = el.data('max-length');
 
-  $('#avatarInput').on('change', function(e) {
-      var file = document.getElementById('avatarInput').files[0];
-      var reader = new FileReader();
-
-      reader.addEventListener("load", function() {
-          $('#previewAvatar').html('<img src="' + reader.result + '" class="rounded-circle box-shadow mb-3" width="100%" height="100%"/>');
-      }, false);
-
-      if (file) {
-          reader.readAsDataURL(file);
+      if(len > 100) {
+        el.attr('rows', '4');
       }
-  });
 
-  $('.delete-profile-photo').on('click', function(e) {
-    e.preventDefault();
-    if(window.confirm('Are you sure you want to delete your profile photo.') == false) {
-      return;
-    }
-    axios.delete('/settings/avatar').then(res => {
-      window.location.href = window.location.href;
-    }).catch(err => {
-      swal('Error', 'An error occured, please try again later', 'error');
+      let val = len + ' / ' + limit;
+
+      if(len > limit) {
+        let diff = len - limit;
+        val = '<span class="text-danger">-' + diff + '</span> / ' + limit;
+      }
+
+      $('.bio-counter').html(val);
     });
-  });
+
+    $(document).on('click', '.modal-close', function(e) {
+      swal.close();
+    });
+    
+    $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
+
+    $('#avatarInput').on('change', function(e) {
+        var file = document.getElementById('avatarInput').files[0];
+        var reader = new FileReader();
+
+        reader.addEventListener("load", function() {
+            $('#previewAvatar').html('<img src="' + reader.result + '" class="rounded-circle box-shadow mb-3" width="100%" height="100%"/>');
+        }, false);
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+
+    $('.delete-profile-photo').on('click', function(e) {
+      e.preventDefault();
+      if(window.confirm('Are you sure you want to delete your profile photo.') == false) {
+        return;
+      }
+      axios.delete('/settings/avatar').then(res => {
+        window.location.href = window.location.href;
+      }).catch(err => {
+        swal('Error', 'An error occured, please try again later', 'error');
+      });
+    });
+})
+
 </script>
 @endpush

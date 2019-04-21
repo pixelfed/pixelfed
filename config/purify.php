@@ -67,7 +67,7 @@ return [
         |
         */
 
-        'HTML.Allowed' => 'a[href|title|rel],p,strong,em,i,u,h1,h2,h3,h4,h5,ul,ol,li',
+        'HTML.Allowed' => 'a[href|title|rel],p,strong,em,i,u,h1,h2,h3,h4,h5,ul,ol,li,br',
 
         /*
         |--------------------------------------------------------------------------
