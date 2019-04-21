@@ -106,21 +106,34 @@
       <div class="col-sm-9">
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="profileLayout1" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout != 'moment' ? 'checked':''}} value="metro">
-          <label class="custom-control-label" for="profileLayout1">Metro</label>
+          <label class="custom-control-label" for="profileLayout1">MetroUI</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
           <input type="radio" id="profileLayout2" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout == 'moment' ? 'checked':''}} value="moment">
-          <label class="custom-control-label" for="profileLayout2">Moment</label>
+          <label class="custom-control-label" for="profileLayout2">MomentUI</label>
         </div>
       </div>
     </div>
     <hr>
+    @if(config('pixelfed.account_deletion') == true)
+    <div class="form-group row py-3">
+      <div class="col-12 d-flex align-items-center justify-content-between">
+        <a class="font-weight-bold" href="{{route('settings.remove.temporary')}}">Temporarily Disable Account</a>
+        <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
+      </div>
+    </div>
+    <hr>
+    <p class="mb-0 text-center pt-4">
+      <a class="font-weight-bold text-danger" href="{{route('settings.remove.permanent')}}">Delete Account</a>
+    </p>
+    @else
     <div class="form-group row">
       <div class="col-12 d-flex align-items-center justify-content-between">
         <a class="font-weight-bold" href="{{route('settings.remove.temporary')}}">Temporarily Disable Account</a>
         <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
       </div>
     </div>
+    @endif
   </form>
 
 @endsection
@@ -168,7 +181,7 @@ $(document).ready(function() {
     $(document).on('click', '.modal-close', function(e) {
       swal.close();
     });
-    
+
     $('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
 
     $('#avatarInput').on('change', function(e) {
