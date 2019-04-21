@@ -240,12 +240,12 @@
 							<div class="media-body font-weight-light small">
 								<div v-if="n.type == 'favourite'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'comment'">
 									<p class="my-0">
-										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="replyUrl(n.status)">post</a>.
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 									</p>
 								</div>
 								<div v-else-if="n.type == 'mention'">
