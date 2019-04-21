@@ -40,7 +40,9 @@ return [
     */
 
     'waits' => [
-        'redis:default' => 60,
+        'redis:feed' => 30,
+        'redis:default' => 30,
+        'redis:high' => 30,
     ],
 
     /*
@@ -74,8 +76,8 @@ return [
         'production' => [
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue'      => ['default'],
-                'balance'    => 'simple',
+                'queue'      => ['high', 'default', 'feed'],
+                'balance'    => 'auto',
                 'processes'  => 20,
                 'tries'      => 3,
             ],
@@ -84,9 +86,9 @@ return [
         'local' => [
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue'      => ['default'],
-                'balance'    => 'simple',
-                'processes'  => 10,
+                'queue'      => ['high', 'default', 'feed'],
+                'balance'    => 'auto',
+                'processes'  => 20,
                 'tries'      => 3,
             ],
         ],
