@@ -7,7 +7,7 @@
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card mb-sm-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="status.id">
+			<div class="card mb-sm-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
 
 				<div class="card-header d-inline-flex align-items-center bg-white">
 					<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
@@ -89,7 +89,7 @@
 						<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 					</div>
 
-					<div class="likes font-weight-bold">
+					<div class="likes font-weight-bold" v-if="expLc(status) == true">
 						<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
 					</div>
 					<div class="caption">
@@ -390,6 +390,7 @@
 		props: ['scope'],
 		data() {
 			return {
+				config: {},
 				page: 2,
 				feed: [],
 				profile: {},
@@ -420,8 +421,12 @@
 		},
 
 		beforeMount() {
-			this.fetchTimelineApi();
-			this.fetchProfile();
+			axios.get('/api/v2/config')
+			.then(res => {
+				this.config = res.data;
+				this.fetchTimelineApi();
+				this.fetchProfile();
+			});
 		},
 
 		mounted() {
@@ -531,12 +536,12 @@
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
-						this.feed.push(...data);
 						let ids = data.map(status => status.id);
 						this.min_id = Math.min(...ids);
 						if(this.page == 1) {
 							this.max_id = Math.max(...ids);
 						}
+						this.feed.push(...data);
 						this.page += 1;
 						this.loading = false;
 						event.target.innerText = 'Load more posts';
@@ -997,6 +1002,16 @@
 			lightbox(src) {
 				this.lightboxMedia = src;
 				this.$refs.lightboxModal.show();
+			},
+
+			expLc(status) {
+				if(this.config.ab.lc == false) {
+					return true;
+				}
+				if(this.statusOwner(status) == true) {
+					return true;
+				}
+				return false;
 			}
 		}
 	}
