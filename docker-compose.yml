@@ -13,8 +13,8 @@ version: '3'
 services:
 
   app:
-    # Uncomment to build a local copy of the image
-    # build: .
+    # Comment to use dockerhub image
+    build: .
     image: pixelfed
     # If you have a traefik running, uncomment this to expose Pixelfed
     # labels:
@@ -25,20 +25,23 @@ services:
       - ./.env
     volumes:
       - "app-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
     networks:
       - external
       - internal
 
-  # Uncomment if you set HORIZON_EMBED to false and wish to run a local worker
-  # worker:
-  #   image: pixelfed
-  #   env_file:
-  #     - ./.env
-  #   volumes:
-  #     - "app-storage:/var/www/storage"
-  #   networks:
-  #     - internal
-  #   command: gosu www-data php artisan horizon
+  worker:
+    # Comment to use dockerhub image
+    build: .
+    image: pixelfed
+    env_file:
+      - ./.env
+    volumes:
+      - "app-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
+    networks:
+      - internal
+    command: gosu www-data php artisan horizon
     
   db:
     image: mysql:5.7
@@ -53,7 +56,7 @@ services:
       - "db-data:/var/lib/mysql"
 
   redis:
-    image: redis:4-alpine
+    image: redis:5-alpine
     volumes:
       - "redis-data:/data"
     networks:
@@ -64,6 +67,7 @@ volumes:
   redis-data:
   db-data:
   app-storage:
+  app-bootstrap:  
 
 networks:
   internal:
