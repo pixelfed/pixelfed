@@ -489,6 +489,9 @@
 			},
 
 			infiniteTimeline($state) {
+				if(this.loading) {
+					return;
+				}
 				let apiUrl = false;
 				switch(this.scope) {
 					case 'home':

@@ -580,6 +580,9 @@ export default {
 		},
 
 		infiniteTimeline($state) {
+			if(this.loading) {
+				return;
+			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 			axios.get(apiUrl, {
 				params: {
