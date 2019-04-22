@@ -1,4 +1,9 @@
 Vue.component(
+    'notification-card',
+    require('./components/NotificationCard.vue').default
+);
+
+Vue.component(
     'photo-presenter',
     require('./components/presenter/PhotoPresenter.vue').default
 );
