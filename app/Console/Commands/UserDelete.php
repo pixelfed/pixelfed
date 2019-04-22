@@ -67,6 +67,6 @@ class UserDelete extends Command
         $profile->save();
         $user->save();
 
-        DeleteAccountPipeline::dispatchNow($user);
+        DeleteAccountPipeline::dispatch($user)->onQueue('high');
     }
 }

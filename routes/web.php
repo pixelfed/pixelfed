@@ -134,6 +134,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('results', 'SearchController@results');
         Route::post('visibility', 'StatusController@toggleVisibility');
 
+        Route::post('metro/dark-mode', 'SettingsController@metroDarkMode');
+
         Route::group(['prefix' => 'report'], function () {
             Route::get('/', 'ReportController@showForm')->name('report.form');
             Route::post('/', 'ReportController@formStore');
@@ -222,10 +224,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
 
         Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
-        Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport');
-        Route::post('data-export/following', 'SettingsController@exportFollowing');
-        Route::post('data-export/followers', 'SettingsController@exportFollowers');
-        Route::post('data-export/mute-block-list', 'SettingsController@exportMuteBlockList');
+        Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport')->middleware('dangerzone');
+        Route::post('data-export/following', 'SettingsController@exportFollowing')->middleware('dangerzone');
+        Route::post('data-export/followers', 'SettingsController@exportFollowers')->middleware('dangerzone');
+        Route::post('data-export/mute-block-list', 'SettingsController@exportMuteBlockList')->middleware('dangerzone');
         Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
     });
 

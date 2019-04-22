@@ -6,7 +6,7 @@ use App\AccountLog;
 use App\Following;
 use App\Report;
 use App\UserFilter;
-use Auth, DB, Cache, Purify;
+use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Settings\{
@@ -176,7 +176,7 @@ class SettingsController extends Controller
         $profile->save();
         Cache::forget('profiles:private');
         Auth::logout();
-        DeleteAccountPipeline::dispatch($user);
+        DeleteAccountPipeline::dispatch($user)->onQueue('high');
         return redirect('/');
     }
 
@@ -191,6 +191,23 @@ class SettingsController extends Controller
         $profile = Auth::user()->profile;
         $reports = Report::whereProfileId($profile->id)->orderByDesc('created_at')->paginate(10);
         return view('settings.reports', compact('reports'));
+    }
+
+    public function metroDarkMode(Request $request)
+    {
+        $this->validate($request, [
+            'mode' => 'required|string|in:light,dark'
+        ]);
+        
+        $mode = $request->input('mode');
+
+        if($mode == 'dark') {
+            $cookie = Cookie::make('dark-mode', true, 43800);
+        } else {
+            $cookie = Cookie::forget('dark-mode');
+        }
+
+        return response()->json([200])->cookie($cookie);
     }
 }
 
