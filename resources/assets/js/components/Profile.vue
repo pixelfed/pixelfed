@@ -580,7 +580,7 @@ export default {
 		},
 
 		infiniteTimeline($state) {
-			if(this.loading) {
+			if(this.loading || this.timeline < 9) {
 				return;
 			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
