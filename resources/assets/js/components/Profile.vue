@@ -559,11 +559,11 @@ export default {
 			})
 			.then(res => {
 				let data = res.data;
-				this.timeline = data;
 				let ids = data.map(status => status.id);
 				this.min_id = Math.max(...ids);
 				this.max_id = Math.min(...ids);
 				this.modalStatus = _.first(res.data);
+				this.timeline = data;
 				this.ownerCheck();
 				this.loading = false;
 			}).catch(err => {
@@ -592,11 +592,11 @@ export default {
 			}).then(res => {
 				if (res.data.length && this.loading == false) {
 					let data = res.data;
-					this.timeline.push(...data);
 					let ids = data.map(status => status.id);
 					this.max_id = Math.min(...ids);
-					this.loading = false;
+					this.timeline.push(...data);
 					$state.loaded();
+					this.loading = false;
 				} else {
 					$state.complete();
 				}
