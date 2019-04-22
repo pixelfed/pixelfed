@@ -374,6 +374,10 @@
 		},
 
 		mounted() {
+			if($('link[data-stylesheet="dark"]').length != 0) {
+				this.modes.dark = true;
+			}
+
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			});
@@ -810,17 +814,23 @@
 			modeDarkToggle() {
 				// todo: more graceful stylesheet change
 				if(this.modes.dark == true) {
-					this.modes.dark = false;
-					$('link[data-stylesheet=dark]').remove();
+					axios.post('/i/metro/dark-mode', {
+						mode: 'light'
+					}).then(res => {
+						$('link[data-stylesheet=dark]')
+						.attr('data-stylesheet', 'light')
+						.attr('href', '/css/app.css?v=' + Date.now());
+						this.modes.dark = false;
+					});
 				} else {
-					this.modes.dark = true;
-					let head = document.head;
-					let link = document.createElement("link");
-					link.type = "text/css";
-					link.rel = "stylesheet";
-					link.href = "/css/appdark.css";
-					link.setAttribute('data-stylesheet','dark');
-					head.appendChild(link);
+					axios.post('/i/metro/dark-mode', {
+						mode: 'dark'
+					}).then(res => {
+						$('link[data-stylesheet=light]')
+						.attr('data-stylesheet', 'dark')
+						.attr('href', '/css/appdark.css?v=' + Date.now());
+						this.modes.dark = true;
+					});
 				}
 				window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
