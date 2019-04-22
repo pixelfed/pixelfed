@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use DB;
+use Illuminate\Support\Str;
 use App\{
     AccountLog,
     Activity,
@@ -74,11 +75,15 @@ class DeleteAccountPipeline implements ShouldQueue
                 $avatar = $user->profile->avatar;
 
                 if(is_file($avatar->media_path)) {
-                    unlink($avatar->media_path);
+                    if($avatar->media_path != 'public/avatars/default.png') {
+                        unlink($avatar->media_path);
+                    }
                 }
 
                 if(is_file($avatar->thumb_path)) {
-                    unlink($avatar->thumb_path);
+                    if($avatar->thumb_path != 'public/avatars/default.png') {
+                        unlink($avatar->thumb_path);
+                    }
                 }
                 $avatar->forceDelete();
             }
