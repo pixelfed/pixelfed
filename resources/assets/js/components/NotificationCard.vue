@@ -18,27 +18,27 @@
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'comment'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'mention'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'follow'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> followed you.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'share'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break">{{n.account.username}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
 							</p>
 						</div>
 					</div>
@@ -71,6 +71,10 @@
 
 		mounted() {
 			this.fetchNotifications();
+		},
+
+		updated() {
+			$('[data-toggle="tooltip"]').tooltip()
 		},
 
 		methods: {
@@ -114,6 +118,14 @@
 					}
 				});
 			},
+
+			truncate(text) {
+				if(text.length <= 15) {
+					return text;
+				}
+
+				return text.slice(0,15) + '...'
+			}
 		}
 	}
 </script>
