@@ -67,7 +67,10 @@ return [
         |
         */
 
-        'HTML.Allowed' => 'a[href|title|rel],p,strong,em,i,u,h1,h2,h3,h4,h5,ul,ol,li,br',
+        'HTML.Allowed' => env('SANITIZER_STRICT', true) ? 
+            'a[href|title|rel],p,span,br' :
+            'a[href|title|rel],p,span,strong,em,i,h1,h2,h3,h4,h5,ul,ol,li,br',
+
 
         /*
         |--------------------------------------------------------------------------
@@ -135,6 +138,23 @@ return [
             'noopener',
             'nofollow'
         ],
+
+        'HTML.TargetBlank' => true,
+
+        'HTML.Nofollow' => true,
+
+        'URI.DefaultScheme' => 'https',
+
+        'URI.DisableExternalResources' => true,
+
+        'URI.DisableResources' => true,
+
+        'URI.AllowedSchemes' => [
+            'http' => true,
+            'https' => true,
+        ],
+
+        'URI.HostBlacklist' => config('costar.enabled') ? config('costar.domain.block') : [],
 
     ],
 
