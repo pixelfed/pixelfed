@@ -15,11 +15,30 @@
     color: #ADAFAE !important;
 }
 
-.bg-white {
-	background: #282828 !important;
+.border-left {
+    background: #ADAFAE !important;
 }
+
+.bg-white,
+.postPresenterContainer,
+.postComponent .card-body.flex-grow-0.py-1,
+.postComponent .reactions,
+.postComponent .status-comments,
 .navbar-laravel {
 	background: #282828 !important;
+}
+
+.postComponent .border-left {
+	border-left: 0 !important;
+}
+
+.postComponent .card-header {
+	border-radius: 0;
+}
+
+input,
+textarea {
+	background: #191919 !important;
 }
 
 .far, .fas,
