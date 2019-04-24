@@ -93,6 +93,4 @@ return [
             ],
         ],
     ],
-
-    'darkmode' => env('HORIZON_DARKMODE', false),
 ];
