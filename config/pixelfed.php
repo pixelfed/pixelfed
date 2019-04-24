@@ -280,6 +280,6 @@ return [
     'oauth_enabled' => env('OAUTH_ENABLED', false),
 
     'sanitizer' => [
-        'strict_mode' => env('SANITIZER_STRICT', true)
+        'restrict_html_types' => env('RESTRICT_HTML_TYPES', true)
     ],
 ];

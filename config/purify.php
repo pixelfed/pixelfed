@@ -67,7 +67,7 @@ return [
         |
         */
 
-        'HTML.Allowed' => env('SANITIZER_STRICT', true) ? 
+        'HTML.Allowed' => env('RESTRICT_HTML_TYPES', true) ? 
             'a[href|title|rel],p,span,br' :
             'a[href|title|rel],p,span,strong,em,i,h1,h2,h3,h4,h5,ul,ol,li,br',
 
