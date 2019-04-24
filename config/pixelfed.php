@@ -278,6 +278,8 @@ return [
     ],
 
     'oauth_enabled' => env('OAUTH_ENABLED', false),
+    
+    'darkmode' => env('HORIZON_DARKMODE', false),
 
     'sanitizer' => [
         'restrict_html_types' => env('RESTRICT_HTML_TYPES', true)
