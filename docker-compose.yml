@@ -33,7 +33,7 @@ services:
       - external
       - internal
 
-  worker:
+  worker:  # Comment this whole block if HORIZON_EMBED is true.
     # Comment to use dockerhub image
     build: .
     image: pixelfed
