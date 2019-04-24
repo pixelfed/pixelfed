@@ -21,7 +21,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
         // Horizon::routeMailNotificationsTo('example@example.com');
         // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
         
-        if(config('pixelfed.darkmode') == true) {
+        if(config('pixelfed.darkmode_enabled') == true) {
             Horizon::night();
         }
     }
