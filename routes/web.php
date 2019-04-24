@@ -228,6 +228,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('data-export/following', 'SettingsController@exportFollowing')->middleware('dangerzone');
         Route::post('data-export/followers', 'SettingsController@exportFollowers')->middleware('dangerzone');
         Route::post('data-export/mute-block-list', 'SettingsController@exportMuteBlockList')->middleware('dangerzone');
+        Route::post('data-export/account', 'SettingsController@exportAccount')->middleware('dangerzone');
         Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
     });
 

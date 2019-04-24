@@ -9,6 +9,10 @@ use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Transformer\ActivityPub\ProfileTransformer;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 trait ExportSettings
 {
@@ -16,6 +20,21 @@ trait ExportSettings
     public function dataExport()
     {
         return view('settings.dataexport');
+    }
+
+    public function exportAccount()
+    {
+    	$data = Cache::remember('account:export:profile:actor:'.Auth::user()->profile->id, now()->addMinutes(60), function() {
+			$profile = Auth::user()->profile;
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Item($profile, new ProfileTransformer());
+			return $fractal->createData($resource)->toArray();
+    	});
+
+    	return response()->streamDownload(function () use ($data) {
+    		echo json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+    	}, 'account.json');
     }
 
     public function exportFollowing()

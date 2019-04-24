@@ -6,6 +6,7 @@
     <h3 class="font-weight-bold">Data Export</h3>
   </div>
   <hr>
+  <div class="alert alert-info font-weight-bold">We generate data exports once per hour, and they may not contain the latest data if you've requested them recently.</div>
   <ul class="list-group">
   	<li class="list-group-item d-flex justify-content-between align-items-center">
   		<div>
@@ -53,7 +54,10 @@
         <span class="font-weight-bold">Account</span>
       </div>
       <div>
-  			<span class="small text-muted">Coming Soon</span>
+  			<form action="/settings/data-export/account" method="post">
+          @csrf
+          <button type="submit" class="font-weight-bold btn btn-outline-primary btn-sm">Download</button>
+        </form>
   		</div>
   	</li>
   </ul>
