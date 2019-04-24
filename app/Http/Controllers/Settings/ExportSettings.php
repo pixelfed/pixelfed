@@ -34,7 +34,9 @@ trait ExportSettings
 
     	return response()->streamDownload(function () use ($data) {
     		echo json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-    	}, 'account.json');
+    	}, 'account.json', [
+    		'Content-Type' => 'application/json'
+    	]);
     }
 
     public function exportFollowing()
@@ -46,7 +48,9 @@ trait ExportSettings
         });
         return response()->streamDownload(function () use($data) {
             echo $data;
-        }, 'following.json');
+        }, 'following.json', [
+    		'Content-Type' => 'application/json'
+    	]);
     }
 
     public function exportFollowers()
@@ -58,7 +62,9 @@ trait ExportSettings
         });
         return response()->streamDownload(function () use($data) {
             echo $data;
-        }, 'followers.json');
+        }, 'followers.json', [
+    		'Content-Type' => 'application/json'
+    	]);
     }
 
     public function exportMuteBlockList()
@@ -78,7 +84,9 @@ trait ExportSettings
         });
         return response()->streamDownload(function () use($data) {
             echo $data;
-        }, 'muted-and-blocked-accounts.json');
+        }, 'muted-and-blocked-accounts.json', [
+    		'Content-Type' => 'application/json'
+    	]);
     }
 
 }
