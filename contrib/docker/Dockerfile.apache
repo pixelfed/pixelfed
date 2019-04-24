@@ -56,7 +56,6 @@ ENV APP_ENV=production \
     DB_HOST=db \
     BROADCAST_DRIVER=log \
     QUEUE_DRIVER=redis \
-    HORIZON_EMBED=TRUE \
     HORIZON_PREFIX=horizon-pixelfed \
     REDIS_HOST=redis \
     SESSION_SECURE_COOKIE=true \
