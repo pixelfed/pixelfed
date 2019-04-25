@@ -106,7 +106,7 @@ trait ExportSettings
     	$limit = 300;
 
     	$profile = Auth::user()->profile;
-    	$type = $request->input('type') == 'ap' ? 'ap' : 'api';
+    	$type = 'ap';
 
     	$count = Status::select('id')->whereProfileId($profile->id)->count();
     	if($count > $limit) {
