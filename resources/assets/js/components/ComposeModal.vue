@@ -174,7 +174,7 @@
 							</div>
 						</div>
 						<div class="small text-muted font-weight-bold">
-							{{composeText.length}} / 500
+							{{composeText.length}} / {{config.uploader.max_caption_length}}
 						</div>
 						<div class="pl-md-5">
 							<div class="btn-group">
