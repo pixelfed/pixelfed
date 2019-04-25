@@ -5,17 +5,26 @@ namespace App\Http\Controllers\Settings;
 use App\AccountLog;
 use App\Following;
 use App\Report;
+use App\Status;
 use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Transformer\ActivityPub\ProfileTransformer;
+use App\Transformer\ActivityPub\{
+	ProfileTransformer,
+	StatusTransformer
+};
+use App\Transformer\Api\StatusTransformer as StatusApiTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 trait ExportSettings
 {
+	public function __construct()
+	{
+		$this->middleware('auth');
+	}
 
     public function dataExport()
     {
@@ -85,6 +94,49 @@ trait ExportSettings
         return response()->streamDownload(function () use($data) {
             echo $data;
         }, 'muted-and-blocked-accounts.json', [
+    		'Content-Type' => 'application/json'
+    	]);
+    }
+
+    public function exportStatuses(Request $request)
+    {
+    	$this->validate($request, [
+    		'type' => 'required|string|in:ap,api'
+    	]);
+    	$limit = 300;
+
+    	$profile = Auth::user()->profile;
+    	$type = $request->input('type') == 'ap' ? 'ap' : 'api';
+
+    	$count = Status::select('id')->whereProfileId($profile->id)->count();
+    	if($count > $limit) {
+    		// fire background job
+    		return redirect('/settings/data-export')->with(['status' => 'You have more than '.$limit.' statuses, we do not support full account export yet.']);
+    	}
+
+    	$filename = 'outbox.json';
+		if($type == 'ap') {
+			$data = Cache::remember('account:export:profile:statuses:ap:'.Auth::user()->profile->id, now()->addDays(7), function() {
+				$profile = Auth::user()->profile->statuses;
+				$fractal = new Fractal\Manager();
+				$fractal->setSerializer(new ArraySerializer());
+				$resource = new Fractal\Resource\Collection($profile, new StatusTransformer());
+				return $fractal->createData($resource)->toArray();
+			});
+		} else {
+			$filename = 'api-statuses.json';
+			$data = Cache::remember('account:export:profile:statuses:api:'.Auth::user()->profile->id, now()->addDays(7), function() {
+				$profile = Auth::user()->profile->statuses;
+				$fractal = new Fractal\Manager();
+				$fractal->setSerializer(new ArraySerializer());
+				$resource = new Fractal\Resource\Collection($profile, new StatusApiTransformer());
+				return $fractal->createData($resource)->toArray();
+			});
+		}
+
+    	return response()->streamDownload(function () use ($data, $filename) {
+    		echo json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+    	}, $filename, [
     		'Content-Type' => 'application/json'
     	]);
     }

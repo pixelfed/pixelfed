@@ -35,7 +35,16 @@
   			<span class="font-weight-bold">Statuses</span>
   		</div>
   		<div>
-        <span class="small text-muted">Coming Soon</span>
+        <form action="/settings/data-export/statuses" method="post" class="d-inline">
+          @csrf
+          <input type="hidden" name="type" value="ap">
+          <button type="submit" class="font-weight-bold btn btn-outline-primary btn-sm">Download</button>
+        </form>
+        {{-- <form action="/settings/data-export/statuses" method="post" class="d-inline">
+          @csrf
+          <input type="hidden" name="type" value="api">
+          <button type="submit" class="font-weight-bold btn btn-outline-primary btn-sm">api.json</button>
+        </form> --}}
       </div>
     </li>
   <li class="list-group-item d-flex justify-content-between align-items-center">
