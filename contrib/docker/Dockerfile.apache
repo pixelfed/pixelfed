@@ -1,11 +1,12 @@
-FROM php:7.2-apache
+FROM php:7.3-apache
 
 ARG COMPOSER_VERSION="1.8.5"
 ARG COMPOSER_CHECKSUM="4e4c1cd74b54a26618699f3190e6f5fc63bb308b13fa660f71f2a2df047c0e17"
 
 RUN apt-get update \
+ && apt-get install -y --no-install-recommends apt-utils \
  && apt-get install -y --no-install-recommends git gosu \
-      optipng pngquant jpegoptim gifsicle libpq-dev libsqlite3-dev locales zip unzip libzip-dev \
+      optipng pngquant jpegoptim gifsicle libpq-dev libsqlite3-dev locales zip unzip libzip-dev libcurl4-openssl-dev \
       libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-3 \
       libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev \
  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
@@ -16,9 +17,9 @@ RUN apt-get update \
       --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
- && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip \
+ && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
  && pecl install imagick \
- && docker-php-ext-enable imagick pcntl imagick gd exif zip \
+ && docker-php-ext-enable imagick pcntl imagick gd exif zip curl \
  && a2enmod rewrite remoteip \
  && {\
      echo RemoteIPHeader X-Real-IP ;\
@@ -56,7 +57,6 @@ ENV APP_ENV=production \
     DB_HOST=db \
     BROADCAST_DRIVER=log \
     QUEUE_DRIVER=redis \
-    HORIZON_EMBED=TRUE \
     HORIZON_PREFIX=horizon-pixelfed \
     REDIS_HOST=redis \
     SESSION_SECURE_COOKIE=true \
