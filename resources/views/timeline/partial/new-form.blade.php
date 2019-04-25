@@ -1,4 +1,4 @@
-    <div class="card card-md-rounded-0">
+    <div class="card card-md-rounded-0 metro-classic-compose">
       <div class="card-header bg-white font-weight-bold d-inline-flex justify-content-between">
         <div>{{__('Create New Post')}}</div>
       </div>

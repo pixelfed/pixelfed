@@ -16,6 +16,7 @@ use Auth, Cache;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Media\Filter;
+use Illuminate\Support\Str;
 
 class StatusController extends Controller
 {
