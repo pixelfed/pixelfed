@@ -19,6 +19,25 @@ $(document).ready(function() {
   new Vue({ 
     el: '#content'
   });
+
+  $('.metro-classic-compose textarea[name="caption"]').on('click', function(e) {
+  	  let el = $(this);
+  	  el.attr('rows', 4);
+  });
+  $('.metro-classic-compose textarea[name="caption"]').on('change keyup paste', function(e) {
+  	  let el = $(this);
+      let len = el.val().length;
+      let limit = el.attr('data-limit');
+
+      let res = len;
+
+      if(len > limit) {
+      	res = '<span class="text-danger">' + (limit - len) + '</span>';
+      } else {
+      	res = '<span>' + len + '</span>';
+      }
+      $('.metro-classic-compose .caption-counter').html(res);
+  })
 });
 </script>
 @endpush
