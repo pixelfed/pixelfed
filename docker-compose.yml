@@ -16,11 +16,14 @@ services:
     # Comment to use dockerhub image
     build: .
     image: pixelfed
-    # If you have a traefik running, uncomment this to expose Pixelfed
+    ## If you have a traefik running, uncomment this to expose Pixelfed
     # labels:
     #   - traefik.enable=true
     #   - traefik.frontend.rule=Host:your.url
     #   - traefik.port=80
+    ## If you have a standard reverse proxy, uncommit this to expose Pixelfed
+    # ports:
+    #   - "127.0.0.1:8080:80"
     env_file:
       - ./.env
     volumes:
@@ -30,7 +33,7 @@ services:
       - external
       - internal
 
-  worker:
+  worker:  # Comment this whole block if HORIZON_EMBED is true.
     # Comment to use dockerhub image
     build: .
     image: pixelfed
@@ -40,6 +43,7 @@ services:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
     networks:
+      - external  # Required for ActivityPub
       - internal
     command: gosu www-data php artisan horizon
     
