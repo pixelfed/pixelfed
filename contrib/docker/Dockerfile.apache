@@ -49,6 +49,10 @@ RUN cp -r storage storage.skel \
 
 VOLUME /var/www/storage /var/www/bootstrap
 
+# Read Only files
+RUN chattr +i /usr/local/etc/php/conf.d/pixelfed.ini \
+ && chattr +i /var/www/contrib/docker/start.sh
+
 ENV APP_ENV=production \
     APP_DEBUG=false \
     LOG_CHANNEL=stderr \
