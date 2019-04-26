@@ -48,7 +48,7 @@ services:
     command: gosu www-data php artisan horizon
     
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     networks:
       - internal
     environment:
