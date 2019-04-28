@@ -34,9 +34,9 @@ class SuggestionService {
 		return self::del($val);
 	}
 
-	public static function warmCache()
+	public static function warmCache($force = false)
 	{
-		if(Redis::zcount(self::CACHE_KEY, '-inf', '+inf') == 0) {
+		if(Redis::zcount(self::CACHE_KEY, '-inf', '+inf') == 0 || $force == true) {
 			$ids = Profile::whereNull('domain')
 				->whereIsSuggestable(true)
 				->whereIsPrivate(false)
