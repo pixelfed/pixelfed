@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
+@if (session('status'))
+    <div class="alert alert-primary px-3 h6 text-center">
+        {{ session('status') }}
+    </div>
+@endif
+@if ($errors->any())
+    <div class="alert alert-danger px-3 h6 text-center">
+            @foreach($errors->all() as $error)
+                <p class="font-weight-bold mb-1">{{ $error }}</li>
+            @endforeach
+    </div>
+@endif
 
 <div class="container">
   <div class="col-12">
@@ -9,20 +21,6 @@
         <div class="row">
           @include('settings.partial.sidebar')
           <div class="col-12 col-md-9 p-5">
-            @if (session('status'))
-                <div class="alert alert-success font-weight-bold">
-                    {{ session('status') }}
-                </div>
-            @endif
-            @if (session('errors'))
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach (session('errors') as $error)
-                            <li class="font-weight-bold">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
             @yield('section')
           </div>
         </div>
