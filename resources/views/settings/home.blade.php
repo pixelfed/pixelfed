@@ -101,19 +101,7 @@
     <div class="pt-5">
       <p class="font-weight-bold text-muted text-center">Layout</p>
     </div>
-    <div class="form-group row">
-      <label for="email" class="col-sm-3 col-form-label font-weight-bold text-right">Profile Layout</label>
-      <div class="col-sm-9">
-        <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="profileLayout1" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout != 'moment' ? 'checked':''}} value="metro">
-          <label class="custom-control-label" for="profileLayout1">MetroUI</label>
-        </div>
-        <div class="custom-control custom-radio custom-control-inline">
-          <input type="radio" id="profileLayout2" name="profile_layout" class="custom-control-input" {{Auth::user()->profile->profile_layout == 'moment' ? 'checked':''}} value="moment">
-          <label class="custom-control-label" for="profileLayout2">MomentUI</label>
-        </div>
-      </div>
-    </div>
+    <div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
     <hr>
     @if(config('pixelfed.account_deletion') == true)
     <div class="form-group row py-3">

@@ -99,6 +99,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
             Route::post('status/compose', 'InternalApiController@compose');
+            Route::get('exp/rec', 'ApiController@userRecommendations');
         });
     });
 
@@ -231,6 +232,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('data-export/account', 'SettingsController@exportAccount')->middleware('dangerzone');
         Route::post('data-export/statuses', 'SettingsController@exportStatuses')->middleware('dangerzone');
         Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
+        Route::get('labs', 'SettingsController@labs')->name('settings.labs');
+        Route::post('labs', 'SettingsController@labsStore');
     });
 
     Route::group(['prefix' => 'site'], function () {

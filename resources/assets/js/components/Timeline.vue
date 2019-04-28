@@ -213,16 +213,38 @@
 						</div>
 						<hr>
 						<p class="font-weight-bold">BETA FEATURES</p>
-						<div class="custom-control custom-switch">
-							<input type="checkbox" class="custom-control-input" id="mode-dark" v-on:click="modeDarkToggle()" v-model="modes.dark">
-							<label class="custom-control-label font-weight-bold" for="mode-dark">Dark Mode</label>
-						</div>
+						<div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
 					</div>
 				</div>
 			</div>
 
 			<div v-show="modes.notify == true" class="mb-4">
 				<notification-card></notification-card>
+			</div>
+
+			<div v-show="suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
+				<div class="card">
+					<div class="card-header bg-white text-muted d-flex justify-content-between align-items-center">
+						<div>Suggestions For You</div>
+						<div class="small text-dark"></div>
+					</div>
+					<div class="card-body pt-0">
+						<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
+							<a :href="'/'+rec.username">
+								<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3">
+							</a>
+							<div class="media-body">
+								<p class="mb-0 font-weight-bold small">
+									<a :href="'/'+rec.username" class="text-decoration-none text-dark">
+										{{rec.username}}
+									</a>
+								</p>
+								<p class="mb-0 small text-muted">{{rec.message}}</p>
+							</div>
+							<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<footer>
@@ -431,6 +453,7 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
+					this.expRec();
 				}).catch(err => {
 				});
 			},
@@ -927,6 +950,29 @@
 					return true;
 				}
 				return false;
+			},
+
+			expRec() {
+				if(this.config.ab.rec == false) {
+					return;
+				}
+
+				axios.get('/api/local/exp/rec')
+				.then(res => {
+					this.suggestions = res.data;
+				})
+			},
+
+			expRecFollow(id, index) {
+				if(this.config.ab.rec == false) {
+					return;
+				}
+
+				axios.post('/i/follow', {
+						item: id
+				}).then(res => {
+					this.suggestions.splice(index, 1);
+				})
 			}
 		}
 	}
