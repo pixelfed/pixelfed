@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Settings\{
     ExportSettings,
+    LabsSettings,
     HomeSettings,
     PrivacySettings,
     SecuritySettings
@@ -20,6 +21,7 @@ use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 class SettingsController extends Controller
 {
     use ExportSettings,
+    LabsSettings,
     HomeSettings,
     PrivacySettings,
     SecuritySettings;
