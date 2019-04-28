@@ -3,16 +3,16 @@
 		<div class="card notification-card">
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
-					<span class="text-muted font-weight-bold">Notifications</span>
+					<span class="text-muted">Notifications</span>
 					<a class="text-dark small" href="/account/activity">See All</a>
 				</p>
 			</div>
-			<div class="card-body loader text-center" style="height: 270px;">
+			<div class="card-body loader text-center" style="height: 230px;">
 				<div class="spinner-border" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card-body pt-2 contents" style="max-height: 270px; overflow-y: scroll;">
+			<div class="card-body pt-2 contents" style="max-height: 230px; overflow-y: scroll;">
 				<div v-if="notifications.length > 0" class="media mb-3 align-items-center" v-for="(n, index) in notifications">
 					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 					<div class="media-body font-weight-light small">
