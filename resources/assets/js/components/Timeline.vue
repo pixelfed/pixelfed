@@ -453,7 +453,7 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
-					//this.expRec();
+					this.expRec();
 				}).catch(err => {
 				});
 			},
@@ -972,7 +972,6 @@
 						item: id
 				}).then(res => {
 					this.suggestions.splice(index, 1);
-					console.log(res.data);
 				})
 			}
 		}
