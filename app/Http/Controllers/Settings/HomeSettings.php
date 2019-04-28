@@ -41,7 +41,7 @@ trait HomeSettings
       ]);
 
         $changes = false;
-        $name = strip_tags($request->input('name'));
+        $name = strip_tags(Purify::clean($request->input('name')));
         $bio = $request->filled('bio') ? strip_tags(Purify::clean($request->input('bio'))) : null;
         $website = $request->input('website');
         $email = $request->input('email');
