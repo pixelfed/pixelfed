@@ -57,6 +57,9 @@ class FollowerController extends Controller
                 'follower_id' => $user->id,
                 'following_id' => $target->id
             ]);
+            if($remote == true) {
+                
+            }
         } elseif ($isFollowing == 0) {
             $follower = new Follower();
             $follower->profile_id = $user->id;
@@ -72,5 +75,6 @@ class FollowerController extends Controller
         Cache::forget('profile:followers:'.$target->id);
         Cache::forget('profile:following:'.$user->id);
         Cache::forget('profile:followers:'.$user->id);
+        Cache::forget('api:local:exp:rec:'.$user->id);
     }
 }
