@@ -6,7 +6,7 @@
     <h3 class="font-weight-bold">Data Export</h3>
   </div>
   <hr>
-  <div class="alert alert-info font-weight-bold">We generate data exports once per hour, and they may not contain the latest data if you've requested them recently.</div>
+  <div class="alert alert-primary px-3 h6">We generate data exports once per hour, and they may not contain the latest data if you've requested them recently.</div>
   <ul class="list-group">
   	<li class="list-group-item d-flex justify-content-between align-items-center">
   		<div>
