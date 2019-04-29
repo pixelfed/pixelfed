@@ -358,7 +358,7 @@
 					<div class="card-columns" v-if="mode == 'grid'">
 						<div class="p-sm-2 p-md-3" v-for="(s, index) in timeline">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
-								<img :src="s.media_attachments[0].url" class="img-fluid">
+								<img :src="previewUrl(s)" class="img-fluid">
 							</a>
 						</div>
 					</div>
@@ -612,7 +612,7 @@ export default {
 		},
 
 		previewUrl(status) {
-			return status.media_attachments[0].preview_url;
+			return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
 		},
 
 		previewBackground(status) {
