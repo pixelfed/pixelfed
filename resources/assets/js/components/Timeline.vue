@@ -287,9 +287,15 @@
                 {{user.display_name}}
             </p>
           </div>
+          <a class="btn btn-outline-secondary btn-sm" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Unfollow</a>
         </div>
       </div>
-      <div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+      <div v-if="following.length == 0" class="list-group-item border-0">
+      	<div class="list-group-item border-0">
+      		<p class="p-3 text-center mb-0 lead">You are not following anyone.</p>
+      	</div>
+      </div>
+      <div v-if="following.length != 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
 	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
       </div>
     </div>
@@ -972,6 +978,16 @@
 						item: id
 				}).then(res => {
 					this.suggestions.splice(index, 1);
+				})
+			},
+
+			followModalAction(id, index, type = 'following') {
+				axios.post('/i/follow', {
+						item: id
+				}).then(res => {
+					if(type == 'following') {
+						this.following.splice(index, 1);
+					}
 				})
 			}
 		}

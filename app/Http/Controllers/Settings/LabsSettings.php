@@ -32,7 +32,7 @@ trait LabsSettings {
 		$profile = $request->user()->profile;
 
 		$cookie = Cookie::forget('dark-mode');
-		if($request->has('dark_mode') && $profile->profile_layout != 'moment') {
+		if($request->has('dark_mode')) {
 			if($request->dark_mode == 'on') {
 				$cookie = Cookie::make('dark-mode', true, 43800);
 			} 
@@ -42,15 +42,10 @@ trait LabsSettings {
 			if($profile->profile_layout != 'moment') {
 				$profile->profile_layout = 'moment';
 				$changes = true;
-			} else {
-				$profile->profile_layout = null;
-				$changes = true;
-			}
+			} 
 		} else {
-			if($profile->profile_layout == 'moment') {
-				$profile->profile_layout = null;
-				$changes = true;
-			}
+			$profile->profile_layout = null;
+			$changes = true;
 		}
 
 		if($request->has('profile_suggestions')) {
@@ -58,17 +53,11 @@ trait LabsSettings {
 				$profile->is_suggestable = true;
 				$changes = true;
 				SuggestionService::set($profile->id);
-			} else {
-				$profile->is_suggestable = false;
-				$changes = true;
-				SuggestionService::del($profile->id);
-			}
+			} 
 		} else {
-			if($profile->is_suggestable == true) {
-				$profile->is_suggestable = false;
-				$changes = true;
-				SuggestionService::del($profile->id);
-			}
+			$profile->is_suggestable = false;
+			$changes = true;
+			SuggestionService::del($profile->id);
 		}
 
 		if($changes == true) {

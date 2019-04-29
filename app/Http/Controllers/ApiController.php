@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\{
+    Follower,
     Like,
-    Profile
+    Profile,
+    UserFilter
 };
 use Auth;
 use Cache;
@@ -58,13 +60,18 @@ class ApiController extends BaseApiController
 
         $id = Auth::user()->profile->id;
 
-        $following = Cache::get('profile:following:'.$id, []);
+        $following = Cache::remember('profile:following:'.$id, now()->addHours(12), function() use ($id) {
+            return Follower::whereProfileId($id)->pluck('following_id')->toArray();
+        });
+        array_push($following, $id);
         $ids = SuggestionService::get();
+        $filters = UserFilter::whereUserId($id)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+        $following = array_merge($following, $filters);
 
         $res = Cache::remember('api:local:exp:rec:'.$id, now()->addMinutes(5), function() use($id, $following, $ids) {
-
-            array_push($following, $id);
-
             return Profile::select(
                 'id',
                 'username'
