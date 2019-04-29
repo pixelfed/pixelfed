@@ -31,7 +31,6 @@
 			</label>
 			<p class="text-muted small help-text">MomentUI offers an alternative layout for posts and your profile.</p>
 		</div>
-		@if($profile->profile_layout != 'moment')
 		<div class="form-check pb-3">
 			<input class="form-check-input" type="checkbox" name="dark_mode" id="dark_mode" {{request()->hasCookie('dark-mode') ? 'checked':''}}>
 			<label class="form-check-label font-weight-bold" for="dark_mode">
@@ -39,7 +38,6 @@
 			</label>
 			<p class="text-muted small help-text">Use dark mode theme.</p>
 		</div>
-		@endif
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
 			<hr>
