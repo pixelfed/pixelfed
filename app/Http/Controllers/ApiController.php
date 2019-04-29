@@ -75,7 +75,7 @@ class ApiController extends BaseApiController
             ->whereNull('status')
             ->whereNull('domain')
             ->inRandomOrder()
-            ->take(4)
+            ->take(3)
             ->get()
             ->map(function($item, $key) {
                 return [
