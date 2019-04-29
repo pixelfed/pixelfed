@@ -207,6 +207,7 @@ class AccountController extends Controller
         Cache::forget("user:filter:list:$pid");
         Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
 
         return redirect()->back();
     }
@@ -257,6 +258,7 @@ class AccountController extends Controller
         Cache::forget("user:filter:list:$pid");
         Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
 
         if($request->wantsJson()) {
             return response()->json([200]);
@@ -310,6 +312,8 @@ class AccountController extends Controller
         Cache::forget("user:filter:list:$pid");
         Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
+
         return redirect()->back();
     }
 
@@ -360,6 +364,8 @@ class AccountController extends Controller
         Cache::forget("user:filter:list:$pid");
         Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
+        
         return redirect()->back();
     }
 
