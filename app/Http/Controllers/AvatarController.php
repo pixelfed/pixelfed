@@ -41,6 +41,7 @@ class AvatarController extends Controller
             $avatar->save();
 
             Cache::forget("avatar:{$profile->id}");
+            Cache::forget('user:account:id:'.$user->id);
             AvatarOptimize::dispatch($user->profile, $currentAvatar);
         } catch (Exception $e) {
         }
