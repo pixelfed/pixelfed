@@ -74,15 +74,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable Google Recaptcha v2
+    | ActivityPud
     |--------------------------------------------------------------------------
     |
-    | Enable/disable recaptcha on login/registration forms. API Keys required.
-    |
     */
-    'recaptcha'         => env('RECAPTCHA_ENABLED', false),
-
-
+    'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
+    'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
+    'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
+    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
+    
     'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
     'activitypub_enabled' => env('ACTIVITY_PUB', false),
 
@@ -261,11 +261,6 @@ return [
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
 
     'enforce_account_limit' => env('LIMIT_ACCOUNT_SIZE', true),
-
-    'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
-    'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
-    'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
-    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
 
     'import' => [
         'instagram' => [
