@@ -155,21 +155,16 @@
 
 		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2  d-none d-md-block">
 			<div class="mb-4">
-				<div class="card profile-card">
-					<div class="card-body loader text-center">
-						<div class="spinner-border" role="status">
-							<span class="sr-only">Loading...</span>
-						</div>
-					</div>
-					<div class="card-body contents d-none">
+				<div class="">
+					<div class="">
 						<div class="media d-flex align-items-center">
 							<a :href="profile.url">
 								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
 							</a>
-							<div class="media-body d-flex justify-content-between word-break">
+							<div class="media-body d-flex justify-content-between word-break" >
 								<div>
-									<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">&commat;{{profile.username}}</a></p>
-									<p class="my-0 text-muted pb-0">{{profile.display_name}}</p>
+									<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">{{profile.username || 'loading...'}}</a></p>
+									<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
 								</div>
 								<div class="ml-2">
 									<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
@@ -177,7 +172,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="card-footer bg-white py-1 d-none">
+					<!-- <div class="card-footer bg-white py-1 d-none">
 						<div class="d-flex justify-content-between text-center">
 							<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
 								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
@@ -192,7 +187,7 @@
 								<p class="mb-0 small text-muted">Following</p>
 							</span>
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</div>
 
