@@ -59,8 +59,8 @@ class BaseApiController extends Controller
         $timeago = Carbon::now()->subMonths(6);
         $notifications = Notification::whereProfileId($pid)
             ->whereDate('created_at', '>', $timeago)
-            ->orderBy('created_at','desc')
-            ->paginate(10);
+            ->latest()
+            ->simplePaginate(10);
         $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
