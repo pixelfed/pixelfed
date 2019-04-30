@@ -450,7 +450,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 4
+						limit: 6
 					}
 				}).then(res => {
 					let data = res.data;
