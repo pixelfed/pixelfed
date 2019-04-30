@@ -91,14 +91,6 @@ class FederationController extends Controller
     public function nodeinfo()
     {
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
-            $git = Cache::remember('api:nodeinfo:git', now()->addHours(1), function() {
-                $hash = exec('git rev-parse HEAD');
-                $gitUrl = 'https://github.com/pixelfed/pixelfed/commit/' . $hash;
-                return [
-                    'commit_hash' => $hash,
-                    'url'  => $gitUrl
-                ];
-            });
             $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
                 $count = collect([]);
                 // $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
@@ -125,7 +117,6 @@ class FederationController extends Controller
                     'software' => [
                         'homepage'  => 'https://pixelfed.org',
                         'repo'      => 'https://github.com/pixelfed/pixelfed',
-                        'git'       => $git
                     ],
                     'captcha' => (bool) config('pixelfed.recaptcha'),
                 ],
