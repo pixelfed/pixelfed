@@ -74,12 +74,6 @@
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
                             </div>
                         </div>
-
-                        @if(config('pixelfed.recaptcha'))
-                        <div class="row my-3">
-                            {!! Recaptcha::render() !!}
-                        </div>
-                        @endif
                         
                         <div class="form-group row">
                             <div class="col-md-12">

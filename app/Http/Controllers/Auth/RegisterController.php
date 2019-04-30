@@ -76,10 +76,6 @@ class RegisterController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ];
 
-        if (config('pixelfed.recaptcha')) {
-            $rules['g-recaptcha-response'] = 'required|recaptcha';
-        }
-
         return Validator::make($data, $rules);
     }
 

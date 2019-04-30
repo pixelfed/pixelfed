@@ -53,10 +53,6 @@ class LoginController extends Controller
             'password'        => 'required|string|min:6',
         ];
 
-        if (config('pixelfed.recaptcha')) {
-            $rules['g-recaptcha-response'] = 'required|recaptcha';
-        }
-
         $this->validate($request, $rules);
     }
 
