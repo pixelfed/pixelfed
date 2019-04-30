@@ -2,265 +2,269 @@
 <div class="container" style="">
 	<div class="row">
 		<div class="col-md-8 col-lg-8 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1">
-			<div v-if="loading" class="text-center">
-				<div class="spinner-border" role="status">
-					<span class="sr-only">Loading...</span>
+			<div style="padding-top:10px;">
+				<div v-if="loading" class="text-center">
+					<div class="spinner-border" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
 				</div>
-			</div>
-			<div class="card mb-sm-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
+				<div class="card mb-sm-4 status-card card-md-rounded-0" :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
 
-				<div class="card-header d-inline-flex align-items-center bg-white">
-					<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
-					<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
-						{{status.account.username}}
-					</a>
-					<div class="text-right" style="flex-grow:1;">
-						<button class="btn btn-link text-dark no-caret dropdown-toggle py-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-							<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
-						</button>
-						<div class="dropdown-menu dropdown-menu-right">
-							<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
-							<!-- <a class="dropdown-item font-weight-bold" href="#">Share</a>
-							<a class="dropdown-item font-weight-bold" href="#">Embed</a> -->
-							<span v-if="statusOwner(status) == false">
-								<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
-							</span>
-							<span v-if="statusOwner(status) == true">
-								<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-							</span>
-							<span v-if="profile.is_admin == true && modes.mod == true">
-								<div class="dropdown-divider"></div>
-								<a v-if="!statusOwner(status)" class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-								<div class="dropdown-divider"></div>
-								<h6 class="dropdown-header">Mod Tools</h6>
-								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'autocw')">
-									<p class="mb-0" data-toggle="tooltip" data-placement="bottom" title="Adds a CW to every post made by this account.">Enforce CW</p>
-								</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'noautolink')">
-									<p class="mb-0" title="Do not transform mentions, hashtags or urls into HTML.">No Autolinking</p>
-								</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'unlisted')">
-									<p class="mb-0" title="Removes account from public/network timelines.">Unlisted Posts</p>
-								</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'disable')">
-									<p class="mb-0" title="Temporarily disable account until next time user log in.">Disable Account</p>
-								</a>
-								<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'suspend')">
-									<p class="mb-0" title="This prevents any new interactions, without deleting existing data.">Suspend Account</p>
-								</a>
+					<div class="card-header d-inline-flex align-items-center bg-white">
+						<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
+						<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
+							{{status.account.username}}
+						</a>
+						<div class="text-right" style="flex-grow:1;">
+							<button class="btn btn-link text-dark no-caret dropdown-toggle py-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+								<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
+							</button>
+							<div class="dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
+								<!-- <a class="dropdown-item font-weight-bold" href="#">Share</a>
+								<a class="dropdown-item font-weight-bold" href="#">Embed</a> -->
+								<span v-if="statusOwner(status) == false">
+									<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
+								</span>
+								<span v-if="statusOwner(status) == true">
+									<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+								</span>
+								<span v-if="profile.is_admin == true && modes.mod == true">
+									<div class="dropdown-divider"></div>
+									<a v-if="!statusOwner(status)" class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
+									<div class="dropdown-divider"></div>
+									<h6 class="dropdown-header">Mod Tools</h6>
+									<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'autocw')">
+										<p class="mb-0" data-toggle="tooltip" data-placement="bottom" title="Adds a CW to every post made by this account.">Enforce CW</p>
+									</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'noautolink')">
+										<p class="mb-0" title="Do not transform mentions, hashtags or urls into HTML.">No Autolinking</p>
+									</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'unlisted')">
+										<p class="mb-0" title="Removes account from public/network timelines.">Unlisted Posts</p>
+									</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'disable')">
+										<p class="mb-0" title="Temporarily disable account until next time user log in.">Disable Account</p>
+									</a>
+									<a class="dropdown-item font-weight-bold" v-on:click="moderatePost(status, 'suspend')">
+										<p class="mb-0" title="This prevents any new interactions, without deleting existing data.">Suspend Account</p>
+									</a>
 
-							</span>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="postPresenterContainer">
+						<div v-if="status.pf_type === 'photo'" class="w-100">
+							<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+						</div>
+
+						<div v-else-if="status.pf_type === 'video'" class="w-100">
+							<video-presenter :status="status"></video-presenter>
+						</div>
+
+						<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
+							<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+						</div>
+
+						<div v-else-if="status.pf_type === 'video:album'" class="w-100">
+							<video-album-presenter :status="status"></video-album-presenter>
+						</div>
+
+						<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+							<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+						</div>
+
+						<div v-else class="w-100">
+							<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+						</div>
+					</div>
+
+					<div class="card-body">
+						<div class="reactions my-1">
+							<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
+							<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+							<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+						</div>
+
+						<div class="likes font-weight-bold" v-if="expLc(status) == true">
+							<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
+						</div>
+						<div class="caption">
+							<p class="mb-2 read-more" style="overflow: hidden;">
+								<span class="username font-weight-bold">
+									<bdi><a class="text-dark" :href="status.account.url">{{status.account.username}}</a></bdi>
+								</span>
+								<span v-html="status.content"></span>
+							</p>
+						</div>
+						<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
+							<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
+								<span>
+									<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
+									<span v-html="reply.content"></span>
+								</span>
+								<span class="mb-0" style="min-width:38px">
+									<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+									<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
+								</span>
+							</p>
+						</div>
+						<div class="timestamp mt-2">
+							<p class="small text-uppercase mb-0">
+								<a :href="status.url" class="text-muted">
+									<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+								</a>
+							</p>
+						</div>
+					</div>
+
+					<div class="card-footer bg-white" v-if="status.id == replyId">
+						<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
+							<input type="hidden" name="item" value="">
+							<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
+						</form>
+					</div>
+				</div>
+				<div v-if="modes.infinite == true && !loading && feed.length > 0">
+					<div class="card">
+						<div class="card-body">
+							<infinite-loading @infinite="infiniteTimeline" distance="800">
+							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
+							<div slot="no-results" class="font-weight-bold">No posts found</div>
+							</infinite-loading>
 						</div>
 					</div>
 				</div>
-
-				<div class="postPresenterContainer">
-					<div v-if="status.pf_type === 'photo'" class="w-100">
-						<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
-					</div>
-
-					<div v-else-if="status.pf_type === 'video'" class="w-100">
-						<video-presenter :status="status"></video-presenter>
-					</div>
-
-					<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-						<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
-					</div>
-
-					<div v-else-if="status.pf_type === 'video:album'" class="w-100">
-						<video-album-presenter :status="status"></video-album-presenter>
-					</div>
-
-					<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-						<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
-					</div>
-
-					<div v-else class="w-100">
-						<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
-					</div>
+				<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination">
+					<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
 				</div>
-
-				<div class="card-body">
-					<div class="reactions my-1">
-						<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
-						<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
-						<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
-					</div>
-
-					<div class="likes font-weight-bold" v-if="expLc(status) == true">
-						<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
-					</div>
-					<div class="caption">
-						<p class="mb-2 read-more" style="overflow: hidden;">
-							<span class="username font-weight-bold">
-								<bdi><a class="text-dark" :href="status.account.url">{{status.account.username}}</a></bdi>
-							</span>
-							<span v-html="status.content"></span>
-						</p>
-					</div>
-					<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
-						<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
-							<span>
-								<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
-								<span v-html="reply.content"></span>
-							</span>
-							<span class="mb-0" style="min-width:38px">
-								<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-								<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
-							</span>
-						</p>
-					</div>
-					<div class="timestamp mt-2">
-						<p class="small text-uppercase mb-0">
-							<a :href="status.url" class="text-muted">
-								<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
-							</a>
-						</p>
-					</div>
-				</div>
-
-				<div class="card-footer bg-white" v-if="status.id == replyId">
-					<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
-						<input type="hidden" name="item" value="">
-						<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
-					</form>
-				</div>
-			</div>
-			<div v-if="modes.infinite == true && !loading && feed.length > 0">
-				<div class="card">
-					<div class="card-body">
-						<infinite-loading @infinite="infiniteTimeline">
-						<div slot="no-more" class="font-weight-bold">No more posts to load</div>
-						<div slot="no-results" class="font-weight-bold">No posts found</div>
-						</infinite-loading>
-					</div>
-				</div>
-			</div>
-			<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination">
-				<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
-			</div>
-			<div v-if="!loading && scope == 'home' && feed.length == 0">
-				<div class="card">
-					<div class="card-body text-center">
-						<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
-						<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
-						<p class="h3 font-weight-lighter p-5">Start following people to build your timeline.</p>
-						<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Discover new people and posts</a></p>
+				<div v-if="!loading && scope == 'home' && feed.length == 0">
+					<div class="card">
+						<div class="card-body text-center">
+							<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
+							<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
+							<p class="h3 font-weight-lighter p-5">Start following people to build your timeline.</p>
+							<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Discover new people and posts</a></p>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2  d-none d-md-block">
-			<div class="mb-4">
-				<div class="">
+		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2 d-none d-md-block">
+			<div class="position-sticky" style="top:68px;">
+				<div class="mb-4">
 					<div class="">
-						<div class="media d-flex align-items-center">
-							<a :href="profile.url">
-								<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
-							</a>
-							<div class="media-body d-flex justify-content-between word-break" >
-								<div>
-									<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">{{profile.username || 'loading...'}}</a></p>
-									<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
-								</div>
-								<div class="ml-2">
-									<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
+						<div class="">
+							<div class="media d-flex align-items-center">
+								<a :href="profile.url">
+									<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
+								</a>
+								<div class="media-body d-flex justify-content-between word-break" >
+									<div>
+										<p class="mb-0 px-0 font-weight-bold"><a :href="profile.url" class="text-dark">{{profile.username || 'loading...'}}</a></p>
+										<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
+									</div>
+									<div class="ml-2">
+										<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<!-- <div class="card-footer bg-white py-1 d-none">
-						<div class="d-flex justify-content-between text-center">
-							<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
-								<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
-								<p class="mb-0 small text-muted">Posts</p>
-							</span>
-							<span class="cursor-pointer" v-on:click="followersModal()">
-								<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
-								<p class="mb-0 small text-muted">Followers</p>
-							</span>
-							<span class="pr-3 cursor-pointer" v-on:click="followingModal()">
-								<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
-								<p class="mb-0 small text-muted">Following</p>
-							</span>
-						</div>
-					</div> -->
-				</div>
-			</div>
-
-			<div v-if="optionMenuState == true" class="mb-4">
-				<div class="card options-card">
-					<div class="card-body small">
-						<div v-if="profile.is_admin" class="custom-control custom-switch mb-3">
-							<input type="checkbox" class="custom-control-input" id="mode-mod" v-on:click="modeModToggle()" v-model="modes.mod">
-							<label class="custom-control-label font-weight-bold" for="mode-mod">Moderator Mode</label>
-						</div>
-						<!-- <div class="custom-control custom-switch mb-3">
-							<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
-							<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
+						<!-- <div class="card-footer bg-white py-1 d-none">
+							<div class="d-flex justify-content-between text-center">
+								<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
+									<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
+									<p class="mb-0 small text-muted">Posts</p>
+								</span>
+								<span class="cursor-pointer" v-on:click="followersModal()">
+									<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
+									<p class="mb-0 small text-muted">Followers</p>
+								</span>
+								<span class="pr-3 cursor-pointer" v-on:click="followingModal()">
+									<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
+									<p class="mb-0 small text-muted">Following</p>
+								</span>
+							</div>
 						</div> -->
-						<div class="custom-control custom-switch">
-							<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
-							<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
-						</div>
-						<hr>
-						<p class="font-weight-bold">BETA FEATURES</p>
-						<div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
 					</div>
 				</div>
-			</div>
 
-			<div v-show="modes.notify == true" class="mb-4">
-				<notification-card></notification-card>
-			</div>
-
-			<div v-show="suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
-				<div class="card">
-					<div class="card-header bg-white text-muted d-flex justify-content-between align-items-center">
-						<div>Suggestions For You</div>
-						<div class="small text-dark"></div>
-					</div>
-					<div class="card-body pt-0">
-						<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
-							<a :href="'/'+rec.username">
-								<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3">
-							</a>
-							<div class="media-body">
-								<p class="mb-0 font-weight-bold small">
-									<a :href="'/'+rec.username" class="text-decoration-none text-dark">
-										{{rec.username}}
-									</a>
-								</p>
-								<p class="mb-0 small text-muted">{{rec.message}}</p>
+				<div v-if="optionMenuState == true" class="mb-4">
+					<div class="card options-card">
+						<div class="card-body small">
+							<div v-if="profile.is_admin" class="custom-control custom-switch mb-3">
+								<input type="checkbox" class="custom-control-input" id="mode-mod" v-on:click="modeModToggle()" v-model="modes.mod">
+								<label class="custom-control-label font-weight-bold" for="mode-mod">Moderator Mode</label>
 							</div>
-							<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+							<!-- <div class="custom-control custom-switch mb-3">
+								<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
+								<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
+							</div> -->
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
+								<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
+							</div>
+							<hr>
+							<p class="font-weight-bold">BETA FEATURES</p>
+							<div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<footer>
-				<div class="container pb-5">
-					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-						<a href="/site/about" class="text-dark pr-2">About Us</a>
-						<a href="/site/help" class="text-dark pr-2">Help</a>
-						<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
-						<a href="/site/language" class="text-dark pr-2">Language</a>
-						<a href="/site/terms" class="text-dark pr-2">Terms</a>
-						<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
-						<a href="/site/platform" class="text-dark pr-2">API</a>
-					</p>
-					<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-						<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by PixelFed</a>
-					</p>
+				<div v-show="modes.notify == true" class="mb-4">
+					<notification-card></notification-card>
 				</div>
-			</footer>
+
+				<div v-show="suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
+					<div class="card">
+						<div class="card-header bg-white text-muted d-flex justify-content-between align-items-center">
+							<div>Suggestions For You</div>
+							<div class="small text-dark"></div>
+						</div>
+						<div class="card-body pt-0">
+							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
+								<a :href="'/'+rec.username">
+									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3">
+								</a>
+								<div class="media-body">
+									<p class="mb-0 font-weight-bold small">
+										<a :href="'/'+rec.username" class="text-decoration-none text-dark">
+											{{rec.username}}
+										</a>
+									</p>
+									<p class="mb-0 small text-muted">{{rec.message}}</p>
+								</div>
+								<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<footer>
+					<div class="container pb-5">
+						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
+							<a href="/site/about" class="text-dark pr-2">About Us</a>
+							<a href="/site/help" class="text-dark pr-2">Help</a>
+							<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
+							<a href="/site/language" class="text-dark pr-2">Language</a>
+							<a href="/site/terms" class="text-dark pr-2">Terms</a>
+							<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
+							<a href="/site/platform" class="text-dark pr-2">API</a>
+						</p>
+						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
+							<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by PixelFed</a>
+						</p>
+					</div>
+				</footer>
+			</div>
 		</div>
 	</div>
-  <b-modal ref="followingModal"
+<!--   <b-modal ref="followingModal"
     id="following-modal"
     hide-footer
     centered
@@ -323,7 +327,7 @@
 	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
       </div>
     </div>
-  </b-modal>
+  </b-modal> -->
   <b-modal 
   	id="lightbox" 
   	ref="lightboxModal"
