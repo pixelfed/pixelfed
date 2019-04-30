@@ -25,11 +25,11 @@
 											<p class="align-middle">
 												
 											<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
-											<span class="float-right mb-0" v-if="profile.id != user.id && user.hasOwnProperty('id')">
+											<span class="float-right mb-0" v-if="!loading && profile.id != user.id && user.hasOwnProperty('id')">
 												<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
 											</span>
 											</p>
-											<p v-if="profile.id == user.id && user.hasOwnProperty('id')">
+											<p v-if="!loading && profile.id == user.id && user.hasOwnProperty('id')">
 												<a class="btn btn-outline-dark py-0 px-4 mt-3" href="/settings/home">Edit Profile</a>
 											</p>
 											<div v-if="profile.id != user.id && user.hasOwnProperty('id')">
@@ -58,10 +58,10 @@
 									<span class="pl-4">
 										<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
 									</span>	
-									<span class="pl-4" v-if="owner">
+									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
 										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
 									</span>
-									<span class="pl-4" v-if="profile.id != user.id && user.hasOwnProperty('id')">
+									<span class="pl-4" v-if="!owner && user.hasOwnProperty('id')">
 										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
 									</span>
 									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
@@ -588,7 +588,8 @@ export default {
 		},
 
 		infiniteTimeline($state) {
-			if(this.loading || this.timeline < 9) {
+			if(this.loading || this.timeline.length < 9) {
+				$state.complete();
 				return;
 			}
 			let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
