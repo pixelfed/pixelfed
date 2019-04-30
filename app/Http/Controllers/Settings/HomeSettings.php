@@ -10,6 +10,7 @@ use App\User;
 use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
 use Auth;
+use Cache;
 use DB;
 use Purify;
 use Illuminate\Http\Request;
@@ -101,6 +102,7 @@ trait HomeSettings
         }
 
         if ($changes === true) {
+            Cache::forget('user:account:id:'.$user->id);
             $user->save();
             $profile->save();
 

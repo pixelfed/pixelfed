@@ -400,7 +400,7 @@ class InternalApiController extends Controller
         $status->save();
 
         NewStatusPipeline::dispatch($status);
-
+        Cache::forget('user:account:id:'.$profile->user_id);
         return $status->url();
     }
 }

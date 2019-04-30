@@ -309,9 +309,13 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
-        $profile = Auth::user()->profile;
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+        $id = Auth::id();
+
+        $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
+            $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
+            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+            return $this->fractal->createData($resource)->toArray();
+        });
 
         return response()->json($res);
     }
