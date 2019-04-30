@@ -44,15 +44,6 @@ class BaseApiController extends Controller
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
-    public function notification(Request $request, $id)
-    {
-        $notification = Notification::findOrFail($id);
-        $resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
     public function notifications(Request $request)
     {
         $pid = Auth::user()->profile->id;

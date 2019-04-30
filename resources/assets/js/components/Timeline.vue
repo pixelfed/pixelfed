@@ -397,7 +397,9 @@
 			.then(res => {
 				this.config = res.data;
 				this.fetchTimelineApi();
-				this.fetchProfile();
+				if(window.outerWidth > 767) {
+					this.fetchProfile();
+				}
 			});
 		},
 
@@ -459,7 +461,9 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
-					this.expRec();
+					if(window.outerWidth > 767) {
+						this.expRec();
+					}
 				}).catch(err => {
 				});
 			},

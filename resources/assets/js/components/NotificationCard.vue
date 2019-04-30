@@ -70,7 +70,9 @@
 		},
 
 		mounted() {
-			this.fetchNotifications();
+			if(window.outerWidth > 767) {
+				this.fetchNotifications();
+			}
 		},
 
 		updated() {
