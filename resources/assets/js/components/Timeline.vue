@@ -488,7 +488,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 4
+						limit: 6
 					},
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
