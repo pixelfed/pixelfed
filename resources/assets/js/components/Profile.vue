@@ -158,7 +158,7 @@
 			<div class="container">
 				<div class="profile-timeline mt-md-4">
 					<div class="row" v-if="mode == 'grid'">
-						<div class="col-4 p-0 p-sm-2 p-md-3" v-for="(s, index) in timeline">
+						<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(s, index) in timeline">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
 								<div class="square">
 									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
