@@ -363,8 +363,7 @@
 
 <style type="text/css" scoped>
   .status-comments,
-  .reactions,
-  .col-md-4 {
+  .reactions {
     background: #fff;
   }
   .postPresenterContainer {
