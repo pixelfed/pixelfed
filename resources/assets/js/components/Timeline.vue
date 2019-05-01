@@ -132,7 +132,7 @@
 				<div v-if="modes.infinite == true && !loading && feed.length > 0">
 					<div class="card">
 						<div class="card-body">
-							<infinite-loading @infinite="infiniteTimeline" distance="800">
+							<infinite-loading @infinite="infiniteTimeline" :distance="800">
 							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
 							<div slot="no-results" class="font-weight-bold">No posts found</div>
 							</infinite-loading>
