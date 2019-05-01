@@ -511,6 +511,10 @@ details summary::-webkit-details-marker {
     box-sizing: content-box;
 }
 
+.media-drawer-filters img {
+    object-fit: contain;
+}
+
 .reply-container {
     .post-thumbnail {
         object-fit: cover;
