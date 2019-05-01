@@ -358,7 +358,7 @@
 					<div class="card-columns" v-if="mode == 'grid'">
 						<div class="p-sm-2 p-md-3" v-for="(s, index) in timeline">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
-								<img :src="previewUrl(s)" class="img-fluid">
+								<img :src="previewUrl(s)" class="img-fluid w-100">
 							</a>
 						</div>
 					</div>
