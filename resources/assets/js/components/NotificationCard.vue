@@ -42,6 +42,7 @@
 							</p>
 						</div>
 					</div>
+					<div class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
 				</div>
 				<div v-if="notifications.length">
 					<infinite-loading @infinite="infiniteNotifications">
@@ -127,6 +128,38 @@
 				}
 
 				return text.slice(0,15) + '...'
+			},
+
+			timeAgo(ts) {
+				let date = Date.parse(ts);
+				let seconds = Math.floor((new Date() - date) / 1000);
+				let interval = Math.floor(seconds / 31536000);
+				if (interval >= 1) {
+					return interval + "y";
+				}
+				interval = Math.floor(seconds / 604800);
+				if (interval >= 1) {
+					return interval + "w";
+				}
+				interval = Math.floor(seconds / 86400);
+				if (interval >= 1) {
+					return interval + "d";
+				}
+				interval = Math.floor(seconds / 3600);
+				if (interval >= 1) {
+					return interval + "h";
+				}
+				interval = Math.floor(seconds / 60);
+				if (interval >= 1) {
+					return interval + "m";
+				}
+				return Math.floor(seconds) + "s";
+			},
+
+			mentionUrl(status) {
+				let username = status.account.username;
+				let id = status.id;
+				return '/p/' + username + '/' + id;
 			}
 		}
 	}

@@ -118,7 +118,6 @@ class FederationController extends Controller
                         'homepage'  => 'https://pixelfed.org',
                         'repo'      => 'https://github.com/pixelfed/pixelfed',
                     ],
-                    'captcha' => (bool) config('pixelfed.recaptcha'),
                 ],
                 'protocols'         => [
                     'activitypub',

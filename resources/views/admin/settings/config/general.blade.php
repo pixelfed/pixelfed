@@ -25,18 +25,6 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">Recaptcha</label>
-      <div class="col-sm-9">
-        <div class="form-check pb-2">
-          <input class="form-check-input" type="checkbox" id="recaptcha" name="recaptcha" {{config('pixelfed.recaptcha') === true ? 'checked=""' : '' }}>
-          <label class="form-check-label font-weight-bold" for="open_registration">
-            {{config('pixelfed.recaptcha') == true ? 'Enabled' : 'Disabled' }}
-          </label>
-          <p class="text-muted small help-text font-weight-bold">When this option is enabled, new user registration is open.</p>
-        </div>
-      </div>
-    </div>
-    <div class="form-group row">
       <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">ActivityPub</label>
       <div class="col-sm-9">
         <div class="form-check pb-2">

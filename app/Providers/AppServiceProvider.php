@@ -4,9 +4,14 @@ namespace App\Providers;
 
 use App\Observers\{
     AvatarObserver,
+    NotificationObserver,
     UserObserver
 };
-use App\{Avatar,User};
+use App\{
+    Avatar,
+    Notification,
+    User
+};
 use Auth, Horizon, URL;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
@@ -25,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         Avatar::observe(AvatarObserver::class);
+        Notification::observe(NotificationObserver::class);
         User::observe(UserObserver::class);
 
         Horizon::auth(function ($request) {
