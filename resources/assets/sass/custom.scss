@@ -540,3 +540,7 @@ details summary::-webkit-details-marker {
 .tooltip-notification .tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before, .tooltip.bs-tooltip-top .arrow::before {
     border-top-color: #dc3545; 
 }
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    filter: drop-shadow(0px 0px 1px black);
+}
