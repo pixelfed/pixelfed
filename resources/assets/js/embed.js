@@ -1,7 +1,5 @@
 window.pixlfed = {};
-window.pixlfed.config = {
-	domain: process.env.MIX_APP_DOMAIN,
-}
+window.pixlfed.config = {};
 
 pixlfed.autoSizeIFrame = function(el) {
 	console.log(el.contentDocument);
@@ -21,11 +19,11 @@ pixlfed.loadIFrame = function(el) {
 	if(el.getAttribute('loaded') == 'true') {
 		return;
 	}
-	if(pixlfed.config.domain !== parser.host) {
-		el.setAttribute('loaded', 'true');
-		console.error('Invalid embed permalink')
-		return;
-	}
+	// if(pixlfed.config.domain !== parser.host) {
+	// 	el.setAttribute('loaded', 'true');
+	// 	console.error('Invalid embed permalink')
+	// 	return;
+	// }
 	let css = 'background: white; max-width: 540px; width: calc(100% - 2px); border-radius: 3px; border: 1px solid rgb(219, 219, 219); box-shadow: none; display: block; margin: 0px 0px 12px; min-width: 326px; padding: 0px;';
 	let iframe = document.createElement('iframe');
 	iframe.onload = function() {
