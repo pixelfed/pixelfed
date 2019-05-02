@@ -225,7 +225,7 @@ class RestrictedNames
      'whats-new',
      'whatsnew',
      'whatnew',
-     'whats-news'
+     'whats-news',
      'ws',
      'wss',
      'www',
