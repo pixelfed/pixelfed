@@ -124,14 +124,12 @@ body, button, input, textarea {
 
 .info-overlay:hover .info-overlay-text {
     display: flex;
-    h5 {
-        display: flex;
-        flex-flow: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-    }
+}
+
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .info-overlay:hover .info-overlay-text h5 {
+      font-size: 12px;
+  }
 }
 
 .info-overlay-text {
