@@ -170,7 +170,7 @@
 										<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
 									</div>
 									<div class="ml-2">
-										<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog"></i></a>
+										<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog fa-lg"></i></a>
 									</div>
 								</div>
 							</div>
@@ -222,9 +222,8 @@
 
 				<div v-show="suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
 					<div class="card">
-						<div class="card-header bg-white text-muted d-flex justify-content-between align-items-center">
-							<div>Suggestions For You</div>
-							<div class="small text-dark"></div>
+						<div class="card-header bg-white text-center">
+							<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
 						</div>
 						<div class="card-body pt-0">
 							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
