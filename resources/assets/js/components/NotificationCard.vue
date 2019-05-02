@@ -3,8 +3,9 @@
 		<div class="card notification-card">
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
-					<span class="text-muted">Notifications</span>
-					<a class="text-dark small" href="/account/activity">See All</a>
+					<span><i class="far fa-bell fa-lg text-muted"></i></span>
+					<span class="small text-dark text-uppercase font-weight-bold">Alerts</span>
+					<a class="text-decoration-none text-muted" href="/account/activity"><i class="fas fa-inbox fa-lg"></i></a>
 				</p>
 			</div>
 			<div class="card-body loader text-center" style="height: 230px;">
@@ -12,8 +13,8 @@
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card-body pt-2 contents" style="max-height: 230px; overflow-y: scroll;">
-				<div v-if="notifications.length > 0" class="media mb-3 align-items-center" v-for="(n, index) in notifications">
+			<div class="card-body pt-2 px-0 contents" style="max-height: 230px; overflow-y: scroll;">
+				<div v-if="notifications.length > 0" class="media mb-4 align-items-center px-3" v-for="(n, index) in notifications">
 					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
