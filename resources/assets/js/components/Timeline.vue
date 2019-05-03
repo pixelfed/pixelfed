@@ -419,6 +419,9 @@
 			fetchProfile() {
 				axios.get('/api/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;
+					if(this.profile.is_admin == true) {
+						this.modes.mod = true;
+					}
 					$('.profile-card .loader').addClass('d-none');
 					$('.profile-card .contents').removeClass('d-none');
 					$('.profile-card .card-footer').removeClass('d-none');
@@ -653,7 +656,7 @@
 			},
 
 			deletePost(status, index) {
-				if($('body').hasClass('loggedIn') == false || status.account.id !== this.profile.id) {
+				if($('body').hasClass('loggedIn') == false || this.ownerOrAdmin(status) == false) {
 					return;
 				}
 
@@ -834,12 +837,12 @@
 
 			modeModToggle() {
 				this.modes.mod = !this.modes.mod;
-				window.ls.set('pixelfed-classicui-settings', this.modes);
+				//window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
 
 			modeNotifyToggle() {
 				this.modes.notify = !this.modes.notify;
-				window.ls.set('pixelfed-classicui-settings', this.modes);
+				//window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
 
 			modeDarkToggle() {
@@ -863,12 +866,12 @@
 						this.modes.dark = true;
 					});
 				}
-				window.ls.set('pixelfed-classicui-settings', this.modes);
+				//window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
 
 			modeInfiniteToggle() {
 				this.modes.infinite = !this.modes.infinite
-				window.ls.set('pixelfed-classicui-settings', this.modes);
+				//window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
 
 			followingModal() {
@@ -991,6 +994,18 @@
 						this.following.splice(index, 1);
 					}
 				})
+			},
+
+			owner(status) {
+				return this.profile.id === status.account.id;
+			},
+
+			admin() {
+				return this.profile.is_admin == true;
+			},
+
+			ownerOrAdmin(status) {
+				return this.owner(status) || this.admin();
 			}
 		}
 	}
