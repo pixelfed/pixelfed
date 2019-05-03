@@ -57,7 +57,7 @@
 						</div>
 					</div>
 
-					<div class="postPresenterContainer">
+					<div class="postPresenterContainer" v-on:doubletap="likeStatus(status, $event)">
 						<div v-if="status.pf_type === 'photo'" class="w-100">
 							<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 						</div>
@@ -327,8 +327,8 @@
       </div>
     </div>
   </b-modal> -->
-  <b-modal 
-  	id="lightbox" 
+  <b-modal
+  	id="lightbox"
   	ref="lightboxModal"
   	hide-header
   	hide-footer
@@ -660,7 +660,7 @@
 				if(window.confirm('Are you sure you want to delete this post?') == false) {
 					return;
 				}
-				
+
 				axios.post('/i/delete', {
 					type: 'status',
 					item: status.id
