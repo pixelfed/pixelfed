@@ -8,9 +8,12 @@ import VueTimeago from 'vue-timeago';
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
-Vue.use(VueTimeago);
+Vue.use(VueTimeago, {
+  name: 'Timeago',
+  locale: 'en'
+});
 
-pixelfed.readmore = () => {
+pixelfed.readmore = function() {
   $('.read-more').each(function(k,v) {
       let el = $(this);
       let attr = el.attr('data-readmore');
