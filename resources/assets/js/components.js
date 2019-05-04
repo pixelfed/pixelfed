@@ -3,12 +3,20 @@ import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
+import VueTouch from 'vue-touch';
 //import {Howl, Howler} from 'howler';
 
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
 Vue.use(VueTimeago);
+
+Vue.use(VueTouch, { name: 'v-touch' })
+VueTouch.registerCustomEvent('doubletap', {
+  type: 'tap',
+  taps: 2
+})
+
 
 pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {

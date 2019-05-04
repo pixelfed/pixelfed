@@ -212,7 +212,7 @@
 
     <div v-if="profileLayout == 'moment'" class="momentui">
       <div class="bg-dark mt-md-n4">
-        <div class="container" v-on:doubletap="likeStatus(status, $event)">
+        <div class="container" v-on:doubletap="likeStatus">
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
