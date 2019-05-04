@@ -38,6 +38,15 @@
 			</label>
 			<p class="text-muted small help-text">Use dark mode theme.</p>
 		</div>
+		@if(config('exp.rec') == true)
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" name="show_suggestions" id="show_suggestions">
+			<label class="form-check-label font-weight-bold" for="show_suggestions">
+				{{__('Profile Suggestions')}}
+			</label>
+			<p class="text-muted small help-text">Show Profile Suggestions</p>
+		</div>
+		@endif
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
 			<hr>
@@ -59,3 +68,23 @@
 		</div>
 	</form>
 	@endsection
+
+@push('scripts')
+<script type="text/javascript">
+$(document).ready(function() {
+	let showSuggestions = localStorage.getItem('pf_metro_ui.exp.rec') == 'false' ? false : true;
+
+	if(showSuggestions == true) {
+		$('#show_suggestions').attr('checked', true);
+	}
+
+	$('#show_suggestions').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.removeItem('pf_metro_ui.exp.rec');
+		} else {
+			localStorage.setItem('pf_metro_ui.exp.rec', false);
+		}
+	})
+});
+</script>
+@endpush
