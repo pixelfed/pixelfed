@@ -220,10 +220,12 @@
 					<notification-card></notification-card>
 				</div>
 
-				<div v-show="suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
+				<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
 					<div class="card">
-						<div class="card-header bg-white text-center">
+						<div class="card-header bg-white d-flex align-items-center justify-content-between">
+							<div></div>
 							<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
+							<div class="small text-muted cursor-pointer" v-on:click="hideSuggestions"><i class="fas fa-times"></i></div>
 						</div>
 						<div class="card-body pt-0">
 							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
@@ -386,7 +388,8 @@
 				following: [],
 				followingCursor: 1,
 				followingMore: true,
-				lightboxMedia: false
+				lightboxMedia: false,
+				showSuggestions: false
 			}
 		},
 
@@ -404,6 +407,12 @@
 		mounted() {
 			if($('link[data-stylesheet="dark"]').length != 0) {
 				this.modes.dark = true;
+			}
+
+			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
+				this.showSuggestions = false;
+			} else {
+				this.showSuggestions = true;
 			}
 
 			this.$nextTick(function () {
@@ -1006,6 +1015,11 @@
 
 			ownerOrAdmin(status) {
 				return this.owner(status) || this.admin();
+			},
+
+			hideSuggestions() {
+				localStorage.setItem('pf_metro_ui.exp.rec', false);
+				this.showSuggestions = false;
 			}
 		}
 	}
