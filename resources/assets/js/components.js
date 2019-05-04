@@ -9,7 +9,10 @@ import VueTouch from 'vue-touch';
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
-Vue.use(VueTimeago);
+Vue.use(VueTimeago, {
+  name: 'Timeago',
+  locale: 'en'
+);
 
 Vue.use(VueTouch, { name: 'v-touch' })
 VueTouch.registerCustomEvent('doubletap', {
