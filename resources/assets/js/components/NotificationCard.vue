@@ -97,7 +97,7 @@
 					this.notifications = data;
 					$('.notification-card .loader').addClass('d-none');
 					$('.notification-card .contents').removeClass('d-none');
-					//this.notificationPoll();
+					this.notificationPoll();
 				});
 			},
 
