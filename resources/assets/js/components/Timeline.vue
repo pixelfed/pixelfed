@@ -39,7 +39,7 @@
 							</div>
 						</div>
 					</div>
-					<div v-else class="card mb-sm-4 status-card card-md-rounded-0">
+					<div class="card mb-sm-4 status-card card-md-rounded-0">
 						<div class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
 							<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
