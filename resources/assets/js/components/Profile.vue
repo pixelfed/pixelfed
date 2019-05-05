@@ -294,7 +294,7 @@
 		</div>
 
 		<div v-if="profileLayout == 'moment'">
-			<div class="w-100 h-100 mt-n3 bg-pixelfed" style="width:100%;min-height:274px;">
+			<div :class="momentBackground()" style="width:100%;min-height:274px;">
 			</div>
 			<div class="bg-white border-bottom">
 				<div class="container">
@@ -1045,6 +1045,16 @@ export default {
 					this.profile.following_count--;
 				}
 			})
+		},
+
+		momentBackground() {
+			let c = 'w-100 h-100 mt-n3 ';
+			if(this.profile.header_bg) {
+				c += this.profile.header_bg == 'default' ? 'bg-pixelfed' : 'bg-moment-' + this.profile.header_bg;
+			} else {
+				c += 'bg-pixelfed';
+			}
+			return c;
 		}
 	}
 }

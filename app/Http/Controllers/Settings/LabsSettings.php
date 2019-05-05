@@ -24,7 +24,8 @@ trait LabsSettings {
 		$this->validate($request, [
 			'profile_layout' => 'nullable',
 			'dark_mode'	=> 'nullable',
-			'profile_suggestions' => 'nullable'
+			'profile_suggestions' => 'nullable',
+			'moment_bg' => 'nullable'
 		]);
 
 		$changes = false;
@@ -60,6 +61,12 @@ trait LabsSettings {
 			SuggestionService::del($profile->id);
 		}
 
+		if($request->has('moment_bg') && $profile->profile_layout == 'moment') {
+			$bg = in_array($request->input('moment_bg'), $this->momentBackgrounds()) ? $request->input('moment_bg') : 'default';
+			$profile->header_bg = $bg;
+			$changes = true;
+		}
+
 		if($changes == true) {
 			$profile->save();
 		}
@@ -69,4 +76,21 @@ trait LabsSettings {
 			->cookie($cookie);
 	}
 
+	protected function momentBackgrounds()
+	{
+		return [
+			'default',
+			'azure',
+			'passion',
+			'reef',
+			'lush',
+			'neon',
+			'flare',
+			'morning',
+			'tranquil',
+			'mauve',
+			'argon',
+			'royal'
+		];
+	}
 }
