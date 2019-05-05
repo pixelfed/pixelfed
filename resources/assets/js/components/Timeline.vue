@@ -152,10 +152,27 @@
 							</div>
 						</div>
 
-						<div class="card-footer bg-white" v-if="status.id == replyId">
-							<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
-								<input type="hidden" name="item" value="">
-								<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
+						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white px-2 py-0">
+							<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+								<li class="nav-item" v-on:click="emojiReaction(status)">😂</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">💯</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">❤️</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">🙌</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">👏</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😍</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😯</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😢</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😅</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😁</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">🙂</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">😎</li>
+							</ul>
+						</div>
+
+						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white sticky-md-bottom p-0">
+							<form class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="status.id" data-truncate="false">
+								<textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
+								<input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="commentSubmit(status, $event)"/>
 							</form>
 						</div>
 					</div>
@@ -388,6 +405,24 @@
 	.small .custom-control-label {
 		padding-top: 3px;
 	}
+	.reply-btn {
+		position: absolute;
+		bottom: 12px;
+		right: 20px;
+		width: 60px;
+		text-align: center;
+		border-radius: 0 3px 3px 0;
+	}
+	.emoji-reactions .nav-item {
+		font-size: 1.2rem;
+		padding: 9px;
+		cursor: pointer;
+	}
+	.emoji-reactions::-webkit-scrollbar {
+		width: 0px;
+		height: 0px;
+		background: transparent;
+	}
 </style>
 
 <script type="text/javascript">
@@ -422,6 +457,8 @@
 				lightboxMedia: false,
 				showSuggestions: false,
 				showReadMore: true,
+				replyStatus: {},
+				replyText: '',
 			}
 		},
 
@@ -592,7 +629,10 @@
 					return;
 				}
 				this.replies = {};
+				this.replyStatus = {};
+				this.replyText = '';
 				this.replyId = status.id;
+				this.replyStatus = status;
 				this.fetchStatusComments(status, '');
 			},
 
@@ -724,16 +764,12 @@
 
 			commentSubmit(status, $event) {
 				let id = status.id;
-				let form = $event.target;
-				let input = $(form).find('input[name="comment"]');
-				let comment = input.val();
-				let comments = form.parentElement.parentElement.getElementsByClassName('comments')[0];
+				let comment = this.replyText;
 				axios.post('/i/comment', {
 					item: id,
 					comment: comment
 				}).then(res => {
-					form.reset();
-					form.blur();
+					this.replyText = '';
 					this.replies.push(res.data.entity);
 				});
 			},
@@ -1058,7 +1094,18 @@
 			hideSuggestions() {
 				localStorage.setItem('pf_metro_ui.exp.rec', false);
 				this.showSuggestions = false;
-			}
+			},
+
+			emojiReaction(status) {
+				let em = event.target.innerText;
+				if(this.replyText.length == 0) {
+					this.replyText = em + ' ';
+					$('textarea[name="comment"]').focus();
+				} else {
+					this.replyText += em + ' ';
+					$('textarea[name="comment"]').focus();
+				}
+			}, 
 		}
 	}
 </script>

@@ -893,11 +893,11 @@ export default {
         let em = event.target.innerText;
         if(this.replyText.length == 0) {
           this.reply_to_profile_id = this.status.account.id;
-          this.replyText = '@' + this.status.account.username + ' ' + em;
+          this.replyText = em + ' ';
           $('textarea[name="comment"]').focus();
         } else {
           this.reply_to_profile_id = this.status.account.id;
-          this.replyText += em;
+          this.replyText += em + ' ';
           $('textarea[name="comment"]').focus();
         }
       }, 
