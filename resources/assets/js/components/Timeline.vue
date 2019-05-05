@@ -14,7 +14,7 @@
 							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
 						</div>
-						<div class="card-body row">
+						<div class="card-body row mx-0">
 							<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
 								<div class="card">
 									<div class="card-body text-center pt-3">
