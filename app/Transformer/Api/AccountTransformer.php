@@ -26,6 +26,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'avatar_static' => $profile->avatarUrl(),
 			'header' => null,
 			'header_static' => null,
+			'header_bg' => $profile->header_bg,
 			'moved' => null,
 			'fields' => null,
 			'bot' => null,
