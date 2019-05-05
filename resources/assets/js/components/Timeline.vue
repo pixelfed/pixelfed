@@ -389,7 +389,8 @@
 				followingCursor: 1,
 				followingMore: true,
 				lightboxMedia: false,
-				showSuggestions: false
+				showSuggestions: false,
+				showReadMore: true,
 			}
 		},
 
@@ -415,13 +416,21 @@
 				this.showSuggestions = true;
 			}
 
+			if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
+				this.showReadMore = false;
+			} else {
+				this.showReadMore = true;
+			}
+
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip()
 			});
 		},
 
 		updated() {
-			pixelfed.readmore();
+			if(this.showReadMore == true) {
+				pixelfed.readmore();
+			}
 		},
 
 		methods: {

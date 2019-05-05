@@ -162,9 +162,16 @@
 			<label class="form-check-label font-weight-bold" for="show_suggestions">
 				{{__('Profile Suggestions')}}
 			</label>
-			<p class="text-muted small help-text">Show Profile Suggestions</p>
+			<p class="text-muted small help-text">Show Profile Suggestions.</p>
 		</div>
 		@endif
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" name="show_readmore" id="show_readmore">
+			<label class="form-check-label font-weight-bold" for="show_readmore">
+				{{__('Use Read More')}}
+			</label>
+			<p class="text-muted small help-text">Collapses captions/comments more than 3 lines.</p>
+		</div>
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
 			<hr>
@@ -191,9 +198,14 @@
 <script type="text/javascript">
 $(document).ready(function() {
 	let showSuggestions = localStorage.getItem('pf_metro_ui.exp.rec') == 'false' ? false : true;
+	let showReadMore = localStorage.getItem('pf_metro_ui.exp.rm') == 'false' ? false : true;
 
 	if(showSuggestions == true) {
 		$('#show_suggestions').attr('checked', true);
+	}
+
+	if(showReadMore == true) {
+		$('#show_readmore').attr('checked', true);
 	}
 
 	$('#show_suggestions').on('change', function(e) {
@@ -202,7 +214,15 @@ $(document).ready(function() {
 		} else {
 			localStorage.setItem('pf_metro_ui.exp.rec', false);
 		}
-	})
+	});
+
+	$('#show_readmore').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.removeItem('pf_metro_ui.exp.rm');
+		} else {
+			localStorage.setItem('pf_metro_ui.exp.rm', false);
+		}
+	});
 });
 </script>
 @endpush
