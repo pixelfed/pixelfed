@@ -9,7 +9,7 @@
 					</div>
 				</div>
 				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
-					<div v-if="index == 2 && showSuggestions == true" class="card mb-sm-4 status-card card-md-rounded-0">
+					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0">
 						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
