@@ -34,10 +34,10 @@
 						</div>
 					</div>
 					<div v-else>
-						<div v-if="ids.length > 0 && ids.length != config.uploader.album_limit" class="card-header py-2 bg-primary m-2 rounded cursor-pointer" v-on:click="addMedia()">
+						<div v-if="ids.length > 0 && ids.length != config.uploader.album_limit" class="card-header py-2 bg-primary m-2 rounded cursor-pointer" v-on:click="addMedia($event)">
 							<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Add Photo</p>
 						</div>
-						<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia()">
+						<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia($event)">
 							<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos</p>
 						</div>
 						<div v-if="ids.length > 0">
@@ -316,7 +316,7 @@ export default {
 			});
 		},
 
-		addMedia() {
+		addMedia(event) {
 			let el = $(event.target);
 			el.attr('disabled', '');
 			let fi = $('.file-input[name="media"]');
