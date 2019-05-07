@@ -31,12 +31,146 @@
 			</label>
 			<p class="text-muted small help-text">MomentUI offers an alternative layout for posts and your profile.</p>
 		</div>
+		@if($profile->profile_layout == 'moment')
+		<div class="form-check pb-3">
+			<label class="form-check-label font-weight-bold mb-3" for="profile_layout">
+				{{__('MomentUI Profile Header Color')}}
+			</label>
+			<div class="row">
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-pixelfed rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Default</p>
+						<input class="form-check-input mx-0 pl-0" type="radio" name="moment_bg" value="default" {{$profile->header_bg == 'default' || !$profile->header_bg ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-azure rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Azure</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="azure" {{$profile->header_bg == 'azure' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-passion rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Passion</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="passion" {{$profile->header_bg == 'passion' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-reef rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Reef</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="reef" {{$profile->header_bg == 'reef' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-lush rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Lush</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="lush" {{$profile->header_bg == 'lush' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-neon rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Neon</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="neon" {{$profile->header_bg == 'neon' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-flare rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Flare</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="flare" {{$profile->header_bg == 'flare' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-morning rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Morning</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="morning" {{$profile->header_bg == 'morning' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-tranquil rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Tranquil</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="tranquil" {{$profile->header_bg == 'tranquil' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-mauve rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Mauve</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="mauve" {{$profile->header_bg == 'mauve' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-argon rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Argon</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="argon" {{$profile->header_bg == 'argon' ? 'checked':''}}>
+					</div>
+				</div>
+				<div class="col-6 col-sm-3 pb-5">
+					<div class="">
+						<p class="form-check-label">
+							<div class="bg-moment-royal rounded-circle box-shadow" style="width:60px; height:60px"></div>
+						</p>
+						<p class="mb-0 small text-muted">Royal</p>
+						<input class="form-check-input mx-0" type="radio" name="moment_bg" value="royal" {{$profile->header_bg == 'royal' ? 'checked':''}}>
+					</div>
+				</div>
+			</div>
+			<p class="text-muted small help-text">Set your MomentUI profile background color. Adding a custom header image will be supported in a future version.</p>
+		</div>
+		@endif
 		<div class="form-check pb-3">
 			<input class="form-check-input" type="checkbox" name="dark_mode" id="dark_mode" {{request()->hasCookie('dark-mode') ? 'checked':''}}>
 			<label class="form-check-label font-weight-bold" for="dark_mode">
 				{{__('MetroUI Dark Mode')}}
 			</label>
 			<p class="text-muted small help-text">Use dark mode theme.</p>
+		</div>
+		@if(config('exp.rec') == true)
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" name="show_suggestions" id="show_suggestions">
+			<label class="form-check-label font-weight-bold" for="show_suggestions">
+				{{__('Profile Suggestions')}}
+			</label>
+			<p class="text-muted small help-text">Show Profile Suggestions.</p>
+		</div>
+		@endif
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" name="show_readmore" id="show_readmore">
+			<label class="form-check-label font-weight-bold" for="show_readmore">
+				{{__('Use Read More')}}
+			</label>
+			<p class="text-muted small help-text">Collapses captions/comments more than 3 lines.</p>
 		</div>
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
@@ -59,3 +193,36 @@
 		</div>
 	</form>
 	@endsection
+
+@push('scripts')
+<script type="text/javascript">
+$(document).ready(function() {
+	let showSuggestions = localStorage.getItem('pf_metro_ui.exp.rec') == 'false' ? false : true;
+	let showReadMore = localStorage.getItem('pf_metro_ui.exp.rm') == 'false' ? false : true;
+
+	if(showSuggestions == true) {
+		$('#show_suggestions').attr('checked', true);
+	}
+
+	if(showReadMore == true) {
+		$('#show_readmore').attr('checked', true);
+	}
+
+	$('#show_suggestions').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.removeItem('pf_metro_ui.exp.rec');
+		} else {
+			localStorage.setItem('pf_metro_ui.exp.rec', false);
+		}
+	});
+
+	$('#show_readmore').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.removeItem('pf_metro_ui.exp.rm');
+		} else {
+			localStorage.setItem('pf_metro_ui.exp.rm', false);
+		}
+	});
+});
+</script>
+@endpush

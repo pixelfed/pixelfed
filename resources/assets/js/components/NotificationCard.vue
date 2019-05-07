@@ -67,7 +67,8 @@
 		data() {
 			return {
 				notifications: {},
-				notificationCursor: 2
+				notificationCursor: 2,
+				notificationMaxId: 0,
 			};
 		},
 
@@ -91,9 +92,12 @@
 						}
 						return true;
 					});
+					let ids = res.data.map(n => n.id);
+					this.notificationMaxId = Math.max(...ids);
 					this.notifications = data;
 					$('.notification-card .loader').addClass('d-none');
 					$('.notification-card .contents').removeClass('d-none');
+					this.notificationPoll();
 				});
 			},
 
@@ -161,6 +165,32 @@
 				let username = status.account.username;
 				let id = status.id;
 				return '/p/' + username + '/' + id;
+			},
+
+			notificationPoll() {
+				let interval = this.notifications.length > 5 ? 15000 : 120000;
+				let self = this;
+				setInterval(function() {
+					axios.get('/api/v1/notifications')
+					.then(res => {
+						let data = res.data.filter(n => {
+							if(n.type == 'share' || self.notificationMaxId >= n.id) {
+								return false;
+							}
+							return true;
+						});
+						if(data.length) {
+							let ids = data.map(n => n.id);
+							self.notificationMaxId = Math.max(...ids);
+
+							self.notifications.unshift(...data);
+							let beep = new Audio('/static/beep.mp3');
+							beep.volume = 0.7;
+							beep.play();
+							$('.notification-card .far.fa-bell').addClass('fas text-danger').removeClass('far text-muted');
+						}
+					});
+				}, interval);
 			}
 		}
 	}

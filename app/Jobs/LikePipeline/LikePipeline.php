@@ -69,19 +69,13 @@ class LikePipeline implements ShouldQueue
             $notification->profile_id = $status->profile_id;
             $notification->actor_id = $actor->id;
             $notification->action = 'like';
-            $notification->message = $like->toText();
-            $notification->rendered = $like->toHtml();
+            $notification->message = $like->toText($status->in_reply_to_id ? 'comment' : 'post');
+            $notification->rendered = $like->toHtml($status->in_reply_to_id ? 'comment' : 'post');
             $notification->item_id = $status->id;
             $notification->item_type = "App\Status";
             $notification->save();
 
-            Cache::forever('notification.'.$notification->id, $notification);
-
-            $redis = Redis::connection();
-            $key = config('cache.prefix').':user.'.$status->profile_id.'.notifications';
-            $redis->lpush($key, $notification->id);
         } catch (Exception $e) {
-            Log::error($e);
         }
     }
 }
