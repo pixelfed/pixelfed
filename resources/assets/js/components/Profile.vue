@@ -23,7 +23,7 @@
 										</div>
 										<div class="col-7 pl-2">
 											<p class="align-middle">
-												
+
 											<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
 											<span class="float-right mb-0" v-if="!loading && profile.id != user.id && user.hasOwnProperty('id')">
 												<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
@@ -57,7 +57,7 @@
 									</span>
 									<span class="pl-4">
 										<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
-									</span>	
+									</span>
 									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
 										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
 									</span>
@@ -312,7 +312,7 @@
 							<div class="col-4 text-right mt-2">
 									<span class="d-none d-md-inline-block pl-4">
 										<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
-									</span>	
+									</span>
 									<span class="pl-md-4 pl-sm-2" v-if="owner">
 										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
 									</span>
@@ -983,7 +983,7 @@ export default {
         if(res.data.length < 10) {
 					this.followerMore = false;
 				}
-			})	
+			})
 			this.$refs.followerModal.show();
 		},
 

@@ -45,7 +45,7 @@
           </div>
          </div>
           <div class="col-12 col-md-8 px-0 mx-0">
-              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center">
+              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center" v-on:dblclick="likeStatus">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
                 </div>
@@ -212,7 +212,7 @@
 
     <div v-if="profileLayout == 'moment'" class="momentui">
       <div class="bg-dark mt-md-n4">
-        <div class="container">
+        <div class="container" v-on:dblclick="likeStatus">
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
@@ -345,8 +345,8 @@
       </infinite-loading>
     </div>
   </b-modal>
-  <b-modal 
-    id="lightbox" 
+  <b-modal
+    id="lightbox"
     ref="lightboxModal"
     :hide-header="true"
     :hide-footer="true"
@@ -437,11 +437,11 @@ pixelfed.postComponent = {};
 
 export default {
     props: [
-      'status-id', 
-      'status-username', 
-      'status-template', 
-      'status-url', 
-      'status-profile-url', 
+      'status-id',
+      'status-username',
+      'status-template',
+      'status-url',
+      'status-profile-url',
       'status-avatar',
       'status-profile-id',
       'profile-layout'
@@ -732,7 +732,7 @@ export default {
 
       postReply() {
         let self = this;
-        if(this.replyText.length == 0 || 
+        if(this.replyText.length == 0 ||
           this.replyText.trim() == '@'+this.status.account.acct) {
           self.replyText = null;
           $('textarea[name="comment"]').blur();
@@ -769,7 +769,7 @@ export default {
 
       l(e) {
         let len = e.length;
-        if(len < 10) { return e; } 
+        if(len < 10) { return e; }
         return e.substr(0, 10)+'...';
       },
 
@@ -842,7 +842,7 @@ export default {
         if($('body').hasClass('loggedIn') == false) {
           return;
         }
-        
+
         axios.post('/i/like', {
           item: status.id
         }).then(res => {
@@ -900,7 +900,7 @@ export default {
           this.replyText += em + ' ';
           $('textarea[name="comment"]').focus();
         }
-      }, 
+      },
 
       toggleCommentVisibility() {
         if(this.ownerOrAdmin() == false) {

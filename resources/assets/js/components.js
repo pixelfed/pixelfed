@@ -13,7 +13,7 @@ Vue.use(VueTimeago, {
   locale: 'en'
 });
 
-pixelfed.readmore = function() {
+pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {
       let el = $(this);
       let attr = el.attr('data-readmore');
