@@ -87,7 +87,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer" v-on:doubletap="likeStatus(status, $event)">
+						<div class="postPresenterContainer" v-on:dblclick="likeStatus(status)">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
@@ -636,7 +636,7 @@
 				this.fetchStatusComments(status, '');
 			},
 
-			likeStatus(status, $event) {
+			likeStatus(status) {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}

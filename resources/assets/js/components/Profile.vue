@@ -212,7 +212,7 @@
 									</div>
 								</div>
 
-								<div class="postPresenterContainer" v-on:doubletap="likeStatus(status, $event)">
+								<div class="postPresenterContainer">
 									<div v-if="status.pf_type === 'photo'" class="w-100">
 										<photo-presenter :status="status"></photo-presenter>
 									</div>

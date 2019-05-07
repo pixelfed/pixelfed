@@ -18,7 +18,7 @@
 						<source :src="media.url" :type="media.mime">
 					</video>
 
-					<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class" v-on:click="$emit('lightbox', media)">
+					<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class">
 						<img class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description" loading="lazy">
 					</div>
 
@@ -42,7 +42,7 @@
 					<source :src="media.url" :type="media.mime">
 				</video>
 
-				<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class" v-on:click="$emit('lightbox', media)">
+				<div v-else-if="media.type == 'Image'" slot="img" :class="media.filter_class">
 					<img class="d-block img-fluid w-100" :src="media.url" :alt="media.description" :title="media.description" loading="lazy">
 				</div>
 
