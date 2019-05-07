@@ -45,7 +45,8 @@
         "vue-content-loader": "^0.2.1",
         "vue-infinite-loading": "^2.4.4",
         "vue-loading-overlay": "^3.2.0",
-        "vue-timeago": "^5.1.2"
+        "vue-timeago": "^5.1.2",
+        "vue-touch": "^2.0.0-beta.4"
     },
     "collective": {
         "type": "opencollective",

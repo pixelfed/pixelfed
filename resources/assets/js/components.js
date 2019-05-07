@@ -3,6 +3,7 @@ import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
+import VueTouch from 'vue-touch';
 //import {Howl, Howler} from 'howler';
 
 Vue.use(BootstrapVue);
@@ -11,9 +12,16 @@ Vue.use(Loading);
 Vue.use(VueTimeago, {
   name: 'Timeago',
   locale: 'en'
-});
+);
 
-pixelfed.readmore = function() {
+Vue.use(VueTouch, { name: 'v-touch' })
+VueTouch.registerCustomEvent('doubletap', {
+  type: 'tap',
+  taps: 2
+})
+
+
+pixelfed.readmore = () => {
   $('.read-more').each(function(k,v) {
       let el = $(this);
       let attr = el.attr('data-readmore');
