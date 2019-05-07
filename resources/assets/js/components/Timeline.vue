@@ -430,6 +430,7 @@
 		props: ['scope'],
 		data() {
 			return {
+				ids: [],
 				config: {},
 				page: 2,
 				feed: [],
@@ -544,6 +545,7 @@
 					let data = res.data;
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
+					this.ids = ids;
 					this.min_id = Math.max(...ids);
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
@@ -579,10 +581,15 @@
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
-						this.feed.push(...data);
-						let ids = data.map(status => status.id);
-						this.min_id = Math.max(...ids);
-						this.max_id = Math.min(...ids);
+						let self = this;
+						data.forEach(d => {
+							if(self.ids.indexOf(d.id) == -1) {
+								self.feed.push(d);
+								self.ids.push(d.id);
+							} 
+						});
+						this.min_id = Math.max(...this.ids);
+						this.max_id = Math.min(...this.ids);
 						this.page += 1;
 						$state.loaded();
 						this.loading = false;

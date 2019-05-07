@@ -516,6 +516,7 @@ export default {
 	],
 	data() {
 		return {
+			ids: [],
 			profile: {},
 			user: {},
 			timeline: [],
@@ -568,6 +569,7 @@ export default {
 			.then(res => {
 				let data = res.data;
 				let ids = data.map(status => status.id);
+				this.ids = ids;
 				this.min_id = Math.max(...ids);
 				this.max_id = Math.min(...ids);
 				this.modalStatus = _.first(res.data);
@@ -601,9 +603,15 @@ export default {
 			}).then(res => {
 				if (res.data.length && this.loading == false) {
 					let data = res.data;
-					let ids = data.map(status => status.id);
-					this.max_id = Math.min(...ids);
-					this.timeline.push(...data);
+					let self = this;
+					data.forEach(d => {
+						if(self.ids.indexOf(d.id) == -1) {
+							self.timeline.push(d);
+							self.ids.push(d.id);
+						} 
+					});
+					this.min_id = Math.max(...this.ids);
+					this.max_id = Math.min(...this.ids);
 					$state.loaded();
 					this.loading = false;
 				} else {
