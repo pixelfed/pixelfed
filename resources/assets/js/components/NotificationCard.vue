@@ -167,6 +167,38 @@
 				return '/p/' + username + '/' + id;
 			},
 
+            webNotify(notification) {
+
+                const title = `${notification.account.username} ${{
+                    "favourite": "liked your post"
+                    "comment": "commented on your post"
+                    "mention": "mentioned you"
+                    "follow": "followed you"
+                    "share": "shared your post"
+                }[notification.type]}`;
+
+                const options = {image: notification.account.avatar}
+
+                let n;
+
+                if (!("Notification" in window)) return
+                else if (Notification.permission === 'granted') {
+                    n = new Notification(title, options);
+                }
+                else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission(function (permission) {
+                        if (permission === "granted") {
+                            n = new Notification(title, options);
+                        }
+                    });
+                }
+
+                n.onclick(e => {
+                    e.preventDefault();
+                    window.open(notification.account.url, '_blank');
+                })
+            },
+
 			notificationPoll() {
 				let interval = this.notifications.length > 5 ? 15000 : 120000;
 				let self = this;
@@ -179,14 +211,15 @@
 							}
 							return true;
 						});
-						if(data.length) {
-							let ids = data.map(n => n.id);
+						if(notification.length) {
+							let ids = notification.map(n => n.id);
 							self.notificationMaxId = Math.max(...ids);
 
-							self.notifications.unshift(...data);
+							self.notifications.unshift(...notification);
 							let beep = new Audio('/static/beep.mp3');
 							beep.volume = 0.7;
 							beep.play();
+                            webNotify(notification)
 							$('.notification-card .far.fa-bell').addClass('fas text-danger').removeClass('far text-muted');
 						}
 					});
