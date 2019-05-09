@@ -325,6 +325,7 @@ class InternalApiController extends Controller
                 # code...
                 break;
         }
+        Cache::forget('profiles:private');
         return ['msg' => 200];
     }
 
