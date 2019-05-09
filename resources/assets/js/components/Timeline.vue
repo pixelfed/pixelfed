@@ -1,7 +1,7 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div class="col-md-8 col-lg-8 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1">
+		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1']">
 			<div style="padding-top:10px;">
 				<div v-if="loading" class="text-center">
 					<div class="spinner-border" role="status">
@@ -40,7 +40,7 @@
 						</div>
 					</div>
 					<div class="card mb-sm-4 status-card card-md-rounded-0">
-						<div class="card-header d-inline-flex align-items-center bg-white">
+						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
 							<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
 								{{status.account.username}}
@@ -114,13 +114,13 @@
 						</div>
 
 						<div class="card-body">
-							<div class="reactions my-1">
+							<div v-if="!modes.distractionFree" class="reactions my-1">
 								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 								<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 							</div>
 
-							<div class="likes font-weight-bold" v-if="expLc(status) == true">
+							<div class="likes font-weight-bold" v-if="expLc(status) == true && !modes.distractionFree">
 								<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
 							</div>
 							<div class="caption">
@@ -147,6 +147,9 @@
 								<p class="small text-uppercase mb-0">
 									<a :href="status.url" class="text-muted">
 										<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+									</a>
+									<a v-if="modes.distractionFree" class="float-right" :href="status.url">
+										<i class="fas fa-ellipsis-h fa-lg text-muted"></i>
 									</a>
 								</p>
 							</div>
@@ -203,7 +206,7 @@
 			</div>
 		</div>
 
-		<div class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2 d-none d-md-block">
+		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2 d-none d-md-block">
 			<div class="position-sticky" style="top:68px;">
 				<div class="mb-4">
 					<div class="">
@@ -447,7 +450,8 @@
 					'mod': false,
 					'dark': false,
 					'notify': true,
-					'infinite': true
+					'infinite': true,
+					'distractionFree': false
 				},
 				followers: [],
 				followerCursor: 1,
@@ -459,7 +463,7 @@
 				showSuggestions: false,
 				showReadMore: true,
 				replyStatus: {},
-				replyText: '',
+				replyText: ''
 			}
 		},
 
@@ -485,10 +489,17 @@
 				this.showSuggestions = true;
 			}
 
+
 			if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
 				this.showReadMore = false;
 			} else {
 				this.showReadMore = true;
+			}
+
+			if(localStorage.getItem('pf_metro_ui.exp.df') == 'true') {
+				this.modes.distractionFree = true;
+			} else {
+				this.modes.distractionFree = false;
 			}
 
 			this.$nextTick(function () {

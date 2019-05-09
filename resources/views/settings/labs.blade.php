@@ -172,6 +172,11 @@
 			</label>
 			<p class="text-muted small help-text">Collapses captions/comments more than 3 lines.</p>
 		</div>
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" id="distraction_free">
+			<label class="form-check-label font-weight-bold">Simple Mode (Timelines only)</label>
+			<p class="text-muted small help-text">An experimental content-first timeline layout</p>
+		</div>
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
 			<hr>
@@ -199,6 +204,7 @@
 $(document).ready(function() {
 	let showSuggestions = localStorage.getItem('pf_metro_ui.exp.rec') == 'false' ? false : true;
 	let showReadMore = localStorage.getItem('pf_metro_ui.exp.rm') == 'false' ? false : true;
+	let distractionFree = localStorage.getItem('pf_metro_ui.exp.df') == 'true' ? true : false;
 
 	if(showSuggestions == true) {
 		$('#show_suggestions').attr('checked', true);
@@ -206,6 +212,10 @@ $(document).ready(function() {
 
 	if(showReadMore == true) {
 		$('#show_readmore').attr('checked', true);
+	}
+
+	if(distractionFree == true) {
+		$('#distraction_free').attr('checked', true);
 	}
 
 	$('#show_suggestions').on('change', function(e) {
@@ -221,6 +231,14 @@ $(document).ready(function() {
 			localStorage.removeItem('pf_metro_ui.exp.rm');
 		} else {
 			localStorage.setItem('pf_metro_ui.exp.rm', false);
+		}
+	});
+
+	$('#distraction_free').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.setItem('pf_metro_ui.exp.df', true);
+		} else {
+			localStorage.removeItem('pf_metro_ui.exp.df');
 		}
 	});
 });
