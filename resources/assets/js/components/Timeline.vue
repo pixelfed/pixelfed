@@ -471,10 +471,10 @@
 			axios.get('/api/v2/config')
 			.then(res => {
 				this.config = res.data;
-				this.fetchTimelineApi();
 				if(window.outerWidth > 767) {
 					this.fetchProfile();
 				}
+				this.fetchTimelineApi();
 			});
 		},
 
@@ -488,7 +488,6 @@
 			} else {
 				this.showSuggestions = true;
 			}
-
 
 			if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
 				this.showReadMore = false;
@@ -523,6 +522,7 @@
 					$('.profile-card .loader').addClass('d-none');
 					$('.profile-card .contents').removeClass('d-none');
 					$('.profile-card .card-footer').removeClass('d-none');
+					this.expRec();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -561,7 +561,6 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
-					this.expRec();
 				}).catch(err => {
 				});
 			},
