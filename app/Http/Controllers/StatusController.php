@@ -229,13 +229,11 @@ class StatusController extends Controller
         $this->authCheck();
         
         $this->validate($request, [
-          'item'    => 'required|integer',
+          'item'    => 'required|integer|min:1',
         ]);
 
         $profile = Auth::user()->profile;
         $status = Status::withCount('shares')->findOrFail($request->input('item'));
-
-        Cache::forget('transform:status:'.$status->url());
 
         $count = $status->shares_count;
 
