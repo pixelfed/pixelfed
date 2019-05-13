@@ -45,6 +45,7 @@ class SuggestionService {
 			$ids = Profile::whereNull('domain')
 				->whereIsSuggestable(true)
 				->whereIsPrivate(false)
+				->whereHas('statuses')
 				->pluck('id');
 			foreach($ids as $id) {
 				self::set($id);

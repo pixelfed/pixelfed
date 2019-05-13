@@ -20,13 +20,11 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-        'item'    => 'required|integer',
+        'item'    => 'required|integer|min:1',
       ]);
 
         $profile = Auth::user()->profile;
         $status = Status::withCount('likes')->findOrFail($request->input('item'));
-
-        Cache::forget('transform:status:'.$status->url());
 
         $count = $status->likes_count;
 
@@ -47,8 +45,6 @@ class LikeController extends Controller
                ->orderBy('id', 'desc')
                ->take(1000)
                ->pluck('status_id');
-
-        Cache::put('api:like-ids:user:'.$profile->id, $likes, now()->addMinutes(1440));
 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];
