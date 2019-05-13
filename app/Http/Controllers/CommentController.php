@@ -43,8 +43,8 @@ class CommentController extends Controller
             abort(403);
         }
         $this->validate($request, [
-            'item'    => 'required|integer',
-            'comment' => 'required|string|max:500',
+            'item'    => 'required|integer|min:1',
+            'comment' => 'required|string|max:'.(int) config('pixelfed.max_caption_length'),
         ]);
         $comment = $request->input('comment');
         $statusId = $request->item;
@@ -56,8 +56,6 @@ class CommentController extends Controller
         if($status->comments_disabled == true) {
             return;
         }
-
-        Cache::forget('transform:status:'.$status->url());
 
         $reply = DB::transaction(function() use($comment, $status, $profile) {
             $autolink = Autolink::create()->autolink($comment);
