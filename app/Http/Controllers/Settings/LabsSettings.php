@@ -53,7 +53,9 @@ trait LabsSettings {
 			if($profile->is_suggestable == false) {
 				$profile->is_suggestable = true;
 				$changes = true;
-				SuggestionService::set($profile->id);
+				if($profile->statuses->count() > 0) {
+					SuggestionService::set($profile->id);
+				}
 			} 
 		} else {
 			$profile->is_suggestable = false;
