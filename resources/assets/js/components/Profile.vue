@@ -511,8 +511,9 @@
 export default {
 	props: [
 		'profile-id',
+		'profile-layout',
 		'profile-settings',
-		'profile-layout'
+		'profile-username'
 	],
 	data() {
 		return {
@@ -541,6 +542,10 @@ export default {
 	beforeMount() {
 		this.fetchRelationships();
 		this.fetchProfile();
+		if(window.outerWidth < 576 && window.history.length > 2) {
+			$('nav.navbar').hide();
+			$('body').prepend('<div class="bg-white p-3 border-bottom"><div class="d-flex justify-content-between align-items-center"><div onclick="window.history.back();"><i class="fas fa-chevron-left fa-lg"></i></div><div class="font-weight-bold">' + this.profileUsername + '</div><div><i class="fas fa-chevron-right text-white fa-lg"></i></div></div></div>');
+		}
 	},
 
 	mounted() {
