@@ -40,19 +40,24 @@ class SeedFollows extends Command
      */
     public function handle()
     {
-        $limit = 10000;
+        $limit = 100;
 
         for ($i = 0; $i < $limit; $i++) {
             try {
-                $actor = Profile::inRandomOrder()->firstOrFail();
-                $target = Profile::inRandomOrder()->firstOrFail();
+                $actor = Profile::whereDomain(false)->inRandomOrder()->firstOrFail();
+                $target = Profile::whereDomain(false)->inRandomOrder()->firstOrFail();
 
-                $follow = new Follower();
-                $follow->profile_id = $actor->id;
-                $follow->following_id = $target->id;
-                $follow->save();
+                if($actor->id == $target->id) {
+                    continue;
+                }
 
-                FollowPipeline::dispatch($follow);
+                $follow = Follower::firstOrCreate([
+                    'profile_id'    => $actor->id,
+                    'following_id'  => $target->id
+                ]);
+                if($follow->wasRecentlyCreated == true) {
+                    FollowPipeline::dispatch($follow);
+                }
             } catch (Exception $e) {
                 continue;
             }
