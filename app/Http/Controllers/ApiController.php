@@ -9,8 +9,7 @@ use App\{
     Profile,
     UserFilter
 };
-use Auth;
-use Cache;
+use Auth, Cache, Redis;
 use Illuminate\Http\Request;
 use App\Services\SuggestionService;
 
@@ -70,6 +69,13 @@ class ApiController extends BaseApiController
                   ->whereIn('filter_type', ['mute', 'block'])
                   ->pluck('filterable_id')->toArray();
         $following = array_merge($following, $filters);
+
+        $key = config('cache.prefix').':api:local:exp:rec:'.$id;
+        $ttl = (int) Redis::ttl($key);
+
+        if($request->filled('refresh') == true  && (290 > $ttl) == true) {
+            Cache::forget('api:local:exp:rec:'.$id);
+        }
 
         $res = Cache::remember('api:local:exp:rec:'.$id, now()->addMinutes(5), function() use($id, $following, $ids) {
             return Profile::select(
