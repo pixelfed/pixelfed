@@ -79,6 +79,15 @@
                                 <p class="small mb-0 text-muted text-center">{{__('navmenu.viewMyProfile')}}</p>
                             </a>
                             <div class="dropdown-divider"></div>
+                            <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
+                                <span class="far fa-compass pr-1"></span>
+                                {{__('navmenu.discover')}}
+                            </a>
+                            <a class="dropdown-item font-weight-bold" href="{{route('notifications')}}">
+                                <span class="far fa-bell pr-1"></span>
+                                Notifications
+                            </a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">
                                 <span class="fas fa-home pr-1"></span>
                                 {{__('navmenu.myTimeline')}}
@@ -91,11 +100,6 @@
                                 <span class="fas fa-globe pr-1"></span>
                                 Network Timeline
                             </a> --}}
-                            <div class="d-block d-md-none dropdown-divider"></div>
-                            <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
-                                <span class="far fa-compass pr-1"></span>
-                                {{__('navmenu.discover')}}
-                            </a>
                             {{-- <a class="dropdown-item font-weight-bold" href="{{route('messages')}}">
                                 <span class="far fa-envelope pr-1"></span>
                                 {{__('navmenu.directMessages')}}
