@@ -274,7 +274,7 @@
 				<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
 					<div class="card">
 						<div class="card-header bg-white d-flex align-items-center justify-content-between">
-							<div></div>
+							<a class="small text-muted cursor-pointer" href="#" @click.prevent="refreshSuggestions" ref="suggestionRefresh"><i class="fas fa-sync-alt"></i></a>
 							<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
 							<div class="small text-muted cursor-pointer" v-on:click="hideSuggestions"><i class="fas fa-times"></i></div>
 						</div>
@@ -1067,7 +1067,6 @@
 				if(this.config.ab.rec == false) {
 					return;
 				}
-
 				axios.get('/api/local/exp/rec')
 				.then(res => {
 					this.suggestions = res.data;
@@ -1123,6 +1122,39 @@
 					$('textarea[name="comment"]').focus();
 				}
 			}, 
+
+			refreshSuggestions() {
+				let el = event.target.parentNode;
+				if(el.classList.contains('disabled') == true) {
+					return;
+				}
+				axios.get('/api/local/exp/rec', {
+					params: {
+						refresh: true
+					}
+				})
+				.then(res => {
+					this.suggestions = res.data;
+
+					if (el.classList) {
+						el.classList.add('disabled');
+						el.classList.add('text-light');
+					}
+					else {
+						el.className += ' ' + 'disabled text-light';
+					}
+					setTimeout(function() {
+						el.setAttribute('href', '#');
+						if (el.classList) {
+							el.classList.remove('disabled');
+							el.classList.remove('text-light');
+						}
+						else {
+							el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), 'disabled text-light');
+						}
+					}, 10000);
+				});
+			}
 		}
 	}
 </script>
