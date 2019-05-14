@@ -33,7 +33,10 @@
             <name> <![CDATA[{{ $item->profile->username }}]]></name>
         </author>
         <summary type="html">
-            {{ $item->caption }}
+        <![CDATA[
+            <img id="rss_item_{{$loop->iteration}}" src="{{ $item->thumb() }}">
+            <p style="padding:10px;">{{ $item->caption }}</p>
+          ]]>
         </summary>
         <updated>{{ $item->updated_at->toAtomString() }}</updated>
     </entry>
