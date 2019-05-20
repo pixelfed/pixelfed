@@ -471,9 +471,7 @@
 			axios.get('/api/v2/config')
 			.then(res => {
 				this.config = res.data;
-				if(window.outerWidth > 767) {
-					this.fetchProfile();
-				}
+				this.fetchProfile();
 				this.fetchTimelineApi();
 			});
 		},
