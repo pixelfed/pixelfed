@@ -16,6 +16,7 @@ services:
     # Comment to use dockerhub image
     build: .
     image: pixelfed
+    restart: always
     ## If you have a traefik running, uncomment this to expose Pixelfed
     # labels:
     #   - traefik.enable=true
@@ -37,6 +38,7 @@ services:
     # Comment to use dockerhub image
     build: .
     image: pixelfed
+    restart: always
     env_file:
       - ./.env
     volumes:
@@ -49,6 +51,7 @@ services:
     
   db:
     image: mysql:8.0
+    restart: always
     networks:
       - internal
     environment:
@@ -61,6 +64,7 @@ services:
 
   redis:
     image: redis:5-alpine
+    restart: always
     volumes:
       - "redis-data:/data"
     networks:
