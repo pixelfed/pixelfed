@@ -107,7 +107,7 @@
             <div class="d-flex flex-md-column flex-column-reverse h-100">
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
-                  <p class="mb-1 read-more" style="overflow: hidden;">
+                  <p :class="[status.content.length > 420 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
                     <span class="font-weight-bold pr-1">{{statusUsername}}</span>
                     <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                   </p>
@@ -121,7 +121,7 @@
                     <div class="postCommentsContainer d-none pt-3">
                       <p v-if="status.reply_count > 10"class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
                       <div class="comments">
-                        <div v-for="(reply, index) in results" class="pb-3">
+                        <div v-for="(reply, index) in results" class="pb-3" :key="'tl' + reply.id + '_' + index">
                           <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                             <span>
                               <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
@@ -133,7 +133,7 @@
                             </span>
                           </p>
                           <p class="">
-                            <a class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
+                            <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
                             <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
                             <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
                           </p>
@@ -142,12 +142,23 @@
                              <span class="comment-reaction font-weight-bold text-muted">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
                           </div>
                           <div v-if="reply.thread == true" class="comment-thread">
-                            <p class="d-flex justify-content-between align-items-top read-more pb-3" style="overflow-y: hidden;" v-for="(s, index) in reply.replies">
-                              <span>
-                                <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
-                                <span class="text-break" v-html="s.content"></span>
-                              </span>
-                            </p>
+                            <div v-for="(s, sindex) in reply.replies" class="pb-3" :key="'cr' + s.id + '_' + index">
+                              <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+                                <span>
+                                  <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
+                                  <span class="text-break" v-html="s.content"></span>
+                                </span>
+                                <span class="pl-2" style="min-width:38px">
+                                  <span v-on:click="likeReply(s, $event)"><i v-bind:class="[s.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+                                    <post-menu :status="s" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteCommentReply(s.id, sindex, index) "></post-menu>
+                                </span>
+                              </p>
+                              <p class="" v-once>
+                                <a class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
+                                <span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
+                                <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(s, sindex)">Reply</span>
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -767,6 +778,18 @@ export default {
           item: id
         }).then(res => {
           this.results.splice(i, 1);
+        }).catch(err => {
+          swal('Something went wrong!', 'Please try again later', 'error');
+        });
+      },
+
+      deleteCommentReply(id, i, pi) {
+        axios.post('/i/delete', {
+          type: 'comment',
+          item: id
+        }).then(res => {
+          this.results[pi].replies.splice(i, 1);
+          --this.results[pi].reply_count;
         }).catch(err => {
           swal('Something went wrong!', 'Please try again later', 'error');
         });
