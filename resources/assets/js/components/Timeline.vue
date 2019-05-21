@@ -162,6 +162,7 @@
 								<li class="nav-item" v-on:click="emojiReaction(status)">❤️</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">🙌</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">👏</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)">👌</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">😍</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">😯</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">😢</li>
@@ -169,6 +170,7 @@
 								<li class="nav-item" v-on:click="emojiReaction(status)">😁</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">🙂</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">😎</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
 							</ul>
 						</div>
 
@@ -463,7 +465,8 @@
 				showSuggestions: false,
 				showReadMore: true,
 				replyStatus: {},
-				replyText: ''
+				replyText: '',
+				emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥']
 			}
 		},
 
