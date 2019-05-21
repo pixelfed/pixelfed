@@ -120,7 +120,7 @@
                     </div>
                     <div class="postCommentsContainer d-none pt-3">
                       <p v-if="status.reply_count > 10"class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
-                      <div class="comments" data-min-id="0" data-max-id="0">
+                      <div class="comments">
                         <div v-for="(reply, index) in results" class="pb-3">
                           <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                             <span>
@@ -133,9 +133,9 @@
                             </span>
                           </p>
                           <p class="">
-                            <span class="text-muted mr-3" style="width: 20px;" v-text="timeAgo(reply.created_at)"></span>
+                            <a class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
                             <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-                            <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply)">Reply</span>
+                            <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
                           </p>
                           <div v-if="reply.reply_count > 0" class="cursor-pointer" style="margin-left:30px;" v-on:click="toggleReplies(reply)">
                              <span class="show-reply-bar"></span>
@@ -473,6 +473,7 @@ export default {
             loaded: false,
             loading: null,
             replyingToId: this.statusId,
+            replyToIndex: 0,
             emoji: ['😀','😁','😂','🤣','😃','😄','😅','😆','😉','😊','😋','😎','😍','😘','😗','😙','😚','☺️','🙂','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😯','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','☹️','🙁','😖','😞','😟','😤','😢','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🙌','👏','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👌','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
           }
     },
@@ -750,7 +751,11 @@ export default {
             let elem = $('.status-comments')[0];
             elem.scrollTop = elem.clientHeight;
           } else {
-
+            if(self.replyToIndex >= 0) {
+              let el = self.results[self.replyToIndex];
+              el.replies.push(entity);
+              el.reply_count = el.reply_count + 1;
+            }
           }
           self.replyText = '';
         });
@@ -773,7 +778,8 @@ export default {
         return e.substr(0, 10)+'...';
       },
 
-      replyFocus(e) {
+      replyFocus(e, index) {
+          this.replyToIndex = index;
           this.replyingToId = e.id;
           this.reply_to_profile_id = e.account.id;
           this.replyText = '@' + e.account.username + ' ';
