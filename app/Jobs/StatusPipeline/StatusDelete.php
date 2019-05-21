@@ -2,6 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
+use DB;
 use App\{
     Notification,
     Report,
@@ -79,24 +80,32 @@ class StatusDelete implements ShouldQueue
             } catch (Exception $e) {
             }
         }
-        $comments = Status::where('in_reply_to_id', $status->id)->get();
-        foreach ($comments as $comment) {
-            $comment->in_reply_to_id = null;
-            $comment->save();
-            Notification::whereItemType('App\Status')
-                ->whereItemId($comment->id)
-                ->delete();
+        if($status->in_reply_to_id) {
+            DB::transaction(function() use($status) {
+                $parent = Status::findOrFail($status->in_reply_to_id);
+                --$parent->reply_count;
+                $parent->save();
+            });
         }
-
-        $status->likes()->delete();
-        Notification::whereItemType('App\Status')
-            ->whereItemId($status->id)
-            ->delete();
-        StatusHashtag::whereStatusId($status->id)->delete();
-        Report::whereObjectType('App\Status')
-            ->whereObjectId($status->id)
-            ->delete();
-        $status->delete();
+        DB::transaction(function() use($status) {
+            $comments = Status::where('in_reply_to_id', $status->id)->get();
+            foreach ($comments as $comment) {
+                $comment->in_reply_to_id = null;
+                $comment->save();
+                Notification::whereItemType('App\Status')
+                    ->whereItemId($comment->id)
+                    ->delete();
+            }
+            $status->likes()->delete();
+            Notification::whereItemType('App\Status')
+                ->whereItemId($status->id)
+                ->delete();
+            StatusHashtag::whereStatusId($status->id)->delete();
+            Report::whereObjectType('App\Status')
+                ->whereObjectId($status->id)
+                ->delete();
+            $status->delete();
+        });
 
         return true;
     }

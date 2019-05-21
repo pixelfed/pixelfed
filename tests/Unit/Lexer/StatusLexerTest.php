@@ -62,4 +62,48 @@ class StatusLexerTest extends TestCase
         $expected = '@<a class="u-url mention" href="https://pixelfed.dev/pixelfed" rel="external nofollow noopener" target="_blank">pixelfed</a> hi, really like the website! <a href="https://pixelfed.dev/discover/tags/píxelfed?src=hash" title="#píxelfed" class="u-url hashtag" rel="external nofollow noopener">#píxelfed</a>';
         $this->assertEquals($this->autolink, $expected);
     }
+
+    /** @test **/
+    public function remoteMention()
+    {
+        $expected = [
+            "hashtags" => [
+                "dansup",
+            ],
+            "urls" => [],
+            "mentions" => [
+                "@dansup@mstdn.io",
+                "test",
+            ],
+            "replyto" => null,
+            "hashtags_with_indices" => [
+                [
+                    "hashtag" => "dansup",
+                    "indices" => [
+                        0,
+                        7,
+                    ],
+                ],
+            ],
+            "urls_with_indices" => [],
+            "mentions_with_indices" => [
+                [
+                    "screen_name" => "@dansup@mstdn.io",
+                    "indices" => [
+                        8,
+                        24,
+                    ],
+                ],
+                [
+                    "screen_name" => "test",
+                    "indices" => [
+                        25,
+                        30,
+                    ],
+                ],
+            ],
+        ];
+        $actual = Extractor::create()->extract('#dansup @dansup@mstdn.io @test');
+        $this->assertEquals($actual, $expected);
+    }
 }

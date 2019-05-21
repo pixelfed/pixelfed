@@ -79,6 +79,16 @@ class NotificationService {
 			$resource = new Fractal\Resource\Item($n, new NotificationTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
+	}
+
+	public static function setNotification(Notification $notification)
+	{
+		return Cache::remember('service:notification:'.$notification->id, now()->addDays(7), function() use($notification) {
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
+			return $fractal->createData($resource)->toArray();
+		});
 	} 
 
 	public static function warmCache($id, $stop = 100, $force = false)
