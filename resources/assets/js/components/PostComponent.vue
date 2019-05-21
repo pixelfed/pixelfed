@@ -153,8 +153,8 @@
                                     <post-menu :status="s" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteCommentReply(s.id, sindex, index) "></post-menu>
                                 </span>
                               </p>
-                              <p class="" v-once>
-                                <a class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
+                              <p class="">
+                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
                                 <span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
                                 <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(s, sindex)">Reply</span>
                               </p>
