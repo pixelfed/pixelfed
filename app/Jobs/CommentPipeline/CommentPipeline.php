@@ -2,16 +2,18 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use App\Notification;
-use App\Status;
-use Cache;
+use App\{
+    Notification,
+    Status
+};
+use App\Services\NotificationService;
+use DB, Cache, Log, Redis;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use Redis;
 
 class CommentPipeline implements ShouldQueue
 {
@@ -55,7 +57,7 @@ class CommentPipeline implements ShouldQueue
             return true;
         }
 
-        try {
+        DB::transaction(function() use($target, $actor, $comment) {
             $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
@@ -66,14 +68,8 @@ class CommentPipeline implements ShouldQueue
             $notification->item_type = "App\Status";
             $notification->save();
 
-            Cache::forever('notification.'.$notification->id, $notification);
-
-            $redis = Redis::connection();
-
-            $nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
-            $redis->lpush($nkey, $notification->id);
-        } catch (Exception $e) {
-            Log::error($e);
-        }
+            NotificationService::setNotification($notification);
+            NotificationService::set($notification->profile_id, $notification->id);
+        });
     }
 }
