@@ -112,7 +112,7 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
 
         foreach ($mentions as $mention) {
-            $mentioned = Profile::whereUsername($mention)->firstOrFail();
+            $mentioned = Profile::whereNull('domain')->whereUsername($mention)->firstOrFail();
 
             if (empty($mentioned) || !isset($mentioned->id)) {
                 continue;
