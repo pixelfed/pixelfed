@@ -9,6 +9,8 @@
 
 namespace App\Util\Lexer;
 
+use Illuminate\Support\Str;
+
 /**
  * Twitter Autolink Class.
  *
@@ -413,7 +415,11 @@ class Autolink extends Regex
         $beginIndex = 0;
         foreach ($entities as $entity) {
             if (isset($entity['screen_name'])) {
-                $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex + 1);
+                if(Str::startsWith($entity['screen_name'], '@')) {
+                    $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
+                } else {
+                    $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex + 1);
+                }
             } else {
                 $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
             }
@@ -704,7 +710,7 @@ class Autolink extends Regex
 
         if (!empty($entity['list_slug'])) {
             // Replace the list and username
-            $linkText = $entity['screen_name'].$entity['list_slug'];
+            $linkText = $entity['screen_name'];
             $class = $this->class_list;
             $url = $this->url_base_list.$linkText;
         } else {

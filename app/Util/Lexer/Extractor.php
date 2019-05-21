@@ -9,6 +9,8 @@
 
 namespace App\Util\Lexer;
 
+use Illuminate\Support\Str;
+
 /**
  * Twitter Extractor Class.
  *
@@ -452,8 +454,9 @@ class Extractor extends Regex
             list($all, $before, $at, $username, $list_slug, $outer) = array_pad($match, 6, ['', 0]);
             $start_position = $at[1] > 0 ? StringUtils::strlen(substr($tweet, 0, $at[1])) : $at[1];
             $end_position = $start_position + StringUtils::strlen($at[0]) + StringUtils::strlen($username[0]);
+            $screenname = trim($all[0]) == '@'.$username[0] ? $username[0] : trim($all[0]);
             $entity = [
-                'screen_name' => $username[0],
+                'screen_name' => $screenname,
                 'list_slug'   => $list_slug[0],
                 'indices'     => [$start_position, $end_position],
             ];
