@@ -19,7 +19,10 @@ class ProfileController extends Controller
 {
     public function show(Request $request, $username)
     {
-        $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        $user = Profile::whereUsername($username)->firstOrFail();
+        if($user->domain) {
+            return redirect($user->remote_url);
+        }
         if($user->status != null) {
             return $this->accountCheck($user);
         } else {
@@ -252,12 +255,4 @@ class ProfileController extends Controller
         return view('profile.bookmarks', compact('user', 'profile', 'settings', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
     }
 
-    public function createCollection(Request $request)
-    {
-    }
-
-
-    public function collections(Request $request)
-    {
-    }
 }

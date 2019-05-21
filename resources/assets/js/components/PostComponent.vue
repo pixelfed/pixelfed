@@ -156,7 +156,6 @@
                               <p class="">
                                 <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
                                 <span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
-                                <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(s, sindex)">Reply</span>
                               </p>
                             </div>
                           </div>
