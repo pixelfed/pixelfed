@@ -88,10 +88,12 @@
             <span class="text-muted notification-timestamp pl-1">{{$notification->created_at->diffForHumans(null, true, true, true)}}</span>
           </span>
           <span class="float-right notification-action">
-            @if(false == true && $notification->item_id && $notification->item_type == 'App\Status')
+            @if($notification->item_id && $notification->item_type == 'App\Status')
+              @if($notification->status->parent()) 
               <a href="{{$notification->status->parent()->url()}}">
                 <div class="notification-image" style="background-image: url('{{$notification->status->parent()->thumb()}}')"></div>
               </a>
+              @endif
             @endif
           </span>
         @break
