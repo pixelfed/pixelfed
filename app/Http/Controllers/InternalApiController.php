@@ -63,17 +63,6 @@ class InternalApiController extends Controller
         });
         $following = array_merge($following, $filters);
 
-        $people = Profile::select('id', 'name', 'username')
-            ->with('avatar')
-            ->whereNull('status')
-            ->orderByRaw('rand()')
-            ->whereHas('statuses')
-            ->whereNull('domain')
-            ->whereNotIn('id', $following)
-            ->whereIsPrivate(false)
-            ->take(3)
-            ->get();
-
         $posts = Status::select('id', 'caption', 'profile_id')
               ->whereHas('media')
               ->whereIsNsfw(false)
@@ -85,58 +74,10 @@ class InternalApiController extends Controller
               ->get();
 
         $res = [
-            'people' => $people->map(function($profile) {
-                return [
-                    'id'    => $profile->id,
-                    'avatar' => $profile->avatarUrl(),
-                    'name' => $profile->name,
-                    'username' => $profile->username,
-                    'url'   => $profile->url(),
-                ];
-            }),
             'posts' => $posts->map(function($post) {
                 return [
                     'url' => $post->url(),
                     'thumb' => $post->thumb(),
-                ];
-            })
-        ];
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
-    public function discoverPeople(Request $request)
-    {
-        $profile = Auth::user()->profile;
-        $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(60), function() use ($pid) {
-            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
-        });
-        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(60), function() use($pid) {
-            return UserFilter::whereUserId($pid)
-            ->whereFilterableType('App\Profile')
-            ->whereIn('filter_type', ['mute', 'block'])
-            ->pluck('filterable_id')->toArray();
-        });
-        $following = array_merge($following, $filters);
-
-        $people = Profile::select('id', 'name', 'username')
-            ->with('avatar')
-            ->orderByRaw('rand()')
-            ->whereHas('statuses')
-            ->whereNull('domain')
-            ->whereNotIn('id', $following)
-            ->whereIsPrivate(false)
-            ->take(3)
-            ->get();
-
-        $res = [
-            'people' => $people->map(function($profile) {
-                return [
-                    'id'    => $profile->id,
-                    'avatar' => $profile->avatarUrl(),
-                    'name' => $profile->name,
-                    'username' => $profile->username,
-                    'url'   => $profile->url(),
                 ];
             })
         ];
