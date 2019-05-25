@@ -490,6 +490,16 @@ export default {
           }
     },
 
+    beforeMount() {
+      let u = new URLSearchParams(window.location.search);
+      if(u.has('ui') && u.get('ui') == 'moment' && this.profileLayout != 'moment') {
+        this.profileLayout = 'moment';
+      }
+      if(u.has('ui') && u.get('ui') == 'metro' && this.profileLayout != 'metro') {
+        this.profileLayout = 'metro';
+      }
+    },
+
     mounted() {
       this.fetchRelationships();
     },

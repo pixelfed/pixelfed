@@ -546,6 +546,13 @@ export default {
 			$('nav.navbar').hide();
 			$('body').prepend('<div class="bg-white p-3 border-bottom"><div class="d-flex justify-content-between align-items-center"><div onclick="window.history.back();"><i class="fas fa-chevron-left fa-lg"></i></div><div class="font-weight-bold">' + this.profileUsername + '</div><div><i class="fas fa-chevron-right text-white fa-lg"></i></div></div></div>');
 		}
+		let u = new URLSearchParams(window.location.search);
+		if(u.has('ui') && u.get('ui') == 'moment' && this.profileLayout != 'moment') {
+			this.profileLayout = 'moment';
+		}
+		if(u.has('ui') && u.get('ui') == 'metro' && this.profileLayout != 'metro') {
+			this.profileLayout = 'metro';
+		}
 	},
 
 	mounted() {
