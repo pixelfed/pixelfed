@@ -115,4 +115,9 @@ class DiscoverController extends Controller
       });
       return view('discover.personal', compact('posts', 'tags'));
     }
+
+    public function showLoops(Request $request)
+    {
+      return view('discover.loops.home');
+    }
 }
