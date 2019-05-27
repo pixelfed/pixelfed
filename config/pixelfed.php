@@ -78,13 +78,10 @@ return [
     |--------------------------------------------------------------------------
     |
     */
-    'ap_inbox' => env('ACTIVITYPUB_INBOX', false),
-    'ap_shared' => env('ACTIVITYPUB_SHAREDINBOX', false),
+    'activitypub_enabled' => env('ACTIVITY_PUB', false),
     'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
     'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
-    
-    'remote_follow_enabled' => env('REMOTE_FOLLOW', false),
-    'activitypub_enabled' => env('ACTIVITY_PUB', false),
+    'remote_follow_enabled' => false,
 
     /*
     |--------------------------------------------------------------------------
