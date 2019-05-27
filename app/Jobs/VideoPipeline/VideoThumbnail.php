@@ -34,6 +34,9 @@ class VideoThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
+        if($media->mime != 'video/mp4') {
+            return;
+        }
         $base = $media->media_path;
         $path = explode('/', $base);
         $name = last($path);
@@ -43,14 +46,11 @@ class VideoThumbnail implements ShouldQueue
             $i = count($path) - 1;
             $path[$i] = $t;
             $save = implode('/', $path);
-            $video = FFMpeg::open($base);
-            if($video->getDurationInSeconds() < 1) {
-                $video->getFrameFromSeconds(0);
-            } elseif($video->getDurationInSeconds() < 5) {
-                $video->getFrameFromSeconds(4);
-            }
-            $video->export()
-                ->save($save);
+            $video = FFMpeg::open($base)
+            ->getFrameFromSeconds(1)
+            ->export()
+            ->toDisk('local')
+            ->save($save);
 
             $media->thumbnail_path = $save;
             $media->save();
