@@ -87,7 +87,7 @@ class Status extends Model
         return Cache::remember('status:thumb:'.$this->id, now()->addMinutes(15), function() use ($showNsfw) {
             $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album'])) {
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album', 'video'])) {
                 return url(Storage::url('public/no-preview.png'));
             }
 
@@ -99,11 +99,12 @@ class Status extends Model
     {
         if($this->uri) {
             return $this->uri;
+        } else {
+            $id = $this->id;
+            $username = $this->profile->username;
+            $path = url(config('app.url')."/p/{$username}/{$id}");
+            return $path;
         }
-        $id = $this->id;
-        $username = $this->profile->username;
-        $path = url(config('app.url')."/p/{$username}/{$id}");
-        return $path;
     }
 
     public function permalink($suffix = '/activity')
@@ -207,6 +208,8 @@ class Status extends Model
         $parent = $this->in_reply_to_id ?? $this->reblog_of_id;
         if (!empty($parent)) {
             return $this->findOrFail($parent);
+        } else {
+            return false;
         }
     }
 
