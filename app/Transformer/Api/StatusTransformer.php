@@ -46,7 +46,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'reply_count'               => (int) $status->reply_count,
             'comments_disabled'         => $status->comments_disabled ? true : false,
             'thread'                    => false,
-            'replies'                   => []
+            'replies'                   => [],
+            'parent'                    => $status->parent() ? $this->transform($status->parent()) : [],
         ];
     }
 
@@ -67,8 +68,10 @@ class StatusTransformer extends Fractal\TransformerAbstract
     public function includeMediaAttachments(Status $status)
     {
         return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addMinutes(3), function() use($status) {
-            $media = $status->media()->orderBy('order')->get();
-            return $this->collection($media, new MediaTransformer());
+            if(in_array($status->type, ['photo', 'video'])) {
+                $media = $status->media()->orderBy('order')->get();
+                return $this->collection($media, new MediaTransformer());
+            }
         });
     }
 
