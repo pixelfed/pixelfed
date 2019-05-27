@@ -2,9 +2,9 @@
 	<div>
 		<div class="mb-4">
 			<p class="text-center">
-				<a :class="[tab == 'popular'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('popular')">Popular</a>
+				<!-- <a :class="[tab == 'popular'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('popular')">Popular</a> -->
 				<a :class="[tab == 'new'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('new')">New</a>
-				<a :class="[tab == 'random'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('random')">Random</a>
+				<!-- <a :class="[tab == 'random'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('random')">Random</a> -->
 				<a :class="[tab == 'about'? 'btn font-weight-bold py-0 btn-success' : 'btn font-weight-bold py-0 btn-outline-success']" href="#" @click.prevent="setTab('about')">About</a>
 			</p>
 		</div>
@@ -64,7 +64,7 @@ export default {
 		return {
 			'version': 1,
 			'loops': [],
-			'tab': 'popular'
+			'tab': 'new'
 		}
 	},
 
