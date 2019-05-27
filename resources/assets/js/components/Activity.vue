@@ -104,9 +104,7 @@ export default {
 	},
 
 	mounted() {
-		if(window.outerWidth > 767) {
-			this.fetchNotifications();
-		}
+		this.fetchNotifications();
 	},
 
 	updated() {
