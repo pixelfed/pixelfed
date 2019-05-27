@@ -27,18 +27,18 @@
             <ul class="navbar-nav ml-auto">
                     <div class="d-none d-md-block">
                         <li class="nav-item px-md-2">
-                            <a class="nav-link font-weight-bold {{request()->is('/') ?'text-primary':''}}" href="/" title="Home Timeline" data-toggle="tooltip" data-placement="bottom">
+                            <a class="nav-link font-weight-bold {{request()->is('/') ?'text-dark':'text-muted'}}" href="/" title="Home Timeline" data-toggle="tooltip" data-placement="bottom">
                                 <i class="fas fa-home fa-lg"></i>
                             </a>
                         </li>
                     </div>
-                    <div class="d-none d-md-block">
+                    {{-- <div class="d-none d-md-block">
                         <li class="nav-item px-md-2">
                             <a class="nav-link font-weight-bold {{request()->is('timeline/public') ?'text-primary':''}}" href="/timeline/public" title="Public Timeline" data-toggle="tooltip" data-placement="bottom">
                                <i class="far fa-map fa-lg"></i>
                            </a>
                        </li>
-                   </div> 
+                   </div>  --}}
                     
                     <li class="d-block d-md-none">
 
@@ -51,7 +51,7 @@
                     </li> --}}
                     <div class="d-none d-md-block">
                         <li class="nav-item px-md-2">
-                            <a class="nav-link font-weight-bold {{request()->is('*discover*') ?'text-primary':''}}" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
+                            <a class="nav-link font-weight-bold {{request()->is('*discover*') ?'text-dark':'text-muted'}}" href="{{route('discover')}}" title="Discover" data-toggle="tooltip" data-placement="bottom">
                                 <i class="far fa-compass fa-lg"></i>
                             </a>
                         </li>
@@ -60,7 +60,7 @@
                         <li class="nav-item px-md-2">
                             <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
                                 <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
-                                  <i class="far fa-plus-square fa-lg text-dark"></i>
+                                  <i class="fas fa-camera-retro fa-lg text-primary"></i>
                                 </a>
                             </div>
                         </li>
