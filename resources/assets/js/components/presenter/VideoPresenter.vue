@@ -6,14 +6,14 @@
 				<p class="font-weight-light">(click to show)</p>
 			</summary>
 			<div class="embed-responsive embed-responsive-16by9">
-				<video class="video" preload="none" controls loop>
+				<video class="video" preload="none" controls loop :poster="status.media_attachments[0].preview_url">
 					<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
 				</video>
 			</div>
 		</details>
 	</div>
 	<div v-else class="embed-responsive embed-responsive-16by9">
-		<video class="video" preload="none" controls loop>
+		<video class="video" preload="auto" controls loop :poster="status.media_attachments[0].preview_url">
 			<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
 		</video>
 	</div>
@@ -21,6 +21,6 @@
 
 <script type="text/javascript">
 	export default {
-		props: ['status']
+		props: ['status'],
 	}
 </script>
