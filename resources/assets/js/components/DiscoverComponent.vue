@@ -1,22 +1,18 @@
 <template>
 <div class="container">
 
-  <section class="d-none d-md-flex mb-md-5 pb-md-3 px-2" style="overflow-x: hidden;" v-if="categories.length > 0">
-    <a class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" href="/discover/personal">
-      <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;border-bottom: 2px solid #fff;">For You</p>
+  <section class="d-none d-md-flex mb-md-2 pt-2 discover-bar" style="width:auto; overflow: auto hidden;" v-if="categories.length > 0">
+    <a class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
+      <p class="text-success lead font-weight-bold mb-0">Loops</p>
     </a>
-
-    <div v-show="categoryCursor > 5" class="text-dark d-inline-flex align-items-center pr-3" v-on:click="categoryPrev()">
-      <i class="fas fa-chevron-circle-left fa-lg text-muted"></i>
-    </div>
+    <!-- <a class="text-decoration-none rounded d-inline-flex align-items-center justify-content-center mr-3 box-shadow card-disc" href="/discover/personal" style="background: rgb(255, 95, 109);">
+      <p class="text-white lead font-weight-bold mb-0">For You</p>
+    </a> -->
 
     <a v-for="(category, index) in categories" :key="index+'_cat_'" class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc" :href="category.url" :style="'background: linear-gradient(rgba(0, 0, 0, 0.3),rgba(0, 0, 0, 0.3)),url('+category.thumb+');'">
       <p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;">{{category.name}}</p>
     </a>
 
-    <div v-show="allCategories.length != categoryCursor" class="text-dark d-flex align-items-center" v-on:click="categoryNext()">
-      <i class="fas fa-chevron-circle-right fa-lg text-muted"></i>
-    </div>
   </section>
   <section class="mb-5 section-explore">
     <div class="profile-timeline">
@@ -41,7 +37,11 @@
 </template>
 
 <style type="text/css" scoped>
+  .discover-bar::-webkit-scrollbar { 
+      display: none; 
+  }
   .card-disc {
+    flex: 0 0 160px;
     width:160px;
     height:100px;
     background-size: cover !important;
@@ -52,12 +52,10 @@
 export default {
 	data() {
 		return {
-			people: {},
 			posts: {},
 			trending: {},
       categories: {},
       allCategories: {},
-      categoryCursor: 5,
 		}
 	},
 	mounted() {
@@ -84,17 +82,6 @@ export default {
     },
 
 		fetchData() {
-      // axios.get('/api/v2/discover/people')
-      // .then((res) => {
-      //   let data = res.data;
-      //   this.people = data.people;
-
-      //   if(this.people.length > 1) {
-      //     $('.section-people .loader').hide();
-      //     $('.section-people .row.d-none').removeClass('d-none');
-      //   }
-      // });
-
       axios.get('/api/v2/discover/posts')
       .then((res) => {
         let data = res.data;
@@ -111,30 +98,8 @@ export default {
       axios.get('/api/v2/discover/categories')
         .then(res => {
           this.allCategories = res.data;
-          this.categories = _.slice(res.data, 0, 5);
+          this.categories = res.data;
       });
-    },
-
-    categoryNext() {
-      if(this.categoryCursor > this.allCategories.length - 1) {
-        return;
-      }
-      this.categoryCursor++;
-      let cursor = this.categoryCursor;
-      let start = cursor - 5;
-      let end = cursor;
-      this.categories = _.slice(this.allCategories, start, end);
-    },
-
-    categoryPrev() {
-      if(this.categoryCursor == 5) {
-        return;
-      }
-      this.categoryCursor--;
-      let cursor = this.categoryCursor;
-      let start = cursor - 5;
-      let end = cursor;
-      this.categories = _.slice(this.allCategories, start, end);
     },
 	}
 }
