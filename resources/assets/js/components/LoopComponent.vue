@@ -10,7 +10,7 @@
 		</div>
 		<div v-if="tab != 'about'" class="row loops-container">
 			<div class="col-12 col-md-4 mb-3" v-for="(loop, index) in loops">
-				<div class="card">
+				<div class="card border border-success">
 					<div class="embed-responsive embed-responsive-1by1">
 						<video class="embed-responsive-item" :src="videoSrc(loop)" preload="auto" loop @click="toggleVideo(loop, $event)"></video>
 					</div>
@@ -39,7 +39,6 @@
 <style type="text/css">
 	.loops-container .card {
 		box-shadow: none;
-		border-radius: 0;
 	}
 	.loops-container .card .card-img-top{
 		border-radius: 0;
