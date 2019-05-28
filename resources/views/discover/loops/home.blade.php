@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-success" style="height:10px;"></div>
+<div class="bg-success" style="height:1.2px;"></div>
 <div class="profile-header">
   <div class="container pt-5">
     <div class="profile-details text-center">
       <div class="username-bar text-dark">
-        <p class="display-4 font-weight-bold mb-0">Loops <sup class="lead">BETA</sup></p>
+        <p class="display-4 font-weight-bold mb-0"><span class="text-success">Loops</span> <sup class="lead">BETA</sup></p>
         <p class="lead font-weight-lighter">Short looping videos</p>
       </div>
     </div>
