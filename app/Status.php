@@ -40,7 +40,8 @@ class Status extends Model
         'story',
         'story:reply',
         'story:reaction',
-        'story:live'
+        'story:live',
+        'loop'
     ];
 
     public function profile()
