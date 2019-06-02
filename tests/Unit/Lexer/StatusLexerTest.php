@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
+use App\Status;
 
 class StatusLexerTest extends TestCase
 {
@@ -105,5 +106,36 @@ class StatusLexerTest extends TestCase
         ];
         $actual = Extractor::create()->extract('#dansup @dansup@mstdn.io @test');
         $this->assertEquals($actual, $expected);
+    }
+
+    /** @test **/
+    public function mentionLimit()
+    {
+        $text = '@test1 @test @test2 @test3 @test4 @test5 test post';
+
+        $entities = Extractor::create()->extract($text);
+        $count = count($entities['mentions']);
+        $this->assertEquals($count, Status::MAX_MENTIONS);
+    }
+
+    /** @test **/
+    public function hashtagLimit()
+    {
+        $text = '#hashtag0 #hashtag1 #hashtag2 #hashtag3 #hashtag4 #hashtag5 #hashtag6 #hashtag7 #hashtag8 #hashtag9 #hashtag10 #hashtag11 #hashtag12 #hashtag13 #hashtag14 #hashtag15 #hashtag16 #hashtag17 #hashtag18 #hashtag19 #hashtag20 #hashtag21 #hashtag22 #hashtag23 #hashtag24 #hashtag25 #hashtag26 #hashtag27 #hashtag28 #hashtag29 #hashtag30 #hashtag31';
+
+        $entities = Extractor::create()->extract($text);
+        $count = count($entities['hashtags']);
+        $this->assertEquals($count, Status::MAX_HASHTAGS);
+    }
+
+
+    /** @test **/
+    public function linkLimit()
+    {
+        $text = 'https://example.org https://example.net https://example.com';
+
+        $entities = Extractor::create()->extract($text);
+        $count = count($entities['urls']);
+        $this->assertEquals($count, Status::MAX_LINKS);
     }
 }
