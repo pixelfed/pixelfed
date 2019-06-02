@@ -211,6 +211,10 @@ export default {
 						notification.relationship.following = true;
 					}
 				});
+			}).catch(err => {
+				if(err.response.data.message) {
+					swal('Error', err.response.data.message, 'error');
+				}
 			});
 		},
 

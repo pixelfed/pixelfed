@@ -37,6 +37,8 @@ class FollowerController extends Controller
     protected function handleFollowRequest($item)
     {
         $user = Auth::user()->profile;
+
+
         $target = Profile::where('id', '!=', $user->id)->whereNull('status')->findOrFail($item);
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
@@ -47,7 +49,7 @@ class FollowerController extends Controller
                 ->exists();
 
         if($blocked == true) {
-            return redirect()->back()->with('error', 'You cannot follow this user.');
+            abort(400, 'You cannot follow this user.');
         }
 
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
@@ -61,6 +63,13 @@ class FollowerController extends Controller
                 
             }
         } elseif ($isFollowing == 0) {
+            if($user->following()->count() >= Follower::MAX_FOLLOWING) {
+                abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
+            }
+
+            if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+                abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
+            }
             $follower = new Follower();
             $follower->profile_id = $user->id;
             $follower->following_id = $target->id;

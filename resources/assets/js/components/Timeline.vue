@@ -1083,7 +1083,11 @@
 						item: id
 				}).then(res => {
 					this.suggestions.splice(index, 1);
-				})
+				}).catch(err => {
+					if(err.response.data.message) {
+						swal('Error', err.response.data.message, 'error');
+					}
+				});
 			},
 
 			followModalAction(id, index, type = 'following') {
@@ -1093,7 +1097,11 @@
 					if(type == 'following') {
 						this.following.splice(index, 1);
 					}
-				})
+				}).catch(err => {
+					if(err.response.data.message) {
+						swal('Error', err.response.data.message, 'error');
+					}
+				});
 			},
 
 			owner(status) {

@@ -950,6 +950,10 @@ export default {
 					this.profile.followers_count++;
 				}
 				this.relationship.following = !this.relationship.following;
+			}).catch(err => {
+				if(err.response.data.message) {
+					swal('Error', err.response.data.message, 'error');
+				}
 			});
 		},
 
@@ -1064,7 +1068,11 @@ export default {
 					this.following.splice(index, 1);
 					this.profile.following_count--;
 				}
-			})
+			}).catch(err => {
+				if(err.response.data.message) {
+					swal('Error', err.response.data.message, 'error');
+				}
+			});
 		},
 
 		momentBackground() {

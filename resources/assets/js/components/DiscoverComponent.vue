@@ -73,11 +73,9 @@ export default {
         el.addClass('btn-outline-secondary').removeClass('btn-primary');
         el.text('Unfollow');
       }).catch(err => {
-        swal(
-          'Whoops! Something went wrong…',
-          'An error occurred, please try again later.',
-          'error'
-        );
+        if(err.response.data.message) {
+          swal('Error', err.response.data.message, 'error');
+        }
       });
     },
 
