@@ -44,6 +44,12 @@ class Status extends Model
         'loop'
     ];
 
+    const MAX_MENTIONS = 5;
+
+    const MAX_HASHTAGS = 30;
+
+    const MAX_LINKS = 2;
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);
