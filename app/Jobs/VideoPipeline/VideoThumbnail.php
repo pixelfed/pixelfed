@@ -47,7 +47,7 @@ class VideoThumbnail implements ShouldQueue
             $path[$i] = $t;
             $save = implode('/', $path);
             $video = FFMpeg::open($base)
-            ->getFrameFromSeconds(1)
+            ->getFrameFromSeconds(0)
             ->export()
             ->toDisk('local')
             ->save($save);
