@@ -62,11 +62,13 @@
 									<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
 								</a>
 							</div> -->
-							<div v-else-if="n.type == 'follow' && n.relationship.following == false">
+
+							<!-- <div v-else-if="n.type == 'follow' && n.relationship.following == false">
 								<a href="#" class="btn btn-primary py-0 font-weight-bold" @click.prevent="followProfile(n);">
 									Follow
 								</a>
-							</div>
+							</div> -->
+							
 							<!-- <div v-else-if="n.status && n.status.parent && !n.status.parent.media_attachments && n.type == 'like' && n.relationship.following == false">
 								<a href="#" class="btn btn-primary py-0 font-weight-bold">
 									Follow
