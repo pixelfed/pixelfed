@@ -113,11 +113,7 @@ export default {
 
 	methods: {
 		fetchNotifications() {
-			axios.get('/api/v1/notifications', {
-				params: {
-					pg: false
-				}
-			})
+			axios.get('/api/v1/notifications')
 			.then(res => {
 				let data = res.data.filter(n => {
 					if(n.type == 'share' && !status) {
@@ -140,8 +136,7 @@ export default {
 			}
 			axios.get('/api/v1/notifications', {
 				params: {
-					page: this.notificationCursor,
-					pg: false
+					page: this.notificationCursor
 				}
 			}).then(res => {
 				if(res.data.length > 0) {
