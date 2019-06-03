@@ -2,7 +2,7 @@
 <div class="container">
 
   <section class="d-none d-md-flex mb-md-2 pt-2 discover-bar" style="width:auto; overflow: auto hidden;" v-if="categories.length > 0">
-    <a class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
+    <a v-if="config.ab.loops == true" class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
       <p class="text-success lead font-weight-bold mb-0">Loops</p>
     </a>
     <!-- <a class="text-decoration-none rounded d-inline-flex align-items-center justify-content-center mr-3 box-shadow card-disc" href="/discover/personal" style="background: rgb(255, 95, 109);">
@@ -52,6 +52,7 @@
 export default {
 	data() {
 		return {
+      config: {},
 			posts: {},
 			trending: {},
       categories: {},
@@ -80,6 +81,11 @@ export default {
     },
 
 		fetchData() {
+      axios.get('/api/v2/config')
+      .then((res) => {
+        let data = res.data;
+        this.config = data;
+      });
       axios.get('/api/v2/discover/posts')
       .then((res) => {
         let data = res.data;
