@@ -115,7 +115,7 @@ export default {
 		fetchNotifications() {
 			axios.get('/api/v1/notifications', {
 				params: {
-					pg: true
+					pg: false
 				}
 			})
 			.then(res => {
@@ -141,7 +141,7 @@ export default {
 			axios.get('/api/v1/notifications', {
 				params: {
 					page: this.notificationCursor,
-					pg: true
+					pg: false
 				}
 			}).then(res => {
 				if(res.data.length > 0) {
