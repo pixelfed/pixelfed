@@ -96,8 +96,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('moderator/action', 'InternalApiController@modAction');
             Route::get('discover/categories', 'InternalApiController@discoverCategories');
             Route::post('status/compose', 'InternalApiController@composePost');
-            Route::get('loops', 'ApiController@loops');
-            Route::post('loops/watch', 'ApiController@loopWatch');
+            Route::get('loops', 'DiscoverController@loopsApi');
+            Route::post('loops/watch', 'DiscoverController@loopWatch');
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
