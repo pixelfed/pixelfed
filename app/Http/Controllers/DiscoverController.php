@@ -13,21 +13,31 @@ use App\{
 };
 use Auth, DB, Cache;
 use Illuminate\Http\Request;
+use App\Transformer\Api\StatusStatelessTransformer;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class DiscoverController extends Controller
 {
+    protected $fractal;
+
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->fractal = new Fractal\Manager();
+        $this->fractal->setSerializer(new ArraySerializer());
     }
 
     public function home(Request $request)
     {
+        abort_if(!Auth::check(), 403);
         return view('discover.home');
     }
 
     public function showTags(Request $request, $hashtag)
     {
+        abort_if(!Auth::check(), 403);
+
         $tag = Hashtag::whereSlug($hashtag)
           ->firstOrFail();
 
@@ -81,6 +91,8 @@ class DiscoverController extends Controller
 
     public function showCategory(Request $request, $slug)
     {
+      abort_if(!Auth::check(), 403);
+
       $tag = DiscoverCategory::whereActive(true)
         ->whereSlug($slug)
         ->firstOrFail();
@@ -99,6 +111,8 @@ class DiscoverController extends Controller
 
     public function showPersonal(Request $request)
     {
+      abort_if(!Auth::check(), 403);
+
       $profile = Auth::user()->profile;
 
       $tags = Cache::remember('profile-'.$profile->id.':hashtags', now()->addMinutes(15), function() use ($profile){
@@ -122,5 +136,36 @@ class DiscoverController extends Controller
         return redirect('/');
       }
       return view('discover.loops.home');
+    }
+
+    public function loopsApi(Request $request)
+    {
+        abort_if(!config('exp.loops'), 403);
+        
+        // todo proper pagination, maybe LoopService
+        $loops = Status::whereType('video')
+                ->whereScope('public')
+                ->latest()
+                ->take(18)
+                ->get();
+
+        $resource = new Fractal\Resource\Collection($loops, new StatusStatelessTransformer());
+        return $this->fractal->createData($resource)->toArray();
+    }
+
+
+    public function loopWatch(Request $request)
+    {
+        abort_if(!Auth::check(), 403);
+        abort_if(!config('exp.loops'), 403);
+
+        $this->validate($request, [
+            'id' => 'integer|min:1'
+        ]);
+        $id = $request->input('id');
+
+        // todo log loops
+
+        return response()->json(200);
     }
 }
