@@ -330,35 +330,4 @@ class BaseApiController extends Controller
 
         return response()->json($res);
     }
-
-    public function loops(Request $request)
-    {
-        abort_if(!Auth::check(), 403);
-        abort_if(!config('exp.loops'), 403);
-        
-        // todo proper pagination, maybe LoopService
-        $loops = Status::whereType('video')
-                ->latest()
-                ->take(18)
-                ->get();
-
-        $resource = new Fractal\Resource\Collection($loops, new StatusTransformer());
-        return $this->fractal->createData($resource)->toArray();
-    }
-
-
-    public function loopWatch(Request $request)
-    {
-        abort_if(!Auth::check(), 403);
-        abort_if(!config('exp.loops'), 403);
-
-        $this->validate($request, [
-            'id' => 'integer|min:1'
-        ]);
-        $id = $request->input('id');
-
-        // todo log loops
-
-        return response()->json(200);
-    }
 }
