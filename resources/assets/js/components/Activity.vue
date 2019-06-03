@@ -139,7 +139,7 @@ export default {
 					page: this.notificationCursor
 				}
 			}).then(res => {
-				if(res.data.length > 0) {
+				if(res.data.length) {
 					let data = res.data.filter(n => {
 						if(n.type == 'share' && !status) {
 							return false;
