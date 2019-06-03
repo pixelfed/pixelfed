@@ -46,6 +46,7 @@ class ApiController extends BaseApiController
                 'ab' => [
                     'lc' => config('exp.lc'),
                     'rec' => config('exp.rec'),
+                    'loops' => config('exp.loops')
                 ],
             ];
         });

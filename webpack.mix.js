@@ -37,6 +37,12 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // Developer Components
 .js('resources/assets/js/developers.js', 'public/js')
 
+// // Direct Component
+// .js('resources/assets/js/direct.js', 'public/js')
+
+// Loops Component
+.js('resources/assets/js/loops.js', 'public/js')
+
 .sass('resources/assets/sass/app.scss', 'public/css', {
 	implementation: require('node-sass')
 })

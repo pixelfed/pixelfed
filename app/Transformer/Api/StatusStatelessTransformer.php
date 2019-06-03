@@ -6,7 +6,7 @@ use App\Status;
 use League\Fractal;
 use Cache;
 
-class StatusTransformer extends Fractal\TransformerAbstract
+class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = [
         'account',
@@ -29,8 +29,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'emojis'                    => [],
             'reblogs_count'             => $status->shares()->count(),
             'favourites_count'          => $status->likes()->count(),
-            'reblogged'                 => $status->shared(),
-            'favourited'                => $status->liked(),
+            'reblogged'                 => null,
+            'favourited'                => null,
             'muted'                     => null,
             'sensitive'                 => (bool) $status->is_nsfw,
             'spoiler_text'              => $status->cw_summary,

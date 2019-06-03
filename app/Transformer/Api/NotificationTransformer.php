@@ -2,7 +2,10 @@
 
 namespace App\Transformer\Api;
 
-use App\Notification;
+use App\{
+	Notification,
+	Status
+};
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
@@ -10,6 +13,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 	protected $defaultIncludes = [
 		'account',
 		'status',
+		'relationship'
 	];
 
 	public function transform(Notification $notification)
@@ -30,9 +34,14 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 
 	public function includeStatus(Notification $notification)
 	{
-		$item = $notification->item;
-		if(is_object($item) && get_class($item) === 'App\Status') {
-			return $this->item($item, new StatusTransformer());
+		$item = $notification;
+		if($item->item_id && $item->item_type == 'App\Status') {
+			$status = Status::with('media')->find($item->item_id);
+			if($status) {
+				return $this->item($status, new StatusTransformer());
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}
@@ -49,5 +58,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'comment' => 'comment',
 		];
 		return $verbs[$verb];
+	}
+
+	public function includeRelationship(Notification $notification)
+	{
+		return $this->item($notification->actor, new RelationshipTransformer());
 	}
 }

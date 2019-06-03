@@ -48,7 +48,8 @@ class BaseApiController extends Controller
     public function notifications(Request $request)
     {
         $pid = Auth::user()->profile->id;
-        if(config('exp.ns') == false) {
+        $pg = $request->input('pg');
+        if($pg == true) {
             $timeago = Carbon::now()->subMonths(6);
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
@@ -272,6 +273,7 @@ class BaseApiController extends Controller
             'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id]
         );
 
+        $preview_url = $url;
         switch ($media->mime) {
             case 'image/jpeg':
             case 'image/png':
@@ -280,6 +282,8 @@ class BaseApiController extends Controller
 
             case 'video/mp4':
                 VideoThumbnail::dispatch($media);
+                $preview_url = '/storage/no-preview.png';
+                $url = '/storage/no-preview.png';
                 break;
             
             default:
@@ -288,7 +292,7 @@ class BaseApiController extends Controller
 
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $this->fractal->createData($resource)->toArray();
-        $res['preview_url'] = $url;
+        $res['preview_url'] = $preview_url;
         $res['url'] = $url;
         return response()->json($res);
     }
@@ -326,5 +330,4 @@ class BaseApiController extends Controller
 
         return response()->json($res);
     }
-
 }

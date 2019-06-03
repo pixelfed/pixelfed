@@ -12,7 +12,8 @@
     <ul>
       <li class="mb-3 ">People use the hashtag symbol (#) before a relevant phrase or keyword in their post to categorize those posts and make them more discoverable.</li>
       <li class="mb-3 ">Any hashtags will be linked to a hashtag page with other posts containing the same hashtag.</li>
-      <li class="">Hashtags can be used anywhere in a post.</li>
+      <li class="mb-3">Hashtags can be used anywhere in a post.</li>
+      <li class="">You can add up to 30 hashtags to your post or comment.</li>
     </ul>
   </div>
   <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">

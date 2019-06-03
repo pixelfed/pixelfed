@@ -163,4 +163,16 @@
 			</div>
 		</div>
 	</p>
+	<p>	
+		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse11" role="button" aria-expanded="false" aria-controls="collapse11">
+			<i class="fas fa-chevron-down mr-2"></i>
+			How many people can I tag or mention in my comments or posts?
+		</a>
+		<div class="collapse" id="collapse11">
+			<div>
+				You can tag or mention up to 5 profiles per comment or post.
+			</div>
+		</div>
+	</p>
+
 @endsection

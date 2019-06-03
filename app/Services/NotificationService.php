@@ -73,7 +73,7 @@ class NotificationService {
 	public static function getNotification($id)
 	{
 		return Cache::remember('service:notification:'.$id, now()->addDays(7), function() use($id) {
-			$n = Notification::findOrFail($id);
+			$n = Notification::with('item')->findOrFail($id);
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$resource = new Fractal\Resource\Item($n, new NotificationTransformer());

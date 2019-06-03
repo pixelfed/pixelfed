@@ -6,7 +6,7 @@
     <h3 class="font-weight-bold">Timelines</h3>
   </div>
   <hr>
-  <p class="lead">Timelines are chronological feeds of posts from accounts you follow or from other instances.</p>
+  <p class="lead">Timelines are chronological feeds of posts.</p>
   <p class="font-weight-bold h5 py-3">Pixelfed has 2 different timelines:</p>
 
   <ul>
@@ -26,4 +26,15 @@
       <span class="font-weight-light text-muted">Timeline with posts from local and remote accounts - coming soon!</span>
     </li> --}}
   </ul>
+  <div class="py-3"></div>
+  <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
+    <div class="card-header text-light font-weight-bold h4 p-4">Timeline Tips</div>
+    <div class="card-body bg-white p-3">
+      <ul class="pt-3">
+        <li class="lead mb-4">You can mute or block accounts to prevent them from appearing in timelines.</li>
+        <li class="lead mb-4">You can create <span class="font-weight-bold">Unlisted</span> posts that don't appear in public timelines.</li>
+
+      </ul>
+    </div>
+  </div>
 @endsection

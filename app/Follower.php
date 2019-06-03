@@ -9,6 +9,9 @@ class Follower extends Model
 
     protected $fillable = ['profile_id', 'following_id', 'local_profile'];
 
+    const MAX_FOLLOWING = 7500;
+    const FOLLOW_PER_HOUR = 20;
+
     public function actor()
     {
         return $this->belongsTo(Profile::class, 'profile_id', 'id');

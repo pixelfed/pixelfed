@@ -159,6 +159,11 @@ class AccountController extends Controller
         return view('account.messages');
     }
 
+    public function direct()
+    {
+        return view('account.direct');
+    }
+
     public function showMessage(Request $request, $id)
     {
         return view('account.message');

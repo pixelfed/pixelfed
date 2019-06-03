@@ -1,5 +1,16 @@
 <template>
 	<div>
+	<div v-if="!composeType">
+		<div class="card">
+			<div class="card-body">
+				<button type="button" class="btn btn-primary btn-block font-weight-bold" @click="composeType = 'post'">Compose Post</button>
+				<hr>
+				<!-- <button type="button" class="btn btn-outline-secondary btn-block font-weight-bold" @click="composeType = 'story'">Add Story</button> -->
+				<button type="button" class="btn btn-outline-secondary btn-block font-weight-bold" @click="composeType = 'loop'">Create Loop</button>
+			</div>
+		</div>
+	</div>
+	<div v-if="composeType == 'post'">
 		<input type="file" name="media" class="d-none file-input" multiple="" v-bind:accept="config.uploader.media_types">
 		<div class="timeline">
 			<div class="card status-card card-md-rounded-0">
@@ -198,6 +209,30 @@
 			</div>
 		</div>
 	</div>
+	<div v-if="composeType == 'loop'">
+		<div class="card">
+			<div class="card-body">
+				<button type="button" class="btn btn-primary btn-block font-weight-bold" @click="composeType = 'post'">Upload Loop</button>
+				<hr>
+				<button type="button" class="btn btn-outline-secondary btn-block font-weight-bold" @click="composeType = ''">Back</button>
+				<!-- <button type="button" class="btn btn-outline-secondary btn-block font-weight-bold">Import from Coub</button>
+				<button type="button" class="btn btn-outline-secondary btn-block font-weight-bold">Import from Vine</button>
+				<button type="button" class="btn btn-outline-secondary btn-block font-weight-bold">Import from YouTube</button> -->
+			</div>
+		</div>
+	</div>
+	<div v-if="composeType == 'story'">
+		<div class="card">
+			<div class="card-body">
+				<button type="button" class="btn btn-primary btn-block font-weight-bold" @click="composeType = 'post'">Add to Story</button>
+				<hr>
+				<button type="button" class="btn btn-outline-primary btn-block font-weight-bold" @click="composeType = 'post'">New Story</button>
+				<hr>
+				<button type="button" class="btn btn-outline-secondary btn-block font-weight-bold" @click="composeType = ''">Back</button>
+			</div>
+		</div>
+	</div>
+	</div>
 </template>
 
 <style type="text/css" scoped>
@@ -239,7 +274,8 @@ export default {
 			mediaDrawer: false,
 			composeState: 'publish',
 			uploading: false,
-			uploadProgress: 0
+			uploadProgress: 0,
+			composeType: false
 		}
 	},
 
@@ -293,6 +329,7 @@ export default {
 			['Willow','filter-willow'], 
 			['X-Pro II','filter-xpro-ii']
 		];
+
 	},
 
 	methods: {
@@ -300,6 +337,9 @@ export default {
 		fetchConfig() {
 			axios.get('/api/v2/config').then(res => {
 				this.config = res.data;
+				if(this.config.uploader.media_types.includes('video/mp4') == false) {
+					this.composeType = 'post'
+				}
 			});
 		},
 
@@ -485,6 +525,7 @@ export default {
 		},
 
 		closeModal() {
+			this.composeType = '';
 			$('#composeModal').modal('hide');
 		}
 	}

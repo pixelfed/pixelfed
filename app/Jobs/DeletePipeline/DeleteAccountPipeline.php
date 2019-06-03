@@ -74,17 +74,6 @@ class DeleteAccountPipeline implements ShouldQueue
             if($user->profile) {
                 $avatar = $user->profile->avatar;
 
-                if(is_file($avatar->media_path)) {
-                    if($avatar->media_path != 'public/avatars/default.png') {
-                        unlink($avatar->media_path);
-                    }
-                }
-
-                if(is_file($avatar->thumb_path)) {
-                    if($avatar->thumb_path != 'public/avatars/default.png') {
-                        unlink($avatar->thumb_path);
-                    }
-                }
                 $avatar->forceDelete();
             }
 

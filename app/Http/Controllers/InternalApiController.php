@@ -106,7 +106,12 @@ class InternalApiController extends Controller
         });
         $following = array_merge($following, $filters);
 
-        $posts = Status::select('id', 'caption', 'profile_id')
+        $posts = Status::select(
+                'id', 
+                'caption', 
+                'profile_id',
+                'type'
+              )
               ->whereNull('uri')
               ->whereHas('media')
               ->whereHas('profile', function($q) {
@@ -123,6 +128,7 @@ class InternalApiController extends Controller
         $res = [
             'posts' => $posts->map(function($post) {
                 return [
+                    'type' => $post->type,
                     'url' => $post->url(),
                     'thumb' => $post->thumb(),
                 ];

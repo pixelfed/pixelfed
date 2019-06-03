@@ -11,7 +11,7 @@
     <p class="font-weight-bold h5 pb-3">How to use Discover</p>
     <ul>
       <li class="mb-3 ">Click the <i class="far fa-compass fa-sm"></i> icon.</li>
-      <li class="mb-3 ">View the latest posts from accounts you don't already follow.</li>
+      <li class="mb-3 ">View the latest posts.</li>
     </ul>
   </div>
   <div class="py-4">
@@ -36,7 +36,6 @@
       <ul class="pt-3">
         <li class="lead  mb-4">To make your posts more discoverable, add hashtags to your posts.</li>
         <li class="lead  mb-4">Any public posts that contain a hashtag may be included in discover pages.</li>
-        <li class="lead ">No algorithms or behavioral tracking are used in the Discover feature. It may be less personalized than other platforms.</li>
 
       </ul>
     </div>
