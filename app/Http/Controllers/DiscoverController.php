@@ -143,14 +143,17 @@ class DiscoverController extends Controller
         abort_if(!config('exp.loops'), 403);
         
         // todo proper pagination, maybe LoopService
-        $loops = Status::whereType('video')
-                ->whereScope('public')
-                ->latest()
-                ->take(18)
-                ->get();
+        $res = Cache::remember('discover:loops:recent', now()->addHours(1), function() {
+          $loops = Status::whereType('video')
+                  ->whereScope('public')
+                  ->latest()
+                  ->take(18)
+                  ->get();
 
-        $resource = new Fractal\Resource\Collection($loops, new StatusStatelessTransformer());
-        return $this->fractal->createData($resource)->toArray();
+          $resource = new Fractal\Resource\Collection($loops, new StatusStatelessTransformer());
+          return $this->fractal->createData($resource)->toArray();
+        });
+        return $res;
     }
 
 
