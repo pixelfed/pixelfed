@@ -118,6 +118,9 @@ class DiscoverController extends Controller
 
     public function showLoops(Request $request)
     {
+      if(config('exp.loops') != true) {
+        return redirect('/');
+      }
       return view('discover.loops.home');
     }
 }
