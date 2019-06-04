@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.2.3-cli-stretch-node
+      - image: circleci/php:7.3-cli-stretch-node
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -15,7 +15,7 @@ jobs:
       # Using the RAM variation mitigates I/O contention
       # for database intensive operations.
       # - image: circleci/mysql:5.7-ram
-      # 
+      #
       # - image: redis:2.8.19
 
     steps:
