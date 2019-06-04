@@ -110,7 +110,7 @@ export default {
 			return ts.toLocaleDateString();
 		},
 		getTitle(loop) {
-			let content = loop.content : 'Untitled';
+			let content = loop.content ? loop.content : 'Untitled';
 			return content.trim();
 		}
 	}
