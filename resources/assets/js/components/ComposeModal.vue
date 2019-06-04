@@ -49,7 +49,7 @@
 							<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Add Photo</p>
 						</div>
 						<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia($event)">
-							<p class="text-center mb-0 font-weight-bold p-5">Click here to add photos</p>
+							<p class="text-center mb-0 font-weight-bold p-5">{{composeMessage()}}</p>
 						</div>
 						<div v-if="ids.length > 0">
 							
@@ -527,6 +527,16 @@ export default {
 		closeModal() {
 			this.composeType = '';
 			$('#composeModal').modal('hide');
+		},
+
+		composeMessage() {
+			let config = this.config;
+			let composeType = this.composeType;
+			let video = config.uploader.media_types.includes('video/mp4');
+
+			return video ? 
+			'Click here to add photos or videos' :
+			'Click here to add photos';
 		}
 	}
 }
