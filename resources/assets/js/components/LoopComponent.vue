@@ -12,15 +12,15 @@
 			<div class="col-12 col-md-4 mb-3" v-for="(loop, index) in loops">
 				<div class="card border border-success">
 					<div class="embed-responsive embed-responsive-1by1">
-						<video class="embed-responsive-item" :src="videoSrc(loop)" preload="auto" loop @click="toggleVideo(loop, $event)"></video>
+						<video class="embed-responsive-item" :src="videoSrc(loop)" preload="auto" width="100%" height="100%" loop @click="toggleVideo(loop, $event)"></video>
 					</div>
 					<div class="card-body">
-						<p class="username font-weight-bolder"><a :href="loop.account.url">{{loop.account.acct}}</a> , <a :href="loop.url">{{timestamp(loop)}}</a></p>
-						<p class="small text-muted" v-html="loop.content"></p>
+						<p class="username font-weight-bolder lead d-flex justify-content-between"><a :href="loop.account.url">{{loop.account.acct}}</a> <a :href="loop.url">{{timestamp(loop)}}</a></p>
+						<p class="small text-muted text-truncate" v-html="loop.content ? loop.content : 'Untitled'"></p>
 						<div class="small text-muted d-flex justify-content-between mb-0">
 							<span>{{loop.favourites_count}} Likes</span>
 							<span>{{loop.reblogs_count}} Shares</span>
-							<span>0 Loops</span>
+							<span>{{loop.reply_count}} Comments</span>
 						</div>
 					</div>
 				</div>
@@ -90,17 +90,17 @@ export default {
 			});
 			if(!el.playing) {
 				el.play();
-				this.incrementLoop(loop);
+				//this.incrementLoop(loop);
 			} else {
 				el.pause();
 			}
 		},
 		incrementLoop(loop) {
-			axios.post('/api/v2/loops/watch', {
-				id: loop.id
-			}).then(res => {
-				console.log(res.data);
-			});
+			// axios.post('/api/v2/loops/watch', {
+			// 	id: loop.id
+			// }).then(res => {
+			// 	console.log(res.data);
+			// });
 		},
 		timestamp(loop) {
 			let ts = new Date(loop.created_at);
