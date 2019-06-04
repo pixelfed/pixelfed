@@ -7,7 +7,7 @@ return [
   'savedWarning'          => 'あなたが保存したものはあなただけが見ることが出来ます。',
   'emptySaved'            => 'あなたはまだ何も保存していません。',
   'privateProfileWarning' => 'このアカウントはプライベートです。',
-  'alreadyFollow'         => 'もう既に :username をフォローしていますか?',
+  'alreadyFollow'         => 'もう既に :username さんをフォローしています。',
   'loginToSeeProfile'     => '写真とビデオを見る。',
 
   'status.disabled.header'   => 'プロフィールが無効です',
