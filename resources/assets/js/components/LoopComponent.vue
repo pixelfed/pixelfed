@@ -16,7 +16,7 @@
 					</div>
 					<div class="card-body">
 						<p class="username font-weight-bolder lead d-flex justify-content-between"><a :href="loop.account.url">{{loop.account.acct}}</a> <a :href="loop.url">{{timestamp(loop)}}</a></p>
-						<p class="small text-muted text-truncate" v-html="loop.content ? loop.content : 'Untitled'"></p>
+						<p class="small text-muted text-truncate" v-html="getTitle(loop)"></p>
 						<div class="small text-muted d-flex justify-content-between mb-0">
 							<span>{{loop.favourites_count}} Likes</span>
 							<span>{{loop.reblogs_count}} Shares</span>
@@ -108,6 +108,10 @@ export default {
 		timestamp(loop) {
 			let ts = new Date(loop.created_at);
 			return ts.toLocaleDateString();
+		},
+		getTitle(loop) {
+			let content = loop.content : 'Untitled';
+			return content.trim();
 		}
 	}
 }
