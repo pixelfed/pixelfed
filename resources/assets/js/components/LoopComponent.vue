@@ -12,7 +12,7 @@
 			<div class="col-12 col-md-4 mb-3" v-for="(loop, index) in loops">
 				<div class="card border border-success">
 					<div class="embed-responsive embed-responsive-1by1">
-						<video class="embed-responsive-item" :src="videoSrc(loop)" preload="auto" width="100%" height="100%" loop @click="toggleVideo(loop, $event)"></video>
+						<video class="embed-responsive-item" :src="videoSrc(loop)" preload="none" width="100%" height="100%" loop @click="toggleVideo(loop, $event)" :poster="posterSrc(loop)"></video>
 					</div>
 					<div class="card-body">
 						<p class="username font-weight-bolder lead d-flex justify-content-between"><a :href="loop.account.url">{{loop.account.acct}}</a> <a :href="loop.url">{{timestamp(loop)}}</a></p>
@@ -77,6 +77,9 @@ export default {
 	methods: {
 		videoSrc(loop) {
 			return loop.media_attachments[0].url;
+		},
+		posterSrc(loop) {
+			return loop.media_attachments[0].preview_url;
 		},
 		setTab(tab) {
 			this.tab = tab;
