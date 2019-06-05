@@ -113,10 +113,7 @@ class InternalApiController extends Controller
                 'type'
               )
               ->whereNull('uri')
-              ->whereHas('media')
-              ->whereHas('profile', function($q) {
-                return $q->whereNull('status');
-              })
+              ->whereIn('type', ['photo','photo:album', 'video'])
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
