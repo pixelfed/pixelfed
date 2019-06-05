@@ -118,8 +118,8 @@ class InternalApiController extends Controller
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
               ->with('media')
-              ->orderBy('created_at', 'desc')
-              ->take(21)
+              ->inRandomOrder()
+              ->take(36)
               ->get();
 
         $res = [
