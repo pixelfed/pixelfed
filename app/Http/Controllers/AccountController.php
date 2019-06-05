@@ -33,27 +33,7 @@ class AccountController extends Controller
 
     public function notifications(Request $request)
     {
-        $this->validate($request, [
-          'page' => 'nullable|min:1|max:3',
-          'a'    => 'nullable|alpha_dash',
-      ]);
-        $profile = Auth::user()->profile;
-        $action = $request->input('a');
-        $timeago = Carbon::now()->subMonths(6);
-        if ($action && in_array($action, ['comment', 'follow', 'mention'])) {
-            $notifications = Notification::whereProfileId($profile->id)
-            ->whereAction($action)
-            ->whereDate('created_at', '>', $timeago)
-            ->orderBy('id', 'desc')
-            ->simplePaginate(30);
-        } else {
-            $notifications = Notification::whereProfileId($profile->id)
-            ->whereDate('created_at', '>', $timeago)
-            ->orderBy('id', 'desc')
-            ->simplePaginate(30);
-        }
-
-        return view('account.activity', compact('profile', 'notifications'));
+        return view('account.activity');
     }
 
     public function followingActivity(Request $request)
@@ -85,21 +65,18 @@ class AccountController extends Controller
 
     public function sendVerifyEmail(Request $request)
     {
-        $timeLimit = Carbon::now()->subDays(1)->toDateTimeString();
         $recentAttempt = EmailVerification::whereUserId(Auth::id())
-          ->where('created_at', '>', $timeLimit)->count();
-        $exists = EmailVerification::whereUserId(Auth::id())->count();
+          ->whereDate('created_at', '>', now()->subHours(12))->count();
 
-        if ($recentAttempt == 1 && $exists == 1) {
+        if ($recentAttempt > 0) {
             return redirect()->back()->with('error', 'A verification email has already been sent recently. Please check your email, or try again later.');
-        } elseif ($recentAttempt == 0 && $exists !== 0) {
-            // Delete old verification and send new one.
-            EmailVerification::whereUserId(Auth::id())->delete();
-        }
+        } 
+
+        EmailVerification::whereUserId(Auth::id())->delete();
 
         $user = User::whereNull('email_verified_at')->find(Auth::id());
-        $utoken = hash('sha512', $user->id);
-        $rtoken = str_random(40);
+        $utoken = str_random(40);
+        $rtoken = str_random(128);
 
         $verify = new EmailVerification();
         $verify->user_id = $user->id;
@@ -119,12 +96,16 @@ class AccountController extends Controller
           ->where('random_token', $randomToken)
           ->firstOrFail();
 
-        if (Auth::id() === $verify->user_id) {
+        if (Auth::id() === $verify->user_id &&
+          $verify->user_token === $userToken &&
+          $verify->random_token === $randomToken) {
             $user = User::find(Auth::id());
             $user->email_verified_at = Carbon::now();
             $user->save();
 
             return redirect('/');
+        } else {
+            abort(403);
         }
     }
 
