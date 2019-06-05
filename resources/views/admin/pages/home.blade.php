@@ -9,9 +9,9 @@
   </div>
   <hr>
   <p class="alert alert-warning">
-    <strong>Feature Unavailable:</strong> This feature will be released in v0.9.0.
+    <strong>Feature Unavailable:</strong> This feature will be released in a future version.
   </p>
-  {{--< div class="table-responsive">
+  {{-- <div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
         <tr class="text-center">
