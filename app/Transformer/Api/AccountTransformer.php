@@ -19,7 +19,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'created_at' => null,
 			'followers_count' => $profile->followerCount(),
 			'following_count' => $profile->followingCount(),
-			'statuses_count' => $profile->statusCount(),
+			'statuses_count' => (int) $profile->statusCount(),
 			'note' => $profile->bio,
 			'url' => $profile->url(),
 			'avatar' => $profile->avatarUrl(),
@@ -30,7 +30,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'moved' => null,
 			'fields' => null,
 			'bot' => null,
-			'website' => $profile->website,
+			'website' => null,
 			'software' => 'pixelfed',
 			'is_admin' => (bool) $is_admin
 		];

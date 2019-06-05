@@ -196,7 +196,8 @@ class StatusController extends Controller
         }
         $status->type = (new self)::mimeTypeCheck($mimes);
         $status->save();
-
+        
+        Cache::forget('profile:status_count:'.$profile->id);
         NewStatusPipeline::dispatch($status);
 
         // TODO: Send to subscribers
@@ -215,6 +216,7 @@ class StatusController extends Controller
         $status = Status::findOrFail($request->input('item'));
 
         if ($status->profile_id === Auth::user()->profile->id || Auth::user()->is_admin == true) {
+            Cache::forget('profile:status_count:'.$status->profile_id);
             StatusDelete::dispatch($status);
         }
         if($request->wantsJson()) {
