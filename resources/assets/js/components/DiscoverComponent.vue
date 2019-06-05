@@ -22,8 +22,12 @@
       <div class="row d-none">
         <div class="col-4 p-0 p-sm-2 p-md-3" v-for="post in posts">
           <a class="card info-overlay card-md-border-0" :href="post.url">
-            <div class="square filter_class">
-              <div class="square-content" v-bind:style="{ 'background-image': 'url(' + post.thumb + ')' }"></div>
+            <div class="square">
+              <span v-if="post.type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+              <span v-if="post.type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+              <span v-if="post.type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+              <div class="square-content" v-bind:style="{ 'background-image': 'url(' + post.thumb + ')' }">
+              </div>
             </div>
           </a>
         </div>
@@ -45,6 +49,14 @@
     width:160px;
     height:100px;
     background-size: cover !important;
+  }
+  .post-icon {
+    color: #fff;
+    position:relative;
+    margin-top: 10px;
+    z-index: 9;
+    opacity: 0.6;
+    text-shadow: 3px 3px 16px #272634;
   }
 </style>
 
