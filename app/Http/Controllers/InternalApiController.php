@@ -117,6 +117,7 @@ class InternalApiController extends Controller
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
+              ->whereDate('created_at', '>', now()->subMonths(3))
               ->with('media')
               ->inRandomOrder()
               ->take(36)
