@@ -16,11 +16,11 @@ class NotificationService {
 
 	const CACHE_KEY = 'pf:services:notifications:ids:';
 
-	public static function get($id, $start = 0, $stop = 300)
+	public static function get($id, $start = 0, $stop = 400)
 	{
 		$res = collect([]);
 		$key = self::CACHE_KEY . $id;
-		$stop = $stop > 300 ? 300 : $stop;
+		$stop = $stop > 400 ? 400 : $stop;
 		$ids = Redis::zrangebyscore($key, $start, $stop);
 		if(empty($ids)) {
 			$ids = self::coldGet($id, $start, $stop);
@@ -31,9 +31,9 @@ class NotificationService {
 		return $res;
 	}
 
-	public static function coldGet($id, $start = 0, $stop = 300)
+	public static function coldGet($id, $start = 0, $stop = 400)
 	{
-		$stop = $stop > 300 ? 300 : $stop;
+		$stop = $stop > 400 ? 400 : $stop;
 		$ids = Notification::whereProfileId($id)
 			->latest()
 			->skip($start)
@@ -72,7 +72,7 @@ class NotificationService {
 
 	public static function getNotification($id)
 	{
-		return Cache::remember('service:notification:'.$id, now()->addDays(7), function() use($id) {
+		return Cache::remember('service:notification:'.$id, now()->addMonths(3), function() use($id) {
 			$n = Notification::with('item')->findOrFail($id);
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
@@ -83,7 +83,7 @@ class NotificationService {
 
 	public static function setNotification(Notification $notification)
 	{
-		return Cache::remember('service:notification:'.$notification->id, now()->addDays(7), function() use($notification) {
+		return Cache::remember('service:notification:'.$notification->id, now()->addMonths(3), function() use($notification) {
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
@@ -91,7 +91,7 @@ class NotificationService {
 		});
 	} 
 
-	public static function warmCache($id, $stop = 100, $force = false)
+	public static function warmCache($id, $stop = 400, $force = false)
 	{
 		if(self::count($id) == 0 || $force == true) {
 			$ids = Notification::whereProfileId($id)

@@ -119,14 +119,16 @@ class Profile extends Model
     {
         return $this->hasOne(Avatar::class)->withDefault([
             'media_path' => 'public/avatars/default.png',
+            'change_count' => 0
         ]);
     }
 
     public function avatarUrl()
     {
-        $url = Cache::remember("avatar:{$this->id}", now()->addDays(1), function () {
-            $path = optional($this->avatar)->media_path;
-            $version = hash('sha1', $this->avatar->updated_at);
+        $url = Cache::remember("avatar:{$this->id}", now()->addYears(1), function () {
+            $avatar = $this->avatar;
+            $path = $avatar->media_path;
+            $version = hash('sha256', $avatar->change_count);
             $path = "{$path}?v={$version}";
 
             return url(Storage::url($path));
