@@ -16,7 +16,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'acct' => $profile->username,
 			'display_name' => $profile->name,
 			'locked' => (bool) $profile->is_private,
-			'created_at' => $profile->created_at->format('c'),
+			'created_at' => null,
 			'followers_count' => $profile->followerCount(),
 			'following_count' => $profile->followingCount(),
 			'statuses_count' => $profile->statusCount(),
