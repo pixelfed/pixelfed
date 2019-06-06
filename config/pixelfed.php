@@ -17,10 +17,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | PixelFed Version
+    | Pixelfed Version
     |--------------------------------------------------------------------------
     |
-    | This value is the version of your PixelFed instance.
+    | This value is the version of your Pixelfed instance.
     |
     */
     'version' => '0.9.4',

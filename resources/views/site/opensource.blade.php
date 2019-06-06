@@ -12,5 +12,5 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="Open source in PixelFed">
+<meta property="og:description" content="Open source in Pixelfed">
 @endpush
