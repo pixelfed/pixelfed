@@ -1,6 +1,6 @@
 {
-  "name": "PixelFed",
-  "short_name": "PixelFed",
+  "name": "Pixelfed",
+  "short_name": "Pixelfed",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#f5f8fa",

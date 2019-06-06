@@ -117,7 +117,7 @@
                 <a href="{{route('site.platform')}}" class="text-dark pr-2">API</a>
               </p>
               <p class="mb-0 text-uppercase font-weight-bold text-muted small">
-                <a href="http://pixelfed.org" class="text-muted" rel="noopener" title="version {{config('pixelfed.version')}}" data-toggle="tooltip">Powered by PixelFed</a>
+                <a href="http://pixelfed.org" class="text-muted" rel="noopener" title="version {{config('pixelfed.version')}}" data-toggle="tooltip">Powered by Pixelfed</a>
               </p>
           </div>
         </footer>

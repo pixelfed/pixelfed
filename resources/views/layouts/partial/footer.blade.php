@@ -8,7 +8,7 @@
           <a href="{{route('site.privacy')}}" class="text-primary pr-3">{{__('site.privacy')}}</a>
           <a href="{{route('site.platform')}}" class="text-primary pr-3">API</a>
           <a href="{{route('site.language')}}" class="text-primary pr-3">{{__('site.language')}}</a>
-          <a href="https://pixelfed.org" class="text-muted float-right" rel="noopener" title="version {{config('pixelfed.version')}}" data-toggle="tooltip">Powered by PixelFed</a>
+          <a href="https://pixelfed.org" class="text-muted float-right" rel="noopener" title="version {{config('pixelfed.version')}}" data-toggle="tooltip">Powered by Pixelfed</a>
         </p>
     </div>
   </footer>

@@ -7,7 +7,7 @@
   </div>
   <hr>
   <section>
-    <p class="lead">Developers can use PixelFed APIs to build rich experiences and extend PixelFed in new ways.</p>
+    <p class="lead">Developers can use Pixelfed APIs to build rich experiences and extend Pixelfed in new ways.</p>
     <div class="row pt-5">
       <div class="col-12 col-md-6 pb-3">
         <div class="card">

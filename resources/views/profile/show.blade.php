@@ -17,7 +17,7 @@
   @if(false == $settings['crawlable'] || $profile->remote_url)
   <meta name="robots" content="noindex, nofollow">
   @else  <meta property="og:image" content="{{$profile->avatarUrl()}}">
-    <link href="{{$profile->permalink('.atom')}}" rel="alternate" title="{{$profile->username}} on PixelFed" type="application/atom+xml">
+    <link href="{{$profile->permalink('.atom')}}" rel="alternate" title="{{$profile->username}} on Pixelfed" type="application/atom+xml">
     <link href='{{$profile->permalink()}}' rel='alternate' type='application/activity+json'>
   @endif
 @endpush

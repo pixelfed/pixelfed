@@ -96,7 +96,7 @@
 
 @push('meta')<meta property="og:description" content="{{$user->bio}}">
     <meta property="og:image" content="{{$user->avatarUrl()}}">
-    <link href="{{$user->permalink('.atom')}}" rel="alternate" title="{{$user->username}} on PixelFed" type="application/atom+xml">
+    <link href="{{$user->permalink('.atom')}}" rel="alternate" title="{{$user->username}} on Pixelfed" type="application/atom+xml">
   @if(false == $settings->crawlable || $user->remote_url)
   <meta name="robots" content="noindex, nofollow">
   @endif
