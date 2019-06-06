@@ -18,7 +18,7 @@ class DiscoverActor
     {
         $res = Zttp::withHeaders([
       'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-      'User-Agent' => 'PixelFedBot - https://pixelfed.org',
+      'User-Agent' => 'PixelfedBot - https://pixelfed.org',
     ])->get($this->url);
         $this->response = $res->body();
 

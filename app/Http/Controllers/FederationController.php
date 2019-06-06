@@ -287,7 +287,7 @@ XML;
         $actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->firstOrFail();
         $res = Zttp::timeout(5)->withHeaders([
           'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-          'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org',
+          'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($actor->remote_url);
         $res = json_decode($res->body(), true, 8);
         if($res['publicKey']['id'] !== $actor->key_id) {

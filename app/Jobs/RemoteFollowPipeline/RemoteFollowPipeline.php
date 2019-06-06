@@ -64,7 +64,7 @@ class RemoteFollowPipeline implements ShouldQueue
         $client = new Client(['handler' => $handlerStack]);
         $response = Zttp::withHeaders([
             'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-            'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org',
+            'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($url);
         $this->response = $response->json();
 

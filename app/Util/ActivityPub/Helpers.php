@@ -178,7 +178,7 @@ class Helpers {
 	{
 		return [
 			'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-			'User-Agent' => 'PixelFedBot - https://pixelfed.org',
+			'User-Agent' => 'PixelfedBot - https://pixelfed.org',
 		];
 	}
 
