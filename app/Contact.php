@@ -10,4 +10,9 @@ class Contact extends Model
     {
     	return $this->belongsTo(User::class);
     }
+
+    public function adminUrl()
+    {
+    	return url('/i/admin/contact/show/' . $this->id);
+    }
 }
