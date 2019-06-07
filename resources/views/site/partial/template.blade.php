@@ -10,8 +10,22 @@
           @include('site.partial.sidebar')
           <div class="col-12 col-md-9 p-5">
             @if (session('status'))
-                <div class="alert alert-success">
+                <div class="alert alert-success font-weight-bold">
                     {{ session('status') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger font-weight-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="alert alert-danger font-weight-bold">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
             @yield('section')
