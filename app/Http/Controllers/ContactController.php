@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use App\Contact;
 
 class ContactController extends Controller
 {
@@ -24,6 +25,21 @@ class ContactController extends Controller
 		$message = $request->input('message');
 		$request_response = $request->input('request_response') == 'on' ? true : false;
 		$user = Auth::user();
-		return $request->all();
+
+		$contact = Contact::whereUserId($user->id)
+			->whereDate('created_at', '>', now()->subDays(1))
+			->count();
+
+		if($contact >= 2) {
+			return redirect()->back()->with('error', 'You have recently sent a message. Please try again later.');
+		}
+
+		$contact = new Contact;
+		$contact->user_id = $user->id;
+		$contact->response_requested = $request_response;
+		$contact->message = $message;
+		$contact->save();
+
+		return redirect()->back()->with('status', 'Success - Your message has been sent to admins.');
 	}
 }
