@@ -23,7 +23,8 @@ use App\Http\Controllers\Admin\{
   AdminInstanceController,
   AdminReportController,
   AdminMediaController,
-  AdminSettingsController
+  AdminSettingsController,
+  AdminSupportController
 };
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Validation\Rule;
@@ -101,7 +102,7 @@ class AdminController extends Controller
         $col = $request->query('col') ?? 'id';
         $dir = $request->query('dir') ?? 'desc';
         $stats = $this->collectUserStats($request);
-        $users = User::withCount('statuses')->orderBy($col, $dir)->paginate(10);
+        $users = User::withCount('statuses')->orderBy($col, $dir)->simplePaginate(10);
 
         return view('admin.users.home', compact('users', 'stats'));
     }
@@ -115,7 +116,7 @@ class AdminController extends Controller
 
     public function statuses(Request $request)
     {
-        $statuses = Status::orderBy('id', 'desc')->paginate(10);
+        $statuses = Status::orderBy('id', 'desc')->simplePaginate(10);
 
         return view('admin.statuses.home', compact('statuses'));
     }
@@ -207,11 +208,11 @@ class AdminController extends Controller
       $order = $request->input('order') ?? 'desc';
       $limit = $request->input('limit') ?? 12;
       if($search) {
-        $profiles = Profile::select('id','username')->where('username','like', "%$search%")->orderBy('id','desc')->paginate($limit);
+        $profiles = Profile::select('id','username')->where('username','like', "%$search%")->orderBy('id','desc')->simplePaginate($limit);
       } else if($filter && $order) {
-        $profiles = Profile::select('id','username')->withCount(['likes','statuses','followers'])->orderBy($filter, $order)->paginate($limit);
+        $profiles = Profile::select('id','username')->withCount(['likes','statuses','followers'])->orderBy($filter, $order)->simplePaginate($limit);
       } else {
-        $profiles = Profile::select('id','username')->orderBy('id','desc')->paginate($limit);
+        $profiles = Profile::select('id','username')->orderBy('id','desc')->simplePaginate($limit);
       }
 
       return view('admin.profiles.home', compact('profiles'));
