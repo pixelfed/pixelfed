@@ -51,7 +51,7 @@ class StatusController extends Controller
             }
         }
 
-        if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $status);
         }
 

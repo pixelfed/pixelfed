@@ -28,9 +28,9 @@
       <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">ActivityPub</label>
       <div class="col-sm-9">
         <div class="form-check pb-2">
-          <input class="form-check-input" type="checkbox" id="activitypub_enabled" name="activitypub_enabled" {{config('pixelfed.activitypub_enabled') === true ? 'checked=""' : '' }}>
+          <input class="form-check-input" type="checkbox" id="activitypub_enabled" name="activitypub_enabled" {{config('federation.activitypub.enabled') === true ? 'checked=""' : '' }}>
           <label class="form-check-label font-weight-bold" for="activitypub_enabled">
-            {{config('pixelfed.activitypub_enabled') === true ? 'Enabled' : 'Disabled' }}
+            {{config('federation.activitypub.enabled') === true ? 'Enabled' : 'Disabled' }}
           </label>
           <p class="text-muted small help-text font-weight-bold">Enable for federation support.</p>
         </div>

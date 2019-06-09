@@ -357,6 +357,7 @@ class Helpers {
 			$fdata = new File($file);
 			$path = Storage::putFile($storagePath, $fdata, 'public');
 			$media = new Media();
+			$media->remote_media = true;
 			$media->status_id = $status->id;
 			$media->profile_id = $status->profile_id;
 			$media->user_id = null;

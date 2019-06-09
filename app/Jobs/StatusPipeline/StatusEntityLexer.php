@@ -112,7 +112,7 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
 
         foreach ($mentions as $mention) {
-            $mentioned = Profile::whereNull('domain')->whereUsername($mention)->firstOrFail();
+            $mentioned = Profile::whereUsername($mention)->first();
 
             if (empty($mentioned) || !isset($mentioned->id)) {
                 continue;
@@ -132,7 +132,7 @@ class StatusEntityLexer implements ShouldQueue
 
     public function deliver()
     {
-        if(config('pixelfed.activitypub_enabled') == true) {
+        if(config('federation.activitypub.enabled') == true) {
             StatusActivityPubDeliver::dispatch($this->status);
         }
     }

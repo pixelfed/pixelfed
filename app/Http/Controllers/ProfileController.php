@@ -51,7 +51,7 @@ class ProfileController extends Controller
             $settings = $user->user->settings;
         }
 
-        if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
 
@@ -90,7 +90,7 @@ class ProfileController extends Controller
         $user = Profile::whereUsername($username)->firstOrFail();
         $settings = User::whereUsername($username)->firstOrFail()->settings;
 
-        if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
 
@@ -150,6 +150,8 @@ class ProfileController extends Controller
 
     public function showActivityPub(Request $request, $user)
     {
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        
         if($user->status != null) {
             return ProfileController::accountCheck($user);
         }
@@ -161,6 +163,8 @@ class ProfileController extends Controller
 
     public function showAtomFeed(Request $request, $user)
     {
+        abort_if(!config('federation.atom.enabled'), 404);
+
         $profile = $user = Profile::whereNull('status')->whereNull('domain')->whereUsername($user)->whereIsPrivate(false)->firstOrFail();
         if($profile->status != null) {
             return $this->accountCheck($profile);

@@ -55,7 +55,7 @@ class StatusDelete implements ShouldQueue
     {
         $status = $this->status;
 
-        if(config('pixelfed.activitypub_enabled') == true) {
+        if(config('federation.activitypub.enabled') == true) {
             $this->fanoutDelete($status);
         } else {
             $this->unlinkRemoveMedia($status);
@@ -125,7 +125,7 @@ class StatusDelete implements ShouldQueue
         $payload = json_encode($activity);
         
         $client = new Client([
-            'timeout'  => config('pixelfed.ap_delivery_timeout')
+            'timeout'  => config('federation.activitypub.delivery.timeout')
         ]);
 
         $requests = function($audience) use ($client, $activity, $profile, $payload) {
@@ -144,7 +144,7 @@ class StatusDelete implements ShouldQueue
         };
 
         $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('pixelfed.ap_delivery_concurrency'),
+            'concurrency' => config('federation.activitypub.delivery.concurrency'),
             'fulfilled' => function ($response, $index) {
             },
             'rejected' => function ($reason, $index) {
