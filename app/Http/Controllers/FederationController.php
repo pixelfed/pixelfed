@@ -51,15 +51,13 @@ class FederationController extends Controller
     public function remoteFollowStore(Request $request)
     {
         return;
-        
+
         $this->authCheck();
         $this->validate($request, [
             'url' => 'required|string',
         ]);
 
-        if (config('pixelfed.remote_follow_enabled') !== true) {
-            abort(403);
-        }
+        abort_if(!config('federation.activitypub.remoteFollow'), 403);
 
         $follower = Auth::user()->profile;
         $url = $request->input('url');
