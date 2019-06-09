@@ -39,7 +39,7 @@ class ApiController extends BaseApiController
                 ],
 
                 'activitypub' => [
-                    'enabled' => config('pixelfed.activitypub_enabled'),
+                    'enabled' => config('federation.activitypub.enabled'),
                     'remote_follow' => config('pixelfed.remote_follow_enabled')
                 ],
 
