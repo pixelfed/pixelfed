@@ -319,7 +319,7 @@ class Helpers {
 				$status->scope = $scope;
 				$status->visibility = $scope;
 				$status->save();
-				// self::importNoteAttachment($res, $status);
+				self::importNoteAttachment($res, $status);
 				return $status;
 			});
 
@@ -330,8 +330,6 @@ class Helpers {
 
 	public static function importNoteAttachment($data, Status $status)
 	{
-		return;
-
 		if(self::verifyAttachments($data) == false) {
 			return;
 		}
@@ -348,28 +346,28 @@ class Helpers {
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
-			// $info = pathinfo($url);
+			$info = pathinfo($url);
 
-			// // pleroma attachment fix
-			// $url = str_replace(' ', '%20', $url);
+			// pleroma attachment fix
+			$url = str_replace(' ', '%20', $url);
 
-			// $img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
-			// $file = '/tmp/'.str_random(32);
-			// file_put_contents($file, $img);
-			// $fdata = new File($file);
-			// $path = Storage::putFile($storagePath, $fdata, 'public');
-			// $media = new Media();
-			// $media->status_id = $status->id;
-			// $media->profile_id = $status->profile_id;
-			// $media->user_id = null;
-			// $media->media_path = $path;
-			// $media->size = $fdata->getSize();
-			// $media->mime = $fdata->getMimeType();
-			// $media->save();
+			$img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
+			$file = '/tmp/pxmi-'.str_random(32);
+			file_put_contents($file, $img);
+			$fdata = new File($file);
+			$path = Storage::putFile($storagePath, $fdata, 'public');
+			$media = new Media();
+			$media->status_id = $status->id;
+			$media->profile_id = $status->profile_id;
+			$media->user_id = null;
+			$media->media_path = $path;
+			$media->size = $fdata->getSize();
+			$media->mime = $fdata->getMimeType();
+			$media->save();
 
-			// ImageThumbnail::dispatch($media);
-			// ImageOptimize::dispatch($media);
-			// unlink($file);
+			ImageThumbnail::dispatch($media);
+			ImageOptimize::dispatch($media);
+			unlink($file);
 		}
 		return;
 	}

@@ -42,7 +42,7 @@ class VideoThumbnail implements ShouldQueue
         $name = last($path);
         try {
             $t = explode('.', $name);
-            $t = $t[0].'_thumb.png';
+            $t = $t[0].'_thumb.jpeg';
             $i = count($path) - 1;
             $path[$i] = $t;
             $save = implode('/', $path);
