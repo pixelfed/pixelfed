@@ -51,7 +51,7 @@ class ProfileController extends Controller
             $settings = $user->user->settings;
         }
 
-        if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
 
@@ -90,7 +90,7 @@ class ProfileController extends Controller
         $user = Profile::whereUsername($username)->firstOrFail();
         $settings = User::whereUsername($username)->firstOrFail()->settings;
 
-        if ($request->wantsJson() && config('pixelfed.activitypub_enabled')) {
+        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
 
