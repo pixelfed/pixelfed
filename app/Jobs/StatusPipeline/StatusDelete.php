@@ -55,7 +55,7 @@ class StatusDelete implements ShouldQueue
     {
         $status = $this->status;
 
-        if(config('pixelfed.activitypub_enabled') == true) {
+        if(config('federation.activitypub.enabled') == true) {
             $this->fanoutDelete($status);
         } else {
             $this->unlinkRemoveMedia($status);
