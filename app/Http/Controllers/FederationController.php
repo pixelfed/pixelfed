@@ -26,9 +26,7 @@ class FederationController extends Controller
 {
     public function authCheck()
     {
-        if (!Auth::check()) {
-            return abort(403);
-        }
+        abort_if(!Auth::check(), 403);
     }
 
     public function authorizeFollow(Request $request)
@@ -52,6 +50,8 @@ class FederationController extends Controller
 
     public function remoteFollowStore(Request $request)
     {
+        return;
+        
         $this->authCheck();
         $this->validate($request, [
             'url' => 'required|string',
@@ -76,6 +76,8 @@ class FederationController extends Controller
 
     public function nodeinfoWellKnown()
     {
+        abort_if(!config('federation.nodeinfo.enabled'), 404);
+
         $res = [
         'links' => [
           [
@@ -90,6 +92,8 @@ class FederationController extends Controller
 
     public function nodeinfo()
     {
+        abort_if(!config('federation.nodeinfo.enabled'), 404);
+
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
             $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
                 $count = collect([]);
@@ -150,6 +154,8 @@ class FederationController extends Controller
 
     public function webfinger(Request $request)
     {
+        abort_if(!config('federation.webfinger.enabled'), 404);
+
         $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
 
         $resource = $request->input('resource');
@@ -167,22 +173,18 @@ class FederationController extends Controller
 
     public function hostMeta(Request $request)
     {
+        abort_if(!config('federation.webfinger.enabled'), 404);
+
         $path = route('well-known.webfinger');
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
-  <Link rel="lrdd" type="application/xrd+xml" template="{$path}?resource={uri}"/>
-</XRD>
-XML;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0"><Link rel="lrdd" type="application/xrd+xml" template="{$path}?resource={uri}"/></XRD>';
 
         return response($xml)->header('Content-Type', 'application/xrd+xml');
     }
 
     public function userOutbox(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config('federation.activitypub.outbox'), 404);
 
         $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
         if($profile->status != null) {
@@ -201,9 +203,8 @@ XML;
 
     public function userInbox(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config('federation.activitypub.inbox'), 404);
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         if($profile->status != null) {
@@ -300,15 +301,14 @@ XML;
 
     public function userFollowing(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
+        abort_if(!config('federation.activitypub.enabled'), 404);
+
         $profile = Profile::whereNull('remote_url')
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
         if($profile->status != null) {
-            return ProfileController::accountCheck($profile);
+            return [];
         }
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
@@ -324,15 +324,14 @@ XML;
 
     public function userFollowers(Request $request, $username)
     {
-        if (config('pixelfed.activitypub_enabled') == false) {
-            abort(403);
-        }
+        abort_if(!config('federation.activitypub.enabled'), 404);
+
         $profile = Profile::whereNull('remote_url')
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
         if($profile->status != null) {
-            return ProfileController::accountCheck($profile);
+            return [];
         }
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
