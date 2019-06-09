@@ -85,7 +85,7 @@
 </ul>
 <hr>
 <div class="d-flex justify-content-center">
-	{{$media->links()}}
+	{{$media->appends(['layout'=>request()->layout])->links()}}
 </div>
 @else
 <div class="profile-timeline mt-5 row">
@@ -99,7 +99,7 @@
 </div>
 <hr>
 <div class="d-flex justify-content-center">
-	{{$media->links()}}
+	{{$media->appends(['layout'=>request()->layout])->links()}}
 </div>
 @endif
 @endsection
