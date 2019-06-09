@@ -71,7 +71,7 @@ class StatusActivityPubDeliver implements ShouldQueue
         $payload = json_encode($activity);
         
         $client = new Client([
-            'timeout'  => config('pixelfed.ap_delivery_timeout')
+            'timeout'  => config('federation.activitypub.delivery.timeout')
         ]);
 
         $requests = function($audience) use ($client, $activity, $profile, $payload) {
@@ -90,7 +90,7 @@ class StatusActivityPubDeliver implements ShouldQueue
         };
 
         $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('pixelfed.ap_delivery_concurrency'),
+            'concurrency' => config('federation.activitypub.delivery.concurrency'),
             'fulfilled' => function ($response, $index) {
             },
             'rejected' => function ($reason, $index) {
