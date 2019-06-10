@@ -182,7 +182,7 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="modes.infinite == true && !loading && feed.length > 0">
+				<div v-if="!loading && feed.length > 0">
 					<div class="card">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
@@ -191,9 +191,6 @@
 							</infinite-loading>
 						</div>
 					</div>
-				</div>
-				<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination">
-					<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
 				</div>
 				<div v-if="!loading && scope == 'home' && feed.length == 0">
 					<div class="card">
@@ -223,7 +220,7 @@
 										<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
 									</div>
 									<div class="ml-2">
-										<a :class="[optionMenuState == true ? 'text-primary' :'text-muted']" v-on:click="toggleOptionsMenu()"><i class="fas fa-cog fa-lg"></i></a>
+										<a class="text-muted" href="/settings/home"><i class="fas fa-cog fa-lg"></i></a>
 									</div>
 								</div>
 							</div>
@@ -244,28 +241,6 @@
 								</span>
 							</div>
 						</div> -->
-					</div>
-				</div>
-
-				<div v-if="optionMenuState == true" class="mb-4">
-					<div class="card options-card">
-						<div class="card-body small">
-							<div v-if="profile.is_admin" class="custom-control custom-switch mb-3">
-								<input type="checkbox" class="custom-control-input" id="mode-mod" v-on:click="modeModToggle()" v-model="modes.mod">
-								<label class="custom-control-label font-weight-bold" for="mode-mod">Moderator Mode</label>
-							</div>
-							<!-- <div class="custom-control custom-switch mb-3">
-								<input type="checkbox" class="custom-control-input" id="mode-notify" v-on:click="modeNotifyToggle()"  v-model="!modes.notify">
-								<label class="custom-control-label font-weight-bold" for="mode-notify">Disable Notifications</label>
-							</div> -->
-							<div class="custom-control custom-switch">
-								<input type="checkbox" class="custom-control-input" id="mode-infinite" v-on:click="modeInfiniteToggle()" v-model="modes.infinite">
-								<label class="custom-control-label font-weight-bold" for="mode-infinite">Enable Infinite Scroll</label>
-							</div>
-							<hr>
-							<p class="font-weight-bold">BETA FEATURES</p>
-							<div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
-						</div>
 					</div>
 				</div>
 
@@ -447,12 +422,10 @@
 				loading: true,
 				replies: [],
 				replyId: null,
-				optionMenuState: false,
 				modes: {
 					'mod': false,
 					'dark': false,
 					'notify': true,
-					'infinite': true,
 					'distractionFree': false
 				},
 				followers: [],
@@ -930,49 +903,6 @@
 						});
 					break;
 				}
-			},
-
-			toggleOptionsMenu() {
-				this.optionMenuState = !this.optionMenuState;
-			},
-
-			modeModToggle() {
-				this.modes.mod = !this.modes.mod;
-				//window.ls.set('pixelfed-classicui-settings', this.modes);
-			},
-
-			modeNotifyToggle() {
-				this.modes.notify = !this.modes.notify;
-				//window.ls.set('pixelfed-classicui-settings', this.modes);
-			},
-
-			modeDarkToggle() {
-				// todo: more graceful stylesheet change
-				if(this.modes.dark == true) {
-					axios.post('/i/metro/dark-mode', {
-						mode: 'light'
-					}).then(res => {
-						$('link[data-stylesheet=dark]')
-						.attr('data-stylesheet', 'light')
-						.attr('href', '/css/app.css?v=' + Date.now());
-						this.modes.dark = false;
-					});
-				} else {
-					axios.post('/i/metro/dark-mode', {
-						mode: 'dark'
-					}).then(res => {
-						$('link[data-stylesheet=light]')
-						.attr('data-stylesheet', 'dark')
-						.attr('href', '/css/appdark.css?v=' + Date.now());
-						this.modes.dark = true;
-					});
-				}
-				//window.ls.set('pixelfed-classicui-settings', this.modes);
-			},
-
-			modeInfiniteToggle() {
-				this.modes.infinite = !this.modes.infinite
-				//window.ls.set('pixelfed-classicui-settings', this.modes);
 			},
 
 			followingModal() {
