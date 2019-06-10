@@ -57,9 +57,9 @@ class InboxValidator implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
-            InboxWorker::dispatch($headers, $profile, $payload);
+            InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
         } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
-            InboxWorker::dispatch($headers, $profile, $payload);
+            InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
         } else {
             return;
         }
@@ -99,7 +99,8 @@ class InboxValidator implements ShouldQueue
         }
         $actor = Profile::whereKeyId($keyId)->first();
         if(!$actor) {
-            $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
+            $actorUrl = is_array($bodyDecoded['actor']) ? $bodyDecoded['actor'][0] : $bodyDecoded['actor'];
+            $actor = Helpers::profileFirstOrNew($actorUrl);
         }
         if(!$actor) {
             return false;
