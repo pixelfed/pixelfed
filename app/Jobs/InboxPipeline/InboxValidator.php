@@ -70,8 +70,8 @@ class InboxValidator implements ShouldQueue
     {
         $body = $this->payload;
         $bodyDecoded = $payload;
-        $signature = $headers['signature'];
-        $date = $headers['date'];
+        $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
+        $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
         if(!$signature) {
             abort(400, 'Missing signature header');
         }
@@ -116,8 +116,8 @@ class InboxValidator implements ShouldQueue
 
     protected function blindKeyRotation($headers, $profile, $payload)
     {
-        $signature = $headers['signature'];
-        $date = $headers['date'];
+        $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
+        $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
         if(!$signature) {
             return false;
         }
