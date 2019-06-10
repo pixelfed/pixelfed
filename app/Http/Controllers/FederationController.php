@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\InboxPipeline\InboxWorker;
+use App\Jobs\InboxPipeline\{
+    InboxWorker,
+    InboxValidator
+};
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
 use App\{
     AccountLog,
@@ -18,8 +21,10 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
-use App\Util\ActivityPub\Helpers;
-use App\Util\ActivityPub\HttpSignature;
+use App\Util\ActivityPub\{
+    Helpers,
+    HttpSignature
+};
 use \Zttp\Zttp;
 
 class FederationController extends Controller
@@ -204,19 +209,9 @@ class FederationController extends Controller
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.inbox'), 404);
 
-        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-        if($profile->status != null) {
-            return ProfileController::accountCheck($profile);
-        }
-        $body = $request->getContent();
-        $bodyDecoded = json_decode($body, true, 8);
-        if($this->verifySignature($request, $profile) == true) {
-            InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else if($this->blindKeyRotation($request, $profile) == true) {
-            InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else {
-            abort(400, 'Bad Signature');
-        }
+        $headers = $request->headers->all();
+        $payload = $request->getContent();
+        InboxValidator::dispatch($username, $headers, $payload);
         return;
     }
 
