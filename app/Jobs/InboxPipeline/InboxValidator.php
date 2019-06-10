@@ -48,12 +48,12 @@ class InboxValidator implements ShouldQueue
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
-        if(empty($profile)) {
-            return;
+        if(empty($profile) || empty($headers) || empty($payload)) {
+            return true;
         }
 
         if($profile->status != null) {
-            return;
+            return true;
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
