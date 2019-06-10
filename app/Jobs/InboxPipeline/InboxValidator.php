@@ -99,7 +99,8 @@ class InboxValidator implements ShouldQueue
         }
         $actor = Profile::whereKeyId($keyId)->first();
         if(!$actor) {
-            $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
+            $actorUrl = is_array($bodyDecoded['actor']) ? $bodyDecoded['actor'][0] : $bodyDecoded['actor'];
+            $actor = Helpers::profileFirstOrNew($actorUrl);
         }
         if(!$actor) {
             return false;
