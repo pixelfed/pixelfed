@@ -215,81 +215,19 @@ class FederationController extends Controller
         return;
     }
 
+
+    // Deprecated
+
     protected function verifySignature(Request $request, Profile $profile)
     {
-        $body = $request->getContent();
-        $bodyDecoded = json_decode($body, true, 8);
-        $signature = $request->header('signature');
-        $date = $request->header('date');
-        if(!$signature) {
-            abort(400, 'Missing signature header');
-        }
-        if(!$date) {
-            abort(400, 'Missing date header');
-        }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
-            abort(400, 'Invalid date');
-        }
-        $signatureData = HttpSignature::parseSignatureHeader($signature);
-        $keyId = Helpers::validateUrl($signatureData['keyId']);
-        $id = Helpers::validateUrl($bodyDecoded['id']);
-        $keyDomain = parse_url($keyId, PHP_URL_HOST);
-        $idDomain = parse_url($id, PHP_URL_HOST);
-        if(isset($bodyDecoded['object']) 
-            && is_array($bodyDecoded['object'])
-            && isset($bodyDecoded['object']['attributedTo'])
-        ) {
-            if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
-                abort(400, 'Invalid request');
-            }
-        }
-        if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
-            abort(400, 'Invalid request');
-        }
-        $actor = Profile::whereKeyId($keyId)->first();
-        if(!$actor) {
-            $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
-        }
-        if(!$actor) {
-            return false;
-        }
-        $pkey = openssl_pkey_get_public($actor->public_key);
-        $inboxPath = "/users/{$profile->username}/inbox";
-        list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
-        if($verified == 1) { 
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
+
+    // Deprecated
 
     protected function blindKeyRotation(Request $request, Profile $profile)
     {
-        $signature = $request->header('signature');
-        $date = $request->header('date');
-        if(!$signature) {
-            abort(400, 'Missing signature header');
-        }
-        if(!$date) {
-            abort(400, 'Missing date header');
-        }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
-            abort(400, 'Invalid date');
-        }
-        $signatureData = HttpSignature::parseSignatureHeader($signature);
-        $keyId = Helpers::validateUrl($signatureData['keyId']);
-        $actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->firstOrFail();
-        $res = Zttp::timeout(5)->withHeaders([
-          'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-          'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
-        ])->get($actor->remote_url);
-        $res = json_decode($res->body(), true, 8);
-        if($res['publicKey']['id'] !== $actor->key_id) {
-            return false;
-        }
-        $actor->public_key = $res['publicKey']['publicKeyPem'];
-        $actor->save();
-        return $this->verifySignature($request, $profile);
+        return false;
     }
 
     public function userFollowing(Request $request, $username)
@@ -300,6 +238,9 @@ class FederationController extends Controller
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
+            
+        return [];
+
         if($profile->status != null) {
             return [];
         }
@@ -323,6 +264,9 @@ class FederationController extends Controller
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
+
+        return [];
+
         if($profile->status != null) {
             return [];
         }
