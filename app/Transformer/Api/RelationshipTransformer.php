@@ -10,13 +10,14 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
 {
     public function transform(Profile $profile)
     {
-        $user = Auth::user()->profile;
+        $auth = Auth::check();
+        $user = $auth ? Auth::user()->profile : false;
         return [
             'id' => (string) $profile->id,
-            'following' => $user->follows($profile),
-            'followed_by' => $user->followedBy($profile),
-            'blocking' => $user->blockedIds()->contains($profile->id),
-            'muting' => $user->mutedIds()->contains($profile->id),
+            'following' => $auth ? $user->follows($profile) : false,
+            'followed_by' => $auth ? $user->followedBy($profile) : false,
+            'blocking' => $auth ? $user->blockedIds()->contains($profile->id) : false,
+            'muting' => $auth ? $user->mutedIds()->contains($profile->id) : false,
             'muting_notifications' => null,
             'requested' => null,
             'domain_blocking' => null,
