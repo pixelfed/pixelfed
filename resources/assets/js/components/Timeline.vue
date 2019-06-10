@@ -182,7 +182,7 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="modes.infinite == true && !loading && feed.length > 0">
+				<div v-if="!loading && feed.length > 0">
 					<div class="card">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
@@ -191,9 +191,6 @@
 							</infinite-loading>
 						</div>
 					</div>
-				</div>
-				<div v-if="modes.infinite == false && !loading && feed.length > 0" class="pagination">
-					<p class="btn btn-outline-secondary font-weight-bold btn-block" v-on:click="loadMore">Load more posts</p>
 				</div>
 				<div v-if="!loading && scope == 'home' && feed.length == 0">
 					<div class="card">
