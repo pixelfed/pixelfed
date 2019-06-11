@@ -38,7 +38,7 @@ class SearchController extends Controller
             $tokens = [];
             if(Helpers::validateUrl($tag) != false && config('federation.activitypub.enabled') == true && config('federation.activitypub.remoteFollow') == true) {
                 $remote = Helpers::fetchFromUrl($tag);
-                if(isset($remote['type']) && in_array($remote['type'], ['Create', 'Person']) == true) {
+                if(isset($remote['type']) && in_array($remote['type'], ['Note', 'Person']) == true) {
                     $type = $remote['type'];
                     if($type == 'Person') {
                         $item = Helpers::profileFirstOrNew($tag);
@@ -55,7 +55,7 @@ class SearchController extends Controller
                                 'thumb' => $item->avatarUrl()
                             ]
                         ]];
-                    } else if ($type == 'Create') {
+                    } else if ($type == 'Note') {
                         $item = Helpers::statusFirstOrFetch($tag, false);
                         $tokens['posts'] = [[
                             'count'  => 0,
