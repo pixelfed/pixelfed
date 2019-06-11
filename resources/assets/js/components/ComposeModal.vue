@@ -474,6 +474,10 @@ export default {
 		compose() {
 			let state = this.composeState;
 
+			if(this.uploadProgress != 100 || this.ids.length == 0) {
+				return;
+			}
+
 			switch(state) {
 				case 'publish' :
 					if(this.media.length == 0) {
