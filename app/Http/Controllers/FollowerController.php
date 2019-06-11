@@ -86,6 +86,9 @@ class FollowerController extends Controller
             FollowPipeline::dispatch($follower);
         } else {
             $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
+            if($remote == true) {
+                $this->sendUndoFollow($user, $target);
+            }
             $follower->delete();
         }
 
@@ -109,6 +112,30 @@ class FollowerController extends Controller
             'type'      => 'Follow',
             'actor'     => $user->permalink(),
             'object'    => $target->permalink()
+        ];
+
+        $inbox = $target->sharedInbox ?? $target->inbox_url;
+
+        Helpers::sendSignedObject($user, $inbox, $payload);
+    }
+
+    protected function sendUndoFollow($user, $target)
+    {
+        if($target->domain == null || $user->domain != null) {
+            return;
+        }
+
+        $payload = [
+            '@context'  => 'https://www.w3.org/ns/activitystreams',
+            'id'        => $user->permalink('#follow/'.$target->id.'/undo'),
+            'type'      => 'Undo',
+            'actor'     => $user->permalink(),
+            'object'    => [
+                'id' => $user->permalink('#follows/'.$target->id),
+                'actor' => $user->permalink(),
+                'object' => $target->permalink(),
+                'type' => 'Follow'
+            ]
         ];
 
         $inbox = $target->sharedInbox ?? $target->inbox_url;
