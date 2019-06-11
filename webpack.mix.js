@@ -1,9 +1,5 @@
 let mix = require('laravel-mix');
 
-mix.options({
-    purifyCss: true,
-}); 
-
 mix.sass('resources/assets/sass/app.scss', 'public/css', {
 	implementation: require('node-sass')
 })
