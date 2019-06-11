@@ -1,5 +1,9 @@
 let mix = require('laravel-mix');
 
+mix.options({
+    purifyCss: true,
+}); 
+
 /*
 |--------------------------------------------------------------------------
 | Mix Asset Management
@@ -10,6 +14,16 @@ let mix = require('laravel-mix');
 | file for the application as well as bundling up all the JS files.
 |
 */
+
+mix.sass('resources/assets/sass/app.scss', 'public/css', {
+	implementation: require('node-sass')
+})
+.sass('resources/assets/sass/appdark.scss', 'public/css', {
+	implementation: require('node-sass')
+})
+.sass('resources/assets/sass/landing.scss', 'public/css', {
+	implementation: require('node-sass')
+}).version();
 
 mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/activity.js', 'public/js')
@@ -43,13 +57,13 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // Loops Component
 .js('resources/assets/js/loops.js', 'public/js')
 
-.sass('resources/assets/sass/app.scss', 'public/css', {
-	implementation: require('node-sass')
-})
-.sass('resources/assets/sass/appdark.scss', 'public/css', {
-	implementation: require('node-sass')
-})
-.sass('resources/assets/sass/landing.scss', 'public/css', {
-	implementation: require('node-sass')
-})
+.extract([
+	'lodash',
+	'popper.js',
+	'jquery',
+	'axios',
+	'bootstrap',
+	'vue',
+	'readmore-js' 
+])
 .version();
