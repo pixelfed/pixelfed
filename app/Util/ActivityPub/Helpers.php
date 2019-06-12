@@ -55,8 +55,8 @@ class Helpers {
 
 		$activity = $data['object'];
 
-		$mediaTypes = ['Document', 'Image', 'Video'];
-		$mimeTypes = ['image/jpeg', 'image/png', 'video/mp4'];
+		$mimeTypes = explode(',', config('pixelfed.media_types'));
+		$mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
 
 		if(!isset($activity['attachment']) || empty($activity['attachment'])) {
 			return false;
@@ -249,7 +249,6 @@ class Helpers {
 			}
 
 			if(isset($res['cc']) == true) {
-				$scope = 'unlisted';
 				if(is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
 					$scope = 'unlisted';
 				}
@@ -339,6 +338,7 @@ class Helpers {
 		$userHash = hash('sha1', $user->id.(string) $user->created_at);
 		$storagePath = "public/m/{$monthHash}/{$userHash}";
 		$allowed = explode(',', config('pixelfed.media_types'));
+
 		foreach($attachments as $media) {
 			$type = $media['mediaType'];
 			$url = $media['url'];
@@ -370,6 +370,8 @@ class Helpers {
 			ImageOptimize::dispatch($media);
 			unlink($file);
 		}
+		
+		$status->viewType();
 		return;
 	}
 
