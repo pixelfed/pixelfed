@@ -63,7 +63,7 @@
         </p>
       </div>
     </div>
-    <div class="pt-5">
+    <div class="pt-3">
       <p class="font-weight-bold text-muted text-center">Private Information</p>
     </div>
     <div class="form-group row">
@@ -79,7 +79,7 @@
         </p>
       </div>
     </div>
-    <div class="pt-5">
+    <div class="pt-3">
       <p class="font-weight-bold text-muted text-center">Storage Usage</p>
     </div>
     <div class="form-group row">
@@ -98,30 +98,12 @@
         </div>
       </div>
     </div>
-    <div class="pt-5">
-      <p class="font-weight-bold text-muted text-center">Layout</p>
-    </div>
-    <div class="alert alert-primary font-weight-bold text-center">Experimental features have been moved to the <a href="/settings/labs">Labs</a> settings page.</div>
     <hr>
-    @if(config('pixelfed.account_deletion') == true)
-    <div class="form-group row py-3">
-      <div class="col-12 d-flex align-items-center justify-content-between">
-        <a class="font-weight-bold" href="{{route('settings.remove.temporary')}}">Temporarily Disable Account</a>
-        <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
-      </div>
-    </div>
-    <hr>
-    <p class="mb-0 text-center pt-4">
-      <a class="font-weight-bold text-danger" href="{{route('settings.remove.permanent')}}">Delete Account</a>
-    </p>
-    @else
     <div class="form-group row">
-      <div class="col-12 d-flex align-items-center justify-content-between">
-        <a class="font-weight-bold" href="{{route('settings.remove.temporary')}}">Temporarily Disable Account</a>
+      <div class="col-12 text-right">
         <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
       </div>
     </div>
-    @endif
   </form>
 
 @endsection
