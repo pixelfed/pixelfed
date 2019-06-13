@@ -64,22 +64,6 @@
       </div>
     </div>
     <div class="pt-3">
-      <p class="font-weight-bold text-muted text-center">Private Information</p>
-    </div>
-    <div class="form-group row">
-      <label for="email" class="col-sm-3 col-form-label font-weight-bold text-right">Email</label>
-      <div class="col-sm-9">
-        <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="{{Auth::user()->email}}">
-        <p class="help-text small text-muted font-weight-bold">
-          @if(Auth::user()->email_verified_at)
-          <span class="text-success">Verified</span> {{Auth::user()->email_verified_at->diffForHumans()}}
-          @else
-          <span class="text-danger">Unverified</span> You need to <a href="/i/verify-email">verify your email</a>.
-          @endif
-        </p>
-      </div>
-    </div>
-    <div class="pt-3">
       <p class="font-weight-bold text-muted text-center">Storage Usage</p>
     </div>
     <div class="form-group row">

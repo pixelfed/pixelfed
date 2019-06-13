@@ -48,7 +48,7 @@
       <label class="form-check-label font-weight-bold" for="video_autoplay">
         {{__('Disable video autoplay')}}
       </label>
-      <p class="text-muted small help-text">Prevent videos from autoplaying. <a href="#">Learn more</a>.</p>
+      <p class="text-muted small help-text">Prevent videos from autoplaying.</p>
     </div>
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
