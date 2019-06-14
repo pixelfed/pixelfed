@@ -17,7 +17,6 @@ use App\{
 use DB, Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Jackiedo\DotenvEditor\DotenvEditor;
 use App\Http\Controllers\Admin\{
   AdminDiscoverController,
   AdminInstanceController,
