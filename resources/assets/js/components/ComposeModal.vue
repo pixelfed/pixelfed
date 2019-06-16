@@ -249,9 +249,11 @@
 		color: #fff;
 		font-weight: bold;
 	}
-	.media-drawer-filters::-webkit-scrollbar {
-	    display: none;
-	}
+    @media (hover: none) and (pointer: coarse) {
+	    .media-drawer-filters::-webkit-scrollbar {
+	        display: none;
+	    }
+    }
 </style>
 <script type="text/javascript">
 export default {
