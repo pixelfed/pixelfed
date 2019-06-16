@@ -56,7 +56,7 @@
 		<span class="d-inline-flex">
 			<select class="custom-select custom-select-sm font-weight-bold bulk-action">
 				<option selected disabled="">Select Bulk Action</option>
-				<option value="1" disabled="">Review (Coming in v0.9.0)</option>
+				<option value="1" disabled="">Review (Coming in a future version)</option>
 				<option value="2">Add C/W</option>
 				<option value="3">Unlist from timelines</option>
 				<option value="4">No Autolinking</option>
