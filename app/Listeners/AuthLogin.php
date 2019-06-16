@@ -41,7 +41,7 @@ class AuthLogin
     protected function userProfile($user)
     {
         if (empty($user->profile)) {
-            $profile = DB::transaction(function() use($user) {
+            DB::transaction(function() use($user) {
                 $profile = new Profile();
                 $profile->user_id = $user->id;
                 $profile->username = $user->username;
@@ -59,12 +59,6 @@ class AuthLogin
                 $profile->private_key = $pki_private;
                 $profile->public_key = $pki_public;
                 $profile->save();
-                return $profile;
-            });
-            DB::transaction(function() use($user, $profile) {
-                $user = User::findOrFail($user->id);
-                $user->profile_id = $profile->id;
-                $user->save();
 
                 CreateAvatar::dispatch($profile);
             });
