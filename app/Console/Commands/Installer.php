@@ -98,9 +98,9 @@ class Installer extends Command
                 $this->error("- {$ext} extension not found, aborting installation");
                 exit;
             } else {
-                $this->info("- {$ext} extension found!");
             }
         }
+        $this->info("- Required PHP extensions found!");
     }
 
     protected function checkPermissions()
@@ -127,7 +127,7 @@ class Installer extends Command
 
     protected function envCheck()
     {
-        if(!file_exists(base_path('.env'))) {
+        if(!file_exists(base_path('.env')) || filesize(base_path('.env')) == 0) {
             $this->line('');
             $this->info('No .env configuration file found. We will create one now!');
             $this->createEnv();
