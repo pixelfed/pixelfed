@@ -104,7 +104,7 @@
                   </div>
                 </div>
             </div>
-            <div class="d-flex flex-md-column flex-column-reverse h-100">
+            <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
                   <p :class="[status.content.length > 420 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
@@ -433,7 +433,7 @@
     background: transparent;
   }
 </style>
-<style type="text/css">
+<style type="text/css" scoped>
   .momentui .bg-dark {
     background: #000 !important;
   }
