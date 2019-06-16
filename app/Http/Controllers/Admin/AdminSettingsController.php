@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
 use App\Http\Controllers\Controller;
-use Jackiedo\DotenvEditor\Facades\DotenvEditor;
 use App\Util\Lexer\PrettyNumber;
 
 trait AdminSettingsController
@@ -24,9 +23,11 @@ trait AdminSettingsController
       return view('admin.settings.backups', compact('files'));
     }
 
-    public function settingsConfig(Request $request, DotenvEditor $editor)
+    public function settingsConfig(Request $request)
     {
-      return view('admin.settings.config', compact('editor'));
+      $editor = [];
+      $config = file_get_contents(base_path('.env'));
+      return view('admin.settings.config', compact('editor', 'config'));
     }
 
     public function settingsMaintenance(Request $request)
@@ -50,9 +51,7 @@ trait AdminSettingsController
 		$this->validate($request, [
 			'APP_NAME' => 'required|string',
 		]);
-		Artisan::call('config:clear');
-		DotenvEditor::setKey('APP_NAME', $request->input('APP_NAME'));
-		DotenvEditor::save();
+		// Artisan::call('config:clear');
 		return redirect()->back();
 	}
 

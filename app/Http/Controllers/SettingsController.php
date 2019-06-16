@@ -14,6 +14,7 @@ use App\Http\Controllers\Settings\{
     LabsSettings,
     HomeSettings,
     PrivacySettings,
+    RelationshipSettings,
     SecuritySettings
 };
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
@@ -24,6 +25,7 @@ class SettingsController extends Controller
     LabsSettings,
     HomeSettings,
     PrivacySettings,
+    RelationshipSettings,
     SecuritySettings;
 
     public function __construct()

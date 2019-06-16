@@ -237,6 +237,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('developers', 'SettingsController@developers')->name('settings.developers')->middleware('dangerzone');
         Route::get('labs', 'SettingsController@labs')->name('settings.labs');
         Route::post('labs', 'SettingsController@labsStore');
+
+        Route::group(['prefix' => 'relationships'], function() {
+            Route::redirect('/', '/settings/relationships/home');
+            Route::get('home', 'SettingsController@relationshipsHome')->name('settings.relationships');
+        });
     });
 
     Route::group(['prefix' => 'site'], function () {

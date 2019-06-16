@@ -134,16 +134,7 @@ trait PrivacySettings
     public function blockedInstanceStore(Request $request)
     {
         $this->validate($request, [
-            'domain'    => [
-                'required',
-                'min:3',
-                'max:100',
-                function($attribute, $value, $fail) {
-                    if(!filter_var($value, FILTER_VALIDATE_DOMAIN)) {
-                        $fail($attribute. 'is invalid');
-                    }
-                }
-            ]
+            'domain' => 'required|active_url'
         ]);
         $domain = $request->input('domain');
         $instance = Instance::firstOrCreate(['domain' => $domain]);

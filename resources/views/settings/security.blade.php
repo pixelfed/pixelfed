@@ -26,6 +26,32 @@
     @include('settings.security.log-panel')
     
     @include('settings.security.device-panel')
+
+    @if(config('pixelfed.account_deletion') == true)
+    <h4 class="font-weight-bold pt-3">Danger Zone</h4>
+    <div class="mb-4 border rounded border-danger">
+      <ul class="list-group mb-0 pb-0">
+        <li class="list-group-item border-left-0 border-right-0 py-3 d-flex justify-content-between">
+          <div>
+            <p class="font-weight-bold mb-1">Temporarily Disable Account</p>
+            <p class="mb-0 small">Disable your account to hide your posts until next log in.</p>
+          </div>
+          <div>
+            <a class="btn btn-outline-danger font-weight-bold py-1" href="{{route('settings.remove.temporary')}}">Disable</a>
+          </div>
+        </li>
+        <li class="list-group-item border-left-0 border-right-0 py-3 d-flex justify-content-between">
+          <div>
+            <p class="font-weight-bold mb-1">Delete this Account</p>
+            <p class="mb-0 small">Once you delete your account, there is no going back. Please be certain.</p>
+          </div>
+          <div>
+            <a class="btn btn-outline-danger font-weight-bold py-1" href="{{route('settings.remove.permanent')}}">Delete</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+    @endif
   </section>
 
 @endsection

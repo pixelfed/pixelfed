@@ -65,7 +65,6 @@ class Status extends Model
         return $this->hasMany(Media::class)->orderBy('order', 'asc')->first();
     }
 
-    // todo: deprecate after 0.6.0
     public function viewType()
     {
         if($this->type) {
@@ -74,7 +73,6 @@ class Status extends Model
         return $this->setType();
     }
 
-    // todo: deprecate after 0.6.0
     public function setType()
     {
         if(in_array($this->type, self::STATUS_TYPES)) {

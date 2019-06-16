@@ -18,7 +18,11 @@ trait RelationshipSettings
 
 	public function relationshipsHome()
 	{
-		return view('settings.relationships.home');
+		$profile = Auth::user()->profile;
+		$following = $profile->following()->simplePaginate(10);
+		$followers = $profile->followers()->simplePaginate(10);
+
+		return view('settings.relationships.home', compact('profile', 'following', 'followers'));
 	}
 
 }

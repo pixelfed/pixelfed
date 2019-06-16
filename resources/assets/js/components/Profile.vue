@@ -579,7 +579,7 @@ export default {
 				}
 			})
 			.then(res => {
-				let data = res.data;
+				let data = res.data.filter(status => status.media_attachments.length > 0);
 				let ids = data.map(status => status.id);
 				this.ids = ids;
 				this.min_id = Math.max(...ids);

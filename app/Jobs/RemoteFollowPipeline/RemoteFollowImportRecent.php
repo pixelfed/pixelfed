@@ -56,7 +56,7 @@ class RemoteFollowImportRecent implements ShouldQueue
      */
     public function handle()
     {
-        $outbox = $this->fetchOutbox();
+        // $outbox = $this->fetchOutbox();
     }
 
     public function fetchOutbox($url = false)
@@ -216,7 +216,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             $info = pathinfo($url);
             $url = str_replace(' ', '%20', $url);
             $img = file_get_contents($url);
-            $file = '/tmp/'.str_random(12).$info['basename'];
+            $file = '/tmp/'.str_random(64);
             file_put_contents($file, $img);
             $path = Storage::putFile($storagePath, new File($file), 'public');
 
@@ -230,6 +230,8 @@ class RemoteFollowImportRecent implements ShouldQueue
             $media->save();
 
             ImageThumbnail::dispatch($media);
+            
+            @unlink($file);
 
             return true;
         } catch (Exception $e) {

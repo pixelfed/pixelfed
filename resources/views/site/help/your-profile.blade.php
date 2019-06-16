@@ -153,7 +153,9 @@
         <ol class="">
           <li>Log into <a href="{{config('app.url')}}">{{config('pixelfed.domain.app')}}</a></li>
           <li>Tap or click the <i class="far fa-user text-dark"></i> menu and select <span class="font-weight-bold text-dark"><i class="fas fa-cog pr-1"></i> Settings</span></li>
-          <li>Scroll down and click on the <span class="font-weight-bold">Temporarily Disable Account</span> link.</li>
+          <li>Navigate to the <a href="{{route('settings.security')}}">Security Settings</a></li>
+          <li>Confirm your account password.</li>
+          <li>Scroll down to the Danger Zone section and click on the <span class="btn btn-sm btn-outline-danger py-1 font-weight-bold">Disable</span> button.</li>
           <li>Follow the instructions on the next page.</li>
         </ol>
       </div>
@@ -180,8 +182,10 @@
         <p>To permanently delete your account:</p>
         <ol class="">
           <li>Go to <a href="{{route('settings.remove.permanent')}}">the <span class="font-weight-bold">Delete Your Account</span> page</a>.  If you're not logged into pixelfed on the web, you'll be asked to log in first. You can't delete your account from within a mobile app.</li>
+          <li>Navigate to the <a href="{{route('settings.security')}}">Security Settings</a></li>
           <li>Confirm your account password.</li>
-          <li>On the <span class="font-weight-bold">Delete Your Account</span> page click or tap on the <span>Permanently Delete My Account</span> button.</li>
+          <li>Scroll down to the Danger Zone section and click on the <span class="btn btn-sm btn-outline-danger py-1 font-weight-bold">Delete</span> button.</li>
+          <li>Follow the instructions on the next page.</li>
         </ol>
       </div>
     </div>
