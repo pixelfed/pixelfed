@@ -225,6 +225,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 '2fa/recovery-codes',
                 'SettingsController@securityTwoFactorRecoveryCodesRegenerate'
             );
+
         });
 
         Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
@@ -238,10 +239,16 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('labs', 'SettingsController@labs')->name('settings.labs');
         Route::post('labs', 'SettingsController@labsStore');
 
+        Route::get('accessibility', 'SettingsController@accessibility')->name('settings.accessibility');
+        Route::post('accessibility', 'SettingsController@accessibilityStore');
+
         Route::group(['prefix' => 'relationships'], function() {
             Route::redirect('/', '/settings/relationships/home');
             Route::get('home', 'SettingsController@relationshipsHome')->name('settings.relationships');
         });
+        Route::get('invites/create', 'UserInviteController@create')->name('settings.invites.create');
+        Route::post('invites/create', 'UserInviteController@store');
+        Route::get('invites', 'UserInviteController@show')->name('settings.invites');
     });
 
     Route::group(['prefix' => 'site'], function () {
