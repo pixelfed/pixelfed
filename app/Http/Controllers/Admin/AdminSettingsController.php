@@ -26,7 +26,8 @@ trait AdminSettingsController
     public function settingsConfig(Request $request)
     {
       $editor = [];
-      return view('admin.settings.config', compact('editor'));
+      $config = file_get_contents(base_path('.env'));
+      return view('admin.settings.config', compact('editor', 'config'));
     }
 
     public function settingsMaintenance(Request $request)
