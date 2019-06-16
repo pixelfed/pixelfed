@@ -16,13 +16,20 @@ use Illuminate\Http\Request;
 trait RelationshipSettings
 {
 
-	public function relationshipsHome()
+	public function relationshipsHome(Request $request)
 	{
+		$mode = $request->input('mode') == 'following' ? 'following' : 'followers';
 		$profile = Auth::user()->profile;
-		$following = $profile->following()->simplePaginate(10);
-		$followers = $profile->followers()->simplePaginate(10);
 
-		return view('settings.relationships.home', compact('profile', 'following', 'followers'));
+		$following = $followers = [];
+
+		if($mode == 'following') {
+			$data = $profile->following()->simplePaginate(10);
+		} else {
+			$data = $profile->followers()->simplePaginate(10);
+		}
+
+		return view('settings.relationships.home', compact('profile', 'mode', 'data'));
 	}
 
 }
