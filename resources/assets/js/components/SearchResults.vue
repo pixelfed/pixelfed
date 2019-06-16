@@ -69,7 +69,7 @@
 				<p class="col-12 font-weight-bold text-muted">Statuses</p>
 				<a v-for="(status, index) in results.statuses" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="status.url">
 					<div class="card">
-						<img class="card-img-top img-fluid" :src="status.thumb" style="height:180px;">
+						<img class="card-img-top img-fluid" :src="status.thumb">
 						<div class="card-body text-center ">
 							<p class="mb-0 small text-truncate font-weight-bold text-muted" v-html="status.value">
 							</p>
