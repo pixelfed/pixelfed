@@ -284,6 +284,12 @@ class Helpers {
 				}
 			}
 
+			if(!self::validateUrl($res['id']) ||
+			   !self::validateUrl($activity['object']['attributedTo'])
+			) {
+				abort(400, 'Invalid object url');
+			}
+
 			$idDomain = parse_url($res['id'], PHP_URL_HOST);
 			$urlDomain = parse_url($url, PHP_URL_HOST);
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
