@@ -43,6 +43,7 @@
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
       </li>
       
+      @if(config('pixelfed.oauth_enabled') == true)
       <li class="nav-item">
       <hr>
       </li>
@@ -52,6 +53,8 @@
       <li class="nav-item pl-3 {{request()->is('settings/developers')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.developers')}}">Developers</a>
       </li>
+      @endif
+
       <li class="nav-item">
       <hr>
       </li>
