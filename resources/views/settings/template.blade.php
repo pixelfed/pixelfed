@@ -13,6 +13,11 @@
             @endforeach
     </div>
 @endif
+@if (session('error'))
+    <div class="alert alert-danger px-3 h6 text-center">
+        {{ session('error') }}
+    </div>
+@endif
 
 <div class="container">
   <div class="col-12">

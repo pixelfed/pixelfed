@@ -147,9 +147,10 @@ trait HomeSettings
             $log->save();
 
             return redirect('/settings/home')->with('status', 'Password successfully updated!');
+        } else {
+            return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
         }
 
-        return redirect('/settings/home')->with('error', 'There was an error with your request!');
     }
 
     public function email()
