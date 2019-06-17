@@ -175,6 +175,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
         Route::post('password', 'SettingsController@passwordUpdate')->middleware('dangerzone');
         Route::get('email', 'SettingsController@email')->name('settings.email');
+        Route::post('email', 'SettingsController@emailUpdate');
         Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
         Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
         Route::post('privacy', 'SettingsController@privacyStore');
