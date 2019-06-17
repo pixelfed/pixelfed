@@ -6,7 +6,7 @@
     <h3 class="font-weight-bold">Email Settings</h3>
   </div>
   <hr>
-  <form method="post" action="{{route('settings')}}">
+  <form method="post" action="{{route('settings.email')}}">
     @csrf
     <input type="hidden" class="form-control" name="name" value="{{Auth::user()->profile->name}}">
     <input type="hidden" class="form-control" name="username" value="{{Auth::user()->profile->username}}">
