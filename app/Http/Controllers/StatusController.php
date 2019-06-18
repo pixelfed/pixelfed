@@ -234,7 +234,8 @@ class StatusController extends Controller
           'item'    => 'required|integer|min:1',
         ]);
 
-        $profile = Auth::user()->profile;
+        $user = Auth::user();
+        $profile = $user->profile;
         $status = Status::withCount('shares')->findOrFail($request->input('item'));
 
         $count = $status->shares_count;
@@ -259,6 +260,13 @@ class StatusController extends Controller
             $count++;
             SharePipeline::dispatch($share);
         }
+ 
+        if($count >= 0) {
+            $status->reblogs_count = $count;
+            $status->save();
+        }
+ 
+        Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);
 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Share saved', 'count' => $count];

@@ -225,6 +225,7 @@ export default {
 				break;
 				case 'like':
 				case 'favourite':
+				case 'comment':
 					return n.status.url;
 				break;
 			}

@@ -27,8 +27,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'content'                   => $status->rendered ?? $status->caption,
             'created_at'                => $status->created_at->format('c'),
             'emojis'                    => [],
-            'reblogs_count'             => $status->shares()->count(),
-            'favourites_count'          => $status->likes()->count(),
+            'reblogs_count'             => $status->reblogs_count != 0 ? $status->reblogs_count: $status->shares()->count(),
+            'favourites_count'          => $status->likes_count != 0 ? $status->likes_count: $status->likes()->count(),
             'reblogged'                 => $status->shared(),
             'favourited'                => $status->liked(),
             'muted'                     => null,
@@ -47,7 +47,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'comments_disabled'         => $status->comments_disabled ? true : false,
             'thread'                    => false,
             'replies'                   => [],
-            'parent'                    => $status->parent() ? $this->transform($status->parent()) : [],
+            'parent'                    => [],
         ];
     }
 

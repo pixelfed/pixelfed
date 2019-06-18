@@ -20,10 +20,11 @@ class LikeController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-        'item'    => 'required|integer|min:1',
-      ]);
+            'item'    => 'required|integer|min:1',
+        ]);
 
-        $profile = Auth::user()->profile;
+        $user = Auth::user();
+        $profile = $user->profile;
         $status = Status::withCount('likes')->findOrFail($request->input('item'));
 
         $count = $status->likes_count;
@@ -32,19 +33,24 @@ class LikeController extends Controller
             $like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
             $like->forceDelete();
             $count--;
+            if($count >= 0) {
+                $status->likes_count = $count;
+                $status->save();
+            }
         } else {
             $like = new Like();
             $like->profile_id = $profile->id;
             $like->status_id = $status->id;
             $like->save();
             $count++;
+            if($count >= 0) {
+                $status->likes_count = $count;
+                $status->save();
+            }
             LikePipeline::dispatch($like);
         }
 
-        $likes = Like::whereProfileId($profile->id)
-               ->orderBy('id', 'desc')
-               ->take(1000)
-               ->pluck('status_id');
+        Cache::forget('status:'.$status->id.':likedby:userid:'.$user->id);
 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];
