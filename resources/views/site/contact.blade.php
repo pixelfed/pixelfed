@@ -15,6 +15,7 @@
        You can contact the admins by using the form below.
       @endif
     </p>
+    @if(config('instance.contact.enabled'))
   	<form method="POST">
       @csrf
   		<div class="form-group">
@@ -28,6 +29,7 @@
 		</div>
   		<button type="submit" class="btn btn-primary font-weight-bold py-0">Submit</button>
   	</form>
+    @endif
     @else
     <p class="lead">
       @if(filter_var(config('instance.email'), FILTER_VALIDATE_EMAIL) == true)
