@@ -10,7 +10,6 @@ class ContactController extends Controller
 {
 	public function show(Request $request)
 	{
-		abort_if(!config('instance.contact.enabled'), 404);
 		return view('site.contact');
 	}
 	
