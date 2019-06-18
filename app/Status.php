@@ -150,9 +150,11 @@ class Status extends Model
         if(Auth::check() == false) {
             return false;
         }
-        return Cache::remember('status:'.$this->id.':likedby:userid:'.Auth::id(), now()->addHours(30), function() {
-            $profile = Auth::user()->profile;
-            return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
+        $user = Auth::user();
+        $id = $this->id;
+        return Cache::remember('status:'.$this->id.':likedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
+            $profile = $user->profile;
+            return Like::whereProfileId($profile->id)->whereStatusId($id)->count();
         });
     }
 
@@ -193,9 +195,12 @@ class Status extends Model
         if(Auth::check() == false) {
             return false;
         }
-        $profile = Auth::user()->profile;
-
-        return self::whereProfileId($profile->id)->whereReblogOfId($this->id)->count();
+        $user = Auth::user();
+        $id = $this->id;
+        return Cache::remember('status:'.$this->id.':sharedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
+            $profile = $user->profile;
+            return self::whereProfileId($profile->id)->whereReblogOfId($id)->count();
+        });
     }
 
     public function sharedBy()
