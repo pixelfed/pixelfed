@@ -68,7 +68,7 @@
 								</b-carousel-slide>
 							</b-carousel>
 						</div>
-						<div v-if="ids.length > 0" class="bg-dark align-items-center">
+						<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="bg-dark align-items-center">
 							<ul class="nav media-drawer-filters text-center">
 								<li class="nav-item">
 									<div class="p-1 pt-3">
