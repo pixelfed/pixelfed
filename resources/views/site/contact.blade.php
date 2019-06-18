@@ -3,7 +3,7 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Contact</h3>
+    <h3 class="font-weight-bold">{{__('site.contact-us')}}</h3>
   </div>
   <hr>
   <section>
