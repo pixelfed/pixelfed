@@ -325,6 +325,7 @@ class StatusController extends Controller
 
         if ($changed === true) {
             $media->save();
+            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
         }
 
         return response()->json([], 200);
