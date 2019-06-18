@@ -229,6 +229,8 @@ class Inbox
             'item_id' => $parent->id,
             'item_type' => 'App\Status'
         ]);
+        $parent->reblogs_count = $parent->shares()->count();
+        $parent->save();
     }
 
     public function handleAcceptActivity()
@@ -289,6 +291,8 @@ class Inbox
         ]);
 
         if($like->wasRecentlyCreated == true) {
+            $status->likes_count = $status->likes()->count();
+            $status->save();
             LikePipeline::dispatch($like);
         }
 
