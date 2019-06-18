@@ -150,8 +150,10 @@ class Status extends Model
         if(Auth::check() == false) {
             return false;
         }
-        $profile = Auth::user()->profile;
-        return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
+        return Cache::remember('status:'.$this->id.':likedby:userid:'.Auth::id(), now()->addHours(30), function() {
+            $profile = Auth::user()->profile;
+            return Like::whereProfileId($profile->id)->whereStatusId($this->id)->count();
+        });
     }
 
     public function likedBy()
