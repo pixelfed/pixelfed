@@ -8,6 +8,13 @@
   <hr>
   <section>
     @auth
+    <p class="lead">
+      @if(filter_var(config('instance.email'), FILTER_VALIDATE_EMAIL) == true)
+        You can contact the admins by sending an email to {{config('instance.email')}} or using the form below.
+      @else
+       You can contact the admins by using the form below.
+      @endif
+    </p>
   	<form method="POST">
       @csrf
   		<div class="form-group">
