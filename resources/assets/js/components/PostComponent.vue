@@ -728,10 +728,10 @@ export default {
               type: 'status',
               item: this.status.id
             }).then(res => {
+              swal('Success', 'You have successfully deleted this post', 'success');
               setTimeout(function() {
-                swal('Success', 'You have successfully deleted this post', 'success');
                 window.location.href = '/';
-              }, 2000);
+              }, 3000);
             }).catch(err => {
               swal('Error', 'Something went wrong. Please try again later.', 'error');
             });
