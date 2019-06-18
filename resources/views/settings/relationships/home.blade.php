@@ -18,34 +18,33 @@
 	</li>
 </ul>
 <hr>
-<table class="table table-bordered">
+<div class="table-responsive">
+<table class="table table-bordered table-hover">
 	<thead>
 		<tr>
-			<th scope="col" class="pt-0 pb-1 mt-0">
+			{{-- <th scope="col" class="pt-0 pb-1 mt-0">
 				<input type="checkbox" name="check" class="form-control check-all">
-			</th>
+			</th> --}}
 			<th scope="col">Username</th>
-			<th scope="col">Relationship</th>
 			<th scope="col">Action</th>
 		</tr>
 	</thead>
 	<tbody>
 		@foreach($data as $follower)
 		<tr>
-			<th scope="row" class="pb-0 pt-1 my-0">
-				{{-- <input type="checkbox" class="form-control mr-1 check-row"> --}}
-			</th>
+			{{-- <th scope="row" class="pb-0 pt-1 my-0">
+				<input type="checkbox" class="form-control mr-1 check-row">
+			</th> --}}
 			<td class="font-weight-bold">
-				<img src="{{$follower->avatarUrl()}}" width="20px" height="20px" class="rounded-circle border mr-2">
-				<span class="d-inline-block text-truncate" style="max-width: 160px;" title="{{$follower->username}}">{{$follower->username}}</span>
+				<a href="{{$follower->url()}}" class="text-decoration-none text-dark">
+					<p class="mb-0 pb-0 text-truncate" title="{{$follower->username}}">{{$follower->username}}</p>
+				</a>
 			</td>
 			@if($mode == 'following')
-			<td class="text-center">Following</td>
 			<td class="text-center">
 				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="unfollow">Unfollow</a>
 			</td>
 			@else
-			<td class="text-center">Follower</td>
 			<td class="text-center">
 				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">Mute</a>
 				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">Block</a>
@@ -55,10 +54,19 @@
 		@endforeach
 	</tbody>
 </table>
+</div>
 <div class="d-flex justify-content-center">{{$data->appends(['mode' => $mode])->links()}}</div>
 @endif
 @endsection
 
+@push('styles')
+<style type="text/css">
+.table-hover tbody tr:hover {
+    color: #718096;
+    background-color: #F7FAFC;
+}
+</style>
+@endpush 
 @push('scripts')
 <script type="text/javascript">
 	$(document).ready(() => {
