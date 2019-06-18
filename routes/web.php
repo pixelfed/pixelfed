@@ -264,7 +264,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::view('privacy', 'site.privacy')->name('site.privacy');
         Route::view('platform', 'site.platform')->name('site.platform');
         Route::view('language', 'site.language')->name('site.language');
-
+        Route::get('contact', 'ContactController@show')->name('site.contact');
+        Route::post('contact', 'ContactController@store');
         Route::group(['prefix'=>'kb'], function() {
             Route::view('getting-started', 'site.help.getting-started')->name('help.getting-started');
             Route::view('sharing-media', 'site.help.sharing-media')->name('help.sharing-media');
