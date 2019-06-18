@@ -57,21 +57,21 @@ class Image
         }
         if ($thumbnail) {
             return [
-            'dimensions'  => $this->thumbnail,
-            'orientation' => 'thumbnail',
-          ];
+                'dimensions'  => $this->thumbnail,
+                'orientation' => 'thumbnail',
+            ];
         }
 
         list($width, $height) = getimagesize($mediaPath);
         $aspect = $width / $height;
         $orientation = $aspect === 1 ? 'square' :
-      ($aspect > 1 ? 'landscape' : 'portrait');
+        ($aspect > 1 ? 'landscape' : 'portrait');
         $this->orientation = $orientation;
 
         return [
-      'dimensions'  => $this->orientations()[$orientation],
-      'orientation' => $orientation,
-    ];
+          'dimensions'  => $this->orientations()[$orientation],
+          'orientation' => $orientation,
+      ];
     }
 
     public function resizeImage(Media $media)
@@ -116,11 +116,14 @@ class Image
                     $constraint->aspectRatio();
                 });
             } else {
-                $metadata = $img->exif();
+                if(config('media.exif.database', false) == true) {
+                    $metadata = $img->exif();
+                    $media->metadata = json_encode($metadata);
+                }
+
                 $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
-                $media->metadata = json_encode($metadata);
             }
             $converted = $this->setBaseName($path, $thumbnail, $img->extension);
             $newPath = storage_path('app/'.$converted['path']);
@@ -141,6 +144,7 @@ class Image
             }
 
             $media->save();
+            Cache::forget('status:transformer:media:attachments:'.$media->status_id);
             Cache::forget('status:thumb:'.$media->status_id);
         } catch (Exception $e) {
         }
