@@ -259,7 +259,12 @@ class StatusController extends Controller
             $count++;
             SharePipeline::dispatch($share);
         }
-
+ 
+        if($count >= 0) {
+            $status->reblogs_count = $count;
+            $status->save();
+        }
+ 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Share saved', 'count' => $count];
         } else {
