@@ -28,7 +28,7 @@
           @if($status->is_nsfw)
           <details class="cw">
             <summary class="px-3 px-md-5">
-              <p class="py-5 mb-0 text-center">This content may contain sensitive content. <span class="float-right font-weight-bold text-primary">Show</span></p>
+              <p class="py-5 mb-0 text-center">This comment may contain sensitive content. <span class="float-right font-weight-bold text-primary">Show</span></p>
             </summary>
             <div class="media py-5">
               <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
