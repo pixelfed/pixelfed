@@ -13,6 +13,11 @@
 				<a class="dropdown-item font-weight-light" href="{{route('admin.instances')}}?filter=autocw">Show only Auto CW</a>
 				<a class="dropdown-item font-weight-light" href="{{route('admin.instances')}}?filter=banned">Show only Banned</a>
 				<a class="dropdown-item font-weight-light" href="{{route('admin.instances')}}">Show all</a>
+				<div class="dropdown-divider"></div>
+				<form class="" method="post">
+					@csrf
+					<button type="submit" class="btn btn-primary py-1 font-weight-bold btn-sm btn-block">Run Scan</button>
+				</form>
 			</div>
 		</div>
 	</span>
