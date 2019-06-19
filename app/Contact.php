@@ -13,6 +13,6 @@ class Contact extends Model
 
     public function adminUrl()
     {
-    	return url('/i/admin/contact/show/' . $this->id);
+    	return url('/i/admin/messages/show/' . $this->id);
     }
 }

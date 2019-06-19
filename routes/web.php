@@ -44,6 +44,10 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('discover/category/edit/{id}', 'AdminController@discoverCategoryEdit');
     Route::post('discover/category/edit/{id}', 'AdminController@discoverCategoryUpdate');
     Route::post('discover/category/hashtag/create', 'AdminController@discoveryCategoryTagStore')->name('admin.discover.create-hashtag');
+
+    Route::get('messages/home', 'AdminController@messagesHome')->name('admin.messages');
+    Route::get('messages/show/{id}', 'AdminController@messagesShow');
+    Route::post('messages/mark-read', 'AdminController@messagesMarkRead');
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
@@ -264,7 +268,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::view('privacy', 'site.privacy')->name('site.privacy');
         Route::view('platform', 'site.platform')->name('site.platform');
         Route::view('language', 'site.language')->name('site.language');
-
+        Route::get('contact', 'ContactController@show')->name('site.contact');
+        Route::post('contact', 'ContactController@store');
         Route::group(['prefix'=>'kb'], function() {
             Route::view('getting-started', 'site.help.getting-started')->name('help.getting-started');
             Route::view('sharing-media', 'site.help.sharing-media')->name('help.sharing-media');

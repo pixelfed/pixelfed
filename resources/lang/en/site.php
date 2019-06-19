@@ -12,5 +12,7 @@ return [
 	'l10nWip'		=> 'We’re still working on localization support',
 	'currentLocale' => 'Current locale',
 	'selectLocale'  => 'Select one of the supported languages',
+	'contact'		=> 'Contact',
+	'contact-us'	=> 'Contact Us',
 
 ];
