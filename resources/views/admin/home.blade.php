@@ -11,10 +11,10 @@
     <div class="col-md-4">
       <div class="card" style="min-height:125px">
         <div class="card-body">
-          <p class="small text-uppercase font-weight-bold text-muted">Alerts</p>
-          <p class="h2 mb-0">0</p>
+          <p class="small text-uppercase font-weight-bold text-muted">New Messages</p>
+          <p class="h2 mb-0">{{$data['contact']['count']}}</p>
         </div>
-        <canvas width="100" height="10" class="sparkline mb-1" data-chart_values="[0,0]"></canvas>
+        <canvas width="100" height="10" class="sparkline mb-1" data-chart_values="{{$data['contact']['graph']}}"></canvas>
       </div>
     </div>
 

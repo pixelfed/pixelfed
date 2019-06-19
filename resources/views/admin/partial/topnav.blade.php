@@ -8,8 +8,8 @@
         <li class="nav-item mx-2 {{request()->is('*admin/dashboard')?'active':''}}">
           <a class="nav-link" href="{{route('admin.home')}}">Dashboard</a>
         </li>
-        <li class="nav-item mx-2 {{request()->is('*apps*')?'active':''}}">
-          <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.apps')}}">Apps</a>
+        <li class="nav-item mx-2 {{request()->is('*messages*')?'active':''}}">
+          <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.messages')}}">Messages</a>
         </li>
         <li class="nav-item mx-2 {{request()->is('*hashtags*')?'active':''}}">
           <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.hashtags')}}">Hashtags</a>
@@ -37,6 +37,7 @@
             More
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item font-weight-bold {{request()->is('*apps*')?'active':''}}" href="{{route('admin.apps')}}">Apps</a>
             <a class="dropdown-item font-weight-bold {{request()->is('*discover*')?'active':''}}" href="{{route('admin.discover')}}">Discover</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item font-weight-bold" href="/horizon">Horizon</a>

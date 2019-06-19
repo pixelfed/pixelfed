@@ -17,7 +17,8 @@
 </div>
 
 <hr>
-  <table class="table table-responsive">
+<div class="table-responsive">
+  <table class="table">
     <thead class="bg-light">
       <tr>
         <th scope="col">#</th>
@@ -45,4 +46,5 @@
       @endforeach
     </tbody>
   </table>
+</div>
 @endsection
