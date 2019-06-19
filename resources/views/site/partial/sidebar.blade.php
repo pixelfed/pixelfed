@@ -28,7 +28,7 @@
       <li class="nav-item">
         <hr>
       </li>
-      @if(config('instance.contact.enabled'))
+      @if(config('instance.contact.enabled') || config('instance.email'))
       <li class="nav-item pl-3 {{request()->is('site/contact')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('site.contact')}}">{{__('site.contact-us')}}</a>
       </li>
