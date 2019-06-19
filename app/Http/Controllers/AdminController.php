@@ -258,4 +258,25 @@ class AdminController extends Controller
       $messages = Contact::orderByDesc('id')->paginate(10);
       return view('admin.messages.home', compact('messages'));
     }
+
+    public function messagesShow(Request $request, $id)
+    {
+      $message = Contact::findOrFail($id);
+      return view('admin.messages.show', compact('message'));
+    }
+
+    public function messagesMarkRead(Request $request)
+    {
+      $this->validate($request, [
+        'id' => 'required|integer|min:1'
+      ]);
+      $id = $request->input('id');
+      $message = Contact::findOrFail($id);
+      if($message->read_at) {
+        return;
+      }
+      $message->read_at = now();
+      $message->save();
+      return;
+    }
 }
