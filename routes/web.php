@@ -27,6 +27,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('settings/pages', 'AdminController@settingsPages')->name('admin.settings.pages');
     Route::get('settings/pages/edit', 'PageController@edit')->name('admin.settings.pages.edit');
     Route::post('settings/pages/edit', 'PageController@store');
+    Route::post('settings/pages/create', 'PageController@generatePage');
     Route::get('settings/maintenance', 'AdminController@settingsMaintenance')->name('admin.settings.maintenance');
     Route::get('settings/backups', 'AdminController@settingsBackups')->name('admin.settings.backups');
     Route::get('settings/storage', 'AdminController@settingsStorage')->name('admin.settings.storage');
