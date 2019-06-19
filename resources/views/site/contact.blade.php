@@ -36,10 +36,12 @@
     @endif
     @else
     <p class="lead">
-      @if(filter_var(config('instance.email'), FILTER_VALIDATE_EMAIL) == true)
-        You can contact the admins by sending an email to {{config('instance.email')}}.
-      @elseif (config('instance.contact.enabled'))
+      @if(config('instance.email') && config('instance.contact.enabled'))
+        You can contact the admins by sending an email to <span class="font-weight-bold">{{config('instance.email')}}</span> or log in to send a message.
+      @elseif (!config('instance.email') && config('instance.contact.enabled'))
         The admins have not set a contact email address. Please log in to send a message.
+      @elseif (config('instance.email') && !config('instance.contact.enabled'))
+        You can contact the admins by sending an email to <span class="font-weight-bold">{{config('instance.email')}}</span>.
       @endif
     </p>
     @endauth
