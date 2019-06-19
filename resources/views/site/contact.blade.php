@@ -9,10 +9,14 @@
   <section>
     @auth
     <p class="lead">
-      @if(filter_var(config('instance.email'), FILTER_VALIDATE_EMAIL) == true)
-        You can contact the admins by sending an email to {{config('instance.email')}} or using the form below.
-      @else
+      @if(config('instance.email') && config('instance.contact.enabled'))
+        You can contact the admins by sending an email to <span class="font-weight-bold">{{config('instance.email')}}</span> or by using the form below.
+      @elseif(config('instance.email') && !config('instance.contact.enabled'))
+        You can contact the admins by sending an email to <span class="font-weight-bold">{{config('instance.email')}}</span>.
+      @elseif(!config('instance.email') && config('instance.contact.enabled'))
        You can contact the admins by using the form below.
+      @else
+        The admins have not set a contact email address.
       @endif
     </p>
     @if(config('instance.contact.enabled'))
@@ -34,8 +38,8 @@
     <p class="lead">
       @if(filter_var(config('instance.email'), FILTER_VALIDATE_EMAIL) == true)
         You can contact the admins by sending an email to {{config('instance.email')}}.
-      @else
-        The admins have not listed any public email. Please log in to send a message.
+      @elseif (config('instance.contact.enabled'))
+        The admins have not set a contact email address. Please log in to send a message.
       @endif
     </p>
     @endauth
