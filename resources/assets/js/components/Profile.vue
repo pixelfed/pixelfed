@@ -791,10 +791,12 @@ export default {
 					'id[]': this.profileId
 				}
 			}).then(res => {
+				if(res.data.length) {
 					this.relationship = res.data[0];
 					if(res.data[0].blocking == true) {
 						this.warning = true;
 					}
+				}
 			});
 		},
 
