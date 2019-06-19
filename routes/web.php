@@ -46,6 +46,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::post('discover/category/hashtag/create', 'AdminController@discoveryCategoryTagStore')->name('admin.discover.create-hashtag');
 
     Route::get('messages/home', 'AdminController@messagesHome')->name('admin.messages');
+    Route::get('messages/show/{id}', 'AdminController@messagesShow');
+    Route::post('messages/mark-read', 'AdminController@messagesMarkRead');
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
