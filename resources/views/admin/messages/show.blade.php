@@ -17,6 +17,40 @@
 
 <hr>
 
+<div class="row">
+	
+	<div class="col-12 col-md-3 text-md-right">
+		@if($message->response_requested)
+		<p class="text-dark font-weight-bold">Response Requested</p>
+		@endif
+		<p class="text-dark">Sent {{$message->created_at->diffForHumans()}}</p>
+	</div>
+	<div class="col-12 col-md-6">
+		
+		<div class="card shadow-none border">
+			<div class="card-header bg-white">
+				<div class="media">
+					<img src="{{$message->user->profile->avatarUrl()}}" class="mr-3 rounded-circle" width="40px" height="40px">
+					<div class="media-body">
+						<h5 class="my-0">&commat;{{$message->user->username}}</h5>
+						<span class="text-muted">{{$message->user->email}}</span>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<p class="mb-0">{{$message->message}}</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-12 col-md-3">
+		{{-- @if($message->responded_at == null)
+		<button class="btn btn-primary font-weight-bold btn-block">Send Response</button>
+		<hr>
+		@endif
+		<button class="btn btn-outline-danger font-weight-bold btn-block">Delete</button> --}}
+	</div>
+</div>
+
 @endsection
 
 @push('scripts')
