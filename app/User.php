@@ -6,10 +6,11 @@ use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Util\RateLimit\User as UserRateLimit;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasApiTokens;
+    use Notifiable, SoftDeletes, HasApiTokens, UserRateLimit;
 
     /**
      * The attributes that should be mutated to dates.
@@ -76,4 +77,5 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserDevice::class);
     }
+
 }

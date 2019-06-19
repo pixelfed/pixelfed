@@ -99,7 +99,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
             Route::post('moderator/action', 'InternalApiController@modAction');
             Route::get('discover/categories', 'InternalApiController@discoverCategories');
-            Route::post('status/compose', 'InternalApiController@composePost');
+            Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('loops', 'DiscoverController@loopsApi');
             Route::post('loops/watch', 'DiscoverController@loopWatch');
         });
@@ -115,7 +115,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::group(['prefix' => 'i'], function () {
         Route::redirect('/', '/');
         Route::get('compose', 'StatusController@compose')->name('compose');
-        Route::post('comment', 'CommentController@store');
+        Route::post('comment', 'CommentController@store')->middleware('throttle:maxCommentsPerHour,60')->middleware('throttle:maxCommentsPerDay,1440');
         Route::post('delete', 'StatusController@delete');
         Route::post('mute', 'AccountController@mute');
         Route::post('unmute', 'AccountController@unmute');
@@ -294,7 +294,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::group(['prefix' => 'timeline'], function () {
         Route::redirect('/', '/');
         Route::get('public', 'TimelineController@local')->name('timeline.public');
-        Route::post('public', 'StatusController@store');
         // Route::get('network', 'TimelineController@network')->name('timeline.network');
     });
 

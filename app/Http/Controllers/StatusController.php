@@ -101,6 +101,8 @@ class StatusController extends Controller
 
     public function store(Request $request)
     {
+        return;
+        
         $this->authCheck();
         $user = Auth::user();
 
