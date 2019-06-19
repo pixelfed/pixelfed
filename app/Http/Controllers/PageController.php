@@ -50,4 +50,29 @@ class PageController extends Controller
 		$page->save();
 		return response()->json(['msg' => 200]);
 	}
+
+	public function generatePage(Request $request)
+	{
+		$this->validate($request, [
+			'page' => 'required|string|in:about,terms,privacy',
+		]);
+
+		$page = $request->input('page');
+
+		switch ($page) {
+			case 'about':
+				Page::firstOrCreate(['slug' => '/site/about']);
+				break;
+
+			case 'privacy':
+				Page::firstOrCreate(['slug' => '/site/privacy']);
+				break;
+
+			case 'terms':
+				Page::firstOrCreate(['slug' => '/site/terms']);
+				break;
+		}
+
+		return redirect(route('admin.settings.pages'));
+	}
 }
