@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\{
+  Contact,
   FailedJob,
   Hashtag,
   Instance,
@@ -47,6 +48,10 @@ class AdminController extends Controller
         $data = Cache::remember('admin:dashboard:home:data', now()->addMinutes(15), function() {
           $day = config('database.default') == 'pgsql' ? 'DATE_PART(\'day\',' : 'day(';
           return [
+            'contact' => [
+              'count' => PrettyNumber::convert(Contact::whereNull('read_at')->count()),
+              'graph' => Contact::selectRaw('count(*) as count, '.$day.'created_at) as day')->whereNull('read_at')->whereBetween('created_at',[now()->subDays(14), now()])->groupBy('day')->orderBy('day')->pluck('count')
+            ],
             'failedjobs' => [
               'count' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
               'graph' => FailedJob::selectRaw('count(*) as count, '.$day.'failed_at) as d')->groupBy('d')->whereBetween('failed_at',[now()->subDays(24), now()])->orderBy('d')->pluck('count')
@@ -248,4 +253,9 @@ class AdminController extends Controller
       return view('admin.hashtags.home', compact('hashtags'));
     }
 
+    public function messagesHome(Request $request)
+    {
+      $messages = Contact::orderByDesc('id')->paginate(10);
+      return view('admin.messages.home', compact('messages'));
+    }
 }
