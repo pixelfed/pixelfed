@@ -113,50 +113,59 @@
                   </p>
 
                   <div v-if="showComments">
+                    <hr>
                     <div class="postCommentsLoader text-center">
                       <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
                       </div>
                     </div>
-                    <div class="postCommentsContainer d-none pt-3">
+                    <div class="postCommentsContainer d-none">
                       <p v-if="status.reply_count > 10"class="mb-1 text-center load-more-link d-none"><a href="#" class="text-muted" v-on:click="loadMore">Load more comments</a></p>
                       <div class="comments">
                         <div v-for="(reply, index) in results" class="pb-3" :key="'tl' + reply.id + '_' + index">
-                          <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
-                            <span>
-                              <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
-                              <span class="text-break" v-html="reply.content"></span>
-                            </span>
-                            <span class="pl-2" style="min-width:38px">
-                              <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-                                <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
-                            </span>
-                          </p>
-                          <p class="">
-                            <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
-                            <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-                            <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
-                          </p>
-                          <div v-if="reply.reply_count > 0" class="cursor-pointer" style="margin-left:30px;" v-on:click="toggleReplies(reply)">
-                             <span class="show-reply-bar"></span>
-                             <span class="comment-reaction font-weight-bold text-muted">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
+                          <div v-if="reply.sensitive == true">
+                            <div class="card card-body shadow-none border border-left-blue py-3 px-1 text-center small">
+                              <p class="mb-0">This comment may contain sensitive material</p>
+                              <p class="font-weight-bold text-primary cursor-pointer mb-0" @click="reply.sensitive = false;">Show</p>
+                            </div>
                           </div>
-                          <div v-if="reply.thread == true" class="comment-thread">
-                            <div v-for="(s, sindex) in reply.replies" class="pb-3" :key="'cr' + s.id + '_' + index">
-                              <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
-                                <span>
-                                  <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
-                                  <span class="text-break" v-html="s.content"></span>
-                                </span>
-                                <span class="pl-2" style="min-width:38px">
-                                  <span v-on:click="likeReply(s, $event)"><i v-bind:class="[s.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-                                    <post-menu :status="s" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteCommentReply(s.id, sindex, index) "></post-menu>
-                                </span>
-                              </p>
-                              <p class="">
-                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
-                                <span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
-                              </p>
+                          <div v-else>
+                            <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+                              <span>
+                                <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                                <span class="text-break" v-html="reply.content"></span>
+                              </span>
+                              <span class="pl-2" style="min-width:38px">
+                                <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+                                  <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
+                              </span>
+                            </p>
+                            <p class="">
+                              <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
+                              <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
+                              <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
+                            </p>
+                            <div v-if="reply.reply_count > 0" class="cursor-pointer" style="margin-left:30px;" v-on:click="toggleReplies(reply)">
+                               <span class="show-reply-bar"></span>
+                               <span class="comment-reaction font-weight-bold text-muted">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
+                            </div>
+                            <div v-if="reply.thread == true" class="comment-thread">
+                              <div v-for="(s, sindex) in reply.replies" class="pb-3" :key="'cr' + s.id + '_' + index">
+                                <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
+                                  <span>
+                                    <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
+                                    <span class="text-break" v-html="s.content"></span>
+                                  </span>
+                                  <span class="pl-2" style="min-width:38px">
+                                    <span v-on:click="likeReply(s, $event)"><i v-bind:class="[s.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+                                      <post-menu :status="s" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block pl-2" v-on:deletePost="deleteCommentReply(s.id, sindex, index) "></post-menu>
+                                  </span>
+                                </p>
+                                <p class="">
+                                  <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
+                                  <span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
