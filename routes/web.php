@@ -105,7 +105,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
         Route::group(['prefix' => 'local'], function () {
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
-            Route::post('status/compose', 'InternalApiController@compose');
+            Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
         });
     });
@@ -121,8 +121,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('unmute', 'AccountController@unmute');
         Route::post('block', 'AccountController@block');
         Route::post('unblock', 'AccountController@unblock');
-        Route::post('like', 'LikeController@store');
-        Route::post('share', 'StatusController@storeShare');
+        Route::post('like', 'LikeController@store')->middleware('throttle:maxLikesPerHour,60')->middleware('throttle:maxLikesPerDay,1440');
+        Route::post('share', 'StatusController@storeShare')->middleware('throttle:maxSharesPerHour,60')->middleware('throttle:maxSharesPerDay,1440');
         Route::post('follow', 'FollowerController@store');
         Route::post('bookmark', 'BookmarkController@store');
         Route::get('lang/{locale}', 'SiteController@changeLocale');
