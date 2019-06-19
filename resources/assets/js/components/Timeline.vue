@@ -133,14 +133,14 @@
 							</div>
 							<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
 								<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
-									<span>
-										<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
-										<span v-html="reply.content"></span>
-									</span>
-									<span class="mb-0" style="min-width:38px">
-										<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-										<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
-									</span>
+										<span>
+											<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
+											<span v-html="reply.content"></span>
+										</span>
+										<span class="mb-0" style="min-width:38px">
+											<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+											<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
+										</span>
 								</p>
 							</div>
 							<div class="timestamp mt-2">
@@ -696,7 +696,9 @@
 			fetchStatusComments(status, card) {
 				axios.get('/api/v2/status/'+status.id+'/replies')
 				.then(res => {
-					let data = res.data;
+					let data = res.data.filter(res => {
+						return res.sensitive == false;
+					});
 					this.replies = _.reverse(data);
 				}).catch(err => {
 				})
