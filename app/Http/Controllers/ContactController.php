@@ -34,7 +34,7 @@ class ContactController extends Controller
 			->whereDate('created_at', '>', now()->subDays($max))
 			->count();
 
-		if($contact >= 2) {
+		if($contact >= $max) {
 			return redirect()->back()->with('error', 'You have recently sent a message. Please try again later.');
 		}
 
