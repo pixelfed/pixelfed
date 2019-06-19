@@ -202,10 +202,6 @@
 						</div>
 					</div>
 				</div>
-
-				<div class="card-footer py-1">
-					<p class="text-center mb-0 font-weight-bold text-muted small">Having issues? You can also use the <a href="/i/compose">Classic Compose UI</a>.</p>
-				</div>
 			</div>
 		</div>
 	</div>
