@@ -277,7 +277,7 @@ class InternalApiController extends Controller
     public function composePost(Request $request)
     {
         $this->validate($request, [
-            'caption' => 'nullable|string',
+            'caption' => 'nullable|string|max:'.config('pixelfed.max_caption_length', 500),
             'media.*'   => 'required',
             'media.*.id' => 'required|integer|min:1',
             'media.*.filter_class' => 'nullable|alpha_dash|max:30',
