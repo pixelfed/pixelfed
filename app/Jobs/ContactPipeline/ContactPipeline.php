@@ -35,10 +35,10 @@ class ContactPipeline implements ShouldQueue
     public function handle()
     {
         $contact = $this->contact;
-        if(config('instance.contact.enabled') == false || $this->read_at !== null) {
+        $email = config('instance.email');
+        if(config('instance.contact.enabled') == false || $contact->read_at !== null || filter_var($email, FILTER_VALIDATE_EMAIL) == false) {
             return;
         }
-        $email = config('instance.email');
         Mail::to($email)->send(new ContactAdmin($contact));
     }
 }
