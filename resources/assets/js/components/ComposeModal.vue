@@ -476,6 +476,11 @@ export default {
 				return;
 			}
 
+			if(this.composeText.length > this.config.uploader.max_caption_length) {
+				swal('Error', 'Caption is too long', 'error');
+				return;
+			}
+
 			switch(state) {
 				case 'publish' :
 					if(this.media.length == 0) {
