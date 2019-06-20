@@ -38,6 +38,9 @@ class PageController extends Controller
 			'page'	=> 'required|string'
 		]);
 		$slug = urldecode($request->page);
+		if(in_array($slug, array_keys($this->cacheKeys())) == false) {
+			return redirect(route('admin.settings.pages'));
+		}
 		$page = Page::firstOrCreate(['slug' => $slug]);
 		return view('admin.pages.edit', compact('page'));
 	}
