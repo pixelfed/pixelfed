@@ -46,7 +46,7 @@ class SiteController extends Controller
             $page = Page::whereSlug('/site/about')->whereActive(true)->first();
             $stats = [
                 'posts' => Status::whereLocal(true)->count(),
-                'users' => User::count(),
+                'users' => User::whereNull('status')->count(),
                 'admin' => User::whereIsAdmin(true)->first()
             ];
             if($page) {
