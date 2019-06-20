@@ -8,9 +8,6 @@
     <p class="lead">Set custom page content</p>
   </div>
   <hr>
-  {{-- <p class="alert alert-warning">
-    <strong>Feature Unavailable:</strong> This feature will be released in a future version.
-  </p> --}}
   @if($pages->count())
   <div class="table-responsive">
     <table class="table">
