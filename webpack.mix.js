@@ -8,6 +8,9 @@ mix.sass('resources/assets/sass/app.scss', 'public/css', {
 })
 .sass('resources/assets/sass/landing.scss', 'public/css', {
 	implementation: require('node-sass')
+})
+.sass('resources/assets/sass/quill.scss', 'public/css', {
+	implementation: require('node-sass')
 }).version();
 
 mix.js('resources/assets/js/app.js', 'public/js')
@@ -21,6 +24,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/search.js', 'public/js')
 .js('resources/assets/js/developers.js', 'public/js')
 .js('resources/assets/js/loops.js', 'public/js')
+.js('resources/assets/js/quill.js', 'public/js')
 // .js('resources/assets/js/embed.js', 'public')
 // .js('resources/assets/js/direct.js', 'public/js')
 .extract([
