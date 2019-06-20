@@ -27,6 +27,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('settings/pages', 'AdminController@settingsPages')->name('admin.settings.pages');
     Route::get('settings/pages/edit', 'PageController@edit')->name('admin.settings.pages.edit');
     Route::post('settings/pages/edit', 'PageController@store');
+    Route::post('settings/pages/delete', 'PageController@delete');
     Route::post('settings/pages/create', 'PageController@generatePage');
     Route::get('settings/maintenance', 'AdminController@settingsMaintenance')->name('admin.settings.maintenance');
     Route::get('settings/backups', 'AdminController@settingsBackups')->name('admin.settings.backups');
@@ -265,8 +266,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::view('fediverse', 'site.fediverse')->name('site.fediverse');
         Route::view('open-source', 'site.opensource')->name('site.opensource');
         Route::view('banned-instances', 'site.bannedinstances')->name('site.bannedinstances');
-        Route::view('terms', 'site.terms')->name('site.terms');
-        Route::view('privacy', 'site.privacy')->name('site.privacy');
+        Route::get('terms', 'SiteController@terms')->name('site.terms');
+        Route::get('privacy', 'SiteController@privacy')->name('site.privacy');
         Route::view('platform', 'site.platform')->name('site.platform');
         Route::view('language', 'site.language')->name('site.language');
         Route::get('contact', 'ContactController@show')->name('site.contact');
