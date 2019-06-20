@@ -42,14 +42,19 @@ class SiteController extends Controller
 
     public function about()
     {
-        $stats = Cache::remember('site:about', now()->addMinutes(120), function() {
-            return [
+        return Cache::remember('site:about', now()->addMinutes(120), function() {
+            $page = Page::whereSlug('/site/about')->whereActive(true)->first();
+            $stats = [
                 'posts' => Status::whereLocal(true)->count(),
                 'users' => User::count(),
                 'admin' => User::whereIsAdmin(true)->first()
             ];
+            if($page) {
+                return View::make('site.about-custom')->with(compact('page', 'stats'))->render();
+            } else {
+                return View::make('site.about')->with(compact('stats'))->render();
+            }
         });
-        return view('site.about', compact('stats'));
     }
 
     public function language()
