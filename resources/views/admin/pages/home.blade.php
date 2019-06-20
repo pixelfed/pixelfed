@@ -8,10 +8,8 @@
     <p class="lead">Set custom page content</p>
   </div>
   <hr>
-  <p class="alert alert-warning">
-    <strong>Feature Unavailable:</strong> This feature will be released in a future version.
-  </p>
-  {{-- <div class="table-responsive">
+  @if($pages->count())
+  <div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
         <tr class="text-center">
@@ -45,5 +43,48 @@
   </div>
   <div class="d-flex justify-content-center mt-5 small">
     {{$pages->links()}}
-  </div> --}}
+  </div>
+  <hr>
+  <div class="btn-group">
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="about">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About Page</button>
+    </form>
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="privacy">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy Page</button>
+    </form>
+    <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="terms">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms Page</button>
+    </form>
+  </div>
+  @else 
+  <div class="card bg-light shadow-none rounded-0">
+    <div class="card-body text-center">
+      <p class="lead text-muted font-weight-bold py-5 mb-0">No custom pages found</p>
+    </div>
+  </div>
+  <hr>
+  <div class="btn-group">
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="about">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About Page</button>
+    </form>
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="privacy">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy Page</button>
+    </form>
+    <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="terms">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms Page</button>
+    </form>
+  </div>
+  @endif
 @endsection

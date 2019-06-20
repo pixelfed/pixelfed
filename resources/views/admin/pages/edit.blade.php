@@ -14,7 +14,7 @@
     <input class="form-control form-control-lg" id="title" name="title" placeholder="Title">
     <p class="small text-muted">
       Page URL: <span class="page-url font-weight-bold">{{$page->url()}}</span>
-      <span class="pl-1"><a href="#" class="font-weight-bold">Edit</a></span>
+      {{-- <span class="pl-1"><a href="#" class="font-weight-bold">Edit</a></span> --}}
     </p>
     <div id="editor" style="height: 400px">
       {!!$page->content!!}
@@ -25,10 +25,11 @@
           <input type="checkbox" class="custom-control-input" id="activeSwitch" {{$page->active?'checked="true"':''}}>
           <label class="custom-control-label font-weight-bold" for="activeSwitch">Active</label>
         </div>
-        <a class="btn btn-light font-weight-bold py-0" href="#">Set Expire Date</a>
+        {{-- <a class="btn btn-light font-weight-bold py-0" href="#">Set Expire Date</a> --}}
       </div>
       <div>
-        <a class="btn btn-light font-weight-bold py-0" href="#">Preview</a>
+        {{-- <a class="btn btn-light font-weight-bold py-0" href="#">Preview</a> --}}
+        <a class="btn btn-outline-danger font-weight-bold py-0 btn-delete" href="#">Delete</a>
         <a class="btn btn-primary font-weight-bold py-0 btn-save" href="#">Save</a>
       </div>
     </div>
@@ -37,7 +38,7 @@
 @endsection
 
 @push('styles')
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.snow.min.css" integrity="sha256-qc/vMbPSg7/JfxMwKeMv3wlx7ojG33FXfYfO0UJIsc0=" crossorigin="anonymous" />
 <style type="text/css">
 .ql-container {
     box-sizing: border-box;
@@ -51,16 +52,18 @@
 </style>
 @endpush
 @push('scripts')
-<!-- Include the Quill library -->
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.min.js" integrity="sha256-3oYBiGm16EW9wQH8G1VhGh43XgivbO5KaB10RhA9phE=" crossorigin="anonymous"></script>
 
-<!-- Initialize Quill editor -->
 <script>
   window.editor = new Quill('#editor', {
     theme: 'snow'
   });
   $('.btn-save').on('click', function(e) {
     e.preventDefault();
+    let confirm = window.confirm('Are you sure you want to save this page?');
+    if(confirm !== true) {
+      return;
+    }
     let html = editor.container.firstChild.innerHTML;
     let title = $('#title').val();
     let active = $('#activeSwitch')[0].checked;
@@ -74,6 +77,21 @@
     }).catch((err) => {
       console.log(err)
     });
+  });
+
+  $('.btn-delete').on('click', function(e) {
+    e.preventDefault();
+    let confirm = window.confirm('Are you sure you want to delete this page?');
+    if(confirm == true) {
+      axios.post('/i/admin/settings/pages/delete', {
+          id: '{{$page->id}}'
+      }).then(res => {
+        window.location.href = '/i/admin/settings/pages';
+      }).catch(err => {
+        swal('Error', 'An error occured!', 'error');
+        console.log(err);
+      });
+    }
   });
 
   $('#title').on('change input', function(e) {
