@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth;
+use Auth, Cache;
 use App\Page;
 
 class PageController extends Controller
@@ -11,6 +11,14 @@ class PageController extends Controller
 	public function __construct()
 	{
 		$this->middleware(['auth', 'admin']);
+	}
+
+	protected function cacheKeys() {
+		return [
+			'/site/about' => 'site:about',
+			'/site/privacy' => 'site:privacy',
+			'/site/terms' => 'site:terms',
+		];
 	}
 
 	protected function authCheck($admin_only = false)
@@ -48,7 +56,23 @@ class PageController extends Controller
 		$page->title = $request->input('title');
 		$page->active = (bool) $request->input('active');
 		$page->save();
+		if($page->cached) {
+			$keys = $this->cacheKeys();
+			$key = $keys[$page->slug];
+			Cache::forget($key);
+		}
 		return response()->json(['msg' => 200]);
+	}
+
+	public function delete(Request $request)
+	{
+		$this->validate($request, [
+			'id' => 'required|integer|min:1|exists:pages,id'
+		]);
+
+		$page = Page::findOrFail($request->input('id'));
+		$page->delete();
+		return redirect(route('admin.settings.pages'));
 	}
 
 	public function generatePage(Request $request)
