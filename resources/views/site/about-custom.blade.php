@@ -4,33 +4,14 @@
 <div class="jumbotron jumbotron-fluid bg-primary text-white mb-0 py-4">
 	<div class="container">
 		<p class="h1 font-weight-light">About</p>
-		<p class="h3 font-weight-light py-4">Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.</p>
+		<p class="h3 font-weight-light py-4">{{$page->title ?? 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.'}}</p>
 	</div>
 </div>
 <div class="bg-white">
 	<div class="container d-flex justify-content-center">
-		<div class="card mr-3" style="width:500px;margin-top:-30px;">
-			<div class="card-header d-inline-flex align-items-center bg-white">
-				<img src="/storage/avatars/default.png" width="32px" height="32px" style="border-radius: 32px; border: 1px solid #ccc">
-				<span class="username font-weight-bold pl-2 text-dark">
-					username
-				</span>
-			</div>
-			<div class="card-body p-0">
-				<img class="img-fluid" src="/img/sample-post.jpeg">
-			</div>
-			<div class="card-footer bg-white">
-				<div class="likes font-weight-bold mb-2">
-					<span class="like-count">124k</span> likes
-				</div>
-				<div class="caption">
-					<p class="mb-1">
-						<span class="username font-weight-bold">
-							<bdi>username</bdi>
-						</span>
-						<span class="caption-body" data-processed="false">Hello world! <a href="#">#introduction</a></span>
-					</p>
-				</div>
+		<div class="card mr-3" style="width:800px;margin-top:-30px;">
+			<div class="card-body">
+				{!! $page->content !!}
 			</div>
 		</div>
 		<div style="width:300px;margin-top:-30px;text-align: center;">
