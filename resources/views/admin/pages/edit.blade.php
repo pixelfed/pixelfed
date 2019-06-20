@@ -38,7 +38,7 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.snow.min.css" integrity="sha256-qc/vMbPSg7/JfxMwKeMv3wlx7ojG33FXfYfO0UJIsc0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="{{mix('css/quill.css')}}"/>
 <style type="text/css">
 .ql-container {
     box-sizing: border-box;
@@ -52,7 +52,7 @@
 </style>
 @endpush
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.6/quill.min.js" integrity="sha256-3oYBiGm16EW9wQH8G1VhGh43XgivbO5KaB10RhA9phE=" crossorigin="anonymous"></script>
+<script src="{{mix('js/quill.js')}}"></script>
 
 <script>
   window.editor = new Quill('#editor', {
