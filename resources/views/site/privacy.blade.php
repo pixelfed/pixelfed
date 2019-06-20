@@ -2,6 +2,13 @@
 
 @section('section')
 
+  @if($page && $page->content)
+  <div class="title">
+    <h3 class="font-weight-bold">Privacy Policy</h3>
+  </div>
+  <hr>
+  {!! $page->content !!}
+  @else
   <div class="title">
     <h3 class="font-weight-bold">Privacy Policy</h3>
   </div>
@@ -81,7 +88,7 @@
 
     <p class="">Originally adapted from the <a href="https://mastodon.social/terms">Mastodon</a> privacy policy.</p>
   </div>
-
+  @endif
 @endsection
 
 @push('meta')

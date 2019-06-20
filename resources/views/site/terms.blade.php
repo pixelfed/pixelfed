@@ -2,6 +2,13 @@
 
 @section('section')
 
+	@if($page && $page->content)
+	<div class="title">
+		<h3 class="font-weight-bold">Terms Of Use</h3>
+	</div>
+	<hr>
+	{!! $page->content !!}
+	@else
 	<div class="title">
 		<h3 class="font-weight-bold">Terms Of Use</h3>
 	</div>
@@ -38,7 +45,7 @@
 	<p class="">These terms and conditions are governed by and construed in accordance with the laws of Canada and you irrevocably submit to the exclusive jurisdiction of the courts in that State or location.</p>
 	<h5 class="font-weight-bold">9. Additional Rules</h5>
 	<p class="">This website does not have any additional rules.</p>
-
+	@endif
 @endsection
 
 @push('meta')
