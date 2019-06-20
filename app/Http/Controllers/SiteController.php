@@ -69,4 +69,22 @@ class SiteController extends Controller
         return view('site.help.community-guidelines', compact('page'));
     }
 
+    public function privacy(Request $request)
+    {
+        return Cache::remember('site:privacy', now()->addMinutes(120), function() {
+            $slug = '/site/privacy';
+            $page = Page::whereSlug($slug)->whereActive(true)->first();
+            return View::make('site.privacy')->with(compact('page'))->render();
+        });
+    }
+
+
+    public function terms(Request $request)
+    {
+        return Cache::remember('site:terms', now()->addMinutes(120), function() {
+            $slug = '/site/terms';
+            $page = Page::whereSlug($slug)->whereActive(true)->first();
+            return View::make('site.terms')->with(compact('page'))->render();
+        });
+    }
 }
