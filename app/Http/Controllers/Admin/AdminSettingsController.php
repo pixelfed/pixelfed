@@ -27,7 +27,7 @@ trait AdminSettingsController
 	{
 		$editor = config('pixelfed.admin.env_editor');
 		$config = !$editor ? false : file_get_contents(base_path('.env'));
-		$backup = !$editor ? false : file_get_contents(base_path('.env.backup'));
+		$backup = !$editor ? false : (is_file(base_path('.env.backup')) ? file_get_contents(base_path('.env.backup')) : false);
 		return view('admin.settings.config', compact('editor', 'config', 'backup'));
 	}
 
