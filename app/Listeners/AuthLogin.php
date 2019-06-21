@@ -42,25 +42,26 @@ class AuthLogin
     {
         if (empty($user->profile)) {
             DB::transaction(function() use($user) {
-                $profile = new Profile();
-                $profile->user_id = $user->id;
-                $profile->username = $user->username;
-                $profile->name = $user->name;
-                $pkiConfig = [
-                    'digest_alg'       => 'sha512',
-                    'private_key_bits' => 2048,
-                    'private_key_type' => OPENSSL_KEYTYPE_RSA,
-                ];
-                $pki = openssl_pkey_new($pkiConfig);
-                openssl_pkey_export($pki, $pki_private);
-                $pki_public = openssl_pkey_get_details($pki);
-                $pki_public = $pki_public['key'];
+                $profile = Profile::firstOrCreate(['user_id' => $user->id]);
+                if($profile->wasRecentlyCreated == true) {
+                    $profile->username = $user->username;
+                    $profile->name = $user->name;
+                    $pkiConfig = [
+                        'digest_alg'       => 'sha512',
+                        'private_key_bits' => 2048,
+                        'private_key_type' => OPENSSL_KEYTYPE_RSA,
+                    ];
+                    $pki = openssl_pkey_new($pkiConfig);
+                    openssl_pkey_export($pki, $pki_private);
+                    $pki_public = openssl_pkey_get_details($pki);
+                    $pki_public = $pki_public['key'];
 
-                $profile->private_key = $pki_private;
-                $profile->public_key = $pki_public;
-                $profile->save();
+                    $profile->private_key = $pki_private;
+                    $profile->public_key = $pki_public;
+                    $profile->save();
 
-                CreateAvatar::dispatch($profile);
+                    CreateAvatar::dispatch($profile);
+                }
             });
 
         }
@@ -114,7 +115,7 @@ class AuthLogin
             return UserDevice::firstOrCreate([
                 'user_id'       => $user->id,
                 'ip'            => request()->ip(),
-                'user_agent'    => request()->userAgent(),
+                'user_agent'    => str_limit(request()->userAgent(), 180),
             ]);
         });
     }
@@ -124,8 +125,10 @@ class AuthLogin
         if($user->profile_id == null) {
             DB::transaction(function() use($user) {
                 $profile = $user->profile;
-                $user->profile_id = $profile->id;
-                $user->save();
+                if($profile) {
+                    $user->profile_id = $profile->id;
+                    $user->save();
+                }
             });
         }
     }
