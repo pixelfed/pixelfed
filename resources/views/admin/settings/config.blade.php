@@ -32,12 +32,12 @@
 @endsection
 @if($editor == true)
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.4/ace.js"></script>
+<script src="{{mix('js/ace.js')}}"></script>
 <script>
     let editor = ace.edit("editor");
     editor.session.setUseWrapMode(true);
     editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
+    editor.session.setMode("ace/mode/dot");
 
     $('.btn-restore').on('click', function(e) {
       e.preventDefault();
