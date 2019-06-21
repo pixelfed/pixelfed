@@ -24,7 +24,11 @@
     <div id="editor">{{$config}}</div>
     <hr>
     <div class="d-flex justify-content-between px-3">
+      @if($backup)
       <button class="btn btn-outline-secondary font-weight-bold py-1 btn-restore">Restore backup .env</button>
+      @else
+      <div></div>
+      @endif
       <button class="btn btn-primary font-weight-bold py-1 btn-save">Save</button>
     </div>
   </div>
