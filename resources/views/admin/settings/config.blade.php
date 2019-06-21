@@ -16,7 +16,7 @@
     @else
     <p class="lead">Edit configuration settings</p>
     <p class="alert alert-warning">
-      <strong>Warning:</strong> Editing the .env file may cause issues if you change the wrong setting or set the wrong value.
+      <strong>Warning:</strong> If you have opcache enabled, you may need to restart php for the changes to take effect.
     </p>
   </div>
   <hr>
