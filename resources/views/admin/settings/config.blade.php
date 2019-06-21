@@ -48,7 +48,10 @@
       }
       axios.post('/i/admin/settings/config/restore', {
       }).then(res => {
-        window.location.href = window.location.href;
+        swal('Success', 'Configuration successfully restored!', 'success');
+        setTimeout(function() {
+          window.location.href = window.location.href;
+        }, 3000);
       });
     })
 
@@ -62,7 +65,10 @@
       axios.post('/i/admin/settings/config', {
         res: editor.getValue()
       }).then(res => {
-        window.location.href = window.location.href;
+        swal('Success', 'Configuration successfully updated!', 'success');
+        setTimeout(function() {
+          window.location.href = window.location.href;
+        }, 3000);
       });
     })
 </script>
