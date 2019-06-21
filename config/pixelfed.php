@@ -274,4 +274,8 @@ return [
     'sanitizer' => [
         'restrict_html_types' => env('RESTRICT_HTML_TYPES', true)
     ],
+
+    'admin' => [
+        'env_editor' => env('ADMIN_ENV_EDITOR', false)
+    ],
 ];
