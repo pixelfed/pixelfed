@@ -147,7 +147,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <p class="mb-0 font-weight-bold text-lighter small">By signing up, you agree to our <a href="/site/terms" class="text-muted">Terms of Use</a> and <a href="/site/privacy" class="text-muted">Privacy Policy</a>.</p>
+                                        <p class="mb-0 font-weight-bold text-lighter small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="text-muted">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="text-muted">Privacy Policy</a>.</p>
                                     </form>
                                     @else
                                     <div style="min-height: 350px" class="d-flex justify-content-center align-items-center">
