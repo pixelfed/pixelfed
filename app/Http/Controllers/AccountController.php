@@ -191,7 +191,6 @@ class AccountController extends Controller
 
         $pid = $user->id;
         Cache::forget("user:filter:list:$pid");
-        Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
         Cache::forget("api:local:exp:rec:$pid");
 
@@ -242,7 +241,6 @@ class AccountController extends Controller
 
         $pid = $user->id;
         Cache::forget("user:filter:list:$pid");
-        Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
         Cache::forget("api:local:exp:rec:$pid");
 
@@ -296,7 +294,6 @@ class AccountController extends Controller
 
         $pid = $user->id;
         Cache::forget("user:filter:list:$pid");
-        Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
         Cache::forget("api:local:exp:rec:$pid");
 
@@ -348,7 +345,6 @@ class AccountController extends Controller
 
         $pid = $user->id;
         Cache::forget("user:filter:list:$pid");
-        Cache::forget("feature:discover:people:$pid");
         Cache::forget("feature:discover:posts:$pid");
         Cache::forget("api:local:exp:rec:$pid");
         
