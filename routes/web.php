@@ -192,7 +192,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
         Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
         Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
-        Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore');
+        Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore')->middleware('throttle:maxInstanceBansPerDay,1440');
         Route::post('privacy/blocked-instances/unblock', 'SettingsController@blockedInstanceUnblock')->name('settings.privacy.blocked-instances.unblock');
         Route::get('privacy/blocked-keywords', 'SettingsController@blockedKeywords')->name('settings.privacy.blocked-keywords');
 
