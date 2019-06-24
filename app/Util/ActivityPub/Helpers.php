@@ -403,7 +403,10 @@ class Helpers {
 			return;
 		}
 		$domain = parse_url($res['id'], PHP_URL_HOST);
-		$username = Purify::clean($res['preferredUsername']);
+		$username = (string) Purify::clean($res['preferredUsername']);
+		if(empty($username)) {
+			return;
+		}
 		$remoteUsername = "@{$username}@{$domain}";
 
 		abort_if(!self::validateUrl($res['inbox']), 400);
@@ -414,7 +417,7 @@ class Helpers {
 		if(!$profile) {
 			$profile = new Profile;
 			$profile->domain = $domain;
-			$profile->username = Purify::clean($remoteUsername);
+			$profile->username = (string) Purify::clean($remoteUsername);
 			$profile->name = Purify::clean($res['name']) ?? 'user';
 			$profile->bio = Purify::clean($res['summary']);
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
