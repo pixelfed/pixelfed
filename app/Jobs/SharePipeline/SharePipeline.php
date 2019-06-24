@@ -2,16 +2,13 @@
 
 namespace App\Jobs\SharePipeline;
 
-use App\Status;
-use App\Notification;
-use Cache;
+use Cache, Log, Redis;
+use App\{Status, Notification};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use Redis;
 
 class SharePipeline implements ShouldQueue
 {
@@ -73,8 +70,6 @@ class SharePipeline implements ShouldQueue
             $notification->item_id = $status->id;
             $notification->item_type = "App\Status";
             $notification->save();
-
-            Cache::forever('notification.'.$notification->id, $notification);
 
             $redis = Redis::connection();
             $key = config('cache.prefix').':user.'.$status->profile_id.'.notifications';
