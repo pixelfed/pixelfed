@@ -48,4 +48,9 @@ trait User {
 	{
 		return 500;
 	}
+
+	public function getMaxInstanceBansPerDayAttribute()
+	{
+		return 100;
+	}
 }

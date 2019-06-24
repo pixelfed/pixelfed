@@ -146,9 +146,13 @@ class Helpers {
 
 		$host = parse_url($valid, PHP_URL_HOST);
 
+		if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
+			return false;
+		}
+
 		if(config('costar.enabled') == true) {
 			if(
-				(config('costar.domain.block') != null && in_array($host, config('costar.domain.block')) == true) || 
+				(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) || 
 				(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
 			) {
 				return false;

@@ -64,23 +64,34 @@
         },
       })
       .then(val => {
-        if (!val) throw null;
+        if (!val) {
+          swal.stopLoading();
+          swal.close();
+          return;
+        };
+        let msg = 'The URL you have entered is not valid, please try again.'
         try {
           let validator = new URL(val);
-          if(!validator.hostname) throw null;
+          if(!validator.hostname || validator.protocol != 'https:') {
+            swal.stopLoading();
+            swal.close();
+            swal('Invalid URL', msg, 'error');
+            return;
+          };
           axios.post(window.location.href, {
-            domain: validator.hostname
+            domain: validator.href
           }).then(res => {
             window.location.href = window.location.href;
           }).catch(err => {
             swal.stopLoading();
             swal.close();
-            swal('An Error Occured', 'An error occured, please try again later.', 'error');
+            swal('Invalid URL', msg, 'error');
+            return;
           });
         } catch(e) {
           swal.stopLoading();
           swal.close();
-          swal('An Error Occured', 'An error occured, please try again later.', 'error');
+          swal('Invalid URL', msg, 'error');
         }
       })
     });
