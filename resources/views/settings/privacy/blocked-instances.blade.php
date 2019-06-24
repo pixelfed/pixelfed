@@ -69,12 +69,13 @@
           swal.close();
           return;
         };
+        let msg = 'The URL you have entered is not valid, please try again.'
         try {
           let validator = new URL(val);
           if(!validator.hostname || validator.protocol != 'https:') {
             swal.stopLoading();
             swal.close();
-            swal('Invalid URL', 'The URL you have entered is not valid, it must start with https://', 'error');
+            swal('Invalid URL', msg, 'error');
             return;
           };
           axios.post(window.location.href, {
@@ -84,11 +85,13 @@
           }).catch(err => {
             swal.stopLoading();
             swal.close();
+            swal('Invalid URL', msg, 'error');
+            return;
           });
         } catch(e) {
           swal.stopLoading();
           swal.close();
-          swal('Invalid URL', 'The URL you have entered is not valid, it must start with https://', 'error');
+          swal('Invalid URL', msg, 'error');
         }
       })
     });
