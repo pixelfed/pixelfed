@@ -11,6 +11,7 @@ class Like extends Fractal\TransformerAbstract
 	{
 		return [
 			'@context'  => 'https://www.w3.org/ns/activitystreams',
+			'id'		=> $like->actor->permalink('#likes/'.$like->id),
 			'type' 		=> 'Like',
 			'actor'		=> $like->actor->permalink(),
 			'object'	=> $like->status->url()
