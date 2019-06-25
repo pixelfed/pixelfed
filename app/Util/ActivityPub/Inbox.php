@@ -323,6 +323,7 @@ class Inbox
                 break;
                 
             case 'Announce':
+                $obj = $obj['object'];
                 abort_if(!Helpers::validateLocalUrl($obj), 400);
                 $status = Helpers::statusFetch($obj);
                 if(!$status) {
