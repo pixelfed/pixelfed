@@ -34,7 +34,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'muted'                     => null,
             'sensitive'                 => (bool) $status->is_nsfw,
             'spoiler_text'              => $status->cw_summary,
-            'visibility'                => $status->visibility,
+            'visibility'                => $status->visibility ?? $status->scope,
             'application'               => [
                 'name'      => 'web',
                 'website'   => null
