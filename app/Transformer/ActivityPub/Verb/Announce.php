@@ -16,8 +16,8 @@ class Announce extends Fractal\TransformerAbstract
     		'actor'		=> $status->profile->permalink(),
     		'to' 		=> ['https://www.w3.org/ns/activitystreams#Public'],
     		'cc' 		=> [
-    			$status->parent()->profile->permalink(),
-    			$status->parent()->profile->follower_url
+    			$status->profile->permalink(),
+    			$status->profile->follower_url ?? $status->profile->permalink('/followers')
     		],
     		'published' => $status->created_at->format(DATE_ISO8601),
     		'object'	=> $status->parent()->url(),
