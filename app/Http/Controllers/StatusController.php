@@ -30,6 +30,7 @@ class StatusController extends Controller
         }
 
         $status = Status::whereProfileId($user->id)
+                ->whereNull('reblog_of_id')
                 ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
