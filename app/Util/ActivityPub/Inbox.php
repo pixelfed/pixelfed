@@ -235,7 +235,7 @@ class Inbox
             'item_id' => $parent->id,
             'item_type' => 'App\Status'
         ]);
-        
+
         $parent->reblogs_count = $parent->shares()->count();
         $parent->save();
     }
@@ -323,6 +323,20 @@ class Inbox
                 break;
                 
             case 'Announce':
+                abort_if(!Helpers::validateLocalUrl($obj), 400);
+                $status = Helpers::statusFetch($obj);
+                if(!$status) {
+                    return;
+                }
+                Status::whereProfileId($profile->id)
+                    ->whereReblogOfId($status->id)
+                    ->forceDelete();
+                Notification::whereProfileId($status->profile->id)
+                    ->whereActorId($profile->id)
+                    ->whereAction('share')
+                    ->whereItemId($status->reblog_of_id)
+                    ->whereItemType('App\Status')
+                    ->forceDelete();
                 break;
 
             case 'Block':
@@ -354,6 +368,6 @@ class Inbox
                     ->forceDelete();
                 break;
         }
-
+        return;
     }
 }
