@@ -206,7 +206,7 @@ class Helpers {
 		return self::fetchFromUrl($url);
 	}
 
-	public static function statusFirstOrFetch($url, $replyTo = true)
+	public static function statusFirstOrFetch($url, $replyTo = false)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {
@@ -337,6 +337,11 @@ class Helpers {
 		}
 	}
 
+	public static function statusFetch($url)
+	{
+		return self::statusFirstOrFetch($url);
+	}
+
 	public static function importNoteAttachment($data, Status $status)
 	{
 		if(self::verifyAttachments($data) == false) {
@@ -433,6 +438,11 @@ class Helpers {
 			}
 		}
 		return $profile;
+	}
+
+	public static function profileFetch($url)
+	{
+		return self::profileFirstOrNew($url);
 	}
 
 	public static function sendSignedObject($senderProfile, $url, $body)

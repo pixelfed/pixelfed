@@ -179,14 +179,14 @@
                 <div class="reactions my-1">
                   <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
                   <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
-                  <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
-                  <h3 v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
                 </div>
                 <div class="reaction-counts font-weight-bold mb-0">
                   <span style="cursor:pointer;" v-on:click="likesModal">
                     <span class="like-count">{{status.favourites_count || 0}}</span> likes
                   </span>
-                  <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                  <span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
                     <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
                   </span>
                 </div>
@@ -268,13 +268,13 @@
               <div class="reactions py-2">
                 <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
                 <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
-                <h3 v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary float-right cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn float-right cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+                <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary float-right cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn float-right cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
               </div>
                 <div class="reaction-counts font-weight-bold mb-0">
                   <span style="cursor:pointer;" v-on:click="likesModal">
                     <span class="like-count">{{status.favourites_count || 0}}</span> likes
                   </span>
-                  <span class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                  <span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
                     <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
                   </span>
                 </div>
