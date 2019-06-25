@@ -206,7 +206,7 @@ class Helpers {
 		return self::fetchFromUrl($url);
 	}
 
-	public static function statusFirstOrFetch($url, $replyTo = true)
+	public static function statusFirstOrFetch($url, $replyTo = false)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {

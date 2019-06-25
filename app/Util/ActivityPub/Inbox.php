@@ -151,7 +151,7 @@ class Inbox
         if(Status::whereUrl($url)->exists()) {
             return;
         }
-        Helpers::statusFirstOrFetch($url, false);
+        Helpers::statusFetch($url);
         return;
     }
 

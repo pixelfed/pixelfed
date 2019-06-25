@@ -56,7 +56,7 @@ class SearchController extends Controller
                             ]
                         ]];
                     } else if ($type == 'Note') {
-                        $item = Helpers::statusFirstOrFetch($tag, false);
+                        $item = Helpers::statusFetch($tag);
                         $tokens['posts'] = [[
                             'count'  => 0,
                             'url'    => $item->url(),
