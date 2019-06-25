@@ -34,8 +34,8 @@ class StatusController extends Controller
                 ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
-        if($status->uri) {
-            $url = $status->uri;
+        if($status->uri || $status->url) {
+            $url = $status->uri ?? $status->url;
             if(ends_with($url, '/activity')) {
                 $url = str_replace('/activity', '', $url);
             }
