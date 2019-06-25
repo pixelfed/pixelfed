@@ -102,109 +102,6 @@ class StatusController extends Controller
     public function store(Request $request)
     {
         return;
-        
-        $this->authCheck();
-        $user = Auth::user();
-
-        $size = Media::whereUserId($user->id)->sum('size') / 1000;
-        $limit = (int) config('pixelfed.max_account_size');
-        if ($size >= $limit) {
-            return redirect()->back()->with('error', 'You have exceeded your storage limit. Please click <a href="#">here</a> for more info.');
-        }
-
-        $this->validate($request, [
-          'photo.*'      => 'required|mimetypes:' . config('pixelfed.media_types').'|max:' . config('pixelfed.max_photo_size'),
-          'caption'      => 'nullable|string|max:'.config('pixelfed.max_caption_length'),
-          'cw'           => 'nullable|string',
-          'filter_class' => 'nullable|alpha_dash|max:30',
-          'filter_name'  => 'nullable|string',
-          'visibility'   => 'required|string|min:5|max:10',
-        ]);
-
-        if (count($request->file('photo')) > config('pixelfed.max_album_length')) {
-            return redirect()->back()->with('error', 'Too many files, max limit per post: '.config('pixelfed.max_album_length'));
-        }
-        $cw = $request->filled('cw') && $request->cw == 'on' ? true : false;
-        $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id.(string) $user->created_at);
-        $profile = $user->profile;
-        $visibility = $this->validateVisibility($request->visibility);
-
-        $cw = $profile->cw == true ? true : $cw;
-        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
-
-        if(config('costar.enabled') == true) {
-            $blockedKeywords = config('costar.keyword.block');
-            if($blockedKeywords !== null) {
-                $keywords = config('costar.keyword.block');
-                foreach($keywords as $kw) {
-                    if(Str::contains($request->caption, $kw) == true) {
-                        abort(400, 'Invalid object');
-                    }
-                }
-            }
-        }
-        
-        $status = new Status();
-        $status->profile_id = $profile->id;
-        $status->caption = strip_tags($request->caption);
-        $status->is_nsfw = $cw;
-
-        // TODO: remove deprecated visibility in favor of scope
-        $status->visibility = $visibility;
-        $status->scope = $visibility;
-
-        $status->save();
-
-        $photos = $request->file('photo');
-        $order = 1;
-        $mimes = [];
-        $medias = 0;
-
-        foreach ($photos as $k => $v) {
-
-            $allowedMimes = explode(',', config('pixelfed.media_types'));
-            if(in_array($v->getMimeType(), $allowedMimes) == false) {
-                continue;
-            }
-            $filter_class = $request->input('filter_class');
-            $filter_name = $request->input('filter_name');
-
-            $storagePath = "public/m/{$monthHash}/{$userHash}";
-            $path = $v->store($storagePath);
-            $hash = \hash_file('sha256', $v);
-            $media = new Media();
-            $media->status_id = $status->id;
-            $media->profile_id = $profile->id;
-            $media->user_id = $user->id;
-            $media->media_path = $path;
-            $media->original_sha256 = $hash;
-            $media->size = $v->getSize();
-            $media->mime = $v->getMimeType();
-            
-            $media->filter_class = in_array($filter_class, Filter::classes()) ? $filter_class : null;
-            $media->filter_name = in_array($filter_name, Filter::names()) ? $filter_name : null;
-            $media->order = $order;
-            $media->save();
-            array_push($mimes, $media->mime);
-            ImageOptimize::dispatch($media);
-            $order++;
-            $medias++;
-        }
-
-        if($medias == 0) {
-            $status->delete();
-            return;
-        }
-        $status->type = (new self)::mimeTypeCheck($mimes);
-        $status->save();
-        
-        Cache::forget('profile:status_count:'.$profile->id);
-        NewStatusPipeline::dispatch($status);
-
-        // TODO: Send to subscribers
-
-        return redirect($status->url());
     }
 
     public function delete(Request $request)
@@ -238,7 +135,9 @@ class StatusController extends Controller
 
         $user = Auth::user();
         $profile = $user->profile;
-        $status = Status::withCount('shares')->findOrFail($request->input('item'));
+        $status = Status::withCount('shares')
+            ->whereIn('scope', ['public', 'unlisted'])
+            ->findOrFail($request->input('item'));
 
         $count = $status->shares_count;
 
