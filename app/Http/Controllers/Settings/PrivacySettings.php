@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\AccountLog;
 use App\EmailVerification;
 use App\Instance;
+use App\Follower;
 use App\Media;
 use App\Profile;
 use App\User;
@@ -169,5 +170,48 @@ trait PrivacySettings
     public function blockedKeywords()
     {
         return view('settings.privacy.blocked-keywords');
+    }
+
+    public function privateAccountOptions(Request $request)
+    {
+        $this->validate($request, [
+            'mode' => 'required|string|in:keep-all,mutual-only,only-followers,remove-all',
+            'duration' => 'required|integer|min:60|max:525600',
+        ]);
+        $mode = $request->input('mode');
+        $duration = $request->input('duration');
+        // $newRequests = $request->input('newrequests');
+
+        $profile = Auth::user()->profile;
+        $settings = Auth::user()->settings;
+
+        if($mode !== 'keep-all') {
+            switch ($mode) {
+                case 'mutual-only':
+                    $following = $profile->following()->pluck('profiles.id');
+                    Follower::whereFollowingId($profile->id)->whereNotIn('profile_id', $following)->delete();
+                    break;
+
+                case 'only-followers':
+                    $ts = now()->subMinutes($duration);
+                    Follower::whereFollowingId($profile->id)->where('created_at', '>', $ts)->delete();
+                    break;
+
+                case 'remove-all':
+                    Follower::whereFollowingId($profile->id)->delete();
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+        }
+        $profile->is_private = true;
+        $settings->show_guests = false;
+        $settings->show_discover = false;
+        $settings->save();
+        $profile->save();
+        Cache::forget('profiles:private');
+        return [200];
     }
 }
