@@ -18,6 +18,7 @@ class PageController extends Controller
 			'/site/about' => 'site:about',
 			'/site/privacy' => 'site:privacy',
 			'/site/terms' => 'site:terms',
+			'/site/kb/community-guidelines' => 'site:help:community-guidelines'
 		];
 	}
 
@@ -81,7 +82,7 @@ class PageController extends Controller
 	public function generatePage(Request $request)
 	{
 		$this->validate($request, [
-			'page' => 'required|string|in:about,terms,privacy',
+			'page' => 'required|string|in:about,terms,privacy,community_guidelines',
 		]);
 
 		$page = $request->input('page');
@@ -97,6 +98,10 @@ class PageController extends Controller
 
 			case 'terms':
 				Page::firstOrCreate(['slug' => '/site/terms']);
+				break;
+
+			case 'community_guidelines':
+				Page::firstOrCreate(['slug' => '/site/kb/community-guidelines']);
 				break;
 		}
 
