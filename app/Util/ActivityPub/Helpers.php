@@ -420,7 +420,7 @@ class Helpers {
 
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
-			$profile = new Profile;
+			$profile = new Profile();
 			$profile->domain = $domain;
 			$profile->username = (string) Purify::clean($remoteUsername);
 			$profile->name = Purify::clean($res['name']) ?? 'user';

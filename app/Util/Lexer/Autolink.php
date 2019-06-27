@@ -718,7 +718,7 @@ class Autolink extends Regex
             // Replace the username
             $linkText = Str::startsWith($screen_name, '@') ? $screen_name : '@'.$screen_name;
             $class = $this->class_user;
-            $url = $this->url_base_user.$screen_name;;
+            $url = $this->url_base_user . $screen_name;
         }
         if (!empty($class)) {
             $attributes['class'] = $class;

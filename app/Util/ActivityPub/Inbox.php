@@ -274,8 +274,10 @@ class Inbox
         if(is_string($obj) && Helpers::validateUrl($obj)) {
             // actor object detected
             // todo delete actor
+            return;
         } else if (Helpers::validateUrl($obj['id']) && Helpers::validateObject($obj) && $obj['type'] == 'Tombstone') {
             // todo delete status or object
+            return;
         }
     }
 

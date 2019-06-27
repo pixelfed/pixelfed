@@ -60,6 +60,11 @@ class StatusController extends Controller
         return view($template, compact('user', 'status'));
     }
 
+    public function showEmbed(Request $request, $username, int $id)
+    {
+        return;
+    }
+
     public function showObject(Request $request, $username, int $id)
     {
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
