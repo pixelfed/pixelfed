@@ -449,6 +449,13 @@
 				this.config = res.data;
 				this.fetchProfile();
 				this.fetchTimelineApi();
+
+				// if(this.config.announcement.enabled == true) {
+				// 	let msg = $('<div>')
+				// 	.addClass('alert alert-warning mb-0 rounded-0 text-center font-weight-bold')
+				// 	.html(this.config.announcement.message);
+				// 	$('body').prepend(msg);
+				// }
 			});
 		},
 
@@ -748,7 +755,9 @@
 					type: 'status',
 					item: status.id
 				}).then(res => {
-					this.feed.splice(index,1);
+					this.feed = this.feed.filter(s => {
+						return s.id != status.id;
+					})
 					swal('Success', 'You have successfully deleted this post', 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
