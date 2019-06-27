@@ -50,7 +50,7 @@ class MentionPipeline implements ShouldQueue
 
         $exists = Notification::whereProfileId($target)
                   ->whereActorId($actor->id)
-                  ->whereAction('mention')
+                  ->whereIn('action', ['mention', 'comment'])
                   ->whereItemId($status->id)
                   ->whereItemType('App\Status')
                   ->count();
