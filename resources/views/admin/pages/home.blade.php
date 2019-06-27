@@ -49,17 +49,22 @@
     <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
       @csrf
       <input type="hidden" name="page" value="about">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About Page</button>
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About</button>
     </form>
     <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
       @csrf
       <input type="hidden" name="page" value="privacy">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy Page</button>
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy</button>
+    </form>
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="terms">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms</button>
     </form>
     <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
       @csrf
-      <input type="hidden" name="page" value="terms">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms Page</button>
+      <input type="hidden" name="page" value="community_guidelines">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Guidelines</button>
     </form>
   </div>
   @else 
@@ -73,17 +78,22 @@
     <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
       @csrf
       <input type="hidden" name="page" value="about">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About Page</button>
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About</button>
     </form>
     <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
       @csrf
       <input type="hidden" name="page" value="privacy">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy Page</button>
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy</button>
+    </form>
+    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+      @csrf
+      <input type="hidden" name="page" value="terms">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms</button>
     </form>
     <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
       @csrf
-      <input type="hidden" name="page" value="terms">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms Page</button>
+      <input type="hidden" name="page" value="community_guidelines">
+      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Guidelines</button>
     </form>
   </div>
   @endif
