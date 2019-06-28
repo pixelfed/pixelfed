@@ -30,11 +30,11 @@
       <li class="nav-item">
         <hr>
       </li>
-      {{-- <li class="nav-item {{request()->is('*/community-guidelines')?'active':''}}">
+      <li class="nav-item {{request()->is('*/community-guidelines')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.community-guidelines')}}">
           {{__('helpcenter.communityGuidelines')}}
         </a>
-      </li> --}}
+      </li>
       {{-- <li class="nav-item {{request()->is('*/what-is-the-fediverse')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.what-is-fediverse')}}">{{__('helpcenter.whatIsTheFediverse')}}</a>
       </li> --}}

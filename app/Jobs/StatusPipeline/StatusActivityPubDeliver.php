@@ -49,6 +49,7 @@ class StatusActivityPubDeliver implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
+        $profile = $status->profile;
 
         if($status->local == false || $status->url || $status->uri) {
             return;
@@ -56,12 +57,11 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        if(empty($audience) || $status->visibility != 'public') {
+        if(empty($audience) || $status->scope != 'public') {
             // Return on profiles with no remote followers
             return;
         }
 
-        $profile = $status->profile;
 
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());

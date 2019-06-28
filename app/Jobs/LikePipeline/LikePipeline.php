@@ -2,16 +2,17 @@
 
 namespace App\Jobs\LikePipeline;
 
-use App\Like;
-use App\Notification;
-use Cache;
+use Cache, Log, Redis;
+use App\{Like, Notification};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use Redis;
+use App\Util\ActivityPub\Helpers;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
 
 class LikePipeline implements ShouldQueue
 {
@@ -48,9 +49,13 @@ class LikePipeline implements ShouldQueue
         $status = $this->like->status;
         $actor = $this->like->actor;
 
-        if (!$status || $status->url !== null) {
-            // Ignore notifications to remote statuses, or deleted statuses
+        if (!$status) {
+            // Ignore notifications to deleted statuses
             return;
+        }
+
+        if($status->url && $actor->domain == null) {
+            return $this->remoteLikeDeliver();
         }
 
         $exists = Notification::whereProfileId($status->profile_id)
@@ -77,5 +82,21 @@ class LikePipeline implements ShouldQueue
 
         } catch (Exception $e) {
         }
+    }
+
+    public function remoteLikeDeliver()
+    {
+        $like = $this->like;
+        $status = $this->like->status;
+        $actor = $this->like->actor;
+
+        $fractal = new Fractal\Manager();
+        $fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Item($like, new LikeTransformer());
+        $activity = $fractal->createData($resource)->toArray();
+
+        $url = $status->profile->sharedInbox ?? $status->profile->inbox_url;
+
+        Helpers::sendSignedObject($actor, $url, $activity);
     }
 }

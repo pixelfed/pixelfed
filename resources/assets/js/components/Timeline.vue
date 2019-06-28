@@ -117,7 +117,7 @@
 							<div v-if="!modes.distractionFree" class="reactions my-1">
 								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
-								<h3 v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 							</div>
 
 							<div class="likes font-weight-bold" v-if="expLc(status) == true && !modes.distractionFree">
@@ -449,6 +449,13 @@
 				this.config = res.data;
 				this.fetchProfile();
 				this.fetchTimelineApi();
+
+				// if(this.config.announcement.enabled == true) {
+				// 	let msg = $('<div>')
+				// 	.addClass('alert alert-warning mb-0 rounded-0 text-center font-weight-bold')
+				// 	.html(this.config.announcement.message);
+				// 	$('body').prepend(msg);
+				// }
 			});
 		},
 
@@ -748,7 +755,9 @@
 					type: 'status',
 					item: status.id
 				}).then(res => {
-					this.feed.splice(index,1);
+					this.feed = this.feed.filter(s => {
+						return s.id != status.id;
+					})
 					swal('Success', 'You have successfully deleted this post', 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');

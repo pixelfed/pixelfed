@@ -149,7 +149,7 @@
       </a>
     </div>
 
-    {{-- <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.community-guidelines')}}" class="text-decoration-none">
         <div class="card">
           <div class="card-body">
@@ -158,13 +158,13 @@
             </p>
             <p class="text-center text-muted font-weight-bold h4 mb-0">{{__('helpcenter.communityGuidelines')}}</p>
             <div class="text-center pt-3">
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
+              <p class="small text-dark font-weight-bold mb-0">Content that will be removed</p>
+              <p class="small text-dark font-weight-bold mb-0">Content that is explicitly disallowed</p>
             </div>
           </div>
         </div>
       </a>
-    </div> --}}
+    </div>
     {{-- <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.blocking-accounts')}}" class="text-decoration-none">
         <div class="card">

@@ -146,9 +146,13 @@ class Helpers {
 
 		$host = parse_url($valid, PHP_URL_HOST);
 
+		if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
+			return false;
+		}
+
 		if(config('costar.enabled') == true) {
 			if(
-				(config('costar.domain.block') != null && in_array($host, config('costar.domain.block')) == true) || 
+				(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) || 
 				(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
 			) {
 				return false;
@@ -202,7 +206,7 @@ class Helpers {
 		return self::fetchFromUrl($url);
 	}
 
-	public static function statusFirstOrFetch($url, $replyTo = true)
+	public static function statusFirstOrFetch($url, $replyTo = false)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {
@@ -333,6 +337,11 @@ class Helpers {
 		}
 	}
 
+	public static function statusFetch($url)
+	{
+		return self::statusFirstOrFetch($url);
+	}
+
 	public static function importNoteAttachment($data, Status $status)
 	{
 		if(self::verifyAttachments($data) == false) {
@@ -399,7 +408,10 @@ class Helpers {
 			return;
 		}
 		$domain = parse_url($res['id'], PHP_URL_HOST);
-		$username = Purify::clean($res['preferredUsername']);
+		$username = (string) Purify::clean($res['preferredUsername']);
+		if(empty($username)) {
+			return;
+		}
 		$remoteUsername = "@{$username}@{$domain}";
 
 		abort_if(!self::validateUrl($res['inbox']), 400);
@@ -408,9 +420,9 @@ class Helpers {
 
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
-			$profile = new Profile;
+			$profile = new Profile();
 			$profile->domain = $domain;
-			$profile->username = Purify::clean($remoteUsername);
+			$profile->username = (string) Purify::clean($remoteUsername);
 			$profile->name = Purify::clean($res['name']) ?? 'user';
 			$profile->bio = Purify::clean($res['summary']);
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
@@ -426,6 +438,11 @@ class Helpers {
 			}
 		}
 		return $profile;
+	}
+
+	public static function profileFetch($url)
+	{
+		return self::profileFirstOrNew($url);
 	}
 
 	public static function sendSignedObject($senderProfile, $url, $body)

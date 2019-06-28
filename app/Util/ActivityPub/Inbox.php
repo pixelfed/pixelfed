@@ -151,7 +151,7 @@ class Inbox
         if(Status::whereUrl($url)->exists()) {
             return;
         }
-        Helpers::statusFirstOrFetch($url, false);
+        Helpers::statusFetch($url);
         return;
     }
 
@@ -205,21 +205,27 @@ class Inbox
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $activity = $this->payload['object'];
+
         if(!$actor || $actor->domain == null) {
             return;
         }
+
         if(Helpers::validateLocalUrl($activity) == false) {
             return;
         }
-        $parent = Helpers::statusFirstOrFetch($activity, true);
-        if(!$parent) {
+
+        $parent = Helpers::statusFetch($activity);
+
+        if(empty($parent)) {
             return;
         }
+
         $status = Status::firstOrCreate([
             'profile_id' => $actor->id,
             'reblog_of_id' => $parent->id,
-            'type' => 'reply'
+            'type' => 'share'
         ]);
+
         Notification::firstOrCreate([
             'profile_id' => $parent->profile->id,
             'actor_id' => $actor->id,
@@ -229,6 +235,7 @@ class Inbox
             'item_id' => $parent->id,
             'item_type' => 'App\Status'
         ]);
+
         $parent->reblogs_count = $parent->shares()->count();
         $parent->save();
     }
@@ -267,8 +274,10 @@ class Inbox
         if(is_string($obj) && Helpers::validateUrl($obj)) {
             // actor object detected
             // todo delete actor
+            return;
         } else if (Helpers::validateUrl($obj['id']) && Helpers::validateObject($obj) && $obj['type'] == 'Tombstone') {
             // todo delete status or object
+            return;
         }
     }
 
@@ -316,6 +325,21 @@ class Inbox
                 break;
                 
             case 'Announce':
+                $obj = $obj['object'];
+                abort_if(!Helpers::validateLocalUrl($obj), 400);
+                $status = Helpers::statusFetch($obj);
+                if(!$status) {
+                    return;
+                }
+                Status::whereProfileId($profile->id)
+                    ->whereReblogOfId($status->id)
+                    ->forceDelete();
+                Notification::whereProfileId($status->profile->id)
+                    ->whereActorId($profile->id)
+                    ->whereAction('share')
+                    ->whereItemId($status->reblog_of_id)
+                    ->whereItemType('App\Status')
+                    ->forceDelete();
                 break;
 
             case 'Block':
@@ -347,6 +371,6 @@ class Inbox
                     ->forceDelete();
                 break;
         }
-
+        return;
     }
 }
