@@ -390,11 +390,6 @@
   .postPresenterContainer {
     background: #fff;
   }
-  @media(min-width: 720px) {
-    .postPresenterContainer {
-      min-height: 600px;
-    }
-  }
   ::-webkit-scrollbar {
       width: 0px;
       background: transparent;
