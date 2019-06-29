@@ -41,7 +41,10 @@
                             <div class="col-md-12">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> {{ __('Remember Me') }}
+                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
+                                        <span class="font-weight-bold small ml-1 text-muted">
+                                            {{ __('Remember Me') }}
+                                        </span>
                                     </label>
                                 </div>
                             </div>
@@ -56,16 +59,14 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
-            <div class="card mt-3">
-                <div class="card-body">
-                    <a class="btn btn-link font-weight-bold" href="{{ route('password.request') }}">
-                        {{ __('Forgot Your Password?') }}
-                    </a>
-                    <a class="btn btn-link font-weight-bold" href="{{ route('register') }}">
-                        {{ __('Register New Account') }}
-                    </a>
+
+                    <hr>
+
+                    <p class="text-center small font-weight-bold mb-0">
+                        <a href="{{ route('password.request') }}">
+                            {{ __('Forgot Password') }}
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
