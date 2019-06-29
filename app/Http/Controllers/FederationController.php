@@ -179,7 +179,7 @@ class FederationController extends Controller
         abort_if(!config('federation.webfinger.enabled'), 404);
 
         $path = route('well-known.webfinger');
-        $xml = '<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0"><Link rel="lrdd" type="application/xrd+xml" template="{$path}?resource={uri}"/></XRD>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0"><Link rel="lrdd" type="application/xrd+xml" template="'.$path.'?resource={uri}"/></XRD>';
 
         return response($xml)->header('Content-Type', 'application/xrd+xml');
     }
