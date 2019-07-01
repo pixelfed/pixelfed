@@ -59,14 +59,11 @@ class BaseApiController extends Controller
             $res = $this->fractal->createData($resource)->toArray();
         } else {
             $this->validate($request, [
-                'page' => 'nullable|integer|min:1',
+                'page' => 'nullable|integer|min:1|max:10',
                 'limit' => 'nullable|integer|min:1|max:10'
             ]);
             $limit = $request->input('limit') ?? 10;
             $page = $request->input('page') ?? 1;
-            if($page > 3) {
-                return response()->json([]);
-            }
             $end = (int) $page * $limit;
             $start = (int) $end - $limit;
             $res = NotificationService::get($pid, $start, $end);
