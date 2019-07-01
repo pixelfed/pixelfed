@@ -5,11 +5,13 @@ namespace App\Providers;
 use App\Observers\{
     AvatarObserver,
     NotificationObserver,
+    StatusHashtagObserver,
     UserObserver
 };
 use App\{
     Avatar,
     Notification,
+    StatusHashtag,
     User
 };
 use Auth, Horizon, URL;
@@ -31,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
 
         Avatar::observe(AvatarObserver::class);
         Notification::observe(NotificationObserver::class);
+        StatusHashtag::observe(StatusHashtagObserver::class);
         User::observe(UserObserver::class);
 
         Horizon::auth(function ($request) {
