@@ -26,4 +26,16 @@ class StatusHashtag extends Model
 	{
 		return $this->belongsTo(Profile::class);
 	}
+
+	public function media()
+	{
+        return $this->hasManyThrough(
+            Media::class,
+            Status::class,
+            'id',
+            'status_id',
+            'status_id',
+            'id'
+        );
+	}
 }
