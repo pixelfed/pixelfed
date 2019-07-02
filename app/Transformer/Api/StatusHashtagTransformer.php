@@ -12,12 +12,13 @@ class StatusHashtagTransformer extends Fractal\TransformerAbstract
 		$hashtag = $statusHashtag->hashtag;
 		$status = $statusHashtag->status;
 		$profile = $statusHashtag->profile;
-
+		
 		return [
 			'status' => [
 				'type' => $status->type,
 				'url' => $status->url(),
 				'thumb' => $status->thumb(),
+				'filter' => $status->firstMedia()->filter_class,
 				'sensitive' => (bool) $status->is_nsfw,
 				'like_count' => $status->likes_count,
 				'share_count' => $status->reblogs_count,
