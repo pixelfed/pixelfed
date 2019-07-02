@@ -15,21 +15,22 @@ class StatusHashtagTransformer extends Fractal\TransformerAbstract
 		
 		return [
 			'status' => [
-				'type' => $status->type,
-				'url' => $status->url(),
-				'thumb' => $status->thumb(),
-				'filter' => $status->firstMedia()->filter_class,
-				'sensitive' => (bool) $status->is_nsfw,
-				'like_count' => $status->likes_count,
-				'share_count' => $status->reblogs_count,
+				'id'			=> (int) $status->id,
+				'type' 			=> $status->type,
+				'url' 			=> $status->url(),
+				'thumb' 		=> $status->thumb(),
+				'filter' 		=> $status->firstMedia()->filter_class,
+				'sensitive' 	=> (bool) $status->is_nsfw,
+				'like_count' 	=> $status->likes_count,
+				'share_count' 	=> $status->reblogs_count,
 				'user' => [
 					'username' 	=> $profile->username,
 					'url'		=> $profile->url(),
 				]
 			],
 			'hashtag' => [
-				'name' => $hashtag->name,
-				'url'  => $hashtag->url(),
+				'name' 			=> $hashtag->name,
+				'url'  			=> $hashtag->url(),
 			]
 		];
 	}
