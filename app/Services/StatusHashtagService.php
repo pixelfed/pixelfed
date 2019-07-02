@@ -18,9 +18,14 @@ class StatusHashtagService {
 		$res = collect([]);
 		$key = self::CACHE_KEY . $id;
 		$stop = $stop > 2000 ? 2000 : $stop;
-		$ids = Redis::zrangebyscore($key, $start, $stop);
+		$ids = Redis::zrevrangebyscore($key, $start, $stop);
 		if(empty($ids)) {
-			$ids = self::coldGet($id, $start, $stop);
+			if(self::count($id) == 0) {
+				$ids = self::coldGet($id, 0, 2000);
+				$ids = $ids->splice($start, $stop);
+			} else {
+				$ids = self::coldGet($id, $start, $stop);
+			}
 		}
 		foreach($ids as $statusId) {
 			$res->push(self::getStatus($statusId, $id));
