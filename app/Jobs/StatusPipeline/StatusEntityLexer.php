@@ -89,6 +89,9 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
 
         foreach ($tags as $tag) {
+            if(mb_strlen($tag) > 124) {
+                continue;
+            }
             DB::transaction(function () use ($status, $tag) {
                 $slug = str_slug($tag, '-', false);
                 $hashtag = Hashtag::firstOrCreate(
