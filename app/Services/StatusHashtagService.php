@@ -32,6 +32,7 @@ class StatusHashtagService {
 	{
 		$stop = $stop > 2000 ? 2000 : $stop;
 		$ids = StatusHashtag::whereHashtagId($id)
+			->whereHas('media')
 			->latest()
 			->skip($start)
 			->take($stop)
