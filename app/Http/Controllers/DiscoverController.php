@@ -17,6 +17,7 @@ use App\Transformer\Api\StatusStatelessTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\StatusHashtagService;
 
 class DiscoverController extends Controller
 {
@@ -37,56 +38,9 @@ class DiscoverController extends Controller
     public function showTags(Request $request, $hashtag)
     {
         abort_if(!Auth::check(), 403);
-
-        $tag = Hashtag::whereSlug($hashtag)
-          ->firstOrFail();
-
-        $page = 1;
-        $key = 'discover:tag-'.$tag->id.':page-'.$page;
-        $keyMinutes = 15;
-
-        $posts = Cache::remember($key, now()->addMinutes($keyMinutes), function() use ($tag, $request) {
-          $tags = StatusHashtag::select('status_id')
-            ->whereHashtagId($tag->id)
-            ->orderByDesc('id')
-            ->take(48)
-            ->pluck('status_id');
-
-          return Status::select(
-            'id', 
-            'uri',
-            'caption',
-            'rendered',
-            'profile_id', 
-            'type',
-            'in_reply_to_id',
-            'reblog_of_id',
-            'is_nsfw',
-            'scope',
-            'local',
-            'created_at',
-            'updated_at'
-          )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-          ->with('media')
-          ->whereLocal(true)
-          ->whereNull('uri')
-          ->whereIn('id', $tags)
-          ->whereNull('in_reply_to_id')
-          ->whereNull('reblog_of_id')
-          ->whereNull('url')
-          ->whereNull('uri')
-          ->withCount(['likes', 'comments'])
-          ->whereIsNsfw(false)
-          ->whereVisibility('public')
-          ->orderBy('id', 'desc')
-          ->get();
-        });
-
-        if($posts->count() == 0) {
-          abort(404);
-        }
-        
-        return view('discover.tags.show', compact('tag', 'posts'));
+        $tag = Hashtag::whereSlug($hashtag)->firstOrFail();
+        $tagCount = StatusHashtagService::count($tag->id);
+        return view('discover.tags.show', compact('tag', 'tagCount'));
     }
 
     public function showCategory(Request $request, $slug)
@@ -156,7 +110,6 @@ class DiscoverController extends Controller
         return $res;
     }
 
-
     public function loopWatch(Request $request)
     {
         abort_if(!Auth::check(), 403);
@@ -170,5 +123,22 @@ class DiscoverController extends Controller
         // todo log loops
 
         return response()->json(200);
+    }
+
+    public function getHashtags(Request $request)
+    {
+      abort_if(!Auth::check(), 403);
+      $this->validate($request, [
+        'hashtag' => 'required|alphanum|min:2|max:124',
+        'page' => 'nullable|integer|min:1|max:19'
+      ]);
+
+      $page = $request->input('page') ?? '1';
+      $end = $page > 1 ? $page * 9 : 0;
+      $tag = $request->input('hashtag');
+
+      $hashtag = Hashtag::whereName($tag)->firstOrFail();
+      $res = StatusHashtagService::get($hashtag->id, $page, $end);
+      return $res;
     }
 }
