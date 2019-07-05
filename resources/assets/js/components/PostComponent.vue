@@ -124,10 +124,13 @@
                       <div class="comments">
                         <div v-for="(reply, index) in results" class="pb-3" :key="'tl' + reply.id + '_' + index">
                           <div v-if="reply.sensitive == true">
-                            <div class="card card-body shadow-none border border-left-blue py-3 px-1 text-center small">
-                              <p class="mb-0">This comment may contain sensitive material</p>
-                              <p class="font-weight-bold text-primary cursor-pointer mb-0" @click="reply.sensitive = false;">Show</p>
-                            </div>
+                            <span class="py-3">
+                              <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                              <span class="text-break">
+                                <span class="font-italic text-muted">This comment may contain sensitive material</span>
+                                <span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
+                              </span>
+                            </span>
                           </div>
                           <div v-else>
                             <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
