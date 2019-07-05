@@ -13,24 +13,18 @@ class StatusHashtagService {
 
 	const CACHE_KEY = 'pf:services:status-hashtag:collection:';
 
-	public static function get($id, $start = 0, $stop = 100)
+	public static function get($id, $page = 1, $stop = 9)
 	{
-		$res = collect([]);
-		$key = self::CACHE_KEY . $id;
-		$stop = $stop > 2000 ? 2000 : $stop;
-		$ids = Redis::zrevrangebyscore($key, $start, $stop);
-		if(empty($ids)) {
-			if(self::count($id) == 0) {
-				$ids = self::coldGet($id, 0, 2000);
-				$ids = $ids->splice($start, $stop);
-			} else {
-				$ids = self::coldGet($id, $start, $stop);
-			}
-		}
-		foreach($ids as $statusId) {
-			$res->push(self::getStatus($statusId, $id));
-		}
-		return $res;
+		return StatusHashtag::whereHashtagId($id)
+			->whereHas('media')
+			->skip($stop)
+			->latest()
+			->take(9)
+			->pluck('status_id')
+			->map(function ($i, $k) use ($id) {
+				return self::getStatus($i, $id);
+			})
+			->all();
 	}
 
 	public static function coldGet($id, $start = 0, $stop = 2000)
@@ -60,7 +54,11 @@ class StatusHashtagService {
 
 	public static function count($id)
 	{
-		return Redis::zcount(self::CACHE_KEY . $id, '-inf', '+inf');
+		$count = Redis::zcount(self::CACHE_KEY . $id, '-inf', '+inf');
+		if(empty($count)) {
+			$count = StatusHashtag::whereHashtagId($id)->count();
+		}
+		return $count;
 	}
 
 	public static function getStatus($statusId, $hashtagId)
