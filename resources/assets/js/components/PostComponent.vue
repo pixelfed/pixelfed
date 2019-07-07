@@ -107,7 +107,7 @@
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
-                  <p :class="[status.content.length > 420 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
+                  <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
                     <span class="font-weight-bold pr-1">{{statusUsername}}</span>
                     <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                   </p>
