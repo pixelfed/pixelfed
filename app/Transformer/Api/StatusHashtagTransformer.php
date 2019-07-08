@@ -26,7 +26,8 @@ class StatusHashtagTransformer extends Fractal\TransformerAbstract
 				'user' => [
 					'username' 	=> $profile->username,
 					'url'		=> $profile->url(),
-				]
+				],
+				'visibility' 	=> $status->visibility ?? $status->scope
 			],
 			'hashtag' => [
 				'name' 			=> $hashtag->name,
