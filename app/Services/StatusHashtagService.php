@@ -49,7 +49,7 @@ class StatusHashtagService {
 
 	public static function del($key)
 	{
-		return Redis::zrem(self::CACHE_KEY . $key, $val);
+		return Redis::zrem(self::CACHE_KEY . $key, $key);
 	}
 
 	public static function count($id)
