@@ -11,5 +11,11 @@ return [
 	'announcement' => [
 		'enabled' => env('INSTANCE_ANNOUNCEMENT_ENABLED', true),
 		'message' => env('INSTANCE_ANNOUNCEMENT_MESSAGE', 'Example announcement message.<br><span class="font-weight-normal">Something else here</span>')
+	],
+
+	'timeline' => [
+		'local' => [
+			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
+		]
 	]
 ];

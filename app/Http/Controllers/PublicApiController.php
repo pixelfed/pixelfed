@@ -211,6 +211,10 @@ class PublicApiController extends Controller
           'limit'       => 'nullable|integer|max:20'
         ]);
 
+        if(config('instance.timeline.local.is_public') == false && !Auth::check()) {
+            abort(403, 'Authentication required.');
+        }
+
         $page = $request->input('page');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
@@ -331,6 +335,8 @@ class PublicApiController extends Controller
                 ->orWhere('status', '!=', null)
                 ->pluck('id');
         });
+        
+        $private = $private->diff($following)->flatten();
 
         $filters = UserFilter::whereUserId($pid)
                   ->whereFilterableType('App\Profile')
