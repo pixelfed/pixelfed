@@ -101,7 +101,8 @@ class StatusEntityLexer implements ShouldQueue
                     [
                         'status_id' => $status->id, 
                         'hashtag_id' => $hashtag->id,
-                        'profile_id' => $status->profile_id
+                        'profile_id' => $status->profile_id,
+                        'status_visibility' => $status->visibility,
                     ]
                 );
             });
