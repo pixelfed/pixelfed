@@ -112,6 +112,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
             Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
+            Route::post('discover/tag/subscribe', 'HashtagFollowController@store');
         });
     });
 
