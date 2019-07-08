@@ -108,7 +108,7 @@
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
                   <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
-                    <span class="font-weight-bold pr-1">{{statusUsername}}</span>
+                    <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
                     <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                   </p>
 
