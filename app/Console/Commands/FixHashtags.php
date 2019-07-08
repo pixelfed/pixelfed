@@ -56,13 +56,13 @@ class FixHashtags extends Command
         $this->info('Running Fix Hashtags command');
         $this->info(' ');
 
-        $missingCount = StatusHashtag::doesntHave('status')->count();
+        $missingCount = StatusHashtag::doesntHave('profile')->doesntHave('status')->count();
         if($missingCount > 0) {
             $this->info("Found {$missingCount} orphaned StatusHashtag records to delete ...");
             $this->info(' ');
             $bar = $this->output->createProgressBar($missingCount);
             $bar->start();
-            foreach(StatusHashtag::doesntHave('status')->get() as $tag) {
+            foreach(StatusHashtag::doesntHave('profile')->doesntHave('status')->get() as $tag) {
                 $tag->delete();
                 $bar->advance();
             }
