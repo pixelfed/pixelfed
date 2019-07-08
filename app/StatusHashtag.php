@@ -9,7 +9,8 @@ class StatusHashtag extends Model
     public $fillable = [
     	'status_id', 
     	'hashtag_id', 
-    	'profile_id'
+    	'profile_id',
+    	'status_visibility'
     ];
 
 	public function status()
