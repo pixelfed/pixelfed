@@ -6,6 +6,7 @@ use App\{
   DiscoverCategory,
   Follower,
   Hashtag,
+  HashtagFollow,
   Profile,
   Status, 
   StatusHashtag, 
@@ -37,7 +38,8 @@ class DiscoverController extends Controller
 
     public function showTags(Request $request, $hashtag)
     {
-        abort_if(!Auth::check(), 403);
+        abort_if(!config('instance.discover.tags.is_public') && !Auth::check(), 403);
+
         $tag = Hashtag::whereSlug($hashtag)->firstOrFail();
         $tagCount = StatusHashtagService::count($tag->id);
         return view('discover.tags.show', compact('tag', 'tagCount'));
@@ -127,10 +129,12 @@ class DiscoverController extends Controller
 
     public function getHashtags(Request $request)
     {
-      abort_if(!Auth::check(), 403);
+      $auth = Auth::check();
+      abort_if(!config('instance.discover.tags.is_public') && $auth, 403);
+
       $this->validate($request, [
         'hashtag' => 'required|alphanum|min:2|max:124',
-        'page' => 'nullable|integer|min:1|max:19'
+        'page' => 'nullable|integer|min:1|max:' . ($auth ? 19 : 3)
       ]);
 
       $page = $request->input('page') ?? '1';
@@ -138,7 +142,10 @@ class DiscoverController extends Controller
       $tag = $request->input('hashtag');
 
       $hashtag = Hashtag::whereName($tag)->firstOrFail();
-      $res = StatusHashtagService::get($hashtag->id, $page, $end);
+      $res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
+      if($page == 1) {
+        $res['follows'] = HashtagFollow::whereUserId(Auth::id())->whereHashtagId($hashtag->id)->exists();
+      }
       return $res;
     }
 }
