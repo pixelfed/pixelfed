@@ -133,7 +133,7 @@
 			},
 
 			infiniteLoader($state) {
-				if(this.page > 19) {
+				if(this.page > (this.authenticated ? 19 : 3)) {
 					$state.complete();
 					return;
 				}
