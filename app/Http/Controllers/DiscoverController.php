@@ -130,7 +130,7 @@ class DiscoverController extends Controller
     public function getHashtags(Request $request)
     {
       $auth = Auth::check();
-      abort_if(!config('instance.discover.tags.is_public') && $auth, 403);
+      abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);
 
       $this->validate($request, [
         'hashtag' => 'required|alphanum|min:2|max:124',
