@@ -80,8 +80,10 @@ class DeleteAccountPipeline implements ShouldQueue
             Bookmark::whereProfileId($user->profile->id)->forceDelete();
 
             EmailVerification::whereUserId($user->id)->forceDelete();
-
             $id = $user->profile->id;
+
+            StatusHashtag::whereProfileId($id)->delete();
+            
             FollowRequest::whereFollowingId($id)->orWhere('follower_id', $id)->forceDelete();
 
             Follower::whereProfileId($id)->orWhere('following_id', $id)->forceDelete();

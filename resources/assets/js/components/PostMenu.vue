@@ -6,8 +6,8 @@
 			</button>
 			<div class="dropdown-menu dropdown-menu-right">
 				<a class="dropdown-item font-weight-bold text-decoration-none" :href="status.url">Go to post</a>
-				<a class="dropdown-item font-weight-bold text-decoration-none" href="#">Share</a>
-				<a class="dropdown-item font-weight-bold text-decoration-none" href="#">Embed</a>
+				<!-- <a class="dropdown-item font-weight-bold text-decoration-none" href="#">Share</a>
+				<a class="dropdown-item font-weight-bold text-decoration-none" href="#">Embed</a> -->
 				<span v-if="statusOwner(status) == false">
 					<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 				</span>
@@ -54,8 +54,9 @@
 						<div class="modal-body">
 							<div class="list-group">
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Go to post</a>
-								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
-								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a>
+								<!-- <a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
+								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
+								<a class="list-group-item font-weight-bold text-decoration-none" href="#" @click="hidePost(status)">Hide</a>
 								<span v-if="statusOwner(status) == false">
 									<a class="list-group-item font-weight-bold text-decoration-none" :href="reportUrl(status)">Report</a>
 									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
@@ -155,6 +156,11 @@
 			deletePost() {
 				this.$emit('deletePost');
 				$('#mt_pid_'+this.status.id).modal('hide');
+			},
+
+			hidePost(status) {
+				status.sensitive = true;
+				$('#mt_pid_'+status.id).modal('hide');
 			},
 
 			moderatePost(status, action, $event) {

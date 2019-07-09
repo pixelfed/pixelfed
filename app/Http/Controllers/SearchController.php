@@ -143,6 +143,7 @@ class SearchController extends Controller
                     'tokens' => [$item->caption],
                     'name'   => $item->caption,
                     'thumb'  => $item->thumb(),
+                    'filter' => $item->firstMedia()->filter_class
                 ];
             });
             $tokens['posts'] = $posts;

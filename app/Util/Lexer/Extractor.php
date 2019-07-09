@@ -264,7 +264,9 @@ class Extractor extends Regex
             if (preg_match(self::$patterns['end_hashtag_match'], $outer[0])) {
                 continue;
             }
-
+            if(mb_strlen($hashtag[0]) > 124) {
+                continue;
+            }
             $tags[] = [
                 'hashtag' => $hashtag[0],
                 'indices' => [$start_position, $end_position],

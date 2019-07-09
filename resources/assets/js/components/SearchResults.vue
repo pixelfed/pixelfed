@@ -67,15 +67,13 @@
 
 			<div v-if="filters.statuses && results.statuses" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Statuses</p>
-				<a v-for="(status, index) in results.statuses" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="status.url">
-					<div class="card">
-						<img class="card-img-top img-fluid" :src="status.thumb">
-						<div class="card-body text-center ">
-							<p class="mb-0 small text-truncate font-weight-bold text-muted" v-html="status.value">
-							</p>
+				<div v-for="(status, index) in results.statuses" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+					<a class="card info-overlay card-md-border-0" :href="status.url">
+						<div :class="[status.filter ? 'square ' + status.filter : 'square']">
+							<div class="square-content" :style="'background-image: url('+status.thumb+')'"></div>
 						</div>
-					</div>
-				</a>
+					</a>
+				</div>
 			</div>
 
 			<div v-if="!results.hashtags && !results.profiles && !results.statuses">
