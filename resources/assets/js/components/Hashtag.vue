@@ -100,7 +100,7 @@
 		data() {
 			return {
 				loaded: false,
-				page: 2,
+				page: 1,
 				authenticated: false,
 				following: false,
 				tags: [],
