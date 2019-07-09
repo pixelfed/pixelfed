@@ -115,7 +115,8 @@
 			getResults() {
 				axios.get('/api/v2/discover/tag', {
 					params: {
-						hashtag: this.hashtag
+						hashtag: this.hashtag,
+						page: this.page
 					}
 				}).then(res => {
 					let data = res.data;
@@ -129,6 +130,7 @@
 					//this.top = tags.slice(6, 9);
 					this.loaded = true;
 					this.following = data.follows;
+					this.page++;
 				});
 			},
 
