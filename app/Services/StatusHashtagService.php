@@ -16,6 +16,7 @@ class StatusHashtagService {
 	public static function get($id, $page = 1, $stop = 9)
 	{
 		return StatusHashtag::whereHashtagId($id)
+			->whereStatusVisibility('public')
 			->whereHas('media')
 			->skip($stop)
 			->latest()
@@ -31,6 +32,7 @@ class StatusHashtagService {
 	{
 		$stop = $stop > 2000 ? 2000 : $stop;
 		$ids = StatusHashtag::whereHashtagId($id)
+			->whereStatusVisibility('public')
 			->whereHas('media')
 			->latest()
 			->skip($start)
@@ -65,6 +67,7 @@ class StatusHashtagService {
 	{
 		return Cache::remember('pf:services:status-hashtag:post:'.$statusId.':hashtag:'.$hashtagId, now()->addMonths(3), function() use($statusId, $hashtagId) {
 			$statusHashtag = StatusHashtag::with('profile', 'status', 'hashtag')
+				->whereStatusVisibility('public')
 				->whereStatusId($statusId)
 				->whereHashtagId($hashtagId)
 				->first();
