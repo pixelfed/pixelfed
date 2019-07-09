@@ -11,4 +11,9 @@ class HashtagFollow extends Model
     	'profile_id',
     	'hashtag_id'
     ];
+
+    public function hashtag()
+    {
+    	return $this->belongsTo(Hashtag::class);
+    }
 }
