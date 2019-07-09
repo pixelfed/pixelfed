@@ -138,7 +138,7 @@ class DiscoverController extends Controller
       ]);
 
       $page = $request->input('page') ?? '1';
-      $end = $page > 1 ? $page * 9 : 0;
+      $end = $page > 1 ? $page * 9 : 1;
       $tag = $request->input('hashtag');
 
       $hashtag = Hashtag::whereName($tag)->firstOrFail();
