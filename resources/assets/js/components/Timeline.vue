@@ -39,6 +39,33 @@
 							</div>
 						</div>
 					</div>
+
+					<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0">
+						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+							<span></span>
+							<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
+							<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
+						</div>
+						<div class="card-body row mx-0">
+							<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+								<a class="card info-overlay card-md-border-0" :href="tag.status.url">
+									<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
+										<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+										<div class="info-overlay-text">
+											<h5 class="text-white m-auto font-weight-bold">
+												<span class="pr-4">
+													<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
+												</span>
+												<span>
+													<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
+												</span>
+											</h5>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
 					<div class="card mb-sm-4 status-card card-md-rounded-0">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
@@ -440,8 +467,9 @@
 				replyStatus: {},
 				replyText: '',
 				emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
-				showHashtagPosts: true,
-				hashtagPosts: []
+				showHashtagPosts: false,
+				hashtagPosts: [],
+				hashtagPostsName: '',
 			}
 		},
 
@@ -544,6 +572,7 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
+					this.fetchHashtagPosts();
 				}).catch(err => {
 				});
 			},
@@ -1106,6 +1135,30 @@
 						}
 					}, 10000);
 				});
+			},
+
+			fetchHashtagPosts() {
+
+				axios.get('/api/local/discover/tag/list')
+				.then(res => {
+					let tags = res.data;
+					if(tags.length == 0) {
+						return;
+					}
+					let hashtag = tags[0];
+					this.hashtagPostsName = hashtag;
+					axios.get('/api/v2/discover/tag', {
+						params: {
+							hashtag: hashtag
+						}
+					}).then(res => {
+						if(res.data.tags.length) {
+							this.showHashtagPosts = true;
+							this.hashtagPosts = res.data.tags.splice(0,3);
+						}
+					})
+				})
+
 			}
 		}
 	}
