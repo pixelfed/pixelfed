@@ -47,4 +47,15 @@ class HashtagFollowController extends Controller
             'state' => $state
         ];
     }
+
+    public function getTags(Request $request)
+    {
+        return HashtagFollow::with('hashtag')->whereUserId(Auth::id())
+            ->inRandomOrder()
+            ->take(3)
+            ->get()
+            ->map(function($follow, $k) {
+                  return $follow->hashtag->name;
+            });
+    }
 }
