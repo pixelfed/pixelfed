@@ -49,7 +49,22 @@ trait User {
 		return 500;
 	}
 
+	public function getMaxUserBansPerDayAttribute()
+	{
+		return 100;
+	}
+
 	public function getMaxInstanceBansPerDayAttribute()
+	{
+		return 100;
+	}
+
+	public function getMaxHashtagFollowsPerHourAttribute()
+	{
+		return 20;
+	}
+
+	public function getMaxHashtagFollowsPerDayAttribute()
 	{
 		return 100;
 	}
