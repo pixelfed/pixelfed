@@ -16,6 +16,43 @@
       <li class="">You can add up to 30 hashtags to your post or comment.</li>
     </ul>
   </div>
+  <div class="py-4">
+  <p>
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse0" role="button" aria-expanded="false" aria-controls="collapse0">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How do I use a hashtag on Pixelfed?
+    </a>
+    <div class="collapse" id="collapse0">
+      <div>
+        <ul>
+          <li>You can add hashtags to post captions, if the post is public the hashtag will be discoverable.</li>
+          <li>You can follow hashtags on Pixelfed to stay connected with interests you care about.</li>
+        </ul>
+      </div>
+    </div>
+  </p>
+  <p>
+    <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
+      <i class="fas fa-chevron-down mr-2"></i>
+      How do I follow a hashtag?
+    </a>
+    <div class="collapse" id="collapse1">
+      <div>
+        <p>You can follow hashtags on Pixelfed to stay connected with interests you care about.</p>
+        <p class="mb-0">To follow a hashtag:</p>
+        <ol>
+          <li>Tap any hashtag (example: #art) you see on Pixelfed.</li>
+          <li>Tap <span class="font-weight-bold">Follow</span>. Once you follow a hashtag, you'll see its photos and videos appear in feed.</li>
+        </ol>
+        <p>To unfollow a hashtag, tap the hashtag and then tap Unfollow to confirm.</p>
+        <p class="mb-0">
+          You can follow up to 20 hashtags per hour or 100 per day.
+        </p>
+      </div>
+    </div>
+  </p>
+  </div>
+  <hr>
   <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
     <div class="card-header text-light font-weight-bold h4 p-4">Hashtag Tips</div>
     <div class="card-body bg-white p-3">
