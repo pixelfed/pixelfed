@@ -2,6 +2,11 @@
 
 return [
 
+    'search'		 => 'Cercar',
+	'home'			 => 'Acuèlh',
+	'local'			 => 'Local',
+	'network'		 => 'Malhum',
+	'discover'		 => 'Descobrir',
     'viewMyProfile'  => 'Veire mon perfil',
     'myTimeline'     => 'Ma cronologia',
     'publicTimeline' => 'Cronologia publica',
