@@ -1,20 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="bg-white py-4">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <div></div>
+      <a href="/account/activity" class="cursor-pointer font-weight-bold text-dark">Notifications</a>
+      <a href="/account/follow-requests" class="cursor-pointer font-weight-bold text-primary">Follow Requests</a>
+      <div></div>
+    </div>
+  </div>
+</div>
 <div class="container notification-page" style="min-height: 60vh;">
   <div class="col-12 col-md-8 offset-md-2">
-    <div class="card mt-3">
-      <div class="card-body p-0">
-        <ul class="nav nav-pills d-flex text-center">
-          <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications')}}">My Notifications</a>
-          </li>
-          <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('follow-requests')}}">Follow Requests</a>
-          </li> 
-        </ul>
-      </div>
-    </div>
+    @if($followers->count() > 0)
     <ul class="list-group">
       @foreach($followers as $follow)
       <li class="list-group-item notification border-0">
@@ -38,6 +37,11 @@
     <div class="d-flex justify-content-center my-4">
       {{$followers->links()}}
     </div>
+    @else
+    <div class="text-center pt-5">
+      <p class="font-weight-bold text-muted">You don't have any follow requests</p>
+    </div>
+    @endif
 
   </div>
 </div>
