@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Auth; 
+use Cache; 
+use Mail; 
+use Redis;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Illuminate\Http\Request;
-use {Auth, Cache, Mail, Redis};
 use PragmaRX\Google2FA\Google2FA;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\{
