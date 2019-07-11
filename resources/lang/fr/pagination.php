@@ -11,6 +11,7 @@ return [
     | you want to customize your views to better match your application.
     |
     */
-    'previous' => '« Précédente',
-    'next'     => 'Suivante »',
+
+    'previous'    =>    '« Précédente',
+    'next'        =>    'Suivante »',
 ];

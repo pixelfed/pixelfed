@@ -1,8 +1,10 @@
 <?php
 
 return [
-  'likedPhoto'          => 'a aimé votre photo.',
-  'startedFollowingYou' => 'a commencé à vous suivre.',
-  'commented'           => 'commenté sur votre post.',
-  'mentionedYou'        => 'vous à mentionné.',
+    'likedPhoto'             =>    'a aimé votre publication.',
+    'likedComment'           =>    'a aimé votre commentaire.',
+    'startedFollowingYou'    =>    'a commencé à vous suivre.',
+    'commented'              =>    'a commenté votre publication.',
+    'mentionedYou'           =>    'vous a mentionné.',
+    'shared'			     =>    'a partagé votre publication.',
 ];
