@@ -20,8 +20,8 @@ class Hashtag extends Model
       );
     }
 
-    public function url()
+    public function url($suffix = '')
     {
-        return config('routes.hashtag.base').$this->slug;
+        return config('routes.hashtag.base').$this->slug.$suffix;
     }
 }
