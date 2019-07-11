@@ -278,4 +278,9 @@ class Profile extends Model
             'hashtag_id'
         );
     }
+
+    public function hashtagFollowing()
+    {
+        return $this->hasMany(HashtagFollow::class);
+    }
 }

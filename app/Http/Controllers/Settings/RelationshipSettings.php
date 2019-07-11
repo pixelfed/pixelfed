@@ -18,15 +18,29 @@ trait RelationshipSettings
 
 	public function relationshipsHome(Request $request)
 	{
-		$mode = $request->input('mode') == 'following' ? 'following' : 'followers';
+		$this->validate($request, [
+			'mode' => 'nullable|string|in:following,followers,hashtags'
+		]);
+
+		$mode = $request->input('mode');
 		$profile = Auth::user()->profile;
 
-		$following = $followers = [];
+		switch ($mode) {
+			case 'following':
+				$data = $profile->following()->simplePaginate(10);
+				break;
 
-		if($mode == 'following') {
-			$data = $profile->following()->simplePaginate(10);
-		} else {
-			$data = $profile->followers()->simplePaginate(10);
+			case 'followers':
+				$data = $profile->followers()->simplePaginate(10);
+				break;
+
+			case 'hashtags':
+				$data = $profile->hashtagFollowing()->with('hashtag')->simplePaginate(10);
+				break;
+			
+			default:
+				$data = [];
+				break;
 		}
 
 		return view('settings.relationships.home', compact('profile', 'mode', 'data'));
