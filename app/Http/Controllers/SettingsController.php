@@ -10,6 +10,7 @@ use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Settings\{
     ExportSettings,
     LabsSettings,
@@ -188,12 +189,12 @@ class SettingsController extends Controller
             'opencollective' => 'nullable|string'
         ]);
 
-        $patreon = $request->input('patreon');
-        $liberapay = $request->input('liberapay');
-        $opencollective = $request->input('opencollective');
+        $patreon = Str::startsWith($request->input('patreon'), 'patreon.com/') ? e($request->input('patreon')) : null;
+        $liberapay = Str::startsWith($request->input('liberapay'), 'liberapay.com/') ? e($request->input('liberapay')) : null;
+        $opencollective = Str::startsWith($request->input('opencollective'), 'opencollective.com/') ? e($request->input('opencollective')) : null;
 
         if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
-            abort(400, 'Bad request');
+            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
         }
 
         $res = [
@@ -210,5 +211,6 @@ class SettingsController extends Controller
         $sponsors = $res;
         return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
     }
+
 }
 
