@@ -189,9 +189,15 @@ class SettingsController extends Controller
             'opencollective' => 'nullable|string'
         ]);
 
-        $patreon = Str::startsWith($request->input('patreon'), 'patreon.com/') ? e($request->input('patreon')) : null;
-        $liberapay = Str::startsWith($request->input('liberapay'), 'liberapay.com/') ? e($request->input('liberapay')) : null;
-        $opencollective = Str::startsWith($request->input('opencollective'), 'opencollective.com/') ? e($request->input('opencollective')) : null;
+        $patreon = Str::startsWith($request->input('patreon'), 'https://') ? 
+            substr($request->input('patreon'), 8) : 
+            $request->input('patreon');
+        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ? substr($request->input('liberapay'), 8) : $request->input('liberapay');
+        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ? substr($request->input('opencollective'), 8) : $request->input('opencollective');
+
+        $patreon = Str::startsWith($patreon, 'patreon.com/') ? e($patreon) : null;
+        $liberapay = Str::startsWith($liberapay, 'liberapay.com/') ? e($liberapay) : null;
+        $opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
 
         if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
             return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
