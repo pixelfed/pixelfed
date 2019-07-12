@@ -22,7 +22,7 @@
 												<img class="rounded-circle box-shadow mr-2" :src="profile.avatar" width="77px" height="77px">
 												<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-1 mr-2">
 													<button type="button" @click="showSponsorModal" class="btn btn-sm btn-outline-secondary font-weight-bold py-0">
-														Sponsor
+														Donate
 													</button>
 												</p>
 											</div>
@@ -53,7 +53,7 @@
 										<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-3">
 											<button type="button" @click="showSponsorModal" class="btn btn-outline-secondary font-weight-bold py-0">
 												<i class="fas fa-heart text-danger"></i>
-												Sponsor
+												Donate
 											</button>
 										</p>
 									</div>

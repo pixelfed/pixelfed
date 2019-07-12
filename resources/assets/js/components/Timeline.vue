@@ -1,7 +1,7 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1']">
+		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
 			<div style="padding-top:10px;">
 				<div v-if="loading" class="text-center">
 					<div class="spinner-border" role="status">
@@ -232,7 +232,7 @@
 			</div>
 		</div>
 
-		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2 d-none d-md-block">
+		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
 			<div class="position-sticky" style="top:68px;">
 				<div class="mb-4">
 					<div class="">
