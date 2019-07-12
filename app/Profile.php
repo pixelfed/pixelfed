@@ -4,12 +4,20 @@ namespace App;
 
 use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
+use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 class Profile extends Model
 {
-    use SoftDeletes;
+    use HasSnowflakePrimary, SoftDeletes;
 
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+    
     protected $dates = ['deleted_at'];
     protected $hidden = ['private_key'];
     protected $visible = ['id', 'user_id', 'username', 'name'];
