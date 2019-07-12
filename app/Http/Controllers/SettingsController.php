@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\AccountLog;
 use App\Following;
+use App\ProfileSponsor;
 use App\Report;
 use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Settings\{
     ExportSettings,
     LabsSettings,
@@ -166,5 +168,49 @@ class SettingsController extends Controller
 
         return response()->json([200])->cookie($cookie);
     }
+
+    public function sponsor()
+    {
+        $default = [
+            'patreon' => null,
+            'liberapay' => null,
+            'opencollective' => null
+        ];
+        $sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
+        $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
+        return view('settings.sponsor', compact('sponsors'));
+    }
+
+    public function sponsorStore(Request $request)
+    {
+        $this->validate($request, [
+            'patreon' => 'nullable|string',
+            'liberapay' => 'nullable|string',
+            'opencollective' => 'nullable|string'
+        ]);
+
+        $patreon = Str::startsWith($request->input('patreon'), 'patreon.com/') ? e($request->input('patreon')) : null;
+        $liberapay = Str::startsWith($request->input('liberapay'), 'liberapay.com/') ? e($request->input('liberapay')) : null;
+        $opencollective = Str::startsWith($request->input('opencollective'), 'opencollective.com/') ? e($request->input('opencollective')) : null;
+
+        if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
+            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
+        }
+
+        $res = [
+            'patreon' => $patreon,
+            'liberapay' => $liberapay,
+            'opencollective' => $opencollective
+        ];
+
+        $sponsors = ProfileSponsor::firstOrCreate([
+            'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id
+        ]);
+        $sponsors->sponsors = json_encode($res);
+        $sponsors->save();
+        $sponsors = $res;
+        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
+    }
+
 }
 
