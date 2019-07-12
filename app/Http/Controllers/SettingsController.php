@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AccountLog;
 use App\Following;
+use App\ProfileSponsor;
 use App\Report;
 use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
@@ -165,6 +166,49 @@ class SettingsController extends Controller
         }
 
         return response()->json([200])->cookie($cookie);
+    }
+
+    public function sponsor()
+    {
+        $default = [
+            'patreon' => null,
+            'liberapay' => null,
+            'opencollective' => null
+        ];
+        $sponsors = ProfileSponsor::whereProfileId(Auth::user()->profile->id)->first();
+        $sponsors = $sponsors ? json_decode($sponsors->sponsors, true) : $default;
+        return view('settings.sponsor', compact('sponsors'));
+    }
+
+    public function sponsorStore(Request $request)
+    {
+        $this->validate($request, [
+            'patreon' => 'nullable|string',
+            'liberapay' => 'nullable|string',
+            'opencollective' => 'nullable|string'
+        ]);
+
+        $patreon = $request->input('patreon');
+        $liberapay = $request->input('liberapay');
+        $opencollective = $request->input('opencollective');
+
+        if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
+            abort(400, 'Bad request');
+        }
+
+        $res = [
+            'patreon' => $patreon,
+            'liberapay' => $liberapay,
+            'opencollective' => $opencollective
+        ];
+
+        $sponsors = ProfileSponsor::firstOrCreate([
+            'profile_id' => Auth::user()->profile_id ?? Auth::user()->profile->id
+        ]);
+        $sponsors->sponsors = json_encode($res);
+        $sponsors->save();
+        $sponsors = $res;
+        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
     }
 }
 
