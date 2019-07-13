@@ -192,8 +192,14 @@ class SettingsController extends Controller
         $patreon = Str::startsWith($request->input('patreon'), 'https://') ? 
             substr($request->input('patreon'), 8) : 
             $request->input('patreon');
-        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ? substr($request->input('liberapay'), 8) : $request->input('liberapay');
-        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ? substr($request->input('opencollective'), 8) : $request->input('opencollective');
+
+        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ? 
+            substr($request->input('liberapay'), 8) : 
+            $request->input('liberapay');
+            
+        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ? 
+            substr($request->input('opencollective'), 8) : 
+            $request->input('opencollective');
 
         $patreon = Str::startsWith($patreon, 'patreon.com/') ? e($patreon) : null;
         $liberapay = Str::startsWith($liberapay, 'liberapay.com/') ? e($liberapay) : null;

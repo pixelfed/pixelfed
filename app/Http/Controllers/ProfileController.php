@@ -240,23 +240,4 @@ class ProfileController extends Controller
         }
         return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following', 'is_admin', 'settings'));
     }
-
-    public function savedBookmarks(Request $request, $username)
-    {
-        if (Auth::check() === false || $username !== Auth::user()->username) {
-            abort(403);
-        }
-        $user = $profile = Auth::user()->profile;
-        if($profile->status != null) {
-            return $this->accountCheck($profile);
-        }
-        $settings = User::whereUsername($username)->firstOrFail()->settings;
-        $owner = true;
-        $following = false;
-        $timeline = $user->bookmarks()->withCount(['likes','comments'])->orderBy('created_at', 'desc')->simplePaginate(10);
-        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
-        $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-        return view('profile.bookmarks', compact('user', 'profile', 'settings', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
-    }
-
 }

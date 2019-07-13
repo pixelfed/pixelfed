@@ -90,7 +90,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'ApiController@notifications');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
-            // Route::get('timelines/network', 'PublicApiController@homeTimelineApi');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
@@ -115,6 +114,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
             Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
+            Route::get('bookmarks', 'InternalApiController@bookmarks');
         });
     });
 
@@ -201,7 +201,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('privacy/blocked-keywords', 'SettingsController@blockedKeywords')->name('settings.privacy.blocked-keywords');
         Route::post('privacy/account', 'SettingsController@privateAccountOptions')->name('settings.privacy.account');
         Route::get('reports', 'SettingsController@reportsHome')->name('settings.reports');
-        // Todo: Release in 0.7.2
         Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
             Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
             Route::post('request/temporary', 'SettingsController@removeAccountTemporarySubmit');
@@ -304,7 +303,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::group(['prefix' => 'timeline'], function () {
         Route::redirect('/', '/');
         Route::get('public', 'TimelineController@local')->name('timeline.public');
-        // Route::get('network', 'TimelineController@network')->name('timeline.network');
     });
 
     Route::group(['prefix' => 'users'], function () {
@@ -321,7 +319,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
     Route::get('p/{username}/{id}', 'StatusController@show');
-    Route::get('{username}/saved', 'ProfileController@savedBookmarks');
     Route::get('{username}/followers', 'ProfileController@followers')->middleware('auth');
     Route::get('{username}/following', 'ProfileController@following')->middleware('auth');
     Route::get('{username}', 'ProfileController@show');
