@@ -319,7 +319,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
     Route::get('p/{username}/{id}', 'StatusController@show');
-    Route::get('{username}/saved', 'ProfileController@savedBookmarks');
     Route::get('{username}/followers', 'ProfileController@followers')->middleware('auth');
     Route::get('{username}/following', 'ProfileController@following')->middleware('auth');
     Route::get('{username}', 'ProfileController@show');
