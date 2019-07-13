@@ -306,4 +306,18 @@ class InternalApiController extends Controller
         Cache::forget('profile:status_count:'.$profile->id);
         return $status->url();
     }
+
+    public function bookmarks(Request $request)
+    {
+        $statuses = Auth::user()->profile
+            ->bookmarks()
+            ->withCount(['likes','comments'])
+            ->orderBy('created_at', 'desc')
+            ->simplePaginate(10);
+
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
 }
