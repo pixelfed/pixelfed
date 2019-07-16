@@ -12,7 +12,6 @@
     <id>{{$profile->permalink()}}</id>
     <uri>{{$profile->permalink()}}</uri>
     <name>{{$profile->permalink()}}</name>
-    <email>{{$profile->emailUrl()}}</email>
     <summary type="html">{{$profile->bio}}</summary>
     <link rel="alternate" type="text/html" href="{{$profile->url()}}"/>
     <link rel="avatar" type="image/jpeg" media:width="120" media:height="120" href="{{$profile->avatarUrl()}}"/>
