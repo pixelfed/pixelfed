@@ -34,47 +34,22 @@ class FederationController extends Controller
         abort_if(!Auth::check(), 403);
     }
 
+    // deprecated, remove in 0.10
     public function authorizeFollow(Request $request)
     {
-        $this->authCheck();
-        $this->validate($request, [
-            'acct' => 'required|string|min:3|max:255',
-        ]);
-        $acct = $request->input('acct');
-        $nickname = Nickname::normalizeProfileUrl($acct);
-
-        return view('federation.authorizefollow', compact('acct', 'nickname'));
+        abort(404);
     }
 
+    // deprecated, remove in 0.10
     public function remoteFollow()
     {
-        $this->authCheck();
-
-        return view('federation.remotefollow');
+        abort(404);
     }
 
+    // deprecated, remove in 0.10
     public function remoteFollowStore(Request $request)
     {
-        return;
-
-        $this->authCheck();
-        $this->validate($request, [
-            'url' => 'required|string',
-        ]);
-
-        abort_if(!config('federation.activitypub.remoteFollow'), 403);
-
-        $follower = Auth::user()->profile;
-        $url = $request->input('url');
-        $url = Helpers::validateUrl($url);
-
-        if(!$url) {
-            return;
-        }
-
-        RemoteFollowPipeline::dispatch($follower, $url);
-
-        return response(['success' => true, 'follower' => $follower]);
+        abort(404);
     }
 
     public function nodeinfoWellKnown()
@@ -98,20 +73,20 @@ class FederationController extends Controller
         abort_if(!config('federation.nodeinfo.enabled'), 404);
 
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
-            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
+            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(6), function() {
                 $count = collect([]);
-                // $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
-                // $count = $count->merge($likes);
+                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($likes);
                 $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
                 $count = $count->merge($statuses);
                 $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
                 $count = $count->merge($profiles);
                 return $count->unique()->count();
             });
-            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(12), function() {
+            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(6), function() {
                 $count = collect([]);
-                // $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
-                // $count = $count->merge($likes);
+                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $count = $count->merge($likes);
                 $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
                 $count = $count->merge($statuses);
                 $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
@@ -162,10 +137,12 @@ class FederationController extends Controller
         $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
 
         $resource = $request->input('resource');
-        $hash = hash('sha256', $resource);
         $parsed = Nickname::normalizeProfileUrl($resource);
+        if($parsed['domain'] !== config('pixelfed.domain.app')) {
+            abort(404);
+        }
         $username = $parsed['username'];
-        $profile = Profile::whereUsername($username)->firstOrFail();
+        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         if($profile->status != null) {
             return ProfileController::accountCheck($profile);
         }
@@ -315,19 +292,16 @@ class FederationController extends Controller
             ->whereIsPrivate(false)
             ->firstOrFail();
             
-        return [];
-
         if($profile->status != null) {
-            return [];
+            abort(404);
         }
+
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),
             'type'     => 'OrderedCollectionPage',
-            'totalItems' => $profile->following()->count(),
-            'orderedItems' => $profile->following->map(function($f) {
-                return $f->permalink();
-            })
+            'totalItems' => 0,
+            'orderedItems' => []
         ];
         return response()->json($obj); 
     }
@@ -341,20 +315,18 @@ class FederationController extends Controller
             ->whereIsPrivate(false)
             ->firstOrFail();
 
-        return [];
-
         if($profile->status != null) {
-            return [];
+            abort(404);
         }
+
         $obj = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id'       => $request->getUri(),
             'type'     => 'OrderedCollectionPage',
-            'totalItems' => $profile->followers()->count(),
-            'orderedItems' => $profile->followers->map(function($f) {
-                return $f->permalink();
-            })
+            'totalItems' => 0,
+            'orderedItems' => []
         ];
+
         return response()->json($obj); 
     }
 }
