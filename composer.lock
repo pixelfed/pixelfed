@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bdbb027690a100eeaedc9abfb488828",
+    "content-hash": "c7cbd15917579cc9e05eabf908080e06",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -3240,6 +3240,55 @@
             "description": "BaconQrCode is a QR code generator for PHP.",
             "homepage": "https://github.com/pixelfed/BaconQrCode",
             "time": "2018-09-03T06:48:07+00:00"
+        },
+        {
+            "name": "pixelfed/dotenv-editor",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pixelfed/Laravel-Dotenv-Editor.git",
+                "reference": "b53cb2707bb856e92cf1a282b4e5ee17a45ccb2c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pixelfed/Laravel-Dotenv-Editor/zipball/b53cb2707bb856e92cf1a282b4e5ee17a45ccb2c",
+                "reference": "b53cb2707bb856e92cf1a282b4e5ee17a45ccb2c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/config": ">=5.0",
+                "illuminate/container": ">=5.0",
+                "illuminate/support": ">=5.0",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jackiedo\\DotenvEditor\\": "src/Jackiedo/DotenvEditor"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jackie Do",
+                    "email": "anhvudo@gmail.com"
+                }
+            ],
+            "description": "The .env file editor tool for Laravel 5+",
+            "keywords": [
+                "dotenv",
+                "dotenv-editor",
+                "laravel"
+            ],
+            "time": "2018-07-17T19:38:26+00:00"
         },
         {
             "name": "pixelfed/fractal",
