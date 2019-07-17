@@ -27,7 +27,6 @@
         "pbmedia/laravel-ffmpeg": "4.0.0",
         "phpseclib/phpseclib": "~2.0",
         "pixelfed/bacon-qr-code": "^3.0",
-        "pixelfed/dotenv-editor": "^2.0",
         "pixelfed/fractal": "^0.18.0",
         "pixelfed/google2fa": "^4.0",
         "pixelfed/laravel-snowflake": "^2.0",
@@ -42,6 +41,7 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^2.0",
+        "nunomaduro/phpinsights": "^1.7",
         "phpunit/phpunit": "^7.5"
     },
     "autoload": {
