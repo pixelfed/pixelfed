@@ -13,98 +13,6 @@
     <h3 class="font-weight-bold">Users</h3>
   </div>
   <hr>
-  <div class="row mb-3">
-    {{-- <div class="col-12 col-md-6 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Total Users</span>
-            <span>
-              <select class="feature-filter form-control form-control-sm bg-light border-0" data-id="total" data-duration="{{request()->query('total_duration') ?? 30}}">
-                <option data-duration="1">1 Day</option>
-                <option data-duration="14">2 Weeks</option>
-                <option data-duration="30" selected="">1 Month</option>
-                <option data-duration="365">1 Year</option>
-              </select>
-            </span>
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['total']['count']}}</p>
-          </div>
-        </div>
-        <div class="totalUsers pb-2"></div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">New Users</span>
-            <span>
-              <select class="form-control form-control-sm bg-light border-0">
-                <option>1 Day</option>
-                <option>2 Weeks</option>
-                <option selected="">1 Month</option>
-                <option>1 Year</option>
-              </select>
-            </span> 
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['new']['count']}}</p>
-          </div>
-        </div>
-        <div class="newUsers pb-2"></div>
-      </div>
-    </div> --}}
-    <div class="col-12 col-md-3 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Local</span>
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['profile']['local']}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Remote</span>
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['profile']['remote']}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Avg Likes</span>
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['avg']['likes']}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3 mb-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <span class="font-weight-bold text-muted">Avg Posts</span>
-          </div>
-          <div>
-            <p class="h3 font-weight-bold mb-0">{{$stats['avg']['posts']}}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="table-responsive">
     <table class="table">
       <thead class="bg-light">
@@ -128,27 +36,24 @@
       </thead>
       <tbody>
         @foreach($users as $user)
-        @if($user->status == 'deleted')
-        @continue
-        @endif
         <tr class="font-weight-bold text-center user-row">
           <th scope="row">
-            {{$user->id}}
+            <span class="{{$user->status == 'deleted' ? 'text-danger':''}}">{{$user->id}}</span>
           </th>
           <td class="text-left">
-            <img src="{{$user->profile->avatarUrl()}}" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
+            <img src="{{$user->profile ? $user->profile->avatarUrl() : '/storage/avatars/default.png?v=1'}}" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
             <span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
-              {{$user->username}}
+              <span class="{{$user->status == 'deleted' ? 'text-danger':''}}">{{$user->username}}</span>
               @if($user->is_admin)
                <i class="text-danger fas fa-certificate" title="Admin"></i>
               @endif
             </span>
           </td>
          <td>
-            {{$user->profile->statusCount()}}
+            <span class="{{$user->status == 'deleted' ? 'text-danger':''}}">{{$user->profile ? $user->profile->statusCount() : 0}}</span>
           </td>
           <td>
-            <p class="human-size mb-0" data-bytes="{{App\Media::whereUserId($user->id)->sum('size')}}"></p>
+            <span class="{{$user->status == 'deleted' ? 'text-danger':''}}"><p class="human-size mb-0" data-bytes="{{App\Media::whereUserId($user->id)->sum('size')}}"></p></span>
           </td>
           <td>
             <span class="action-row font-weight-lighter">
