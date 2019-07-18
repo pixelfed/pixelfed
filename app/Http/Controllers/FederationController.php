@@ -95,7 +95,7 @@ class FederationController extends Controller
             });
             return [
                 'metadata' => [
-                    'nodeName' => config('app.name'),
+                    'nodeName' => config('pixelfed.domain.app'),
                     'software' => [
                         'homepage'  => 'https://pixelfed.org',
                         'repo'      => 'https://github.com/pixelfed/pixelfed',
