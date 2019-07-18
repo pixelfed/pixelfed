@@ -46,13 +46,7 @@
 			<div>
 				<ul class="nav nav-tabs">
 					<li class="nav-item">
-						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Add Post URL</a>
-					</li>
-					<li class="nav-item">
-						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Add My Posts</a>
-					</li>
-					<li class="nav-item">
-						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Search</a>
+						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Add Posts</a>
 					</li>
 					<li class="nav-item">
 						<a :class="[tab == 'all' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'all'">Preview</a>
