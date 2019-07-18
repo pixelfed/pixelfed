@@ -38,6 +38,9 @@ class CollectionController extends Controller
         if($collection->profile->status != null) {
             abort(404);
         }
+        if($collection->visibility !== 'public') {
+            abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
+        }
     	return view('collection.show', compact('collection'));
     }
 
@@ -51,8 +54,8 @@ class CollectionController extends Controller
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'title'         => 'required',
-            'description'   => 'required',
+            'title'         => 'nullable',
+            'description'   => 'nullable',
             'visibility'    => 'required|alpha|in:public,private'
         ]);
 
@@ -66,11 +69,19 @@ class CollectionController extends Controller
         return 200;
     }
 
-    public function publish(int $id)
+    public function publish(Request $request, int $id)
     {
         abort_if(!Auth::check(), 403);
+        $this->validate($request, [
+            'title'         => 'nullable',
+            'description'   => 'nullable',
+            'visibility'    => 'required|alpha|in:public,private'
+        ]);
         $profile = Auth::user()->profile;   
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
+        $collection->title = e($request->input('title'));
+        $collection->description = e($request->input('description'));
+        $collection->visibility = e($request->input('visibility'));
         $collection->published_at = now();
         $collection->save();
 
@@ -126,7 +137,7 @@ class CollectionController extends Controller
     {
         $profile = Auth::check() ? Auth::user()->profile : [];
 
-        $collection = Collection::findOrFail($id);
+        $collection = Collection::whereVisibility('public')->findOrFail($id);
         if($collection->published_at == null) {
             if(!Auth::check() || $profile->id !== $collection->profile_id) {
                 abort(404);
@@ -143,9 +154,10 @@ class CollectionController extends Controller
 
     public function getItems(Request $request, int $id)
     {
-        $profile = Auth::user()->profile;
-
         $collection = Collection::findOrFail($id);
+        if($collection->visibility !== 'public') {
+            abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
+        }
         $posts = $collection->posts()->orderBy('order', 'asc')->paginate(18);
 
         $fractal = new Fractal\Manager();
