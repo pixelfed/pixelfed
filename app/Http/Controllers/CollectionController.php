@@ -79,6 +79,9 @@ class CollectionController extends Controller
         ]);
         $profile = Auth::user()->profile;   
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
+        if($collection->items()->count() == 0) {
+            abort(404);
+        }
         $collection->title = e($request->input('title'));
         $collection->description = e($request->input('description'));
         $collection->visibility = e($request->input('visibility'));
