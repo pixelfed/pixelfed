@@ -152,9 +152,9 @@
 					<li class="nav-item px-3">
 						<a :class="this.mode == 'list' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('list')"><i class="fas fa-th-list fa-lg"></i></a>
 					</li>
-					<!-- <li class="nav-item pr-3">
+					<li class="nav-item pr-3">
 						<a :class="this.mode == 'collections' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('collections')"><i class="fas fa-images fa-lg"></i></a>
-					</li> -->
+					</li>
 					<li class="nav-item" v-if="owner">
 						<a :class="this.mode == 'bookmarks' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark fa-lg"></i></a>
 					</li>
@@ -189,7 +189,7 @@
 						</div>
 					</div>
 					<div class="row" v-if="mode == 'list'">
-						<div class="col-md-8 col-lg-8 offset-md-2 px-0 mb-3 timeline">
+						<div class="col-md-8 col-lg-8 offset-md-2 px-0 timeline">
 							<div class="card status-card card-md-rounded-0 my-sm-2 my-md-3 my-lg-4" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
 
 								<div class="card-header d-inline-flex align-items-center bg-white">
@@ -282,6 +282,12 @@
 							</div>
 						</div>
 					</div>
+					<div v-if="['grid','list'].indexOf(mode) != -1 && timeline.length == 0">
+						<div class="py-5 text-center text-muted">
+							<p><i class="fas fa-camera-retro fa-2x"></i></p>
+							<p class="h2 font-weight-light pt-3">No posts yet</p>
+						</div>
+					</div>
 					<div v-if="timeline.length && ['grid','list'].indexOf(mode) != -1">
 						<infinite-loading @infinite="infiniteTimeline">
 							<div slot="no-more"></div>
@@ -289,32 +295,43 @@
 						</infinite-loading>
 					</div>
 					<div class="row" v-if="mode == 'bookmarks'">
-						<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(s, index) in bookmarks">
-							<a class="card info-overlay card-md-border-0" :href="s.url">
-								<div class="square">
-									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
-									<div class="square-content" v-bind:style="previewBackground(s)">
+						<div v-if="bookmarks.length">
+							<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(s, index) in bookmarks">
+								<a class="card info-overlay card-md-border-0" :href="s.url">
+									<div class="square">
+										<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+										<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+										<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+										<div class="square-content" v-bind:style="previewBackground(s)">
+										</div>
+										<div class="info-overlay-text">
+											<h5 class="text-white m-auto font-weight-bold">
+												<span>
+													<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+													<span class="d-flex-inline">{{s.favourites_count}}</span>
+												</span>
+												<span>
+													<span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
+													<span class="d-flex-inline">{{s.reblogs_count}}</span>
+												</span>
+											</h5>
+										</div>
 									</div>
-									<div class="info-overlay-text">
-										<h5 class="text-white m-auto font-weight-bold">
-											<span>
-												<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
-												<span class="d-flex-inline">{{s.favourites_count}}</span>
-											</span>
-											<span>
-												<span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
-												<span class="d-flex-inline">{{s.reblogs_count}}</span>
-											</span>
-										</h5>
-									</div>
-								</div>
-							</a>
+								</a>
+							</div>
+						</div>
+						<div v-else class="col-12">
+							<div class="py-5 text-center text-muted">
+								<p><i class="fas fa-bookmark fa-2x"></i></p>
+								<p class="h2 font-weight-light pt-3">You have no saved bookmarks</p>
+							</div>
 						</div>
 					</div>
-					<div class="row" v-if="mode == 'collections'">
-						<p class="text-center">Collections here</p>
+					<div class="col-12" v-if="mode == 'collections'">
+						<div class="py-5 text-center text-muted">
+							<p><i class="fas fa-images fa-2x"></i></p>
+							<p class="h2 font-weight-light pt-3">You have no collections</p>
+						</div>
 					</div>
 				</div>
 			</div>
