@@ -115,6 +115,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
             Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
             Route::get('bookmarks', 'InternalApiController@bookmarks');
+            Route::get('collection/items/{id}', 'CollectionController@getItems');
+            Route::post('collection/item', 'CollectionController@storeId');
+            Route::get('collection/{id}', 'CollectionController@get');
+            Route::post('collection/{id}', 'CollectionController@store');
+            Route::delete('collection/{id}', 'CollectionController@delete');
+            Route::post('collection/{id}/publish', 'CollectionController@publish');
         });
     });
 
@@ -167,6 +173,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('abusive/post', 'ReportController@abusivePostForm')->name('report.abusive.post');
             Route::get('abusive/profile', 'ReportController@abusiveProfileForm')->name('report.abusive.profile');
         });
+
+        Route::get('collections/create', 'CollectionController@create');
     });
 
     Route::group(['prefix' => 'account'], function () {
@@ -314,6 +322,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('{username}/following', 'FederationController@userFollowing');
     });
 
+    Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
