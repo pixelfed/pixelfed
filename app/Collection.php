@@ -39,7 +39,7 @@ class Collection extends Model
             'collection_id',
             'id',
             'id',
-            'object_id',
+            'object_id'
         );
     }
 
