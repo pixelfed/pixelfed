@@ -221,7 +221,11 @@ export default {
 		},
 
 		publish() {
-			axios.post('/api/local/collection/' + this.collectionId + '/publish')
+			axios.post('/api/local/collection/' + this.collectionId + '/publish', {
+				title: this.collection.title,
+				description: this.collection.description,
+				visibility: this.collection.visibility	
+			})
 			.then(res => {
 				window.location.href = res.data;
 			});
