@@ -167,4 +167,35 @@ class CollectionController extends Controller
 
         return response()->json($res);
     }
+
+    public function getUserCollections(Request $request, int $id)
+    {
+        $profile = Profile::whereNull('status')
+            ->whereNull('domain')
+            ->findOrFail($id);
+
+        if($profile->is_private) {
+            abort_if(!Auth::check(), 404);
+            abort_if(!$profile->followedBy(Auth::user()->profile) && $profile->id != Auth::user()->profile_id, 404);
+        }
+
+        return $profile
+            ->collections()
+            ->has('posts')
+            ->with('posts')
+            ->whereVisibility('public')
+            ->whereNotNull('published_at')
+            ->orderByDesc('published_at')
+            ->paginate(9)
+            ->map(function($collection) {
+                return [
+                    'id' => $collection->id,
+                    'title' => $collection->title,
+                    'description' => $collection->description,
+                    'thumb' => $collection->posts()->first()->thumb(),
+                    'url' => $collection->url(),
+                    'published_at' => $collection->published_at
+                ];
+        });
+    }
 }
