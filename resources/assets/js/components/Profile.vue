@@ -328,9 +328,21 @@
 						</div>
 					</div>
 					<div class="col-12" v-if="mode == 'collections'">
-						<div class="py-5 text-center text-muted">
-							<p><i class="fas fa-images fa-2x"></i></p>
-							<p class="h2 font-weight-light pt-3">You have no collections</p>
+						<div v-if="collections.length" class="row">
+							<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(c, index) in collections">
+								<a class="card info-overlay card-md-border-0" :href="c.url">
+									<div class="square">
+										<div class="square-content" v-bind:style="'background-image: url(' + c.thumb + ');'">
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+						<div v-else>
+							<div class="py-5 text-center text-muted">
+								<p><i class="fas fa-images fa-2x"></i></p>
+								<p class="h2 font-weight-light pt-3">No collections yet</p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -703,6 +715,12 @@
 					axios.get('/api/local/bookmarks')
 					.then(res => {
 						this.bookmarks = res.data
+					});
+				}
+				if(this.mode == 'collections' && this.collections.length == 0) {
+					axios.get('/api/local/profile/collections/' + this.profileId)
+					.then(res => {
+						this.collections = res.data
 					});
 				}
 			},
