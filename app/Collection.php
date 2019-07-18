@@ -19,6 +19,8 @@ class Collection extends Model
 
     public $fillable = ['profile_id', 'published_at'];
 
+    public $dates = ['published_at'];
+
 	public function profile()
 	{
 		return $this->belongsTo(Profile::class);
