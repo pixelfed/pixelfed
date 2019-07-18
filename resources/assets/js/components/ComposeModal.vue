@@ -14,9 +14,9 @@
 							<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
 						</button>
 						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-							<div v-show="media.length > 0" class="dropdown-item small font-weight-bold" v-on:click="mediaDrawer = !mediaDrawer">{{mediaDrawer ? 'Hide' : 'Show'}} Media Toolbar</div>
-							<div class="dropdown-item small font-weight-bold" v-on:click="about">About</div>
+							<div class="dropdown-item small font-weight-bold" v-on:click="createCollection">Create Collection</div>
 							<div class="dropdown-divider"></div>
+							<div class="dropdown-item small font-weight-bold" v-on:click="about">About</div>
 							<div class="dropdown-item small font-weight-bold" v-on:click="closeModal">Close</div>
 						</div>
 					</div>
@@ -507,6 +507,10 @@ export default {
 			return video ? 
 			'Click here to add photos or videos' :
 			'Click here to add photos';
+		},
+
+		createCollection() {
+			window.location.href = '/i/collections/create';
 		}
 	}
 }

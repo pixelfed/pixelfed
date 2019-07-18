@@ -68,4 +68,19 @@ trait User {
 	{
 		return 100;
 	}
+
+	public function getMaxCollectionsPerHourAttribute()
+	{
+		return 10;
+	}
+
+	public function getMaxCollectionsPerDayAttribute()
+	{
+		return 20;
+	}
+
+	public function getMaxCollectionsPerMonthAttribute()
+	{
+		return 100;
+	}
 }

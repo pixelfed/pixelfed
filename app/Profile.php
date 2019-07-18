@@ -291,4 +291,9 @@ class Profile extends Model
     {
         return $this->hasMany(HashtagFollow::class);
     }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
 }

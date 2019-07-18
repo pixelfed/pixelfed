@@ -31,6 +31,9 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // .js('resources/assets/js/embed.js', 'public')
 // .js('resources/assets/js/direct.js', 'public/js')
 .js('resources/assets/js/hashtag.js', 'public/js')
+.js('resources/assets/js/collectioncompose.js', 'public/js')
+.js('resources/assets/js/collections.js', 'public/js')
+
 .extract([
 	'lodash',
 	'popper.js',

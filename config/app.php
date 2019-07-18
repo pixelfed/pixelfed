@@ -150,7 +150,6 @@ return [
         /*
          * Package Service Providers...
          */
-        Jackiedo\DotenvEditor\DotenvEditorServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -211,7 +210,6 @@ return [
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
 
-        'DotenvEditor' => Jackiedo\DotenvEditor\Facades\DotenvEditor::class,
         'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
         'Purify'       => Stevebauman\Purify\Facades\Purify::class,
         'FFMpeg'       => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,

@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:7.3-apache-buster
 
 ARG COMPOSER_VERSION="1.8.5"
 ARG COMPOSER_CHECKSUM="4e4c1cd74b54a26618699f3190e6f5fc63bb308b13fa660f71f2a2df047c0e17"
@@ -7,13 +7,13 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends apt-utils \
  && apt-get install -y --no-install-recommends git gosu \
       optipng pngquant jpegoptim gifsicle libpq-dev libsqlite3-dev locales zip unzip libzip-dev libcurl4-openssl-dev \
-      libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-3 \
+      libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-6 \
       libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev \
  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
  && locale-gen && update-locale \
  && docker-php-source extract \
  && docker-php-ext-configure gd \
-      --with-freetype-dir=/usr/lib/x86_64-linux-gnu/ \
+      --enable-freetype \
       --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \

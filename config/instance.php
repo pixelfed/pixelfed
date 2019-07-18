@@ -3,7 +3,7 @@
 return [
 
 	'announcement' => [
-		'enabled' => env('INSTANCE_ANNOUNCEMENT_ENABLED', true),
+		'enabled' => env('INSTANCE_ANNOUNCEMENT_ENABLED', false),
 		'message' => env('INSTANCE_ANNOUNCEMENT_MESSAGE', 'Example announcement message.<br><span class="font-weight-normal">Something else here</span>')
 	],
 
