@@ -30,7 +30,8 @@
 						</form>
 						<hr>
 						<p>
-							<button type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publish</button>
+							<button v-if="posts.length > 0" type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publish</button>
+							<button v-else type="button" class="btn btn-primary font-weight-bold btn-block disabled" disabled>Publish</button>
 						</p>
 						<p>
 							<button type="button" class="btn btn-outline-primary font-weight-bold btn-block" @click="save">Save</button>
@@ -221,6 +222,10 @@ export default {
 		},
 
 		publish() {
+			if(this.posts.length == 0) {
+				swal('Error', 'You cannot publish an empty collection');
+				return;
+			}
 			axios.post('/api/local/collection/' + this.collectionId + '/publish', {
 				title: this.collection.title,
 				description: this.collection.description,
@@ -228,6 +233,8 @@ export default {
 			})
 			.then(res => {
 				window.location.href = res.data;
+			}).catch(err => {
+				swal('Something went wrong', 'There was a problem with your request, please try again later.', 'error');
 			});
 		},
 
