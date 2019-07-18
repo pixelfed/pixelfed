@@ -119,7 +119,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('collection/item', 'CollectionController@storeId');
             Route::get('collection/{id}', 'CollectionController@get');
             Route::post('collection/{id}', 'CollectionController@store');
-            Route::delete('collection/{id}', 'CollectionController@delete');
+            Route::delete('collection/{id}', 'CollectionController@delete')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::post('collection/{id}/publish', 'CollectionController@publish')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
         });
