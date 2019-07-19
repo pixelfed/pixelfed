@@ -17,6 +17,7 @@ use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
 
 use App\Util\ActivityPub\Validator\{
+    Accept,
     Follow
 };
 
