@@ -11,7 +11,6 @@
     {!!$page->content!!}
     <hr>
     <p class="">This document was last updated {{$page->created_at->format('M d, Y')}}.</p>
-    <p class="">Originally adapted from the <a href="https://mastodon.social/about/more">Mastodon</a> Code of Conduct.</p>
   </div>
   @else
   <div>
