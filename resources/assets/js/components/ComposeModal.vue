@@ -73,8 +73,8 @@
 						</ul>
 					</div>
 				</div>
-				<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="bg-lighter p-2 row">
-					<div class="col-12">
+				<div v-if="ids.length > 0 && ['Image', 'Video'].indexOf(media[carouselCursor].type)" class="bg-lighter p-2 row">
+					<div v-if="media[carouselCursor].type == 'Image'" class="col-12">
 						<div class="form-group">
 							<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Optional image description">
 						</div>
@@ -88,7 +88,7 @@
 						<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-tools"></i></button>
 					</div> -->
 					<div class="col-12 text-right pt-2">
-						<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()">Delete Photo</button>
+						<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()">Delete Media</button>
 					</div>
 				</div>
 			</div>
@@ -380,7 +380,7 @@ export default {
 		},
 
 		deleteMedia() {
-			if(window.confirm('Are you sure you want to delete this photo?') == false) {
+			if(window.confirm('Are you sure you want to delete this media?') == false) {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
