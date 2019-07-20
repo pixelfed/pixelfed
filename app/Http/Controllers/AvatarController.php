@@ -73,7 +73,7 @@ class AvatarController extends Controller
 
     public function buildPath($id)
     {
-        $padded = str_pad($id, 12, 0, STR_PAD_LEFT);
+        $padded = str_pad($id, 19, 0, STR_PAD_LEFT);
         $parts = str_split($padded, 3);
         foreach ($parts as $k => $part) {
             if ($k == 0) {
@@ -90,6 +90,21 @@ class AvatarController extends Controller
             }
             if ($k == 3) {
                 $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3];
+                $prefix = storage_path('app/'.$avatarpath);
+                $this->checkDir($prefix);
+            }
+            if ($k == 4) {
+                $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4];
+                $prefix = storage_path('app/'.$avatarpath);
+                $this->checkDir($prefix);
+            }
+            if ($k == 5) {
+                $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5];
+                $prefix = storage_path('app/'.$avatarpath);
+                $this->checkDir($prefix);
+            }
+            if ($k == 6) {
+                $avatarpath = 'public/avatars/'.$parts[0].'/'.$parts[1].'/'.$parts[2].'/'.$parts[3].'/'.$parts[4].'/'.$parts[5].'/'.$parts[6];
                 $prefix = storage_path('app/'.$avatarpath);
                 $this->checkDir($prefix);
             }
