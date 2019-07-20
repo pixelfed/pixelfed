@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Cache;
 use App\Follower;
+use App\FollowRequest;
 use App\Profile;
 use App\User;
 use App\UserFilter;
@@ -67,8 +68,12 @@ class ProfileController extends Controller
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
 
         if ($isPrivate == true || $isBlocked == true) {
-            return view('profile.private', compact('user', 'is_following'));
+            $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
+                ->whereFollowingId($user->id)
+                ->exists() : false;
+            return view('profile.private', compact('user', 'is_following', 'requested'));
         } 
+
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         $profile = $user;
         $settings = [
