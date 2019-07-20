@@ -75,7 +75,7 @@ class FederationController extends Controller
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
             $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(6), function() {
                 $count = collect([]);
-                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $likes = Like::select('profile_id')->with('actor')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
                 $count = $count->merge($likes);
                 $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
                 $count = $count->merge($statuses);
@@ -85,7 +85,7 @@ class FederationController extends Controller
             });
             $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(6), function() {
                 $count = collect([]);
-                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
+                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
                 $count = $count->merge($likes);
                 $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
                 $count = $count->merge($statuses);
