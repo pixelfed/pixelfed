@@ -9,7 +9,7 @@
       <div class="col-12 col-md-8 d-flex align-items-center">
         <div class="profile-details">
           <div class="username-bar pb-2 d-flex align-items-center">
-            <span class="font-weight-ultralight h1">{{$user->username}}</span>
+            <span class="font-weight-ultralight h3">{{$user->username}}</span>
             @if(Auth::check() && $is_following == true)
             <span class="pl-4">
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
@@ -17,6 +17,10 @@
                 <input type="hidden" name="item" value="{{$user->id}}">
                 <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
               </form>
+            </span>
+            @elseif(Auth::check() && $requested == true)
+            <span class="pl-4">
+              <button class="btn btn-outline-secondary font-weight-bold px-4 py-0 disabled" disabled type="button">Follow Requested</button>
             </span>
             @elseif(Auth::check() && $is_following == false)
             <span class="pl-4">
