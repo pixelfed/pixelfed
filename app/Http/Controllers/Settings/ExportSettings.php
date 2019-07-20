@@ -103,7 +103,7 @@ trait ExportSettings
     	$this->validate($request, [
     		'type' => 'required|string|in:ap,api'
     	]);
-    	$limit = 300;
+    	$limit = 500;
 
     	$profile = Auth::user()->profile;
     	$type = 'ap';
@@ -116,7 +116,7 @@ trait ExportSettings
 
     	$filename = 'outbox.json';
 		if($type == 'ap') {
-			$data = Cache::remember('account:export:profile:statuses:ap:'.Auth::user()->profile->id, now()->addDays(7), function() {
+			$data = Cache::remember('account:export:profile:statuses:ap:'.Auth::user()->profile->id, now()->addHours(1), function() {
 				$profile = Auth::user()->profile->statuses;
 				$fractal = new Fractal\Manager();
 				$fractal->setSerializer(new ArraySerializer());
@@ -125,7 +125,7 @@ trait ExportSettings
 			});
 		} else {
 			$filename = 'api-statuses.json';
-			$data = Cache::remember('account:export:profile:statuses:api:'.Auth::user()->profile->id, now()->addDays(7), function() {
+			$data = Cache::remember('account:export:profile:statuses:api:'.Auth::user()->profile->id, now()->addHours(1), function() {
 				$profile = Auth::user()->profile->statuses;
 				$fractal = new Fractal\Manager();
 				$fractal->setSerializer(new ArraySerializer());
