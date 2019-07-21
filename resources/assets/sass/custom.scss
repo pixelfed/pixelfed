@@ -543,12 +543,12 @@ details summary::-webkit-details-marker {
     padding: 3px 8px;
     color: #fff;
     text-align: center;
-    background-color: #dc3545;
+    /*background-color: #dc3545;*/
     border-radius: .25rem;
 }
 
 .tooltip-notification .tooltip.bs-tooltip-auto[x-placement^=top] .arrow::before, .tooltip.bs-tooltip-top .arrow::before {
-    border-top-color: #dc3545; 
+    /*border-top-color: #dc3545; */
 }
 
 .carousel-control-prev-icon, .carousel-control-next-icon {
