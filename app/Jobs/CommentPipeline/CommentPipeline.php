@@ -4,7 +4,8 @@ namespace App\Jobs\CommentPipeline;
 
 use App\{
     Notification,
-    Status
+    Status,
+    UserFilter
 };
 use App\Services\NotificationService;
 use DB, Cache, Log, Redis;
@@ -55,6 +56,15 @@ class CommentPipeline implements ShouldQueue
 
         if ($actor->id === $target->id || $status->comments_disabled == true) {
             return true;
+        }
+        $filtered = UserFilter::whereUserId($target->id)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->whereFilterableId($actor->id)
+            ->exists();
+
+        if($filtered == true) {
+            return;
         }
 
         DB::transaction(function() use($target, $actor, $comment) {
