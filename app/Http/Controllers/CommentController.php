@@ -13,6 +13,7 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\Lexer\Autolink;
 use App\Profile;
 use App\Status;
+use App\UserFilter;
 use League\Fractal;
 use App\Transformer\Api\StatusTransformer;
 use League\Fractal\Serializer\ArraySerializer;
@@ -54,6 +55,16 @@ class CommentController extends Controller
         $status = Status::findOrFail($statusId);
 
         if($status->comments_disabled == true) {
+            return;
+        }
+
+        $filtered = UserFilter::whereUserId($status->profile_id)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->whereFilterableId($profile->id)
+            ->exists();
+
+        if($filtered == true) {
             return;
         }
 

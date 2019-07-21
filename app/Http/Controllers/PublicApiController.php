@@ -113,10 +113,22 @@ class PublicApiController extends Controller
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
+
+        if(Auth::check()) {
+            $pid = Auth::user()->profile->id;
+            $filtered = UserFilter::whereUserId($pid)
+            ->whereFilterableType('App\Profile')
+            ->whereIn('filter_type', ['mute', 'block'])
+            ->pluck('filterable_id')->toArray();
+        } else {
+            $filtered = [];
+        }
+
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
+                ->whereNotIn('profile_id', $filtered)
                 ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
@@ -125,6 +137,7 @@ class PublicApiController extends Controller
             if($request->filled('max_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
+                ->whereNotIn('profile_id', $filtered)
                 ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
@@ -133,6 +146,7 @@ class PublicApiController extends Controller
         } else {
             $replies = $status->comments()
             ->whereNull('reblog_of_id')
+            ->whereNotIn('profile_id', $filtered)
             ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
