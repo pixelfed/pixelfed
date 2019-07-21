@@ -146,6 +146,9 @@ export default {
 						if(n.type == 'share' && !status) {
 							return false;
 						}
+						if(_.find(this.notifications, {id: n.id})) {
+							return false;
+						}
 						return true;
 					});
 					this.notifications.push(...data);

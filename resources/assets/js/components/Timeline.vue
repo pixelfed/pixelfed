@@ -9,7 +9,7 @@
 					</div>
 				</div>
 				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
-					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0">
+					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
@@ -40,7 +40,7 @@
 						</div>
 					</div>
 
-					<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0">
+					<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 							<span></span>
 							<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
@@ -66,7 +66,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="card mb-sm-4 status-card card-md-rounded-0">
+					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
 							<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">

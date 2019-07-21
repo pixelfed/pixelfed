@@ -11,7 +11,7 @@
   </div>
   <div v-if="loaded && warning == false" class="postComponent">
     <div v-if="profileLayout == 'metro'" class="container px-0">
-      <div class="card card-md-rounded-0 status-container orientation-unknown">
+      <div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
           <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
