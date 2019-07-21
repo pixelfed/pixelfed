@@ -122,7 +122,7 @@ class CollectionController extends Controller
         }
 
         $status = Status::whereScope('public')
-            ->whereIn('type', ['photo'])
+            ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
         $item = CollectionItem::firstOrCreate([
