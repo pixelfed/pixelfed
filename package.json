@@ -21,6 +21,7 @@
         "sass": "^1.22.3",
         "sass-loader": "^7.1.0",
         "vue": "^2.6.10",
+        "vue-masonry-css": "^1.0.3",
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
