@@ -418,12 +418,17 @@
 			</div>
 			<div class="container-fluid">
 				<div class="profile-timeline mt-md-4">
-					<div class="card-columns" v-if="mode == 'grid'">
-						<div class="p-sm-2 p-md-3" v-for="(s, index) in timeline">
-							<a class="card info-overlay card-md-border-0" :href="s.url">
-								<img :src="previewUrl(s)" class="img-fluid w-100">
-							</a>
-						</div>
+					<div class="" v-if="mode == 'grid'">
+						<masonry
+						  :cols="{default: 3, 700: 2, 400: 1}"
+						  :gutter="{default: '5px'}"
+						>
+							<div class="p-1" v-for="(s, index) in timeline">
+								<a class="card info-overlay card-md-border-0" :href="s.url">
+									<img :src="previewUrl(s)" class="img-fluid w-100">
+								</a>
+							</div>
+						</masonry>
 					</div>
 					<div v-if="timeline.length">
 						<infinite-loading @infinite="infiniteTimeline">
@@ -577,6 +582,9 @@
 }
 </style>
 <script type="text/javascript">
+	import VueMasonry from 'vue-masonry-css'
+
+	Vue.use(VueMasonry);
 	export default {
 		props: [
 		'profile-id',
