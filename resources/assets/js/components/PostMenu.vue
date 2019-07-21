@@ -12,8 +12,8 @@
 					<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 				</span>
 				<span v-if="statusOwner(status) == true">
-					<a class="dropdown-item font-weight-bold text-decoration-none" v-on:click="muteProfile(status)">Mute Profile</a>
-					<a class="dropdown-item font-weight-bold text-decoration-none" v-on:click="blockProfile(status)">Block Profile</a>
+					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="muteProfile(status)">Mute Profile</a>
+					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="blockProfile(status)">Block Profile</a>
 				</span>
 				<span v-if="profile.is_admin == true">
 					<div class="dropdown-divider"></div>
@@ -187,6 +187,36 @@
 						});
 					break;
 				}
+			},
+
+			muteProfile(status) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+
+				axios.post('/i/mute', {
+					type: 'user',
+					item: status.account.id
+				}).then(res => {
+					swal('Success', 'You have successfully muted ' + status.account.acct, 'success');
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
+
+			blockProfile(status) {
+				if($('body').hasClass('loggedIn') == false) {
+					return;
+				}
+
+				axios.post('/i/block', {
+					type: 'user',
+					item: status.account.id
+				}).then(res => {
+					swal('Success', 'You have successfully blocked ' + status.account.acct, 'success');
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
 			}
 		}
 	}
