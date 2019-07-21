@@ -356,7 +356,14 @@
 				<div class="container">
 					<div class="row">
 						<div class="col-12 row mx-0">
-							<div class="col-4"></div>
+							<div class="col-4 text-left mt-2">
+								<span v-if="relationship && relationship.followed_by">
+									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">FOLLOWS YOU</span>
+								</span>
+								<span v-if="profile.is_admin">
+									<span class="bg-light border border-danger font-weight-bold small py-1 px-2 text-danger rounded">ADMIN</span>
+								</span>
+							</div>
 							<div class="col-4 text-center">
 								<div class="d-block d-md-none">
 									<img class="rounded-circle box-shadow" :src="profile.avatar" width="110px" height="110px" style="margin-top:-60px; border: 5px solid #fff">
@@ -666,6 +673,10 @@
 			},
 
 			ownerCheck() {
+				if($('body').hasClass('loggedIn') == false) {
+					this.owner = false;
+					return;
+				}
 				this.owner = this.profile.id === this.user.id;
 			},
 
