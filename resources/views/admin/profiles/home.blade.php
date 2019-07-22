@@ -73,56 +73,23 @@
 	<table class="table">
 		<thead class="bg-light">
 			<tr>
-				<th class="border-0" width="5%">
-					<div class="custom-control custom-checkbox table-check">
-						<input type="checkbox" class="custom-control-input row-check-item row-check-all" id="row-check-all">
-						<label class="custom-control-label" for="row-check-all"></label>
-					</div>
-				</th>
 				<th scope="col" class="border-0" width="10%">
-					<span>
-						ID
-						@if(request()->filter && request()->filter == 'id' && request()->order == 'asc')
-						<a href="#" class="col-ord" data-col="id" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
-						@else
-						<a href="#" class="col-ord" data-col="id" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
-						@endif
-					</span> 
+					<span>ID</span> 
 				</th>
 				<th scope="col" class="border-0" width="15%">
-					<span>
-						Username
-						@if(request()->filter && request()->filter == 'username' && request()->order == 'asc')
-						<a href="#" class="col-ord" data-col="username" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
-						@else
-						<a href="#" class="col-ord" data-col="username" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
-						@endif
-					</span>
+					<span>Username</span>
 				</th>
 				<th scope="col" class="border-0" width="20%">
-					<span>
-						Followers
-					</span>
+					<span>Followers</span>
 				</th>
 				<th scope="col" class="border-0" width="20%">
-					<span>
-						Likes
-					</span>
+					<span>Likes</span>
 				</th>
 				<th scope="col" class="border-0" width="20%">
-					<span>
-						Statuses
-						@if(request()->filter && request()->filter == 'statuses_count' && request()->order == 'asc')
-						<a href="#" class="col-ord" data-col="statuses_count" data-dir="desc"><i class="fas fa-chevron-down"></i></a>
-						@else
-						<a href="#" class="col-ord" data-col="statuses_count" data-dir="asc"><i class="fas fa-chevron-up"></i></a>
-						@endif
-					</span>
+					<span>Statuses</span>
 				</th>
 				<th scope="col" class="border-0" width="10%">
-					<span>
-						Storage
-					</span>
+					<span>Storage</span>
 				</th>
 				<th scope="col" class="border-0" width="10%">
 					<span>Actions</span>
@@ -131,12 +98,6 @@
 		</thead>
 		@foreach($profiles as $profile)
 		<tr class="font-weight-bold text-center user-row">
-			<th scope="">
-				<div class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input row-check-item" id="row-check-{{$profile->id}}" data-id="{{$profile->id}}">
-					<label class="custom-control-label" for="row-check-{{$profile->id}}"></label>
-				</div>
-			</th>
 			<td>
 				{{$profile->id}}
 			</td>

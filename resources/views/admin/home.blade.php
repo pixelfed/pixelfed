@@ -9,7 +9,7 @@
 
   <div class="row">
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">New Messages</p>
           <p class="h2 mb-0">{{$data['contact']['count']}}</p>
@@ -19,7 +19,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Failed Jobs (24h)</p>
           <p class="h2 mb-0">{{$data['failedjobs']['count']}}</p>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Reports</p>
           <p class="h2 mb-0" title="{{$data['reports']['count']}}" data-toggle="tooltip">{{$data['reports']['count']}}</p>
@@ -41,7 +41,7 @@
 
   <div class="row mt-4">
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Statuses</p>
           <p class="h2 mb-0" title="{{$data['statuses']['count']}}" data-toggle="tooltip">{{$data['statuses']['count']}}</p>
@@ -51,7 +51,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Replies</p>
           <p class="h2 mb-0" title="{{$data['replies']['count']}}" data-toggle="tooltip">{{$data['replies']['count']}}</p>
@@ -60,7 +60,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Shares (Reblogs)</p>
           <p class="h2 mb-0">{{$data['shares']['count']}}</p>
@@ -72,7 +72,7 @@
 
   <div class="row mt-4">
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Likes</p>
           <p class="h2 mb-0">{{$data['likes']['count']}}</p>
@@ -82,7 +82,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Profiles</p>
           <p class="h2 mb-0">{{$data['profiles']['count']}}</p>
@@ -92,7 +92,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Users</p>
           <p class="h2 mb-0">{{$data['users']['count']}}</p>
@@ -104,7 +104,7 @@
 
   <div class="row mt-4">
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Remote Instances</p>
           <p class="h2 mb-0">{{$data['instances']['count']}}</p>
@@ -114,7 +114,7 @@
     </div>
 
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Photos Uploaded</p>
           <p class="h2 mb-0">{{$data['media']['count']}}</p>
@@ -123,7 +123,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card" style="min-height:125px">
+      <div class="card shadow-none border" style="min-height:125px">
         <div class="card-body">
           <p class="small text-uppercase font-weight-bold text-muted">Storage Used</p>
           <p class="human-size mb-0" data-bytes="{{$data['storage']['count']}}">{{$data['storage']['count']}} bytes</p>
