@@ -73,15 +73,15 @@
 						</ul>
 					</div>
 				</div>
-				<div v-if="ids.length > 0 && ['Image', 'Video'].indexOf(media[carouselCursor].type)" class="bg-lighter p-2 row">
+				<div v-if="ids.length > 0 && ['Image', 'Video'].indexOf(media[carouselCursor].type) != -1" class="bg-lighter p-2 row">
 					<div v-if="media[carouselCursor].type == 'Image'" class="col-12">
 						<div class="form-group">
 							<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Optional image description">
 						</div>
 
-						<!-- <div class="form-group">
+						<div class="form-group">
 							<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="Optional media license">
-						</div> -->
+						</div>
 					</div>
 					<!-- <div class="col-6 pt-2">
 						<button class="btn btn-outline-secondary btn-sm mr-1"><i class="fas fa-map-marker-alt"></i></button>
