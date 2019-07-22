@@ -5,8 +5,8 @@
 @include('admin.partial.topnav')
 
 <div class="container">
-  <div class="col-12 mt-5">
-    <div class="card">
+  <div class="col-12 mt-4">
+    <div class="card shadow-none border">
       <div class="card-body p-0">
         <div class="row">
           @include('admin.partial.sidebar')
