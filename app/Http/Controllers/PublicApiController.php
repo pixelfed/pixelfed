@@ -529,7 +529,7 @@ class PublicApiController extends Controller
         $filtered = $ids->filter(function($v) { 
             return $v != Auth::user()->profile->id;
         });
-        $relations = Profile::findOrFail($filtered->all());
+        $relations = Profile::whereNull('status')->findOrFail($filtered->all());
         $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
