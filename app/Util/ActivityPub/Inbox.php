@@ -246,7 +246,7 @@ class Inbox
     {
 
         $actor = $this->payload['actor'];
-        $obj = $this->payload['object'];
+        $obj = $this->payload['object']['object'];
         $type = $this->payload['object']['type'];
 
         if($type !== 'Follow') {
