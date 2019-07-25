@@ -243,6 +243,8 @@ class Inbox
 
     public function handleAcceptActivity()
     {
+        return;
+        
         $actor = $this->payload['actor'];
         $obj = $this->payload['object'];
         switch ($obj['type']) {
