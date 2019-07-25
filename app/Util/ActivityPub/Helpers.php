@@ -388,7 +388,10 @@ class Helpers {
 
 		if($local == true) {
 			$id = last(explode('/', $url));
-			return Profile::whereUsername($id)->firstOrFail();
+			return Profile::whereNull('status')
+				->whereNull('domain')
+				->whereUsername($id)
+				->firstOrFail();
 		}
 		$res = self::fetchProfileFromUrl($url);
 		if(isset($res['id']) == false) {
