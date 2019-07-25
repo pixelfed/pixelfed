@@ -15,6 +15,7 @@ use App\{
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\FollowPipeline\FollowPipeline;
 
 use App\Util\ActivityPub\Validator\{
     Accept,
@@ -243,30 +244,40 @@ class Inbox
 
     public function handleAcceptActivity()
     {
-        return;
-        
+
         $actor = $this->payload['actor'];
         $obj = $this->payload['object'];
-        switch ($obj['type']) {
-            case 'Follow':
-                $accept = [
-                    '@context' => 'https://www.w3.org/ns/activitystreams',
-                    'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
-                    'type'     => 'Accept',
-                    'actor'    => $target->permalink(),
-                    'object'   => [
-                        'id' => $actor->permalink('#follows/'.$target->id),
-                        'type'  => 'Follow',
-                        'actor' => $actor->permalink(),
-                        'object' => $target->permalink()
-                    ]
-                ];
-                break;
-            
-            default:
-                # code...
-                break;
+        $type = $this->payload['object']['type'];
+
+        if($type !== 'Follow') {
+            return;
         }
+
+        $actor = Helpers::validateUrl($actor);
+        $target = Helpers::validateLocalUrl($obj);
+
+        if(!$actor || !$target) {
+            return;
+        }
+        $actor = Helpers::profileFetch($actor);
+        $target = Helpers::profileFetch($target);
+
+        $request = FollowRequest::whereFollowerId($actor->id)
+            ->whereFollowingId($target->id)
+            ->whereIsRejected(false)
+            ->first();
+
+        if(!$request) {
+            return;
+        }
+
+        $follower = new Follower();
+        $follower->profile_id = $actor->id;
+        $follower->following_id = $target->id;
+        $follower->save();
+        FollowPipeline::dispatch($follower);
+
+        $request->delete();
     }
 
     public function handleDeleteActivity()
