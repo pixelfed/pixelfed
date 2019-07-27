@@ -8,6 +8,17 @@
 			<div class="text-center">
 				<h1>Collection</h1>
 				<h4 class="text-muted">{{$collection->title}}</h4>
+				@auth
+				@if($collection->profile_id == Auth::user()->profile_id)
+				<div class="text-right">
+				<form method="post" action="/api/local/collection/{{$collection->id}}">
+					@csrf
+					<input type="hidden" name="_method" value="DELETE">
+					<button type="submit" class="btn btn-outline-danger font-weight-bold btn-sm py-1">Delete</button>
+				</form>
+				</div>
+				@endif
+				@endauth
 			</div>
 		</div>
 		<div class="col-12">
