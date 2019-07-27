@@ -137,8 +137,6 @@ class Inbox
 
     public function handleNoteCreate()
     {
-        return;
-
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         if(!$actor || $actor->domain == null) {
