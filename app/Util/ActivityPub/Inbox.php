@@ -143,7 +143,7 @@ class Inbox
             return;
         }
 
-        if(Helpers::userInAudience($this->profile, $this->payload) == false) {
+        if($actor->followers()->count() == 0) {
             return;
         }
 

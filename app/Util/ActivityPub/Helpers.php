@@ -328,7 +328,9 @@ class Helpers {
 				$status->scope = $scope;
 				$status->visibility = $scope;
 				$status->save();
-				self::importNoteAttachment($res, $status);
+				if($reply_to == null) {
+					self::importNoteAttachment($res, $status);
+				}
 				return $status;
 			});
 
