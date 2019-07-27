@@ -143,9 +143,9 @@ class Inbox
             return;
         }
 
-        if(Helpers::userInAudience($this->profile, $this->payload) == false) {
-            return;
-        }
+        // if(Helpers::userInAudience($this->profile, $this->payload) == false) {
+        //     return;
+        // }
 
         $url = $activity['id'];
         if(Status::whereUrl($url)->exists()) {
