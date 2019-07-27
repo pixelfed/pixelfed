@@ -30,6 +30,10 @@ return [
 	],
 
 	'page' => [
+		'404' => [
+			'header' => env('PAGE_404_HEADER', 'Sorry, this page isn\'t available.'),
+			'body' => env('PAGE_404_BODY', 'The link you followed may be broken, or the page may have been removed. <a href="/">Go back to Pixelfed.</a>')
+		],
 		'503' => [
 			'header' => env('PAGE_503_HEADER', 'Service Unavailable'),
 			'body' => env('PAGE_503_BODY', 'Our service is in maintenance mode, please try again later.')
