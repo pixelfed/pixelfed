@@ -296,4 +296,11 @@ class Profile extends Model
     {
         return $this->hasMany(Collection::class);
     }
+
+    public function hasFollowRequestById(int $id)
+    {
+        return FollowRequest::whereFollowerId($id)
+            ->whereFollowingId($this->id)
+            ->exists();
+    }
 }

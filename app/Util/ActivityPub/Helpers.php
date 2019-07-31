@@ -125,7 +125,7 @@ class Helpers {
 	{
 		$audience = self::normalizeAudience($data);
 		$url = $profile->permalink();
-		return in_array($url, $audience);
+		return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
 	}
 
 	public static function validateUrl($url)
@@ -328,7 +328,9 @@ class Helpers {
 				$status->scope = $scope;
 				$status->visibility = $scope;
 				$status->save();
-				self::importNoteAttachment($res, $status);
+				if($reply_to == null) {
+					self::importNoteAttachment($res, $status);
+				}
 				return $status;
 			});
 
