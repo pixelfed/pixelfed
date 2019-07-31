@@ -11,7 +11,7 @@ trait User {
 
 	public function getMaxPostsPerHourAttribute()
 	{
-		return 20;
+		return 50;
 	}
 
 	public function getMaxPostsPerDayAttribute()
