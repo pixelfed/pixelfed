@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
-    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,12 +24,17 @@
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="canonical" href="{{request()->url()}}">
     @if(request()->cookie('dark-mode')) 
+    
     <link href="{{ mix('css/appdark.css') }}" rel="stylesheet" data-stylesheet="dark">
     @else
+    
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
     @endif
+    
     @stack('styles')
-
+    
+    <script type="text/javascript">window.App = {}; window.App.config = {!!App\Util\Site\Config::json()!!}</script>
+    
 </head>
 <body class="{{Auth::check()?'loggedIn':''}}">
     @include('layouts.partial.nav')

@@ -23,6 +23,7 @@
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <link href="{{ mix('css/landing.css') }}" rel="stylesheet">
+    <script type="text/javascript">window.App = {}; window.App.config = {!!App\Util\Site\Config::json()!!}</script>
 </head>
 <body class="">
     <main id="content">

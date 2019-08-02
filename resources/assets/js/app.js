@@ -14,7 +14,7 @@ if (token) {
     console.error('CSRF token not found.');
 }
 
-window.App = {};
+window.App = window.App || {};
 
 window.App.boot = function() {
 	new Vue({ el: '#content'});
