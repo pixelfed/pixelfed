@@ -245,4 +245,10 @@ class ProfileController extends Controller
         }
         return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following', 'is_admin', 'settings'));
     }
+
+    public function meRedirect()
+    {
+        abort_if(!Auth::check(), 404);
+        return redirect(Auth::user()->url());
+    }
 }
