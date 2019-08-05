@@ -656,7 +656,6 @@
 						let data = res.data;
 						let self = this;
 						data.forEach((d, index) => {
-							console.log(index);
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
 								self.ids.push(d.id);
@@ -863,7 +862,6 @@
 
 			moderatePost(status, action, $event) {
 				let username = status.account.username;
-				console.log('action: ' + action + ' status id' + status.id);
 				switch(action) {
 					case 'autocw':
 						let msg = 'Are you sure you want to enforce CW for ' + username + ' ?';

@@ -291,7 +291,6 @@ export default {
 			['Willow','filter-willow'], 
 			['X-Pro II','filter-xpro-ii']
 		];
-		console.log(this.config);
 	},
 
 	methods: {
@@ -302,7 +301,6 @@ export default {
 					this.visibility = 'private';
 				}
 			}).catch(err => {
-				console.log(err)
 			});
 		},
 
