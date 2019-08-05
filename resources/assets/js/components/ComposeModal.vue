@@ -39,8 +39,9 @@
 					<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia($event)">
 						<div class="p-5">
 							<p class="text-center font-weight-bold">{{composeMessage()}}</p>
-							<p class="text-muted mb-0 small text-center">Accepted Formats: {{acceptedFormats()}}</p>
-							<p class="text-muted mb-0 small text-center">Max File Size: {{maxSize()}}</p>
+							<p class="text-muted mb-0 small text-center">Accepted Formats: <b>{{acceptedFormats()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Max File Size: <b>{{maxSize()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Albums can contain up to <b>{{config.uploader.album_limit}}</b> photos or videos</p>
 						</div>
 					</div>
 					<div v-if="ids.length > 0">
