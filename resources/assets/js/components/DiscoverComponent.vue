@@ -64,7 +64,7 @@
 export default {
 	data() {
 		return {
-      config: {},
+      config: window.App.config,
 			posts: {},
 			trending: {},
       categories: {},
@@ -93,11 +93,6 @@ export default {
     },
 
 		fetchData() {
-      axios.get('/api/v2/config')
-      .then((res) => {
-        let data = res.data;
-        this.config = data;
-      });
       axios.get('/api/v2/discover/posts')
       .then((res) => {
         let data = res.data;
