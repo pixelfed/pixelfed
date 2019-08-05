@@ -138,7 +138,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="d-block d-md-none my-0 border-bottom">
+			<div class="d-block d-md-none my-0 pt-3 border-bottom">
 				<p v-if="user && user.hasOwnProperty('id')" class="pt-3">
 					<button v-if="owner" class="btn btn-outline-secondary bg-white btn-sm py-1 btn-block text-center font-weight-bold text-dark border border-lighter" @click.prevent="redirect('/settings/home')">Edit Profile</button>
 					<button v-if="!owner && relationship.following" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter" @click="followProfile">&nbsp;&nbsp; Unfollow &nbsp;&nbsp;</button>
@@ -423,28 +423,28 @@
 		<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="copyProfileLink">
 			Copy Link
 		</div>
-		<div v-if="!owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
+		<div v-if="user && !owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
 			Follow
 		</div>
-		<div v-if="!owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
+		<div v-if="user && !owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
 			Unfollow
 		</div>
-		<div v-if="!owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
+		<div v-if="user && !owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
 			Mute
 		</div>
-		<div v-if="!owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
+		<div v-if="user && !owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
 			Unmute
 		</div>
-		<div v-if="!owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
+		<div v-if="user && !owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
 			Report User
 		</div>
-		<div v-if="!owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
+		<div v-if="user && !owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
 			Block
 		</div>
-		<div v-if="!owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
+		<div v-if="user && !owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
 			Unblock
 		</div>
-		<div v-if="owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
+		<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
 			Settings
 		</div>
 		<div class="list-group-item cursor-pointer text-center rounded text-muted" @click="$refs.visitorContextMenu.hide()">
@@ -522,7 +522,7 @@
 			return {
 				ids: [],
 				profile: {},
-				user: {},
+				user: false,
 				timeline: [],
 				timelinePage: 2,
 				min_id: 0,
@@ -1084,9 +1084,6 @@
 			},
 
 			visitorMenu() {
-				if($('body').hasClass('loggedIn') == false) {
-					return;
-				}
 				this.$refs.visitorContextMenu.show();
 			},
 
