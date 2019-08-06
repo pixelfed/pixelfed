@@ -7,7 +7,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
-            <ul class="navbar-nav mx-auto pr-3">
+            <ul class="navbar-nav d-none d-md-block mx-auto pr-3">
               <form class="form-inline search-bar" method="get" action="/i/results">
                 <div class="input-group">
                     <input class="form-control" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required>
