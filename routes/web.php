@@ -108,7 +108,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/tag', 'DiscoverController@getHashtags');
         });
         Route::group(['prefix' => 'local'], function () {
-            Route::get('i/follow-suggestions', 'ApiController@followSuggestions');
             Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
@@ -176,6 +175,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
 
         Route::get('collections/create', 'CollectionController@create');
+
+        Route::get('me', 'ProfileController@meRedirect');
     });
 
     Route::group(['prefix' => 'account'], function () {
