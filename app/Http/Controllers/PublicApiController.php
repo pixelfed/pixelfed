@@ -272,6 +272,7 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
+                      ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereLocal(true)
                       ->whereNull('uri')
@@ -300,6 +301,7 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereNull('uri')
                       ->whereNotIn('profile_id', $filtered)
@@ -378,6 +380,7 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
@@ -405,6 +408,7 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereNull('in_reply_to_id')

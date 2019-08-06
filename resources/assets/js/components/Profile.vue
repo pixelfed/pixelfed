@@ -1,5 +1,19 @@
 <template>
 <div class="w-100 h-100">
+	<div v-if="isMobile" class="bg-white p-3 border-bottom">
+		<div class="d-flex justify-content-between align-items-center">
+			<div @click="goBack" class="cursor-pointer">
+				<i class="fas fa-chevron-left fa-lg"></i>
+			</div>
+			<div class="font-weight-bold">
+				{{this.profileUsername}}								
+
+			</div>
+			<div>
+				<a class="fas fa-ellipsis-v fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+			</div>
+		</div>
+	</div>
 	<div v-if="relationship && relationship.blocking && warning" class="bg-white pt-3 border-bottom">
 		<div class="container">
 			<p class="text-center font-weight-bold">You are blocking this account</p>
@@ -10,46 +24,55 @@
 		<img src="/img/pixelfed-icon-grey.svg" class="">
 	</div>
 	<div v-if="!loading && !warning">
-		<div v-if="profileLayout == 'metro'">
-			<div class="bg-white py-5 border-bottom">
-				<div class="container">
+		<div v-if="layout == 'metro'" class="container">
+			<div :class="isMobile ? 'pt-5' : 'pt-5 border-bottom'">
+				<div class="container px-0">
 					<div class="row">
-						<div class="col-12 col-md-4 d-flex">
+						<div class="col-12 col-md-4 d-md-flex">
 							<div class="profile-avatar mx-md-auto">
-								<div class="d-block d-md-none">
-									<div class="row">
-										<div class="col-5">
-											<img class="rounded-circle box-shadow mr-2" :src="profile.avatar" width="77px" height="77px">
-											<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-1 mr-2">
-												<button type="button" @click="showSponsorModal" class="btn btn-sm btn-outline-secondary font-weight-bold py-0">
-													Donate
-												</button>
-											</p>
-										</div>
-										<div class="col-7 pl-2">
-											<p class="align-middle">
 
-												<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
-												<span class="float-right mb-0" v-if="!loading && profile.id != user.id && user.hasOwnProperty('id')">
-													<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
-												</span>
-											</p>
-											<p v-if="!loading && profile.id == user.id && user.hasOwnProperty('id')">
-												<a class="btn btn-outline-dark py-0 px-4 mt-3" href="/settings/home">Edit Profile</a>
-											</p>
-											<div v-if="profile.id != user.id && user.hasOwnProperty('id')">
-												<p class="mt-3 mb-0" v-if="relationship.following == true">
-													<button type="button"  class="btn btn-outline-dark font-weight-bold px-4 py-0" v-on:click="followProfile()" data-toggle="tooltip" title="Unfollow">Unfollow</button>
-												</p>
-												<p class="mt-3 mb-0" v-if="!relationship.following">
-													<button type="button" class="btn btn-outline-dark font-weight-bold px-4 py-0" v-on:click="followProfile()" data-toggle="tooltip" title="Follow">Follow</button>
-												</p>
+								<!-- MOBILE PROFILE PICTURE -->
+								<div class="d-block d-md-none mt-n3 mb-3">
+									<div class="row">
+										<div class="col-4">
+											<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border mr-2" :src="profile.avatar" width="77px" height="77px">
+										</div>
+										<div class="col-8">
+											<div class="d-block d-md-none mt-3 py-2">
+												<ul class="nav d-flex justify-content-between">
+													<li class="nav-item">
+														<div class="font-weight-light">
+															<span class="text-dark text-center">
+																<p class="font-weight-bold mb-0">{{profile.statuses_count}}</p>
+																<p class="text-muted mb-0 small">Posts</p>
+															</span>
+														</div>
+													</li>
+													<li class="nav-item">
+														<div v-if="profileSettings.followers.count" class="font-weight-light">
+															<a class="text-dark cursor-pointer text-center" v-on:click="followersModal()">
+																<p class="font-weight-bold mb-0">{{profile.followers_count}}</p>
+																<p class="text-muted mb-0 small">Followers</p>
+															</a>
+														</div>
+													</li>
+													<li class="nav-item">
+														<div v-if="profileSettings.following.count" class="font-weight-light">
+															<a class="text-dark cursor-pointer text-center" v-on:click="followingModal()">
+																<p class="font-weight-bold mb-0">{{profile.following_count}}</p>
+																<p class="text-muted mb-0 small">Following</p>
+															</a>
+														</div>
+													</li>
+												</ul>
 											</div>
 										</div>
 									</div>
 								</div>
-								<div class="d-none d-md-block">
-									<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px">
+
+								<!-- DESKTOP PROFILE PICTURE -->
+								<div class="d-none d-md-block pb-5">
+									<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
 									<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-3">
 										<button type="button" @click="showSponsorModal" class="btn btn-outline-secondary font-weight-bold py-0">
 											<i class="fas fa-heart text-danger"></i>
@@ -61,110 +84,87 @@
 						</div>
 						<div class="col-12 col-md-8 d-flex align-items-center">
 							<div class="profile-details">
-								<div class="d-none d-md-flex username-bar pb-2 align-items-center">
-									<span class="font-weight-ultralight h3">{{profile.username}}</span>
-									<span class="pl-4" v-if="profile.is_admin">
-										<span class="btn btn-outline-secondary font-weight-bold py-0">ADMIN</span>
-									</span>
-									<span class="pl-4">
-										<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
-									</span>
-									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
-										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
-									</span>
-									<span class="pl-4" v-if="!owner && user.hasOwnProperty('id')">
-										<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+								<div class="d-none d-md-flex username-bar pb-3 align-items-center">
+									<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
+									<span class="pl-1 pb-2" v-if="profile.is_admin" title="Admin Account" data-toggle="tooltip">
+										<i class="fas fa-certificate fa-lg text-primary">
+										</i>
+										<i class="fas fa-check text-white fa-sm" style="font-size:9px;margin-left: -1.1rem;padding-bottom: 0.6rem;"></i>
 									</span>
 									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 										<span class="pl-4" v-if="relationship.following == true">
-											<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" v-on:click="followProfile()" data-toggle="tooltip" title="Unfollow"><i class="fas fa-user-minus"></i></button>
+											<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1" v-on:click="followProfile" data-toggle="tooltip" title="Unfollow">FOLLOWING</button>
 										</span>
 										<span class="pl-4" v-if="!relationship.following">
-											<button type="button" class="btn btn-primary font-weight-bold btn-sm" v-on:click="followProfile()" data-toggle="tooltip" title="Follow"><i class="fas fa-user-plus"></i></button>
+											<button type="button" class="btn btn-primary font-weight-bold btn-sm py-1" v-on:click="followProfile" data-toggle="tooltip" title="Follow">FOLLOW</button>
 										</span>
 									</span>
+									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
+										<a class="btn btn-outline-secondary btn-sm" href="/settings/home" style="font-weight: 600;">Edit Profile</a>
+									</span>
+									<span class="pl-4" v-else>
+										<a class="fas fa-ellipsis-h fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
+									</span> 
 								</div>
-								<div class="d-none d-md-inline-flex profile-stats pb-3 lead">
-									<div class="font-weight-light pr-5">
-										<a class="text-dark" :href="profile.url">
-											<span class="font-weight-bold">{{profile.statuses_count}}</span>
-											Posts
-										</a>
+								<div class="font-size-16px">
+									<div class="d-none d-md-inline-flex profile-stats pb-3">
+										<div class="font-weight-light pr-5">
+											<span class="text-dark">
+												<span class="font-weight-bold">{{profile.statuses_count}}</span>
+												Posts
+											</span>
+										</div>
+										<div v-if="profileSettings.followers.count" class="font-weight-light pr-5">
+											<a class="text-dark cursor-pointer" v-on:click="followersModal()">
+												<span class="font-weight-bold">{{profile.followers_count}}</span>
+												Followers
+											</a>
+										</div>
+										<div v-if="profileSettings.following.count" class="font-weight-light">
+											<a class="text-dark cursor-pointer" v-on:click="followingModal()">
+												<span class="font-weight-bold">{{profile.following_count}}</span>
+												Following
+											</a>
+										</div>
 									</div>
-									<div v-if="profileSettings.followers.count" class="font-weight-light pr-5">
-										<a class="text-dark cursor-pointer" v-on:click="followersModal()">
-											<span class="font-weight-bold">{{profile.followers_count}}</span>
-											Followers
-										</a>
-									</div>
-									<div v-if="profileSettings.following.count" class="font-weight-light">
-										<a class="text-dark cursor-pointer" v-on:click="followingModal()">
-											<span class="font-weight-bold">{{profile.following_count}}</span>
-											Following
-										</a>
-									</div>
+									<p class="mb-0 d-flex align-items-center">
+										<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
+									</p>
+									<div v-if="profile.note" class="mb-0" v-html="profile.note"></div>
+									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank">{{profile.website}}</a></p>
 								</div>
-								<p class="lead mb-0 d-flex align-items-center pt-3">
-									<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
-								</p>
-								<div v-if="profile.note" class="mb-0 lead" v-html="profile.note"></div>
-								<p v-if="profile.website" class=""><a :href="profile.website" class="font-weight-bold" rel="me external nofollow noopener" target="_blank">{{profile.website}}</a></p>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="d-block d-md-none bg-white my-0 py-2 border-bottom">
-				<ul class="nav d-flex justify-content-center">
-					<li class="nav-item">
-						<div class="font-weight-light">
-							<span class="text-dark text-center">
-								<p class="font-weight-bold mb-0">{{profile.statuses_count}}</p>
-								<p class="text-muted mb-0">Posts</p>
-							</span>
-						</div>
-					</li>
-					<li class="nav-item px-5">
-						<div v-if="profileSettings.followers.count" class="font-weight-light">
-							<a class="text-dark cursor-pointer text-center" v-on:click="followersModal()">
-								<p class="font-weight-bold mb-0">{{profile.followers_count}}</p>
-								<p class="text-muted mb-0">Followers</p>
-							</a>
-						</div>
-					</li>
-					<li class="nav-item">
-						<div v-if="profileSettings.following.count" class="font-weight-light">
-							<a class="text-dark cursor-pointer text-center" v-on:click="followingModal()">
-								<p class="font-weight-bold mb-0">{{profile.following_count}}</p>
-								<p class="text-muted mb-0">Following</p>
-							</a>
-						</div>
-					</li>
-				</ul>
+			<div class="d-block d-md-none my-0 pt-3 border-bottom">
+				<p v-if="user && user.hasOwnProperty('id')" class="pt-3">
+					<button v-if="owner" class="btn btn-outline-secondary bg-white btn-sm py-1 btn-block text-center font-weight-bold text-dark border border-lighter" @click.prevent="redirect('/settings/home')">Edit Profile</button>
+					<button v-if="!owner && relationship.following" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter" @click="followProfile">&nbsp;&nbsp; Unfollow &nbsp;&nbsp;</button>
+					<button v-if="!owner && !relationship.following" class="btn btn-primary btn-sm py-1 px-5 font-weight-bold" @click="followProfile">{{relationship.followed_by ? 'Follow Back' : '&nbsp;&nbsp;&nbsp;&nbsp; Follow &nbsp;&nbsp;&nbsp;&nbsp;'}}</button>
+					<!-- <button v-if="!owner" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter mx-2">Message</button>
+					<button v-if="!owner" class="btn btn-outline-secondary bg-white btn-sm py-1 font-weight-bold text-dark border border-lighter"><i class="fas fa-chevron-down fa-sm"></i></button> -->
+				</p>
 			</div>
-			<div class="bg-white">
+			<div class="">
 				<ul class="nav nav-topbar d-flex justify-content-center border-0">
-
-					<li class="nav-item">
-						<a :class="this.mode == 'grid' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('grid')"><i class="fas fa-th fa-lg"></i></a>
+					<li class="nav-item border-top">
+						<a :class="this.mode == 'grid' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('grid')"><i class="fas fa-th"></i> <span class="d-none d-md-inline-block small pl-1">POSTS</span></a>
 					</li>
-
-					<li class="nav-item px-3">
-						<a :class="this.mode == 'list' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('list')"><i class="fas fa-th-list fa-lg"></i></a>
+					<li class="nav-item px-0 border-top">
+						<a :class="this.mode == 'collections' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('collections')"><i class="fas fa-images"></i> <span class="d-none d-md-inline-block small pl-1">COLLECTIONS</span></a>
 					</li>
-					<li class="nav-item pr-3">
-						<a :class="this.mode == 'collections' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('collections')"><i class="fas fa-images fa-lg"></i></a>
-					</li>
-					<li class="nav-item" v-if="owner">
-						<a :class="this.mode == 'bookmarks' ? 'nav-link font-weight-bold text-uppercase text-primary' : 'nav-link font-weight-bold text-uppercase'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark fa-lg"></i></a>
+					<li v-if="owner" class="nav-item border-top">
+						<a :class="this.mode == 'bookmarks' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark"></i></a>
 					</li>
 				</ul>
 			</div>
 
-			<div class="container">
+			<div class="container px-0">
 				<div class="profile-timeline mt-md-4">
 					<div class="row" v-if="mode == 'grid'">
-						<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(s, index) in timeline">
+						<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
 								<div class="square">
 									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
@@ -188,115 +188,21 @@
 							</a>
 						</div>
 					</div>
-					<div class="row" v-if="mode == 'list'">
-						<div class="col-md-8 col-lg-8 offset-md-2 px-0 timeline">
-							<div class="card status-card card-md-rounded-0 my-sm-2 my-md-3 my-lg-4" :data-status-id="status.id" v-for="(status, index) in timeline" :key="status.id">
-
-								<div class="card-header d-inline-flex align-items-center bg-white">
-									<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
-									<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
-										{{status.account.username}}
-									</a>
-									<div v-if="user.hasOwnProperty('id')" class="text-right" style="flex-grow:1;">
-										<div class="dropdown">
-											<button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-												<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
-											</button>
-											<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-												<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
-												<span v-if="status.account.id != user.id">
-													<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
-													<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
-													<a class="dropdown-item font-weight-bold" v-on:click="blockProfile(status)">Block Profile</a>
-												</span>
-												<span  v-if="status.account.id == user.id || user.is_admin == true">
-													<a class="dropdown-item font-weight-bold" :href="editUrl(status)">Edit</a>
-													<a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-												</span>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<div class="postPresenterContainer">
-									<div v-if="status.pf_type === 'photo'" class="w-100">
-										<photo-presenter :status="status"></photo-presenter>
-									</div>
-
-									<div v-else-if="status.pf_type === 'video'" class="w-100">
-										<video-presenter :status="status"></video-presenter>
-									</div>
-
-									<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-										<photo-album-presenter :status="status"></photo-album-presenter>
-									</div>
-
-									<div v-else-if="status.pf_type === 'video:album'" class="w-100">
-										<video-album-presenter :status="status"></video-album-presenter>
-									</div>
-
-									<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-										<mixed-album-presenter :status="status"></mixed-album-presenter>
-									</div>
-
-									<div v-else class="w-100">
-										<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
-									</div>
-								</div>
-
-								<div class="card-body">
-									<div class="reactions my-1" v-if="user.hasOwnProperty('id')">
-										<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
-										<h3 class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
-										<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
-									</div>
-
-									<div class="likes font-weight-bold">
-										<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
-									</div>
-									<div class="caption">
-										<p class="mb-2 read-more" style="overflow: hidden;">
-											<span class="username font-weight-bold">
-												<bdi><a class="text-dark" :href="status.account.url">{{status.account.username}}</a></bdi>
-											</span>
-											<span v-html="status.content"></span>
-										</p>
-									</div>
-									<div class="comments">
-									</div>
-									<div class="timestamp pt-1">
-										<p class="small text-uppercase mb-0">
-											<a :href="status.url" class="text-muted">
-												<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
-											</a>
-										</p>
-									</div>
-								</div>
-
-								<div class="card-footer bg-white d-none">
-									<form class="" v-on:submit.prevent="commentSubmit(status, $event)">
-										<input type="hidden" name="item" value="">
-										<input class="form-control status-reply-input" name="comment" placeholder="Add a comment…" autocomplete="off">
-									</form>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div v-if="['grid','list'].indexOf(mode) != -1 && timeline.length == 0">
+					<div v-if="mode == 'grid' != -1 && timeline.length == 0">
 						<div class="py-5 text-center text-muted">
 							<p><i class="fas fa-camera-retro fa-2x"></i></p>
 							<p class="h2 font-weight-light pt-3">No posts yet</p>
 						</div>
 					</div>
-					<div v-if="timeline.length && ['grid','list'].indexOf(mode) != -1">
+					<div v-if="timeline.length && mode == 'grid'">
 						<infinite-loading @infinite="infiniteTimeline">
 							<div slot="no-more"></div>
 							<div slot="no-results"></div>
 						</infinite-loading>
 					</div>
-					<div class="row" v-if="mode == 'bookmarks'">
-						<div v-if="bookmarks.length">
-							<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(s, index) in bookmarks">
+					<div v-if="mode == 'bookmarks'">
+						<div v-if="bookmarks.length" class="row">
+							<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(s, index) in bookmarks">
 								<a class="card info-overlay card-md-border-0" :href="s.url">
 									<div class="square">
 										<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
@@ -323,13 +229,13 @@
 						<div v-else class="col-12">
 							<div class="py-5 text-center text-muted">
 								<p><i class="fas fa-bookmark fa-2x"></i></p>
-								<p class="h2 font-weight-light pt-3">You have no saved bookmarks</p>
+								<p class="h2 font-weight-light pt-3">No saved bookmarks</p>
 							</div>
 						</div>
 					</div>
-					<div class="col-12" v-if="mode == 'collections'">
+					<div v-if="mode == 'collections'">
 						<div v-if="collections.length" class="row">
-							<div class="col-4 p-0 p-sm-2 p-md-3 p-xs-1" v-for="(c, index) in collections">
+							<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(c, index) in collections">
 								<a class="card info-overlay card-md-border-0" :href="c.url">
 									<div class="square">
 										<div class="square-content" v-bind:style="'background-image: url(' + c.thumb + ');'">
@@ -349,7 +255,7 @@
 			</div>
 		</div>
 
-		<div v-if="profileLayout == 'moment'">
+		<div v-if="layout == 'moment'" class="mt-3">
 			<div :class="momentBackground()" style="width:100%;min-height:274px;">
 			</div>
 			<div class="bg-white border-bottom">
@@ -514,28 +420,34 @@
 	size="sm"
 	body-class="list-group-flush p-0">
 	<div class="list-group" v-if="relationship">
-		<div v-if="!owner && !relationship.following" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-primary" @click="followProfile">
+		<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="copyProfileLink">
+			Copy Link
+		</div>
+		<div v-if="user && !owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
 			Follow
 		</div>
-		<div v-if="!owner && relationship.following" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="followProfile">
+		<div v-if="user && !owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
 			Unfollow
 		</div>
-		<div v-if="!owner && !relationship.muting" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="muteProfile">
+		<div v-if="user && !owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
 			Mute
 		</div>
-		<div v-if="!owner && relationship.muting" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded" @click="unmuteProfile">
+		<div v-if="user && !owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
 			Unmute
 		</div>
-		<div v-if="!owner" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="reportProfile">
+		<div v-if="user && !owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
 			Report User
 		</div>
-		<div v-if="!owner && !relationship.blocking" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="blockProfile">
+		<div v-if="user && !owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
 			Block
 		</div>
-		<div v-if="!owner && relationship.blocking" class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-danger" @click="unblockProfile">
+		<div v-if="user && !owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
 			Unblock
 		</div>
-		<div class="list-group-item cursor-pointer text-center font-weight-bold lead rounded text-muted" @click="$refs.visitorContextMenu.hide()">
+		<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
+			Settings
+		</div>
+		<div class="list-group-item cursor-pointer text-center rounded text-muted" @click="$refs.visitorContextMenu.hide()">
 			Close
 		</div>
 	</div>
@@ -580,6 +492,20 @@
 	opacity: 0.6;
 	text-shadow: 3px 3px 16px #272634;
 }
+.font-size-16px {
+	font-size: 16px;
+}
+.profile-website {
+	color: #003569;
+	text-decoration: none;
+	font-weight: 600;
+}
+.nav-topbar .nav-link {
+	color: #999;
+}
+.nav-topbar .nav-link .small {
+	font-weight: 600;
+}
 </style>
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
@@ -596,15 +522,16 @@
 			return {
 				ids: [],
 				profile: {},
-				user: {},
+				user: false,
 				timeline: [],
 				timelinePage: 2,
 				min_id: 0,
 				max_id: 0,
 				loading: true,
 				owner: false,
+				layout: this.profileLayout,
 				mode: 'grid',
-				modes: ['grid', 'list', 'masonry', 'bookmarks'],
+				modes: ['grid', 'collections', 'bookmarks'],
 				modalStatus: false,
 				relationship: {},
 				followers: [],
@@ -618,29 +545,36 @@
 				bookmarks: [],
 				bookmarksPage: 2,
 				collections: [],
-				collectionsPage: 2
+				collectionsPage: 2,
+				isMobile: false
 			}
 		},
 		beforeMount() {
+			if(window.outerWidth < 576) {
+				$('nav.navbar').hide();
+				this.isMobile = true;
+			}
 			this.fetchRelationships();
 			this.fetchProfile();
-			if(window.outerWidth < 576 && window.history.length > 2) {
-				$('nav.navbar').hide();
-				$('body').prepend('<div class="bg-white p-3 border-bottom"><div class="d-flex justify-content-between align-items-center"><div onclick="window.history.back();"><i class="fas fa-chevron-left fa-lg"></i></div><div class="font-weight-bold">' + this.profileUsername + '</div><div><i class="fas fa-chevron-right text-white fa-lg"></i></div></div></div>');
-			}
 			let u = new URLSearchParams(window.location.search);
-			if(u.has('ui') && u.get('ui') == 'moment' && this.profileLayout != 'moment') {
-				this.profileLayout = 'moment';
+			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
+				this.layout = 'moment';
 			}
-			if(u.has('ui') && u.get('ui') == 'metro' && this.profileLayout != 'metro') {
-				this.profileLayout = 'metro';
+			if(u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
+				this.layout = 'metro';
 			}
-		},
-
-		mounted() {
+			if(this.layout == 'metro' && u.has('t')) {
+				if(this.modes.indexOf(u.get('t')) != -1) {
+					if(u.get('t') == 'bookmarks') {
+						return;
+					}
+					this.mode = u.get('t');
+				}
+			}
 		},
 
 		updated() {
+			$('[data-toggle="tooltip"]').tooltip();
 		},
 
 		methods: {
@@ -672,11 +606,9 @@
 					this.loading = false;
 					this.loadSponsor();
 				}).catch(err => {
-					swal(
-						'Oops, something went wrong',
+					swal('Oops, something went wrong',
 						'Please release the page.',
-						'error'
-						);
+						'error');
 				});
 			},
 
@@ -1028,10 +960,12 @@
 				return o;
 			},
 
-			followProfile() {
+			followProfile($event) {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
+				$event.target.setAttribute('disabled','');
+				$event.target.blur();
 				axios.post('/i/follow', {
 					item: this.profileId
 				}).then(res => {
@@ -1045,6 +979,7 @@
 						this.profile.followers_count++;
 					}
 					this.relationship.following = !this.relationship.following;
+					$event.target.removeAttribute('disabled');
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');
@@ -1149,9 +1084,6 @@
 			},
 
 			visitorMenu() {
-				if($('body').hasClass('loggedIn') == false) {
-					return;
-				}
 				this.$refs.visitorContextMenu.show();
 			},
 
@@ -1189,6 +1121,21 @@
 
 			showSponsorModal() {
 				this.$refs.sponsorModal.show();
+			},
+
+			goBack() {
+				if(window.history.length > 2) {
+					window.history.back();
+					return;
+				} else {
+					window.location.href = '/';
+					return;
+				}
+			},
+
+			copyProfileLink() {
+				navigator.clipboard.writeText(window.location.href);
+				this.$refs.visitorContextMenu.hide();
 			}
 		}
 	}

@@ -34,7 +34,7 @@ class CollectionController extends Controller
 
     public function show(Request $request, int $collection)
     {
-        $collection = Collection::whereNotNull('published_at')->findOrFail($collection);
+        $collection = Collection::with('profile')->whereNotNull('published_at')->findOrFail($collection);
         if($collection->profile->status != null) {
             abort(404);
         }
@@ -100,7 +100,11 @@ class CollectionController extends Controller
         $collection->items()->delete();
         $collection->delete();
 
-        return 200;
+        if($request->wantsJson()) {
+            return 200;
+        }
+
+        return redirect('/');
     }
 
     public function storeId(Request $request)

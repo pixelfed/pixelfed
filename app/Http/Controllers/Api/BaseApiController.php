@@ -118,7 +118,7 @@ class BaseApiController extends Controller
         $since_id = $request->since_id ?? false;
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
-        $account = Profile::findOrFail($id);
+        $account = Profile::whereNull('status')->findOrFail($id);
         $statuses = $account->statuses()->getQuery(); 
         if($only_media == true) {
             $statuses = $statuses
@@ -145,15 +145,6 @@ class BaseApiController extends Controller
             $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
-    public function followSuggestions(Request $request)
-    {
-        $followers = Auth::user()->profile->recommendFollowers();
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
@@ -197,14 +188,9 @@ class BaseApiController extends Controller
 
     public function showTempMedia(Request $request, int $profileId, $mediaId)
     {
-        if (!$request->hasValidSignature()) {
-            abort(401);
-        }
-        $profile = Auth::user()->profile;
-        if($profile->id !== $profileId) {
-            abort(403);
-        }
-        $media = Media::whereProfileId($profile->id)->findOrFail($mediaId);
+        abort_if(!$request->hasValidSignature(), 404); 
+        abort_if(Auth::user()->profile_id !== $profileId, 404); 
+        $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
         $path = storage_path('app/'.$media->media_path);
         return response()->file($path);
     }

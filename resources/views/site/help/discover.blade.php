@@ -22,14 +22,6 @@
       <li class="mb-3 ">On the discover page, you will see a list of Category cards that links to each Discover Category.</li>
     </ul>
   </div>
-  <div class="py-4">
-    <p class="font-weight-bold h5 pb-3">Personalized Discover <span class="badge badge-success">NEW</span></p>
-    <p>Discover posts based on hashtags you've used before. This feature might not be supported on every Pixelfed instance.</p>
-    <ul>
-      <li class="mb-3 ">Click the <i class="far fa-compass fa-sm"></i> icon.</li>
-      <li class="mb-3 ">Click on the card that says "For You" or <a href="/discover/personal">click here</a>.</li>
-    </ul>
-  </div>
   <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
     <div class="card-header text-light font-weight-bold h4 p-4">Discover Tips</div>
     <div class="card-body bg-white p-3">

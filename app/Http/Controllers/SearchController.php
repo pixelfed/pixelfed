@@ -52,6 +52,7 @@ class SearchController extends Controller
                             'entity' => [
                                 'id' => $item->id,
                                 'following' => $item->followedBy(Auth::user()->profile),
+                                'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                                 'thumb' => $item->avatarUrl()
                             ]
                         ]];

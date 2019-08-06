@@ -15,6 +15,9 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://w3id.org/security/v1',
             [
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
+              'PropertyValue'             => 'schema:PropertyValue',
+              'schema'                    => 'http://schema.org#',
+              'value'                     => 'schema:value'
             ],
           ],
           'id'                        => $profile->permalink(),

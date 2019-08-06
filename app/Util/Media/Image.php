@@ -110,14 +110,15 @@ class Image
         $orientation = $ratio['orientation'];
 
         try {
-            $img = Intervention::make($file)->orientate();
+            $img = Intervention::make($file);
+            $metadata = $img->exif();
+            $img->orientate();
             if($thumbnail) {
                 $img->resize($aspect['width'], $aspect['height'], function ($constraint) {
                     $constraint->aspectRatio();
                 });
             } else {
                 if(config('media.exif.database', false) == true) {
-                    $metadata = $img->exif();
                     $media->metadata = json_encode($metadata);
                 }
 

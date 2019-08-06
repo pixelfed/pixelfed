@@ -27,6 +27,8 @@
     <link rel="canonical" href="{{request()->url()}}">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
     @stack('styles')
+
+    <script type="text/javascript">window.App = {}; window.App.config = {!!App\Util\Site\Config::json()!!}</script>
 </head>
 <body class="">
     @include('layouts.partial.noauthnav')

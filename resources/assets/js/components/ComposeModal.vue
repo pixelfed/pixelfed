@@ -37,7 +37,12 @@
 						<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Add Photo</p>
 					</div>
 					<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia($event)">
-						<p class="text-center mb-0 font-weight-bold p-5">{{composeMessage()}}</p>
+						<div class="p-5">
+							<p class="text-center font-weight-bold">{{composeMessage()}}</p>
+							<p class="text-muted mb-0 small text-center">Accepted Formats: <b>{{acceptedFormats()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Max File Size: <b>{{maxSize()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Albums can contain up to <b>{{config.uploader.album_limit}}</b> photos or videos</p>
+						</div>
 					</div>
 					<div v-if="ids.length > 0">
 						
@@ -173,19 +178,20 @@
 						{{composeText.length}} / {{config.uploader.max_caption_length}}
 					</div>
 					<div class="pl-md-5">
-						<div class="btn-group">
+						<!-- <div class="btn-group">
 							<button type="button" class="btn btn-primary btn-sm font-weight-bold" v-on:click="compose()">{{composeState[0].toUpperCase() + composeState.slice(1)}}</button>
 							<button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<span class="sr-only">Toggle Dropdown</span>
 							</button>
 							<div class="dropdown-menu dropdown-menu-right">
 								<a :class="[composeState == 'publish' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'publish'">Publish now</a>
-								<!-- <a :class="[composeState == 'draft' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'draft'">Save as draft</a>
+								<!- - <a :class="[composeState == 'draft' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'draft'">Save as draft</a>
 								<a :class="[composeState == 'schedule' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'schedule'">Schedule for later</a>
 								<div class="dropdown-divider"></div>
-								<a :class="[composeState == 'delete' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'delete'">Delete</a> -->
+								<a :class="[composeState == 'delete' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'delete'">Delete</a> - ->
 							</div>
-						</div>
+						</div> -->
+						<button class="btn btn-primary btn-sm font-weight-bold px-3" v-on:click="compose()">Publish</button>
 					</div>
 				</div>
 			</div>
@@ -218,11 +224,7 @@
 export default {
 	data() {
 		return {
-			config: {
-				uploader: {
-					media_types: '',
-				}
-			},
+			config: window.App.config,
 			profile: {},
 			composeText: '',
 			composeTextLength: 0,
@@ -241,7 +243,6 @@ export default {
 	},
 
 	beforeMount() {
-		this.fetchConfig();
 		this.fetchProfile();
 	},
 
@@ -290,20 +291,9 @@ export default {
 			['Willow','filter-willow'], 
 			['X-Pro II','filter-xpro-ii']
 		];
-
 	},
 
 	methods: {
-
-		fetchConfig() {
-			axios.get('/api/v2/config').then(res => {
-				this.config = res.data;
-				if(this.config.uploader.media_types.includes('video/mp4') == false) {
-					this.composeType = 'post'
-				}
-			});
-		},
-
 		fetchProfile() {
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.profile = res.data;
@@ -311,7 +301,6 @@ export default {
 					this.visibility = 'private';
 				}
 			}).catch(err => {
-				console.log(err)
 			});
 		},
 
@@ -464,6 +453,11 @@ export default {
 						let data = res.data;
 						window.location.href = data;
 					}).catch(err => {
+						let res = err.response.data;
+						if(res.message == 'Too Many Attempts.') {
+							swal('You\'re posting too much!', 'We only allow 50 posts per hour or 100 per day. If you\'ve reached that limit, please try again later. If you think this is an error, please contact an administrator.', 'error');
+							return;
+						}
 						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
 					});
 					return;
@@ -511,6 +505,18 @@ export default {
 
 		createCollection() {
 			window.location.href = '/i/collections/create';
+		},
+
+		maxSize() {
+			let limit = this.config.uploader.max_photo_size;
+			return limit / 1000 + ' MB';
+		},
+
+		acceptedFormats() {
+			let formats = this.config.uploader.media_types;
+			return formats.split(',').map(f => {
+				return ' ' + f.split('/')[1];
+			}).toString();
 		}
 	}
 }
