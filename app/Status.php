@@ -379,12 +379,25 @@ class Status extends Model
                 break;
 
             case 'unlisted':
+                $res['to'] = [
+                    $this->profile->permalink('/followers')
+                ];
+                $res['cc'] = [
+                    "https://www.w3.org/ns/activitystreams#Public"
+                ];
                 break;
 
             case 'private':
+                $res['to'] = [
+                    $this->profile->permalink('/followers')
+                ];
+                $res['cc'] = [];
                 break;
 
+            // TODO: Update scope when DMs are supported
             case 'direct':
+                $res['to'] = [];
+                $res['cc'] = [];
                 break;
         }
         return $res[$audience];
