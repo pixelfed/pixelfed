@@ -39,12 +39,16 @@ class MediaGarbageCollector extends Command
      */
     public function handle()
     {
-        $gc = Media::whereNull('status_id')
-        ->where('created_at', '<', Carbon::now()->subHours(6)->toDateTimeString())
+        $limit = 20000;
+        
+        $gc = Media::doesntHave('status')
+        ->where('created_at', '<', Carbon::now()->subHours(1)->toDateTimeString())
         ->orderBy('created_at','asc')
-        ->take(500)
+        ->take($limit)
         ->get();
 
+        $bar = $this->output->createProgressBar($gc->count());
+        $bar->start();
         foreach($gc as $media) {
             $path = storage_path("app/$media->media_path");
             $thumb = storage_path("app/$media->thumbnail_path");
@@ -55,6 +59,8 @@ class MediaGarbageCollector extends Command
                 unlink($thumb);
             }
             $media->forceDelete();
+            $bar->advance();
         }
+        $bar->finish();
     }
 }
