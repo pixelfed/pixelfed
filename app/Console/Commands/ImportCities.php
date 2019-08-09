@@ -65,6 +65,7 @@ class ImportCities extends Command
             }
         }
         $this->insertBuffer($buffer, $count);
+        $bar->advance(count($buffer));
         $bar->finish();
         $this->info('Successfully imported ' . $count . ' entries.');
         return;
