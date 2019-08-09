@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use App\Services\EmailService;
 
 class RegisterController extends Controller
 {
@@ -53,6 +54,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         $this->validateUsername($data['username']);
+        $this->validateEmail($data['email']);
+
         $usernameRules = [
             'required',
             'min:2',
@@ -102,6 +105,14 @@ class RegisterController extends Controller
 
         if (in_array($username, $restricted)) {
             return abort(403);
+        }
+    }
+
+    public function validateEmail($email)
+    {
+        $banned = EmailService::isBanned($email);
+        if($banned) {
+            return abort(403, 'Invalid email.');
         }
     }
 
