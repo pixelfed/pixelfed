@@ -41,10 +41,10 @@ class ImportCities extends Command
             $this->error('Missing storage/app/cities.json file!');
             return;
         }
-        // if (Place::count() > 10) {
-        //     $this->error('Cities already imported, aborting operation...');
-        //     return;
-        // }
+        if (Place::count() > 10) {
+            $this->error('Cities already imported, aborting operation...');
+            return;
+        }
         $this->info('Importing city data into database ...');
         $cities = file_get_contents($path);
         $cities = json_decode($cities);
