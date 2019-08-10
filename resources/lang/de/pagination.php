@@ -14,6 +14,6 @@ return [
     */
 
     'previous' => '« Vorherige',
-    'next'     => 'Naumlchste »',
+    'next'     => 'Nächste »',
 
 ];
