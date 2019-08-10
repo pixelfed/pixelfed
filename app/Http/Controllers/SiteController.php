@@ -43,6 +43,7 @@ class SiteController extends Controller
     public function about()
     {
         return Cache::remember('site:about', now()->addHours(12), function() {
+            app()->setLocale('en');
             $page = Page::whereSlug('/site/about')->whereActive(true)->first();
             $stats = [
                 'posts' => Status::whereLocal(true)->count(),
