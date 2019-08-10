@@ -221,6 +221,8 @@ class RestrictedNames
      'quote',
      'query',
      'r',
+     'register',
+     'registers',
      'review',
      'reset',
      'report',
