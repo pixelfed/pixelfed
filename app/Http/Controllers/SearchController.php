@@ -51,7 +51,7 @@ class SearchController extends Controller
                             'tokens' => [$item->username],
                             'name'   => $item->name,
                             'entity' => [
-                                'id' => $item->id,
+                                'id' => (string) $item->id,
                                 'following' => $item->followedBy(Auth::user()->profile),
                                 'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                                 'thumb' => $item->avatarUrl()
