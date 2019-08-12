@@ -83,14 +83,18 @@ class FollowerController extends Controller
             $follower->profile_id = $user->id;
             $follower->following_id = $target->id;
             $follower->save();
-            
+
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
                 $this->sendFollow($user, $target);
             } 
             FollowPipeline::dispatch($follower);
         } else {
-            $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
-            if($remote == true) {
+            $request = FollowRequest::whereFollowerId($user->id)->whereFollowingId($target->id)->exists();
+            $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
+            if($remote == true && $request && !$follower) {
+                $this->sendFollow($user, $target);
+            }
+            if($remote == true && $follower) {
                 $this->sendUndoFollow($user, $target);
             }
             $follower->delete();
