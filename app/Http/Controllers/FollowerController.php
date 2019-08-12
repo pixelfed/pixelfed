@@ -53,7 +53,7 @@ class FollowerController extends Controller
             abort(400, 'You cannot follow this user.');
         }
 
-        $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
+        $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
 
         if($private == true && $isFollowing == 0 || $remote == true) {
             if($user->following()->count() >= Follower::MAX_FOLLOWING) {
@@ -83,6 +83,10 @@ class FollowerController extends Controller
             $follower->profile_id = $user->id;
             $follower->following_id = $target->id;
             $follower->save();
+            
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
+                $this->sendFollow($user, $target);
+            } 
             FollowPipeline::dispatch($follower);
         } else {
             $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
