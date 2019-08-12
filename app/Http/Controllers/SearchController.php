@@ -37,6 +37,7 @@ class SearchController extends Controller
         $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = [];
             if(Helpers::validateUrl($tag) != false && config('federation.activitypub.enabled') == true && config('federation.activitypub.remoteFollow') == true) {
+                abort_if(Helpers::validateLocalUrl($tag), 404);
                 $remote = Helpers::fetchFromUrl($tag);
                 if(isset($remote['type']) && in_array($remote['type'], ['Note', 'Person']) == true) {
                     $type = $remote['type'];
