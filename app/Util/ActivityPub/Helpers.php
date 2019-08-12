@@ -220,7 +220,7 @@ class Helpers {
 			$id = (int) last(explode('/', $url));
 			return Status::findOrFail($id);
 		} else {
-			$cached = Status::whereUrl($url)->first();
+			$cached = Status::whereUri($url)->orWhere('url', $url)->first();
 			if($cached) {
 				return $cached;
 			}
