@@ -104,7 +104,7 @@ class StatusDelete implements ShouldQueue
             Report::whereObjectType('App\Status')
                 ->whereObjectId($status->id)
                 ->delete();
-            $status->delete();
+            $status->forceDelete();
         });
 
         return true;
