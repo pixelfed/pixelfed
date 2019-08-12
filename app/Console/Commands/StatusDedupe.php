@@ -42,6 +42,7 @@ class StatusDedupe extends Command
     {
         DB::table('statuses')
             ->selectRaw('id, uri, count(uri) as occurences')
+            ->whereNull('deleted_at')
             ->whereNotNull('uri')
             ->groupBy('uri')
             ->orderBy('created_at')
