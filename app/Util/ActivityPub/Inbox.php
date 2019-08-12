@@ -176,7 +176,7 @@ class Inbox
                 'following_id' => $target->id,
                 'local_profile' => empty($actor->domain)
             ]);
-            if($follower->wasRecentlyCreated == true) {
+            if($follower->wasRecentlyCreated == true && $target->domain == null) {
                 // send notification
                 Notification::firstOrCreate([
                     'profile_id' => $target->id,
@@ -188,14 +188,19 @@ class Inbox
                     'item_type' => 'App\Profile'
                 ]);
             }
-            $payload = $this->payload;
+
             // send Accept to remote profile
             $accept = [
                 '@context' => 'https://www.w3.org/ns/activitystreams',
                 'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
                 'type'     => 'Accept',
                 'actor'    => $target->permalink(),
-                'object'   => $payload
+                'object'   => [
+                    'id'        => $actor->permalink('#follows/' . $follower->id),
+                    'actor'     => $actor->permalink(),
+                    'type'      => 'Follow',
+                    'object'    => $target->permalink()
+                ]
             ];
             Helpers::sendSignedObject($target, $actor->inbox_url, $accept);
         }
