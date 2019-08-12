@@ -243,7 +243,7 @@ class Inbox
     public function handleAcceptActivity()
     {
 
-        $actor = $this->payload['actor'];
+        $actor = $this->payload['object']['actor'];
         $obj = $this->payload['object']['object'];
         $type = $this->payload['object']['type'];
 
@@ -251,8 +251,8 @@ class Inbox
             return;
         }
 
-        $actor = Helpers::validateUrl($actor);
-        $target = Helpers::validateLocalUrl($obj);
+        $actor = Helpers::validateLocalUrl($actor);
+        $target = Helpers::validateUrl($obj);
 
         if(!$actor || !$target) {
             return;
