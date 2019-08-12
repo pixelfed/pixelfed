@@ -16,15 +16,15 @@ class Accept {
 				'required',
 				Rule::in(['Accept'])
 			],
-			'actor' => 'required|url|active_url',
+			'actor' => 'required|url',
 			'object' => 'required',
-			'object.id' => 'required|url|active_url',
+			'object.id' => 'required|url',
 			'object.type' => [
 				'required',
 				Rule::in(['Follow'])
 			],
-			'object.actor' => 'required|url|active_url',
-			'object.object' => 'required|url|active_url|same:actor',
+			'object.actor' => 'required|url',
+			'object.object' => 'required|url|same:actor',
 		])->passes();
 
 		return $valid;
