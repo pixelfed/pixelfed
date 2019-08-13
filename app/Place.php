@@ -7,15 +7,8 @@ use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 class Place extends Model
 {
-	use HasSnowflakePrimary;
+	protected $visible = ['id', 'name', 'country', 'slug'];
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-    
 	public function url()
 	{
 		return url('/discover/places/' . $this->id . '/' . $this->slug);
@@ -29,5 +22,10 @@ class Place extends Model
 	public function postCount()
 	{
 		return $this->posts()->count();
+	}
+
+	public function statuses()
+	{
+		return $this->hasMany(Status::class, 'id', 'place_id');
 	}
 }
