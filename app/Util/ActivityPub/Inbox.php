@@ -274,10 +274,10 @@ class Inbox
             return;
         }
 
-        $follower = new Follower();
-        $follower->profile_id = $actor->id;
-        $follower->following_id = $target->id;
-        $follower->save();
+        $follower = Follower::firstOrCreate([
+            'profile_id' => $actor->id,
+            'following_id' => $target->id,
+        ]);
         FollowPipeline::dispatch($follower);
 
         $request->delete();
