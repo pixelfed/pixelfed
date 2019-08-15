@@ -80,16 +80,16 @@
 								</div>
 							</div>
 						</div>
-					</div>
-					<div v-if="notifications.length">
-						<infinite-loading @infinite="infiniteNotifications">
-							<div slot="no-results" class="font-weight-bold"></div>
-							<div slot="no-more" class="font-weight-bold"></div>
-						</infinite-loading>
+						<div>
+							<infinite-loading @infinite="infiniteNotifications">
+								<div slot="no-results" class="font-weight-bold"></div>
+								<div slot="no-more" class="font-weight-bold"></div>
+							</infinite-loading>
+						</div>
 					</div>
 					<div v-if="notifications.length == 0" class="text-lighter text-center py-3">
 						<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
-						<p class="mb-0 small font-weight-bold">0 Notifications!</p>
+						<p class="mb-0 small font-weight-bold">No new notifications!</p>
 					</div>
 				</div>
 			</div>
@@ -161,7 +161,7 @@ export default {
 				}
 			});
 		},
-
+		
 		truncate(text) {
 			if(text.length <= 15) {
 				return text;
@@ -226,8 +226,6 @@ export default {
 					return n.account.url;
 				break;
 				case 'mention':
-					return n.status.url;
-				break;
 				case 'like':
 				case 'favourite':
 				case 'comment':

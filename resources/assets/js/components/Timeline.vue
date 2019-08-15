@@ -15,7 +15,7 @@
 							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
 						</div>
 						<div class="card-body row mx-0">
-							<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
+							<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions" :key="index">
 								<div class="card">
 									<div class="card-body text-center pt-3">
 										<p class="mb-0">
@@ -47,7 +47,7 @@
 							<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
 						</div>
 						<div class="card-body row mx-0">
-							<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+							<div v-for="(tag, index) in hashtagPosts" :key="index" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
 								<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 									<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
 										<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
@@ -78,8 +78,8 @@
 								</button>
 								<!-- <div class="dropdown-menu dropdown-menu-right">
 									<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
-									<!-- <a class="dropdown-item font-weight-bold" href="#">Share</a>
-									<a class="dropdown-item font-weight-bold" href="#">Embed</a> ->
+									<a class="dropdown-item font-weight-bold" href="#">Share</a>
+									<a class="dropdown-item font-weight-bold" href="#">Embed</a>
 									<span v-if="statusOwner(status) == false">
 										<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 										<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
@@ -159,7 +159,7 @@
 								</p>
 							</div>
 							<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
-								<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
+								<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies" :key="index">
 										<span>
 											<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
 											<span v-html="reply.content"></span>
@@ -197,7 +197,7 @@
 								<li class="nav-item" v-on:click="emojiReaction(status)">😁</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">🙂</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)">😎</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+								<li class="nav-item" v-on:click="emojiReaction(status)" v-for="(e, index) in emoji" :key="index">{{e}}</li>
 							</ul>
 						</div>
 
@@ -283,7 +283,7 @@
 							<div class="small text-muted cursor-pointer" v-on:click="hideSuggestions"><i class="fas fa-times"></i></div>
 						</div>
 						<div class="card-body pt-0">
-							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
+							<div v-for="(rec, index) in suggestions" :key="index" class="media align-items-center mt-3">
 								<a :href="'/'+rec.username">
 									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3">
 								</a>

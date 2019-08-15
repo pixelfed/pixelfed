@@ -21,10 +21,6 @@
 	</div>
 </template>
 
-<style type="text/css" scoped>
-
-</style>
-
 <script type="text/javascript">
 	export default {
 		data() {

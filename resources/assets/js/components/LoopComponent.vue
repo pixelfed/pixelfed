@@ -13,7 +13,7 @@
 				</p>
 			</div>
 			<div v-if="tab != 'about'" class="row loops-container">
-				<div class="col-12 col-md-4 mb-3" v-for="(loop, index) in loops">
+				<div class="col-12 col-md-4 mb-3" v-for="(loop, index) in loops" :key="index">
 					<div class="card border border-success">
 						<div class="embed-responsive embed-responsive-1by1">
 							<video class="embed-responsive-item" :src="videoSrc(loop)" preload="none" width="100%" height="100%" loop @click="toggleVideo(loop, $event)" :poster="posterSrc(loop)"></video>
@@ -60,71 +60,73 @@
 </style>
 
 <script type="text/javascript">
-Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
-    get: function(){
-        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
-    }
-})
-export default {
-	data() {
-		return {
-			loading: true,
-			version: 1,
-			loops: [],
-			tab: 'new'
+
+	Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+		get: function(){
+			return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
 		}
-	},
+	})
 
-	mounted() {
-		axios.get('/api/v2/loops')
-			.then(res => {
-				this.loops = res.data;
-				this.loading = false;
-			})
-	}, 
-
-	methods: {
-		videoSrc(loop) {
-			return loop.media_attachments[0].url;
-		},
-		posterSrc(loop) {
-			return loop.media_attachments[0].preview_url;
-		},
-		setTab(tab) {
-			this.tab = tab;
-		},
-		toggleVideo(loop, $event) {
-			let el = $event.target;
-			$('video').each(function() {
-				if(el.src != $(this)[0].src) {
-					$(this)[0].pause();
-				}
-			});
-			if(!el.playing) {
-				el.play();
-				//this.incrementLoop(loop);
-			} else {
-				el.pause();
+	export default {
+		data() {
+			return {
+				loading: true,
+				version: 1,
+				loops: [],
+				tab: 'new'
 			}
 		},
-		incrementLoop(loop) {
-			// axios.post('/api/v2/loops/watch', {
-			// 	id: loop.id
-			// }).then(res => {
-			// 	console.log(res.data);
-			// });
-		},
-		timestamp(loop) {
-			let ts = new Date(loop.created_at);
-			return ts.toLocaleDateString();
-		},
-		getTitle(loop) {
-			let content = loop.content ? loop.content : 'Untitled';
-			return content.trim();
-		},
-		truncate(str, len = 15) {
-			return _.truncate(str, {length: len});
+
+		mounted() {
+			axios.get('/api/v2/loops')
+				.then(res => {
+					this.loops = res.data;
+					this.loading = false;
+				})
+		}, 
+
+		methods: {
+			videoSrc(loop) {
+				return loop.media_attachments[0].url;
+			},
+			posterSrc(loop) {
+				return loop.media_attachments[0].preview_url;
+			},
+			setTab(tab) {
+				this.tab = tab;
+			},
+			toggleVideo(loop, $event) {
+				let el = $event.target;
+				$('video').each(function() {
+					if(el.src != $(this)[0].src) {
+						$(this)[0].pause();
+					}
+				});
+				if(!el.playing) {
+					el.play();
+					//this.incrementLoop(loop);
+				} else {
+					el.pause();
+				}
+			},
+			incrementLoop(loop) {
+				// axios.post('/api/v2/loops/watch', {
+				// 	id: loop.id
+				// }).then(res => {
+				// 	console.log(res.data);
+				// });
+			},
+			timestamp(loop) {
+				let ts = new Date(loop.created_at);
+				return ts.toLocaleDateString();
+			},
+			getTitle(loop) {
+				let content = loop.content ? loop.content : 'Untitled';
+				return content.trim();
+			},
+			truncate(str, len = 15) {
+				return _.truncate(str, {length: len});
+			}
 		}
 	}
-}
 </script>

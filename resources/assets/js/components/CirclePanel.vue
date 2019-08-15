@@ -1,9 +1,3 @@
-<style scoped>
- .b-dropdown {
-    padding:0 !important;
- }
-</style>
-
 <template>
 	<div class="card mb-4">
 		<div class="card-header py-1 bg-white d-flex align-items-center justify-content-between">
@@ -25,9 +19,13 @@
 		</div>
 	</div>
 </template>
-
 <script>
 	export default {
 
 	}
 </script>
+<style scoped>
+	.b-dropdown {
+		padding:0 !important;
+	}
+</style>

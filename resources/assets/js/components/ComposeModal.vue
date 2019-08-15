@@ -54,11 +54,13 @@
 							:interval="0"
 							v-model="carouselCursor"
 						>
-							<b-carousel-slide  v-if="ids.length > 0" v-for="(preview, index) in media" :key="'preview_media_'+index">
-								<div slot="img" :class="[media[index].filter_class?media[index].filter_class:'']" style="display:flex;min-height: 320px;align-items: center;">
-									<img class="d-block img-fluid w-100" :src="preview.url" :alt="preview.description" :title="preview.description">
-								</div>
-							</b-carousel-slide>
+							<div v-if="ids.length > 0">
+								<b-carousel-slide v-for="(preview, index) in media" :key="'preview_media_'+index">
+									<div slot="img" :class="[media[index].filter_class?media[index].filter_class:'']" style="display:flex;min-height: 320px;align-items: center;">
+										<img class="d-block img-fluid w-100" :src="preview.url" :alt="preview.description" :title="preview.description">
+									</div>
+								</b-carousel-slide>
+							</div>
 						</b-carousel>
 					</div>
 					<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="bg-dark align-items-center">
@@ -69,7 +71,7 @@
 								</div>
 								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
 							</li>
-							<li class="nav-item" v-for="(filter, index) in filters">
+							<li class="nav-item" v-for="(filter, index) in filters" :key="index">
 								<div class="p-1 pt-3">
 									<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 								</div>

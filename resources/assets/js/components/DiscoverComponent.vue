@@ -19,7 +19,7 @@
 			<section class="mb-5 section-explore">
 				<div class="profile-timeline">
 					<div class="row p-0">
-						<div class="col-4 p-1 p-sm-2 p-md-3" v-for="post in posts">
+						<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(post, index) in posts" :key="index">
 							<a class="card info-overlay card-md-border-0" :href="post.url">
 								<div class="square">
 									<span v-if="post.type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>

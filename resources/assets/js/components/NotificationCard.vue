@@ -14,42 +14,44 @@
 				</div>
 			</div>
 			<div class="card-body pt-2 px-0 py-0 contents" style="max-height: 230px; overflow-y: scroll;">
-				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
-					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
-					<div class="media-body font-weight-light small">
-						<div v-if="n.type == 'favourite'">
-							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
-							</p>
+				<div v-if="notifications.length > 0">
+					<div class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications" :key="index">
+						<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
+						<div class="media-body font-weight-light small">
+							<div v-if="n.type == 'favourite'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'comment'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'mention'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'follow'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'share'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+								</p>
+							</div>
 						</div>
-						<div v-else-if="n.type == 'comment'">
-							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
-							</p>
-						</div>
-						<div v-else-if="n.type == 'mention'">
-							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
-							</p>
-						</div>
-						<div v-else-if="n.type == 'follow'">
-							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
-							</p>
-						</div>
-						<div v-else-if="n.type == 'share'">
-							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
-							</p>
-						</div>
+						<div class="small text-muted font-weight-bold" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
 					</div>
-					<div class="small text-muted font-weight-bold" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
-				</div>
-				<div v-if="notifications.length">
-					<infinite-loading @infinite="infiniteNotifications">
-						<div slot="no-results" class="font-weight-bold"></div>
-						<div slot="no-more" class="font-weight-bold"></div>
-					</infinite-loading>
+					<div>
+						<infinite-loading @infinite="infiniteNotifications">
+							<div slot="no-results" class="font-weight-bold"></div>
+							<div slot="no-more" class="font-weight-bold"></div>
+						</infinite-loading>
+					</div>
 				</div>
 				<div v-if="notifications.length == 0" class="text-lighter text-center py-3">
 					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
@@ -59,8 +61,6 @@
 		</div>
 	</div>
 </template>
-
-<style type="text/css" scoped></style>
 
 <script type="text/javascript">
 	export default {

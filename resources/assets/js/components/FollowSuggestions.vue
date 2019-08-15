@@ -14,7 +14,7 @@
         <div v-if="results.length == 0">
           <p class="mb-0 font-weight-bold">You are not following anyone yet, try the <a href="/discover">discover</a> feature to find users to follow.</p>
         </div>
-        <div v-for="(user, index) in results">
+        <div v-for="(user, index) in results" :key="index">
           <div class="media " style="width:100%">
             <img class="mr-3" :src="user.avatar" width="40px">
             <div class="media-body" style="width:70%">
@@ -40,10 +40,10 @@ export default {
     },
     methods: {
       fetchData() {
-          axios.get('/api/local/i/follow-suggestions')
-            .then(response => {
-                this.results = response.data;
-            });
+        axios.get('/api/local/i/follow-suggestions')
+          .then(response => {
+              this.results = response.data;
+          });
       }
     }
 }
