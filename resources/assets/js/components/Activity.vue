@@ -14,68 +14,70 @@
 		<div class="container">
 			<div class="row my-5">
 				<div class="col-12 col-md-8 offset-md-2">
-					<div v-if="notifications.length > 0" class="media mb-3 align-items-center px-3 border-bottom pb-3" v-for="(n, index) in notifications">
-						<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
-						<div class="media-body font-weight-light">
-							<div v-if="n.type == 'favourite'">
-								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
-								</p>
+					<div v-if="notifications.length > 0">				
+						<div class="media mb-3 align-items-center px-3 border-bottom pb-3" v-for="(n, index) in notifications" :key="index">
+							<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
+							<div class="media-body font-weight-light">
+								<div v-if="n.type == 'favourite'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'comment'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'mention'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'follow'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
+									</p>
+								</div>
+								<div v-else-if="n.type == 'share'">
+									<p class="my-0">
+										<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+									</p>
+								</div>
+								<div class="align-items-center">
+									<span class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</span>
+								</div>
 							</div>
-							<div v-else-if="n.type == 'comment'">
-								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
-								</p>
-							</div>
-							<div v-else-if="n.type == 'mention'">
-								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
-								</p>
-							</div>
-							<div v-else-if="n.type == 'follow'">
-								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
-								</p>
-							</div>
-							<div v-else-if="n.type == 'share'">
-								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
-								</p>
-							</div>
-							<div class="align-items-center">
-								<span class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</span>
-							</div>
-						</div>
-						<div>
-							<div v-if="n.status && n.status && n.status.media_attachments && n.status.media_attachments.length">
-								<a :href="n.status.url">
-									<img :src="n.status.media_attachments[0].preview_url" width="32px" height="32px">
-								</a>
-							</div>
-							<div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
-								<a :href="n.status.parent.url">
-									<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
-								</a>
-							</div>
-							<!-- <div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
-								<a :href="n.status.parent.url">
-									<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
-								</a>
-							</div> -->
+							<div>
+								<div v-if="n.status && n.status && n.status.media_attachments && n.status.media_attachments.length">
+									<a :href="n.status.url">
+										<img :src="n.status.media_attachments[0].preview_url" width="32px" height="32px">
+									</a>
+								</div>
+								<div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
+									<a :href="n.status.parent.url">
+										<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
+									</a>
+								</div>
+								<!-- <div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
+									<a :href="n.status.parent.url">
+										<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
+									</a>
+								</div> -->
 
-							<!-- <div v-else-if="n.type == 'follow' && n.relationship.following == false">
-								<a href="#" class="btn btn-primary py-0 font-weight-bold" @click.prevent="followProfile(n);">
-									Follow
-								</a>
-							</div> -->
-							
-							<!-- <div v-else-if="n.status && n.status.parent && !n.status.parent.media_attachments && n.type == 'like' && n.relationship.following == false">
-								<a href="#" class="btn btn-primary py-0 font-weight-bold">
-									Follow
-								</a>
-							</div> -->
-							<div v-else>
-								<a class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">View</a>
+								<!-- <div v-else-if="n.type == 'follow' && n.relationship.following == false">
+									<a href="#" class="btn btn-primary py-0 font-weight-bold" @click.prevent="followProfile(n);">
+										Follow
+									</a>
+								</div> -->
+								
+								<!-- <div v-else-if="n.status && n.status.parent && !n.status.parent.media_attachments && n.type == 'like' && n.relationship.following == false">
+									<a href="#" class="btn btn-primary py-0 font-weight-bold">
+										Follow
+									</a>
+								</div> -->
+								<div v-else>
+									<a class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">View</a>
+								</div>
 							</div>
 						</div>
 					</div>
