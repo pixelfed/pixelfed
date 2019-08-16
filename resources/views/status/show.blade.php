@@ -15,10 +15,11 @@
 @endsection
 
 @push('meta')
-  <meta property="og:description" content="{{ $status->caption }}">
-  <meta property="og:image" content="{{$status->mediaUrl()}}">
-  <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>
-  <meta name="twitter:card" content="summary_large_image">
+
+    <meta property="og:description" content="{{ $status->caption }}">
+    <meta property="og:image" content="{{$status->mediaUrl()}}">
+    <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>
+    <meta name="twitter:card" content="summary_large_image">
 @endpush
 
 @push('scripts')
