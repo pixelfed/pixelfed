@@ -8,6 +8,29 @@ use Illuminate\Support\Str;
 
 class ImportCities extends Command
 {
+    protected $countries = [
+        'AE' => 'UAE',
+        'BA' => 'Bosnia-Herzegovina',
+        'BO' => 'Bolivia',
+        'CD' => 'Democratic Republic of Congo',
+        'CG' => 'Republic of Congo',
+        'FM' => 'Micronesia',
+        'GB' => 'United Kingdom',
+        'IR' => 'Iran',
+        'KP' => 'DRPK',
+        'KR' => 'South Korea',
+        'LA' => 'Laos',
+        'MD' => 'Moldova',
+        'PS' => 'Palestine',
+        'RU' => 'Russia',
+        'SH' => 'Saint Helena',
+        'SY' => 'Syria',
+        'TW' => 'Taiwan',
+        'TZ' => 'Tanzania',
+        'US' => 'USA',
+        'VE' => 'Venezuela',
+        'XK' => 'Kosovo'
+    ];
     /**
      * The name and signature of the console command.
      *
@@ -41,9 +64,8 @@ class ImportCities extends Command
             $this->error('Missing storage/app/cities.json file!');
             return;
         }
-        if (Place::count() > 10) {
-            $this->error('Cities already imported, aborting operation...');
-            return;
+        if (Place::count() > 0) {
+            DB::table('places')->truncate();
         }
         $this->info('Importing city data into database ...');
         $cities = file_get_contents($path);
@@ -55,7 +77,7 @@ class ImportCities extends Command
         $buffer = [];
         $count = 0;
         foreach ($cities as $city) {
-            $country = $city->country == 'XK' ? 'Kosovo' : (new \League\ISO3166\ISO3166)->alpha2($city->country)['name'];
+            $country = $this->codeToCountry($city->country);
             $buffer[] = ["name" => $city->name, "slug" => Str::slug($city->name), "country" => $country, "lat" => $city->lat, "long" => $city->lng];
             $count++;
             if ($count % $this->argument('chunk') == 0) {
@@ -74,5 +96,17 @@ class ImportCities extends Command
     private function insertBuffer($buffer, $count)
     {
         DB::table('places')->insert($buffer);
+    }
+
+    private function codeToCountry($code)
+    {
+        $countries = $this->countries;
+        if(isset($countries[$code])) {
+            return $countries[$code];
+        }
+
+        $country = (new \League\ISO3166\ISO3166)->alpha2($code);
+        $this->countries[$code] = $country['name'];
+        return $this->countries[$code];
     }
 }
