@@ -11,7 +11,8 @@ use App\{
     AccountLog,
     Like,
     Profile,
-    Status
+    Status,
+    User
 };
 use App\Transformer\ActivityPub\ProfileOutbox;
 use App\Util\Lexer\Nickname;
@@ -73,7 +74,7 @@ class FederationController extends Controller
         abort_if(!config('federation.nodeinfo.enabled'), 404);
 
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
-            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(6), function() {
+            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
                 $count = collect([]);
                 $likes = Like::select('profile_id')->with('actor')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
                 $count = $count->merge($likes);
@@ -83,7 +84,7 @@ class FederationController extends Controller
                 $count = $count->merge($profiles);
                 return $count->unique()->count();
             });
-            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(6), function() {
+            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(12), function() {
                 $count = collect([]);
                 $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
                 $count = $count->merge($likes);
@@ -100,6 +101,7 @@ class FederationController extends Controller
                         'homepage'  => 'https://pixelfed.org',
                         'repo'      => 'https://github.com/pixelfed/pixelfed',
                     ],
+                    'config' => \App\Util\Site\Config::get()
                 ],
                 'protocols'         => [
                     'activitypub',
@@ -113,12 +115,12 @@ class FederationController extends Controller
                     'version'       => config('pixelfed.version'),
                 ],
                 'usage' => [
-                    'localPosts'    => \App\Status::whereLocal(true)->whereHas('media')->count(),
-                    'localComments' => \App\Status::whereLocal(true)->whereNotNull('in_reply_to_id')->count(),
+                    'localPosts'    => Status::whereLocal(true)->count(),
+                    'localComments' => 0,
                     'users'         => [
-                        'total'          => \App\Profile::whereNull('status')->whereNull('domain')->count(),
-                        'activeHalfyear' => $activeHalfYear,
-                        'activeMonth'    => $activeMonth,
+                        'total'          => User::count(),
+                        'activeHalfyear' => (int) $activeHalfYear,
+                        'activeMonth'    => (int) $activeMonth,
                     ],
                 ],
                 'version' => '2.0',
