@@ -60,6 +60,15 @@ class ImportCities extends Command
     public function handle()
     {
         $path = storage_path('app/cities.json');
+
+        if(hash_file('sha512', $path) !== 'e203c0247538788b2a91166c7cf4b95f58291d998f514e9306d315aa72b09e48bfd3ddf310bf737afc4eefadca9083b8ff796c67796c6bd8e882a3d268bd16af') {
+            $this->error('Invalid or corrupt storage/app/cities.json data.');
+            $this->line('');
+            $this->info('Run the following command to fix:');
+            $this->info('git checkout storage/app/cities.json');
+            return;
+        }
+
         if (!is_file($path)) {
             $this->error('Missing storage/app/cities.json file!');
             return;
