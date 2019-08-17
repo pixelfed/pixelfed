@@ -97,7 +97,9 @@ class FollowerController extends Controller
             if($remote == true && $follower) {
                 $this->sendUndoFollow($user, $target);
             }
-            $follower->delete();
+            Follower::whereProfileId($user->id)
+                ->whereFollowingId($target->id)
+                ->delete();
         }
 
         Cache::forget('profile:following:'.$target->id);
