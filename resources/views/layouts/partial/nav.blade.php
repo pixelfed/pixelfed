@@ -20,9 +20,11 @@
             @endauth
 
                 @guest
+                
             <ul class="navbar-nav ml-auto">
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
-                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
+                    @if(config('pixelfed.open_registration'))
+                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>@endif
                 @else
             <ul class="navbar-nav ml-auto">
                     <div class="d-none d-md-block">
