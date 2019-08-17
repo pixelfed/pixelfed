@@ -10,7 +10,8 @@ class ProfileSponsorController extends Controller
 {
 	public function get(Request $request, $id)
 	{
-		$res = ProfileSponsor::whereProfileId($id)->firstOrFail()->sponsors;
-		return response($res)->header('Content-Type', 'application/json');
+		$profile = ProfileSponsor::whereProfileId($id)->first();
+		$res = $profile ? $profile->sponsors : [];
+		return response()->json($res);
 	}
 }
