@@ -76,7 +76,7 @@ class RegisterController extends Controller
             'name'     => 'required|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ];
 
         return Validator::make($data, $rules);
@@ -123,14 +123,17 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        $count = User::count();
-        $limit = config('pixelfed.max_users');
-        if($limit && $limit <= $count) {
-            $view = 'site.closed-registration';
+        if(config('pixelfed.open_registration')) {
+            $limit = config('pixelfed.max_users');
+            if($limit) {
+                abort_if($limit <= User::count(), 404);
+                return view('auth.register');
+            } else {
+                return view('auth.register');
+            }
         } else {
-            $view = config('pixelfed.open_registration') == true ? 'auth.register' : 'site.closed-registration';
+            abort(404);
         }
-        return view($view);
     }
 
     /**
