@@ -131,7 +131,7 @@ class Image
 
             $quality = config('pixelfed.image_quality');
             $img->save($newPath, $quality);
-
+            $img->destroy();
             if (!$thumbnail) {
                 $media->orientation = $orientation;
             }

@@ -403,4 +403,9 @@ class Status extends Model
         return $res[$audience];
     }
 
+    public function place()
+    {
+        return $this->belongsTo(Place::class);
+    }
+
 }

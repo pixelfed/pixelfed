@@ -269,6 +269,7 @@ class PublicApiController extends Controller
                         'local',
                         'reply_count',
                         'comments_disabled',
+                        'place_id',
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
@@ -299,6 +300,7 @@ class PublicApiController extends Controller
                         'reply_count',
                         'comments_disabled',
                         'created_at',
+                        'place_id',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
@@ -377,6 +379,7 @@ class PublicApiController extends Controller
                         'local',
                         'reply_count',
                         'comments_disabled',
+                        'place_id',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -405,6 +408,7 @@ class PublicApiController extends Controller
                         'local',
                         'reply_count',
                         'comments_disabled',
+                        'place_id',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -523,7 +527,9 @@ class PublicApiController extends Controller
 
     public function relationships(Request $request)
     {
-        abort_if(!Auth::check(), 403);
+        if(!Auth::check()) {
+            return response()->json([]);
+        }
 
         $this->validate($request, [
             'id'    => 'required|array|min:1|max:20',

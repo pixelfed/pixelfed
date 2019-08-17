@@ -103,7 +103,7 @@ class Inbox
 
     public function actorFirstOrCreate($actorUrl)
     {
-        return Helpers::profileFirstOrNew($actorUrl);
+        return Helpers::profileFetch($actorUrl);
     }
 
     public function handleCreateActivity()
