@@ -347,7 +347,7 @@ class PublicApiController extends Controller
             return $following->push($pid)->toArray();
         });
 
-        $private = Cache::remember('profiles:private', 1440, function() {
+        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
             return Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)

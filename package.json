@@ -1,4 +1,5 @@
 {
+    "name": "pixelfed",
     "private": true,
     "scripts": {
         "dev": "npm run development",
@@ -25,6 +26,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@trevoreyre/autocomplete-vue": "^2.0.2",
         "bootstrap-vue": "^2.0.0-rc.26",
         "emoji-mart-vue": "^2.6.6",
         "filesize": "^3.6.1",
@@ -44,6 +46,7 @@
         "sweetalert": "^2.1.2",
         "twitter-text": "^2.0.5",
         "vue-content-loader": "^0.2.2",
+        "vue-cropperjs": "^4.0.0",
         "vue-infinite-loading": "^2.4.4",
         "vue-loading-overlay": "^3.2.0",
         "vue-timeago": "^5.1.2"
