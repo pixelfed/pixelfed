@@ -17,7 +17,7 @@ A free and ethical photo sharing platform, powered by ActivityPub federation.
 
 ## Official Documentation
 
-Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://pixelfed.github.io/docs/master/).
+Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://docs.pixelfed.org/).
 
 ## License
 
