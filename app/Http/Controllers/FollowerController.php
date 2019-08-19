@@ -119,6 +119,7 @@ class FollowerController extends Controller
 
         $payload = [
             '@context'  => 'https://www.w3.org/ns/activitystreams',
+            'id'        => $user->permalink('#follow/'.$target->id.''),
             'type'      => 'Follow',
             'actor'     => $user->permalink(),
             'object'    => $target->permalink()
