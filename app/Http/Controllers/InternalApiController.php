@@ -239,7 +239,8 @@ class InternalApiController extends Controller
             'media.*.filter_class' => 'nullable|alpha_dash|max:30',
             'media.*.license' => 'nullable|string|max:80',
             'cw' => 'nullable|boolean',
-            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10'
+            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
+            'place' => 'nullable'
         ]);
 
         if(config('costar.enabled') == true) {
@@ -283,6 +284,9 @@ class InternalApiController extends Controller
             array_push($mimes, $m->mime);
         }
 
+        if($request->filled('place')) {
+            $status->place_id = $request->input('place')['id'];
+        }
         $status->caption = strip_tags($request->caption);
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
