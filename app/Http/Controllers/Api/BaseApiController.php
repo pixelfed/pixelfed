@@ -227,7 +227,7 @@ class BaseApiController extends Controller
         }
 
         $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id.(string) $user->created_at);
+        $userHash = hash('sha1', $user->id . (string) $user->created_at);
 
         $photo = $request->file('file');
 
