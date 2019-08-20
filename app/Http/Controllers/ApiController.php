@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\{
     Follower,
     Like,
+    Place,
     Profile,
     UserFilter
 };
@@ -76,6 +77,26 @@ class ApiController extends BaseApiController
         });
 
         return response()->json($res->all());
+    }
+
+    public function composeLocationSearch(Request $request)
+    {
+        $this->validate($request, [
+            'q' => 'required|string'
+        ]);
+
+        $places = Place::where('name', 'like', '%' . $request->input('q') . '%')
+            ->take(25)
+            ->get()
+            ->map(function($r) {
+                return [
+                    'id' => $r->id,
+                    'name' => $r->name,
+                    'country' => $r->country,
+                    'url'   => $r->url()
+                ];
+        });
+        return $places;
     }
 
 }
