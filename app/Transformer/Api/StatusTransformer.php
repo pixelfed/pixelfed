@@ -47,7 +47,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'thread'                    => false,
             'replies'                   => [],
             'parent'                    => [],
-            //'place'                     => $status->place
+            'place'                     => $status->place
         ];
     }
 

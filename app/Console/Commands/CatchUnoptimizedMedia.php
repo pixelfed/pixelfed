@@ -42,6 +42,7 @@ class CatchUnoptimizedMedia extends Command
     {
         DB::transaction(function() {
             Media::whereNull('processed_at')
+                ->whereNull('remote_url')
                 ->whereNotNull('status_id')
                 ->whereNotNull('media_path')
                 ->whereIn('mime', [
