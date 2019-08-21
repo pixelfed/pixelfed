@@ -92,12 +92,20 @@ class SettingsController extends Controller
 
     public function removeAccountTemporary(Request $request)
     {
+        $user = Auth::user();
+        abort_if(!config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
+        abort_if($user->created_at->gt(now()->subHours(12)), 403);
+
         return view('settings.remove.temporary');
     }
 
     public function removeAccountTemporarySubmit(Request $request)
     {
         $user = Auth::user();
+        abort_if(!config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
+        abort_if($user->created_at->gt(now()->subHours(12)), 403);
         $profile = $user->profile;
         $user->status = 'disabled';
         $profile->status = 'disabled';
@@ -110,9 +118,9 @@ class SettingsController extends Controller
 
     public function removeAccountPermanent(Request $request)
     {
-        if(config('pixelfed.account_deletion') == false) {
-            abort(404);
-        }
+        $user = Auth::user();
+        abort_if($user->is_admin, 403);
+        abort_if($user->created_at->gt(now()->subDays(7)), 403);
         return view('settings.remove.permanent');
     }
 
@@ -122,9 +130,9 @@ class SettingsController extends Controller
             abort(404);
         }
         $user = Auth::user();
-        if($user->is_admin == true) {
-            return abort(400, 'You cannot delete an admin account.');
-        }
+        abort_if(!config('pixelfed.account_deletion'), 403);
+        abort_if($user->is_admin, 403);
+        abort_if($user->created_at->gt(now()->subDays(7)), 403);
         $profile = $user->profile;
         $ts = Carbon::now()->addMonth();
         $user->status = 'delete';

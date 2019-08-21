@@ -27,7 +27,7 @@
     
     @include('settings.security.device-panel')
 
-    @if(config('pixelfed.account_deletion') == true)
+    @if(config('pixelfed.account_deletion') && !$user->is_admin && $user->created_at->gt(now()->subHours(12)))
     <h4 class="font-weight-bold pt-3">Danger Zone</h4>
     <div class="mb-4 border rounded border-danger">
       <ul class="list-group mb-0 pb-0">
@@ -40,6 +40,7 @@
             <a class="btn btn-outline-danger font-weight-bold py-1" href="{{route('settings.remove.temporary')}}">Disable</a>
           </div>
         </li>
+        @if( !$user->is_admin && $user->created_at->gt(now()->subDays(7)) )
         <li class="list-group-item border-left-0 border-right-0 py-3 d-flex justify-content-between">
           <div>
             <p class="font-weight-bold mb-1">Delete this Account</p>
@@ -49,6 +50,7 @@
             <a class="btn btn-outline-danger font-weight-bold py-1" href="{{route('settings.remove.permanent')}}">Delete</a>
           </div>
         </li>
+        @endif
       </ul>
     </div>
     @endif
