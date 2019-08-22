@@ -241,7 +241,7 @@ class Helpers {
 
 			$scope = 'private';
 			
-			$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+			$cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
 
 			if(isset($res['to']) == true) {
 				if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
