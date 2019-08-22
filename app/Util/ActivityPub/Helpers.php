@@ -283,9 +283,7 @@ class Helpers {
 				$cw = config('costar.domain.cw');
 				if(in_array(parse_url($url, PHP_URL_HOST), $cw) == true) {
 					$cw = true;
-				} else {
-					$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
-				}
+				} 
 			}
 
 			if(!self::validateUrl($res['id']) ||
