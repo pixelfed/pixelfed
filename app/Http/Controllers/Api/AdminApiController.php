@@ -68,6 +68,8 @@ class AdminApiController extends Controller
 
     public function moderateStatus(Request $request)
     {
+        abort(400, 'Unpublished API');
+        return;
         $this->validate($request, [
             'type' => 'required|string|in:status,profile',
             'id'   => 'required|integer|min:1',
