@@ -58,8 +58,8 @@
 						</p>
 						<p class="mb-0 text-center">
 							<button v-if="profile.entity.follow_request" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" disabled>Follow Requested</button>
-							<button v-if="!profile.entity.follow_request && profile.entity.following" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile)">Unfollow</button>
-							<button v-if="!profile.entity.follow_request && !profile.entity.following" type="button" class="btn btn-primary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile)">Follow</button>
+							<button v-if="!profile.entity.follow_request && profile.entity.following" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Unfollow</button>
+							<button v-if="!profile.entity.follow_request && !profile.entity.following" type="button" class="btn btn-primary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Follow</button>
 						</p>
 					</div>
 				</a>
@@ -140,12 +140,19 @@ export default {
 			})
 		},
 
-		followProfile(profile) {
+		followProfile(profile, index) {
 			this.loading = true;
 			axios.post('/i/follow', {
 				item: profile.entity.id
 			}).then(res => {
-				this.fetchSearchResults();
+				if(profile.entity.local == true) {
+					this.fetchSearchResults();
+					return;
+				} else {
+					this.loading = false;
+					this.results.profiles[index].entity.follow_request = true;
+					return;
+				}
 			}).catch(err => {
 				if(err.response.data.message) {
 					swal('Error', err.response.data.message, 'error');
