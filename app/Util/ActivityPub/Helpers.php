@@ -181,7 +181,7 @@ class Helpers {
 	public static function zttpUserAgent()
 	{
 		return [
-			'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+			'Accept'     => 'application/activity+json',
 			'User-Agent' => 'PixelfedBot - https://pixelfed.org',
 		];
 	}
@@ -280,8 +280,8 @@ class Helpers {
 					$unlisted = false;
 				}
 
-				$cw = config('costar.domain.cw');
-				if(in_array(parse_url($url, PHP_URL_HOST), $cw) == true) {
+				$cwDomains = config('costar.domain.cw');
+				if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
 					$cw = true;
 				} 
 			}
@@ -413,8 +413,8 @@ class Helpers {
 			$profile = new Profile();
 			$profile->domain = $domain;
 			$profile->username = (string) Purify::clean($remoteUsername);
-			$profile->name = Purify::clean($res['name']) ?? 'user';
-			$profile->bio = Purify::clean($res['summary']);
+			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 			$profile->inbox_url = $res['inbox'];
 			$profile->outbox_url = $res['outbox'];
