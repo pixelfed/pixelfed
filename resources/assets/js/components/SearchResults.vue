@@ -57,9 +57,9 @@
 							{{profile.value}}
 						</p>
 						<p class="mb-0 text-center">
-							 <button :class="[profile.entity.following ? 'btn btn-secondary btn-sm py-1 font-weight-bold' : 'btn btn-primary btn-sm py-1 font-weight-bold']" v-on:click="followProfile(profile.entity.id)">
-							 	{{profile.entity.following ? 'Unfollow' : 'Follow'}}
-							 </button>
+							<button v-if="profile.entity.follow_request" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" disabled>Follow Requested</button>
+							<button v-if="!profile.entity.follow_request && profile.entity.following" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Unfollow</button>
+							<button v-if="!profile.entity.follow_request && !profile.entity.following" type="button" class="btn btn-primary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Follow</button>
 						</p>
 					</div>
 				</a>
@@ -140,12 +140,19 @@ export default {
 			})
 		},
 
-		followProfile(id) {
-			// todo: finish AP Accept handling to enable remote follows
+		followProfile(profile, index) {
+			this.loading = true;
 			axios.post('/i/follow', {
-				item: id
+				item: profile.entity.id
 			}).then(res => {
-				window.location.href = window.location.href;
+				if(profile.entity.local == true) {
+					this.fetchSearchResults();
+					return;
+				} else {
+					this.loading = false;
+					this.results.profiles[index].entity.follow_request = true;
+					return;
+				}
 			}).catch(err => {
 				if(err.response.data.message) {
 					swal('Error', err.response.data.message, 'error');

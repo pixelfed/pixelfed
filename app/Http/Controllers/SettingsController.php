@@ -95,7 +95,6 @@ class SettingsController extends Controller
         $user = Auth::user();
         abort_if(!config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-        abort_if($user->created_at->gt(now()->subHours(12)), 403);
 
         return view('settings.remove.temporary');
     }
@@ -105,7 +104,6 @@ class SettingsController extends Controller
         $user = Auth::user();
         abort_if(!config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-        abort_if($user->created_at->gt(now()->subHours(12)), 403);
         $profile = $user->profile;
         $user->status = 'disabled';
         $profile->status = 'disabled';
@@ -120,7 +118,6 @@ class SettingsController extends Controller
     {
         $user = Auth::user();
         abort_if($user->is_admin, 403);
-        abort_if($user->created_at->gt(now()->subDays(7)), 403);
         return view('settings.remove.permanent');
     }
 
@@ -132,7 +129,6 @@ class SettingsController extends Controller
         $user = Auth::user();
         abort_if(!config('pixelfed.account_deletion'), 403);
         abort_if($user->is_admin, 403);
-        abort_if($user->created_at->gt(now()->subDays(7)), 403);
         $profile = $user->profile;
         $ts = Carbon::now()->addMonth();
         $user->status = 'delete';

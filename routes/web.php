@@ -102,13 +102,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
             Route::post('moderator/action', 'InternalApiController@modAction');
             Route::get('discover/categories', 'InternalApiController@discoverCategories');
-            Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('loops', 'DiscoverController@loopsApi');
             Route::post('loops/watch', 'DiscoverController@loopWatch');
             Route::get('discover/tag', 'DiscoverController@getHashtags');
+            Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
         });
         Route::group(['prefix' => 'local'], function () {
-            Route::post('status/compose', 'InternalApiController@compose')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
+            Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
@@ -122,6 +122,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('collection/{id}/publish', 'CollectionController@publish')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
         });
+        Route::group(['prefix' => 'admin'], function () {
+            Route::post('moderate', 'Api\AdminApiController@moderate');
+        });
+
     });
 
     Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');

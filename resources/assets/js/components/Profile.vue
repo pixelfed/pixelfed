@@ -187,11 +187,11 @@
 								</div>
 							</a>
 						</div>
-					</div>
-					<div v-if="mode == 'grid' != -1 && timeline.length == 0">
-						<div class="py-5 text-center text-muted">
-							<p><i class="fas fa-camera-retro fa-2x"></i></p>
-							<p class="h2 font-weight-light pt-3">No posts yet</p>
+						<div v-if="timeline.length == 0" class="col-12">
+							<div class="py-5 text-center text-muted">
+								<p><i class="fas fa-camera-retro fa-2x"></i></p>
+								<p class="h2 font-weight-light pt-3">No posts yet</p>
+							</div>
 						</div>
 					</div>
 					<div v-if="timeline.length && mode == 'grid'">
@@ -290,10 +290,10 @@
 								</span>
 								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 									<span class="pl-md-4 pl-sm-2" v-if="relationship.following == true">
-										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()" data-toggle="tooltip" title="Unfollow">Unfollow</button>
+										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()">Unfollow</button>
 									</span>
 									<span class="pl-md-4 pl-sm-2" v-else>
-										<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()" data-toggle="tooltip" title="Follow">Follow</button>
+										<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()">Follow</button>
 									</span>
 								</span>
 							</div>
@@ -960,12 +960,10 @@
 				return o;
 			},
 
-			followProfile($event) {
+			followProfile() {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				$event.target.setAttribute('disabled','');
-				$event.target.blur();
 				axios.post('/i/follow', {
 					item: this.profileId
 				}).then(res => {
@@ -979,7 +977,6 @@
 						this.profile.followers_count++;
 					}
 					this.relationship.following = !this.relationship.following;
-					$event.target.removeAttribute('disabled');
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');

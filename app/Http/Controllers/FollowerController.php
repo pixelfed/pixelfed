@@ -23,16 +23,11 @@ class FollowerController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'item'    => 'required|integer',
+            'item'    => 'required|string',
         ]);
-        $item = $request->input('item');
+        $item = (int) $request->input('item');
         $this->handleFollowRequest($item);
-        if($request->wantsJson()) {
-            return response()->json([
-                200
-            ], 200);
-        }
-        return redirect()->back();
+        return response()->json(200);
     }
 
     protected function handleFollowRequest($item)
