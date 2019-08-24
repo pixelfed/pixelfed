@@ -413,8 +413,8 @@ class Helpers {
 			$profile = new Profile();
 			$profile->domain = $domain;
 			$profile->username = (string) Purify::clean($remoteUsername);
-			$profile->name = Purify::clean($res['name']) ?? 'user';
-			$profile->bio = Purify::clean($res['summary']);
+			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 			$profile->inbox_url = $res['inbox'];
 			$profile->outbox_url = $res['outbox'];
