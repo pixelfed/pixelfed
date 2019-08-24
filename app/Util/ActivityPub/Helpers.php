@@ -181,7 +181,7 @@ class Helpers {
 	public static function zttpUserAgent()
 	{
 		return [
-			'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+			'Accept'     => 'application/activity+json',
 			'User-Agent' => 'PixelfedBot - https://pixelfed.org',
 		];
 	}
@@ -280,8 +280,8 @@ class Helpers {
 					$unlisted = false;
 				}
 
-				$cw = config('costar.domain.cw');
-				if(in_array(parse_url($url, PHP_URL_HOST), $cw) == true) {
+				$cwDomains = config('costar.domain.cw');
+				if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
 					$cw = true;
 				} 
 			}
