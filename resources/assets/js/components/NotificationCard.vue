@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<div class="card notification-card">
+		<div class="card notification-card shadow-none border">
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
-					<span><i class="far fa-bell fa-lg text-muted"></i></span>
-					<span class="small text-dark text-uppercase font-weight-bold">Alerts</span>
+					<span><i class="far fa-bell fa-lg text-white"></i></span>
+					<span class="small text-dark text-uppercase font-weight-bold">Notifications</span>
 					<a class="text-decoration-none text-muted" href="/account/activity"><i class="fas fa-inbox fa-lg"></i></a>
 				</p>
 			</div>
@@ -13,8 +13,8 @@
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card-body pt-2 px-0 contents" style="max-height: 230px; overflow-y: scroll;">
-				<div v-if="notifications.length > 0" class="media mb-4 align-items-center px-3" v-for="(n, index) in notifications">
+			<div class="card-body pt-2 px-0 py-0 contents" style="max-height: 230px; overflow-y: scroll;">
+				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
 					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
@@ -43,7 +43,7 @@
 							</p>
 						</div>
 					</div>
-					<div class="small text-muted" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
+					<div class="small text-muted font-weight-bold" :title="n.created_at">{{timeAgo(n.created_at)}}</div>
 				</div>
 				<div v-if="notifications.length">
 					<infinite-loading @infinite="infiniteNotifications">
@@ -90,16 +90,16 @@
 						return true;
 					});
 					let ids = res.data.map(n => n.id);
-					this.notificationMaxId = Math.max(...ids);
+					this.notificationMaxId = Math.min(...ids);
 					this.notifications = data;
 					$('.notification-card .loader').addClass('d-none');
 					$('.notification-card .contents').removeClass('d-none');
-					this.notificationPoll();
+					//this.notificationPoll();
 				});
 			},
 
 			infiniteNotifications($state) {
-				if(this.notificationCursor > 10) {
+				if(this.notificationCursor > 5) {
 					$state.complete();
 					return;
 				}
@@ -111,6 +111,9 @@
 					if(res.data.length) {
 						let data = res.data.filter(n => {
 							if(n.type == 'share' && !status) {
+								return false;
+							}
+							if(_.find(this.notifications, {id: n.id})) {
 								return false;
 							}
 							return true;

@@ -3,7 +3,10 @@
 namespace App\Transformer\Api;
 
 use Auth;
-use App\Profile;
+use App\{
+    FollowRequest,
+    Profile
+};
 use League\Fractal;
 
 class RelationshipTransformer extends Fractal\TransformerAbstract
@@ -12,6 +15,12 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
     {
         $auth = Auth::check();
         $user = $auth ? Auth::user()->profile : false;
+        $requested = false;
+        if($user) {
+            $requested = FollowRequest::whereFollowerId($user->id)
+                ->whereFollowingId($profile->id)
+                ->exists();
+        }
         return [
             'id' => (string) $profile->id,
             'following' => $auth ? $user->follows($profile) : false,
@@ -19,7 +28,7 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
             'blocking' => $auth ? $user->blockedIds()->contains($profile->id) : false,
             'muting' => $auth ? $user->mutedIds()->contains($profile->id) : false,
             'muting_notifications' => null,
-            'requested' => null,
+            'requested' => $requested,
             'domain_blocking' => null,
             'showing_reblogs' => null,
             'endorsed' => false

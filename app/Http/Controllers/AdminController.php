@@ -105,10 +105,9 @@ class AdminController extends Controller
     {
         $col = $request->query('col') ?? 'id';
         $dir = $request->query('dir') ?? 'desc';
-        $stats = $this->collectUserStats($request);
-        $users = User::withCount('statuses')->orderBy($col, $dir)->simplePaginate(10);
+        $users = User::select('id', 'username', 'status')->withCount('statuses')->orderBy($col, $dir)->simplePaginate(10);
 
-        return view('admin.users.home', compact('users', 'stats'));
+        return view('admin.users.home', compact('users'));
     }
 
     public function editUser(Request $request, $id)
@@ -156,34 +155,6 @@ class AdminController extends Controller
     {
       $report = Report::findOrFail($id);
       return view('admin.reports.show', compact('report'));
-    }
-
-    protected function collectUserStats($request)
-    { 
-      $total_duration = $request->query('total_duration') ?? '30';
-      $new_duration = $request->query('new_duration') ?? '7';
-      $stats = [];
-      $stats['total'] = [
-        'count' => User::where('created_at', '>', Carbon::now()->subDays($total_duration))->count(),
-        'points' => 0//User::selectRaw(''.$day.'created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($total_duration))->groupBy('day')->pluck('count')
-      ];
-      $stats['new'] = [
-        'count' => User::where('created_at', '>', Carbon::now()->subDays($new_duration))->count(),
-        'points' => 0//User::selectRaw(''.$day.'created_at) day, count(*) as count')->where('created_at','>', Carbon::now()->subDays($new_duration))->groupBy('day')->pluck('count')
-      ];
-      $stats['active'] = [
-        'count' => Status::groupBy('profile_id')->count()
-      ];
-      $stats['profile'] = [
-        'local' => Profile::whereNull('remote_url')->count(),
-        'remote' => Profile::whereNotNull('remote_url')->count()
-      ];
-      $stats['avg'] = [
-        'likes' => floor(Like::average('profile_id')),
-        'posts' => floor(Status::avg('profile_id'))
-      ];
-      return $stats;
-
     }
 
     public function profiles(Request $request)

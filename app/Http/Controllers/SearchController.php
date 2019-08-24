@@ -37,6 +37,7 @@ class SearchController extends Controller
         $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = [];
             if(Helpers::validateUrl($tag) != false && config('federation.activitypub.enabled') == true && config('federation.activitypub.remoteFollow') == true) {
+                abort_if(Helpers::validateLocalUrl($tag), 404);
                 $remote = Helpers::fetchFromUrl($tag);
                 if(isset($remote['type']) && in_array($remote['type'], ['Note', 'Person']) == true) {
                     $type = $remote['type'];
@@ -50,8 +51,9 @@ class SearchController extends Controller
                             'tokens' => [$item->username],
                             'name'   => $item->name,
                             'entity' => [
-                                'id' => $item->id,
+                                'id' => (string) $item->id,
                                 'following' => $item->followedBy(Auth::user()->profile),
+                                'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                                 'thumb' => $item->avatarUrl()
                             ]
                         ]];
@@ -143,6 +145,7 @@ class SearchController extends Controller
                     'tokens' => [$item->caption],
                     'name'   => $item->caption,
                     'thumb'  => $item->thumb(),
+                    'filter' => $item->firstMedia()->filter_class
                 ];
             });
             $tokens['posts'] = $posts;

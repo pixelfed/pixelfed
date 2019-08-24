@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use App\Services\EmailService;
 
 class RegisterController extends Controller
 {
@@ -53,6 +54,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         $this->validateUsername($data['username']);
+        $this->validateEmail($data['email']);
+
         $usernameRules = [
             'required',
             'min:2',
@@ -73,7 +76,7 @@ class RegisterController extends Controller
             'name'     => 'required|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ];
 
         return Validator::make($data, $rules);
@@ -105,6 +108,14 @@ class RegisterController extends Controller
         }
     }
 
+    public function validateEmail($email)
+    {
+        $banned = EmailService::isBanned($email);
+        if($banned) {
+            return abort(403, 'Invalid email.');
+        }
+    }
+
     /**
      * Show the application registration form.
      *
@@ -112,14 +123,17 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        $count = User::count();
-        $limit = config('pixelfed.max_users');
-        if($limit && $limit <= $count) {
-            $view = 'site.closed-registration';
+        if(config('pixelfed.open_registration')) {
+            $limit = config('pixelfed.max_users');
+            if($limit) {
+                abort_if($limit <= User::count(), 404);
+                return view('auth.register');
+            } else {
+                return view('auth.register');
+            }
         } else {
-            $view = config('pixelfed.open_registration') == true ? 'auth.register' : 'site.closed-registration';
+            abort(404);
         }
-        return view($view);
     }
 
     /**

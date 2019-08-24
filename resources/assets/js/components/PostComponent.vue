@@ -11,7 +11,7 @@
   </div>
   <div v-if="loaded && warning == false" class="postComponent">
     <div v-if="profileLayout == 'metro'" class="container px-0">
-      <div class="card card-md-rounded-0 status-container orientation-unknown">
+      <div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
           <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
@@ -107,8 +107,8 @@
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
-                  <p :class="[status.content.length > 420 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
-                    <span class="font-weight-bold pr-1">{{statusUsername}}</span>
+                  <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
+                    <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
                     <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                   </p>
 
@@ -124,10 +124,13 @@
                       <div class="comments">
                         <div v-for="(reply, index) in results" class="pb-3" :key="'tl' + reply.id + '_' + index">
                           <div v-if="reply.sensitive == true">
-                            <div class="card card-body shadow-none border border-left-blue py-3 px-1 text-center small">
-                              <p class="mb-0">This comment may contain sensitive material</p>
-                              <p class="font-weight-bold text-primary cursor-pointer mb-0" @click="reply.sensitive = false;">Show</p>
-                            </div>
+                            <span class="py-3">
+                              <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                              <span class="text-break">
+                                <span class="font-italic text-muted">This comment may contain sensitive material</span>
+                                <span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
+                              </span>
+                            </span>
                           </div>
                           <div v-else>
                             <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
@@ -390,10 +393,10 @@
   .postPresenterContainer {
     background: #fff;
   }
-  @media(min-width: 720px) {
-    .postPresenterContainer {
-      min-height: 600px;
-    }
+  @media(min-width: 720px) {  
+    .postPresenterContainer { 
+      min-height: 600px;  
+    } 
   }
   ::-webkit-scrollbar {
       width: 0px;
@@ -496,6 +499,7 @@ export default {
             replyingToId: this.statusId,
             replyToIndex: 0,
             emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
+            showReadMore: true,
           }
     },
 
@@ -511,11 +515,18 @@ export default {
 
     mounted() {
       this.fetchRelationships();
+      if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
+        this.showReadMore = false;
+      } else {
+        this.showReadMore = true;
+      }
     },
 
     updated() {
       $('.carousel').carousel();
-      window.pixelfed.readmore();
+      if(this.showReadMore == true) {
+        window.pixelfed.readmore();
+      }
     },
 
     methods: {

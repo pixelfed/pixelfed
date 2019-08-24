@@ -21,6 +21,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/status.js', 'public/js')
 .js('resources/assets/js/timeline.js', 'public/js')
 .js('resources/assets/js/compose.js', 'public/js')
+.js('resources/assets/js/compose-classic.js', 'public/js')
 .js('resources/assets/js/search.js', 'public/js')
 .js('resources/assets/js/developers.js', 'public/js')
 .js('resources/assets/js/loops.js', 'public/js')
@@ -30,6 +31,11 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/lib/ace/theme-monokai.js', 'public/js')
 // .js('resources/assets/js/embed.js', 'public')
 // .js('resources/assets/js/direct.js', 'public/js')
+.js('resources/assets/js/hashtag.js', 'public/js')
+.js('resources/assets/js/collectioncompose.js', 'public/js')
+.js('resources/assets/js/collections.js', 'public/js')
+//.js('resources/assets/js/admin.js', 'public/js')
+
 .extract([
 	'lodash',
 	'popper.js',

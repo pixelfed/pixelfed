@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Cache;
 use App\Follower;
+use App\FollowRequest;
 use App\Profile;
 use App\User;
 use App\UserFilter;
@@ -67,8 +68,12 @@ class ProfileController extends Controller
         $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
 
         if ($isPrivate == true || $isBlocked == true) {
-            return view('profile.private', compact('user', 'is_following'));
+            $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
+                ->whereFollowingId($user->id)
+                ->exists() : false;
+            return view('profile.private', compact('user', 'is_following', 'requested'));
         } 
+
         $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
         $profile = $user;
         $settings = [
@@ -241,22 +246,9 @@ class ProfileController extends Controller
         return view('profile.following', compact('user', 'profile', 'following', 'owner', 'is_following', 'is_admin', 'settings'));
     }
 
-    public function savedBookmarks(Request $request, $username)
+    public function meRedirect()
     {
-        if (Auth::check() === false || $username !== Auth::user()->username) {
-            abort(403);
-        }
-        $user = $profile = Auth::user()->profile;
-        if($profile->status != null) {
-            return $this->accountCheck($profile);
-        }
-        $settings = User::whereUsername($username)->firstOrFail()->settings;
-        $owner = true;
-        $following = false;
-        $timeline = $user->bookmarks()->withCount(['likes','comments'])->orderBy('created_at', 'desc')->simplePaginate(10);
-        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
-        $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-        return view('profile.bookmarks', compact('user', 'profile', 'settings', 'owner', 'following', 'timeline', 'is_following', 'is_admin'));
+        abort_if(!Auth::check(), 404);
+        return redirect(Auth::user()->url());
     }
-
 }

@@ -6,10 +6,12 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\{
     Follower,
     Like,
+    Place,
     Profile,
     UserFilter
 };
 use Auth, Cache, Redis;
+use App\Util\Site\Config;
 use Illuminate\Http\Request;
 use App\Services\SuggestionService;
 
@@ -23,34 +25,7 @@ class ApiController extends BaseApiController
 
     public function siteConfiguration(Request $request)
     {
-        $res = Cache::remember('api:site:configuration', now()->addMinutes(30), function() {
-            return [
-                'uploader' => [
-                    'max_photo_size' => config('pixelfed.max_photo_size'),
-                    'max_caption_length' => config('pixelfed.max_caption_length'),
-                    'album_limit' => config('pixelfed.max_album_length'),
-                    'image_quality' => config('pixelfed.image_quality'),
-
-                    'optimize_image' => config('pixelfed.optimize_image'),
-                    'optimize_video' => config('pixelfed.optimize_video'),
-
-                    'media_types' => config('pixelfed.media_types'),
-                    'enforce_account_limit' => config('pixelfed.enforce_account_limit')
-                ],
-
-                'activitypub' => [
-                    'enabled' => config('federation.activitypub.enabled'),
-                    'remote_follow' => config('federation.activitypub.remoteFollow')
-                ],
-
-                'ab' => [
-                    'lc' => config('exp.lc'),
-                    'rec' => config('exp.rec'),
-                    'loops' => config('exp.loops')
-                ],
-            ];
-        });
-        return response()->json($res);
+        return response()->json(Config::get());
     }
 
     public function userRecommendations(Request $request)
@@ -102,6 +77,26 @@ class ApiController extends BaseApiController
         });
 
         return response()->json($res->all());
+    }
+
+    public function composeLocationSearch(Request $request)
+    {
+        $this->validate($request, [
+            'q' => 'required|string'
+        ]);
+
+        $places = Place::where('name', 'like', '%' . $request->input('q') . '%')
+            ->take(25)
+            ->get()
+            ->map(function($r) {
+                return [
+                    'id' => $r->id,
+                    'name' => $r->name,
+                    'country' => $r->country,
+                    'url'   => $r->url()
+                ];
+        });
+        return $places;
     }
 
 }

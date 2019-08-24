@@ -50,38 +50,7 @@ class InternalApiController extends Controller
     // deprecated
     public function discover(Request $request)
     {
-        $profile = Auth::user()->profile;
-        $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(60), function() use ($pid) {
-            return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
-        });
-        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(60), function() use($pid) {
-            return UserFilter::whereUserId($pid)
-            ->whereFilterableType('App\Profile')
-            ->whereIn('filter_type', ['mute', 'block'])
-            ->pluck('filterable_id')->toArray();
-        });
-        $following = array_merge($following, $filters);
-
-        $posts = Status::select('id', 'caption', 'profile_id')
-              ->whereHas('media')
-              ->whereIsNsfw(false)
-              ->whereVisibility('public')
-              ->whereNotIn('profile_id', $following)
-              ->with('media')
-              ->orderBy('created_at', 'desc')
-              ->take(21)
-              ->get();
-
-        $res = [
-            'posts' => $posts->map(function($post) {
-                return [
-                    'url' => $post->url(),
-                    'thumb' => $post->thumb(),
-                ];
-            })
-        ];
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return;
     }
 
     public function discoverPosts(Request $request)
@@ -155,22 +124,9 @@ class InternalApiController extends Controller
         return response()->json(compact('msg', 'profile', 'thread'), 200, [], JSON_PRETTY_PRINT);
     }
 
-    public function notificationMarkAllRead(Request $request)
-    {
-        $profile = Auth::user()->profile;
-
-        $notifications = Notification::whereProfileId($profile->id)->get();
-        foreach($notifications as $n) {
-            $n->read_at = Carbon::now();
-            $n->save();
-        }
-
-        return;
-    }
-
     public function statusReplies(Request $request, int $id)
     {
-        $parent = Status::findOrFail($id);
+        $parent = Status::whereScope('public')->findOrFail($id);
 
         $children = Status::whereInReplyToId($parent->id)
             ->orderBy('created_at', 'desc')
@@ -283,7 +239,8 @@ class InternalApiController extends Controller
             'media.*.filter_class' => 'nullable|alpha_dash|max:30',
             'media.*.license' => 'nullable|string|max:80',
             'cw' => 'nullable|boolean',
-            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10'
+            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
+            'place' => 'nullable'
         ]);
 
         if(config('costar.enabled') == true) {
@@ -327,6 +284,9 @@ class InternalApiController extends Controller
             array_push($mimes, $m->mime);
         }
 
+        if($request->filled('place')) {
+            $status->place_id = $request->input('place')['id'];
+        }
         $status->caption = strip_tags($request->caption);
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
@@ -349,5 +309,19 @@ class InternalApiController extends Controller
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:status_count:'.$profile->id);
         return $status->url();
+    }
+
+    public function bookmarks(Request $request)
+    {
+        $statuses = Auth::user()->profile
+            ->bookmarks()
+            ->withCount(['likes','comments'])
+            ->orderBy('created_at', 'desc')
+            ->simplePaginate(10);
+
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
     }
 }

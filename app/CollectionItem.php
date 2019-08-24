@@ -9,6 +9,13 @@ class CollectionItem extends Model
 {
 	use HasSnowflakePrimary;
 
+    public $fillable = [
+        'collection_id',
+        'object_type',
+        'object_id',
+        'order'
+    ];
+    
     /**
      * Indicates if the IDs are auto-incrementing.
      *

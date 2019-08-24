@@ -15,8 +15,10 @@ use App\{
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\FollowPipeline\FollowPipeline;
 
 use App\Util\ActivityPub\Validator\{
+    Accept,
     Follow
 };
 
@@ -101,7 +103,7 @@ class Inbox
 
     public function actorFirstOrCreate($actorUrl)
     {
-        return Helpers::profileFirstOrNew($actorUrl);
+        return Helpers::profileFetch($actorUrl);
     }
 
     public function handleCreateActivity()
@@ -135,15 +137,13 @@ class Inbox
 
     public function handleNoteCreate()
     {
-        return;
-
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         if(!$actor || $actor->domain == null) {
             return;
         }
 
-        if(Helpers::userInAudience($this->profile, $this->payload) == false) {
+        if($actor->followers()->count() == 0) {
             return;
         }
 
@@ -176,7 +176,7 @@ class Inbox
                 'following_id' => $target->id,
                 'local_profile' => empty($actor->domain)
             ]);
-            if($follower->wasRecentlyCreated == true) {
+            if($follower->wasRecentlyCreated == true && $target->domain == null) {
                 // send notification
                 Notification::firstOrCreate([
                     'profile_id' => $target->id,
@@ -188,14 +188,19 @@ class Inbox
                     'item_type' => 'App\Profile'
                 ]);
             }
-            $payload = $this->payload;
+
             // send Accept to remote profile
             $accept = [
                 '@context' => 'https://www.w3.org/ns/activitystreams',
                 'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
                 'type'     => 'Accept',
                 'actor'    => $target->permalink(),
-                'object'   => $payload
+                'object'   => [
+                    'id'        => $actor->permalink('#follows/' . $follower->id),
+                    'actor'     => $actor->permalink(),
+                    'type'      => 'Follow',
+                    'object'    => $target->permalink()
+                ]
             ];
             Helpers::sendSignedObject($target, $actor->inbox_url, $accept);
         }
@@ -242,28 +247,40 @@ class Inbox
 
     public function handleAcceptActivity()
     {
-        $actor = $this->payload['actor'];
-        $obj = $this->payload['object'];
-        switch ($obj['type']) {
-            case 'Follow':
-                $accept = [
-                    '@context' => 'https://www.w3.org/ns/activitystreams',
-                    'id'       => $target->permalink().'#accepts/follows/' . $follower->id,
-                    'type'     => 'Accept',
-                    'actor'    => $target->permalink(),
-                    'object'   => [
-                        'id' => $actor->permalink('#follows/'.$target->id),
-                        'type'  => 'Follow',
-                        'actor' => $actor->permalink(),
-                        'object' => $target->permalink()
-                    ]
-                ];
-                break;
-            
-            default:
-                # code...
-                break;
+
+        $actor = $this->payload['object']['actor'];
+        $obj = $this->payload['object']['object'];
+        $type = $this->payload['object']['type'];
+
+        if($type !== 'Follow') {
+            return;
         }
+
+        $actor = Helpers::validateLocalUrl($actor);
+        $target = Helpers::validateUrl($obj);
+
+        if(!$actor || !$target) {
+            return;
+        }
+        $actor = Helpers::profileFetch($actor);
+        $target = Helpers::profileFetch($target);
+
+        $request = FollowRequest::whereFollowerId($actor->id)
+            ->whereFollowingId($target->id)
+            ->whereIsRejected(false)
+            ->first();
+
+        if(!$request) {
+            return;
+        }
+
+        $follower = Follower::firstOrCreate([
+            'profile_id' => $actor->id,
+            'following_id' => $target->id,
+        ]);
+        FollowPipeline::dispatch($follower);
+
+        $request->delete();
     }
 
     public function handleDeleteActivity()

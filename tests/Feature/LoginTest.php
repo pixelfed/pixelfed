@@ -14,7 +14,7 @@ class LoginTest extends TestCase
     {
         $response = $this->get('login');
 
-        $response->assertSee('Forgot Your Password?');
+        $response->assertSee('Forgot Password');
     }
 
     /** @test */

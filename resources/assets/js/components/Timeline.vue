@@ -1,7 +1,7 @@
 <template>
 <div class="container" style="">
 	<div class="row">
-		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 pt-sm-2 px-0 my-sm-3 timeline order-2 order-md-1']">
+		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
 			<div style="padding-top:10px;">
 				<div v-if="loading" class="text-center">
 					<div class="spinner-border" role="status">
@@ -9,7 +9,7 @@
 					</div>
 				</div>
 				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
-					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0">
+					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
@@ -39,20 +39,47 @@
 							</div>
 						</div>
 					</div>
-					<div class="card mb-sm-4 status-card card-md-rounded-0">
+
+					<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+							<span></span>
+							<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
+							<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
+						</div>
+						<div class="card-body row mx-0">
+							<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+								<a class="card info-overlay card-md-border-0" :href="tag.status.url">
+									<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
+										<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+										<div class="info-overlay-text">
+											<h5 class="text-white m-auto font-weight-bold">
+												<span class="pr-4">
+													<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
+												</span>
+												<span>
+													<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
+												</span>
+											</h5>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
 							<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
 								{{status.account.username}}
 							</a>
 							<div class="text-right" style="flex-grow:1;">
-								<button class="btn btn-link text-dark no-caret dropdown-toggle py-0" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-									<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
+								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
+									<span class="fas fa-ellipsis-h text-dark"></span>
 								</button>
-								<div class="dropdown-menu dropdown-menu-right">
+								<!-- <div class="dropdown-menu dropdown-menu-right">
 									<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
 									<!-- <a class="dropdown-item font-weight-bold" href="#">Share</a>
-									<a class="dropdown-item font-weight-bold" href="#">Embed</a> -->
+									<a class="dropdown-item font-weight-bold" href="#">Embed</a> ->
 									<span v-if="statusOwner(status) == false">
 										<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 										<a class="dropdown-item font-weight-bold" v-on:click="muteProfile(status)">Mute Profile</a>
@@ -83,7 +110,7 @@
 										</a>
 
 									</span>
-								</div>
+								</div> -->
 							</div>
 						</div>
 
@@ -205,7 +232,7 @@
 			</div>
 		</div>
 
-		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 pt-2 my-3 order-1 order-md-2 d-none d-md-block">
+		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
 			<div class="position-sticky" style="top:68px;">
 				<div class="mb-4">
 					<div class="">
@@ -357,6 +384,57 @@
       </div>
     </div>
   </b-modal> -->
+ <b-modal ref="ctxModal"
+    id="ctx-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="sm"
+    body-class="list-group-flush p-0 rounded">
+    <div class="list-group text-center">
+      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report inappropriate</div>
+      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
+      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
+      <!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
+      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
+      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+    </div>
+ </b-modal>
+ <b-modal ref="ctxShareModal"
+    id="ctx-share-modal"
+    title="Share"
+    hide-footer
+    centered
+    rounded
+    size="sm"
+    body-class="list-group-flush p-0 rounded text-center">
+      <div class="list-group-item rounded cursor-pointer border-top-0">Email</div>
+      <div class="list-group-item rounded cursor-pointer">Facebook</div>
+      <div class="list-group-item rounded cursor-pointer">Mastodon</div>
+      <div class="list-group-item rounded cursor-pointer">Pinterest</div>
+      <div class="list-group-item rounded cursor-pointer">Pixelfed</div>
+      <div class="list-group-item rounded cursor-pointer">Twitter</div>
+      <div class="list-group-item rounded cursor-pointer">VK</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxShareMenu()">Cancel</div>
+ </b-modal>
+ <b-modal ref="ctxEmbedModal"
+    id="ctx-embed-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="md"
+    body-class="p-2 rounded">
+	<div>
+		<textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 17px; min-height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
+		<hr>
+		<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="#">API Terms of Use</a>.</p>
+	</div>
+  </b-modal>
   <b-modal
   	id="lightbox"
   	ref="lightboxModal"
@@ -411,7 +489,7 @@
 		data() {
 			return {
 				ids: [],
-				config: {},
+				config: window.App.config,
 				page: 2,
 				feed: [],
 				profile: {},
@@ -439,24 +517,27 @@
 				showReadMore: true,
 				replyStatus: {},
 				replyText: '',
-				emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥']
+				emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
+				showHashtagPosts: false,
+				hashtagPosts: [],
+				hashtagPostsName: '',
+				ctxMenuStatus: false,
+				ctxMenuRelationship: false,
+				ctxEmbedPayload: false,
+				copiedEmbed: false
 			}
 		},
 
 		beforeMount() {
-			axios.get('/api/v2/config')
-			.then(res => {
-				this.config = res.data;
-				this.fetchProfile();
-				this.fetchTimelineApi();
+			this.fetchProfile();
+			this.fetchTimelineApi();
 
-				// if(this.config.announcement.enabled == true) {
-				// 	let msg = $('<div>')
-				// 	.addClass('alert alert-warning mb-0 rounded-0 text-center font-weight-bold')
-				// 	.html(this.config.announcement.message);
-				// 	$('body').prepend(msg);
-				// }
-			});
+			// if(this.config.announcement.enabled == true) {
+			// 	let msg = $('<div>')
+			// 	.addClass('alert alert-warning mb-0 rounded-0 text-center font-weight-bold')
+			// 	.html(this.config.announcement.message);
+			// 	$('body').prepend(msg);
+			// }
 		},
 
 		mounted() {
@@ -542,6 +623,7 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
+					this.fetchHashtagPosts();
 				}).catch(err => {
 				});
 			},
@@ -573,7 +655,7 @@
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
 						let self = this;
-						data.forEach(d => {
+						data.forEach((d, index) => {
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
 								self.ids.push(d.id);
@@ -638,13 +720,15 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-
+				let count = status.favourites_count;
+				status.favourited = !status.favourited;
 				axios.post('/i/like', {
 					item: status.id
 				}).then(res => {
 					status.favourites_count = res.data.count;
-					status.favourited = !status.favourited;
 				}).catch(err => {
+					status.favourited = !status.favourited;
+					status.favourites_count = count;
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
 			},
@@ -778,7 +862,6 @@
 
 			moderatePost(status, action, $event) {
 				let username = status.account.username;
-				console.log('action: ' + action + ' status id' + status.id);
 				switch(action) {
 					case 'autocw':
 						let msg = 'Are you sure you want to enforce CW for ' + username + ' ?';
@@ -1104,7 +1187,121 @@
 						}
 					}, 10000);
 				});
+			},
+
+			fetchHashtagPosts() {
+
+				axios.get('/api/local/discover/tag/list')
+				.then(res => {
+					let tags = res.data;
+					if(tags.length == 0) {
+						return;
+					}
+					let hashtag = tags[0];
+					this.hashtagPostsName = hashtag;
+					axios.get('/api/v2/discover/tag', {
+						params: {
+							hashtag: hashtag
+						}
+					}).then(res => {
+						if(res.data.tags.length) {
+							this.showHashtagPosts = true;
+							this.hashtagPosts = res.data.tags.splice(0,3);
+						}
+					})
+				})
+
+			},
+
+			ctxMenu(status) {
+				this.ctxMenuStatus = status;
+				let payload = '<div class="pixlfed-media" data-id="'+ this.ctxMenuStatus.id + '"></div><script ';
+				payload += 'src="https://pixelfed.dev/js/embed.js" async><';
+				payload += '/script>';
+				this.ctxEmbedPayload = payload;
+				if(status.account.id == this.profile.id) {
+					this.$refs.ctxModal.show();
+				} else {
+					axios.get('/api/v1/accounts/relationships', {
+						params: {
+							'id[]': status.account.id
+						}
+					}).then(res => {
+						this.ctxMenuRelationship = res.data[0];
+						this.$refs.ctxModal.show();
+					});
+				}
+			},
+
+			closeCtxMenu(truncate) {
+				this.copiedEmbed = false;
+				this.ctxMenuStatus = false;
+				this.ctxMenuRelationship = false;
+				this.$refs.ctxModal.hide();
+			},
+
+			ctxMenuCopyLink() {
+				let status = this.ctxMenuStatus;
+				navigator.clipboard.writeText(status.url);
+				this.closeCtxMenu();
+				return;
+			},
+
+			ctxMenuGoToPost() {
+				let status = this.ctxMenuStatus;
+				window.location.href = status.url;
+				this.closeCtxMenu();
+				return;
+			},
+
+			ctxMenuFollow() {
+				axios.post('/i/follow', {
+					item: this.ctxMenuStatus.account.id
+				}).then(res => {
+					let username = this.ctxMenuStatus.account.acct;
+					this.closeCtxMenu();
+					setTimeout(function() {
+						swal('Follow successful!', 'You are now following ' + username, 'success');
+					}, 500);
+				});
+			},
+
+			ctxMenuUnfollow() {
+				axios.post('/i/follow', {
+					item: this.ctxMenuStatus.account.id
+				}).then(res => {
+					let username = this.ctxMenuStatus.account.acct;
+					this.closeCtxMenu();
+					setTimeout(function() {
+						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
+					}, 500);
+				});
+			},
+
+			ctxMenuReportPost() {
+				window.location.href = '/i/report?type=post&id=' + this.ctxMenuStatus.id;
+			},
+
+			ctxMenuEmbed() {
+				this.$refs.ctxModal.hide();
+				this.$refs.ctxEmbedModal.show();
+			},
+
+			ctxMenuShare() {
+				this.$refs.ctxModal.hide();
+				this.$refs.ctxShareModal.show();
+			},
+
+			closeCtxShareMenu() {
+				this.$refs.ctxShareModal.hide();
+				this.$refs.ctxModal.show();
+			},
+
+			ctxCopyEmbed() {
+				navigator.clipboard.writeText(this.ctxEmbedPayload);
+				this.$refs.ctxEmbedModal.hide();
 			}
+
 		}
 	}
 </script>

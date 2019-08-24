@@ -5,11 +5,11 @@
 @include('admin.partial.topnav')
 
 <div class="container">
-  <div class="col-12 mt-5">
-    <div class="card">
+  <div class="col-12 mt-4">
+    <div class="card shadow-none bg-transparent">
       <div class="card-body p-0">
         <div class="row">
-          <div class="col-12 px-5 py-4">
+          <div class="col-12">
             @if (session('status'))
                 <div class="alert alert-success">
                     {{ session('status')}}

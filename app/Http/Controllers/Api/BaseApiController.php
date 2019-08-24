@@ -59,14 +59,11 @@ class BaseApiController extends Controller
             $res = $this->fractal->createData($resource)->toArray();
         } else {
             $this->validate($request, [
-                'page' => 'nullable|integer|min:1',
+                'page' => 'nullable|integer|min:1|max:10',
                 'limit' => 'nullable|integer|min:1|max:10'
             ]);
             $limit = $request->input('limit') ?? 10;
             $page = $request->input('page') ?? 1;
-            if($page > 3) {
-                return response()->json([]);
-            }
             $end = (int) $page * $limit;
             $start = (int) $end - $limit;
             $res = NotificationService::get($pid, $start, $end);
@@ -121,7 +118,7 @@ class BaseApiController extends Controller
         $since_id = $request->since_id ?? false;
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
-        $account = Profile::findOrFail($id);
+        $account = Profile::whereNull('status')->findOrFail($id);
         $statuses = $account->statuses()->getQuery(); 
         if($only_media == true) {
             $statuses = $statuses
@@ -148,15 +145,6 @@ class BaseApiController extends Controller
             $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
-    public function followSuggestions(Request $request)
-    {
-        $followers = Auth::user()->profile->recommendFollowers();
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
@@ -200,14 +188,9 @@ class BaseApiController extends Controller
 
     public function showTempMedia(Request $request, int $profileId, $mediaId)
     {
-        if (!$request->hasValidSignature()) {
-            abort(401);
-        }
-        $profile = Auth::user()->profile;
-        if($profile->id !== $profileId) {
-            abort(403);
-        }
-        $media = Media::whereProfileId($profile->id)->findOrFail($mediaId);
+        abort_if(!$request->hasValidSignature(), 404); 
+        abort_if(Auth::user()->profile_id !== $profileId, 404); 
+        $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
         $path = storage_path('app/'.$media->media_path);
         return response()->file($path);
     }
@@ -244,7 +227,7 @@ class BaseApiController extends Controller
         }
 
         $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id.(string) $user->created_at);
+        $userHash = hash('sha1', $user->id . (string) $user->created_at);
 
         $photo = $request->file('file');
 

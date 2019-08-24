@@ -125,7 +125,7 @@ class Helpers {
 	{
 		$audience = self::normalizeAudience($data);
 		$url = $profile->permalink();
-		return in_array($url, $audience);
+		return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
 	}
 
 	public static function validateUrl($url)
@@ -181,7 +181,7 @@ class Helpers {
 	public static function zttpUserAgent()
 	{
 		return [
-			'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+			'Accept'     => 'application/activity+json',
 			'User-Agent' => 'PixelfedBot - https://pixelfed.org',
 		];
 	}
@@ -220,7 +220,7 @@ class Helpers {
 			$id = (int) last(explode('/', $url));
 			return Status::findOrFail($id);
 		} else {
-			$cached = Status::whereUrl($url)->first();
+			$cached = Status::whereUri($url)->orWhere('url', $url)->first();
 			if($cached) {
 				return $cached;
 			}
@@ -241,7 +241,7 @@ class Helpers {
 
 			$scope = 'private';
 			
-			$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+			$cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
 
 			if(isset($res['to']) == true) {
 				if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
@@ -280,12 +280,10 @@ class Helpers {
 					$unlisted = false;
 				}
 
-				$cw = config('costar.domain.cw');
-				if(in_array(parse_url($url, PHP_URL_HOST), $cw) == true) {
+				$cwDomains = config('costar.domain.cw');
+				if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
 					$cw = true;
-				} else {
-					$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
-				}
+				} 
 			}
 
 			if(!self::validateUrl($res['id']) ||
@@ -328,7 +326,9 @@ class Helpers {
 				$status->scope = $scope;
 				$status->visibility = $scope;
 				$status->save();
-				self::importNoteAttachment($res, $status);
+				if($reply_to == null) {
+					self::importNoteAttachment($res, $status);
+				}
 				return $status;
 			});
 
@@ -361,29 +361,16 @@ class Helpers {
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
-			$info = pathinfo($url);
 
-			// pleroma attachment fix
-			$url = str_replace(' ', '%20', $url);
-
-			$img = file_get_contents($url, false, stream_context_create(['ssl' => ["verify_peer"=>true,"verify_peer_name"=>true]]));
-			$file = '/tmp/pxmi-'.str_random(32);
-			file_put_contents($file, $img);
-			$fdata = new File($file);
-			$path = Storage::putFile($storagePath, $fdata, 'public');
 			$media = new Media();
 			$media->remote_media = true;
 			$media->status_id = $status->id;
 			$media->profile_id = $status->profile_id;
 			$media->user_id = null;
-			$media->media_path = $path;
-			$media->size = $fdata->getSize();
-			$media->mime = $fdata->getMimeType();
+			$media->media_path = $url;
+			$media->remote_url = $url;
+			$media->mime = $type;
 			$media->save();
-
-			ImageThumbnail::dispatch($media);
-			ImageOptimize::dispatch($media);
-			unlink($file);
 		}
 		
 		$status->viewType();
@@ -401,7 +388,10 @@ class Helpers {
 
 		if($local == true) {
 			$id = last(explode('/', $url));
-			return Profile::whereUsername($id)->firstOrFail();
+			return Profile::whereNull('status')
+				->whereNull('domain')
+				->whereUsername($id)
+				->firstOrFail();
 		}
 		$res = self::fetchProfileFromUrl($url);
 		if(isset($res['id']) == false) {
@@ -423,8 +413,8 @@ class Helpers {
 			$profile = new Profile();
 			$profile->domain = $domain;
 			$profile->username = (string) Purify::clean($remoteUsername);
-			$profile->name = Purify::clean($res['name']) ?? 'user';
-			$profile->bio = Purify::clean($res['summary']);
+			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 			$profile->inbox_url = $res['inbox'];
 			$profile->outbox_url = $res['outbox'];

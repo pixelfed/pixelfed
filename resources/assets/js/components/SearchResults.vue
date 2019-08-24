@@ -57,9 +57,9 @@
 							{{profile.value}}
 						</p>
 						<p class="mb-0 text-center">
-							 <button :class="[profile.entity.following ? 'btn btn-secondary btn-sm py-1 font-weight-bold' : 'btn btn-primary btn-sm py-1 font-weight-bold']" v-on:click="followProfile(profile.entity.id)">
-							 	{{profile.entity.following ? 'Unfollow' : 'Follow'}}
-							 </button>
+							<button v-if="profile.entity.follow_request" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" disabled>Follow Requested</button>
+							<button v-if="!profile.entity.follow_request && profile.entity.following" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Unfollow</button>
+							<button v-if="!profile.entity.follow_request && !profile.entity.following" type="button" class="btn btn-primary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Follow</button>
 						</p>
 					</div>
 				</a>
@@ -67,15 +67,13 @@
 
 			<div v-if="filters.statuses && results.statuses" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Statuses</p>
-				<a v-for="(status, index) in results.statuses" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="status.url">
-					<div class="card">
-						<img class="card-img-top img-fluid" :src="status.thumb">
-						<div class="card-body text-center ">
-							<p class="mb-0 small text-truncate font-weight-bold text-muted" v-html="status.value">
-							</p>
+				<div v-for="(status, index) in results.statuses" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+					<a class="card info-overlay card-md-border-0" :href="status.url">
+						<div :class="[status.filter ? 'square ' + status.filter : 'square']">
+							<div class="square-content" :style="'background-image: url('+status.thumb+')'"></div>
 						</div>
-					</div>
-				</a>
+					</a>
+				</div>
 			</div>
 
 			<div v-if="!results.hashtags && !results.profiles && !results.statuses">
@@ -142,12 +140,19 @@ export default {
 			})
 		},
 
-		followProfile(id) {
-			// todo: finish AP Accept handling to enable remote follows
+		followProfile(profile, index) {
+			this.loading = true;
 			axios.post('/i/follow', {
-				item: id
+				item: profile.entity.id
 			}).then(res => {
-				window.location.href = window.location.href;
+				if(profile.entity.local == true) {
+					this.fetchSearchResults();
+					return;
+				} else {
+					this.loading = false;
+					this.results.profiles[index].entity.follow_request = true;
+					return;
+				}
 			}).catch(err => {
 				if(err.response.data.message) {
 					swal('Error', err.response.data.message, 'error');

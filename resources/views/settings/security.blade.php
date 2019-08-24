@@ -27,7 +27,7 @@
     
     @include('settings.security.device-panel')
 
-    @if(config('pixelfed.account_deletion') == true)
+    @if(config('pixelfed.account_deletion') && !$user->is_admin)
     <h4 class="font-weight-bold pt-3">Danger Zone</h4>
     <div class="mb-4 border rounded border-danger">
       <ul class="list-group mb-0 pb-0">

@@ -23,16 +23,11 @@ class FollowerController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'item'    => 'required|integer',
+            'item'    => 'required|string',
         ]);
-        $item = $request->input('item');
+        $item = (int) $request->input('item');
         $this->handleFollowRequest($item);
-        if($request->wantsJson()) {
-            return response()->json([
-                200
-            ], 200);
-        }
-        return redirect()->back();
+        return response()->json(200);
     }
 
     protected function handleFollowRequest($item)
@@ -53,7 +48,7 @@ class FollowerController extends Controller
             abort(400, 'You cannot follow this user.');
         }
 
-        $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->count();
+        $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
 
         if($private == true && $isFollowing == 0 || $remote == true) {
             if($user->following()->count() >= Follower::MAX_FOLLOWING) {
@@ -83,13 +78,23 @@ class FollowerController extends Controller
             $follower->profile_id = $user->id;
             $follower->following_id = $target->id;
             $follower->save();
+
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
+                $this->sendFollow($user, $target);
+            } 
             FollowPipeline::dispatch($follower);
         } else {
-            $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->firstOrFail();
-            if($remote == true) {
+            $request = FollowRequest::whereFollowerId($user->id)->whereFollowingId($target->id)->exists();
+            $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
+            if($remote == true && $request && !$follower) {
+                $this->sendFollow($user, $target);
+            }
+            if($remote == true && $follower) {
                 $this->sendUndoFollow($user, $target);
             }
-            $follower->delete();
+            Follower::whereProfileId($user->id)
+                ->whereFollowingId($target->id)
+                ->delete();
         }
 
         Cache::forget('profile:following:'.$target->id);
@@ -109,6 +114,7 @@ class FollowerController extends Controller
 
         $payload = [
             '@context'  => 'https://www.w3.org/ns/activitystreams',
+            'id'        => $user->permalink('#follow/'.$target->id.''),
             'type'      => 'Follow',
             'actor'     => $user->permalink(),
             'object'    => $target->permalink()

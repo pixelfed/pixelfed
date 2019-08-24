@@ -57,7 +57,7 @@ class StatusActivityPubDeliver implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        if(empty($audience) || $status->scope != 'public') {
+        if(empty($audience) || !in_array($status->scope, ['public', 'unlisted', 'private'])) {
             // Return on profiles with no remote followers
             return;
         }

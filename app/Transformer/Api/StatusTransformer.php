@@ -10,9 +10,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = [
         'account',
-        'mentions',
         'media_attachments',
-        'tags',
     ];
 
     public function transform(Status $status)
@@ -41,13 +39,15 @@ class StatusTransformer extends Fractal\TransformerAbstract
              ],
             'language'                  => null,
             'pinned'                    => null,
-
+            'mentions'                  => [],
+            'tags'                      => [],
             'pf_type'                   => $status->type ?? $status->setType(),
             'reply_count'               => (int) $status->reply_count,
             'comments_disabled'         => $status->comments_disabled ? true : false,
             'thread'                    => false,
             'replies'                   => [],
             'parent'                    => [],
+            'place'                     => $status->place
         ];
     }
 
@@ -58,13 +58,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
         return $this->item($account, new AccountTransformer());
     }
 
-    public function includeMentions(Status $status)
-    {
-        $mentions = $status->mentions;
-
-        return $this->collection($mentions, new MentionTransformer());
-    }
-
     public function includeMediaAttachments(Status $status)
     {
         return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addDays(14), function() use($status) {
@@ -73,12 +66,5 @@ class StatusTransformer extends Fractal\TransformerAbstract
                 return $this->collection($media, new MediaTransformer());
             }
         });
-    }
-
-    public function includeTags(Status $status)
-    {
-        $tags = $status->hashtags;
-
-        return $this->collection($tags, new HashtagTransformer());
     }
 }

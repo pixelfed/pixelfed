@@ -2,13 +2,9 @@
 
 @section('content')
 <div class="container">
-  <div class="error-page py-5 my-5">
-    <div class="card mx-5">
-      <div class="card-body p-5 text-center">
-        <h1>Page Not Found</h1>
-        <img src="/img/fred1.gif" class="img-fluid">
-      </div>
-    </div>
+  <div class="error-page py-5 my-5 text-center">
+    <h3 class="font-weight-bold">{!!config('instance.page.404.header')!!}</h3>
+    <p class="lead">{!!config('instance.page.404.body')!!}</p>
   </div>
 </div>
 @endsection

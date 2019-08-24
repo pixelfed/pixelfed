@@ -11,7 +11,7 @@ trait User {
 
 	public function getMaxPostsPerHourAttribute()
 	{
-		return 20;
+		return 50;
 	}
 
 	public function getMaxPostsPerDayAttribute()
@@ -49,7 +49,37 @@ trait User {
 		return 500;
 	}
 
+	public function getMaxUserBansPerDayAttribute()
+	{
+		return 100;
+	}
+
 	public function getMaxInstanceBansPerDayAttribute()
+	{
+		return 100;
+	}
+
+	public function getMaxHashtagFollowsPerHourAttribute()
+	{
+		return 20;
+	}
+
+	public function getMaxHashtagFollowsPerDayAttribute()
+	{
+		return 100;
+	}
+
+	public function getMaxCollectionsPerHourAttribute()
+	{
+		return 10;
+	}
+
+	public function getMaxCollectionsPerDayAttribute()
+	{
+		return 20;
+	}
+
+	public function getMaxCollectionsPerMonthAttribute()
 	{
 		return 100;
 	}

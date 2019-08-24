@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
-    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,12 +24,17 @@
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="canonical" href="{{request()->url()}}">
     @if(request()->cookie('dark-mode')) 
+    
     <link href="{{ mix('css/appdark.css') }}" rel="stylesheet" data-stylesheet="dark">
     @else
+    
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
     @endif
+    
     @stack('styles')
-
+    
+    <script type="text/javascript">window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
+    
 </head>
 <body class="{{Auth::check()?'loggedIn':''}}">
     @include('layouts.partial.nav')
@@ -58,19 +62,19 @@
         <div class="card card-body rounded-0 py-2 d-flex align-items-middle box-shadow" style="border-top:1px solid #F1F5F8">
             <ul class="nav nav-pills nav-fill">
               <li class="nav-item">
-                <a class="nav-link {{request()->is('/')?'text-dark':'text-muted'}}" href="/"><i class="fas fa-home fa-lg"></i></a>
+                <a class="nav-link {{request()->is('/')?'text-dark':'text-lighter'}}" href="/"><i class="fas fa-home fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is('timeline/public')?'text-dark':'text-muted'}}" href="/timeline/public"><i class="far fa-map fa-lg"></i></a>
+                <a class="nav-link {{request()->is('discover')?'text-dark':'text-lighter'}}" href="/discover"><i class="fas fa-search fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <div class="nav-link text-primary cursor-pointer" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera-retro fa-lg"></i></div>
+                <div class="nav-link text-lighter cursor-pointer" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera fa-lg"></i></div>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is('discover')?'text-dark':'text-muted'}}" href="{{route('discover')}}"><i class="far fa-compass fa-lg"></i></a>
+                <a class="nav-link {{request()->is('account/activity')?'text-dark':'text-lighter'}}" href="/account/activity"><i class="far fa-heart fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is('account/activity')?'text-dark':'text-muted'}} tooltip-notification" href="/account/activity"><i class="far fa-bell fa-lg"></i></a>
+                <a class="nav-link text-lighter" href="/i/me"><i class="far fa-user fa-lg"></i></a>
               </li>
             </ul>
         </div>

@@ -91,7 +91,7 @@
       <span class="like-count">{{$item->likes_count}}</span> likes
     </div>
     <div class="caption">
-      <p class="mb-1">
+      <p class="mb-1 read-more" style="overflow: hidden;">
         <span class="username font-weight-bold">
           <bdi><a class="text-dark" href="{{$item->profile->url()}}" v-pre>{{$item->profile->username}}</a></bdi>
         </span>

@@ -9,9 +9,6 @@
       <li class="nav-item pl-3 {{request()->is('settings/email')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.email')}}">Email</a>
       </li>
-      <li class="nav-item pl-3 {{request()->is('settings/relationships*')?'active':''}}">
-        <a class="nav-link font-weight-light text-muted" href="{{route('settings.relationships')}}">Followers</a>
-      </li>
       @if(config('pixelfed.user_invites.enabled'))
       <li class="nav-item pl-3 {{request()->is('settings/invites*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.invites')}}">Invites</a>
@@ -26,12 +23,18 @@
       <li class="nav-item pl-3 {{request()->is('settings/privacy*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.privacy')}}">Privacy</a>
       </li>
+      <li class="nav-item pl-3 {{request()->is('settings/relationships*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.relationships')}}">Relationships</a>
+      </li>
       <li class="nav-item pl-3 {{request()->is('settings/reports*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.reports')}}">Reports</a>
       </li>
   
       <li class="nav-item pl-3 {{request()->is('settings/security*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.security')}}">Security</a>
+      </li>
+      <li class="nav-item pl-3 {{request()->is('settings/sponsor*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.sponsor')}}">Sponsor</a>
       </li>
       <li class="nav-item">
         <hr>

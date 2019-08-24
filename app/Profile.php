@@ -4,12 +4,20 @@ namespace App;
 
 use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
+use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 class Profile extends Model
 {
-    use SoftDeletes;
+    use HasSnowflakePrimary, SoftDeletes;
 
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+    
     protected $dates = ['deleted_at'];
     protected $hidden = ['private_key'];
     protected $visible = ['id', 'user_id', 'username', 'name'];
@@ -132,7 +140,7 @@ class Profile extends Model
             $version = hash('sha256', $avatar->change_count);
             $path = "{$path}?v={$version}";
 
-            return url(Storage::url($path));
+            return config('app.url') . Storage::url($path);
         });
 
         return $url;
@@ -277,5 +285,22 @@ class Profile extends Model
             'id',
             'hashtag_id'
         );
+    }
+
+    public function hashtagFollowing()
+    {
+        return $this->hasMany(HashtagFollow::class);
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
+
+    public function hasFollowRequestById(int $id)
+    {
+        return FollowRequest::whereFollowerId($id)
+            ->whereFollowingId($this->id)
+            ->exists();
     }
 }

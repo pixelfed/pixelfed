@@ -7,7 +7,7 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             @auth
-            <ul class="navbar-nav mx-auto pr-3">
+            <ul class="navbar-nav d-none d-md-block mx-auto pr-3">
               <form class="form-inline search-bar" method="get" action="/i/results">
                 <div class="input-group">
                     <input class="form-control" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required>
@@ -20,9 +20,11 @@
             @endauth
 
                 @guest
+                
             <ul class="navbar-nav ml-auto">
                     <li><a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">{{ __('Login') }}</a></li>
-                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>
+                    @if(config('pixelfed.open_registration'))
+                    <li><a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">{{ __('Register') }}</a></li>@endif
                 @else
             <ul class="navbar-nav ml-auto">
                     <div class="d-none d-md-block">
