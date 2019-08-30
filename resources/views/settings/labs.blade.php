@@ -177,6 +177,11 @@
 			<label class="form-check-label font-weight-bold">Simple Mode (Timelines only)</label>
 			<p class="text-muted small help-text">An experimental content-first timeline layout</p>
 		</div>
+		<div class="form-check pb-3">
+			<input class="form-check-input" type="checkbox" id="show_tips">
+			<label class="form-check-label font-weight-bold">Show Tips</label>
+			<p class="text-muted small help-text">Show Tips on Timelines (Desktop Only)</p>
+		</div>
 		<div class="py-3">
 			<p class="font-weight-bold text-muted text-center">Discovery</p>
 			<hr>
@@ -218,6 +223,10 @@ $(document).ready(function() {
 		$('#distraction_free').attr('checked', true);
 	}
 
+	if(localStorage.getItem('metro-tips') !== 'false') {
+		$('#show_tips').attr('checked', true);
+	}
+
 	$('#show_suggestions').on('change', function(e) {
 		if(e.target.checked) {
 			localStorage.removeItem('pf_metro_ui.exp.rec');
@@ -239,6 +248,14 @@ $(document).ready(function() {
 			localStorage.setItem('pf_metro_ui.exp.df', true);
 		} else {
 			localStorage.removeItem('pf_metro_ui.exp.df');
+		}
+	});
+
+	$('#show_tips').on('change', function(e) {
+		if(e.target.checked) {
+			localStorage.setItem('metro-tips', true);
+		} else {
+			localStorage.removeItem('metro-tips');
 		}
 	});
 });
