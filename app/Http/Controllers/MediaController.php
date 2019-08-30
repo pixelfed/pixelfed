@@ -22,7 +22,6 @@ class MediaController extends Controller
 
 	public function composeUpdate(Request $request, $id)
 	{
-		ini_set('memory_limit', '1024M');
 		$this->validate($request, [
 			'file'      => function() {
 				return [
