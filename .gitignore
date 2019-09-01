@@ -15,6 +15,7 @@ yarn-error.log
 .DS_Store
 .bash_profile
 .bash_history
+.bashrc
 .gitconfig
 /.composer/
 /nginx.conf
