@@ -17,5 +17,6 @@ yarn-error.log
 .bash_history
 .bashrc
 .gitconfig
+.git-credentials
 /.composer/
 /nginx.conf
