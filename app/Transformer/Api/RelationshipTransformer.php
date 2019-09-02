@@ -14,6 +14,9 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
     public function transform(Profile $profile)
     {
         $auth = Auth::check();
+        if(!$auth) {
+            return [];
+        }
         $user = $auth ? Auth::user()->profile : false;
         $requested = false;
         if($user) {
