@@ -121,6 +121,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::delete('collection/{id}', 'CollectionController@delete')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::post('collection/{id}/publish', 'CollectionController@publish')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
+
+            Route::post('compose/media/update/{id}', 'MediaController@composeUpdate')->middleware('throttle:maxComposeMediaUpdatesPerHour,60')->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
+            Route::get('compose/location/search', 'ApiController@composeLocationSearch');
         });
         Route::group(['prefix' => 'admin'], function () {
             Route::post('moderate', 'Api\AdminApiController@moderate');
@@ -129,6 +132,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     });
 
     Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');
+    Route::get('discover/places', 'PlaceController@directoryHome')->name('discover.places');
+    Route::get('discover/places/{id}/{slug}', 'PlaceController@show');
+    Route::get('discover/location/country/{country}', 'PlaceController@directoryCities');
 
     Route::group(['prefix' => 'i'], function () {
         Route::redirect('/', '/');
