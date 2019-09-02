@@ -47,7 +47,7 @@ return [
     /*
      * This path will be used to register the necessary routes for the package.
      */
-    'path' => 'laravel-websockets',
+    'path' => 'pxws',
 
     /*
      * Dashboard Routes Middleware
@@ -98,18 +98,20 @@ return [
          * certificate chain of issuers. The private key also may be contained
          * in a separate file specified by local_pk.
          */
-        'local_cert' => null,
+        'local_cert' => env('WSS_LOCAL_CERT', null),
 
         /*
          * Path to local private key file on filesystem in case of separate files for
          * certificate (local_cert) and private key.
          */
-        'local_pk' => null,
+        'local_pk' => env('WSS_LOCAL_PK', null),
 
         /*
          * Passphrase for your local_cert file.
          */
-        'passphrase' => null,
+        'passphrase' => env('WSS_PASSPHRASE', null),
+
+        'verify_peer' => env('WSS_VERIFY_PEER', false),
     ],
 
     /*
