@@ -6,13 +6,15 @@ use App\Observers\{
     AvatarObserver,
     NotificationObserver,
     StatusHashtagObserver,
-    UserObserver
+    UserObserver,
+    UserFilterObserver,
 };
 use App\{
     Avatar,
     Notification,
     StatusHashtag,
-    User
+    User,
+    UserFilter
 };
 use Auth, Horizon, URL;
 use Illuminate\Support\Facades\Blade;
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Notification::observe(NotificationObserver::class);
         StatusHashtag::observe(StatusHashtagObserver::class);
         User::observe(UserObserver::class);
+        UserFilter::observe(UserFilterObserver::class);
 
         Horizon::auth(function ($request) {
             return Auth::check() && $request->user()->is_admin;
