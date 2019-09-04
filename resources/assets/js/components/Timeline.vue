@@ -66,15 +66,24 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
-							<a class="username font-weight-bold pl-2 text-dark" v-bind:href="status.account.url">
-								{{status.account.username}}
-							</a>
+							<div class="pl-2">
+								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
+								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="status.account.url">
+									{{status.account.username}}
+								</a>
+								<span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
+									<span class="px-1">•</span>
+									<span :class="'font-weight-bold cursor-pointer ' + [status.account.relationship.following == true ? 'text-muted' : 'text-primary']" @click="followAction(status)">{{status.account.relationship.following == true ? 'Following' : 'Follow'}}</span>
+								</span>
+								<a v-if="status.place" class="d-block small text-decoration-none" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" style="color:#718096">{{status.place.name}}, {{status.place.country}}</a>
+							</div>
 							<div class="text-right" style="flex-grow:1;">
 								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
-									<span class="fas fa-ellipsis-h text-dark"></span>
+									<span class="fas fa-ellipsis-h text-lighter"></span>
 								</button>
 								<!-- <div class="dropdown-menu dropdown-menu-right">
 									<a class="dropdown-item font-weight-bold" :href="status.url">Go to post</a>
@@ -114,7 +123,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer" v-on:dblclick="likeStatus(status)">
+						<div class="postPresenterContainer" @click="lightbox(status)">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
@@ -141,10 +150,13 @@
 						</div>
 
 						<div class="card-body">
-							<div v-if="!modes.distractionFree" class="reactions my-1">
-								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
-								<h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
-								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+							<div v-if="!modes.distractionFree" class="reactions my-1 pb-2">
+								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
+								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'fas fa-retweet pr-3 m-0 text-primary cursor-pointer' : 'fas fa-retweet pr-3 m-0 text-lighter share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+								<span class="float-right">
+									<h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3>
+								</span>
 							</div>
 
 							<div class="likes font-weight-bold" v-if="expLc(status) == true && !modes.distractionFree">
@@ -165,8 +177,11 @@
 											<span v-html="reply.content"></span>
 										</span>
 										<span class="mb-0" style="min-width:38px">
-											<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-											<post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu>
+											<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i></span>
+											<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> -->
+											<span class="text-lighter pl-2 cursor-pointer" @click="ctxMenu(reply)">
+												<span class="fas fa-ellipsis-v text-lighter"></span>
+											</span>
 										</span>
 								</p>
 							</div>
@@ -209,7 +224,7 @@
 						</div>
 					</div>
 				</div>
-				<div v-if="!loading && feed.length > 0">
+				<div v-if="!loading && feed.length">
 					<div class="card">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
@@ -252,22 +267,36 @@
 								</div>
 							</div>
 						</div>
-						<!-- <div class="card-footer bg-white py-1 d-none">
+						<div class="card-footer bg-transparent border-0 mt-2 py-1">
 							<div class="d-flex justify-content-between text-center">
-								<span class="pl-3 cursor-pointer" v-on:click="redirect(profile.url)">
+								<span class="cursor-pointer" @click="redirect(profile.url)">
 									<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
 									<p class="mb-0 small text-muted">Posts</p>
 								</span>
-								<span class="cursor-pointer" v-on:click="followersModal()">
+								<span class="cursor-pointer" @click="redirect(profile.url+'?md=followers')">
 									<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
 									<p class="mb-0 small text-muted">Followers</p>
 								</span>
-								<span class="pr-3 cursor-pointer" v-on:click="followingModal()">
+								<span class="cursor-pointer" @click="redirect(profile.url+'?md=following')">
 									<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
 									<p class="mb-0 small text-muted">Following</p>
 								</span>
 							</div>
-						</div> -->
+						</div>
+					</div>
+				</div>
+
+				<div v-if="showTips" class="mb-4 card-tips">
+					<div class="card border shadow-none mb-3" style="max-width: 18rem;">
+						<div class="card-body">
+							<div class="card-title">
+								<span class="font-weight-bold">Tip: Hide follower counts</span>
+								<span class="float-right cursor-pointer" @click.prevent="hideTips()"><i class="fas fa-times text-lighter"></i></span>
+							</div>
+							<p class="card-text">
+								<span style="font-size:13px;">You can hide followers or following count and lists on your profile.</span>
+								<br><a href="/settings/privacy/" class="small font-weight-bold">Privacy Settings</a></p>
+						</div>
 					</div>
 				</div>
 
@@ -400,7 +429,23 @@
       <!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
       <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
       <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+      <div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
+	  <div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer" @click="deletePost(ctxMenuStatus)">Delete</div>
       <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+    </div>
+ </b-modal>
+ <b-modal ref="ctxModModal"
+    id="ctx-mod-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="sm"
+    body-class="list-group-flush p-0 rounded">
+    <div class="list-group text-center">
+      <div class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'unlist')">Unlist from Timelines</div>
+      <div class="list-group-item rounded cursor-pointer" @click="">Add Content Warning</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
     </div>
  </b-modal>
  <b-modal ref="ctxShareModal"
@@ -444,8 +489,8 @@
   	size="lg"
   	body-class="p-0"
   	>
-  	<div v-if="lightboxMedia" :class="lightboxMedia.filter_class">
-  		<img :src="lightboxMedia.url" class="img-fluid" style="min-height: 100%; min-width: 100%">
+  	<div v-if="lightboxMedia" :class="lightboxMedia.filter_class" class="w-100 h-100">
+  		<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%">
   	</div>
   </b-modal>
 </div>
@@ -524,7 +569,8 @@
 				ctxMenuStatus: false,
 				ctxMenuRelationship: false,
 				ctxEmbedPayload: false,
-				copiedEmbed: false
+				copiedEmbed: false,
+				showTips: true,
 			}
 		},
 
@@ -561,6 +607,10 @@
 				this.modes.distractionFree = true;
 			} else {
 				this.modes.distractionFree = false;
+			}
+
+			if(localStorage.getItem('metro-tips') == 'false') {
+				this.showTips = false;
 			}
 
 			this.$nextTick(function () {
@@ -623,13 +673,19 @@
 					this.max_id = Math.min(...ids);
 					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
-					this.fetchHashtagPosts();
+					if(this.feed.length == 6) {
+						this.fetchHashtagPosts();
+						this.fetchTimelineApi();
+					} else {
+						this.fetchHashtagPosts();
+					}
 				}).catch(err => {
 				});
 			},
 
 			infiniteTimeline($state) {
 				if(this.loading) {
+					$state.complete();
 					return;
 				}
 				let apiUrl = false;
@@ -649,7 +705,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 6
+						limit: 9
 					},
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
@@ -826,7 +882,7 @@
 				});
 			},
 
-			deletePost(status, index) {
+			deletePost(status) {
 				if($('body').hasClass('loggedIn') == false || this.ownerOrAdmin(status) == false) {
 					return;
 				}
@@ -841,8 +897,8 @@
 				}).then(res => {
 					this.feed = this.feed.filter(s => {
 						return s.id != status.id;
-					})
-					swal('Success', 'You have successfully deleted this post', 'success');
+					});
+					this.$refs.ctxModal.hide();
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
@@ -916,6 +972,7 @@
 							}
 						});
 					break;
+
 					case 'unlisted':
 						msg = 'Are you sure you want to unlist from timelines for ' + username + ' ?';
 						swal({
@@ -1073,8 +1130,8 @@
 				});
 			},
 
-			lightbox(src) {
-				this.lightboxMedia = src;
+			lightbox(status) {
+				this.lightboxMedia = status.media_attachments[0];
 				this.$refs.lightboxModal.show();
 			},
 
@@ -1114,13 +1171,26 @@
 				});
 			},
 
-			followModalAction(id, index, type = 'following') {
+			followAction(status) {
+				let id = status.account.id;
+
 				axios.post('/i/follow', {
 						item: id
 				}).then(res => {
-					if(type == 'following') {
-						this.following.splice(index, 1);
+					this.feed.forEach(s => {
+						if(s.account.id == id) {
+							s.account.relationship.following = !s.account.relationship.following;
+						}
+					});
+
+					let username = status.account.acct;
+
+					if(status.account.relationship.following) {
+						swal('Follow successful!', 'You are now following ' + username, 'success');
+					} else {
+						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
 					}
+
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');
@@ -1190,7 +1260,6 @@
 			},
 
 			fetchHashtagPosts() {
-
 				axios.get('/api/local/discover/tag/list')
 				.then(res => {
 					let tags = res.data;
@@ -1210,7 +1279,6 @@
 						}
 					})
 				})
-
 			},
 
 			ctxMenu(status) {
@@ -1255,9 +1323,16 @@
 			},
 
 			ctxMenuFollow() {
+				let id = this.ctxMenuStatus.account.id;
 				axios.post('/i/follow', {
-					item: this.ctxMenuStatus.account.id
+					item: id
 				}).then(res => {
+					this.feed.forEach(s => {
+						if(s.account.id == id) {
+							s.account.relationship.following = !s.account.relationship.following;
+						}
+					});
+
 					let username = this.ctxMenuStatus.account.acct;
 					this.closeCtxMenu();
 					setTimeout(function() {
@@ -1267,10 +1342,21 @@
 			},
 
 			ctxMenuUnfollow() {
+				let id = this.ctxMenuStatus.account.id;
 				axios.post('/i/follow', {
-					item: this.ctxMenuStatus.account.id
+					item: id
 				}).then(res => {
+					this.feed.forEach(s => {
+						if(s.account.id == id) {
+							s.account.relationship.following = !s.account.relationship.following;
+						}
+					});
 					let username = this.ctxMenuStatus.account.acct;
+					if(this.scope == 'home') {
+						this.feed = this.feed.filter(s => {
+							return s.account.id != this.ctxMenuStatus.account.id;
+						});
+					}
 					this.closeCtxMenu();
 					setTimeout(function() {
 						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
@@ -1300,6 +1386,26 @@
 			ctxCopyEmbed() {
 				navigator.clipboard.writeText(this.ctxEmbedPayload);
 				this.$refs.ctxEmbedModal.hide();
+			},
+
+			ctxModMenuShow() {
+				this.$refs.ctxModal.hide();
+				this.$refs.ctxModModal.show();
+			},
+			
+			ctxModMenu() {
+				this.$refs.ctxModal.hide();
+			},
+
+			ctxModMenuClose() {
+				this.$refs.ctxModal.hide();
+				this.$refs.ctxModModal.hide();
+			},
+
+			hideTips() {
+				this.showTips = false;
+				let ls = window.localStorage;
+				ls.setItem('metro-tips', false);
 			}
 
 		}
