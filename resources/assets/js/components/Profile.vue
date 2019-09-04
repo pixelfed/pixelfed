@@ -86,10 +86,9 @@
 							<div class="profile-details">
 								<div class="d-none d-md-flex username-bar pb-3 align-items-center">
 									<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
-									<span class="pl-1 pb-2" v-if="profile.is_admin" title="Admin Account" data-toggle="tooltip">
-										<i class="fas fa-certificate fa-lg text-primary">
-										</i>
-										<i class="fas fa-check text-white fa-sm" style="font-size:9px;margin-left: -1.1rem;padding-bottom: 0.6rem;"></i>
+									<span class="pl-1 pb-2 fa-stack" v-if="profile.is_admin" title="Admin Account" data-toggle="tooltip">
+										<i class="fas fa-certificate fa-lg text-primary fa-stack-1x"></i>
+										<i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:9px;"></i>
 									</span>
 									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 										<span class="pl-4" v-if="relationship.following == true">
