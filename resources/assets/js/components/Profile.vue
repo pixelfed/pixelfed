@@ -375,7 +375,7 @@
 		</div>
 		<div v-if="following.length == 0" class="list-group-item border-0">
 			<div class="list-group-item border-0">
-				<p class="p-3 text-center mb-0 lead">You are not following anyone.</p>
+				<p class="p-3 text-center mb-0 lead"></p>
 			</div>
 		</div>
 		<div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
@@ -570,6 +570,17 @@
 					}
 					this.mode = u.get('t');
 				}
+			}
+
+		},
+
+		mounted() {
+			let u = new URLSearchParams(window.location.search);
+			if(u.has('md') && u.get('md') == 'followers') {
+				this.followersModal();
+			}
+			if(u.has('md') && u.get('md') == 'following') {
+				this.followingModal();
 			}
 		},
 
@@ -780,33 +791,6 @@
 				}
 			},
 
-			fetchStatusComments(status, card) {
-				axios.get('/api/v2/status/'+status.id+'/replies')
-				.then(res => {
-					let comments = card.querySelectorAll('.comments')[0];
-					let data = res.data;
-					data.forEach(function(i, k) {
-						let username = document.createElement('a');
-						username.classList.add('font-weight-bold');
-						username.classList.add('text-dark');
-						username.classList.add('mr-2');
-						username.setAttribute('href', i.account.url);
-						username.textContent = i.account.username;
-
-						let text = document.createElement('span');
-						text.innerHTML = i.content;
-
-						let comment = document.createElement('p');
-						comment.classList.add('read-more');
-						comment.classList.add('mb-0');
-						comment.appendChild(username);
-						comment.appendChild(text);
-						comments.appendChild(comment);
-					});
-				}).catch(err => {
-				})
-			},
-
 			fetchRelationships() {
 				if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == false) {
 					return;
@@ -878,7 +862,6 @@
 				});
 			},
 
-
 			unblockProfile(status = null) {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
@@ -912,54 +895,6 @@
 				});
 			},
 
-			commentSubmit(status, $event) {
-				if($('body').hasClass('loggedIn') == false) {
-					return;
-				}
-				let id = status.id;
-				let form = $event.target;
-				let input = $(form).find('input[name="comment"]');
-				let comment = input.val();
-				let comments = form.parentElement.parentElement.getElementsByClassName('comments')[0];
-				axios.post('/i/comment', {
-					item: id,
-					comment: comment
-				}).then(res => {
-					input.val('');
-					input.blur();
-
-					let username = document.createElement('a');
-					username.classList.add('font-weight-bold');
-					username.classList.add('text-dark');
-					username.classList.add('mr-2');
-					username.setAttribute('href', this.user.url);
-					username.textContent = this.user.username;
-
-					let text = document.createElement('span');
-					text.innerHTML = comment;
-
-					let wrapper = document.createElement('p');
-					wrapper.classList.add('read-more');
-					wrapper.classList.add('mb-0');
-					wrapper.appendChild(username);
-					wrapper.appendChild(text);
-					comments.insertBefore(wrapper, comments.firstChild);
-				});
-			},
-
-			statusModal(status) {
-				this.modalStatus = status;
-				this.$refs.statusModalRef.show();
-			},
-
-			masonryOrientation(status) {
-				let o = status.media_attachments[0].orientation;
-				if(!o) {
-					o = 'square';
-				}
-				return o;
-			},
-
 			followProfile() {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
@@ -986,56 +921,60 @@
 
 			followingModal() {
 				if($('body').hasClass('loggedIn') == false) {
-					window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
+					window.location.href = encodeURI('/login?next=/' + this.profileUsername + '/');
 					return;
 				}
 				if(this.profileSettings.following.list == false) {
 					return;
 				}
-				if(this.following.length > 0) {
+				if(this.followingCursor > 1) {
+					this.$refs.followingModal.show();
+					return;
+				} else {
+					axios.get('/api/v1/accounts/'+this.profileId+'/following', {
+						params: {
+							page: this.followingCursor
+						}
+					})
+					.then(res => {
+						this.following = res.data;
+						this.followingCursor++;
+						if(res.data.length < 10) {
+							this.followingMore = false;
+						}
+					});
 					this.$refs.followingModal.show();
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
-					params: {
-						page: this.followingCursor
-					}
-				})
-				.then(res => {
-					this.following = res.data;
-					this.followingCursor++;
-					if(res.data.length < 10) {
-						this.followingMore = false;
-					}
-				});
-				this.$refs.followingModal.show();
 			},
 
 			followersModal() {
 				if($('body').hasClass('loggedIn') == false) {
-					window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
+					window.location.href = encodeURI('/login?next=/' + this.profileUsername + '/');
 					return;
 				}
 				if(this.profileSettings.followers.list == false) {
 					return;
 				}
-				if(this.followers.length > 0) {
+				if(this.followerCursor > 1) {
+					this.$refs.followerModal.show();
+					return;
+				} else {
+					axios.get('/api/v1/accounts/'+this.profileId+'/followers', {
+						params: {
+							page: this.followerCursor
+						}
+					})
+					.then(res => {
+						this.followers.push(...res.data);
+						this.followerCursor++;
+						if(res.data.length < 10) {
+							this.followerMore = false;
+						}
+					})
 					this.$refs.followerModal.show();
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
-					params: {
-						page: this.followerCursor
-					}
-				})
-				.then(res => {
-					this.followers = res.data;
-					this.followerCursor++;
-					if(res.data.length < 10) {
-						this.followerMore = false;
-					}
-				})
-				this.$refs.followerModal.show();
 			},
 
 			followingLoadMore() {
