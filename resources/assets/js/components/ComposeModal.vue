@@ -2,233 +2,243 @@
 <div>
 	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" draggable="true" multiple="true" v-bind:accept="config.uploader.media_types">
 	<div class="timeline">
-		<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
-			<div class="card-header d-inline-flex align-items-center bg-white">
-				<div>
-					<a v-if="page == 1" href="#" @click.prevent="closeModal()" class="font-weight-bold text-decoration-none text-muted">
-						<i class="fas fa-times fa-lg"></i>
-						<span class="font-weight-bold mb-0">{{pageTitle}}</span>
-					</a>
-					<span v-else>
-						<span>
-							<a class="text-lighter text-decoration-none mr-3" href="#" @click.prevent="goBack()"><i class="fas fa-long-arrow-alt-left fa-lg"></i></a>
+		<div v-if="uploading">
+			<div class="card status-card card-md-rounded-0 w-100 h-100 bg-light py-5" style="border-bottom: 1px solid #f1f1f1">
+				<div class="p-5 mt-2">
+					<b-progress :value="uploadProgress" :max="100" striped :animated="true"></b-progress>
+					<p class="text-center mb-0 font-weight-bold">Uploading ... ({{uploadProgress}}%)</p>
+				</div>
+			</div>
+		</div>
+		<div v-else>
+			<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
+				<div class="card-header d-inline-flex align-items-center bg-white">
+					<div>
+						<a v-if="page == 1" href="#" @click.prevent="closeModal()" class="font-weight-bold text-decoration-none text-muted">
+							<i class="fas fa-times fa-lg"></i>
+							<span class="font-weight-bold mb-0">{{pageTitle}}</span>
+						</a>
+						<span v-else>
+							<span>
+								<a class="text-lighter text-decoration-none mr-3" href="#" @click.prevent="goBack()"><i class="fas fa-long-arrow-alt-left fa-lg"></i></a>
+							</span>
+							<span class="font-weight-bold mb-0">{{pageTitle}}</span>
 						</span>
-						<span class="font-weight-bold mb-0">{{pageTitle}}</span>
-					</span>
+					</div>
+					<div class="text-right" style="flex-grow:1;">
+						<!-- <a v-if="page > 1" class="font-weight-bold text-decoration-none" href="#" @click.prevent="page--">Back</a> -->
+						<span v-if="pageLoading">
+							<div class="spinner-border spinner-border-sm" role="status">
+								<span class="sr-only">Loading...</span>
+							</div>
+						</span>
+						<a v-if="!pageLoading && (page > 1 && page <= 3) || (page == 1 && ids.length != 0)" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
+						<a v-if="!pageLoading && page == 4" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose">Post</a>
+					</div>
 				</div>
-				<div class="text-right" style="flex-grow:1;">
-					<!-- <a v-if="page > 1" class="font-weight-bold text-decoration-none" href="#" @click.prevent="page--">Back</a> -->
-					<span v-if="pageLoading">
-						<div class="spinner-border spinner-border-sm" role="status">
-							<span class="sr-only">Loading...</span>
+				<div class="card-body p-0 border-top">
+					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
+						<div class="text-center">
+							<p>
+								<a class="btn btn-primary font-weight-bold" href="/i/compose">Compose Post</a>
+							</p>
+							<hr>
+							<p>
+								<button type="button" class="btn btn-outline-primary font-weight-bold" @click.prevent="addMedia">Compose Post <sup>BETA</sup></button>
+							</p>
+							<p>
+								<button class="btn btn-outline-primary font-weight-bold" @click.prevent="createCollection">New Collection</button>
+							</p>
+							<!-- <p>
+								<button class="btn btn-outline-primary font-weight-bold" @click.prevent="showAddToStoryCard()">Add To My Story</button>
+							</p> -->
+							<p>
+								<a class="font-weight-bold" href="/site/help">Need Help?</a>
+							</p>
+							<p class="text-muted mb-0 small text-center">Formats: <b>{{acceptedFormats()}}</b> up to <b>{{maxSize()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Albums can contain up to <b>{{config.uploader.album_limit}}</b> photos or videos</p>
 						</div>
-					</span>
-					<a v-if="!pageLoading && (page > 1 && page <= 3) || (page == 1 && ids.length != 0)" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
-					<a v-if="!pageLoading && page == 4" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose">Post</a>
-				</div>
-			</div>
-			<div class="card-body p-0 border-top">
-				<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
-					<div class="text-center">
-						<p>
-							<a class="btn btn-primary font-weight-bold" href="/i/compose">Compose Post</a>
-						</p>
+					</div>
+
+					<div v-if="page == 2" class="w-100 h-100">
+						<div v-if="ids.length > 0">
+							<vue-cropper
+								ref="cropper"
+								:relativeZoom="cropper.zoom"
+								:aspectRatio="cropper.aspectRatio"
+								:viewMode="cropper.viewMode"
+								:zoomable="cropper.zoomable"
+								:rotatable="true"
+								:src="media[0].url"
+							>
+							</vue-cropper>
+						</div>
+					</div>
+
+					<div v-if="page == 3" class="w-100 h-100">
+						<div slot="img" style="display:flex;min-height: 420px;align-items: center;">
+							<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
+						</div>
 						<hr>
-						<p>
-							<button type="button" class="btn btn-outline-primary font-weight-bold" @click.prevent="addMedia">Compose Post <sup>BETA</sup></button>
-						</p>
-						<p>
-							<button class="btn btn-outline-primary font-weight-bold" @click.prevent="createCollection">New Collection</button>
-						</p>
-						<!-- <p>
-							<button class="btn btn-outline-primary font-weight-bold" @click.prevent="showAddToStoryCard()">Add To My Story</button>
-						</p> -->
-						<p>
-							<a class="font-weight-bold" href="/site/help">Need Help?</a>
-						</p>
-						<p class="text-muted mb-0 small text-center">Formats: <b>{{acceptedFormats()}}</b> up to <b>{{maxSize()}}</b></p>
-						<p class="text-muted mb-0 small text-center">Albums can contain up to <b>{{config.uploader.album_limit}}</b> photos or videos</p>
+						<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="align-items-center px-2 pt-2">
+							<ul class="nav media-drawer-filters text-center">
+								<li class="nav-item">
+									<div class="p-1 pt-3">
+										<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+									</div>
+									<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+								</li>
+								<li class="nav-item" v-for="(filter, index) in filters">
+									<div class="p-1 pt-3">
+										<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+									</div>
+									<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
+								</li>
+							</ul>
+						</div>
 					</div>
-				</div>
 
-				<div v-if="page == 2" class="w-100 h-100">
-					<div v-if="ids.length > 0">
-						<vue-cropper
-							ref="cropper"
-							:relativeZoom="cropper.zoom"
-							:aspectRatio="cropper.aspectRatio"
-							:viewMode="cropper.viewMode"
-							:zoomable="cropper.zoomable"
-							:rotatable="true"
-							:src="media[0].url"
+					<div v-if="page == 4" class="w-100 h-100">
+						<div class="border-bottom mt-2">
+							<div class="media px-3">
+								<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
+								<div class="media-body">
+									<div class="form-group">
+										<label class="font-weight-bold text-muted small d-none">Caption</label>
+										<textarea class="form-control border-0 rounded-0 no-focus" rows="2" placeholder="Write a caption..." style="resize:none" v-model="composeText"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
+							<p v-else class="px-4 mb-0 py-2">
+								<span class="text-lighter">Location:</span> {{place.name}}, {{place.country}}
+								<span class="float-right">
+									<a href="#" @click.prevent="showLocationCard()" class="text-muted font-weight-bold small mr-2">Change</a>
+									<a href="#" @click.prevent="place = false" class="text-muted font-weight-bold small">Remove</a>
+								</span>
+							</p>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2">
+								<span class="text-lighter">Visibility:</span> {{visibilityTag}}
+								<span class="float-right">
+									<a href="#" @click.prevent="showVisibilityCard()" class="text-muted font-weight-bold small mr-2">Change</a>
+								</span>
+							</p>
+						</div>
+						<div style="min-height: 200px;">
+							<p class="px-4 mb-0 py-2 small font-weight-bold text-muted cursor-pointer" @click="showAdvancedSettingsCard()">Advanced settings</p>
+						</div>
+					</div>
+
+					<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
+						<p class="mb-0">Add Location</p>
+						<autocomplete 
+							:search="locationSearch"
+							placeholder="Search locations ..."
+							aria-label="Search locations ..."
+							:get-result-value="getResultValue"
+							@submit="onSubmitLocation"
 						>
-						</vue-cropper>
+						</autocomplete>
 					</div>
-				</div>
 
-				<div v-if="page == 3" class="w-100 h-100">
-					<div slot="img" style="display:flex;min-height: 420px;align-items: center;">
-						<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
-					</div>
-					<hr>
-					<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="align-items-center px-2 pt-2">
-						<ul class="nav media-drawer-filters text-center">
-							<li class="nav-item">
-								<div class="p-1 pt-3">
-									<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+					<div v-if="page == 'advancedSettings'" class="w-100 h-100">
+						<div class="list-group list-group-flush">
+							<div class="list-group-item d-flex justify-content-between">
+								<div>
+									<div class="text-dark ">Turn off commenting</div>
+									<p class="text-muted small mb-0">Disables comments for this post, you can change this later.</p>
 								</div>
-								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
-							</li>
-							<li class="nav-item" v-for="(filter, index) in filters">
-								<div class="p-1 pt-3">
-									<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
-								</div>
-								<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-
-				<div v-if="page == 4" class="w-100 h-100">
-					<div class="border-bottom mt-2">
-						<div class="media px-3">
-							<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
-							<div class="media-body">
-								<div class="form-group">
-									<label class="font-weight-bold text-muted small d-none">Caption</label>
-									<textarea class="form-control border-0 rounded-0 no-focus" rows="2" placeholder="Write a caption..." style="resize:none" v-model="composeText"></textarea>
+								<div>
+									<div class="custom-control custom-switch" style="z-index: 9999;">
+										<input type="checkbox" class="custom-control-input" id="asdisablecomments" v-model="commentsDisabled">
+										<label class="custom-control-label" for="asdisablecomments"></label>
+									</div>
 								</div>
 							</div>
+							<div class="list-group-item d-flex justify-content-between">
+								<div>
+									<div class="text-dark ">Contains NSFW Media</div>
+								</div>
+								<div>
+									<div class="custom-control custom-switch" style="z-index: 9999;">
+										<input type="checkbox" class="custom-control-input" id="asnsfw" v-model="nsfw">
+										<label class="custom-control-label" for="asnsfw"></label>
+									</div>
+								</div>
+							</div>
+							<a class="list-group-item" @click.prevent="page = 'altText'">
+								<div class="text-dark">Write alt text</div>
+								<p class="text-muted small mb-0">Alt text describes your photos for people with visual impairments.</p>
+							</a>
+							<a href="#" class="list-group-item" @click.prevent="page = 'addToCollection'">
+								<div class="text-dark">Add to Collection</div>
+								<p class="text-muted small mb-0">Add this post to a collection.</p>
+							</a>
+							<a href="#" class="list-group-item" @click.prevent="page = 'schedulePost'">
+								<div class="text-dark">Schedule</div>
+								<p class="text-muted small mb-0">Schedule post for a future date.</p>
+							</a>
+							<a href="#" class="list-group-item" @click.prevent="page = 'mediaMetadata'">
+								<div class="text-dark">Metadata</div>
+								<p class="text-muted small mb-0">Manage media exif and metadata.</p>
+							</a>
 						</div>
 					</div>
-					<div class="border-bottom">
-						<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
-					</div>
-					<div class="border-bottom">
-						<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
-						<p v-else class="px-4 mb-0 py-2">
-							<span class="text-lighter">Location:</span> {{place.name}}, {{place.country}}
-							<span class="float-right">
-								<a href="#" @click.prevent="showLocationCard()" class="text-muted font-weight-bold small mr-2">Change</a>
-								<a href="#" @click.prevent="place = false" class="text-muted font-weight-bold small">Remove</a>
-							</span>
-						</p>
-					</div>
-					<div class="border-bottom">
-						<p class="px-4 mb-0 py-2">
-							<span class="text-lighter">Visibility:</span> {{visibilityTag}}
-							<span class="float-right">
-								<a href="#" @click.prevent="showVisibilityCard()" class="text-muted font-weight-bold small mr-2">Change</a>
-							</span>
-						</p>
-					</div>
-					<div style="min-height: 200px;">
-						<p class="px-4 mb-0 py-2 small font-weight-bold text-muted cursor-pointer" @click="showAdvancedSettingsCard()">Advanced settings</p>
-					</div>
-				</div>
 
-				<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-				<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
-					<p class="mb-0">Add Location</p>
-					<autocomplete 
-						:search="locationSearch"
-						placeholder="Search locations ..."
-						aria-label="Search locations ..."
-						:get-result-value="getResultValue"
-						@submit="onSubmitLocation"
-					>
-					</autocomplete>
-				</div>
-
-				<div v-if="page == 'advancedSettings'" class="w-100 h-100">
-					<div class="list-group list-group-flush">
-						<div class="list-group-item d-flex justify-content-between">
-							<div>
-								<div class="text-dark ">Turn off commenting</div>
-								<p class="text-muted small mb-0">Disables comments for this post, you can change this later.</p>
-							</div>
-							<div>
-								<div class="custom-control custom-switch" style="z-index: 9999;">
-									<input type="checkbox" class="custom-control-input" id="asdisablecomments" v-model="commentsDisabled">
-									<label class="custom-control-label" for="asdisablecomments"></label>
-								</div>
-							</div>
+					<div v-if="page == 'visibility'" class="w-100 h-100">
+						<div class="list-group list-group-flush">
+							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'public'?'text-primary':'']" @click="toggleVisibility('public')">Public</div>
+							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'unlisted'?'text-primary':'']" @click="toggleVisibility('unlisted')">Unlisted</div>
+							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'private'?'text-primary':'']" @click="toggleVisibility('private')">Followers Only</div>
 						</div>
-						<div class="list-group-item d-flex justify-content-between">
-							<div>
-								<div class="text-dark ">Contains NSFW Media</div>
-							</div>
-							<div>
-								<div class="custom-control custom-switch" style="z-index: 9999;">
-									<input type="checkbox" class="custom-control-input" id="asnsfw" v-model="nsfw">
-									<label class="custom-control-label" for="asnsfw"></label>
-								</div>
-							</div>
+					</div>
+
+					<div v-if="page == 'altText'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+					<div v-if="page == 'addToCollection'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+					<div v-if="page == 'schedulePost'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+					<div v-if="page == 'mediaMetadata'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+					<div v-if="page == 'addToStory'" class="w-100 h-100 p-3">
+						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+					</div>
+
+				</div>
+
+				<!-- card-footers -->
+				<div v-if="page == 2" class="card-footer bg-white d-flex justify-content-between">
+					<div>
+						<button type="button" class="btn btn-outline-secondary" @click="rotate"><i class="fas fa-undo"></i></button>
+					</div>
+					<div>
+						<div class="d-inline-block button-group">
+							<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 16/9 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(16/9)">16:9</button>
+							<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 4/3 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(4/3)">4:3</button>
+							<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 3/2 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(3/2)">3:2</button>
+							<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 1 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(1)">1:1</button>
+							<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 2/3 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(2/3)">2:3</button>
 						</div>
-						<a class="list-group-item" @click.prevent="page = 'altText'">
-							<div class="text-dark">Write alt text</div>
-							<p class="text-muted small mb-0">Alt text describes your photos for people with visual impairments.</p>
-						</a>
-						<a href="#" class="list-group-item" @click.prevent="page = 'addToCollection'">
-							<div class="text-dark">Add to Collection</div>
-							<p class="text-muted small mb-0">Add this post to a collection.</p>
-						</a>
-						<a href="#" class="list-group-item" @click.prevent="page = 'schedulePost'">
-							<div class="text-dark">Schedule</div>
-							<p class="text-muted small mb-0">Schedule post for a future date.</p>
-						</a>
-						<a href="#" class="list-group-item" @click.prevent="page = 'mediaMetadata'">
-							<div class="text-dark">Metadata</div>
-							<p class="text-muted small mb-0">Manage media exif and metadata.</p>
-						</a>
-					</div>
-				</div>
-
-				<div v-if="page == 'visibility'" class="w-100 h-100">
-					<div class="list-group list-group-flush">
-						<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'public'?'text-primary':'']" @click="toggleVisibility('public')">Public</div>
-						<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'unlisted'?'text-primary':'']" @click="toggleVisibility('unlisted')">Unlisted</div>
-						<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'private'?'text-primary':'']" @click="toggleVisibility('private')">Followers Only</div>
-					</div>
-				</div>
-
-				<div v-if="page == 'altText'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-				<div v-if="page == 'addToCollection'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-				<div v-if="page == 'schedulePost'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-				<div v-if="page == 'mediaMetadata'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-				<div v-if="page == 'addToStory'" class="w-100 h-100 p-3">
-					<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
-				</div>
-
-			</div>
-
-			<!-- card-footers -->
-			<div v-if="page == 2" class="card-footer bg-white d-flex justify-content-between">
-				<div>
-					<button type="button" class="btn btn-outline-secondary" @click="rotate"><i class="fas fa-undo"></i></button>
-				</div>
-				<div>
-					<div class="d-inline-block button-group">
-						<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 16/9 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(16/9)">16:9</button>
-						<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 4/3 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(4/3)">4:3</button>
-						<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 3/2 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(3/2)">3:2</button>
-						<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 1 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(1)">1:1</button>
-						<button :class="'btn font-weight-bold ' + [cropper.aspectRatio == 2/3 ? 'btn-primary':'btn-light']" @click.prevent="changeAspect(2/3)">2:3</button>
 					</div>
 				</div>
 			</div>
@@ -647,7 +657,13 @@ export default {
 				case 2:
 					this.pageLoading = true;
 					let self = this;
-					this.$refs.cropper.getCroppedCanvas().toBlob(function(blob) {
+					this.$refs.cropper.getCroppedCanvas({  
+							maxWidth: 4096,
+							maxHeight: 4096,
+							fillColor: '#fff',
+							imageSmoothingEnabled: false,
+							imageSmoothingQuality: 'high',
+						}).toBlob(function(blob) {
 						let data = new FormData();
 						data.append('file', blob);
 						let url = '/api/local/compose/media/update/' + self.ids[self.carouselCursor];
