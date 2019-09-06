@@ -14,14 +14,19 @@
       <div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
-          <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
-            <div class="status-avatar mr-2">
-              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
+          <div class="d-flex">
+            <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
+              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
             </div>
             <div class="username">
-              <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
+              <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
+              <span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+                <i class="fas fa-certificate text-primary fa-stack-1x"></i>
+                <i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+              </span>
+              <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
             </div>
-          </a>
+          </div>
           <div v-if="user != false" class="float-right">
             <div class="post-actions">
             <div class="dropdown">
@@ -80,6 +85,10 @@
                 </div>
                 <div class="username">
                   <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
+                  <span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+                    <i class="fas fa-certificate text-primary fa-stack-1x"></i>
+                    <i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+                  </span>
                   <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
                 </div>
               </div>
