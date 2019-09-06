@@ -72,7 +72,7 @@ class Note extends Fractal\TransformerAbstract
 					'type' => 'Place',
 					'name' => $status->place->name,
 					'longitude' => $status->place->long,
-					'lattitude' => $status->place->lat,
+					'latitude' => $status->place->lat,
 					'country' => $status->place->country
 				] : null,
 		];
