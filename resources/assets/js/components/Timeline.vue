@@ -75,9 +75,9 @@
 								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="status.account.url">
 									{{status.account.username}}
 								</a>
-								<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="max-width:19px;">
-									<i class="fas fa-certificate text-primary fa-lg fa-stack-1x"></i>
-									<i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:9px;"></i>
+								<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+									<i class="fas fa-certificate text-primary fa-stack-1x"></i>
+									<i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
 								</span>
 								<span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
 									<span class="px-1">•</span>
