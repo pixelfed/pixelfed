@@ -213,17 +213,13 @@ class BaseApiController extends Controller
         $profile = $user->profile;
 
         if(config('pixelfed.enforce_account_limit') == true) {
-            $size = Media::whereUserId($user->id)->sum('size') / 1000;
+            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
+                return Media::whereUserId($user->id)->sum('size') / 1000;
+            }); 
             $limit = (int) config('pixelfed.max_account_size');
             if ($size >= $limit) {
                abort(403, 'Account size limit reached.');
             }
-        }
-
-        $recent = Media::whereProfileId($profile->id)->whereNull('status_id')->count();
-
-        if($recent > 50) {
-            abort(403);
         }
 
         $monthHash = hash('sha1', date('Y').date('m'));
