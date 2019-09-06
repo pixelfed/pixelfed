@@ -229,7 +229,7 @@
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
 							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
-							<div slot="no-results" class="font-weight-bold">No posts found</div>
+							<div slot="no-results" class="font-weight-bold">No more posts to load</div>
 							</infinite-loading>
 						</div>
 					</div>
@@ -725,6 +725,9 @@
 					} else {
 						$state.complete();
 					}
+				}).catch(err => {
+					this.loading = false;
+					$state.complete();
 				});
 			},
 
