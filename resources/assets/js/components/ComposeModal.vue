@@ -340,6 +340,9 @@ export default {
 
 	beforeMount() {
 		this.fetchProfile();
+		if(this.config.uploader.media_types.includes('video/mp4') == false) {
+			this.composeType = 'post'
+		}
 	},
 
 	mounted() {
@@ -390,16 +393,6 @@ export default {
 	},
 
 	methods: {
-		fetchConfig() {
-			axios.get('/api/v2/config').then(res => {
-				this.config = res.data;
-				window.pixelfed.config = window.pixelfed.config || res.data;
-				if(this.config.uploader.media_types.includes('video/mp4') == false) {
-					this.composeType = 'post'
-				}
-			});
-		},
-
 		fetchProfile() {
 			axios.get('/api/v1/accounts/verify_credentials').then(res => {
 				this.profile = res.data;
