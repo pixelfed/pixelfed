@@ -25,7 +25,7 @@ return [
 
 	'timeline' => [
 		'local' => [
-			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', true)
+			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
 		]
 	],
 
