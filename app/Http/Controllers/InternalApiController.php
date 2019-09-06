@@ -256,7 +256,8 @@ class InternalApiController extends Controller
             }
         }
 
-        $profile = Auth::user()->profile;
+        $user = Auth::user();
+        $profile = $user->profile;
         $visibility = $request->input('visibility');
         $medias = $request->input('media');
         $attachments = [];
@@ -315,6 +316,7 @@ class InternalApiController extends Controller
         NewStatusPipeline::dispatch($status);
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:status_count:'.$profile->id);
+        Cache::forget($user->storageUsedKey());
         return $status->url();
     }
 
