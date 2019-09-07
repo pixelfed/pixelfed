@@ -130,7 +130,7 @@ class Inbox
         }
 
         $inReplyTo = $activity['inReplyTo'];
-        $url = $activity['id'];
+        $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
         
         Helpers::statusFirstOrFetch($url, true);
         return;
@@ -148,7 +148,7 @@ class Inbox
             return;
         }
 
-        $url = $activity['id'];
+        $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
         if(Status::whereUrl($url)->exists()) {
             return;
         }
