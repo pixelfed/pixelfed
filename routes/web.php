@@ -68,7 +68,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('/home', 'HomeController@index')->name('home');
 
     Route::get('discover/c/{slug}', 'DiscoverController@showCategory');
-    Route::get('discover/personal', 'DiscoverController@showPersonal');
+    Route::redirect('discover/personal', '/discover');
     Route::get('discover', 'DiscoverController@home')->name('discover');
     Route::get('discover/loops', 'DiscoverController@showLoops');
     
