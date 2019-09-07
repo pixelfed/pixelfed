@@ -65,27 +65,6 @@ class DiscoverController extends Controller
       return view('discover.tags.category', compact('tag', 'posts'));
     }
 
-    public function showPersonal(Request $request)
-    {
-      abort_if(!Auth::check(), 403);
-
-      $profile = Auth::user()->profile;
-
-      $tags = Cache::remember('profile-'.$profile->id.':hashtags', now()->addMinutes(15), function() use ($profile){
-          return $profile->hashtags()->groupBy('hashtag_id')->inRandomOrder()->take(8)->get();
-      });
-      $following = Cache::remember('profile:following:'.$profile->id, now()->addMinutes(60), function() use ($profile) {
-          $res = Follower::whereProfileId($profile->id)->pluck('following_id');
-          return $res->push($profile->id)->toArray();
-      });
-      $posts = Cache::remember('profile-'.$profile->id.':hashtag-posts', now()->addMinutes(5), function() use ($profile, $following) {
-          $posts = Status::whereScope('public')->withCount(['likes','comments'])->whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->orderByDesc('created_at')->take(39)->get();
-          $posts->post_count = Status::whereScope('public')->whereNotIn('profile_id', $following)->whereHas('media')->whereType('photo')->count();
-          return $posts;
-      });
-      return view('discover.personal', compact('posts', 'tags'));
-    }
-
     public function showLoops(Request $request)
     {
       if(config('exp.loops') != true) {
@@ -147,5 +126,11 @@ class DiscoverController extends Controller
         $res['follows'] = HashtagFollow::whereUserId(Auth::id())->whereHashtagId($hashtag->id)->exists();
       }
       return $res;
+    }
+
+    public function profilesDirectory(Request $request)
+    {
+      $profiles = Profile::whereNull('domain')->simplePaginate(48);
+      return view('discover.profiles.home', compact('profiles'));
     }
 }
