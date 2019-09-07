@@ -165,7 +165,7 @@
 					<div class="row" v-if="mode == 'grid'">
 						<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
-								<div class="square">
+								<div :class="'square ' + s.media_attachments[0].filter_class">
 									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
 									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
 									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
@@ -329,7 +329,7 @@
 						  :gutter="{default: '5px'}"
 						>
 							<div class="p-1" v-for="(s, index) in timeline">
-								<a class="card info-overlay card-md-border-0" :href="s.url">
+								<a :class="s.media_attachments[0].filter_class + ' card info-overlay card-md-border-0'" :href="s.url">
 									<img :src="previewUrl(s)" class="img-fluid w-100">
 								</a>
 							</div>
