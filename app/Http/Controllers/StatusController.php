@@ -22,7 +22,6 @@ class StatusController extends Controller
 {
     public function show(Request $request, $username, int $id)
     {
-        // $id = strlen($id) < 17 ? array_first(\Hashids::decode($id)) : $id;
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
         if($user->status != null) {
@@ -60,9 +59,24 @@ class StatusController extends Controller
         return view($template, compact('user', 'status'));
     }
 
+    public function showId(int $id)
+    {
+        abort(404);
+        $status = Status::whereNull('reblog_of_id')
+                ->whereIn('scope', ['public', 'unlisted'])
+                ->findOrFail($id);
+        return redirect($status->url());
+    }
+
     public function showEmbed(Request $request, $username, int $id)
     {
-        return;
+        abort(404);
+        $profile = Profile::whereNull('status')->whereUsername($username)->first();
+        $status = Status::whereScope('private')->find($id);
+        if(!$profile || !$status) {
+            return view('status.embed-removed');
+        }
+        return view('status.embed', compact('status'));
     }
 
     public function showObject(Request $request, $username, int $id)
@@ -77,13 +91,7 @@ class StatusController extends Controller
                 ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
-        if($status->uri) {
-            $url = $status->uri;
-            if(ends_with($url, '/activity')) {
-                $url = str_replace('/activity', '', $url);
-            }
-            return redirect($url);
-        }
+        abort_if($status->uri, 404);
 
         if($status->visibility == 'private' || $user->is_private) {
             if(!Auth::check()) {
@@ -190,7 +198,7 @@ class StatusController extends Controller
         $resource = new Fractal\Resource\Item($status, new Note());
         $res = $fractal->createData($resource)->toArray();
 
-        return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+        return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT);
     }
 
     public function edit(Request $request, $username, $id)
