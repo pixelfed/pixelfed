@@ -298,7 +298,7 @@ class Inbox
         $obj = $this->payload['object'];
         $type = $this->payload['object']['type'];
         $typeCheck = in_array($type, ['Person', 'Tombstone']);
-        if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj) || !$typeCheck) {
+        if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
             return;
         }
         if(parse_url($obj['id'], PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
