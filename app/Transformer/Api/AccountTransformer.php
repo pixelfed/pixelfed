@@ -2,11 +2,16 @@
 
 namespace App\Transformer\Api;
 
+use Auth;
 use App\Profile;
 use League\Fractal;
 
 class AccountTransformer extends Fractal\TransformerAbstract
 {
+    protected $defaultIncludes = [
+        'relationship',
+    ];
+
 	public function transform(Profile $profile)
 	{
 		$is_admin = $profile->domain ? false : $profile->user->is_admin;
@@ -32,7 +37,12 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'bot' => null,
 			'website' => $profile->website,
 			'software' => 'pixelfed',
-			'is_admin' => (bool) $is_admin
+			'is_admin' => (bool) $is_admin,
 		];
+	}
+
+	protected function includeRelationship(Profile $profile)
+	{
+		return $this->item($profile, new RelationshipTransformer());
 	}
 }

@@ -28,4 +28,16 @@ class Place extends Model
 	{
 		return $this->hasMany(Status::class, 'id', 'place_id');
 	}
+
+	public function countryUrl()
+	{
+		$country = strtolower($this->country);
+		$country = urlencode($country);
+		return url('/discover/location/country/' . $country);
+	}
+
+	public function cityUrl()
+	{
+		return $this->url();
+	}
 }

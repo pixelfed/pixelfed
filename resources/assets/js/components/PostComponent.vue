@@ -14,14 +14,19 @@
       <div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
-          <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
-            <div class="status-avatar mr-2">
-              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
+          <div class="d-flex">
+            <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
+              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
             </div>
             <div class="username">
-              <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
+              <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
+              <span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+                <i class="fas fa-certificate text-primary fa-stack-1x"></i>
+                <i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+              </span>
+              <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
             </div>
-          </a>
+          </div>
           <div v-if="user != false" class="float-right">
             <div class="post-actions">
             <div class="dropdown">
@@ -74,14 +79,19 @@
 
           <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
             <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
-              <a :href="statusProfileUrl" class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
-                <div class="status-avatar mr-2">
-                  <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;">
+              <div class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
+                <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
+                  <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
                 </div>
                 <div class="username">
-                  <span class="username-link font-weight-bold text-dark">{{ statusUsername }}</span>
+                  <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
+                  <span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+                    <i class="fas fa-certificate text-primary fa-stack-1x"></i>
+                    <i class="fas fa-check text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+                  </span>
+                  <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
                 </div>
-              </a>
+              </div>
                 <div class="float-right">
                   <div class="post-actions">
                   <div v-if="user != false" class="dropdown">
@@ -183,6 +193,7 @@
                   <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
                   <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
                   <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+                  <h3 @click="lightbox(status.media_attachments[0])" class="fas fa-expand m-0 cursor-pointer"></h3>
                   <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
                 </div>
                 <div class="reaction-counts font-weight-bold mb-0">
@@ -266,38 +277,123 @@
       </div>
       <div class="bg-white">
         <div class="container">
-          <div class="row py-5">
-            <div class="col-12 col-md-8">
-              <div class="reactions py-2">
-                <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
-                <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
-                <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary float-right cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn float-right cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
+          <div class="row pb-5">
+            <div class="col-12 col-md-8 py-4">
+              <div class="reactions d-flex align-items-center">
+                <div class="text-center mr-5">
+                  <div v-bind:class="[reactions.liked ? 'fas fa-heart text-danger m-0 cursor-pointer' : 'far fa-heart m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus" style="font-size:1.575rem">
+                  </div>
+                  <div class="like-count font-weight-bold mt-2 rounded border" style="cursor:pointer;" v-on:click="likesModal">{{status.favourites_count || 0}}</div>
+                </div>
+                <div class="text-center">
+                  <div v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'h3 far fa-share-square m-0 text-primary cursor-pointer' : 'h3 far fa-share-square m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus">
+                  </div>
+                  <div class="share-count font-weight-bold mt-2 rounded border" v-if="status.visibility == 'public'" style="cursor:pointer;" v-on:click="sharesModal">{{status.reblogs_count || 0}}</div>
+                </div>
               </div>
-                <div class="reaction-counts font-weight-bold mb-0">
-                  <span style="cursor:pointer;" v-on:click="likesModal">
-                    <span class="like-count">{{status.favourites_count || 0}}</span> likes
-                  </span>
-                  <span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
-                    <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
-                  </span>
+              <!-- <div class="reaction-counts font-weight-bold mb-0">
+                  <span class="like-count">{{status.favourites_count || 0}}</span> likes
+                <span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
+                  <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
+                </span>
+              </div> -->
+              <div class="media align-items-center mt-3">
+                <div class="media-body">
+                  <h2 class="font-weight-bold">
+                    {{status.content.length < 100 ? status.content.slice(0,100) : 'Untitled Post'}}
+                  </h2>
+                  <p class="lead mb-0">
+                    by <a :href="statusProfileUrl">{{statusUsername}}</a>
+                    <!-- <span class="px-1 text-lighter">•</span> 
+                    <a class="font-weight-bold small" href="#">Follow</a> -->
+                  </p>
                 </div>
-              <hr>
-              <div class="media align-items-center">
-                <img :src="statusAvatar" class="rounded-circle shadow-lg mr-3" alt="avatar" width="72px" height="72px">
-                <div class="media-body lead">
-                  by <a :href="statusProfileUrl">{{statusUsername}}</a>
-                </div>
+                <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px">
               </div>
               <hr>
               <div>
-                <p class="lead"><i class="far fa-clock"></i> {{timestampFormat()}}</p>
-                <div class="lead" v-html="status.content"></div>
+                <p class="lead">
+                  <span v-if="status.place" class="text-truncate">
+                    <i class="fas fa-map-marker-alt text-lighter mr-3"></i> {{status.place.name}}, {{status.place.country}}
+                  </span>
+                  <span v-once class="float-right">
+                    <i class="far fa-clock text-lighter mr-3"></i> {{timeAgo(status.created_at)}} ago
+                  </span>
+                </p>
+                <!-- <div v-if="status.content.length > 100" class="lead" v-html="status.content"></div> -->
+                <!-- <div class="pt-4">
+                  <p class="lead">
+                    <span class="mr-3"><i class="fas fa-camera text-lighter"></i></span>
+                    <span>Nikon D850</span>
+                  </p>
+                  <p class="lead">
+                    <span class="mr-3"><i class="fas fa-ruler-horizontal text-lighter"></i></span>
+                    <span>200-500mm</span>
+                  </p>
+                  <p class="lead">
+                    <span class="mr-3"><i class="fas fa-stream text-lighter"></i></span>
+                    <span>500mm <span class="px-1"></span> ƒ/7.1 <span class="px-1"></span> 1/1600s <span class="px-1"></span> ISO 800</span>
+                  </p>
+                </div> -->
+                <div v-if="status.tags" class="pt-4">
+                  <p class="lead">
+                    <a v-for="(tag, index) in status.tags" class="btn btn-outline-dark mr-1 mb-1" :href="tag.url + '?src=mp'">{{tag.name}}</a>
+                  </p>
+                </div>
               </div>
             </div>
-            <div class="col-12 col-md-4">
-              <div v-if="status.comments_disabled" class="bg-light p-5 text-center lead">
-                <p class="mb-0">Comments have been disabled on this post.</p>
-              </div>
+            <div class="col-12 col-md-4 pt-4 pl-md-3">
+                <p class="lead font-weight-bold">Comments</p>
+                <div v-if="user" class="moment-comments">
+                  <div class="form-group">
+                    <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
+                    <p style="padding-top:4px;">
+                      <span class="small text-lighter font-weight-bold">
+                        {{replyText.length}}/{{config.uploader.max_caption_length}}
+                      </span>
+                      <button 
+                      :class="[replyText.length > 1 ? 'btn btn-sm font-weight-bold float-right btn-outline-dark ':'btn btn-sm font-weight-bold float-right btn-outline-lighter']" 
+                      :disabled="replyText.length < 2" 
+                      @click="postReply"
+                      >Post</button>
+                    </p>
+                  </div>
+                  <hr>
+                </div>
+                <div class="comment mt-3" style="max-height: 500px; overflow-y: auto;">
+                  <div v-for="(reply, index) in results" :key="'tl' + reply.id + '_' + index" class="media mb-3">
+                    <img :src="reply.account.avatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
+                    <div class="media-body">
+                      <div class="d-flex justify-content-between">
+                        <span class="font-weight-bold">{{reply.account.username}}</span>
+                        <span class="small">
+                          <a class="text-lighter text-decoration-none" :href="reply.url">{{timeAgo(reply.created_at)}}</a>
+                        </span>
+                      </div>
+                      <p v-html="reply.content" style="word-break: break-all;"></p>
+                    </div>
+                  </div> 
+                  <!-- <div class="media mb-3">
+                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
+                    <div class="media-body">
+                      <div class="d-flex justify-content-between">
+                        <span class="font-weight-bold">mona</span>
+                        <span class="text-lighter small">2h ago</span>
+                      </div>
+                      <p>Stunning my friend!</p>
+                    </div>
+                  </div>  
+                  <div class="media mb-3">
+                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
+                    <div class="media-body">
+                      <div class="d-flex justify-content-between">
+                        <span class="font-weight-bold">Andre</span>
+                        <span class="text-lighter small">3h ago</span>
+                      </div>
+                      <p>Wow</p>
+                    </div>
+                  </div>   -->
+                </div>
             </div>
           </div>
         </div>
@@ -378,8 +474,8 @@
     size="lg"
     body-class="p-0"
     >
-    <div v-if="lightboxMedia" :class="lightboxMedia.filter_class">
-      <img :src="lightboxMedia.url" class="img-fluid" style="min-height: 100%; min-width: 100%">
+    <div v-if="lightboxMedia" >
+      <img :src="lightboxMedia.url" :class="lightboxMedia.filter_class + ' img-fluid'" style="min-height: 100%; min-width: 100%">
     </div>
   </b-modal>
 </div>
@@ -472,6 +568,7 @@ export default {
     ],
     data() {
         return {
+            config: window.App.config,
             status: false,
             media: {},
             user: false,
@@ -787,11 +884,18 @@ export default {
           item: this.replyingToId,
           comment: this.replyText
         }
+        
+        this.replyText = '';
+
         axios.post('/i/comment', data)
         .then(function(res) {
           let entity = res.data.entity;
           if(entity.in_reply_to_id == self.status.id) {
-            self.results.push(entity);
+            if(self.profileLayout == 'metro') {
+              self.results.push(entity);
+            } else {
+              self.results.unshift(entity);
+            }
             let elem = $('.status-comments')[0];
             elem.scrollTop = elem.clientHeight;
           } else {
@@ -801,7 +905,6 @@ export default {
               el.reply_count = el.reply_count + 1;
             }
           }
-          self.replyText = '';
         });
       },
 
@@ -847,7 +950,9 @@ export default {
           axios.get(url)
             .then(response => {
                 let self = this;
-                this.results = _.reverse(response.data.data);
+                this.results = this.profileLayout == 'metro' ? 
+                  _.reverse(response.data.data) :
+                  response.data.data;
                 this.pagination = response.data.meta.pagination;
                 if(this.results.length > 0) {
                   $('.load-more-link').removeClass('d-none');
@@ -1054,6 +1159,10 @@ export default {
                 reply.thread = true;
             });
         }
+      },
+
+      redirect(url) {
+        window.location.href = url;
       }
 
     },

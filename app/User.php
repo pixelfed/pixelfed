@@ -78,4 +78,9 @@ class User extends Authenticatable
         return $this->hasMany(UserDevice::class);
     }
 
+    public function storageUsedKey()
+    {
+        return 'profile:storage:used:' . $this->id;
+    }
+
 }

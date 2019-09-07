@@ -22,6 +22,7 @@ use App\Transformer\Api\{
     RelationshipTransformer,
     StatusTransformer,
 };
+use App\Services\UserFilterService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -234,23 +235,27 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
 
-        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
-            return Profile::whereIsPrivate(true)
-                ->orWhere('unlisted', true)
-                ->orWhere('status', '!=', null)
-                ->pluck('id');
-        });
+        // $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
+        //     return Profile::whereIsPrivate(true)
+        //         ->orWhere('unlisted', true)
+        //         ->orWhere('status', '!=', null)
+        //         ->pluck('id');
+        // });
 
-        if(Auth::check()) {
-            $pid = Auth::user()->profile->id;
-            $filters = UserFilter::whereUserId($pid)
-                      ->whereFilterableType('App\Profile')
-                      ->whereIn('filter_type', ['mute', 'block'])
-                      ->pluck('filterable_id')->toArray();
-            $filtered = array_merge($private->toArray(), $filters);
-        } else {
-            $filtered = $private->toArray();
-        }
+        // if(Auth::check()) {
+        //     // $pid = Auth::user()->profile->id;
+        //     // $filters = UserFilter::whereUserId($pid)
+        //     //           ->whereFilterableType('App\Profile')
+        //     //           ->whereIn('filter_type', ['mute', 'block'])
+        //     //           ->pluck('filterable_id')->toArray();
+        //     // $filtered = array_merge($private->toArray(), $filters);
+        //     $filtered = UserFilterService::filters(Auth::user()->profile_id);
+        // } else {
+        //     // $filtered = $private->toArray();
+        //     $filtered = [];
+        // }
+
+        $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -276,14 +281,12 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->whereLocal(true)
-                      ->whereNull('uri')
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
-                      ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
+                      //->toSql();
         } else {
             $timeline = Status::select(
                         'id', 
@@ -305,17 +308,16 @@ class PublicApiController extends Controller
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
-                      ->whereNull('uri')
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
-                      ->whereNull('reblog_of_id')
                       ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
+                      //->toSql();
         }
 
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
+        // $res = $timeline;
         return response()->json($res);
 
     }
@@ -347,20 +349,22 @@ class PublicApiController extends Controller
             return $following->push($pid)->toArray();
         });
 
-        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
-            return Profile::whereIsPrivate(true)
-                ->orWhere('unlisted', true)
-                ->orWhere('status', '!=', null)
-                ->pluck('id');
-        });
+        // $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
+        //     return Profile::whereIsPrivate(true)
+        //         ->orWhere('unlisted', true)
+        //         ->orWhere('status', '!=', null)
+        //         ->pluck('id');
+        // });
         
-        $private = $private->diff($following)->flatten();
+        // $private = $private->diff($following)->flatten();
 
-        $filters = UserFilter::whereUserId($pid)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id')->toArray();
-        $filtered = array_merge($private->toArray(), $filters);
+        // $filters = UserFilter::whereUserId($pid)
+        //           ->whereFilterableType('App\Profile')
+        //           ->whereIn('filter_type', ['mute', 'block'])
+        //           ->pluck('filterable_id')->toArray();
+        // $filtered = array_merge($private->toArray(), $filters);
+
+        $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -387,8 +391,6 @@ class PublicApiController extends Controller
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
-                      ->whereNull('reblog_of_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
@@ -415,8 +417,6 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
-                      ->whereNull('reblog_of_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);

@@ -81,11 +81,13 @@ class ApiController extends BaseApiController
 
     public function composeLocationSearch(Request $request)
     {
+        abort_if(!Auth::check(), 403);
         $this->validate($request, [
             'q' => 'required|string'
         ]);
-
-        $places = Place::where('name', 'like', '%' . $request->input('q') . '%')
+        $q = filter_var($request->input('q'), FILTER_SANITIZE_STRING);
+        $q = '%' . $q . '%';
+        $places = Place::where('name', 'like', $q)
             ->take(25)
             ->get()
             ->map(function($r) {

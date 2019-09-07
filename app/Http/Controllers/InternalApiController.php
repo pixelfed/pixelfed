@@ -240,7 +240,8 @@ class InternalApiController extends Controller
             'media.*.license' => 'nullable|string|max:80',
             'cw' => 'nullable|boolean',
             'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
-            'place' => 'nullable'
+            'place' => 'nullable',
+            'comments_disabled' => 'nullable|boolean'
         ]);
 
         if(config('costar.enabled') == true) {
@@ -255,7 +256,8 @@ class InternalApiController extends Controller
             }
         }
 
-        $profile = Auth::user()->profile;
+        $user = Auth::user();
+        $profile = $user->profile;
         $visibility = $request->input('visibility');
         $medias = $request->input('media');
         $attachments = [];
@@ -287,9 +289,15 @@ class InternalApiController extends Controller
         if($request->filled('place')) {
             $status->place_id = $request->input('place')['id'];
         }
+        
+        if($request->filled('comments_disabled')) {
+            $status->comments_disabled = $request->input('comments_disabled');
+        }
+
         $status->caption = strip_tags($request->caption);
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
+
         $status->save();
 
         foreach($attachments as $media) {
@@ -308,6 +316,7 @@ class InternalApiController extends Controller
         NewStatusPipeline::dispatch($status);
         Cache::forget('user:account:id:'.$profile->user_id);
         Cache::forget('profile:status_count:'.$profile->id);
+        Cache::forget($user->storageUsedKey());
         return $status->url();
     }
 

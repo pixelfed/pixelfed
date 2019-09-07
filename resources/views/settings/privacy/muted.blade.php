@@ -10,6 +10,8 @@
     <p>
       <a class="btn btn-outline-primary py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">Muted Users</a>
       <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">Blocked Users</a>
+      {{-- <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-keywords')}}">Blocked keywords</a>
+      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-instances')}}">Blocked instances</a> --}}
     </p>
   </div>
   @if($users->count() > 0)
@@ -17,7 +19,7 @@
     @foreach($users as $user)
     <li class="list-group-item">
       <div class="d-flex justify-content-between align-items-center font-weight-bold">
-        <span><img class="rounded-circle mr-3" src="{{$user->avatarUrl()}}" width="32px">{{$user->emailUrl()}}</span>
+        <span><a href="{{$user->url()}}" class="text-decoration-none text-dark"><img class="rounded-circle mr-3" src="{{$user->avatarUrl()}}" width="32px">{{$user->username}}</a></span>
         <span class="btn-group">
           <form method="post">
             @csrf
