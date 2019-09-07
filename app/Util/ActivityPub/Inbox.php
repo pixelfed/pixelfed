@@ -289,7 +289,7 @@ class Inbox
         if(!isset(
             $this->payload['actor'], 
             $this->payload['object'], 
-            $this->payload['object']['id']
+            $this->payload['object']['id'],
             $this->payload['object']['type']
         )) {
             return;
