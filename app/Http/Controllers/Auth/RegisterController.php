@@ -63,17 +63,17 @@ class RegisterController extends Controller
             'unique:users',
             function ($attribute, $value, $fail) {
                 if (!ctype_alpha($value[0])) {
-                    return $fail($attribute.' is invalid. Username must be alpha-numeric and start with a letter.');
+                    return $fail('Username is invalid. Username must be alpha-numeric and start with a letter.');
                 }
-                $val = str_replace(['-', '_'], '', $value);
+                $val = str_replace(['_', '-', '.'], '', $value);
                 if(!ctype_alnum($val)) {
-                    return $fail($attribute . ' is invalid. Username must be alpha-numeric.');
+                    return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
                 }
             },
         ];
 
         $rules = [
-            'name'     => 'required|string|max:'.config('pixelfed.max_name_length'),
+            'name'     => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',

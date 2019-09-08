@@ -83,4 +83,19 @@ trait User {
 	{
 		return 100;
 	}
+
+	public function getMaxComposeMediaUpdatesPerHourAttribute()
+	{
+		return 100;
+	}
+
+	public function getMaxComposeMediaUpdatesPerDayAttribute()
+	{
+		return 1000;
+	}
+
+	public function getMaxComposeMediaUpdatesPerMonthAttribute()
+	{
+		return 5000;
+	}
 }

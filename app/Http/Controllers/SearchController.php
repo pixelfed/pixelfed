@@ -54,7 +54,8 @@ class SearchController extends Controller
                                 'id' => (string) $item->id,
                                 'following' => $item->followedBy(Auth::user()->profile),
                                 'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
-                                'thumb' => $item->avatarUrl()
+                                'thumb' => $item->avatarUrl(),
+                                'local' => (bool) !$item->domain
                             ]
                         ]];
                     } else if ($type == 'Note') {
@@ -92,7 +93,7 @@ class SearchController extends Controller
             }
             return $tokens;
         });
-        $users = Profile::select('username', 'name', 'id')
+        $users = Profile::select('domain', 'username', 'name', 'id')
             ->whereNull('status')
             ->whereNull('domain')
             ->where('id', '!=', Auth::user()->profile->id)
@@ -113,9 +114,11 @@ class SearchController extends Controller
                     'avatar' => $item->avatarUrl(),
                     'id'     =>  $item->id,
                     'entity' => [
-                        'id' => $item->id,
+                        'id' => (string) $item->id,
                         'following' => $item->followedBy(Auth::user()->profile),
-                        'thumb' => $item->avatarUrl()
+                        'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
+                        'thumb' => $item->avatarUrl(),
+                        'local' => (bool) !$item->domain
                     ]
                 ];
             });
@@ -162,4 +165,5 @@ class SearchController extends Controller
         
         return view('search.results');
     }
+
 }

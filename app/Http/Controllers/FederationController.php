@@ -228,6 +228,9 @@ class FederationController extends Controller
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
+        if($keyDomain == config('pixelfed.domain.app') || $idDomain == config('pixelfed.domain.app')) {
+            return false;
+        }
         if(isset($bodyDecoded['object']) 
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
@@ -248,7 +251,7 @@ class FederationController extends Controller
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
-        list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
+        list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
         if($verified == 1) { 
             return true;
         } else {

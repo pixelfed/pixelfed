@@ -74,7 +74,14 @@ class CreateNote extends Fractal\TransformerAbstract
 					'announce' => 'https://www.w3.org/ns/activitystreams#Public',
 					'like' => 'https://www.w3.org/ns/activitystreams#Public',
 					'reply' => $status->comments_disabled == true ? null : 'https://www.w3.org/ns/activitystreams#Public'
-				]
+				],
+				'location' => $status->place_id ? [
+						'type' => 'Place',
+						'name' => $status->place->name,
+						'longitude' => $status->place->long,
+						'latitude' => $status->place->lat,
+						'country' => $status->place->country
+					] : null,
 			]
 		];
 	}
