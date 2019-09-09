@@ -1,6 +1,15 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
+
+### Added
+-
+
+### Fixed
+- 
+
+### Changed
+- Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
     
     
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
@@ -84,7 +93,7 @@
 ## [v0.9.6 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.5...v0.9.6)
 
 ### Fixed
-- Hashtag post count off-by-one #1485
+- Hashtag post count off-by-one [#1485](https://github.com/pixelfed/pixelfed/pull/1485)
     
 
 ## [v0.9.5 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.4...v0.9.5)
