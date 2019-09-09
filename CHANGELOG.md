@@ -1,9 +1,102 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.9.4...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
+
+### Added
+-
+
+### Fixed
+- 
+
+### Changed
+- Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
+    
+    
+## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
+
+### Added
+- Append ```.json``` to local status urls to view ActivityPub object [#1666](https://github.com/pixelfed/pixelfed/pull/1666)
+
+### Fixed
+- Reverted ```strict``` Same-Site Cookies to ```null``` to fix 2FA/session expiry [#1667](https://github.com/pixelfed/pixelfed/pull/1667) 
+- Fixed AP errors by storing ActivityPub object id and url [#1668](https://github.com/pixelfed/pixelfed/pull/1668) [#1683](https://github.com/pixelfed/pixelfed/pull/1683) 
+- Fixed content warnings that had filter applied [#1669](https://github.com/pixelfed/pixelfed/pull/1669) 
+
+### Changed
+- Japanese Translations [#1673](https://github.com/pixelfed/pixelfed/pull/1673)
+- Occitan Translations [#1679](https://github.com/pixelfed/pixelfed/pull/1679)
+- Use footer partial on landing page [#1681](https://github.com/pixelfed/pixelfed/pull/1681)
+- Change admin badge so it doesn't look like a verified badge [#1684](https://github.com/pixelfed/pixelfed/pull/1684)
+
+### Deprecated
+- Personalized Discover has been deprecated due to low use [#1670](https://github.com/pixelfed/pixelfed/pull/1670)
     
 
-## [v0.9.X (TBD)](https://github.com/pixelfed/pixelfed/compare/v0.9.4...dev)
+## [v0.10.2 (2019-09-06)](https://github.com/pixelfed/pixelfed/compare/v0.10.1...v0.10.2)
+
+### Fixed
+
+- Typo in Inbox prevented proper federation support
+
+
+## [v0.10.1 (2019-09-06)](https://github.com/pixelfed/pixelfed/compare/v0.10.0...v0.10.1)
+
+### Added
+- Remote follows! Search for an actor URI, send AP Follow, plus handle incoming AP Accept Follow
+- Compose UI v4: a rework of the v3 flow to allow basic cropping and better support future post types
+- Profile badges show if a user is following you or is an admin
+- Show confirmation message when muting or blocking a user from a post
+- Allow "read more" to be disabled on posts
+- Loops! Discover short videos
+- Preliminary support for profile PropertyValue metadata
+- Preliminary support for Direct Messages
+- Places! Run the artisan task `import:cities` 
+- Emails are now validated and banned email domains are disallowed at signup. Artisan task `email:bancheck` will validate existing users.
+- .env vars `REDIS_SCHEME` and `REDIS_PATH` allow for using Redis over a Unix socket instead of TCP
+- .env var `IMAGE_DRIVER` allows using imagick instead of gd
+
+### Fixed
+- Show delete button while composing video posts
+- Show pending follow requests on private profiles
+- Allow muted users to comment on your posts
+- Bugs with carousel cursor and tooltips
+- Collections can now be deleted from collection page
+- Compose modal now indicates album media limits
+- Unlisted and private posts are now delivered
+- Don't show Register link in navbar when registrations are closed
+
+### Changed
+- Use vue-masonry for Moment UI layout
+- User post limit changed from 20/hr to 50/hr
+- Better mobile profile layout
+- Dark mode is now a bit bluer
+- Sample nginx.conf in contrib/ now uses HTTPS instead of HTTP. Docs updated to reference this file
+- Updated register form
+- Allow users to edit email after registrations
+    
+
+## [v0.10.0 (2019-07-17)](https://github.com/pixelfed/pixelfed/compare/v0.9.6...v0.10.0)
+
+### Added
+- Collections! Add posts to Collections, similar to categories.
+- Profile donate links: add links to Patreon, Liberapay, and OpenCollective on your profile
+
+### Fixed
+- Show correct mode when viewing followers / following
+
+### Changed
+- Profile model now uses snowflake id
+
+### Removed
+- OStatus legacy code has been removed
+
+## [v0.9.6 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.5...v0.9.6)
+
+### Fixed
+- Hashtag post count off-by-one [#1485](https://github.com/pixelfed/pixelfed/pull/1485)
+    
+
+## [v0.9.5 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.4...v0.9.5)
 
 ### Added
 - Add StatusService [#1387](https://github.com/pixelfed/pixelfed/pull/1387), [425ec91](https://github.com/pixelfed/pixelfed/commit/425ec91)
