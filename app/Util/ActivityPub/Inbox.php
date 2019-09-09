@@ -326,7 +326,7 @@ class Inbox
                 break;
 
             case 'Tombstone':
-                    $status = Status::whereUri($id)->first();
+                    $status = Status::whereUri($id)->orWhere('object_url', $id)->first();
                     if(!$status) {
                         return;
                     }
