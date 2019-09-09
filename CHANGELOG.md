@@ -6,21 +6,21 @@
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
 
 ### Added
-- Append ```.json``` to local status urls to view ActivityPub object #1666 
+- Append ```.json``` to local status urls to view ActivityPub object [#1666](https://github.com/pixelfed/pixelfed/pull/1666)
 
 ### Fixed
-- Reverted ```strict``` Same-Site Cookies to ```null``` to fix 2FA/session expiry #1667 
-- Fixed AP errors by storing ActivityPub object id and url #1668 #1683 
-- Fixed content warnings that had filter applied #1669 
+- Reverted ```strict``` Same-Site Cookies to ```null``` to fix 2FA/session expiry [#1667](https://github.com/pixelfed/pixelfed/pull/1667) 
+- Fixed AP errors by storing ActivityPub object id and url [#1668](https://github.com/pixelfed/pixelfed/pull/1668) [#1683](https://github.com/pixelfed/pixelfed/pull/1683) 
+- Fixed content warnings that had filter applied [#1669](https://github.com/pixelfed/pixelfed/pull/1669) 
 
 ### Changed
-- Japanese Translations #1673
-- Occitan Translations #1679 
-- Use footer partial on landing page #1681 
-- Change admin badge so it doesn't look like a verified badge #1684 
+- Japanese Translations [#1673](https://github.com/pixelfed/pixelfed/pull/1673)
+- Occitan Translations [#1679](https://github.com/pixelfed/pixelfed/pull/1679)
+- Use footer partial on landing page [#1681](https://github.com/pixelfed/pixelfed/pull/1681)
+- Change admin badge so it doesn't look like a verified badge [#1684](https://github.com/pixelfed/pixelfed/pull/1684)
 
 ### Deprecated
-- Personalized Discover has been deprecated due to low use #1670 
+- Personalized Discover has been deprecated due to low use [#1670](https://github.com/pixelfed/pixelfed/pull/1670)
     
 
 ## [v0.10.2 (2019-09-06)](https://github.com/pixelfed/pixelfed/compare/v0.10.1...v0.10.2)
