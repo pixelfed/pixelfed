@@ -220,7 +220,7 @@ class Helpers {
 			$id = (int) last(explode('/', $url));
 			return Status::findOrFail($id);
 		} else {
-			$cached = Status::whereUri($url)->orWhere('url', $url)->first();
+			$cached = Status::whereUri($url)->orWhere('object_url', $url)->first();
 			if($cached) {
 				return $cached;
 			}
@@ -317,6 +317,7 @@ class Helpers {
 				$status->profile_id = $profile->id;
 				$status->url = isset($res['url']) ? $res['url'] : $url;
 				$status->uri = isset($res['url']) ? $res['url'] : $url;
+				$status->object_url = isset($res['id']) ? $res['id'] : $url;
 				$status->caption = strip_tags($res['content']);
 				$status->rendered = Purify::clean($res['content']);
 				$status->created_at = Carbon::parse($ts);
