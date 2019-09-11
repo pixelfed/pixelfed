@@ -29,14 +29,14 @@ trait PrivacySettings
 
     public function privacyStore(Request $request)
     {
-        $settings = Auth::user()->settings;
-        $profile = Auth::user()->profile;
+        $settings = $request->user()->settings;
+        $profile = $request->user()->profile;
         $fields = [
           'is_private',
           'crawlable',
           'show_profile_follower_count',
           'show_profile_following_count',
-      ];
+        ];
         foreach ($fields as $field) {
             $form = $request->input($field);
             if ($field == 'is_private') {
@@ -65,7 +65,7 @@ trait PrivacySettings
             }
             $settings->save();
         }
-
+        Cache::forget('profile:settings:' . $profile->id);
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
