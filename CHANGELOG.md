@@ -11,6 +11,7 @@
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
 - Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1690)
+- Cache ProfileController [#1700](https://github.com/pixelfed/pixelfed/pull/1700)
 
 ## Deprecated
 - Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
