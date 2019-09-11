@@ -27,7 +27,11 @@ class FollowerController extends Controller
         ]);
         $item = (int) $request->input('item');
         $this->handleFollowRequest($item);
-        return response()->json(200);
+        if($request->wantsJson()) {
+            return response()->json(200);
+        } else {
+            return redirect()->back();
+        }
     }
 
     protected function handleFollowRequest($item)
