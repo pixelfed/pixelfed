@@ -56,11 +56,11 @@ class StatusHashtagService {
 
 	public static function count($id)
 	{
-		$count = Redis::zcount(self::CACHE_KEY . $id, '-inf', '+inf');
-		if(empty($count)) {
-			$count = StatusHashtag::whereHashtagId($id)->count();
-		}
-		return $count;
+		$key = 'pf:services:status-hashtag:count:' . $id;
+		$ttl = now()->addHours(6);
+		return Cache::remember($key, $ttl, function() use($id) {
+			return StatusHashtag::whereHashtagId($id)->count();
+		});
 	}
 
 	public static function getStatus($statusId, $hashtagId)
