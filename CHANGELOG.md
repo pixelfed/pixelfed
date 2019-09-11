@@ -3,10 +3,9 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
 
 ### Added
--
 
 ### Fixed
-- 
+- Fixed count bug in StatusHashtagService [#1694]((https://github.com/pixelfed/pixelfed/pull/1694)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
