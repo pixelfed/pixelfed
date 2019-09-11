@@ -3,13 +3,13 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
 
 ### Added
--
 
 ### Fixed
-- 
+- Fixed count bug in StatusHashtagService [#1694]((https://github.com/pixelfed/pixelfed/pull/1694)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
+- Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1690)
     
     
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
