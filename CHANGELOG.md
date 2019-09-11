@@ -6,6 +6,7 @@
 
 ### Fixed
 - Fixed count bug in StatusHashtagService [#1694](https://github.com/pixelfed/pixelfed/pull/1694)
+- Fixed private account bug [#1699](https://github.com/pixelfed/pixelfed/pull/1699)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
