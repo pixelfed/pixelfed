@@ -1,6 +1,6 @@
 <template>
 <div>
-	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" draggable="true" multiple="true" v-bind:accept="config.uploader.media_types">
+	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" draggable="true" v-bind:accept="config.uploader.media_types">
 	<div class="timeline">
 		<div v-if="uploading">
 			<div class="card status-card card-md-rounded-0 w-100 h-100 bg-light py-5" style="border-bottom: 1px solid #f1f1f1">
@@ -12,7 +12,7 @@
 		</div>
 		<div v-else>
 			<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
-				<div class="card-header d-inline-flex align-items-center bg-white">
+				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
 					<div>
 						<a v-if="page == 1" href="#" @click.prevent="closeModal()" class="font-weight-bold text-decoration-none text-muted">
 							<i class="fas fa-times fa-lg"></i>
@@ -25,15 +25,20 @@
 							<span class="font-weight-bold mb-0">{{pageTitle}}</span>
 						</span>
 					</div>
-					<div class="text-right" style="flex-grow:1;">
+					<div v-if="page == 2">
+						<a href="#" class="text-center text-dark" @click.prevent="showCropPhotoCard"><i class="fas fa-magic fa-lg"></i></a>
+					</div>
+					<div>
 						<!-- <a v-if="page > 1" class="font-weight-bold text-decoration-none" href="#" @click.prevent="page--">Back</a> -->
 						<span v-if="pageLoading">
 							<div class="spinner-border spinner-border-sm" role="status">
 								<span class="sr-only">Loading...</span>
 							</div>
 						</span>
-						<a v-if="!pageLoading && (page > 1 && page <= 3) || (page == 1 && ids.length != 0)" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
-						<a v-if="!pageLoading && page == 4" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose">Post</a>
+						<span v-else>
+							<a v-if="!pageLoading && (page > 1 && page <= 2) || (page == 1 && ids.length != 0) || page == 'cropPhoto'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
+							<a v-if="!pageLoading && page == 3" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose">Post</a>
+						</span>
 					</div>
 				</div>
 				<div class="card-body p-0 border-top">
@@ -43,7 +48,7 @@
 								<a class="btn btn-primary font-weight-bold" href="/i/compose">Compose Post</a>
 							</p>
 							<hr>
-							<p>
+							<p v-if="media.length == 0">
 								<button type="button" class="btn btn-outline-primary font-weight-bold" @click.prevent="addMedia">Compose Post <sup>BETA</sup></button>
 							</p>
 							<p>
@@ -60,7 +65,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 2" class="w-100 h-100">
+					<div v-if="page == 'cropPhoto'" class="w-100 h-100">
 						<div v-if="ids.length > 0">
 							<vue-cropper
 								ref="cropper"
@@ -75,7 +80,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 3" class="w-100 h-100">
+					<div v-if="page == 2" class="w-100 h-100">
 						<div slot="img" style="display:flex;min-height: 420px;align-items: center;">
 							<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
 						</div>
@@ -98,7 +103,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 4" class="w-100 h-100">
+					<div v-if="page == 3" class="w-100 h-100">
 						<div class="border-bottom mt-2">
 							<div class="media px-3">
 								<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
@@ -177,7 +182,7 @@
 									</div>
 								</div>
 							</div>
-							<a class="list-group-item" @click.prevent="page = 'altText'">
+							<a href="#" class="list-group-item" @click.prevent="page = 'altText'">
 								<div class="text-dark">Write alt text</div>
 								<p class="text-muted small mb-0">Alt text describes your photos for people with visual impairments.</p>
 							</a>
@@ -227,7 +232,7 @@
 				</div>
 
 				<!-- card-footers -->
-				<div v-if="page == 2" class="card-footer bg-white d-flex justify-content-between">
+				<div v-if="page == 'cropPhoto'" class="card-footer bg-white d-flex justify-content-between">
 					<div>
 						<button type="button" class="btn btn-outline-secondary" @click="rotate"><i class="fas fa-undo"></i></button>
 					</div>
@@ -325,6 +330,7 @@ export default {
 
 			taggedUsernames: false,
 			namedPages: [
+				'cropPhoto',
 				'tagPeople',
 				'addLocation',
 				'advancedSettings',
@@ -642,12 +648,13 @@ export default {
 		},
 
 		nextPage() {
+			this.pageTitle = '';
 			switch(this.page) {
 				case 1:
-					this.page = 3;
+					this.page = 2;
 				break;
 
-				case 2:
+				case 'cropPhoto':
 					this.pageLoading = true;
 					let self = this;
 					this.$refs.cropper.getCroppedCanvas({  
@@ -664,14 +671,14 @@ export default {
 						axios.post(url, data).then(res => {
 							self.media[self.carouselCursor].url = res.data.url;
 							self.pageLoading = false;
-							self.page++;
+							self.page = 2;
 						}).catch(err => {
 						});
 					});
 				break;
 
+				case 2:
 				case 3:
-				case 4:
 					this.page++;
 				break;
 			}
@@ -732,16 +739,25 @@ export default {
 		onSubmitLocation(result) {
 			this.place = result;
 			this.pageTitle = '';
-			this.page = 4;
+			this.page = 3;
 			return;
 		},
 
 		goBack() {
 			this.pageTitle = '';
-			if(this.page == 'addToStory') {
-				this.page = 1;
-			} else {
-				this.namedPages.indexOf(this.page) != -1 ? this.page = 4 : this.page--;
+			
+			switch(this.page) {
+				case 'addToStory':
+					this.page = 1;
+				break;
+
+				case 'cropPhoto':
+					this.page = 2;
+				break;
+
+				default:
+					this.namedPages.indexOf(this.page) != -1 ? this.page = 3 : this.page--;
+				break;
 			}
 		},
 
@@ -755,6 +771,11 @@ export default {
 			this.page = 'addToStory';
 		},
 
+		showCropPhotoCard() {
+			this.pageTitle = 'Edit Photo';
+			this.page = 'cropPhoto';
+		},
+
 		toggleVisibility(state) {
 			let tags = {
 				public: 'Public',
@@ -764,7 +785,7 @@ export default {
 			this.visibility = state;
 			this.visibilityTag = tags[state];
 			this.pageTitle = '';
-			this.page = 4;
+			this.page = 3;
 		}
 	}
 }
