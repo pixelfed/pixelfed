@@ -346,176 +346,176 @@
 		</div>
 	</div>
 	<b-modal ref="followingModal"
-	id="following-modal"
-	hide-footer
-	centered
-	title="Following"
-	body-class="list-group-flush p-0">
-	<div class="list-group">
-		<div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
-			<div class="media">
-				<a :href="user.url">
-					<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
-				</a>
-				<div class="media-body">
-					<p class="mb-0" style="font-size: 14px">
-						<a :href="user.url" class="font-weight-bold text-dark">
-							{{user.username}}
-						</a>
-					</p>
-					<p class="text-muted mb-0" style="font-size: 14px">
-						{{user.display_name}}
-					</p>
-				</div>
-				<div v-if="owner">
-					<a class="btn btn-outline-secondary btn-sm" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Unfollow</a>
+		id="following-modal"
+		hide-footer
+		centered
+		title="Following"
+		body-class="list-group-flush p-0">
+		<div class="list-group">
+			<div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
+				<div class="media">
+					<a :href="user.url">
+						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
+					</a>
+					<div class="media-body">
+						<p class="mb-0" style="font-size: 14px">
+							<a :href="user.url" class="font-weight-bold text-dark">
+								{{user.username}}
+							</a>
+						</p>
+						<p class="text-muted mb-0" style="font-size: 14px">
+							{{user.display_name}}
+						</p>
+					</div>
+					<div v-if="owner">
+						<a class="btn btn-outline-secondary btn-sm" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Unfollow</a>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div v-if="following.length == 0" class="list-group-item border-0">
-			<div class="list-group-item border-0">
-				<p class="p-3 text-center mb-0 lead"></p>
+			<div v-if="following.length == 0" class="list-group-item border-0">
+				<div class="list-group-item border-0">
+					<p class="p-3 text-center mb-0 lead"></p>
+				</div>
+			</div>
+			<div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
 			</div>
 		</div>
-		<div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
-			<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
-		</div>
-	</div>
 	</b-modal>
 	<b-modal ref="followerModal"
-	id="follower-modal"
-	hide-footer
-	centered
-	title="Followers"
-	body-class="list-group-flush p-0">
-	<div class="list-group">
-		<div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
-			<div class="media">
-				<a :href="user.url">
-					<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
-				</a>
-				<div class="media-body">
-					<p class="mb-0" style="font-size: 14px">
-						<a :href="user.url" class="font-weight-bold text-dark">
-							{{user.username}}
-						</a>
-					</p>
-					<p class="text-muted mb-0" style="font-size: 14px">
-						{{user.display_name}}
-					</p>
+		id="follower-modal"
+		hide-footer
+		centered
+		title="Followers"
+		body-class="list-group-flush p-0">
+		<div class="list-group">
+			<div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
+				<div class="media">
+					<a :href="user.url">
+						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
+					</a>
+					<div class="media-body">
+						<p class="mb-0" style="font-size: 14px">
+							<a :href="user.url" class="font-weight-bold text-dark">
+								{{user.username}}
+							</a>
+						</p>
+						<p class="text-muted mb-0" style="font-size: 14px">
+							{{user.display_name}}
+						</p>
+					</div>
 				</div>
 			</div>
+			<div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
+				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+			</div>
 		</div>
-		<div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
-			<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
-		</div>
-	</div>
 	</b-modal>
 	<b-modal ref="visitorContextMenu"
-	id="visitor-context-menu"
-	hide-footer
-	hide-header
-	centered
-	size="sm"
-	body-class="list-group-flush p-0">
-	<div class="list-group" v-if="relationship">
-		<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="copyProfileLink">
-			Copy Link
+		id="visitor-context-menu"
+		hide-footer
+		hide-header
+		centered
+		size="sm"
+		body-class="list-group-flush p-0">
+		<div class="list-group" v-if="relationship">
+			<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="copyProfileLink">
+				Copy Link
+			</div>
+			<div v-if="user && !owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
+				Follow
+			</div>
+			<div v-if="user && !owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
+				Unfollow
+			</div>
+			<div v-if="user && !owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
+				Mute
+			</div>
+			<div v-if="user && !owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
+				Unmute
+			</div>
+			<div v-if="user && !owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
+				Report User
+			</div>
+			<div v-if="user && !owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
+				Block
+			</div>
+			<div v-if="user && !owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
+				Unblock
+			</div>
+			<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
+				Settings
+			</div>
+			<div class="list-group-item cursor-pointer text-center rounded text-muted" @click="$refs.visitorContextMenu.hide()">
+				Close
+			</div>
 		</div>
-		<div v-if="user && !owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
-			Follow
-		</div>
-		<div v-if="user && !owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
-			Unfollow
-		</div>
-		<div v-if="user && !owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
-			Mute
-		</div>
-		<div v-if="user && !owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
-			Unmute
-		</div>
-		<div v-if="user && !owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
-			Report User
-		</div>
-		<div v-if="user && !owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
-			Block
-		</div>
-		<div v-if="user && !owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
-			Unblock
-		</div>
-		<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
-			Settings
-		</div>
-		<div class="list-group-item cursor-pointer text-center rounded text-muted" @click="$refs.visitorContextMenu.hide()">
-			Close
-		</div>
-	</div>
 	</b-modal>
 	<b-modal ref="sponsorModal"
-	id="sponsor-modal"
-	hide-footer
-	:title="'Sponsor ' + profileUsername"
-	centered
-	size="md"
-	body-class="px-5">
-	<div>
-		<p class="font-weight-bold">External Links</p>
-		<p v-if="sponsorList.patreon" class="pt-2">
-			<a :href="'https://' + sponsorList.patreon" rel="nofollow" class="font-weight-bold">{{sponsorList.patreon}}</a>
-		</p>
-		<p v-if="sponsorList.liberapay" class="pt-2">
-			<a :href="'https://' + sponsorList.liberapay" rel="nofollow" class="font-weight-bold">{{sponsorList.liberapay}}</a>
-		</p>
-		<p v-if="sponsorList.opencollective" class="pt-2">
-			<a :href="'https://' + sponsorList.opencollective" rel="nofollow" class="font-weight-bold">{{sponsorList.opencollective}}</a>
-		</p>
-	</div>
+		id="sponsor-modal"
+		hide-footer
+		:title="'Sponsor ' + profileUsername"
+		centered
+		size="md"
+		body-class="px-5">
+		<div>
+			<p class="font-weight-bold">External Links</p>
+			<p v-if="sponsorList.patreon" class="pt-2">
+				<a :href="'https://' + sponsorList.patreon" rel="nofollow" class="font-weight-bold">{{sponsorList.patreon}}</a>
+			</p>
+			<p v-if="sponsorList.liberapay" class="pt-2">
+				<a :href="'https://' + sponsorList.liberapay" rel="nofollow" class="font-weight-bold">{{sponsorList.liberapay}}</a>
+			</p>
+			<p v-if="sponsorList.opencollective" class="pt-2">
+				<a :href="'https://' + sponsorList.opencollective" rel="nofollow" class="font-weight-bold">{{sponsorList.opencollective}}</a>
+			</p>
+		</div>
 	</b-modal>
 </div>
 </template>
 <style type="text/css" scoped>
-.o-square {
-	max-width: 320px;
-}
-.o-portrait {
-	max-width: 320px;
-}
-.o-landscape {
-	max-width: 320px;
-}
-.post-icon {
-	color: #fff;
-	position:relative;
-	margin-top: 10px;
-	z-index: 9;
-	opacity: 0.6;
-	text-shadow: 3px 3px 16px #272634;
-}
-.font-size-16px {
-	font-size: 16px;
-}
-.profile-website {
-	color: #003569;
-	text-decoration: none;
-	font-weight: 600;
-}
-.nav-topbar .nav-link {
-	color: #999;
-}
-.nav-topbar .nav-link .small {
-	font-weight: 600;
-}
+	.o-square {
+		max-width: 320px;
+	}
+	.o-portrait {
+		max-width: 320px;
+	}
+	.o-landscape {
+		max-width: 320px;
+	}
+	.post-icon {
+		color: #fff;
+		position:relative;
+		margin-top: 10px;
+		z-index: 9;
+		opacity: 0.6;
+		text-shadow: 3px 3px 16px #272634;
+	}
+	.font-size-16px {
+		font-size: 16px;
+	}
+	.profile-website {
+		color: #003569;
+		text-decoration: none;
+		font-weight: 600;
+	}
+	.nav-topbar .nav-link {
+		color: #999;
+	}
+	.nav-topbar .nav-link .small {
+		font-weight: 600;
+	}
 </style>
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
 
-	Vue.use(VueMasonry);
+
 	export default {
 		props: [
-		'profile-id',
-		'profile-layout',
-		'profile-settings',
-		'profile-username'
+			'profile-id',
+			'profile-layout',
+			'profile-settings',
+			'profile-username'
 		],
 		data() {
 			return {
@@ -557,6 +557,7 @@
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
 			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
+				Vue.use(VueMasonry);
 				this.layout = 'moment';
 			}
 			if(u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
@@ -581,6 +582,11 @@
 			if(u.has('md') && u.get('md') == 'following') {
 				this.followingModal();
 			}
+			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
+				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+					this.user = res.data;
+				});
+			}
 		},
 
 		updated() {
@@ -591,12 +597,12 @@
 			fetchProfile() {
 				axios.get('/api/v1/accounts/' + this.profileId).then(res => {
 					this.profile = res.data;
+				}).then(res => {
+					this.fetchPosts();
 				});
-				if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
-					axios.get('/api/v1/accounts/verify_credentials').then(res => {
-						this.user = res.data;
-					});
-				}
+			},
+
+			fetchPosts() {
 				let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
 				axios.get(apiUrl, {
 					params: {
@@ -614,7 +620,7 @@
 					this.timeline = data;
 					this.ownerCheck();
 					this.loading = false;
-					this.loadSponsor();
+					//this.loadSponsor();
 				}).catch(err => {
 					swal('Oops, something went wrong',
 						'Please release the page.',
@@ -824,7 +830,6 @@
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
 			},
-
 
 			unmuteProfile(status = null) {
 				if($('body').hasClass('loggedIn') == false) {
