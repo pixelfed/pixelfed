@@ -13,6 +13,7 @@
 - Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1690)
 - Cache ProfileController [#1700](https://github.com/pixelfed/pixelfed/pull/1700)
 - Updated ComposeUI v4, made cropping optional [#1702](https://github.com/pixelfed/pixelfed/pull/1702)
+- Updated DiscoverController, limit Loops to local only posts [#1703](https://github.com/pixelfed/pixelfed/pull/1703)
 
 ## Deprecated
 - Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
