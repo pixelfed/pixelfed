@@ -20,80 +20,93 @@ class ProfileController extends Controller
 {
     public function show(Request $request, $username)
     {
-        $user = Profile::whereUsername($username)->firstOrFail();
-        if($user->domain) {
-            return redirect($user->remote_url);
+        $user = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereUsername($username)
+            ->firstOrFail();
+        if($request->wantsJson() && config('federation.activitypub.enabled')) {
+            return $this->showActivityPub($request, $user);
         }
-        if($user->status != null) {
-            return $this->accountCheck($user);
-        } else {
-            return $this->buildProfile($request, $user);
-        }
+        return $this->buildProfile($request, $user);
     }
 
-    // TODO: refactor this mess
     protected function buildProfile(Request $request, $user)
     {
         $username = $user->username;
         $loggedIn = Auth::check();
         $isPrivate = false;
         $isBlocked = false;
+        if(!$loggedIn) {
+            $key = 'profile:settings:' . $user->id;
+            $ttl = now()->addHours(6);
+            $settings = Cache::remember($key, $ttl, function() use($user) {
+                return $user->user->settings;
+            });
 
-        if($user->status != null) {
-            return ProfileController::accountCheck($user);
-        }
+            if ($user->is_private == true) {
+                abort(404);
+            }
 
-        if ($user->remote_url) {
-            $settings = new \StdClass;
-            $settings->crawlable = false;
-            $settings->show_profile_follower_count = true;
-            $settings->show_profile_following_count = true;
+            $owner = false;
+            $is_following = false;
+
+            $is_admin = $user->user->is_admin;
+            $profile = $user;
+            $settings = [
+                'crawlable' => $settings->crawlable,
+                'following' => [
+                    'count' => $settings->show_profile_following_count,
+                    'list' => $settings->show_profile_following
+                ], 
+                'followers' => [
+                    'count' => $settings->show_profile_follower_count,
+                    'list' => $settings->show_profile_followers
+                ]
+            ];
+            return view('profile.show', compact('profile', 'settings'));
         } else {
-            $settings = $user->user->settings;
-        }
+            $key = 'profile:settings:' . $user->id;
+            $ttl = now()->addHours(6);
+            $settings = Cache::remember($key, $ttl, function() use($user) {
+                return $user->user->settings;
+            });
 
-        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
-            return $this->showActivityPub($request, $user);
-        }
+            if ($user->is_private == true) {
+                $isPrivate = $this->privateProfileCheck($user, $loggedIn);
+            }
 
-        if ($user->is_private == true) {
-            $isPrivate = $this->privateProfileCheck($user, $loggedIn);
-        }
-
-        if ($loggedIn == true) {
             $isBlocked = $this->blockedProfileCheck($user);
+
+            $owner = $loggedIn && Auth::id() === $user->user_id;
+            $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
+
+            if ($isPrivate == true || $isBlocked == true) {
+                $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
+                    ->whereFollowingId($user->id)
+                    ->exists() : false;
+                return view('profile.private', compact('user', 'is_following', 'requested'));
+            } 
+
+            $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
+            $profile = $user;
+            $settings = [
+                'crawlable' => $settings->crawlable,
+                'following' => [
+                    'count' => $settings->show_profile_following_count,
+                    'list' => $settings->show_profile_following
+                ], 
+                'followers' => [
+                    'count' => $settings->show_profile_follower_count,
+                    'list' => $settings->show_profile_followers
+                ]
+            ];
+            return view('profile.show', compact('profile', 'settings'));
         }
-
-        $owner = $loggedIn && Auth::id() === $user->user_id;
-        $is_following = ($owner == false && Auth::check()) ? $user->followedBy(Auth::user()->profile) : false;
-
-        if ($isPrivate == true || $isBlocked == true) {
-            $requested = Auth::check() ? FollowRequest::whereFollowerId(Auth::user()->profile_id)
-                ->whereFollowingId($user->id)
-                ->exists() : false;
-            return view('profile.private', compact('user', 'is_following', 'requested'));
-        } 
-
-        $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
-        $profile = $user;
-        $settings = [
-            'crawlable' => $settings->crawlable,
-            'following' => [
-                'count' => $settings->show_profile_following_count,
-                'list' => $settings->show_profile_following
-            ], 
-            'followers' => [
-                'count' => $settings->show_profile_follower_count,
-                'list' => $settings->show_profile_followers
-            ]
-        ];
-        return view('profile.show', compact('user', 'profile', 'settings', 'owner', 'is_following', 'is_admin'));
     }
 
     public function permalinkRedirect(Request $request, $username)
     {
-        $user = Profile::whereUsername($username)->firstOrFail();
-        $settings = User::whereUsername($username)->firstOrFail()->settings;
+        $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
         if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
@@ -136,34 +149,19 @@ class ProfileController extends Controller
         return false;
     }
 
-    public static function accountCheck(Profile $profile)
-    {
-        switch ($profile->status) {
-            case 'disabled':
-            case 'suspended':
-            case 'delete':
-                return view('profile.disabled');
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-
-        return abort(404);
-    }
-
     public function showActivityPub(Request $request, $user)
     {
         abort_if(!config('federation.activitypub.enabled'), 404);
-        
-        if($user->status != null) {
-            return ProfileController::accountCheck($user);
-        }
-        $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
-        $res = $fractal->createData($resource)->toArray();
-        return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+        abort_if($user->domain, 404);
+        $key = 'profile:ap:' . $user->id;
+        $ttl = now()->addHours(6);
+
+        return Cache::remember($key, $ttl, function() use($user) {
+            $fractal = new Fractal\Manager();
+            $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
+            $res = $fractal->createData($resource)->toArray();
+            return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+        });
     }
 
     public function showAtomFeed(Request $request, $user)

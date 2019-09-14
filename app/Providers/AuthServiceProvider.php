@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -32,14 +33,22 @@ class AuthServiceProvider extends ServiceProvider
             Passport::enableImplicitGrant();
             
             Passport::setDefaultScope([
-                'user:read',
-                'user:write'
+                'read',
+                'write',
+                'follow',
+                'push'
             ]);
 
             Passport::tokensCan([
-                'user:read' => 'Read a user’s profile info and media',
-                'user:write' => 'This scope lets an app "Change your profile information"',
+                'read' => 'Full read access to your account',
+                'write' => 'Full write access to your account',
+                'follow' => 'Ability to follow other profiles',
+                'push'  => ''
             ]);
         }
+
+        Gate::define('viewWebSocketsDashboard', function ($user = null) {
+            return $user->is_admin;
+        });
     }
 }

@@ -6,10 +6,17 @@
 
 ### Fixed
 - Fixed count bug in StatusHashtagService [#1694](https://github.com/pixelfed/pixelfed/pull/1694)
+- Fixed private account bug [#1699](https://github.com/pixelfed/pixelfed/pull/1699)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
 - Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1692)
+- Cache ProfileController [#1700](https://github.com/pixelfed/pixelfed/pull/1700)
+- Updated ComposeUI v4, made cropping optional [#1702](https://github.com/pixelfed/pixelfed/pull/1702)
+- Updated DiscoverController, limit Loops to local only posts [#1703](https://github.com/pixelfed/pixelfed/pull/1703)
+
+## Deprecated
+- Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
     
     
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)

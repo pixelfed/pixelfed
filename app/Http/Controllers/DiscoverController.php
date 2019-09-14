@@ -78,8 +78,9 @@ class DiscoverController extends Controller
         abort_if(!config('exp.loops'), 403);
         
         // todo proper pagination, maybe LoopService
-        $res = Cache::remember('discover:loops:recent', now()->addHours(1), function() {
+        $res = Cache::remember('discover:loops:recent', now()->addHours(6), function() {
           $loops = Status::whereType('video')
+                  ->whereNull('uri')
                   ->whereScope('public')
                   ->latest()
                   ->take(18)
