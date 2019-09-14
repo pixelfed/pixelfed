@@ -22,6 +22,8 @@ class ApiV1Controller extends Controller {
 
 	public function apps(Request $request)
 	{
+		abort_if(!config('pixelfed.oauth_enabled'), 404);
+
 		$this->validate($request, [
 			'client_name' 		=> 'required',
 			'redirect_uris' 	=> 'required',
@@ -38,7 +40,9 @@ class ApiV1Controller extends Controller {
             'password_client' => false,
             'revoked' => false,
         ]);
+
         $client->save();
+
         $res = [
         	'id' => $client->id,
         	'name' => $client->name,
