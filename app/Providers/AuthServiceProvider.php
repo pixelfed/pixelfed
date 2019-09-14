@@ -35,13 +35,15 @@ class AuthServiceProvider extends ServiceProvider
             Passport::setDefaultScope([
                 'read',
                 'write',
-                'follow'
+                'follow',
+                'push'
             ]);
 
             Passport::tokensCan([
                 'read' => 'Full read access to your account',
                 'write' => 'Full write access to your account',
-                'follow' => 'Ability to follow other profiles'
+                'follow' => 'Ability to follow other profiles',
+                'push'  => ''
             ]);
         }
 
