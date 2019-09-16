@@ -1,5 +1,7 @@
 <?php
+
 return [
+    
     /*
     |--------------------------------------------------------------------------
     | Authentication Language Lines
@@ -12,4 +14,5 @@ return [
     */
     'failed'   => 'Nid yw\'r manylion mewngofnodi hyn yn cyd-fynd â\'n cofnodion.',
     'throttle' => 'Gormod o ymdrechion mewngofnodi. Rhowch gynnig arall arni mewn :seconds eiliadau.',
+    
 ];
