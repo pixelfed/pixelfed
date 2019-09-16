@@ -1,5 +1,7 @@
 <?php
+
 return [
+    
 	'helpcenter' => 'Canolfan Cymorth',
 	'whatsnew' => 'Beth Sy\'n Newydd',
   
@@ -20,4 +22,5 @@ return [
 	'safetyTips' => 'Awgrymiadau Diogelwch',
 	'reportSomething' => 'Riportio Rhywbeth',
 	'dataPolicy' => 'Polisi Data'
+    
 ];
