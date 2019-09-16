@@ -125,7 +125,7 @@ export default {
 	methods: {
 		fetchCurrentUser() {
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
-				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.currentUser = res.data;
 					this.owner = this.currentUser.id == this.profileId;
 				});

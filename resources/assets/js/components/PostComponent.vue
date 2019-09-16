@@ -1106,7 +1106,7 @@ export default {
           this.fetchData();
           return;
         } else {
-          axios.get('/api/v1/accounts/relationships', {
+          axios.get('/api/pixelfed/v1/accounts/relationships', {
             params: {
               'id[]': this.statusProfileId
             }

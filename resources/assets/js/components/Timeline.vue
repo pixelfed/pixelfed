@@ -343,7 +343,7 @@
 							<a href="/site/language" class="text-dark pr-2">Language</a>
 							<a href="/site/terms" class="text-dark pr-2">Terms</a>
 							<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
-							<a href="/site/platform" class="text-dark pr-2">API</a>
+							<a href="/discover/places" class="text-dark pr-2">Places</a>
 						</p>
 						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
 							<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by Pixelfed</a>
@@ -353,70 +353,6 @@
 			</div>
 		</div>
 	</div>
-<!--   <b-modal ref="followingModal"
-    id="following-modal"
-    hide-footer
-    centered
-    title="Following"
-    body-class="list-group-flush p-0">
-    <div class="list-group">
-      <div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
-        <div class="media">
-          <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-          </a>
-          <div class="media-body">
-            <p class="mb-0" style="font-size: 14px">
-              <a :href="user.url" class="font-weight-bold text-dark">
-                {{user.username}}
-              </a>
-            </p>
-            <p class="text-muted mb-0" style="font-size: 14px">
-                {{user.display_name}}
-            </p>
-          </div>
-          <a class="btn btn-outline-secondary btn-sm" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Unfollow</a>
-        </div>
-      </div>
-      <div v-if="following.length == 0" class="list-group-item border-0">
-      	<div class="list-group-item border-0">
-      		<p class="p-3 text-center mb-0 lead">You are not following anyone.</p>
-      	</div>
-      </div>
-      <div v-if="following.length != 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
-	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
-      </div>
-    </div>
-  </b-modal>
-  <b-modal ref="followerModal"
-    id="follower-modal"
-    hide-footer
-    centered
-    title="Followers"
-    body-class="list-group-flush p-0">
-    <div class="list-group">
-      <div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
-        <div class="media">
-          <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-          </a>
-          <div class="media-body">
-            <p class="mb-0" style="font-size: 14px">
-              <a :href="user.url" class="font-weight-bold text-dark">
-                {{user.username}}
-              </a>
-            </p>
-            <p class="text-muted mb-0" style="font-size: 14px">
-                {{user.display_name}}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
-	  	<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
-      </div>
-    </div>
-  </b-modal> -->
  <b-modal ref="ctxModal"
     id="ctx-modal"
     hide-header
@@ -630,7 +566,7 @@
 
 		methods: {
 			fetchProfile() {
-				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;
 					if(this.profile.is_admin == true) {
 						this.modes.mod = true;
@@ -652,15 +588,15 @@
 				let apiUrl = false;
 				switch(this.scope) {
 					case 'home':
-					apiUrl = '/api/v1/timelines/home';
+					apiUrl = '/api/pixelfed/v1/timelines/home';
 					break;
 
 					case 'local':
-					apiUrl = '/api/v1/timelines/public';
+					apiUrl = '/api/pixelfed/v1/timelines/public';
 					break;
 
 					case 'network':
-					apiUrl = '/api/v1/timelines/network';
+					apiUrl = '/api/pixelfed/v1/timelines/network';
 					break;
 				}
 				axios.get(apiUrl, {
@@ -695,15 +631,15 @@
 				let apiUrl = false;
 				switch(this.scope) {
 					case 'home':
-					apiUrl = '/api/v1/timelines/home';
+					apiUrl = '/api/pixelfed/v1/timelines/home';
 					break;
 
 					case 'local':
-					apiUrl = '/api/v1/timelines/public';
+					apiUrl = '/api/pixelfed/v1/timelines/public';
 					break;
 
 					case 'network':
-					apiUrl = '/api/v1/timelines/network';
+					apiUrl = '/api/pixelfed/v1/timelines/network';
 					break;
 				}
 				axios.get(apiUrl, {
@@ -736,8 +672,8 @@
 			},
 
 			loadMore(event) {
-				let homeTimeline = '/api/v1/timelines/home';
-				let localTimeline = '/api/v1/timelines/public';
+				let homeTimeline = '/api/pixelfed/v1/timelines/home';
+				let localTimeline = '/api/pixelfed/v1/timelines/public';
 				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
 				event.target.innerText = 'Loading...';
 				axios.get(apiUrl, {
@@ -1068,7 +1004,7 @@
 					this.$refs.followingModal.show();
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
 					params: {
 						page: this.followingCursor
 					}
@@ -1088,7 +1024,7 @@
 					this.$refs.followerModal.show();
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
 						page: this.followerCursor
 					}
@@ -1104,7 +1040,7 @@
 			},
 
 			followingLoadMore() {
-				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
 					params: {
 						page: this.followingCursor
 					}
@@ -1121,7 +1057,7 @@
 			},
 
 			followersLoadMore() {
-				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
 						page: this.followerCursor
 					}
@@ -1297,7 +1233,7 @@
 				if(status.account.id == this.profile.id) {
 					this.$refs.ctxModal.show();
 				} else {
-					axios.get('/api/v1/accounts/relationships', {
+					axios.get('/api/pixelfed/v1/accounts/relationships', {
 						params: {
 							'id[]': status.account.id
 						}

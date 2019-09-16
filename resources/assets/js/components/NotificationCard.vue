@@ -81,7 +81,7 @@
 
 		methods: {
 			fetchNotifications() {
-				axios.get('/api/v1/notifications')
+				axios.get('/api/pixelfed/v1/notifications')
 				.then(res => {
 					let data = res.data.filter(n => {
 						if(n.type == 'share' && !status) {
@@ -103,7 +103,7 @@
 					$state.complete();
 					return;
 				}
-				axios.get('/api/v1/notifications', {
+				axios.get('/api/pixelfed/v1/notifications', {
 					params: {
 						page: this.notificationCursor
 					}
@@ -171,7 +171,7 @@
 				let interval = this.notifications.length > 5 ? 15000 : 120000;
 				let self = this;
 				setInterval(function() {
-					axios.get('/api/v1/notifications')
+					axios.get('/api/pixelfed/v1/notifications')
 					.then(res => {
 						let data = res.data.filter(n => {
 							if(n.type == 'share' || self.notificationMaxId >= n.id) {
