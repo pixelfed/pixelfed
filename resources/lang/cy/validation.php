@@ -22,7 +22,7 @@ return [
     'alpha_num'            => 'Dim ond llythrennau a rhifau y gall y :attribute eu cynnwys.',
     'array'                => 'Rhaid i\'r :attribute fod yn arae.',
     'before'               => 'Rhaid i\'r :attribute fod yn ddyddiad cyn :date.',
-    'before_or_equal'      => 'Rhaid i\'r :attribute fod yn ddyddiad cyn neu'n hafal i :date.',
+    'before_or_equal'      => 'Rhaid i\'r :attribute fod yn ddyddiad cyn neu\'n hafal i :date.',
     'between'              => [
         'numeric' => 'Rhaid i\'r :attribute fod rhwng :min a :max.',
         'file'    => 'Rhaid i\'r :attribute fod rhwng :min a :max cilobytes.',
@@ -33,7 +33,7 @@ return [
     'confirmed'            => 'Nid yw\'r cadarnhad :attribute yn cyfateb.',
     'date'                 => 'Nid yw\'r :attribute yn ddyddiad dilys.',
     'date_format'          => 'Nid yw\'r :attribute yn cyd-fynd â\'r fformat :format.',
-    'different'            => 'Rhaid i\'r :attribute a'r :other fod yn wahanol.',
+    'different'            => 'Rhaid i\'r :attribute a\'r :other fod yn wahanol.',
     'digits'               => 'Rhaid i\'r :attribute fod yn :digits digid.',
     'digits_between'       => 'Rhaid i\'r :attribute fod rhwng :min a :max digid.',
     'dimensions'           => 'Mae gan y :attribute ddimensiynau delwedd annilys.',
