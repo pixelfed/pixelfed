@@ -77,19 +77,19 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
-            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
-            Route::get('accounts/relationships', 'PublicApiController@relationships');
-            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
-            Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
-            Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
-            Route::get('accounts/{id}', 'PublicApiController@account');
-            Route::post('avatar/update', 'ApiController@avatarUpdate');
-            Route::get('likes', 'ApiController@hydrateLikes');
-            Route::post('media', 'ApiController@uploadMedia');
-            Route::delete('media', 'ApiController@deleteMedia');
-            Route::get('notifications', 'ApiController@notifications');
-            Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            // Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+            // Route::get('accounts/relationships', 'PublicApiController@relationships');
+            // Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+            // Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
+            // Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+            // Route::get('accounts/{id}', 'PublicApiController@account');
+            // Route::post('avatar/update', 'ApiController@avatarUpdate');
+            // Route::get('likes', 'ApiController@hydrateLikes');
+            // Route::post('media', 'ApiController@uploadMedia');
+            // Route::delete('media', 'ApiController@deleteMedia');
+            // Route::get('notifications', 'ApiController@notifications');
+            // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
@@ -107,7 +107,38 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/tag', 'DiscoverController@getHashtags');
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
         });
+        Route::group(['prefix' => 'pixelfed'], function() {
+            Route::group(['prefix' => 'v1'], function() {
+                Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+                Route::get('accounts/relationships', 'PublicApiController@relationships');
+                Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+                Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
+                Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+                Route::get('accounts/{id}', 'PublicApiController@account');
+                Route::post('avatar/update', 'ApiController@avatarUpdate');
+                Route::get('likes', 'ApiController@hydrateLikes');
+                Route::post('media', 'ApiController@uploadMedia');
+                Route::delete('media', 'ApiController@deleteMedia');
+                Route::get('notifications', 'ApiController@notifications');
+                Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+                Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            });
+        });
         Route::group(['prefix' => 'local'], function () {
+            // Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+            // Route::get('accounts/relationships', 'PublicApiController@relationships');
+            // Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+            // Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
+            // Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+            // Route::get('accounts/{id}', 'PublicApiController@account');
+            // Route::post('avatar/update', 'ApiController@avatarUpdate');
+            // Route::get('likes', 'ApiController@hydrateLikes');
+            // Route::post('media', 'ApiController@uploadMedia');
+            // Route::delete('media', 'ApiController@deleteMedia');
+            // Route::get('notifications', 'ApiController@notifications');
+            // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
