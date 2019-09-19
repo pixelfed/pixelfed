@@ -21,7 +21,7 @@
 		<tr>
 			<td class="font-weight-bold">{{$report->id}}</td>
 			<td class="font-weight-bold">{{$report->type}}</td>
-			<td class="font-weight-bold"><a href="{{$report->reported()->url()}}">{{str_limit($report->reported()->url(), 30)}}</a></td>
+			<td class="font-weight-bold"><a href="{{$report->reported()->url()}}">{{Str::limit($report->reported()->url(), 30)}}</a></td>
 			@if(!$report->admin_seen)
 			<td><span class="text-danger font-weight-bold">Unresolved</span></td>
 			@else

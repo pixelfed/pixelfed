@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 return [
 
     /*
@@ -52,7 +54,7 @@ return [
     |
     */
 
-    'prefix' => env('HORIZON_PREFIX', 'horizon-'.str_random(8).':'),
+    'prefix' => env('HORIZON_PREFIX', 'horizon-'.Str::random(8).':'),
 
     /*
     |--------------------------------------------------------------------------

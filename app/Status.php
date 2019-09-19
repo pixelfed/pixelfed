@@ -96,7 +96,7 @@ class Status extends Model
                 return url(Storage::url('public/no-preview.png'));
             }
 
-            return url(Storage::url($this->firstMedia()->thumbnail_path));
+            return url(Storage::url($this->firstMedia()->thumbnail_path ?? 'public/no-preview.png'));
         });
     }
 
@@ -359,7 +359,7 @@ class Status extends Model
 
     public function scopeToAudience($audience)
     {
-        if(!in_array($audience, ['to', 'cc']) || $this->local == false) { 
+        if(!in_array($audience, ['to', 'cc']) || $this->local == false) {
             return;
         }
         $res = [];

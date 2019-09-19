@@ -1,7 +1,13 @@
 <?php
 
+use Rap2hpoutre\LaravelLogViewer\LogViewerController;
+
+if (!App::environment('production')) {
+    Route::get('/logs', [LogViewerController::class, 'index'])->name('logs');
+}
+
 Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(function () {
-    Route::redirect('/', '/dashboard');
+    Route::redirect('/', '/i/admin/dashboard');
     Route::redirect('timeline', config('app.url').'/timeline');
     Route::get('dashboard', 'AdminController@home')->name('admin.home');
     Route::get('reports', 'AdminController@reports')->name('admin.reports');
@@ -71,7 +77,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::redirect('discover/personal', '/discover');
     Route::get('discover', 'DiscoverController@home')->name('discover');
     Route::get('discover/loops', 'DiscoverController@showLoops');
-    
+
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
@@ -230,23 +236,23 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function() {
             Route::get(
-                '/', 
+                '/',
                 'SettingsController@security'
             )->name('settings.security');
             Route::get(
-                '2fa/setup', 
+                '2fa/setup',
                 'SettingsController@securityTwoFactorSetup'
             )->name('settings.security.2fa.setup');
             Route::post(
-                '2fa/setup', 
+                '2fa/setup',
                 'SettingsController@securityTwoFactorSetupStore'
             );
             Route::get(
-                '2fa/edit', 
+                '2fa/edit',
                 'SettingsController@securityTwoFactorEdit'
             )->name('settings.security.2fa.edit');
             Route::post(
-                '2fa/edit', 
+                '2fa/edit',
                 'SettingsController@securityTwoFactorUpdate'
             );
             Route::get(

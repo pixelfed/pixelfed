@@ -25,7 +25,7 @@
           </a>
         </td>
         <td class="font-weight-bold"><a href="{{$msg->user->url()}}">{{$msg->user->username}}</a></td>
-        <td class="font-weight-bold">{{str_limit($msg->message, 40)}}</td>
+        <td class="font-weight-bold">{{\Illuminate\Support\Str::limit($msg->message, 40)}}</td>
         <td class="font-weight-bold">{{$msg->created_at->diffForHumans()}}</td>
       </tr>
       @endforeach

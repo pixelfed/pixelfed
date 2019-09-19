@@ -142,7 +142,7 @@ class StatusController extends Controller
     public function storeShare(Request $request)
     {
         $this->authCheck();
-        
+
         $this->validate($request, [
           'item'    => 'required|integer|min:1',
         ]);
@@ -175,12 +175,12 @@ class StatusController extends Controller
             $count++;
             SharePipeline::dispatch($share);
         }
- 
+
         if($count >= 0) {
             $status->reblogs_count = $count;
             $status->save();
         }
- 
+
         Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);
 
         if ($request->ajax()) {
@@ -277,10 +277,10 @@ class StatusController extends Controller
             if(in_array($mime, $allowed) == false && $mime !== 'video/mp4') {
                 continue;
             }
-            if(str_contains($mime, 'image/')) {
+            if(Str::contains($mime, 'image/')) {
                 $photos++;
             }
-            if(str_contains($mime, 'video/')) {
+            if(Str::contains($mime, 'video/')) {
                 $videos++;
             }
         }

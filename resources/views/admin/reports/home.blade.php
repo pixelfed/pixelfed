@@ -92,11 +92,11 @@
           <a href="{{$report->url()}}" class="btn btn-sm btn-outline-primary my-0 py-0">
             {{$report->id}}
           </a>
-          
+
         </td>
         <td class="font-weight-bold"><a href="{{$report->reporter->url()}}">{{$report->reporter->username}}</a></td>
         <td class="font-weight-bold">{{$report->type}}</td>
-        <td class="font-weight-bold"><a href="{{$report->reported()->url()}}" title="{{$report->reported()->url()}}">{{str_limit($report->reported()->url(), 25)}}</a></td>
+        <td class="font-weight-bold"><a href="{{$report->reported()->url()}}" title="{{$report->reported()->url()}}">{{\Illuminate\Support\Str::limit($report->reported()->url(), 25)}}</a></td>
         @if(!$report->admin_seen)
         <td><span class="text-danger font-weight-bold">Unresolved</span></td>
         @else
@@ -178,7 +178,7 @@
             $('.bulk-actions').addClass('d-none');
           } else {
             len--;
-            $('.bulk-count').text(len).attr('data-count', len);   
+            $('.bulk-count').text(len).attr('data-count', len);
           }
         }
         if(len == 0) {

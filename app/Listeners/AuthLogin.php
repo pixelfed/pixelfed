@@ -14,6 +14,7 @@ use App\{
 use Illuminate\Queue\InteractsWithQueue;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Str;
 
 class AuthLogin
 {
@@ -101,7 +102,7 @@ class AuthLogin
                     $profile->save();
                     $user->save();
                     break;
-                
+
                 default:
                     # code...
                     break;
@@ -111,11 +112,11 @@ class AuthLogin
 
     protected function userDevice($user)
     {
-        $device = DB::transaction(function() use($user) {
+        DB::transaction(function() use($user) {
             return UserDevice::firstOrCreate([
                 'user_id'       => $user->id,
                 'ip'            => request()->ip(),
-                'user_agent'    => str_limit(request()->userAgent(), 180),
+                'user_agent'    => Str::limit(request()->userAgent(), 180),
             ]);
         });
     }

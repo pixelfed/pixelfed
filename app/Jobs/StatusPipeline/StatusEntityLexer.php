@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -24,14 +25,14 @@ class StatusEntityLexer implements ShouldQueue
     protected $status;
     protected $entities;
     protected $autolink;
-    
+
     /**
      * Delete the job if its models no longer exist.
      *
      * @var bool
      */
     public $deleteWhenMissingModels = true;
-    
+
     /**
      * Create a new job instance.
      *
@@ -93,13 +94,13 @@ class StatusEntityLexer implements ShouldQueue
                 continue;
             }
             DB::transaction(function () use ($status, $tag) {
-                $slug = str_slug($tag, '-', false);
+                $slug = Str::slug($tag, '-', false);
                 $hashtag = Hashtag::firstOrCreate(
                     ['name' => $tag, 'slug' => $slug]
                 );
                 StatusHashtag::firstOrCreate(
                     [
-                        'status_id' => $status->id, 
+                        'status_id' => $status->id,
                         'hashtag_id' => $hashtag->id,
                         'profile_id' => $status->profile_id,
                         'status_visibility' => $status->visibility,

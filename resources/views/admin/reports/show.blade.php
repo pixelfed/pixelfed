@@ -111,21 +111,21 @@
             <div class="my-3 report-comment">
               <div class="card bg-primary text-white">
                 <div class="card-body">
-                  <a href="#" class="text-white font-weight-bold">[username]</a>: {{str_limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
+                  <a href="#" class="text-white font-weight-bold">[username]</a>: {{\Illuminate\Support\Str::limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
                 </div>
               </div>
             </div>
             <div class="my-3 report-comment">
               <div class="card bg-light">
                 <div class="card-body">
-                  <a href="#" class="font-weight-bold">me</a>: {{str_limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
+                  <a href="#" class="font-weight-bold">me</a>: {{\Illuminate\Support\Str::limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
                 </div>
               </div>
             </div>
             <div class="my-3 report-comment">
               <div class="card bg-light">
                 <div class="card-body">
-                  <a href="#" class="font-weight-bold">me</a>: {{str_limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
+                  <a href="#" class="font-weight-bold">me</a>: {{\Illuminate\Support\Str::limit('Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.', 150)}} <span class="float-right small p-2">2m</span>
                 </div>
               </div>
             </div>
@@ -142,10 +142,10 @@
     </div>
   </div> --}}
 @endsection
-  
+
 @push('scripts')
 <script type="text/javascript">
-  
+
   $(document).on('click', '.report-action-btn', function(e) {
     e.preventDefault();
     let el = $(this);

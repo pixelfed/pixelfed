@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Auth; 
-use Cache; 
-use Mail; 
+use Auth;
+use Cache;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Mail;
 use Redis;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
@@ -75,13 +77,13 @@ class AccountController extends Controller
 
 		if ($recentAttempt > 0) {
 			return redirect()->back()->with('error', 'A verification email has already been sent recently. Please check your email, or try again later.');
-		} 
+		}
 
 		EmailVerification::whereUserId(Auth::id())->delete();
 
 		$user = User::whereNull('email_verified_at')->find(Auth::id());
-		$utoken = str_random(64);
-		$rtoken = str_random(128);
+		$utoken = Str::random(64);
+		$rtoken = Str::random(128);
 
 		$verify = new EmailVerification();
 		$verify->user_id = $user->id;
@@ -425,7 +427,7 @@ class AccountController extends Controller
 			$codes = json_decode($backupCodes, true);
 			foreach ($codes as $c) {
 				if(hash_equals($c, $code)) {
-					$codes = array_flatten(array_diff($codes, [$code]));
+					$codes = Arr::flatten(array_diff($codes, [$code]));
 					$user->{'2fa_backup_codes'} = json_encode($codes);
 					$user->save();
 					$request->session()->push('2fa.session.active', true);
@@ -436,7 +438,7 @@ class AccountController extends Controller
 			}
 		} else {
 			return false;
-		}  
+		}
 	}
 
 	public function accountRestored(Request $request)

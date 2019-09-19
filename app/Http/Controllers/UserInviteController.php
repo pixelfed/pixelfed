@@ -11,7 +11,9 @@ class UserInviteController extends Controller
 {
 	public function __construct()
 	{
-		abort_if(!config('pixelfed.user_invites.enabled'), 404);
+	    if (!\App::runningInConsole()) {
+            abort_if(!config('pixelfed.user_invites.enabled'), 404);
+        }
 	}
 
 	public function create(Request $request)
@@ -44,7 +46,7 @@ class UserInviteController extends Controller
 		$invite->email = $request->input('email');
 		$invite->message = $request->input('message');
 		$invite->key = (string) Str::uuid();
-		$invite->token = str_random(32);
+		$invite->token = Str::random(32);
 		$invite->save();
 
 		return redirect(route('settings.invites'));

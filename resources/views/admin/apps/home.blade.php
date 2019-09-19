@@ -39,7 +39,7 @@
         </td>
         <td class="font-weight-bold"><a href="{{$app->user->url()}}">{{$app->user->username}}</a></td>
         <td class="font-weight-bold">{{$app->name}}</td>
-        <td class="font-weight-bold">{{str_limit($app->redirect, 30)}}</td>
+        <td class="font-weight-bold">{{\Illuminate\Support\Str::limit($app->redirect, 30)}}</td>
         <td class="font-weight-bold">{{$app->revoked ? 'true' : 'false'}}</td>
         <td class="font-weight-bold">{{now()->parse($app->created_at)->diffForHumans()}}</td>
       </tr>

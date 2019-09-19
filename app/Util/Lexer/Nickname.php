@@ -2,6 +2,8 @@
 
 namespace App\Util\Lexer;
 
+use Illuminate\Support\Str;
+
 class Nickname
 {
     public static function normalizeProfileUrl($url)
@@ -10,7 +12,7 @@ class Nickname
             $url = str_replace('acct:', '', $url);
         }
 
-        if (!str_contains($url, '@') && filter_var($url, FILTER_VALIDATE_URL)) {
+        if (!Str::contains($url, '@') && filter_var($url, FILTER_VALIDATE_URL)) {
             $parsed = parse_url($url);
             $username = str_replace(['/', '\\', '@'], '', $parsed['path']);
 
@@ -28,7 +30,7 @@ class Nickname
             }
 
             // if slice contains . assume its a domain
-            if (str_contains($part, '.')) {
+            if (Str::contains($part, '.')) {
                 $domain = filter_var($part, FILTER_VALIDATE_URL) ?
                     parse_url($part, PHP_URL_HOST) :
                     $part;

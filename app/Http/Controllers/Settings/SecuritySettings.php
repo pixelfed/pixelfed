@@ -14,6 +14,7 @@ use Auth;
 use DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use PragmaRX\Google2FA\Google2FA;
 
 trait SecuritySettings
@@ -60,8 +61,8 @@ trait SecuritySettings
 	protected function generateBackupCodes()
 	{
 		$keys = [];
-		for ($i=0; $i < 11; $i++) { 
-			$key = str_random(24);
+		for ($i=0; $i < 11; $i++) {
+			$key = Str::random(24);
 			$keys[] = $key;
 		}
 		return $keys;
@@ -135,7 +136,7 @@ trait SecuritySettings
 		$this->validate($request, [
 			'action'	=> 'required|string|max:12'
 		]);
-		
+
 		if($request->action !== 'remove') {
 			abort(403);
 		}

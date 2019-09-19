@@ -19,7 +19,7 @@
                 </div>
               </div>
               <div class="">
-                <p class="mb-0 w-100" v-pre>{{ str_limit($status->parent()->caption, 125) }}</p>
+                <p class="mb-0 w-100" v-pre>{{ \Illuminate\Support\Str::limit($status->parent()->caption, 125) }}</p>
               </div>
             </div>
           </div>
@@ -114,7 +114,7 @@
     $('.reactions').hide();
     $('.more-comments').hide();
     $('.card-footer').hide();
-    new Vue({ 
+    new Vue({
       el: '#content'
     });
   });

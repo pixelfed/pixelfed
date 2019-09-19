@@ -10,7 +10,6 @@ use App\{
 use App\Transformer\Api\NotificationTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class NotificationService {
 
@@ -25,8 +24,8 @@ class NotificationService {
 		if(empty($ids)) {
 			$ids = self::coldGet($id, $start, $stop);
 		}
-		foreach($ids as $id) {
-			$res->push(self::getNotification($id));
+		foreach($ids as $i) {
+			$res->push(self::getNotification($i));
 		}
 		return $res;
 	}
@@ -89,7 +88,7 @@ class NotificationService {
 			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
-	} 
+	}
 
 	public static function warmCache($id, $stop = 400, $force = false)
 	{

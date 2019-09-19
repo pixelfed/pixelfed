@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Redis;
 
 class Installer extends Command
@@ -54,7 +55,7 @@ class Installer extends Command
         $this->info(' ');
         $this->info('Pixelfed version: ' . config('pixelfed.version'));
         $this->line(' ');
-        $this->info('Scanning system...');                               
+        $this->info('Scanning system...');
         $this->preflightCheck();
     }
     protected function preflightCheck()
@@ -158,7 +159,7 @@ class Installer extends Command
         // copy env
         if(!file_exists(app()->environmentFilePath())) {
             exec('cp .env.example .env');
-            $this->call('key:generate');            
+            $this->call('key:generate');
         }
 
         $name = $this->ask('Site name [ex: Pixelfed]');
@@ -186,11 +187,11 @@ class Installer extends Command
                 $database_username = $this->ask('Select database username', 'pixelfed');
                 $this->updateEnvFile('DB_USERNAME', $database_username ?? 'pixelfed');
 
-                $db_pass = str_random(64);
+                $db_pass = Str::random(64);
                 $database_password = $this->secret('Select database password', $db_pass);
                 $this->updateEnvFile('DB_PASSWORD', $database_password);
             break;
-            
+
         }
 
         $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);

@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\File;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 use Log;
 use Storage;
 use Zttp\Zttp;
@@ -163,7 +164,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         $profile = $this->profile;
         $supported = $this->supported;
         $attachments = $activity['object']['attachment'];
-        $caption = str_limit($activity['object']['content'], 125);
+        $caption = Str::limit($activity['object']['content'], 125);
 
         if (Status::whereUrl($activity['id'])->count() !== 0) {
             return true;
@@ -190,7 +191,7 @@ class RemoteFollowImportRecent implements ShouldQueue
                 Log::info('Skipping invalid attachment URL: ' . $url);
                 continue;
             }
-            
+
             $count++;
 
             if ($count === 1) {
@@ -216,7 +217,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             $info = pathinfo($url);
             $url = str_replace(' ', '%20', $url);
             $img = file_get_contents($url);
-            $file = '/tmp/'.str_random(64);
+            $file = '/tmp/'.Str::random(64);
             file_put_contents($file, $img);
             $path = Storage::putFile($storagePath, new File($file), 'public');
 
@@ -230,7 +231,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             $media->save();
 
             ImageThumbnail::dispatch($media);
-            
+
             @unlink($file);
 
             return true;

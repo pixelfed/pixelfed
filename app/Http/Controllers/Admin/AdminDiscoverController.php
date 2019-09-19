@@ -4,15 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use DB, Cache;
 use App\{
-	DiscoverCategory, 
-	DiscoverCategoryHashtag, 
-	Hashtag, 
-	Media, 
-	Profile, 
+	DiscoverCategory,
+	DiscoverCategoryHashtag,
+	Hashtag,
+	Media,
+	Profile,
 	StatusHashtag
 };
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 trait AdminDiscoverController
@@ -37,7 +38,7 @@ trait AdminDiscoverController
 		]);
 
 		$name = $request->input('name');
-		$slug = str_slug($name);
+		$slug = Str::slug($name);
 		$active = $request->input('active');
 		$media = (int) $request->input('media');
 
@@ -66,7 +67,7 @@ trait AdminDiscoverController
 			'hashtags' => 'nullable|string'
 		]);
 		$name = $request->input('name');
-		$slug = str_slug($name);
+		$slug = Str::slug($name);
 		$active = $request->input('active');
 		$media = (int) $request->input('media');
 		$media = Media::findOrFail($media);

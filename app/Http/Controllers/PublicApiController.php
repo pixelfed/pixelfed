@@ -185,14 +185,14 @@ class PublicApiController extends Controller
     {
         if($profile->is_private == true && Auth::check() == false) {
             abort(404);
-        } 
+        }
 
+        $user = Auth::check() ? Auth::user() : false;
         switch ($status->scope) {
             case 'public':
             case 'unlisted':
                 break;
             case 'private':
-                $user = Auth::check() ? Auth::user() : false;
                 if(!$user) {
                     abort(403);
                 } else {
@@ -208,9 +208,11 @@ class PublicApiController extends Controller
                 break;
 
             case 'draft':
-                abort(404);
+                if ($user->profile_id !== $status->profile_id) {
+                    abort(404);
+                }
                 break;
-            
+
             default:
                 abort(404);
                 break;
@@ -261,11 +263,11 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -289,11 +291,11 @@ class PublicApiController extends Controller
                       //->toSql();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -355,7 +357,7 @@ class PublicApiController extends Controller
         //         ->orWhere('status', '!=', null)
         //         ->pluck('id');
         // });
-        
+
         // $private = $private->diff($following)->flatten();
 
         // $filters = UserFilter::whereUserId($pid)
@@ -370,11 +372,11 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -397,11 +399,11 @@ class PublicApiController extends Controller
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -467,11 +469,11 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -494,11 +496,11 @@ class PublicApiController extends Controller
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -536,7 +538,7 @@ class PublicApiController extends Controller
             'id.*'  => 'required|integer'
         ]);
         $ids = collect($request->input('id'));
-        $filtered = $ids->filter(function($v) { 
+        $filtered = $ids->filter(function($v) {
             return $v != Auth::user()->profile->id;
         });
         $relations = Profile::whereNull('status')->findOrFail($filtered->all());
@@ -558,7 +560,7 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_followers) {
+        if(Auth::id() != $profile->user_id && ($profile->is_private || !$profile->user->settings->show_profile_followers)) {
             return response()->json([]);
         }
         $followers = $profile->followers()->orderByDesc('followers.created_at')->paginate(10);
@@ -572,7 +574,7 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_following) {
+        if(Auth::id() != $profile->user_id && ($profile->is_private || !$profile->user->settings->show_profile_following)) {
             return response()->json([]);
         }
         $following = $profile->following()->orderByDesc('followers.created_at')->paginate(10);
@@ -599,10 +601,10 @@ class PublicApiController extends Controller
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
-        $scope = $request->only_media == true ? 
+        $scope = $request->only_media == true ?
             ['photo', 'photo:album', 'video', 'video:album'] :
             ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
-       
+
         if($profile->is_private) {
             if(!Auth::check()) {
                 return response()->json([]);
@@ -630,11 +632,11 @@ class PublicApiController extends Controller
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
-            'id', 
+            'id',
             'uri',
             'caption',
             'rendered',
-            'profile_id', 
+            'profile_id',
             'type',
             'in_reply_to_id',
             'reblog_of_id',
