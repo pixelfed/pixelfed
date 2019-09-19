@@ -148,8 +148,7 @@ return [
     |
     */
 
-//    'domain' => env('SESSION_DOMAIN', env('APP_DOMAIN', null)),
-    'domain' => env('SESSION_DOMAIN', null),
+    'domain' => env('SESSION_DOMAIN', env('APP_DOMAIN', null)),
 
     /*
     |--------------------------------------------------------------------------
