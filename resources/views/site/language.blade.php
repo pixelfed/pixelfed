@@ -1,21 +1,23 @@
-@extends('site.partial.template')
+@extends('layouts.app')
 
-@section('section')
+@section('content')
 
-  <div class="title">
-    <h3 class="font-weight-bold">{{__('site.language')}}</h3>
+<div class="container mt-5">  
+  <div class="col-12">
+    <p class="font-weight-bold text-lighter text-uppercase">{{__('site.language')}}</p>
+    <div class="card border shadow-none">
+      <div class="card-body row pl-md-5 ml-md-5">
+        @foreach(App\Util\Localization\Localization::languages() as $lang)
+        <div class="col-12 col-md-4 mb-2">
+          <a href="/i/lang/{{$lang}}" class="{{App::getLocale() == $lang ? 'font-weight-bold text-primary' : 'text-muted'}} pr-3 b-3">{{locale_get_display_language($lang, $lang)}}</a>
+        </div>
+        @endforeach
+      </div>
+    </div>
   </div>
-  <hr>
-  <div class="alert alert-info font-weight-bold">{{__('site.l10nWip')}}!</div>
-  <p class="font-weight-light">{{__('site.currentLocale')}}: <span class="font-weight-bold">{{App::getLocale()}}</span></p>
-  <p class="font-weight-light">{{__('site.selectLocale')}}:</p>
-  <ul class="list-group">
-    @foreach(App\Util\Localization\Localization::languages() as $lang)
-    <a class="list-group-item font-weight-bold" href="/i/lang/{{$lang}}">{{locale_get_display_language($lang, $lang)}}</a>
-    @endforeach
-  </ul>
+</div>
 @endsection
 
 @push('meta')
-<meta property="og:description" content="Language">
+<meta property="og:description" content="Change Site Language">
 @endpush
