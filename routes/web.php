@@ -360,13 +360,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/');
         Route::get('{user}.atom', 'ProfileController@showAtomFeed');
         Route::get('{username}/outbox', 'FederationController@userOutbox');
-        Route::get('{username}', 'ProfileController@permalinkRedirect');
         Route::get('{username}/followers', 'FederationController@userFollowers');
         Route::get('{username}/following', 'FederationController@userFollowing');
+        Route::get('{username}', 'ProfileController@permalinkRedirect');
     });
 
     Route::get('c/{collection}', 'CollectionController@show');
-    Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
