@@ -3,10 +3,13 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
 
 ### Added
+- Added Welsh translations [#1706](https://github.com/pixelfed/pixelfed/pull/1706)
+- Added Api v1 controller [85835f5a](https://github.com/pixelfed/pixelfed/commit/85835f5a6712dea0562df4be897087de5305750f)
 
 ### Fixed
 - Fixed count bug in StatusHashtagService [#1694](https://github.com/pixelfed/pixelfed/pull/1694)
 - Fixed private account bug [#1699](https://github.com/pixelfed/pixelfed/pull/1699)
+- Fixed comments on MomentUI posts [#1704](https://github.com/pixelfed/pixelfed/pull/1704)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
@@ -14,6 +17,8 @@
 - Cache ProfileController [#1700](https://github.com/pixelfed/pixelfed/pull/1700)
 - Updated ComposeUI v4, made cropping optional [#1702](https://github.com/pixelfed/pixelfed/pull/1702)
 - Updated DiscoverController, limit Loops to local only posts [#1703](https://github.com/pixelfed/pixelfed/pull/1703)
+- Namespaced internal apis [3c306c5e](https://github.com/pixelfed/pixelfed/commit/3c306c5e179d35dbe19a6a1bd9533350e4b96524)
+- Updated .env.example with proper remote follow variable [0697f780](https://github.com/pixelfed/pixelfed/commit/0697f780d3a5cba72148f0a767d5a35124a3d9b4)
 
 ## Deprecated
 - Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
