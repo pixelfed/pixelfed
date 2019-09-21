@@ -48,8 +48,7 @@ class BaseApiController extends Controller
     public function notifications(Request $request)
     {
         abort_if(!$request->user(), 403);
-
-        $pid = Auth::user()->profile->id;
+        $pid = $request->user()->profile_id;
         $pg = $request->input('pg');
         if($pg == true) {
             $timeago = Carbon::now()->subMonths(6);
@@ -62,7 +61,7 @@ class BaseApiController extends Controller
         } else {
             $this->validate($request, [
                 'page' => 'nullable|integer|min:1|max:10',
-                'limit' => 'nullable|integer|min:1|max:10'
+                'limit' => 'nullable|integer|min:1|max:40'
             ]);
             $limit = $request->input('limit') ?? 10;
             $page = $request->input('page') ?? 1;
