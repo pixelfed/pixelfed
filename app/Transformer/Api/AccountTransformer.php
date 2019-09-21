@@ -17,7 +17,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 		$local = $profile->domain == null;
 		$is_admin = !$local ? false : $profile->user->is_admin;
 		$acct = $local ? $profile->username : substr($profile->username, 1);
-		$username = $local ? $profile->username : explode('@', $profile->username)[0];
+		$username = $local ? $profile->username : explode('@', $acct)[0];
 		return [
 			'id' => (string) $profile->id,
 			'username' => $username,
