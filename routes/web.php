@@ -77,20 +77,20 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
-            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
-            Route::get('accounts/relationships', 'PublicApiController@relationships');
-            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
-            Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
-            Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials')->middleware('auth:api');
+            Route::get('accounts/relationships', 'PublicApiController@relationships')->middleware('auth:api');
+            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses')->middleware('auth:api');
+            Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing')->middleware('auth:api');
+            Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
-            Route::post('avatar/update', 'ApiController@avatarUpdate');
+            Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
             Route::get('likes', 'ApiController@hydrateLikes');
-            Route::post('media', 'ApiController@uploadMedia');
-            Route::delete('media', 'ApiController@deleteMedia');
-            Route::get('notifications', 'ApiController@notifications');
+            Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
+            Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
+            Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
