@@ -34,6 +34,11 @@ class SiteController extends Controller
         // todo: add other locales after pushing new l10n strings
         $locales = Localization::languages();
         if(in_array($locale, $locales)) {
+            if($request->user()) {
+                $user = $request->user();
+                $user->language = $locale;
+                $user->save();
+            }
           session()->put('locale', $locale);
         }
 
