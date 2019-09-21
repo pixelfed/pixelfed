@@ -49,26 +49,18 @@ class BaseApiController extends Controller
     {
         abort_if(!$request->user(), 403);
         $pid = $request->user()->profile_id;
-        $pg = $request->input('pg');
-        if($pg == true) {
-            $timeago = Carbon::now()->subMonths(6);
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->latest()
-                ->simplePaginate(10);
-            $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-        } else {
-            $this->validate($request, [
-                'page' => 'nullable|integer|min:1|max:10',
-                'limit' => 'nullable|integer|min:1|max:40'
-            ]);
-            $limit = $request->input('limit') ?? 10;
-            $page = $request->input('page') ?? 1;
-            $end = (int) $page * $limit;
-            $start = (int) $end - $limit;
-            $res = NotificationService::get($pid, $start, $end);
-        }
+        $this->validate($request, [
+            'page' => 'nullable|integer|min:1|max:10',
+            'limit' => 'nullable|integer|min:1|max:40'
+        ]);
+        $limit = $request->input('limit') ?? 10;
+        $timeago = Carbon::now()->subMonths(6);
+        $notifications = Notification::whereProfileId($pid)
+            ->whereDate('created_at', '>', $timeago)
+            ->latest()
+            ->simplePaginate($limit);
+        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
