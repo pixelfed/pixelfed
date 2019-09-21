@@ -40,13 +40,15 @@ class BaseApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
     public function notifications(Request $request)
     {
+        abort_if(!$request->user(), 403);
+
         $pid = Auth::user()->profile->id;
         $pg = $request->input('pg');
         if($pg == true) {
@@ -74,6 +76,7 @@ class BaseApiController extends Controller
 
     public function accounts(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -83,6 +86,7 @@ class BaseApiController extends Controller
 
     public function accountFollowers(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $followers = $profile->followers;
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
@@ -93,6 +97,7 @@ class BaseApiController extends Controller
 
     public function accountFollowing(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $following = $profile->following;
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
@@ -103,6 +108,7 @@ class BaseApiController extends Controller
 
     public function accountStatuses(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'only_media' => 'nullable',
             'pinned' => 'nullable',
@@ -152,6 +158,7 @@ class BaseApiController extends Controller
 
     public function avatarUpdate(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'upload'   => 'required|mimes:jpeg,png,gif|max:'.config('pixelfed.max_avatar_size'),
         ]);
@@ -188,6 +195,7 @@ class BaseApiController extends Controller
 
     public function showTempMedia(Request $request, int $profileId, $mediaId)
     {
+        abort_if(!$request->user(), 403);
         abort_if(!$request->hasValidSignature(), 404); 
         abort_if(Auth::user()->profile_id !== $profileId, 404); 
         $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
@@ -197,6 +205,7 @@ class BaseApiController extends Controller
 
     public function uploadMedia(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
               'file.*'      => function() {
                 return [
@@ -278,6 +287,7 @@ class BaseApiController extends Controller
 
     public function deleteMedia(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'id' => 'required|integer|min:1|exists:media,id'
         ]);
@@ -299,6 +309,7 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $id = Auth::id();
 
         $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
