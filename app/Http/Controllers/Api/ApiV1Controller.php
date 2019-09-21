@@ -78,6 +78,15 @@ class ApiV1Controller extends Controller
 		return response()->json($res);
 	}
 
+    public function statusById(Request $request, $id)
+    {
+        $status = Status::whereVisibility('public')->findOrFail($id);
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
     public function instance(Request $request)
     {
         $res = [
@@ -98,5 +107,22 @@ class ApiV1Controller extends Controller
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')'
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function filters(Request $request)
+    {
+        // Pixelfed does not yet support keyword filters
+        return response()->json([]);
+    }
+
+    public function context(Request $request)
+    {
+        // todo
+        $res = [
+            'ancestors' => [],
+            'descendants' => []
+        ];
+
+        return response()->json($res);
     }
 }

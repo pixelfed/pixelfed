@@ -223,7 +223,7 @@ class PublicApiController extends Controller
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-          'limit'       => 'nullable|integer|max:20'
+          'limit'       => 'nullable|integer|max:30'
         ]);
 
         if(config('instance.timeline.local.is_public') == false && !Auth::check()) {
