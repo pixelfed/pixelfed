@@ -77,4 +77,26 @@ class ApiV1Controller extends Controller
 
 		return response()->json($res);
 	}
+
+    public function instance(Request $request)
+    {
+        $res = [
+            'description' => 'Pixelfed - Photo sharing for everyone',
+            'email' => config('instance.email'),
+            'languages' => ['en'],
+            'max_toot_chars' => config('pixelfed.max_caption_length'),
+            'registrations' => config('pixelfed.open_registration'),
+            'stats' => [
+                'user_count' => 0,
+                'status_count' => 0,
+                'domain_count' => 0
+            ],
+            'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.svg',
+            'title' => 'Pixelfed (' . config('pixelfed.domain.app') . ')',
+            'uri' => config('app.url'),
+            'urls' => [],
+            'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')'
+        ];
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
 }
