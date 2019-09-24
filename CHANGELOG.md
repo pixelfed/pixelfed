@@ -3,6 +3,15 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
 
 ### Added
+
+### Fixed
+
+### Changed
+    
+    
+## [v0.10.4 (2019-09-24)](https://github.com/pixelfed/pixelfed/compare/v0.10.3...v0.10.4)
+
+### Added
 - Added Welsh translations [#1706](https://github.com/pixelfed/pixelfed/pull/1706)
 - Added Api v1 controller [85835f5a](https://github.com/pixelfed/pixelfed/commit/85835f5a6712dea0562df4be897087de5305750f)
 - Added database migration that adds a language column to the users table [c87d8c16](https://github.com/pixelfed/pixelfed/commit/c87d8c16)
