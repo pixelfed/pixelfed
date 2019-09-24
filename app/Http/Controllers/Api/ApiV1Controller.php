@@ -100,7 +100,7 @@ class ApiV1Controller extends Controller
                 'status_count' => 0,
                 'domain_count' => 0
             ],
-            'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.svg',
+            'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.png',
             'title' => 'Pixelfed (' . config('pixelfed.domain.app') . ')',
             'uri' => config('app.url'),
             'urls' => [],
