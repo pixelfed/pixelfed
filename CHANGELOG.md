@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.4...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.5...dev)
+
+### Added
+
+### Fixed
+
+### Changed
+    
+
+## [v0.10.5 (2019-09-24)](https://github.com/pixelfed/pixelfed/compare/v0.10.4...v0.10.5)
 
 ### Added
 - Added ```software``` back to AccountTransformer [93c687c7](https://github.com/pixelfed/pixelfed/commit/93c687c7)
