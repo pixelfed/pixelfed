@@ -1,10 +1,12 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.4...dev)
 
 ### Added
+- Added ```software``` back to AccountTransformer [93c687c7](https://github.com/pixelfed/pixelfed/commit/93c687c7)
 
 ### Fixed
+- Fixed cache bug in privacy and terms pages [#1712](https://github.com/pixelfed/pixelfed/commit/fe522da8db7a8b0d7c18d405abcb885f8678f35c)
 
 ### Changed
     
