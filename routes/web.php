@@ -77,19 +77,20 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
-            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
-            Route::get('accounts/relationships', 'PublicApiController@relationships');
-            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
-            Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
-            Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
-            Route::get('accounts/{id}', 'PublicApiController@account');
-            Route::post('avatar/update', 'ApiController@avatarUpdate');
+            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials')->middleware('auth:api');
+            Route::get('accounts/relationships', 'PublicApiController@relationships')->middleware('auth:api');
+            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses')->middleware('auth:api');
+            Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing')->middleware('auth:api');
+            Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers')->middleware('auth:api');
+            // Route::get('accounts/{id}', 'PublicApiController@account');
+            Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
+            Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
             Route::get('likes', 'ApiController@hydrateLikes');
-            Route::post('media', 'ApiController@uploadMedia');
-            Route::delete('media', 'ApiController@deleteMedia');
-            Route::get('notifications', 'ApiController@notifications');
+            Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
+            Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
+            Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
@@ -107,7 +108,38 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/tag', 'DiscoverController@getHashtags');
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
         });
+        Route::group(['prefix' => 'pixelfed'], function() {
+            Route::group(['prefix' => 'v1'], function() {
+                Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+                Route::get('accounts/relationships', 'PublicApiController@relationships');
+                Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+                Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
+                Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+                Route::get('accounts/{id}', 'PublicApiController@account');
+                Route::post('avatar/update', 'ApiController@avatarUpdate');
+                Route::get('likes', 'ApiController@hydrateLikes');
+                Route::post('media', 'ApiController@uploadMedia');
+                Route::delete('media', 'ApiController@deleteMedia');
+                Route::get('notifications', 'ApiController@notifications');
+                Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+                Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            });
+        });
         Route::group(['prefix' => 'local'], function () {
+            // Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
+            // Route::get('accounts/relationships', 'PublicApiController@relationships');
+            // Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
+            // Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
+            // Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+            // Route::get('accounts/{id}', 'PublicApiController@account');
+            // Route::post('avatar/update', 'ApiController@avatarUpdate');
+            // Route::get('likes', 'ApiController@hydrateLikes');
+            // Route::post('media', 'ApiController@uploadMedia');
+            // Route::delete('media', 'ApiController@deleteMedia');
+            // Route::get('notifications', 'ApiController@notifications');
+            // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
@@ -329,13 +361,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::redirect('/', '/');
         Route::get('{user}.atom', 'ProfileController@showAtomFeed');
         Route::get('{username}/outbox', 'FederationController@userOutbox');
-        Route::get('{username}', 'ProfileController@permalinkRedirect');
         Route::get('{username}/followers', 'FederationController@userFollowers');
         Route::get('{username}/following', 'FederationController@userFollowing');
+        Route::get('{username}', 'ProfileController@permalinkRedirect');
     });
 
     Route::get('c/{collection}', 'CollectionController@show');
-    Route::get('p/{username}/{id}/c/{cid}', 'CommentController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');

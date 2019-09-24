@@ -37,25 +37,25 @@
   <form method="post">
     @csrf
     <div class="form-group row">
-      <label for="name" class="col-sm-3 col-form-label font-weight-bold text-right">Name</label>
+      <label for="name" class="col-sm-3 col-form-label font-weight-bold">Name</label>
       <div class="col-sm-9">
         <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="{{Auth::user()->profile->name}}">
       </div>
     </div>
     <div class="form-group row">
-      <label for="username" class="col-sm-3 col-form-label font-weight-bold text-right">Username</label>
+      <label for="username" class="col-sm-3 col-form-label font-weight-bold">Username</label>
       <div class="col-sm-9">
         <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{Auth::user()->profile->username}}" readonly>
       </div>
     </div>
     <div class="form-group row">
-      <label for="website" class="col-sm-3 col-form-label font-weight-bold text-right">Website</label>
+      <label for="website" class="col-sm-3 col-form-label font-weight-bold">Website</label>
       <div class="col-sm-9">
         <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}">
       </div>
     </div>
     <div class="form-group row">
-      <label for="bio" class="col-sm-3 col-form-label font-weight-bold text-right">Bio</label>
+      <label for="bio" class="col-sm-3 col-form-label font-weight-bold">Bio</label>
       <div class="col-sm-9">
         <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}">{{Auth::user()->profile->bio}}</textarea>
         <p class="form-text">
@@ -63,11 +63,21 @@
         </p>
       </div>
     </div>
+    <div class="form-group row">
+      <label for="bio" class="col-sm-3 col-form-label font-weight-bold">Language</label>
+      <div class="col-sm-9">
+        <select class="form-control" name="language">
+        @foreach(App\Util\Localization\Localization::languages() as $lang)
+          <option value="{{$lang}}" {{Auth::user()->language == $lang ? 'selected':''}}>{{locale_get_display_language($lang, 'en')}} - {{locale_get_display_language($lang, $lang)}}</option>
+        @endforeach
+        </select>
+      </div>
+    </div>
     <div class="pt-3">
       <p class="font-weight-bold text-muted text-center">Storage Usage</p>
     </div>
     <div class="form-group row">
-      <label for="email" class="col-sm-3 col-form-label font-weight-bold text-right">Storage Used</label>
+      <label class="col-sm-3 col-form-label font-weight-bold">Storage Used</label>
       <div class="col-sm-9">
         <div class="progress mt-2">
           <div class="progress-bar" role="progressbar" style="width: {{$storage['percentUsed']}}%"  aria-valuenow="{{$storage['percentUsed']}}" aria-valuemin="0" aria-valuemax="100"></div>

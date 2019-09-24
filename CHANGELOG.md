@@ -3,20 +3,33 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.3...dev)
 
 ### Added
+- Added Welsh translations [#1706](https://github.com/pixelfed/pixelfed/pull/1706)
+- Added Api v1 controller [85835f5a](https://github.com/pixelfed/pixelfed/commit/85835f5a6712dea0562df4be897087de5305750f)
+- Added database migration that adds a language column to the users table [c87d8c16](https://github.com/pixelfed/pixelfed/commit/c87d8c16)
+- Added persistent preferred language [18bc9c30](https://github.com/pixelfed/pixelfed/commit/18bc9c30)
 
 ### Fixed
 - Fixed count bug in StatusHashtagService [#1694](https://github.com/pixelfed/pixelfed/pull/1694)
 - Fixed private account bug [#1699](https://github.com/pixelfed/pixelfed/pull/1699)
+- Fixed comments on MomentUI posts [#1704](https://github.com/pixelfed/pixelfed/pull/1704)
 
 ### Changed
 - Updated EmailService, added new domains [#1690](https://github.com/pixelfed/pixelfed/pull/1690)
-- Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1690)
+- Updated quill.js to v1.3.7 [#1692](https://github.com/pixelfed/pixelfed/pull/1692)
 - Cache ProfileController [#1700](https://github.com/pixelfed/pixelfed/pull/1700)
 - Updated ComposeUI v4, made cropping optional [#1702](https://github.com/pixelfed/pixelfed/pull/1702)
 - Updated DiscoverController, limit Loops to local only posts [#1703](https://github.com/pixelfed/pixelfed/pull/1703)
+- Namespaced internal apis [3c306c5e](https://github.com/pixelfed/pixelfed/commit/3c306c5e179d35dbe19a6a1bd9533350e4b96524)
+- Updated .env.example with proper remote follow variable [0697f780](https://github.com/pixelfed/pixelfed/commit/0697f780d3a5cba72148f0a767d5a35124a3d9b4)
+- Updated show all comments view [0a5eaa31](https://github.com/pixelfed/pixelfed/pull/1708/commits/0a5eaa3118cb09c61d3e5442fe3bf8439a2a12af)
+- Updated language page layout [01fb5af](https://github.com/pixelfed/pixelfed/pull/1708/commits/01fb5af19e803488c5794b545d218771f6fce6d7)
+- Updated privacy policy page layout [a4229d5](https://github.com/pixelfed/pixelfed/pull/1708/commits/a4229d5d30faea11e7a72d122c4a5762d867aaf3)
+- Updated terms page layout [4f8c5e5](https://github.com/pixelfed/pixelfed/pull/1708/commits/4f8c5e5519949c63c702c724a00d8575db4e0014)
+- Update v1 API, added /api/v1/instance endpoint [951b6fa0](https://github.com/pixelfed/pixelfed/commit/951b6fa0) [9dc2234b](https://github.com/pixelfed/pixelfed/commit/99dc2234b)
 
 ## Deprecated
 - Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
+- Remove old comment permalink [05f6598](https://github.com/pixelfed/pixelfed/pull/1708/commits/05f659896d903e1ff41dba810f125d721fa057e7)
     
     
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
@@ -43,7 +56,7 @@
 
 ### Fixed
 
-- Typo in Inbox prevented proper federation support
+- Typo in Inbox prevented proper federation support [#1664](https://github.com/pixelfed/pixelfed/pull/1664)
 
 
 ## [v0.10.1 (2019-09-06)](https://github.com/pixelfed/pixelfed/compare/v0.10.0...v0.10.1)
@@ -53,19 +66,19 @@
 - Compose UI v4: a rework of the v3 flow to allow basic cropping and better support future post types
 - Profile badges show if a user is following you or is an admin
 - Show confirmation message when muting or blocking a user from a post
-- Allow "read more" to be disabled on posts
+- Allow "read more" to be disabled on posts [#1545](https://github.com/pixelfed/pixelfed/pull/1545)
 - Loops! Discover short videos
 - Preliminary support for profile PropertyValue metadata
 - Preliminary support for Direct Messages
 - Places! Run the artisan task `import:cities` 
 - Emails are now validated and banned email domains are disallowed at signup. Artisan task `email:bancheck` will validate existing users.
-- .env vars `REDIS_SCHEME` and `REDIS_PATH` allow for using Redis over a Unix socket instead of TCP
+- .env vars `REDIS_SCHEME` and `REDIS_PATH` allow for using Redis over a Unix socket instead of TCP [#1602](https://github.com/pixelfed/pixelfed/pull/1602)
 - .env var `IMAGE_DRIVER` allows using imagick instead of gd
 
 ### Fixed
-- Show delete button while composing video posts
+- Show delete button while composing video posts [#1529](https://github.com/pixelfed/pixelfed/pull/1529)
 - Show pending follow requests on private profiles
-- Allow muted users to comment on your posts
+- Allow muted users to comment on your posts [#1537](https://github.com/pixelfed/pixelfed/pull/1537)
 - Bugs with carousel cursor and tooltips
 - Collections can now be deleted from collection page
 - Compose modal now indicates album media limits
@@ -73,7 +86,7 @@
 - Don't show Register link in navbar when registrations are closed
 
 ### Changed
-- Use vue-masonry for Moment UI layout
+- Use vue-masonry for Moment UI layout [#1536](https://github.com/pixelfed/pixelfed/pull/1536)
 - User post limit changed from 20/hr to 50/hr
 - Better mobile profile layout
 - Dark mode is now a bit bluer
@@ -85,17 +98,17 @@
 ## [v0.10.0 (2019-07-17)](https://github.com/pixelfed/pixelfed/compare/v0.9.6...v0.10.0)
 
 ### Added
-- Collections! Add posts to Collections, similar to categories.
-- Profile donate links: add links to Patreon, Liberapay, and OpenCollective on your profile
+- Collections! Add posts to Collections, similar to categories. [#1511](https://github.com/pixelfed/pixelfed/pull/1511)
+- Profile donate links: add links to Patreon, Liberapay, and OpenCollective on your profile [#1500](https://github.com/pixelfed/pixelfed/pull/1500)
 
 ### Fixed
 - Show correct mode when viewing followers / following
 
 ### Changed
-- Profile model now uses snowflake id
+- Profile model now uses snowflake id [#1502](https://github.com/pixelfed/pixelfed/pull/1502)
 
 ### Removed
-- OStatus legacy code has been removed
+- OStatus legacy code has been removed [#1510](https://github.com/pixelfed/pixelfed/pull/1510)
 
 ## [v0.9.6 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.5...v0.9.6)
 

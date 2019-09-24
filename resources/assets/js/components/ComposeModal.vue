@@ -400,7 +400,7 @@ export default {
 
 	methods: {
 		fetchProfile() {
-			axios.get('/api/v1/accounts/verify_credentials').then(res => {
+			axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 				this.profile = res.data;
 				window.pixelfed.currentUser = res.data;
 				if(res.data.locked == true) {
@@ -454,7 +454,7 @@ export default {
 					}
 				};
 
-				axios.post('/api/v1/media', form, xhrConfig)
+				axios.post('/api/pixelfed/v1/media', form, xhrConfig)
 				.then(function(e) {
 					self.uploadProgress = 100;
 					self.ids.push(e.data.id);
@@ -516,7 +516,7 @@ export default {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
-			axios.delete('/api/v1/media', {
+			axios.delete('/api/pixelfed/v1/media', {
 				params: {
 					id: id
 				}

@@ -370,7 +370,7 @@
                           <a class="text-lighter text-decoration-none" :href="reply.url">{{timeAgo(reply.created_at)}}</a>
                         </span>
                       </div>
-                      <p v-html="reply.content" style="word-break: break-all;"></p>
+                      <p v-html="reply.content"></p>
                     </div>
                   </div> 
                   <!-- <div class="media mb-3">
@@ -1106,7 +1106,7 @@ export default {
           this.fetchData();
           return;
         } else {
-          axios.get('/api/v1/accounts/relationships', {
+          axios.get('/api/pixelfed/v1/accounts/relationships', {
             params: {
               'id[]': this.statusProfileId
             }

@@ -40,40 +40,34 @@ class BaseApiController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
         $this->fractal = new Fractal\Manager();
         $this->fractal->setSerializer(new ArraySerializer());
     }
 
     public function notifications(Request $request)
     {
-        $pid = Auth::user()->profile->id;
-        $pg = $request->input('pg');
-        if($pg == true) {
-            $timeago = Carbon::now()->subMonths(6);
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->latest()
-                ->simplePaginate(10);
-            $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-        } else {
-            $this->validate($request, [
-                'page' => 'nullable|integer|min:1|max:10',
-                'limit' => 'nullable|integer|min:1|max:10'
-            ]);
-            $limit = $request->input('limit') ?? 10;
-            $page = $request->input('page') ?? 1;
-            $end = (int) $page * $limit;
-            $start = (int) $end - $limit;
-            $res = NotificationService::get($pid, $start, $end);
-        }
+        abort_if(!$request->user(), 403);
+        $pid = $request->user()->profile_id;
+        $this->validate($request, [
+            'page' => 'nullable|integer|min:1|max:10',
+            'limit' => 'nullable|integer|min:1|max:40'
+        ]);
+        $limit = $request->input('limit') ?? 10;
+        $timeago = Carbon::now()->subMonths(6);
+        $notifications = Notification::whereProfileId($pid)
+            ->whereDate('created_at', '>', $timeago)
+            ->latest()
+            ->simplePaginate($limit);
+        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
 
     public function accounts(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -83,6 +77,7 @@ class BaseApiController extends Controller
 
     public function accountFollowers(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $followers = $profile->followers;
         $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
@@ -93,6 +88,7 @@ class BaseApiController extends Controller
 
     public function accountFollowing(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $profile = Profile::findOrFail($id);
         $following = $profile->following;
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
@@ -103,6 +99,7 @@ class BaseApiController extends Controller
 
     public function accountStatuses(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'only_media' => 'nullable',
             'pinned' => 'nullable',
@@ -152,6 +149,7 @@ class BaseApiController extends Controller
 
     public function avatarUpdate(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'upload'   => 'required|mimes:jpeg,png,gif|max:'.config('pixelfed.max_avatar_size'),
         ]);
@@ -188,6 +186,7 @@ class BaseApiController extends Controller
 
     public function showTempMedia(Request $request, int $profileId, $mediaId)
     {
+        abort_if(!$request->user(), 403);
         abort_if(!$request->hasValidSignature(), 404); 
         abort_if(Auth::user()->profile_id !== $profileId, 404); 
         $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
@@ -197,6 +196,7 @@ class BaseApiController extends Controller
 
     public function uploadMedia(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
               'file.*'      => function() {
                 return [
@@ -278,6 +278,7 @@ class BaseApiController extends Controller
 
     public function deleteMedia(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'id' => 'required|integer|min:1|exists:media,id'
         ]);
@@ -299,12 +300,21 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $id = Auth::id();
 
         $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
             $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
             $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-            return $this->fractal->createData($resource)->toArray();
+            $res = $this->fractal->createData($resource)->toArray();
+            $res['source'] = [
+                'privacy' => $profile->is_private ? 'private' : 'public',
+                'sensitive' => $profile->cw ? true : false,
+                'language' => 'en',
+                'note' => '',
+                'fields' => []
+            ];
+            return $res;
         });
 
         return response()->json($res);

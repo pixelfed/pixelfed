@@ -583,7 +583,7 @@
 				this.followingModal();
 			}
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
-				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
 				});
 			}
@@ -595,7 +595,7 @@
 
 		methods: {
 			fetchProfile() {
-				axios.get('/api/v1/accounts/' + this.profileId).then(res => {
+				axios.get('/api/pixelfed/v1/accounts/' + this.profileId).then(res => {
 					this.profile = res.data;
 				}).then(res => {
 					this.fetchPosts();
@@ -603,7 +603,7 @@
 			},
 
 			fetchPosts() {
-				let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
+				let apiUrl = '/api/pixelfed/v1/accounts/' + this.profileId + '/statuses';
 				axios.get(apiUrl, {
 					params: {
 						only_media: true,
@@ -641,7 +641,7 @@
 					$state.complete();
 					return;
 				}
-				let apiUrl = '/api/v1/accounts/' + this.profileId + '/statuses';
+				let apiUrl = '/api/pixelfed/v1/accounts/' + this.profileId + '/statuses';
 				axios.get(apiUrl, {
 					params: {
 						only_media: true,
@@ -800,7 +800,7 @@
 				if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == false) {
 					return;
 				}
-				axios.get('/api/v1/accounts/relationships', {
+				axios.get('/api/pixelfed/v1/accounts/relationships', {
 					params: {
 						'id[]': this.profileId
 					}
@@ -935,7 +935,7 @@
 					this.$refs.followingModal.show();
 					return;
 				} else {
-					axios.get('/api/v1/accounts/'+this.profileId+'/following', {
+					axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/following', {
 						params: {
 							page: this.followingCursor
 						}
@@ -964,7 +964,7 @@
 					this.$refs.followerModal.show();
 					return;
 				} else {
-					axios.get('/api/v1/accounts/'+this.profileId+'/followers', {
+					axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/followers', {
 						params: {
 							page: this.followerCursor
 						}
@@ -986,7 +986,7 @@
 					window.location.href = encodeURI('/login?next=/' + this.profile.username + '/');
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
 					params: {
 						page: this.followingCursor
 					}
@@ -1007,7 +1007,7 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
 						page: this.followerCursor
 					}

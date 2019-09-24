@@ -21,21 +21,13 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class CommentController extends Controller
 {
-    public function show(Request $request, $username, int $id, int $cid)
-    {
-        $user = Profile::whereUsername($username)->firstOrFail();
-        $status = Status::whereProfileId($user->id)->whereInReplyToId($id)->findOrFail($cid);
-
-        return view('status.reply', compact('user', 'status'));
-    }
-
     public function showAll(Request $request, $username, int $id)
     {
-        $user = Profile::whereUsername($username)->firstOrFail();
-        $status = Status::whereProfileId($user->id)->findOrFail($id);
-        $replies = Status::whereInReplyToId($id)->paginate(40);
+        $profile = Profile::whereNull(['status', 'domain'])->whereUsername($username)->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($id);
+        $replies = Status::whereInReplyToId($id)->simplePaginate(40);
 
-        return view('status.comments', compact('user', 'status', 'replies'));
+        return view('status.comments', compact('profile', 'status', 'replies'));
     }
 
     public function store(Request $request)

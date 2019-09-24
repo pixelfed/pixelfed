@@ -2,15 +2,15 @@
 
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
+
+
+Route::group(['prefix' => 'api'], function() {
+	Route::group(['prefix' => 'v1'], function() {
+		Route::post('apps', 'Api\ApiV1Controller@apps');
+		Route::get('instance', 'Api\ApiV1Controller@instance');
+		Route::get('filters', 'Api\ApiV1Controller@filters');
+		Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById');
+		Route::get('statuses/{id}/context', 'Api\ApiV1Controller@context');
+	});
+});

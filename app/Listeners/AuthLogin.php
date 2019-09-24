@@ -36,6 +36,7 @@ class AuthLogin
         $this->userState($user);
         $this->userDevice($user);
         $this->userProfileId($user);
+        $this->userLanguage($user);
     }
 
     protected function userProfile($user)
@@ -131,5 +132,10 @@ class AuthLogin
                 }
             });
         }
+    }
+
+    protected function userLanguage($user)
+    {
+        session()->put('locale', $user->language ?? 'en');
     }
 }

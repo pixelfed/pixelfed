@@ -22,8 +22,6 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'id'       		=> (string) $notification->id,
 			'type'       	=> $this->replaceTypeVerb($notification->action),
 			'created_at' 	=> (string) $notification->created_at->format('c'),
-			'account' 		=> null,
-			'status' 		=> null
 		];
 	}
 

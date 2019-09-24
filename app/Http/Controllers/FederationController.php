@@ -129,7 +129,7 @@ class FederationController extends Controller
         $res['openRegistrations'] = config('pixelfed.open_registration');
         return response()->json($res, 200, [
             'Access-Control-Allow-Origin' => '*'
-        ]);
+        ], JSON_PRETTY_PRINT);
     }
 
     public function webfinger(Request $request)

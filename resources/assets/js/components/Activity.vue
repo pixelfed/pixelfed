@@ -115,7 +115,7 @@ export default {
 
 	methods: {
 		fetchNotifications() {
-			axios.get('/api/v1/notifications')
+			axios.get('/api/pixelfed/v1/notifications')
 			.then(res => {
 				let data = res.data.filter(n => {
 					if(n.type == 'share' && !status) {
@@ -136,7 +136,7 @@ export default {
 				$state.complete();
 				return;
 			}
-			axios.get('/api/v1/notifications', {
+			axios.get('/api/pixelfed/v1/notifications', {
 				params: {
 					page: this.notificationCursor
 				}
