@@ -517,13 +517,6 @@
 		beforeMount() {
 			this.fetchProfile();
 			this.fetchTimelineApi();
-
-			// if(this.config.announcement.enabled == true) {
-			// 	let msg = $('<div>')
-			// 	.addClass('alert alert-warning mb-0 rounded-0 text-center font-weight-bold')
-			// 	.html(this.config.announcement.message);
-			// 	$('body').prepend(msg);
-			// }
 		},
 
 		mounted() {
@@ -602,7 +595,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 6
+						limit: 4
 					}
 				}).then(res => {
 					let data = res.data;
@@ -611,15 +604,20 @@
 					this.ids = ids;
 					this.min_id = Math.max(...ids);
 					this.max_id = Math.min(...ids);
-					$('.timeline .pagination').removeClass('d-none');
 					this.loading = false;
-					if(this.feed.length == 6) {
-						this.fetchHashtagPosts();
+					$('.timeline .pagination').removeClass('d-none');
+					if(this.feed.length == 4) {
 						this.fetchTimelineApi();
-					} else {
+					} 
+					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
 				}).catch(err => {
+					swal(
+						'Oops, something went wrong',
+						'Please reload the page.',
+						'error'
+					);
 				});
 			},
 
@@ -645,7 +643,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 9
+						limit: 6
 					},
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
@@ -668,32 +666,6 @@
 				}).catch(err => {
 					this.loading = false;
 					$state.complete();
-				});
-			},
-
-			loadMore(event) {
-				let homeTimeline = '/api/pixelfed/v1/timelines/home';
-				let localTimeline = '/api/pixelfed/v1/timelines/public';
-				let apiUrl = this.scope == 'home' ? homeTimeline : localTimeline;
-				event.target.innerText = 'Loading...';
-				axios.get(apiUrl, {
-					params: {
-						page: this.page,
-					},
-				}).then(res => {
-					if (res.data.length && this.loading == false) {
-						let data = res.data;
-						let ids = data.map(status => status.id);
-						this.min_id = Math.min(...ids);
-						if(this.page == 1) {
-							this.max_id = Math.max(...ids);
-						}
-						this.feed.push(...data);
-						this.page += 1;
-						this.loading = false;
-						event.target.innerText = 'Load more posts';
-					} else {
-					}
 				});
 			},
 
@@ -752,25 +724,9 @@
 				return ts.toDateString() + ' ' + ts.toLocaleTimeString();
 			},
 
-			editUrl(status) {
-				return status.url + '/edit';
-			},
-
 			redirect(url) {
 				window.location.href = url;
 				return;
-			},
-
-			replyUrl(status) {
-				let username = this.profile.username;
-				let id = status.account.id == this.profile.id ? status.id : status.in_reply_to_id;
-				return '/p/' + username + '/' + id;
-			},
-
-			mentionUrl(status) {
-				let username = status.account.username;
-				let id = status.id;
-				return '/p/' + username + '/' + id;
 			},
 
 			statusOwner(status) {
@@ -1089,6 +1045,8 @@
 			},
 
 			expRec() {
+				return;
+
 				if(this.config.ab.rec == false) {
 					return;
 				}
@@ -1099,6 +1057,8 @@
 			},
 
 			expRecFollow(id, index) {
+				return;
+
 				if(this.config.ab.rec == false) {
 					return;
 				}
@@ -1170,6 +1130,8 @@
 			}, 
 
 			refreshSuggestions() {
+				return;
+
 				let el = event.target.parentNode;
 				if(el.classList.contains('disabled') == true) {
 					return;
@@ -1226,10 +1188,10 @@
 
 			ctxMenu(status) {
 				this.ctxMenuStatus = status;
-				let payload = '<div class="pixlfed-media" data-id="'+ this.ctxMenuStatus.id + '"></div><script ';
-				payload += 'src="https://pixelfed.dev/js/embed.js" async><';
-				payload += '/script>';
-				this.ctxEmbedPayload = payload;
+				// let payload = '<div class="pixlfed-media" data-id="'+ this.ctxMenuStatus.id + '"></div><script ';
+				// payload += 'src="https://pixelfed.dev/js/embed.js" async><';
+				// payload += '/script>';
+				// this.ctxEmbedPayload = payload;
 				if(status.account.id == this.profile.id) {
 					this.$refs.ctxModal.show();
 				} else {
@@ -1347,8 +1309,7 @@
 
 			hideTips() {
 				this.showTips = false;
-				let ls = window.localStorage;
-				ls.setItem('metro-tips', false);
+				window.localStorage.setItem('metro-tips', false);
 			}
 
 		}
