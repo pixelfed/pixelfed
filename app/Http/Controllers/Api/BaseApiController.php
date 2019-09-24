@@ -306,7 +306,15 @@ class BaseApiController extends Controller
         $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
             $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
             $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-            return $this->fractal->createData($resource)->toArray();
+            $res = $this->fractal->createData($resource)->toArray();
+            $res['source'] = [
+                'privacy' => $profile->is_private ? 'private' : 'public',
+                'sensitive' => $profile->cw ? true : false,
+                'language' => 'en',
+                'note' => '',
+                'fields' => []
+            ];
+            return $res;
         });
 
         return response()->json($res);
