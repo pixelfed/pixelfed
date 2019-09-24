@@ -37,10 +37,9 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'header_bg' => $profile->header_bg,
 			'emojis' => [],
 			'moved' => null,
-			'fields' => null,
+			'fields' => [],
 			'bot' => false,
 			'website' => $profile->website,
-			'software' => 'pixelfed',
 			'is_admin' => (bool) $is_admin,
 		];
 	}
