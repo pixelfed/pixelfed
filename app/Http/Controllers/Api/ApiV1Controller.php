@@ -92,7 +92,7 @@ class ApiV1Controller extends Controller
      *
      * @return \App\Transformer\Api\AccountTransformer
      */
-    public function accountUpdateCredentials(Request, $request)
+    public function accountUpdateCredentials(Request $request)
     {
         abort_if(!$request->user(), 403);
 
@@ -252,6 +252,7 @@ class ApiV1Controller extends Controller
             'is_nsfw',
             'scope',
             'local',
+            'place_id',
             'created_at',
             'updated_at'
           )->whereProfileId($profile->id)
