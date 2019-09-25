@@ -91,6 +91,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
+            Route::get('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware('auth:api');
+            Route::post('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware('auth:api');
+            Route::delete('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware('auth:api');
             Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
             Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
             Route::get('likes', 'ApiController@hydrateLikes');

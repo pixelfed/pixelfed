@@ -623,6 +623,20 @@ class ApiV1Controller extends Controller
         return response()->json([]);
     }
 
+
+    /**
+     * GET /api/v1/domain_blocks
+     *
+     * Return empty array
+     *
+     * @return array
+     */
+    public function accountDomainBlocks(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        return response()->json([]);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
