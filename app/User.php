@@ -65,7 +65,7 @@ class User extends Authenticatable
 
     public function filters()
     {
-        return $this->hasMany(UserFilter::class);
+        return $this->hasMany(UserFilter::class, 'user_id', 'profile_id');
     }
 
     public function receivesBroadcastNotificationsOn()
