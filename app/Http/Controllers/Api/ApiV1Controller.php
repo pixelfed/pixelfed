@@ -328,9 +328,12 @@ class ApiV1Controller extends Controller
             ->whereFollowingId($target->id)
             ->exists();
 
-        // Following already, return empty response
+        // Following already, return empty relationship
         if($isFollowing == true) {
-            return response()->json([]);
+            $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
+            $res = $this->fractal->createData($resource)->toArray();
+
+            return response()->json($res);
         }
 
         // Rate limits, max 7500 followers per account
@@ -361,6 +364,68 @@ class ApiV1Controller extends Controller
                 (new FollowerController())->sendFollow($user, $target);
             } 
             FollowPipeline::dispatch($follower);
+        } 
+
+        Cache::forget('profile:following:'.$target->id);
+        Cache::forget('profile:followers:'.$target->id);
+        Cache::forget('profile:following:'.$user->id);
+        Cache::forget('profile:followers:'.$user->id);
+        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('user:account:id:'.$target->user_id);
+        Cache::forget('user:account:id:'.$user->user_id);
+
+        $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/accounts/{id}/unfollow
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountUnfollowById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $target = Profile::where('id', '!=', $user->id)
+            ->whereNull('status')
+            ->findOrFail($item);
+
+        $private = (bool) $target->is_private;
+        $remote = (bool) $target->domain;
+
+        $isFollowing = Follower::whereProfileId($user->id)
+            ->whereFollowingId($target->id)
+            ->exists();
+
+        if($isFollowing == false) {
+            $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
+            $res = $this->fractal->createData($resource)->toArray();
+
+            return response()->json($res);
+        }
+
+        // Rate limits, follow 30 accounts per hour max
+        if($user->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+            abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
+        }
+
+        FollowRequest::whereFollowerId($user->id)
+            ->whereFollowingId($target->id)
+            ->delete(); 
+
+        Follower::whereProfileId($user->id)
+            ->whereFollowingId($target->id)
+            ->delete();
+
+        if($remote == true && config('federation.activitypub.remoteFollow') == true) {
+            (new FollowerController())->sendUndoFollow($user, $target);
         } 
 
         Cache::forget('profile:following:'.$target->id);
