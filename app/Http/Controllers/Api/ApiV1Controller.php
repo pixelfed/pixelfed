@@ -623,7 +623,6 @@ class ApiV1Controller extends Controller
         return response()->json([]);
     }
 
-
     /**
      * GET /api/v1/domain_blocks
      *
@@ -632,6 +631,19 @@ class ApiV1Controller extends Controller
      * @return array
      */
     public function accountDomainBlocks(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        return response()->json([]);
+    }
+
+    /**
+     * GET /api/v1/endorsements
+     *
+     * Return empty array
+     *
+     * @return array
+     */
+    public function accountEndorsements(Request $request)
     {
         abort_if(!$request->user(), 403);
         return response()->json([]);
