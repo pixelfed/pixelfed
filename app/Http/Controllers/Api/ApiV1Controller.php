@@ -649,6 +649,31 @@ class ApiV1Controller extends Controller
         return response()->json([]);
     }
 
+    /**
+     * GET /api/v1/favourites
+     *
+     * Return empty array
+     *
+     * @return array
+     */
+    public function accountFavourites(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $limit = $request->input('limit') ?? 20;
+        $favourites = Like::whereProfileId($user->profile_id)
+            ->latest()
+            ->simplePaginate($limit)
+            ->pluck('status_id');
+
+        $statuses = Status::findOrFail($favourites);
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);

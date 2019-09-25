@@ -99,6 +99,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('endorsements', 'Api\ApiV1Controller@accountEndorsements')->middleware('auth:api');
             Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
             Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
+            Route::get('favourites', 'Api\ApiV1Controller@accountFavourites')->middleware('auth:api');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
             Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
