@@ -78,6 +78,56 @@ class ApiV1Controller extends Controller
 		return response()->json($res);
 	}
 
+    public function accountUpdateCredentials(Request, $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'display_name'      => 'nullable|string',
+            'note'              => 'nullable|string',
+            'locked'            => 'nullable|boolean',
+            // 'source.privacy'    => 'nullable|in:unlisted,public,private',
+            // 'source.sensitive'  => 'nullable|boolean'
+        ]);
+
+        $user = $request->user();
+        $profile = $user->profile;
+
+        $displayName = $request->input('display_name');
+        $note = $request->input('note');
+        $locked = $request->input('locked');
+        // $privacy = $request->input('source.privacy');
+        // $sensitive = $request->input('source.sensitive');
+
+        $changes = false;
+
+        if($displayName !== $user->name) {
+            $user->name = $displayName;
+            $profile->name = $displayName;
+            $changes = true;
+        }
+
+        if($note !== $profile->bio) {
+            $profile->bio = e($note);
+            $changes = true;
+        }
+
+        if(!is_null($locked)) {
+            $profile->is_private = $locked;
+            $changes = true;
+        }
+
+        if($changes) {
+            $user->save();
+            $profile->save()
+        }
+
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
@@ -124,5 +174,23 @@ class ApiV1Controller extends Controller
         ];
 
         return response()->json($res);
+    }
+
+    public function createStatus(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        
+        $this->validate($request, [
+            'status' => 'string',
+            'media_ids' => 'array',
+            'media_ids.*' => 'integer|min:1',
+            'sensitive' => 'nullable|boolean',
+            'visibility' => 'string|in:private,unlisted,public',
+            'in_reply_to_id' => 'integer'
+        ]);
+
+        if(!$request->filled('media_ids') && !$request->filled('in_reply_to_id')) {
+            abort(403, 'Empty statuses are not allowed');
+        }
     }
 }

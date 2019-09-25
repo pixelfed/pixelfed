@@ -78,6 +78,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::group(['prefix' => 'v1'], function () {
             Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials')->middleware('auth:api');
+            Route::patch('accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware('auth:api');
             Route::get('accounts/relationships', 'PublicApiController@relationships')->middleware('auth:api');
             Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses')->middleware('auth:api');
             Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing')->middleware('auth:api');
@@ -91,6 +92,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
             Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
+            Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
