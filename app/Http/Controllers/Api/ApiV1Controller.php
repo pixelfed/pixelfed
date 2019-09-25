@@ -535,6 +535,46 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * POST /api/v1/accounts/{id}/block
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountBlockById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+        $pid = $user->profile_id ?? $user->profile->id;
+
+        if($id == $pid) {
+            abort(400, 'You cannot block yourself');
+        }
+
+        $profile = Profile::findOrFail($id);
+
+        Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
+        Follower::whereProfileId($pid)->whereFollowingId($profile->id)->delete();
+        Notification::whereProfileId($pid)->whereActorId($profile->id)->delete();
+
+        $filter = UserFilter::firstOrCreate([
+            'user_id'         => $pid,
+            'filterable_id'   => $profile->id,
+            'filterable_type' => 'App\Profile',
+            'filter_type'     => 'block',
+        ]);
+
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
+
+        $resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
