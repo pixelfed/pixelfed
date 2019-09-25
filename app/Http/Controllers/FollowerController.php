@@ -109,7 +109,7 @@ class FollowerController extends Controller
         Cache::forget('user:account:id:'.$user->user_id);
     }
 
-    protected function sendFollow($user, $target)
+    public function sendFollow($user, $target)
     {
         if($target->domain == null || $user->domain != null) {
             return;
@@ -117,7 +117,7 @@ class FollowerController extends Controller
 
         $payload = [
             '@context'  => 'https://www.w3.org/ns/activitystreams',
-            'id'        => $user->permalink('#follow/'.$target->id.''),
+            'id'        => $user->permalink('#follow/'.$target->id),
             'type'      => 'Follow',
             'actor'     => $user->permalink(),
             'object'    => $target->permalink()
@@ -128,7 +128,7 @@ class FollowerController extends Controller
         Helpers::sendSignedObject($user, $inbox, $payload);
     }
 
-    protected function sendUndoFollow($user, $target)
+    public function sendUndoFollow($user, $target)
     {
         if($target->domain == null || $user->domain != null) {
             return;
