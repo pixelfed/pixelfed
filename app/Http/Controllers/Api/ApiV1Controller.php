@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
+use App\Util\ActivityPub\Helpers;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use Laravel\Passport\Passport;
@@ -466,6 +467,40 @@ class ApiV1Controller extends Controller
         $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/accounts/search
+     *
+     *
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountSearch(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'q'         => 'required|string|min:1|max:255',
+            'limit'     => 'nullable|integer|min:1|max:40',
+            'resolve'   => 'nullable'
+        ]);
+
+        $user = $request->user();
+        $query = $request->input('q');
+        $limit = $request->input('limit') ?? 20;
+        $resolve = (bool) $request->input('resolve', false);
+        $q = '%' . $query . '%';
+
+        $profiles = Profile::whereNull('status')
+            ->where('username', 'like', $q)
+            ->orWhere('name', 'like', $q)
+            ->limit($limit)
+            ->get();
+        
+        $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
     public function statusById(Request $request, $id)
