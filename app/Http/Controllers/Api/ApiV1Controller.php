@@ -34,6 +34,7 @@ class ApiV1Controller extends Controller
 		$this->fractal = new Fractal\Manager();
 		$this->fractal->setSerializer(new ArraySerializer());
 	}
+
 	public function apps(Request $request)
 	{
 		abort_if(!config('pixelfed.oauth_enabled'), 404);
@@ -69,6 +70,13 @@ class ApiV1Controller extends Controller
         return $res;
 	}
 
+    /**
+     * GET /api/v1/accounts/{id}
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
 	public function accountById(Request $request, $id)
 	{
 		$profile = Profile::whereNull('status')->findOrFail($id);
@@ -78,6 +86,11 @@ class ApiV1Controller extends Controller
 		return response()->json($res);
 	}
 
+    /**
+     * PATCH /api/v1/accounts/update_credentials
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
     public function accountUpdateCredentials(Request, $request)
     {
         abort_if(!$request->user(), 403);
@@ -125,6 +138,30 @@ class ApiV1Controller extends Controller
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/accounts/{id}/followers
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountFollowersById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        $profile = Profile::whereNull('status')->findOrFail($id);
+
+        $settings = $profile->user->settings;
+        if($settings->show_profile_followers == true) {
+            $limit = $request->input('limit') ?? 40;
+            $followers = $profile->followers()->paginate($limit);
+            $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
+            $res = $this->fractal->createData($resource)->toArray();
+        } else {
+            $res = [];
+        }
         return response()->json($res);
     }
 
