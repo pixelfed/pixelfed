@@ -88,6 +88,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('accounts/{id}/unfollow', 'Api\ApiV1Controller@accountUnfollowById')->middleware('auth:api');
             Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
             Route::post('accounts/{id}/block', 'Api\ApiV1Controller@accountBlockById')->middleware('auth:api');
+            Route::post('accounts/{id}/unblock', 'Api\ApiV1Controller@accountUnblockById')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');

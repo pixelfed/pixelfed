@@ -15,6 +15,7 @@ use App\{
     FollowRequest,
     Like,
     Media,
+    Notification,
     Profile,
     Status,
     UserFilter,
@@ -565,6 +566,41 @@ class ApiV1Controller extends Controller
             'filterable_type' => 'App\Profile',
             'filter_type'     => 'block',
         ]);
+
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
+
+        $resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/accounts/{id}/unblock
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountUnblockById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+        $pid = $user->profile_id ?? $user->profile->id;
+
+        if($id == $pid) {
+            abort(400, 'You cannot unblock yourself');
+        }
+
+        $profile = Profile::findOrFail($id);
+
+        UserFilter::whereUserId($pid)
+            ->whereFilterableId($profile->id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('block')
+            ->delete();
 
         Cache::forget("user:filter:list:$pid");
         Cache::forget("api:local:exp:rec:$pid");
