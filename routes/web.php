@@ -86,12 +86,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('accounts/{id}/followers', 'Api\ApiV1Controller@accountFollowersById')->middleware('auth:api');
             Route::post('accounts/{id}/follow', 'Api\ApiV1Controller@accountFollowById')->middleware('auth:api');
             Route::post('accounts/{id}/unfollow', 'Api\ApiV1Controller@accountUnfollowById')->middleware('auth:api');
-            Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
             Route::post('accounts/{id}/block', 'Api\ApiV1Controller@accountBlockById')->middleware('auth:api');
             Route::post('accounts/{id}/unblock', 'Api\ApiV1Controller@accountUnblockById')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
+            Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
+            Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
             Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
@@ -124,9 +125,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
                 Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
                 Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
+                Route::post('accounts/{id}/block', 'Api\ApiV1Controller@accountBlockById');
+                Route::post('accounts/{id}/unblock', 'Api\ApiV1Controller@accountUnblockById');
                 Route::get('accounts/{id}', 'PublicApiController@account');
                 Route::post('avatar/update', 'ApiController@avatarUpdate');
-                Route::get('blocks', 'Api\ApiV1Controller@accountBlocks');
+                Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
                 Route::get('likes', 'ApiController@hydrateLikes');
                 Route::post('media', 'ApiController@uploadMedia');
                 Route::delete('media', 'ApiController@deleteMedia');

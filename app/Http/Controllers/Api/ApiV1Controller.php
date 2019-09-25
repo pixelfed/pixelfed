@@ -611,6 +611,18 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/custom_emojis
+     *
+     * Return empty array, we don't support custom emoji
+     *
+     * @return array
+     */
+    public function customEmojis()
+    {
+        return response()->json([]);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
