@@ -133,7 +133,7 @@ class ApiV1Controller extends Controller
 
         if($changes) {
             $user->save();
-            $profile->save()
+            $profile->save();
         }
 
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
