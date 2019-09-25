@@ -9,6 +9,7 @@ use App\Jobs\StatusPipeline\StatusDelete;
 use Laravel\Passport\Passport;
 use Auth, Cache, DB;
 use App\{
+    Follower,
     Like,
     Media,
     Profile,
@@ -186,6 +187,85 @@ class ApiV1Controller extends Controller
         } else {
             $res = [];
         }
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/accounts/{id}/statuses
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\StatusTransformer
+     */
+    public function accountStatusesById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'only_media' => 'nullable',
+            'pinned' => 'nullable',
+            'exclude_replies' => 'nullable',
+            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'limit' => 'nullable|integer|min:1|max:40'
+        ]);
+
+        $profile = Profile::whereNull('status')->findOrFail($id);
+
+        $limit = $request->limit ?? 20;
+        $max_id = $request->max_id;
+        $min_id = $request->min_id;
+        $pid = $request->user()->profile_id;
+        $scope = $request->only_media == true ? 
+            ['photo', 'photo:album', 'video', 'video:album'] :
+            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+       
+        if($pid == $profile->id) {
+            $visibility = ['public', 'unlisted', 'private'];
+        } else if($profile->is_private) {
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Follower::whereProfileId($pid)->pluck('following_id');
+                return $following->push($pid)->toArray();
+            });
+            $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
+        } else {
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Follower::whereProfileId($pid)->pluck('following_id');
+                return $following->push($pid)->toArray();
+            });
+            $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+
+        }
+
+        $dir = $min_id ? '>' : '<';
+        $id = $min_id ?? $max_id;
+        $timeline = Status::select(
+            'id', 
+            'uri',
+            'caption',
+            'rendered',
+            'profile_id', 
+            'type',
+            'in_reply_to_id',
+            'reblog_of_id',
+            'is_nsfw',
+            'scope',
+            'local',
+            'created_at',
+            'updated_at'
+          )->whereProfileId($profile->id)
+          ->whereIn('type', $scope)
+          ->whereLocal(true)
+          ->whereNull('uri')
+          ->where('id', $dir, $id)
+          ->whereIn('visibility', $visibility)
+          ->latest()
+          ->limit($limit)
+          ->get();
+
+        $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
 

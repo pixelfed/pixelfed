@@ -80,7 +80,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials')->middleware('auth:api');
             Route::patch('accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware('auth:api');
             Route::get('accounts/relationships', 'PublicApiController@relationships')->middleware('auth:api');
-            Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses')->middleware('auth:api');
+            Route::get('accounts/{id}/statuses', 'Api\ApiV1Controller@accountStatusesById')->middleware('auth:api');
             Route::get('accounts/{id}/following', 'Api\ApiV1Controller@accountFollowingById')->middleware('auth:api');
             Route::get('accounts/{id}/followers', 'Api\ApiV1Controller@accountFollowersById')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
