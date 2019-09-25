@@ -86,6 +86,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('accounts/{id}/followers', 'Api\ApiV1Controller@accountFollowersById')->middleware('auth:api');
             Route::post('accounts/{id}/follow', 'Api\ApiV1Controller@accountFollowById')->middleware('auth:api');
             Route::post('accounts/{id}/unfollow', 'Api\ApiV1Controller@accountUnfollowById')->middleware('auth:api');
+            Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
@@ -123,6 +124,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
                 Route::get('accounts/{id}', 'PublicApiController@account');
                 Route::post('avatar/update', 'ApiController@avatarUpdate');
+                Route::get('blocks', 'Api\ApiV1Controller@accountBlocks');
                 Route::get('likes', 'ApiController@hydrateLikes');
                 Route::post('media', 'ApiController@uploadMedia');
                 Route::delete('media', 'ApiController@deleteMedia');

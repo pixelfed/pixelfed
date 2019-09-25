@@ -500,7 +500,39 @@ class ApiV1Controller extends Controller
         
         $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/blocks
+     *
+     *
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountBlocks(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit'     => 'nullable|integer|min:1|max:40',
+            'page'      => 'nullable|integer|min:1|max:10'
+        ]);
+
+        $user = $request->user();
+        $limit = $request->input('limit') ?? 40;
+
+        $blocked = UserFilter::select('filterable_id','filterable_type','filter_type','user_id')
+            ->whereUserId($user->profile_id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('block')
+            ->simplePaginate($limit)
+            ->pluck('filterable_id');
+
+        $profiles = Profile::findOrFail($blocked);
+        $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
     }
 
     public function statusById(Request $request, $id)
