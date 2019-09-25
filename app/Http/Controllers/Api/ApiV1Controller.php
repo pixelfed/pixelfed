@@ -442,6 +442,32 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/accounts/relationships
+     *
+     * @param  array|integer  $id
+     *
+     * @return \App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountRelationshipsById(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'id'    => 'required|array|min:1|max:20',
+            'id.*'  => 'required|integer|min:1|max:' . PHP_INT_MAX
+        ]);
+        $pid = $request->user()->profile_id ?? $request->user()->profile->id;
+        $ids = collect($request->input('id'));
+        $filtered = $ids->filter(function($v) use($pid) { 
+            return $v != $pid;
+        });
+        $relations = Profile::whereNull('status')->findOrFail($filtered->values());
+        $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
