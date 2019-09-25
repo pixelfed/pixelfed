@@ -165,6 +165,30 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/accounts/{id}/following
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountFollowingById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        $profile = Profile::whereNull('status')->findOrFail($id);
+
+        $settings = $profile->user->settings;
+        if($settings->show_profile_following == true) {
+            $limit = $request->input('limit') ?? 40;
+            $following = $profile->following()->paginate($limit);
+            $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
+            $res = $this->fractal->createData($resource)->toArray();
+        } else {
+            $res = [];
+        }
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
