@@ -6,14 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\FollowPipeline\FollowPipeline;
 use Laravel\Passport\Passport;
 use Auth, Cache, DB;
 use App\{
     Follower,
+    FollowRequest,
     Like,
     Media,
     Profile,
-    Status
+    Status,
+    UserFilter,
 };
 use League\Fractal;
 use App\Transformer\Api\{
@@ -21,6 +24,7 @@ use App\Transformer\Api\{
     RelationshipTransformer,
     StatusTransformer,
 };
+use App\Http\Controllers\FollowerController;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -235,38 +239,141 @@ class ApiV1Controller extends Controller
                 return $following->push($pid)->toArray();
             });
             $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
-
         }
 
-        $dir = $min_id ? '>' : '<';
-        $id = $min_id ?? $max_id;
-        $timeline = Status::select(
-            'id', 
-            'uri',
-            'caption',
-            'rendered',
-            'profile_id', 
-            'type',
-            'in_reply_to_id',
-            'reblog_of_id',
-            'is_nsfw',
-            'scope',
-            'local',
-            'place_id',
-            'created_at',
-            'updated_at'
-          )->whereProfileId($profile->id)
-          ->whereIn('type', $scope)
-          ->whereLocal(true)
-          ->whereNull('uri')
-          ->where('id', $dir, $id)
-          ->whereIn('visibility', $visibility)
-          ->latest()
-          ->limit($limit)
-          ->get();
+        if($min_id || $max_id) {
+            $dir = $min_id ? '>' : '<';
+            $id = $min_id ?? $max_id;
+            $timeline = Status::select(
+                'id', 
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id', 
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'place_id',
+                'created_at',
+                'updated_at'
+              )->whereProfileId($profile->id)
+              ->whereIn('type', $scope)
+              ->where('id', $dir, $id)
+              ->whereIn('visibility', $visibility)
+              ->latest()
+              ->limit($limit)
+              ->get();
+        } else {
+            $timeline = Status::select(
+                'id', 
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id', 
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'place_id',
+                'created_at',
+                'updated_at'
+              )->whereProfileId($profile->id)
+              ->whereIn('type', $scope)
+              ->whereIn('visibility', $visibility)
+              ->latest()
+              ->limit($limit)
+              ->get();
+        }
 
         $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/accounts/{id}/follow
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountFollowById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $target = Profile::where('id', '!=', $user->id)
+            ->whereNull('status')
+            ->findOrFail($item);
+
+        $private = (bool) $target->is_private;
+        $remote = (bool) $target->domain;
+        $blocked = UserFilter::whereUserId($target->id)
+                ->whereFilterType('block')
+                ->whereFilterableId($user->id)
+                ->whereFilterableType('App\Profile')
+                ->exists();
+
+        if($blocked == true) {
+            abort(400, 'You cannot follow this user.');
+        }
+
+        $isFollowing = Follower::whereProfileId($user->id)
+            ->whereFollowingId($target->id)
+            ->exists();
+
+        // Following already, return empty response
+        if($isFollowing == true) {
+            return response()->json([]);
+        }
+
+        // Rate limits, max 7500 followers per account
+        if($user->following()->count() >= Follower::MAX_FOLLOWING) {
+            abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
+        }
+
+        // Rate limits, follow 30 accounts per hour max
+        if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+            abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
+        }
+
+        if($private == true) {
+            $follow = FollowRequest::firstOrCreate([
+                'follower_id' => $user->id,
+                'following_id' => $target->id
+            ]);
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
+                (new FollowerController())->sendFollow($user, $target);
+            } 
+        } else {
+            $follower = new Follower();
+            $follower->profile_id = $user->id;
+            $follower->following_id = $target->id;
+            $follower->save();
+
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
+                (new FollowerController())->sendFollow($user, $target);
+            } 
+            FollowPipeline::dispatch($follower);
+        } 
+
+        Cache::forget('profile:following:'.$target->id);
+        Cache::forget('profile:followers:'.$target->id);
+        Cache::forget('profile:following:'.$user->id);
+        Cache::forget('profile:followers:'.$user->id);
+        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('user:account:id:'.$target->user_id);
+        Cache::forget('user:account:id:'.$user->user_id);
+
+        $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
         return response()->json($res);
     }
 

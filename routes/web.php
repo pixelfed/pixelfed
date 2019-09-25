@@ -83,6 +83,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('accounts/{id}/statuses', 'Api\ApiV1Controller@accountStatusesById')->middleware('auth:api');
             Route::get('accounts/{id}/following', 'Api\ApiV1Controller@accountFollowingById')->middleware('auth:api');
             Route::get('accounts/{id}/followers', 'Api\ApiV1Controller@accountFollowersById')->middleware('auth:api');
+            Route::post('accounts/{id}/follow', 'Api\ApiV1Controller@accountFollowById')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
