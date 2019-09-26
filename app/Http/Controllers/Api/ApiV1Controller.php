@@ -704,6 +704,34 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * POST /api/v1/statuses/{id}/unfavourite
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\StatusTransformer
+     */
+    public function statusUnfavouriteById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $status = Status::findOrFail($id);
+
+        $like = Like::whereProfileId($user->profile_id)
+            ->whereStatusId($status->id)
+            ->first();
+
+        if($like) {
+            $like->delete();
+        }
+
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
