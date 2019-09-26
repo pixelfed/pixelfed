@@ -111,6 +111,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('accounts/{id}/lists', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
             Route::get('lists/{id}/accounts', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
             Route::post('media', 'Api\ApiV1Controller@mediaUpload')->middleware('auth:api');
+            Route::put('media/{id}', 'Api\ApiV1Controller@mediaUpdate')->middleware('auth:api');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');

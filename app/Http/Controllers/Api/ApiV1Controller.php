@@ -900,7 +900,8 @@ class ApiV1Controller extends Controller
             ];
           },
           'filter_name' => 'nullable|string|max:24',
-          'filter_class' => 'nullable|alpha_dash|max:24'
+          'filter_class' => 'nullable|alpha_dash|max:24',
+          'description' => 'nullable|string|max:420'
         ]);
 
         $user = $request->user();
@@ -938,6 +939,7 @@ class ApiV1Controller extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $photo->getMimeType();
+        $media->caption = $request->input('description');
         $media->filter_class = $request->input('filter_class');
         $media->filter_name = $request->input('filter_name');
         $media->save();
@@ -955,6 +957,37 @@ class ApiV1Controller extends Controller
                 break;
         }
 
+        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['preview_url'] = url('/storage/no-preview.png');
+        $res['url'] = url('/storage/no-preview.png');
+        return response()->json($res);
+    }
+
+    /**
+     * PUT /api/v1/media/{id}
+     *
+     * @param  integer  $id
+     *
+     * @return App\Transformer\Api\MediaTransformer
+     */
+    public function mediaUpdate(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+          'description' => 'nullable|string|max:420'
+        ]);
+
+        $user = $request->user();
+
+        $media = Media::whereUserId($user->id)
+            ->whereNull('status_id')
+            ->findOrFail($id);
+
+        $media->caption = $request->input('description');
+        $media->save();
+        
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         $res['preview_url'] = url('/storage/no-preview.png');
