@@ -19,11 +19,14 @@ use App\{
     UserFilter,
 };
 use League\Fractal;
-use App\Transformer\Api\{
+use App\Transformer\Api\Mastodon\v1\{
     AccountTransformer,
     MediaTransformer,
-    RelationshipTransformer,
+    NotificationTransformer,
     StatusTransformer,
+};
+use App\Transformer\Api\{
+    RelationshipTransformer,
 };
 use App\Http\Controllers\FollowerController;
 use League\Fractal\Serializer\ArraySerializer;
@@ -1087,6 +1090,46 @@ class ApiV1Controller extends Controller
         }
 
         $resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/notifications
+     *
+     *
+     * @return App\Transformer\Api\NotificationTransformer
+     */
+    public function accountNotifications(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        $this->validate($request, [
+            'page' => 'nullable|integer|min:1|max:10',
+            'limit' => 'nullable|integer|min:1|max:40',
+            'max_id' => 'nullable|integer|min:1',
+            'min_id' => 'nullable|integer|min:0',
+        ]);
+        $pid = $request->user()->profile_id;
+        $limit = $request->input('limit') ?? 20;
+        $timeago = now()->subMonths(6);
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $notifications = Notification::whereProfileId($pid)
+                ->whereDate('created_at', '>', $timeago)
+                ->latest()
+                ->where('id', $dir, $id)
+                ->limit($limit)
+                ->get();
+        } else {
+            $notifications = Notification::whereProfileId($pid)
+                ->whereDate('created_at', '>', $timeago)
+                ->latest()
+                ->simplePaginate($limit);
+        }
+        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
