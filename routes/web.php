@@ -113,7 +113,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('media', 'Api\ApiV1Controller@mediaUpload')->middleware('auth:api');
             Route::put('media/{id}', 'Api\ApiV1Controller@mediaUpdate')->middleware('auth:api');
             Route::get('mutes', 'Api\ApiV1Controller@accountMutes')->middleware('auth:api');
-            
+            Route::post('accounts/{id}/mute', 'Api\ApiV1Controller@accountMuteById')->middleware('auth:api');
+
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
             // Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');

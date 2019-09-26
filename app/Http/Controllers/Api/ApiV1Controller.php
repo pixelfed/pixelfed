@@ -1025,6 +1025,38 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * POST /api/v1/accounts/{id}/mute
+     *
+     * @param  integer  $id
+     *
+     * @return App\Transformer\Api\AccountTransformer
+     */
+    public function accountMuteById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $account = Profile::findOrFail($id);
+
+        $filter = UserFilter::firstOrCreate([
+            'user_id'         => $user->profile_id,
+            'filterable_id'   => $account->id,
+            'filterable_type' => 'App\Profile',
+            'filter_type'     => 'mute',
+        ]);
+
+        $pid = $user->profile_id;
+        Cache::forget("user:filter:list:$pid");
+        Cache::forget("feature:discover:posts:$pid");
+        Cache::forget("api:local:exp:rec:$pid");
+
+        $resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
