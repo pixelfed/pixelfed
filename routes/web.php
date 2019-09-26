@@ -91,7 +91,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('accounts/{id}/pin', 'Api\ApiV1Controller@accountEndorsements')->middleware('auth:api');
             Route::post('accounts/{id}/unpin', 'Api\ApiV1Controller@accountEndorsements')->middleware('auth:api');
             // Route::get('accounts/{id}', 'PublicApiController@account');
-            Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
             Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware('auth:api');
             Route::get('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware('auth:api');
             Route::post('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware('auth:api');
@@ -114,6 +113,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::put('media/{id}', 'Api\ApiV1Controller@mediaUpdate')->middleware('auth:api');
             Route::get('mutes', 'Api\ApiV1Controller@accountMutes')->middleware('auth:api');
             Route::post('accounts/{id}/mute', 'Api\ApiV1Controller@accountMuteById')->middleware('auth:api');
+            Route::post('accounts/{id}/unmute', 'Api\ApiV1Controller@accountUnmuteById')->middleware('auth:api');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
@@ -122,6 +122,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
             // Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
             // Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
+            Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');

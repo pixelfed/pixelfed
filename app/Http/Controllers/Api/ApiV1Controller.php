@@ -1030,27 +1030,61 @@ class ApiV1Controller extends Controller
      *
      * @param  integer  $id
      *
-     * @return App\Transformer\Api\AccountTransformer
+     * @return App\Transformer\Api\RelationshipTransformer
      */
     public function accountMuteById(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        $pid = $user->profile_id;
 
         $account = Profile::findOrFail($id);
 
         $filter = UserFilter::firstOrCreate([
-            'user_id'         => $user->profile_id,
+            'user_id'         => $pid,
             'filterable_id'   => $account->id,
             'filterable_type' => 'App\Profile',
             'filter_type'     => 'mute',
         ]);
 
-        $pid = $user->profile_id;
         Cache::forget("user:filter:list:$pid");
         Cache::forget("feature:discover:posts:$pid");
         Cache::forget("api:local:exp:rec:$pid");
+
+        $resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/accounts/{id}/unmute
+     *
+     * @param  integer  $id
+     *
+     * @return App\Transformer\Api\RelationshipTransformer
+     */
+    public function accountUnmuteById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+        $pid = $user->profile_id;
+
+        $account = Profile::findOrFail($id);
+
+        $filter = UserFilter::whereUserId($pid)
+            ->whereFilterableId($account->id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('mute')
+            ->first();
+
+        if($filter) {
+            $filter->delete();
+            Cache::forget("user:filter:list:$pid");
+            Cache::forget("feature:discover:posts:$pid");
+            Cache::forget("api:local:exp:rec:$pid");
+        }
 
         $resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();
