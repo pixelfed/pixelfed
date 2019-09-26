@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
+use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use Laravel\Passport\Passport;
@@ -652,9 +653,9 @@ class ApiV1Controller extends Controller
     /**
      * GET /api/v1/favourites
      *
-     * Return empty array
+     * Returns collection of liked statuses
      *
-     * @return array
+     * @return \App\Transformer\Api\StatusTransformer
      */
     public function accountFavourites(Request $request)
     {
@@ -670,6 +671,35 @@ class ApiV1Controller extends Controller
 
         $statuses = Status::findOrFail($favourites);
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/statuses/{id}/favourite
+     *
+     * @param  integer  $id
+     *
+     * @return \App\Transformer\Api\StatusTransformer
+     */
+    public function statusFavouriteById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $status = Status::findOrFail($id);
+
+        $like = Like::firstOrCreate([
+            'profile_id' => $user->profile_id,
+            'status_id' => $status->id
+        ]);
+
+        if($like->wasRecentlyCreated == true) {
+            LikePipeline::dispatch($like);
+        }
+
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
