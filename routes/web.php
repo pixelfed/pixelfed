@@ -103,6 +103,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('statuses/{id}/favourite', 'Api\ApiV1Controller@statusFavouriteById')->middleware('auth:api');
             Route::post('statuses/{id}/unfavourite', 'Api\ApiV1Controller@statusUnfavouriteById')->middleware('auth:api');
             Route::get('filters', 'Api\ApiV1Controller@accountFilters')->middleware('auth:api');
+            Route::get('follow_requests', 'Api\ApiV1Controller@accountFollowRequests')->middleware('auth:api');
 
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');

@@ -746,6 +746,28 @@ class ApiV1Controller extends Controller
         return response()->json([]);
     }
 
+    /**
+     * GET /api/v1/follow_requests
+     *
+     *  Return array of Accounts that have sent follow requests
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountFollowRequests(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $user = $request->user();
+
+        $followRequests = FollowRequest::whereFollowingId($user->profile->id)->pluck('follower_id');
+
+        $profiles = Profile::find($followRequests);
+
+        $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
