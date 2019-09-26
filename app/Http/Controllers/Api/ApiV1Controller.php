@@ -732,6 +732,20 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/filters
+     *
+     *  Return empty response since we filter server side
+     *
+     * @return array
+     */
+    public function accountFilters(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        return response()->json([]);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
@@ -761,12 +775,6 @@ class ApiV1Controller extends Controller
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')'
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
-    public function filters(Request $request)
-    {
-        // Pixelfed does not yet support keyword filters
-        return response()->json([]);
     }
 
     public function context(Request $request)
