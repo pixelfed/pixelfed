@@ -800,6 +800,22 @@ class ApiV1Controller extends Controller
         return response()->json([]);        
     }
 
+    /**
+     * GET /api/v1/suggestions
+     *
+     *   Return empty array as we don't support suggestions
+     *
+     * @return null
+     */
+    public function accountSuggestions(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        
+        // todo
+
+        return response()->json([]);        
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
