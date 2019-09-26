@@ -995,6 +995,36 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/mutes
+     *
+     *
+     * @return App\Transformer\Api\AccountTransformer
+     */
+    public function accountMutes(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit' => 'nullable|integer|min:1|max:40'
+        ]);
+
+        $user = $request->user();
+        $limit = $request->input('limit') ?? 40;
+
+        $mutes = UserFilter::whereUserId($user->profile_id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('mute')
+            ->simplePaginate($limit)
+            ->pluck('filterable_id');
+
+        $accounts = Profile::find($mutes);
+
+        $resource = new Fractal\Resource\Collection($accounts, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
