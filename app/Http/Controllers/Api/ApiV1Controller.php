@@ -784,6 +784,22 @@ class ApiV1Controller extends Controller
         return response()->json([]);        
     }
 
+    /**
+     * POST /api/v1/follow_requests/{id}/reject
+     *
+     * @param  integer  $id
+     *
+     * @return null
+     */
+    public function accountFollowRequestReject(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        
+        // todo
+
+        return response()->json([]);        
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
