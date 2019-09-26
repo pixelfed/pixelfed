@@ -6,11 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
-use App\Jobs\LikePipeline\LikePipeline;
-use App\Jobs\StatusPipeline\StatusDelete;
-use App\Jobs\FollowPipeline\FollowPipeline;
 use Laravel\Passport\Passport;
-use Auth, Cache, DB;
+use Auth, Cache, DB, URL;
 use App\{
     Follower,
     FollowRequest,
@@ -24,12 +21,23 @@ use App\{
 use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
+    MediaTransformer,
     RelationshipTransformer,
     StatusTransformer,
 };
 use App\Http\Controllers\FollowerController;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+
+use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\FollowPipeline\FollowPipeline;
+use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Jobs\VideoPipeline\{
+    VideoOptimize,
+    VideoPostProcess,
+    VideoThumbnail
+};
 
 use App\Services\NotificationService;
 
@@ -871,6 +879,87 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
         
         return response()->json([]);        
+    }
+
+    /**
+     * POST /api/v1/media
+     *
+     *
+     * @return App\Transformer\Api\MediaTransformer
+     */
+    public function mediaUpload(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+          'file.*'      => function() {
+            return [
+                'required',
+                'mimes:' . config('pixelfed.media_types'),
+                'max:' . config('pixelfed.max_photo_size'),
+            ];
+          },
+          'filter_name' => 'nullable|string|max:24',
+          'filter_class' => 'nullable|alpha_dash|max:24'
+        ]);
+
+        $user = $request->user();
+        $profile = $user->profile;
+
+        if(config('pixelfed.enforce_account_limit') == true) {
+            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
+                return Media::whereUserId($user->id)->sum('size') / 1000;
+            }); 
+            $limit = (int) config('pixelfed.max_account_size');
+            if ($size >= $limit) {
+               abort(403, 'Account size limit reached.');
+            }
+        }
+
+        $monthHash = hash('sha1', date('Y').date('m'));
+        $userHash = hash('sha1', $user->id . (string) $user->created_at);
+
+        $photo = $request->file('file');
+
+        $mimes = explode(',', config('pixelfed.media_types'));
+        if(in_array($photo->getMimeType(), $mimes) == false) {
+            abort(403, 'Invalid or unsupported mime type.');
+        }
+
+        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $path = $photo->store($storagePath);
+        $hash = \hash_file('sha256', $photo);
+
+        $media = new Media();
+        $media->status_id = null;
+        $media->profile_id = $profile->id;
+        $media->user_id = $user->id;
+        $media->media_path = $path;
+        $media->original_sha256 = $hash;
+        $media->size = $photo->getSize();
+        $media->mime = $photo->getMimeType();
+        $media->filter_class = $request->input('filter_class');
+        $media->filter_name = $request->input('filter_name');
+        $media->save();
+        
+        switch ($media->mime) {
+            case 'image/jpeg':
+            case 'image/png':
+                ImageOptimize::dispatch($media);
+                break;
+
+            case 'video/mp4':
+                VideoThumbnail::dispatch($media);
+                $preview_url = '/storage/no-preview.png';
+                $url = '/storage/no-preview.png';
+                break;
+        }
+
+        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['preview_url'] = url('/storage/no-preview.png');
+        $res['url'] = url('/storage/no-preview.png');
+        return response()->json($res);
     }
 
     public function statusById(Request $request, $id)

@@ -110,14 +110,15 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('lists', 'Api\ApiV1Controller@accountLists')->middleware('auth:api');
             Route::get('accounts/{id}/lists', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
             Route::get('lists/{id}/accounts', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
+            Route::post('media', 'Api\ApiV1Controller@mediaUpload')->middleware('auth:api');
 
-            Route::get('likes', 'ApiController@hydrateLikes');
-            Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
-            Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
-            Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
-            Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
-            Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
+            // Route::get('likes', 'ApiController@hydrateLikes');
+            // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
+            // Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
+            // Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
+            // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
+            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
+            // Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
         });
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
