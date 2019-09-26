@@ -816,15 +816,13 @@ class ApiV1Controller extends Controller
         return response()->json([]);        
     }
 
-    public function statusById(Request $request, $id)
-    {
-        $status = Status::whereVisibility('public')->findOrFail($id);
-        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
+    /**
+     * GET /api/v1/instance
+     *
+     *   Information about the server.
+     *
+     * @return Instance
+     */
     public function instance(Request $request)
     {
         $res = [
@@ -845,6 +843,29 @@ class ApiV1Controller extends Controller
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')'
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    /**
+     * GET /api/v1/lists
+     *
+     *   Return empty array as we don't support lists
+     *
+     * @return null
+     */
+    public function accountLists(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        
+        return response()->json([]);        
+    }
+
+    public function statusById(Request $request, $id)
+    {
+        $status = Status::whereVisibility('public')->findOrFail($id);
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
     }
 
     public function context(Request $request)
