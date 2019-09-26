@@ -859,6 +859,20 @@ class ApiV1Controller extends Controller
         return response()->json([]);        
     }
 
+    /**
+     * GET /api/v1/accounts/{id}/lists
+     *
+     * @param  integer  $id
+     *
+     * @return null
+     */
+    public function accountListsById(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        
+        return response()->json([]);        
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);

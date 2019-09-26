@@ -108,6 +108,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('follow_requests/{id}/reject', 'Api\ApiV1Controller@accountFollowRequestReject')->middleware('auth:api');
             Route::get('suggestions', 'Api\ApiV1Controller@accountSuggestions')->middleware('auth:api');
             Route::get('lists', 'Api\ApiV1Controller@accountLists')->middleware('auth:api');
+            Route::get('accounts/{id}/lists', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
+            Route::get('lists/{id}/accounts', 'Api\ApiV1Controller@accountListsById')->middleware('auth:api');
 
             Route::get('likes', 'ApiController@hydrateLikes');
             Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
