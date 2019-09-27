@@ -131,7 +131,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
             Route::get('discover', 'InternalApiController@discover');
-            Route::get('discover/posts', 'InternalApiController@discoverPosts');
+            Route::get('discover/posts', 'InternalApiController@discoverPosts')->middleware('auth:api');
             Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
             Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
             Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
@@ -163,6 +163,23 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('notifications', 'ApiController@notifications');
                 Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
                 Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+            });
+
+            Route::group(['prefix' => 'v2'], function() {
+                Route::get('config', 'ApiController@siteConfiguration');
+                Route::get('discover', 'InternalApiController@discover');
+                Route::get('discover/posts', 'InternalApiController@discoverPosts');
+                Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
+                Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
+                Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
+                Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
+                Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
+                Route::post('moderator/action', 'InternalApiController@modAction');
+                Route::get('discover/categories', 'InternalApiController@discoverCategories');
+                Route::get('loops', 'DiscoverController@loopsApi');
+                Route::post('loops/watch', 'DiscoverController@loopWatch');
+                Route::get('discover/tag', 'DiscoverController@getHashtags');
+                Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             });
         });
         Route::group(['prefix' => 'local'], function () {
