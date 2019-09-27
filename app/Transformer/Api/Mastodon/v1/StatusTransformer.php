@@ -27,6 +27,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'content'                   => $status->rendered ?? $status->caption,
             'created_at'                => $status->created_at->toIso8601ZuluString(),
             'emojis'                    => [],
+            'replies_count'             => 0,
             'reblogs_count'             => $status->reblogs_count != 0 ? $status->reblogs_count: $status->shares()->count(),
             'favourites_count'          => $status->likes_count != 0 ? $status->likes_count: $status->likes()->count(),
             'reblogged'                 => null,
@@ -35,16 +36,16 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'sensitive'                 => (bool) $status->is_nsfw,
             'spoiler_text'              => $status->cw_summary ?? '',
             'visibility'                => $status->visibility ?? $status->scope,
+            'mentions'                  => [],
+            'tags'                      => [],
+            'card'                      => null,
+            'poll'                      => null,
             'application'               => [
                 'name'      => 'web',
                 'website'   => null
              ],
             'language'                  => null,
             'pinned'                    => null,
-            'mentions'                  => [],
-
-            'parent'                    => [],
-            'place'                     => $status->place
         ];
     }
 
