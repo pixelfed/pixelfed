@@ -1219,7 +1219,21 @@ class ApiV1Controller extends Controller
 
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/conversations
+     *
+     *   Not implemented
+     *
+     * @return array
+     */
+    public function conversations(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        return response()->json([]);
     }
 
     public function statusById(Request $request, $id)

@@ -117,6 +117,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('notifications', 'Api\ApiV1Controller@accountNotifications')->middleware('auth:api');
             
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware('auth:api');
+            Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware('auth:api');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
