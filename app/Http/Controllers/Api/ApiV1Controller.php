@@ -927,7 +927,7 @@ class ApiV1Controller extends Controller
      * POST /api/v1/media
      *
      *
-     * @return App\Transformer\Api\MediaTransformer
+     * @return MediaTransformer
      */
     public function mediaUpload(Request $request)
     {
@@ -1011,7 +1011,7 @@ class ApiV1Controller extends Controller
      *
      * @param  integer  $id
      *
-     * @return App\Transformer\Api\MediaTransformer
+     * @return MediaTransformer
      */
     public function mediaUpdate(Request $request, $id)
     {
@@ -1041,7 +1041,7 @@ class ApiV1Controller extends Controller
      * GET /api/v1/mutes
      *
      *
-     * @return App\Transformer\Api\AccountTransformer
+     * @return AccountTransformer
      */
     public function accountMutes(Request $request)
     {
@@ -1072,7 +1072,7 @@ class ApiV1Controller extends Controller
      *
      * @param  integer  $id
      *
-     * @return App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountMuteById(Request $request, $id)
     {
@@ -1104,7 +1104,7 @@ class ApiV1Controller extends Controller
      *
      * @param  integer  $id
      *
-     * @return App\Transformer\Api\RelationshipTransformer
+     * @return RelationshipTransformer
      */
     public function accountUnmuteById(Request $request, $id)
     {
@@ -1137,7 +1137,7 @@ class ApiV1Controller extends Controller
      * GET /api/v1/notifications
      *
      *
-     * @return App\Transformer\Api\NotificationTransformer
+     * @return NotificationTransformer
      */
     public function accountNotifications(Request $request)
     {
@@ -1177,7 +1177,7 @@ class ApiV1Controller extends Controller
      * GET /api/v1/timelines/home
      *
      *
-     * @return App\Transformer\Api\StatusTransformer
+     * @return StatusTransformer
      */
     public function timelineHome(Request $request)
     {
@@ -1279,7 +1279,7 @@ class ApiV1Controller extends Controller
      * GET /api/v1/timelines/public
      *
      *
-     * @return App\Transformer\Api\StatusTransformer
+     * @return StatusTransformer
      */
     public function timelinePublic(Request $request)
     {
@@ -1354,8 +1354,17 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/statuses/{id}
+     *
+     * @param  integer  $id
+     *
+     * @return StatusTransformer
+     */
     public function statusById(Request $request, $id)
     {
+        abort_if(!$request->user(), 403);
+
         $status = Status::whereVisibility('public')->findOrFail($id);
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -1363,9 +1372,42 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
-    public function context(Request $request)
+    /**
+     * GET /api/v1/statuses/{id}/context
+     *
+     * @param  integer  $id
+     *
+     * @return StatusTransformer
+     */
+    public function statusContext(Request $request, $id)
     {
-        // todo
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereVisibility('public')->findOrFail($id);
+
+        // Return empty response since we don't handle threading like this
+        $res = [
+            'ancestors' => [],
+            'descendants' => []
+        ];
+
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/statuses/{id}/card
+     *
+     * @param  integer  $id
+     *
+     * @return StatusTransformer
+     */
+    public function statusCard(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereVisibility('public')->findOrFail($id);
+
+        // Return empty response since we don't handle threading like this
         $res = [
             'ancestors' => [],
             'descendants' => []

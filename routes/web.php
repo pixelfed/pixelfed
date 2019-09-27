@@ -116,6 +116,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('accounts/{id}/unmute', 'Api\ApiV1Controller@accountUnmuteById')->middleware('auth:api');
             Route::get('notifications', 'Api\ApiV1Controller@accountNotifications')->middleware('auth:api');
             
+            Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware('auth:api');
+            Route::get('statuses/{id}/context', 'Api\ApiV1Controller@statusContext')->middleware('auth:api');
+            Route::get('statuses/{id}/card', 'Api\ApiV1Controller@statusCard')->middleware('auth:api');
+
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware('auth:api');
             Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware('auth:api');
             Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic');
