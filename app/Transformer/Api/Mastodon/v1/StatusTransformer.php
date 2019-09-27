@@ -25,7 +25,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
             'reblog'                    => null,
             'content'                   => $status->rendered ?? $status->caption,
-            'created_at'                => $status->created_at->toIso8601ZuluString(),
+            'created_at'                => $status->created_at->toJSON(),
             'emojis'                    => [],
             'replies_count'             => 0,
             'reblogs_count'             => $status->reblogs_count != 0 ? $status->reblogs_count: $status->shares()->count(),
