@@ -1437,6 +1437,30 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/statuses/{id}/favourited_by
+     *
+     * @param  integer  $id
+     *
+     * @return AccountTransformer
+     */
+    public function statusFavouritedBy(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit' => 'nullable|integer|min:1|max:80'
+        ]);
+
+        $limit = $request->input('limit') ?? 40;
+        $status = Status::whereVisibility('public')->findOrFail($id);
+        $liked = $status->likedBy()->latest()->simplePaginate($limit);
+        $resource = new Fractal\Resource\Collection($liked, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
     public function createStatus(Request $request)
     {
         abort_if(!$request->user(), 403);
