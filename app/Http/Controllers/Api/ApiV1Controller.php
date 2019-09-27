@@ -86,7 +86,9 @@ class ApiV1Controller extends Controller
         	'client_secret' => $client->secret,
         	'vapid_key' => null
         ];
-        return $res;
+        return response()->json($res, 200, [
+            'Access-Control-Allow-Origin' => '*'
+        ]);
 	}
 
     /**
@@ -241,7 +243,7 @@ class ApiV1Controller extends Controller
                 $res = [];
             }
         }
-        
+
         return response()->json($res);
     }
 
