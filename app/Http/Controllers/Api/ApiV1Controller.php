@@ -1407,11 +1407,32 @@ class ApiV1Controller extends Controller
 
         $status = Status::whereVisibility('public')->findOrFail($id);
 
-        // Return empty response since we don't handle threading like this
-        $res = [
-            'ancestors' => [],
-            'descendants' => []
-        ];
+        // Return empty response since we don't handle support cards
+        $res = [];
+
+        return response()->json($res);
+    }
+
+    /**
+     * GET /api/v1/statuses/{id}/reblogged_by
+     *
+     * @param  integer  $id
+     *
+     * @return AccountTransformer
+     */
+    public function statusRebloggedBy(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit' => 'nullable|integer|min:1|max:80'
+        ]);
+
+        $limit = $request->input('limit') ?? 40;
+        $status = Status::whereVisibility('public')->findOrFail($id);
+        $shared = $status->sharedBy()->latest()->simplePaginate($limit);
+        $resource = new Fractal\Resource\Collection($shared, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
     }
