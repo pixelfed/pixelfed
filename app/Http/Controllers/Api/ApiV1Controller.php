@@ -200,14 +200,18 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
         $profile = Profile::whereNull('status')->findOrFail($id);
 
-        $settings = $profile->user->settings;
-        if($settings->show_profile_followers == true) {
-            $limit = $request->input('limit') ?? 40;
-            $followers = $profile->followers()->paginate($limit);
-            $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-        } else {
+        if($profile->domain) {
             $res = [];
+        } else {
+            $settings = $profile->user->settings;
+            if($settings->show_profile_followers == true) {
+                $limit = $request->input('limit') ?? 40;
+                $followers = $profile->followers()->paginate($limit);
+                $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
+                $res = $this->fractal->createData($resource)->toArray();
+            } else {
+                $res = [];
+            }
         }
         return response()->json($res);
     }
@@ -224,15 +228,20 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
         $profile = Profile::whereNull('status')->findOrFail($id);
 
-        $settings = $profile->user->settings;
-        if($settings->show_profile_following == true) {
-            $limit = $request->input('limit') ?? 40;
-            $following = $profile->following()->paginate($limit);
-            $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-        } else {
+        if($profile->domain) {
             $res = [];
+        } else {
+            $settings = $profile->user->settings;
+            if($settings->show_profile_following == true) {
+                $limit = $request->input('limit') ?? 40;
+                $following = $profile->following()->paginate($limit);
+                $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
+                $res = $this->fractal->createData($resource)->toArray();
+            } else {
+                $res = [];
+            }
         }
+        
         return response()->json($res);
     }
 
