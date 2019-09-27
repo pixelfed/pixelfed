@@ -1315,7 +1315,8 @@ class ApiV1Controller extends Controller
                         'place_id',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->whereNull('uri')
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereVisibility('public')
@@ -1340,7 +1341,8 @@ class ApiV1Controller extends Controller
                         'place_id',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->whereNull('uri')
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereVisibility('public')
                       ->latest()
