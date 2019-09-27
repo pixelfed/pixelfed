@@ -80,7 +80,7 @@
 
 		methods: {
 			fetchData() {
-				axios.get('/api/v2/discover/posts')
+				axios.get('/api/pixelfed/v2/discover/posts')
 				.then((res) => {
 					this.posts = res.data.posts;
 					this.loaded = true;
