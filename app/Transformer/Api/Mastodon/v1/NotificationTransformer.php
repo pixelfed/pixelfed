@@ -49,10 +49,9 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		$verbs = [
 			'follow' => 'follow',
 			'mention' => 'mention',
-			'reblog' => 'share',
-			'share' => 'share',
+			'share' => 'reblog',
 			'like' => 'favourite',
-			'comment' => 'comment',
+			'comment' => 'mention',
 		];
 		return $verbs[$verb];
 	}
