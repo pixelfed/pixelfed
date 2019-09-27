@@ -1133,7 +1133,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
         $this->validate($request, [
             'page' => 'nullable|integer|min:1|max:10',
-            'limit' => 'nullable|integer|min:1|max:40',
+            'limit' => 'nullable|integer|min:1|max:80',
             'max_id' => 'nullable|integer|min:1',
             'min_id' => 'nullable|integer|min:0',
         ]);
@@ -1176,7 +1176,7 @@ class ApiV1Controller extends Controller
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-          'limit'       => 'nullable|integer|max:40'
+          'limit'       => 'nullable|integer|max:80'
         ]);
 
         $page = $request->input('page');
@@ -1276,7 +1276,7 @@ class ApiV1Controller extends Controller
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-          'limit'       => 'nullable|integer|max:40'
+          'limit'       => 'nullable|integer|max:80'
         ]);
 
         $page = $request->input('page');
