@@ -90,6 +90,34 @@ class ApiV1Controller extends Controller
 	}
 
     /**
+     * GET /api/v1/accounts/verify_credentials
+     *
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function verifyCredentials(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        $id = $request->user()->id;
+
+        $res = Cache::remember('mastoapi:user:account:id:'.$id, now()->addHours(6), function() use($id) {
+            $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
+            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+            $res = $this->fractal->createData($resource)->toArray();
+            $res['source'] = [
+                'privacy' => $profile->is_private ? 'private' : 'public',
+                'sensitive' => $profile->cw ? true : false,
+                'language' => 'en',
+                'note' => '',
+                'fields' => []
+            ];
+            return $res;
+        });
+
+        return response()->json($res);
+    }
+
+    /**
      * GET /api/v1/accounts/{id}
      *
      * @param  integer  $id

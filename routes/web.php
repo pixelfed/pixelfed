@@ -77,7 +77,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
         Route::group(['prefix' => 'v1'], function () {
-            Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials')->middleware('auth:api');
+            Route::get('accounts/verify_credentials', 'Api\ApiV1Controller@verifyCredentials')->middleware('auth:api');
             Route::patch('accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware('auth:api');
             Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById')->middleware('auth:api');
             Route::get('accounts/search', 'Api\ApiV1Controller@accountSearch')->middleware('auth:api');
