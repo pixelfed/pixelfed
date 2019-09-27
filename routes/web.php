@@ -115,13 +115,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('accounts/{id}/mute', 'Api\ApiV1Controller@accountMuteById')->middleware('auth:api');
             Route::post('accounts/{id}/unmute', 'Api\ApiV1Controller@accountUnmuteById')->middleware('auth:api');
             Route::get('notifications', 'Api\ApiV1Controller@accountNotifications')->middleware('auth:api');
+            
+            Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
             // Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
             // Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
             // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi')->middleware('auth:api');
             // Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
         });

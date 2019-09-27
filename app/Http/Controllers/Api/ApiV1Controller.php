@@ -1134,6 +1134,94 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * GET /api/v1/timelines/home
+     *
+     *
+     * @return App\Transformer\Api\StatusTransformer
+     */
+    public function timelineHome(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'limit'       => 'nullable|integer|max:40'
+        ]);
+
+        $page = $request->input('page');
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit') ?? 3;
+
+        $pid = $request->user()->profile_id;
+
+        $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+            $following = Follower::whereProfileId($pid)->pluck('following_id');
+            return $following->push($pid)->toArray();
+        });
+
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'reply_count',
+                        'comments_disabled',
+                        'place_id',
+                        'created_at',
+                        'updated_at'
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
+                      ->where('id', $dir, $id)
+                      ->whereIn('profile_id', $following)
+                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->latest()
+                      ->limit($limit)
+                      ->get();
+        } else {
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'reply_count',
+                        'comments_disabled',
+                        'place_id',
+                        'created_at',
+                        'updated_at'
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
+                      ->whereIn('profile_id', $following)
+                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->latest()
+                      ->simplePaginate($limit);
+        }
+
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
