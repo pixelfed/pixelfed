@@ -1236,6 +1236,83 @@ class ApiV1Controller extends Controller
         return response()->json([]);
     }
 
+    /**
+     * GET /api/v1/timelines/public
+     *
+     *
+     * @return App\Transformer\Api\StatusTransformer
+     */
+    public function timelinePublic(Request $request)
+    {
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'limit'       => 'nullable|integer|max:40'
+        ]);
+
+        $page = $request->input('page');
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit') ?? 3;
+
+        if($min || $max) {
+            $dir = $min ? '>' : '<';
+            $id = $min ?? $max;
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'reply_count',
+                        'comments_disabled',
+                        'place_id',
+                        'created_at',
+                        'updated_at'
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
+                      ->where('id', $dir, $id)
+                      ->whereVisibility('public')
+                      ->latest()
+                      ->limit($limit)
+                      ->get();
+        } else {
+            $timeline = Status::select(
+                        'id', 
+                        'uri',
+                        'caption',
+                        'rendered',
+                        'profile_id', 
+                        'type',
+                        'in_reply_to_id',
+                        'reblog_of_id',
+                        'is_nsfw',
+                        'scope',
+                        'local',
+                        'reply_count',
+                        'comments_disabled',
+                        'place_id',
+                        'created_at',
+                        'updated_at'
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->with('profile', 'hashtags', 'mentions')
+                      ->whereVisibility('public')
+                      ->latest()
+                      ->simplePaginate($limit);
+        }
+
+        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($fractal)->toArray();
+        return response()->json($res);
+    }
+
     public function statusById(Request $request, $id)
     {
         $status = Status::whereVisibility('public')->findOrFail($id);
