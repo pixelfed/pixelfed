@@ -125,13 +125,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware('auth:api');
             Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware('auth:api');
             Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic');
+            Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');
             // Route::delete('media', 'ApiController@deleteMedia')->middleware('auth:api');
             // Route::get('notifications', 'ApiController@notifications')->middleware('auth:api');
             // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            // Route::post('status', 'Api\ApiV1Controller@createStatus')->middleware('auth:api');
             Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById')->middleware('auth:api');
         });
         Route::group(['prefix' => 'v2'], function() {

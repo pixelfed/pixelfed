@@ -31,8 +31,10 @@ use App\Transformer\Api\{
 use App\Http\Controllers\FollowerController;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-
+use App\Http\Controllers\StatusController;
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Util\Media\Filter;
+use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
@@ -1461,21 +1463,103 @@ class ApiV1Controller extends Controller
         return response()->json($res);
     }
 
+    /**
+     * POST /api/v1/statuses
+     *
+     *
+     * @return StatusTransformer
+     */
     public function createStatus(Request $request)
     {
         abort_if(!$request->user(), 403);
         
         $this->validate($request, [
-            'status' => 'string',
-            'media_ids' => 'array',
+            'status' => 'nullable|string',
+            'in_reply_to_id' => 'nullable|integer',
+            'media_ids' => 'array|max:' . config('pixelfed.max_album_length'),
             'media_ids.*' => 'integer|min:1',
             'sensitive' => 'nullable|boolean',
             'visibility' => 'string|in:private,unlisted,public',
-            'in_reply_to_id' => 'integer'
         ]);
+
+        if(config('costar.enabled') == true) {
+            $blockedKeywords = config('costar.keyword.block');
+            if($blockedKeywords !== null && $request->status) {
+                $keywords = config('costar.keyword.block');
+                foreach($keywords as $kw) {
+                    if(Str::contains($request->status, $kw) == true) {
+                        abort(400, 'Invalid object. Contains banned keyword.');
+                    }
+                }
+            }
+        }
 
         if(!$request->filled('media_ids') && !$request->filled('in_reply_to_id')) {
             abort(403, 'Empty statuses are not allowed');
         }
+
+        $ids = $request->input('media_ids');
+        $in_reply_to_id = $request->input('in_reply_to_id');
+        $user = $request->user();
+
+        if($in_reply_to_id) {
+            $parent = Status::findOrFail($in_reply_to_id);
+
+            $status = new Status;
+            $status->caption = strip_tags($request->input('status'));
+            $status->scope = $request->input('visibility');
+            $status->visibility = $request->input('visibility');
+            $status->profile_id = $user->profile_id;
+            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive');
+            $status->in_reply_to_id = $parent->id;
+            $status->in_reply_to_profile_id = $parent->profile_id;
+            $status->save();
+        } else if($ids) {
+            $status = new Status;
+            $status->caption = strip_tags($request->input('status'));
+            $status->profile_id = $user->profile_id;
+            $status->scope = 'draft';
+            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive');
+            $status->save();
+
+            $mimes = [];
+
+            foreach($ids as $k => $v) {
+                if($k + 1 > config('pixelfed.max_album_length')) {
+                    continue;
+                }
+                $m = Media::findOrFail($v);
+                if($m->profile_id !== $user->profile_id || $m->status_id) {
+                    abort(403, 'Invalid media id');
+                }
+                $m->status_id = $status->id;
+                $m->save();
+                array_push($mimes, $m->mime);
+            }
+
+            if(empty($mimes)) {
+                $status->delete();
+                abort(500, 'Invalid media ids');
+            }
+
+            $status->scope = $request->input('visibility');
+            $status->visibility = $request->input('visibility');
+            $status->type = StatusController::mimeTypeCheck($mimes);
+            $status->save();
+        }
+
+        if(!$status) {
+            $oops = 'An error occured. RefId: '.time().'-'.$user->profile_id.':'.Str::random(5).':'.Str::random(10);
+            abort(500, $oops);
+        }
+
+        NewStatusPipeline::dispatch($status);
+        Cache::forget('user:account:id:'.$user->id);
+        Cache::forget('profile:status_count:'.$user->profile_id);
+        Cache::forget($user->storageUsedKey());
+
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
     }
 }
