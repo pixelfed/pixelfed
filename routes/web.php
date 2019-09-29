@@ -126,6 +126,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware('auth:api');
             Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic');
             Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware('auth:api');
+            Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware('auth:api');
+            Route::post('statuses/{id}/reblog', 'Api\ApiV1Controller@statusShare')->middleware('auth:api');
 
             // Route::get('likes', 'ApiController@hydrateLikes');
             // Route::post('media', 'ApiController@uploadMedia')->middleware('auth:api');

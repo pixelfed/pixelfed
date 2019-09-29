@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
+use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
 use Auth, Cache, DB, URL;
 use App\{
@@ -33,7 +34,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Http\Controllers\StatusController;
 use App\Jobs\LikePipeline\LikePipeline;
-use App\Util\Media\Filter;
+use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
@@ -43,7 +44,6 @@ use App\Jobs\VideoPipeline\{
     VideoPostProcess,
     VideoThumbnail
 };
-
 use App\Services\NotificationService;
 
 class ApiV1Controller extends Controller 
@@ -1581,5 +1581,34 @@ class ApiV1Controller extends Controller
         StatusDelete::dispatch($status);
 
         return response()->json(['Status successfully deleted.']);
+    }
+
+    /**
+     * POST /api/v1/statuses/{id}/reblog
+     *
+     * @param  integer  $id
+     *
+     * @return StatusTransformer
+     */
+    public function statusShare(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        
+        $user = $request->user();
+        $status = Status::findOrFail($id);
+
+        $share = Status::firstOrCreate([
+            'profile_id' = $user->profile_id,
+            'reblog_of_id' = $status->id,
+            'in_reply_to_profile_id' = $status->profile_id
+        ]);
+
+        if($share->wasRecentlyCreated == true) {
+            SharePipeline::dispatch($share);
+        }
+
+        $resource = new Fractal\Resource\Item($share, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
     }
 }
