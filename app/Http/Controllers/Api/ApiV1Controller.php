@@ -1469,7 +1469,7 @@ class ApiV1Controller extends Controller
      *
      * @return StatusTransformer
      */
-    public function createStatus(Request $request)
+    public function statusCreate(Request $request)
     {
         abort_if(!$request->user(), 403);
         
@@ -1510,7 +1510,7 @@ class ApiV1Controller extends Controller
             $status->scope = $request->input('visibility');
             $status->visibility = $request->input('visibility');
             $status->profile_id = $user->profile_id;
-            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive');
+            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
             $status->in_reply_to_id = $parent->id;
             $status->in_reply_to_profile_id = $parent->profile_id;
             $status->save();
@@ -1519,7 +1519,7 @@ class ApiV1Controller extends Controller
             $status->caption = strip_tags($request->input('status'));
             $status->profile_id = $user->profile_id;
             $status->scope = 'draft';
-            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive');
+            $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
             $status->save();
 
             $mimes = [];
@@ -1561,5 +1561,17 @@ class ApiV1Controller extends Controller
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
+    }
+
+    /**
+     * DELETE /api/v1/statuses
+     *
+     * @param  integer  $id
+     *
+     * @return null
+     */
+    public function statusDelete(Request $request)
+    {
+        abort_if(!$request->user(), 403);
     }
 }
