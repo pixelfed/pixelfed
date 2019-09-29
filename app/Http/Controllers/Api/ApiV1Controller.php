@@ -1598,9 +1598,9 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
 
         $share = Status::firstOrCreate([
-            'profile_id' = $user->profile_id,
-            'reblog_of_id' = $status->id,
-            'in_reply_to_profile_id' = $status->profile_id
+            'profile_id' => $user->profile_id,
+            'reblog_of_id' => $status->id,
+            'in_reply_to_profile_id' => $status->profile_id
         ]);
 
         if($share->wasRecentlyCreated == true) {
