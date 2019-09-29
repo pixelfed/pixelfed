@@ -1607,7 +1607,33 @@ class ApiV1Controller extends Controller
             SharePipeline::dispatch($share);
         }
 
-        $resource = new Fractal\Resource\Item($share, new StatusTransformer());
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/statuses/{id}/unreblog
+     *
+     * @param  integer  $id
+     *
+     * @return StatusTransformer
+     */
+    public function statusUnshare(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        
+        $user = $request->user();
+        $status = Status::findOrFail($id);
+
+        Status::whereProfileId($user->profile_id)
+          ->whereReblogOfId($status->id)
+          ->delete();
+        $count = $status->reblogs_count;
+        $status->reblogs_count = $count > 0 ? $count - 1 : 0;
+        $status->save();
+
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
