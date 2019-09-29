@@ -1570,8 +1570,16 @@ class ApiV1Controller extends Controller
      *
      * @return null
      */
-    public function statusDelete(Request $request)
+    public function statusDelete(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
+
+        $status = Status::whereProfileId($request->user()->profile->id)
+        ->findOrFail($id);
+
+        Cache::forget('profile:status_count:'.$status->profile_id);
+        StatusDelete::dispatch($status);
+
+        return response()->json(['Status successfully deleted.']);
     }
 }
