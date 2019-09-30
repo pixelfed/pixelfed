@@ -1637,4 +1637,20 @@ class ApiV1Controller extends Controller
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
+
+    /**
+     * GET /api/v1/timelines/tag/{hashtag}
+     *
+     * @param  string  $hashtag
+     *
+     * @return StatusTransformer
+     */
+    public function timelineHashtag(Request $request, $hashtag)
+    {
+        abort_if(!$request->user(), 403);
+
+        // todo
+        $res = [];
+        return response()->json($res);
+    }
 }
