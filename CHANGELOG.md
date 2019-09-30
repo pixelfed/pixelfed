@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.5...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.6...dev)
+
+### Added
+
+### Fixed
+
+### Changed
+    
+
+## [v0.10.6 (2019-09-30)](https://github.com/pixelfed/pixelfed/compare/v0.10.5...v0.10.6)
 
 ### Added
 - Added ```/api/v1/accounts/update_credentials``` endpoint [6afd6970](https://github.com/pixelfed/pixelfed/commit/6afd6970)
