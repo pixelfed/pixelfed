@@ -58,6 +58,11 @@
 
 ## Deprecated
 - Removed deprecated AttachmentTransformer, superceeded by MediaTransformer [9b5aac4f](https://github.com/pixelfed/pixelfed/commit/9b5aac4f)
+
+### To enable mobile app support
+- Run ```php artisan passport:keys```
+- Add ```OAUTH_ENABLED=true``` to .env
+- Run ```php artisan config:cache```
     
 
 ## [v0.10.5 (2019-09-24)](https://github.com/pixelfed/pixelfed/compare/v0.10.4...v0.10.5)
