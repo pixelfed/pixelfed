@@ -37,6 +37,16 @@
 			</p>
 		</div>
 	</div>
+	<div class="form-group row">
+		<label for="Monero - XMR" class="col-sm-3 col-form-label font-weight-bold text-right">Monero</label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" id="Monero" name="Monero" placeholder="47qDNpK9SpXVYn8gEfUnusRkW5cricnViAXC1uwFDbu1Xc62WGQFeMRjMTTJeKameZ5jSHqKChKpthm9MyT7a3JKNXPMZyK" value="{{$sponsors['Monero']}}">
+
+			<p class="help-text small text-muted font-weight-bold">
+				Example: a monero/XMR address 47qDNpK9SpXVYn8gEfUnusRkW5cricnViAXC1uwFDbu1Xc62WGQFeMRjMTTJeKameZ5jSHqKChKpthm9MyT7a3JKNXPMZyK
+			</p>
+		</div>
+	</div>
 	<hr>
 	<div class="form-group row">
 		<div class="col-12 text-right">
