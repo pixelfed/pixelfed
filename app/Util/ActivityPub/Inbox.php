@@ -197,7 +197,7 @@ class Inbox
                 'type'     => 'Accept',
                 'actor'    => $target->permalink(),
                 'object'   => [
-                    'id'        => $actor->permalink('#follows/' . $follower->id),
+                    'id'        => $this->payload['id'],
                     'actor'     => $actor->permalink(),
                     'type'      => 'Follow',
                     'object'    => $target->permalink()
