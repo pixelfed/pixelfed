@@ -304,7 +304,7 @@
 					</div>
 				</div>
 
-				<div v-show="modes.notify == true" class="mb-4">
+				<div v-show="modes.notify == true && !loading" class="mb-4">
 					<notification-card></notification-card>
 				</div>
 
@@ -606,9 +606,9 @@
 					this.max_id = Math.min(...ids);
 					this.loading = false;
 					$('.timeline .pagination').removeClass('d-none');
-					if(this.feed.length == 4) {
-						this.fetchTimelineApi();
-					} 
+					// if(this.feed.length == 4) {
+					// 	this.fetchTimelineApi();
+					// } 
 					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
