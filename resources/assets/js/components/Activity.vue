@@ -115,7 +115,11 @@ export default {
 
 	methods: {
 		fetchNotifications() {
-			axios.get('/api/pixelfed/v1/notifications')
+			axios.get('/api/pixelfed/v1/notifications', {
+				params: {
+					pg: true
+				}
+			})
 			.then(res => {
 				let data = res.data.filter(n => {
 					if(n.type == 'share' && !status) {
@@ -138,6 +142,7 @@ export default {
 			}
 			axios.get('/api/pixelfed/v1/notifications', {
 				params: {
+					pg: true,
 					page: this.notificationCursor
 				}
 			}).then(res => {
