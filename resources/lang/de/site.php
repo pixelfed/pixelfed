@@ -14,5 +14,6 @@ return [
 	'selectLocale'  => 'Wähle eine der unterstützten Sprachen aus',
 	'contact'		=> 'Kontakt',
 	'contact-us'	=> 'Kontaktiere uns',
+	'places'		=> 'Plätze',
 
 ];

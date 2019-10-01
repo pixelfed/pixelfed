@@ -14,5 +14,6 @@ return [
 	'selectLocale'  => 'Välj ett av de språk som stöds',
 	'contact'		=> 'Kontakt',
 	'contact-us'	=> 'Kontakta oss',
+	'places'		=> 'Platser',
 
 ];
