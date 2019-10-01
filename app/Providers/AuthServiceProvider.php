@@ -27,7 +27,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         if(config('pixelfed.oauth_enabled')) {
-            Passport::routes();
+            Route::group(['middleware' => 'cors'], function() {
+                Passport::routes();
+            });
             Passport::tokensExpireIn(now()->addDays(15));
             Passport::refreshTokensExpireIn(now()->addDays(30));
             Passport::enableImplicitGrant();
