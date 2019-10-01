@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
-use Gate, Route;
+use Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -27,9 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         if(config('pixelfed.oauth_enabled')) {
-            Route::group(['middleware' => 'cors'], function() {
-                Passport::routes();
-            });
+            Passport::routes();
             Passport::tokensExpireIn(now()->addDays(15));
             Passport::refreshTokensExpireIn(now()->addDays(30));
             Passport::enableImplicitGrant();
