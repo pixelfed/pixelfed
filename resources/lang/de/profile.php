@@ -9,4 +9,7 @@ return [
   'privateProfileWarning' => 'Dieser Account ist privat',
   'alreadyFollow'         => ':username bereits folgen?',
   'loginToSeeProfile'     => 'um deren Bilder und Videos zu sehen.',
+
+  'status.disabled.header' 	  => 'Profil nicht verfügbar',
+  'status.disabled.body'	  => 'Entschuldigung, dieses Profil ist im Moment nicht verfügbar. Bitte versuchen Sie es später noch einmal.',
 ];

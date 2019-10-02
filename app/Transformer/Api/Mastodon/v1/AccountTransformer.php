@@ -4,6 +4,7 @@ namespace App\Transformer\Api\Mastodon\v1;
 
 use App\Profile;
 use League\Fractal;
+use Illuminate\Support\Str;
 
 class AccountTransformer extends Fractal\TransformerAbstract
 {
@@ -11,12 +12,11 @@ class AccountTransformer extends Fractal\TransformerAbstract
 	{
 		$local = $profile->domain == null;
 		$is_admin = !$local ? false : $profile->user->is_admin;
-		$acct = $local ? $profile->username . '@' . config('pixelfed.domain.app') : substr($profile->username, 1);
-		$username = $local ? $profile->username : explode('@', $acct)[0];
+		$username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];
 		return [
 			'id' => (string) $profile->id,
 			'username' => $username,
-			'acct' => $acct,
+			'acct' => $username,
 			'display_name' => $profile->name,
 			'locked' => (bool) $profile->is_private,
 			'created_at' => $profile->created_at->toJSON(),
@@ -32,7 +32,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'emojis' => [],
 			'moved' => null,
 			'fields' => null,
-			'bot' => null,
+			'bot' => false,
 			'software' => 'pixelfed',
 			'is_admin' => (bool) $is_admin,
 		];
