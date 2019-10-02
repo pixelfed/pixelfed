@@ -267,7 +267,7 @@ class ApiV1Controller extends Controller
             'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
             'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-            'limit' => 'nullable|integer|min:1|max:40'
+            'limit' => 'nullable|integer|min:1|max:80'
         ]);
 
         $profile = Profile::whereNull('status')->findOrFail($id);
@@ -748,6 +748,8 @@ class ApiV1Controller extends Controller
         ]);
 
         if($like->wasRecentlyCreated == true) {
+            $status->likes_count = $status->likes()->count();
+            $status->save();
             LikePipeline::dispatch($like);
         }
 
@@ -777,6 +779,8 @@ class ApiV1Controller extends Controller
 
         if($like) {
             $like->delete();
+            $status->likes_count = $status->likes()->count();
+            $status->save();
         }
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
