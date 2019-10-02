@@ -1431,7 +1431,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
-            'page'  => 'nullable|integer|min:1|max:40'
+            'page'  => 'nullable|integer|min:1|max:40',
             'limit' => 'nullable|integer|min:1|max:80'
         ]);
 
@@ -1464,7 +1464,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
-            'page'  => 'nullable|integer|min:1|max:40'
+            'page'  => 'nullable|integer|min:1|max:40',
             'limit' => 'nullable|integer|min:1|max:80'
         ]);
 
