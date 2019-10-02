@@ -1164,14 +1164,14 @@ class ApiV1Controller extends Controller
             $id = $min ?? $max;
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
-                ->latest()
                 ->where('id', $dir, $id)
+                ->orderByDesc('created_at')
                 ->limit($limit)
                 ->get();
         } else {
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
-                ->latest()
+                ->orderByDesc('created_at')
                 ->simplePaginate($limit);
         }
         $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
