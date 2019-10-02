@@ -1164,14 +1164,14 @@ class ApiV1Controller extends Controller
             $id = $min ?? $max;
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
-                ->latest()
                 ->where('id', $dir, $id)
+                ->orderByDesc('created_at')
                 ->limit($limit)
                 ->get();
         } else {
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
-                ->latest()
+                ->orderByDesc('created_at')
                 ->simplePaginate($limit);
         }
         $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
@@ -1431,6 +1431,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
+            'page'  => 'nullable|integer|min:1|max:40',
             'limit' => 'nullable|integer|min:1|max:80'
         ]);
 
@@ -1440,7 +1441,15 @@ class ApiV1Controller extends Controller
         $resource = new Fractal\Resource\Collection($shared, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res);
+        $url = $request->url();
+        $page = $request->input('page', 1);
+        $next = $page < 40 ? $page + 1 : 40;
+        $prev = $page > 1 ? $page - 1 : 1;
+        $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+
+        return response()
+            ->header('Link', $links)
+            ->json($res);
     }
 
     /**
@@ -1455,6 +1464,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $this->validate($request, [
+            'page'  => 'nullable|integer|min:1|max:40',
             'limit' => 'nullable|integer|min:1|max:80'
         ]);
 
@@ -1464,7 +1474,15 @@ class ApiV1Controller extends Controller
         $resource = new Fractal\Resource\Collection($liked, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res);
+        $url = $request->url();
+        $page = $request->input('page', 1);
+        $next = $page < 40 ? $page + 1 : 40;
+        $prev = $page > 1 ? $page - 1 : 1;
+        $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+
+        return response()
+            ->header('Link', $links)
+            ->json($res);
     }
 
     /**
@@ -1608,6 +1626,8 @@ class ApiV1Controller extends Controller
         ]);
 
         if($share->wasRecentlyCreated == true) {
+            $status->reblogs_count = $status->shares()->count();
+            $status->save();
             SharePipeline::dispatch($share);
         }
 
@@ -1633,8 +1653,7 @@ class ApiV1Controller extends Controller
         Status::whereProfileId($user->profile_id)
           ->whereReblogOfId($status->id)
           ->delete();
-        $count = $status->reblogs_count;
-        $status->reblogs_count = $count > 0 ? $count - 1 : 0;
+        $status->reblogs_count = $status->shares()->count();
         $status->save();
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
