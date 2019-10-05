@@ -24,7 +24,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'in_reply_to_id'            => $status->in_reply_to_id,
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
             'reblog'                    => null,
-            'content'                   => $status->rendered ?? $status->caption,
+            'content'                   => $status->rendered ?? $status->caption ?? '',
             'created_at'                => $status->created_at->toJSON(),
             'emojis'                    => [],
             'replies_count'             => 0,
