@@ -44,13 +44,13 @@
                 <div class="text-center mb-5">
                     <img src="/img/pixelfed-icon-grey.svg">
                 </div>
-                <div class="card card-default">
+                <div class="card card-default shadow-none border">
                     <div class="card-header text-center font-weight-bold bg-white">
                         Authorization Request
                     </div>
                     <div class="card-body">
                         <!-- Introduction -->
-                        <p><strong>{{ $client->name }}</strong> is requesting permission to access your account.</p>
+                        <p><strong>{{ $client->name }}</strong> is requesting permission to access your <strong>{{request()->user()->username}}</strong> account.</p>
 
                         <!-- Scope List -->
                         @if (count($scopes) > 0)
@@ -85,6 +85,11 @@
                                 <button class="btn btn-outline-danger font-weight-bold">Cancel</button>
                             </form>
                         </div>
+                        <hr>
+                        <p class="mb-0 text-center small text-muted">Click <a href="{{ route('logout') }}" class="font-weight-bold" onclick="event.preventDefault();document.getElementById('logout_auth').submit();">here</a> to log out of this account.</p>
+                        <form id="logout_auth" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                        </form>
                     </div>
                 </div>
             </div>
