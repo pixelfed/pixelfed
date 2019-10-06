@@ -1447,9 +1447,7 @@ class ApiV1Controller extends Controller
         $prev = $page > 1 ? $page - 1 : 1;
         $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
 
-        return response()
-            ->header('Link', $links)
-            ->json($res);
+        return response()->json($res, 200, ['Link' => $links]);
     }
 
     /**
@@ -1480,9 +1478,7 @@ class ApiV1Controller extends Controller
         $prev = $page > 1 ? $page - 1 : 1;
         $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
 
-        return response()
-            ->header('Link', $links)
-            ->json($res);
+        return response()->json($res, 200, ['Link' => $links]);
     }
 
     /**
