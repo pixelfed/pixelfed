@@ -4,6 +4,7 @@ namespace App\Transformer\ActivityPub\Verb;
 
 use App\Status;
 use League\Fractal;
+use Illuminate\Support\Str;
 
 class CreateNote extends Fractal\TransformerAbstract
 {
@@ -11,12 +12,33 @@ class CreateNote extends Fractal\TransformerAbstract
 	{
 
 		$mentions = $status->mentions->map(function ($mention) {
+			$webfinger = $mention->emailUrl();
+			$name = Str::startsWith($webfinger, '@') ? 
+				$webfinger :
+				'@' . $webfinger;
 			return [
 				'type' => 'Mention',
 				'href' => $mention->permalink(),
-				'name' => $mention->emailUrl()
+				'name' => $name
 			];
 		})->toArray();
+
+		if($status->in_reply_to_id != null) {
+			$parent = $status->parent()->profile;
+			if($parent) {
+				$webfinger = $parent->emailUrl();
+				$name = Str::startsWith($webfinger, '@') ? 
+					$webfinger :
+					'@' . $webfinger;
+				$reply = [
+					'type' => 'Mention',
+					'href' => $parent->permalink(),
+					'name' => $name
+				];
+				$mentions = array_merge($reply, $mentions);
+			}
+		}
+
 		$hashtags = $status->hashtags->map(function ($hashtag) {
 			return [
 				'type' => 'Hashtag',
