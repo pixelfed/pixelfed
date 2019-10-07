@@ -370,8 +370,8 @@ class Status extends Model
             return $mention->permalink();
         })->toArray();
 
-        if($status->in_reply_to_id != null) {
-            $parent = $status->parent();
+        if($this->in_reply_to_id != null) {
+            $parent = $this->parent();
             if($parent) {
                 $mentions = array_merge([$parent->profile->permalink()], $mentions);
             }
