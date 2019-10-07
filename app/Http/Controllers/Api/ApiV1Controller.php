@@ -312,6 +312,8 @@ class ApiV1Controller extends Controller
                 'scope',
                 'local',
                 'place_id',
+                'likes_count',
+                'reblogs_count',
                 'created_at',
                 'updated_at'
               )->whereProfileId($profile->id)
@@ -335,6 +337,8 @@ class ApiV1Controller extends Controller
                 'scope',
                 'local',
                 'place_id',
+                'likes_count',
+                'reblogs_count',
                 'created_at',
                 'updated_at'
               )->whereProfileId($profile->id)
@@ -1224,6 +1228,8 @@ class ApiV1Controller extends Controller
                         'scope',
                         'local',
                         'reply_count',
+                        'likes_count',
+                        'reblogs_count',
                         'comments_disabled',
                         'place_id',
                         'created_at',
@@ -1251,6 +1257,8 @@ class ApiV1Controller extends Controller
                         'local',
                         'reply_count',
                         'comments_disabled',
+                        'likes_count',
+                        'reblogs_count',
                         'place_id',
                         'created_at',
                         'updated_at'
@@ -1319,6 +1327,8 @@ class ApiV1Controller extends Controller
                         'reply_count',
                         'comments_disabled',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'created_at',
                         'updated_at'
                       )->whereNull('uri')
@@ -1345,6 +1355,8 @@ class ApiV1Controller extends Controller
                         'reply_count',
                         'comments_disabled',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'created_at',
                         'updated_at'
                       )->whereNull('uri')

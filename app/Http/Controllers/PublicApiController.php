@@ -275,6 +275,8 @@ class PublicApiController extends Controller
                         'reply_count',
                         'comments_disabled',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
@@ -304,6 +306,8 @@ class PublicApiController extends Controller
                         'comments_disabled',
                         'created_at',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
@@ -384,6 +388,8 @@ class PublicApiController extends Controller
                         'reply_count',
                         'comments_disabled',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -411,6 +417,8 @@ class PublicApiController extends Controller
                         'reply_count',
                         'comments_disabled',
                         'place_id',
+                        'likes_count',
+                        'reblogs_count',
                         'created_at',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
@@ -625,7 +633,6 @@ class PublicApiController extends Controller
                 $visibility = ['public', 'unlisted'];
             }
         }
-
 
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
