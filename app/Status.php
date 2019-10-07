@@ -370,6 +370,13 @@ class Status extends Model
             return $mention->permalink();
         })->toArray();
 
+        if($status->in_reply_to_id != null) {
+            $parent = $status->parent();
+            if($parent) {
+                $mentions = array_merge([$parent->profile->permalink()], $mentions);
+            }
+        }
+
         switch ($scope) {
             case 'public':
                 $res['to'] = [
@@ -379,18 +386,14 @@ class Status extends Model
                 break;
 
             case 'unlisted':
-                $res['to'] = [
-                    $this->profile->permalink('/followers')
-                ];
+                $res['to'] = array_merge([$this->profile->permalink('/followers')], $mentions);
                 $res['cc'] = [
                     "https://www.w3.org/ns/activitystreams#Public"
                 ];
                 break;
 
             case 'private':
-                $res['to'] = [
-                    $this->profile->permalink('/followers')
-                ];
+                $res['to'] = array_merge([$this->profile->permalink('/followers')], $mentions);
                 $res['cc'] = [];
                 break;
 
