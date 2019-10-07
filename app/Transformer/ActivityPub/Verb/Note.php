@@ -4,6 +4,7 @@ namespace App\Transformer\ActivityPub\Verb;
 
 use App\Status;
 use League\Fractal;
+use Illuminate\Support\Str;
 
 class Note extends Fractal\TransformerAbstract
 {
@@ -11,10 +12,14 @@ class Note extends Fractal\TransformerAbstract
 	{
 
 		$mentions = $status->mentions->map(function ($mention) {
+			$webfinger = $mention->emailUrl();
+			$name = Str::startsWith($webfinger, '@') ? 
+				$webfinger :
+				'@' . $webfinger;
 			return [
 				'type' => 'Mention',
 				'href' => $mention->permalink(),
-				'name' => $mention->emailUrl()
+				'name' => $name
 			];
 		})->toArray();
 		$hashtags = $status->hashtags->map(function ($hashtag) {
