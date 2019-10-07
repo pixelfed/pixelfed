@@ -564,10 +564,7 @@
 					if(this.profile.is_admin == true) {
 						this.modes.mod = true;
 					}
-					$('.profile-card .loader').addClass('d-none');
-					$('.profile-card .contents').removeClass('d-none');
-					$('.profile-card .card-footer').removeClass('d-none');
-					this.expRec();
+					//this.expRec();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -602,8 +599,8 @@
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
 					this.ids = ids;
-					this.min_id = Math.max(...ids);
-					this.max_id = Math.min(...ids);
+					this.min_id = Math.max(...ids).toString();
+					this.max_id = Math.min(...ids).toString();
 					this.loading = false;
 					$('.timeline .pagination').removeClass('d-none');
 					// if(this.feed.length == 4) {
@@ -625,6 +622,10 @@
 				if(this.loading) {
 					$state.complete();
 					return;
+				}
+				if(this.page > 40) {
+					this.loading = false;
+					$state.complete();
 				}
 				let apiUrl = false;
 				switch(this.scope) {
@@ -655,8 +656,8 @@
 								self.ids.push(d.id);
 							} 
 						});
-						this.min_id = Math.max(...this.ids);
-						this.max_id = Math.min(...this.ids);
+						this.min_id = Math.max(...this.ids).toString();
+						this.max_id = Math.min(...this.ids).toString();
 						this.page += 1;
 						$state.loaded();
 						this.loading = false;

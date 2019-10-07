@@ -83,20 +83,24 @@ class ApiController extends BaseApiController
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'q' => 'required|string'
+            'q' => 'required|string|max:100'
         ]);
         $q = filter_var($request->input('q'), FILTER_SANITIZE_STRING);
-        $q = '%' . $q . '%';
-        $places = Place::where('name', 'like', $q)
-            ->take(25)
-            ->get()
-            ->map(function($r) {
-                return [
-                    'id' => $r->id,
-                    'name' => $r->name,
-                    'country' => $r->country,
-                    'url'   => $r->url()
-                ];
+        $hash = hash('sha256', $q);
+        $key = 'search:location:id:' . $hash;
+        $places = Cache::remember($key, now()->addMinutes(15), function() use($q) {
+            $q = '%' . $q . '%';
+            return Place::where('name', 'like', $q)
+                ->take(80)
+                ->get()
+                ->map(function($r) {
+                    return [
+                        'id' => $r->id,
+                        'name' => $r->name,
+                        'country' => $r->country,
+                        'url'   => $r->url()
+                    ];
+            });
         });
         return $places;
     }
