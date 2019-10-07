@@ -900,7 +900,14 @@ class ApiV1Controller extends Controller
             'title' => 'Pixelfed (' . config('pixelfed.domain.app') . ')',
             'uri' => config('app.url'),
             'urls' => [],
-            'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')'
+            'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
+            'environment' => [
+                'max_photo_size' => config('pixelfed.max_photo_size'),
+                'max_avatar_size' => config('pixelfed.max_avatar_size'),
+                'max_caption_length' => config('pixelfed.max_caption_length'),
+                'max_bio_length' => config('pixelfed.max_bio_length'),
+                'max_album_length' => config('pixelfed.max_album_length')
+            ]
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
