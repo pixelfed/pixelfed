@@ -307,7 +307,7 @@ class Inbox
         $id = $this->payload['object']['id'];
         switch ($type) {
             case 'Person':
-                    $profile = Helpers::fetchProfile($actor);
+                    $profile = Helpers::profileFetch($actor);
                     if(!$profile || $profile->private_key != null) {
                         return;
                     }
@@ -323,7 +323,7 @@ class Inbox
                 break;
 
             case 'Tombstone':
-                    $profile = Helpers::fetchProfile($actor);
+                    $profile = Helpers::profileFetch($actor);
                     $status = Status::whereProfileId($profile->id)
                         ->whereUri($id)
                         ->orWhereUrl($id)
