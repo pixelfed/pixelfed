@@ -326,7 +326,7 @@ class Inbox
                     $profile = Helpers::profileFetch($actor);
                     $status = Status::whereProfileId($profile->id)
                         ->whereUri($id)
-                        ->orWhereUrl($id)
+                        ->orWhere('url', $id)
                         ->orWhere('object_url', $id)
                         ->first();
                     if(!$status) {
