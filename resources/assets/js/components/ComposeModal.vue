@@ -110,7 +110,8 @@
 								<div class="media-body">
 									<div class="form-group">
 										<label class="font-weight-bold text-muted small d-none">Caption</label>
-										<textarea class="form-control border-0 rounded-0 no-focus" rows="2" placeholder="Write a caption..." style="resize:none" v-model="composeText"></textarea>
+										<textarea class="form-control border-0 rounded-0 no-focus" rows="2" placeholder="Write a caption..." style="resize:none" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+										<p class="help-text small text-right text-muted mb-0">{{composeTextLength}}/{{config.uploader.max_caption_length}}</p>
 									</div>
 								</div>
 							</div>
@@ -474,8 +475,10 @@ export default {
 		},
 
 		mediaDragAndDrop() {
+			
 			let self = this;
 			let pdz = document.getElementById('content');
+
 
 			function allowDrag(e) {
 				e.dataTransfer.dropEffect = 'copy';
@@ -484,10 +487,10 @@ export default {
 
 			function handleDrop(e) {
 				e.preventDefault();
-				let dz = document.querySelector('#pf-dz');
-				dz.files = e.dataTransfer.files;
-				$('#composeModal').modal('show');
-				self.mediaUpload();
+				// let dz = document.querySelector('#pf-dz');
+				// dz.files = e.dataTransfer.files;
+				// $('#composeModal').modal('show');
+				// self.mediaUpload();
 			}
 
 			window.addEventListener('dragenter', function(e) {
