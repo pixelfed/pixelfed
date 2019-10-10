@@ -307,11 +307,8 @@ class Inbox
         $id = $this->payload['object']['id'];
         switch ($type) {
             case 'Person':
-                    $profile = Profile::whereNull('domain')
-                        ->whereNull('private_key')
-                        ->whereRemoteUrl($id)
-                        ->first();
-                    if(!$profile) {
+                    $profile = Helpers::profileFetch($actor);
+                    if(!$profile || $profile->private_key != null) {
                         return;
                     }
                     Notification::whereActorId($profile->id)->delete();
@@ -326,11 +323,18 @@ class Inbox
                 break;
 
             case 'Tombstone':
-                    $status = Status::whereUri($id)->orWhere('object_url', $id)->first();
+                    $profile = Helpers::profileFetch($actor);
+                    $status = Status::whereProfileId($profile->id)
+                        ->whereUri($id)
+                        ->orWhere('url', $id)
+                        ->orWhere('object_url', $id)
+                        ->first();
                     if(!$status) {
                         return;
                     }
-                    $status->media->delete();
+                    $status->media()->delete();
+                    $status->likes()->delete();
+                    $status->shares()->delete();
                     $status->delete();
                     return;
                 break;
