@@ -39,3 +39,4 @@ Matrix](https://matrix.to/#/#freenode_#pixelfed:matrix.org))
 We would like to extend our thanks to the following sponsors for funding Pixelfed development. If you are interested in becoming a sponsor, please visit the Pixelfed [Patreon Page](https://www.patreon.com/dansup/overview)
 
 - [<img src="https://td-misc-public.s3.amazonaws.com/OscillasLogo.png" width="100px">](https://oscillas.com/)
+- Managed Pixelfed Hosting by [Spacebear](https://app.spacebear.ee/)
