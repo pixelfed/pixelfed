@@ -646,6 +646,8 @@ class PublicApiController extends Controller
             'in_reply_to_id',
             'reblog_of_id',
             'is_nsfw',
+            'likes_count',
+            'reblogs_count',
             'scope',
             'local',
             'created_at',
