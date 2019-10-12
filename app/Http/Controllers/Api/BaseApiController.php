@@ -192,7 +192,7 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function showTempMedia(Request $request, int $profileId, $mediaId)
+    public function showTempMedia(Request $request, int $profileId, $mediaId, $timestamp)
     {
         abort_if(!$request->user(), 403);
         abort_if(!$request->hasValidSignature(), 404); 
@@ -257,10 +257,9 @@ class BaseApiController extends Controller
         $media->save();
 
         $url = URL::temporarySignedRoute(
-            'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id]
+            'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id, 'timestamp' => time()]
         );
 
-        $preview_url = $url;
         switch ($media->mime) {
             case 'image/jpeg':
             case 'image/png':
@@ -279,7 +278,7 @@ class BaseApiController extends Controller
 
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $this->fractal->createData($resource)->toArray();
-        $res['preview_url'] = $preview_url;
+        $res['preview_url'] = $url;
         $res['url'] = $url;
         return response()->json($res);
     }
