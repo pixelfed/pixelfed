@@ -66,6 +66,7 @@ trait PrivacySettings
             $settings->save();
         }
         Cache::forget('profile:settings:' . $profile->id);
+        Cache::forget('user:account:id:' . $profile->user_id);
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 
