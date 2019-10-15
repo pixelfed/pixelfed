@@ -20,6 +20,7 @@ use App\Transformer\Api\{
     AccountTransformer,
     NotificationTransformer,
     MediaTransformer,
+    MediaDraftTransformer,
     StatusTransformer
 };
 use League\Fractal;
@@ -307,8 +308,9 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
-        abort_if(!$request->user(), 403);
-        $id = Auth::id();
+        $user = $request->user();
+        abort_if(!$user, 403);
+        $id = $user->id;
 
         $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
             $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
@@ -318,5 +320,20 @@ class BaseApiController extends Controller
         });
 
         return response()->json($res);
+    }
+
+    public function drafts(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$request->user(), 403);
+
+        $medias = Media::whereUserId($user->id)
+            ->whereNull('status_id')
+            ->latest()
+            ->take(13)
+            ->get();
+        $resource = new Fractal\Resource\Collection($medias, new MediaDraftTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 }
