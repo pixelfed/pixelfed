@@ -43,7 +43,7 @@
 													<li class="nav-item">
 														<div class="font-weight-light">
 															<span class="text-dark text-center">
-																<p class="font-weight-bold mb-0">{{profile.statuses_count}}</p>
+																<p class="font-weight-bold mb-0">{{formatCount(profile.statuses_count)}}</p>
 																<p class="text-muted mb-0 small">Posts</p>
 															</span>
 														</div>
@@ -51,7 +51,7 @@
 													<li class="nav-item">
 														<div v-if="profileSettings.followers.count" class="font-weight-light">
 															<a class="text-dark cursor-pointer text-center" v-on:click="followersModal()">
-																<p class="font-weight-bold mb-0">{{profile.followers_count}}</p>
+																<p class="font-weight-bold mb-0">{{formatCount(profile.followers_count)}}</p>
 																<p class="text-muted mb-0 small">Followers</p>
 															</a>
 														</div>
@@ -59,7 +59,7 @@
 													<li class="nav-item">
 														<div v-if="profileSettings.following.count" class="font-weight-light">
 															<a class="text-dark cursor-pointer text-center" v-on:click="followingModal()">
-																<p class="font-weight-bold mb-0">{{profile.following_count}}</p>
+																<p class="font-weight-bold mb-0">{{formatCount(profile.following_count)}}</p>
 																<p class="text-muted mb-0 small">Following</p>
 															</a>
 														</div>
@@ -109,19 +109,19 @@
 									<div class="d-none d-md-inline-flex profile-stats pb-3">
 										<div class="font-weight-light pr-5">
 											<span class="text-dark">
-												<span class="font-weight-bold">{{profile.statuses_count}}</span>
+												<span class="font-weight-bold">{{formatCount(profile.statuses_count)}}</span>
 												Posts
 											</span>
 										</div>
 										<div v-if="profileSettings.followers.count" class="font-weight-light pr-5">
 											<a class="text-dark cursor-pointer" v-on:click="followersModal()">
-												<span class="font-weight-bold">{{profile.followers_count}}</span>
+												<span class="font-weight-bold">{{formatCount(profile.followers_count)}}</span>
 												Followers
 											</a>
 										</div>
 										<div v-if="profileSettings.following.count" class="font-weight-light">
 											<a class="text-dark cursor-pointer" v-on:click="followingModal()">
-												<span class="font-weight-bold">{{profile.following_count}}</span>
+												<span class="font-weight-bold">{{formatCount(profile.following_count)}}</span>
 												Following
 											</a>
 										</div>
@@ -304,15 +304,15 @@
 								<div v-if="profile.note" class="text-center text-muted p-3" v-html="profile.note"></div>
 								<div class="pb-3 text-muted text-center">
 									<a class="text-lighter" :href="profile.url">
-										<span class="font-weight-bold">{{profile.statuses_count}}</span>
+										<span class="font-weight-bold">{{formatCount(profile.statuses_count)}}</span>
 										Posts
 									</a>
 									<a v-if="profileSettings.followers.count" class="text-lighter cursor-pointer px-3" v-on:click="followersModal()">
-										<span class="font-weight-bold">{{profile.followers_count}}</span>
+										<span class="font-weight-bold">{{formatCount(profile.followers_count)}}</span>
 										Followers
 									</a>
 									<a v-if="profileSettings.following.count" class="text-lighter cursor-pointer" v-on:click="followingModal()">
-										<span class="font-weight-bold">{{profile.following_count}}</span>
+										<span class="font-weight-bold">{{formatCount(profile.following_count)}}</span>
 										Following
 									</a>
 								</div>
@@ -1076,6 +1076,10 @@
 			copyProfileLink() {
 				navigator.clipboard.writeText(window.location.href);
 				this.$refs.visitorContextMenu.hide();
+			},
+
+			formatCount(count) {
+				return App.util.format.count(count);
 			}
 		}
 	}
