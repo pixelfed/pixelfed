@@ -42,18 +42,18 @@ trait AdminInstanceController
 
 	public function instanceScan(Request $request)
 	{
-		DB::transaction(function() {
-			Profile::select('domain')->whereNotNull('domain')
-				->groupBy('id')
-				->groupBy('domain')
-				->chunk(50, function($domains) {
-					foreach($domains as $domain) {
-						Instance::firstOrCreate([
-							'domain' => $domain->domain
-						]);
-					}
-				});
+		Profile::whereNotNull('domain')
+			->latest()
+			->groupBy('domain')
+			->where('created_at', '>', now()->subMonths(2))
+			->chunk(100, function($domains) {
+				foreach($domains as $domain) {
+					Instance::firstOrCreate([
+						'domain' => $domain->domain
+					]);
+				}
 		});
+
 		return redirect()->back();
 	}
 
