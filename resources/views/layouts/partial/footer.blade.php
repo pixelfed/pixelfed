@@ -1,9 +1,9 @@
   <footer>
     <div class="container py-5">
         <p class="d-flex flex-wrap justify-content-center mb-0 text-uppercase font-weight-bold small text-justify">
-          <a href="{{route('site.about')}}" class="text-primary pr-3">{{__('site.about')}}</a>
+          <a href="{{route('site.about')}}" class="text-primary p-2">{{__('site.about')}}</a>
           @if(config('instance.contact.enabled') || config('instance.email'))
-          <a href="{{route('site.contact')}}" class="text-primary pr-3">{{__('site.contact-us')}}</a>
+          <a href="{{route('site.contact')}}" class="text-primary p-2">{{__('site.contact-us')}}</a>
           @endif
           <a href="{{route('site.help')}}" class="text-primary p-2">{{__('site.help')}}</a>
           <a href="{{route('site.terms')}}" class="text-primary p-2">{{__('site.terms')}}</a>
