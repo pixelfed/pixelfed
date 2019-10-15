@@ -198,7 +198,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('auth/checkpoint', 'AccountController@twoFactorCheckpoint');
         Route::post('auth/checkpoint', 'AccountController@twoFactorVerify');
 
-        Route::get('media/preview/{profileId}/{mediaId}', 'ApiController@showTempMedia')->name('temp-media');
+        Route::get('media/preview/{profileId}/{mediaId}/{timestamp}', 'ApiController@showTempMedia')->name('temp-media');
 
         Route::get('results', 'SearchController@results');
         Route::post('visibility', 'StatusController@toggleVisibility');
