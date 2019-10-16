@@ -50,7 +50,7 @@
           </div>
          </div>
           <div class="col-12 col-md-8 px-0 mx-0">
-              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center" v-on:dblclick="likeStatus">
+              <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center" style="background: #000;">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
                 </div>

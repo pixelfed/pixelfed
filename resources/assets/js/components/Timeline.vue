@@ -127,7 +127,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer">
+						<div class="postPresenterContainer" style="background: #000;">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
@@ -216,7 +216,7 @@
 					</div>
 				</div>
 				<div v-if="!loading && feed.length">
-					<div class="card">
+					<div class="card shadow-none border">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
 							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
