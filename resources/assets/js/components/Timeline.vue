@@ -127,7 +127,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer">
+						<div class="postPresenterContainer" style="background: #000;">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
