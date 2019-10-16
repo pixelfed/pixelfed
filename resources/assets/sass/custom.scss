@@ -559,3 +559,10 @@ details summary::-webkit-details-marker {
 .carousel-control-prev-icon, .carousel-control-next-icon {
     filter: drop-shadow(0px 0px 1px black);
 }
+
+.VueCarousel:focus,
+.VueCarousel-navigation-button:focus,
+.VueCarousel-dot:focus,
+.VueCarousel-dot--active:focus {
+  outline: 0px !important;
+}
