@@ -127,7 +127,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer" @click="lightbox(status)">
+						<div class="postPresenterContainer">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
