@@ -3,7 +3,9 @@ import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
+import VueCarousel from 'vue-carousel';
 
+Vue.use(VueCarousel);
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
@@ -37,11 +39,7 @@ try {
 window.filesize = require('filesize');
 import swal from 'sweetalert';
 
-$(document).ready(function() {
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  });
-});
+$('[data-toggle="tooltip"]').tooltip()
 
 const warningTitleCSS = 'color:red; font-size:60px; font-weight: bold; -webkit-text-stroke: 1px black;';
 const warningDescCSS = 'font-size: 18px;';
