@@ -61,7 +61,12 @@ class SharePipeline implements ShouldQueue
                   ->whereItemType('App\Status')
                   ->count();
 
-        if ($target->id === $status->profile_id || $exists !== 0) {
+        if ($target->id === $status->profile_id) {
+            $this->remoteAnnounceDeliver();
+            return true;
+        }
+
+        if( $exists !== 0) {
             return true;
         }
 
@@ -88,6 +93,9 @@ class SharePipeline implements ShouldQueue
 
     public function remoteAnnounceDeliver()
     {
+        if(config('federation.activitypub.enabled') == false) {
+            return true;
+        }
         $status = $this->status;
         $profile = $status->profile;
 

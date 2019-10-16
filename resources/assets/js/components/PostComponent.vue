@@ -117,10 +117,21 @@
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
               <div class="card-body status-comments pb-5">
                 <div class="status-comment">
-                  <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
-                    <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
-                    <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
-                  </p>
+                  <div v-if="showCaption != true">
+                    <span class="py-3">
+                      <a class="text-dark font-weight-bold mr-1" :href="status.account.url" v-bind:title="status.account.username">{{truncate(status.account.username,15)}}</a>
+                      <span class="text-break">
+                        <span class="font-italic text-muted">This comment may contain sensitive material</span>
+                        <span class="text-primary cursor-pointer pl-1" @click="showCaption = true">Show</span>
+                      </span>
+                    </span>
+                  </div>
+                  <div v-else>
+                    <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
+                      <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
+                      <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
+                    </p>
+                  </div>
 
                   <div v-if="showComments">
                     <hr>
@@ -214,19 +225,6 @@
             </div>
             <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
               <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-                <li class="nav-item" v-on:click="emojiReaction">😂</li>
-                <li class="nav-item" v-on:click="emojiReaction">💯</li>
-                <li class="nav-item" v-on:click="emojiReaction">❤️</li>
-                <li class="nav-item" v-on:click="emojiReaction">🙌</li>
-                <li class="nav-item" v-on:click="emojiReaction">👏</li>
-                <li class="nav-item" v-on:click="emojiReaction">👌</li>
-                <li class="nav-item" v-on:click="emojiReaction">😍</li>
-                <li class="nav-item" v-on:click="emojiReaction">😯</li>
-                <li class="nav-item" v-on:click="emojiReaction">😢</li>
-                <li class="nav-item" v-on:click="emojiReaction">😅</li>
-                <li class="nav-item" v-on:click="emojiReaction">😁</li>
-                <li class="nav-item" v-on:click="emojiReaction">🙂</li>
-                <li class="nav-item" v-on:click="emojiReaction">😎</li>
                 <li class="nav-item" v-on:click="emojiReaction" v-for="e in emoji">{{e}}</li>
               </ul>
             </div>
@@ -595,8 +593,9 @@ export default {
             loading: null,
             replyingToId: this.statusId,
             replyToIndex: 0,
-            emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
+            emoji: window.App.util.emoji,
             showReadMore: true,
+            showCaption: true,
           }
     },
 
@@ -663,6 +662,7 @@ export default {
                 self.likesPage = 2;
                 self.sharesPage = 2;
                 this.showMuteBlock();
+                self.showCaption = !response.data.status.sensitive;
                 if(self.status.comments_disabled == false) {
                   self.showComments = true;
                   this.fetchComments();

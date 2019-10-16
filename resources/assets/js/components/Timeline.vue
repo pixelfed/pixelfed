@@ -127,7 +127,7 @@
 							</div>
 						</div>
 
-						<div class="postPresenterContainer" @click="lightbox(status)">
+						<div class="postPresenterContainer">
 							<div v-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
@@ -203,19 +203,6 @@
 
 						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white px-2 py-0">
 							<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-								<li class="nav-item" v-on:click="emojiReaction(status)">😂</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">💯</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">❤️</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">🙌</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">👏</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">👌</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😍</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😯</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😢</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😅</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😁</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">🙂</li>
-								<li class="nav-item" v-on:click="emojiReaction(status)">😎</li>
 								<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
 							</ul>
 						</div>
@@ -274,15 +261,15 @@
 						<div class="card-footer bg-transparent border-0 mt-2 py-1">
 							<div class="d-flex justify-content-between text-center">
 								<span class="cursor-pointer" @click="redirect(profile.url)">
-									<p class="mb-0 font-weight-bold">{{profile.statuses_count}}</p>
+									<p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
 									<p class="mb-0 small text-muted">Posts</p>
 								</span>
 								<span class="cursor-pointer" @click="redirect(profile.url+'?md=followers')">
-									<p class="mb-0 font-weight-bold">{{profile.followers_count}}</p>
+									<p class="mb-0 font-weight-bold">{{formatCount(profile.followers_count)}}</p>
 									<p class="mb-0 small text-muted">Followers</p>
 								</span>
 								<span class="cursor-pointer" @click="redirect(profile.url+'?md=following')">
-									<p class="mb-0 font-weight-bold">{{profile.following_count}}</p>
+									<p class="mb-0 font-weight-bold">{{formatCount(profile.following_count)}}</p>
 									<p class="mb-0 small text-muted">Following</p>
 								</span>
 							</div>
@@ -502,7 +489,7 @@
 				showReadMore: true,
 				replyStatus: {},
 				replyText: '',
-				emoji: ['😀','🤣','😃','😄','😆','😉','😊','😋','😘','😗','😙','😚','🤗','🤩','🤔','🤨','😐','😑','😶','🙄','😏','😣','😥','😮','🤐','😪','😫','😴','😌','😛','😜','😝','🤤','😒','😓','😔','😕','🙃','🤑','😲','🙁','😖','😞','😟','😤','😭','😦','😧','😨','😩','🤯','😬','😰','😱','😳','🤪','😵','😡','😠','🤬','😷','🤒','🤕','🤢','🤮','🤧','😇','🤠','🤡','🤥','🤫','🤭','🧐','🤓','😈','👿','👹','👺','💀','👻','👽','🤖','💩','😺','😸','😹','😻','😼','😽','🙀','😿','😾','🤲','👐','🤝','👍','👎','👊','✊','🤛','🤜','🤞','✌️','🤟','🤘','👈','👉','👆','👇','☝️','✋','🤚','🖐','🖖','👋','🤙','💪','🖕','✍️','🙏','💍','💄','💋','👄','👅','👂','👃','👣','👁','👀','🧠','🗣','👤','👥'],
+				emoji: window.App.util.emoji,
 				showHashtagPosts: false,
 				hashtagPosts: [],
 				hashtagPostsName: '',
@@ -592,7 +579,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 4
+						limit: 5
 					}
 				}).then(res => {
 					let data = res.data;
@@ -1311,6 +1298,10 @@
 			hideTips() {
 				this.showTips = false;
 				window.localStorage.setItem('metro-tips', false);
+			},
+
+			formatCount(count) {
+				return App.util.format.count(count);
 			}
 
 		}

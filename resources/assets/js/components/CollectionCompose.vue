@@ -201,7 +201,7 @@ export default {
 		},
 
 		fetchRecentPosts() {
-			axios.get('/api/local/accounts/' + this.profileId + '/statuses', {
+			axios.get('/api/pixelfed/v1/accounts/' + this.profileId + '/statuses', {
 				params: {
 					only_media: true,
 					min_id: 1,

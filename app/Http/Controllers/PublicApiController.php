@@ -281,7 +281,7 @@ class PublicApiController extends Controller
                         'updated_at'
                       )->where('id', $dir, $id)
                       ->with('profile', 'hashtags', 'mentions')
-                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereLocal(true)
                       ->whereNotIn('profile_id', $filtered)
                       ->whereVisibility('public')
@@ -309,7 +309,7 @@ class PublicApiController extends Controller
                         'likes_count',
                         'reblogs_count',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereNotIn('profile_id', $filtered)
@@ -392,7 +392,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
@@ -421,7 +421,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
+                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
