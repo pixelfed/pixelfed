@@ -216,7 +216,7 @@
 					</div>
 				</div>
 				<div v-if="!loading && feed.length">
-					<div class="card">
+					<div class="card shadow-none border">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
 							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
