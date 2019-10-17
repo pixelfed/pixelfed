@@ -110,6 +110,7 @@
 		beforeMount() {
 			this.authenticated = $('body').hasClass('loggedIn');
 			this.getResults();
+			this.hashtagCount = window.App.util.format.count(this.hashtagCount);
 		},
 		methods: {
 			getResults() {
