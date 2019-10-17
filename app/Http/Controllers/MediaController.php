@@ -48,7 +48,7 @@ class MediaController extends Controller
 		$path = $photo->storeAs($dir, $name);
         $res = [];
         $res['url'] =  URL::temporarySignedRoute(
-            'temp-media', now()->addHours(1), ['profileId' => $media->profile_id, 'mediaId' => $media->id]
+            'temp-media', now()->addHours(1), ['profileId' => $media->profile_id, 'mediaId' => $media->id, 'timestamp' => time()]
         );
         ImageOptimize::dispatch($media);
 		return $res;
