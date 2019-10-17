@@ -51,7 +51,7 @@
 			</b-carousel-slide>
 		</b-carousel> -->
 		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0">
-			<slide v-for="(media, index) in status.media_attachments" :key="'px-carousel-'+media.id + '-' + index" class="w-100 h-100 d-block mx-auto text-center" style="background: #000; display: flex;align-items: center;min-height: 600px;">
+			<slide v-for="(media, index) in status.media_attachments" :key="'px-carousel-'+media.id + '-' + index" class="w-100 h-100 d-block mx-auto text-center" style="background: #000; display: flex;align-items: center;">
 
 				<video v-if="media.type == 'Video'" class="embed-responsive-item" preload="none" controls loop :title="media.description" width="100%" height="100%" :poster="media.preview_url">
 					<source :src="media.url" :type="media.mime">

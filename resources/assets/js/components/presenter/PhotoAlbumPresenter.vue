@@ -22,8 +22,8 @@
 				</span>
 			</b-carousel> -->
 			<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb">
-				<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="w-100 h-100 d-block mx-auto text-center" style="min-height: 600px;" :title="img.description">
-					<img :class="img.filter_class + ' img-fluid'" style="min-height: 600px;" :src="img.url" :alt="img.description">
+				<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="w-100 h-100 d-block mx-auto text-center" :title="img.description">
+					<img :class="img.filter_class + ' img-fluid'" :src="img.url" :alt="img.description">
 				</slide>
 			</carousel>
 		</details>
@@ -46,8 +46,8 @@
 			</span>
 		</b-carousel> -->
 		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0">
-			<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="" style="background: #000; display: flex;align-items: center;min-height: 600px;" :title="img.description">
-				<img :class="img.filter_class + ' img-fluid w-100 p-0'" style="min-height: 600px;" :src="img.url" :alt="img.description">
+			<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="" style="background: #000; display: flex;align-items: center;" :title="img.description">
+				<img :class="img.filter_class + ' img-fluid w-100 p-0'" style="" :src="img.url" :alt="img.description">
 			</slide>
 		</carousel>
 	</div>
