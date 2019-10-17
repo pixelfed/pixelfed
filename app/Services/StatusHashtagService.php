@@ -57,7 +57,7 @@ class StatusHashtagService {
 	public static function count($id)
 	{
 		$key = 'pf:services:status-hashtag:count:' . $id;
-		$ttl = now()->addHours(6);
+		$ttl = now()->addMinutes(5);
 		return Cache::remember($key, $ttl, function() use($id) {
 			return StatusHashtag::whereHashtagId($id)->count();
 		});
