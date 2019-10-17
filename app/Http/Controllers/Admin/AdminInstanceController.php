@@ -44,7 +44,7 @@ trait AdminInstanceController
 	{
 		Profile::whereNotNull('domain')
 			->latest()
-			->groupBy('domain')
+			->groupBy(['domain', 'id'])
 			->where('created_at', '>', now()->subMonths(2))
 			->chunk(100, function($domains) {
 				foreach($domains as $domain) {
