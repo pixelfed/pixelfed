@@ -310,15 +310,8 @@ class BaseApiController extends Controller
     {
         $user = $request->user();
         abort_if(!$user, 403);
-        $id = $user->id;
-
-        $res = Cache::remember('user:account:id:'.$id, now()->addHours(6), function() use($id) {
-            $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
-            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-            return $res;
-        });
-
+        $resource = new Fractal\Resource\Item($user->profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
     }
 
