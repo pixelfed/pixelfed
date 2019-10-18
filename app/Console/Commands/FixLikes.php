@@ -40,7 +40,7 @@ class FixLikes extends Command
     public function handle()
     {
         $chunk = 100;
-        $limit = Like::groupBy('status_id')->get()->count();
+        $limit = Like::select('status_id')->groupBy('status_id')->get()->count();
         
         if($limit > 1000) {
             if($this->confirm('We have found more than 1000 records to update, this may take a few moments. Are you sure you want to continue?') == false) {
@@ -56,7 +56,7 @@ class FixLikes extends Command
         $bar->start();
 
         Like::selectRaw('count(id) as count, status_id')
-            ->groupBy('status_id')
+            ->groupBy(['status_id','id'])
             ->chunk($chunk, function($likes) use($bar) {
                 foreach($likes as $like) {
                     $s = Status::find($like['status_id']);
