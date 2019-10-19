@@ -33,9 +33,9 @@
       <li class="nav-item pl-3 {{request()->is('settings/security*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.security')}}">Security</a>
       </li>
-      <li class="nav-item pl-3 {{request()->is('settings/sponsor*')?'active':''}}">
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/sponsor*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.sponsor')}}">Sponsor</a>
-      </li>
+      </li> --}}
       <li class="nav-item">
         <hr>
       </li>
