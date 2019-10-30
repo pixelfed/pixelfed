@@ -17,9 +17,12 @@
 @push('meta')
 
     <meta property="og:description" content="{{ $status->caption }}">
-    <meta property="og:image" content="{{$status->mediaUrl()}}">
+    <meta property="og:image" content="{{$status->thumb()}}">
     <link href='{{$status->url()}}' rel='alternate' type='application/activity+json'>
     <meta name="twitter:card" content="summary_large_image">
+    @if($status->viewType() == "video" || $status->viewType() == "video:album")
+        <meta property="og:video" content="{{$status->mediaUrl()}}">
+    @endif
 @endpush
 
 @push('scripts')
