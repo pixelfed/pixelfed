@@ -15,7 +15,7 @@ return [
 	'timelines' => 'Timelines',
 	'embed'	=> 'Einbetten',
 
-	'communityGuidelines' => 'Community-Richtlinien',
+	'communityGuidelines' => 'Gemeinschaftsrichtlinien',
 	'whatIsTheFediverse' => 'Was ist das Fediversum?',
 	'controllingVisibility' => 'Sichtbarkeit steuern',
 	'blockingAccounts' => 'Kontosperrung',
