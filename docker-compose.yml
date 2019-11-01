@@ -72,6 +72,8 @@ services:
   redis:
     image: redis:5-alpine
     restart: unless-stopped
+    env_file:
+      - ./.env
     ports:
       - "6379:6379"
     volumes:
