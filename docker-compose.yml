@@ -60,6 +60,7 @@ services:
     restart: unless-stopped
     networks:
       - internal
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=pixelfed
       - MYSQL_USER=${DB_USERNAME}
