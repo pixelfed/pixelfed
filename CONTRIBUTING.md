@@ -10,6 +10,11 @@ Remember, bug reports are created in the hope that others with the same problem 
 ## Core Development Discussion
 Informal discussion regarding bugs, new features, and implementation of existing features takes place in the ```#pixelfed-dev``` channel on the Freenode IRC network.
 
+## Branches
+If you want to contribute to this repository, please file your pull request against the `staging` branch. 
+
+Pixelfed Beta currently uses the `dev` branch for deployable code. When v1.0 is released, the stable branch will be changed to `master`, with `dev` branch being used for development and testing.
+
 ## Compiled Assets
 If you are submitting a change that will affect a compiled file, such as most of the files in ```resources/assets/sass``` or ```resources/assets/js``` of the pixelfed/pixelfed repository, do not commit the compiled files. Due to their large size, they cannot realistically be reviewed by a maintainer. This could be exploited as a way to inject malicious code into Pixelfed. In order to defensively prevent this, all compiled files will be generated and committed by Pixelfed maintainers.
 
