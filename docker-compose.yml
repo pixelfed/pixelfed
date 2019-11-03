@@ -72,8 +72,6 @@ services:
   redis:
     image: redis:5-alpine
     restart: unless-stopped
-    env_file:
-      - ./.env
     volumes:
       - "redis-data:/data"
     networks:
