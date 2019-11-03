@@ -39,5 +39,11 @@ return [
 			'body' => env('PAGE_503_BODY', 'Our service is in maintenance mode, please try again later.')
 		]
 	],
-
+	'username' => [
+		'remote' => [
+			'formats' => ['@', 'from', 'custom'],
+			'format' => in_array(env('USERNAME_REMOTE_FORMAT', '@'), ['@','from','custom']) ? env('USERNAME_REMOTE_FORMAT', '@') : '@',
+			'custom' => env('USERNAME_REMOTE_CUSTOM_TEXT', null)
+		]
+	],
 ];
