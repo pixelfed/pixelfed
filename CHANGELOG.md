@@ -40,6 +40,7 @@
 - Updated Settings, hide sponsors feature until re-implemented in Profile UI ([c4dd8449](https://github.com/pixelfed/pixelfed/commit/c4dd8449))
 - Updated Status view, added ```video``` open graph tag support ([#1799](https://github.com/pixelfed/pixelfed/pull/1799))
 - Updated AccountTransformer, added ```local``` attribute ([d2a90f11](https://github.com/pixelfed/pixelfed/commit/d2a90f11))
+- Updated Laravel framework from v5.8 to v6.x ([3aff6de33](https://github.com/pixelfed/pixelfed/commit/3aff6de33))
 
 ## Deprecated
     
