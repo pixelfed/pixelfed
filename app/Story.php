@@ -4,9 +4,26 @@ namespace App;
 
 use Auth;
 use Illuminate\Database\Eloquent\Model;
+use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 class Story extends Model
 {
+    use HasSnowflakePrimary;
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['published_at', 'expires_at'];
+
 	protected $visible = ['id'];
 
 	public function profile()
