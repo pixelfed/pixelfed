@@ -14,7 +14,10 @@ services:
 
   app:
     # Comment to use dockerhub image
-    build: .
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
+      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
     ## If you have a traefik running, uncomment this to expose Pixelfed
@@ -36,7 +39,10 @@ services:
 
   worker:  # Comment this whole block if HORIZON_EMBED is true.
     # Comment to use dockerhub image
-    build: .
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
+      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
     env_file:
@@ -54,6 +60,7 @@ services:
     restart: unless-stopped
     networks:
       - internal
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=pixelfed
       - MYSQL_USER=${DB_USERNAME}

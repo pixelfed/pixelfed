@@ -2,6 +2,7 @@
 <div class="container" style="">
 	<div class="row">
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
+			<div class="d-none" data-id="StoryTimelineComponent"></div>
 			<div style="padding-top:10px;">
 				<div v-if="loading" class="text-center">
 					<div class="spinner-border" role="status">
@@ -69,11 +70,11 @@
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
-							<img v-bind:src="status.account.avatar" width="32px" height="32px" style="border-radius: 32px;">
+							<img v-bind:src="status.account.avatar" width="32px" height="32px" class="cursor-pointer" style="border-radius: 32px;" @click="profileUrl(status)">
 							<div class="pl-2">
 								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
-								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="status.account.url">
-									{{status.account.username}}
+								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
+									Loading...
 								</a>
 								<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
 									<i class="fas fa-certificate text-danger fa-stack-1x"></i>
@@ -158,7 +159,7 @@
 								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'fas fa-retweet pr-3 m-0 text-primary cursor-pointer' : 'fas fa-retweet pr-3 m-0 text-lighter share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
-								<span class="float-right">
+								<span v-if="status.pf_type == 'photo'" class="float-right">
 									<h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3>
 								</span>
 							</div>
@@ -169,15 +170,15 @@
 							<div class="caption">
 								<p class="mb-2 read-more" style="overflow: hidden;">
 									<span class="username font-weight-bold">
-										<bdi><a class="text-dark" :href="status.account.url">{{status.account.username}}</a></bdi>
+										<bdi><a class="text-dark" :href="profileUrl(status)">{{status.account.username}}</a></bdi>
 									</span>
-									<span v-html="status.content"></span>
+									<span class="status-content" v-html="status.content"></span>
 								</p>
 							</div>
 							<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
 								<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
 										<span>
-											<a class="text-dark font-weight-bold mr-1" :href="reply.account.url">{{reply.account.username}}</a>
+											<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)">{{reply.account.username}}</a>
 											<span v-html="reply.content"></span>
 										</span>
 										<span class="mb-0" style="min-width:38px">
@@ -191,7 +192,7 @@
 							</div>
 							<div class="timestamp mt-2">
 								<p class="small text-uppercase mb-0">
-									<a :href="status.url" class="text-muted">
+									<a :href="statusUrl(status)" class="text-muted">
 										<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
 									</a>
 									<a v-if="modes.distractionFree" class="float-right" :href="status.url">
@@ -467,7 +468,6 @@
 				profile: {},
 				min_id: 0,
 				max_id: 0,
-				stories: {},
 				suggestions: {},
 				loading: true,
 				replies: [],
@@ -579,7 +579,7 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 5
+						limit: 3
 					}
 				}).then(res => {
 					let data = res.data;
@@ -596,6 +596,7 @@
 					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
+					// this.fetchStories();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -1159,14 +1160,14 @@
 					if(tags.length == 0) {
 						return;
 					}
-					let hashtag = tags[0];
+					let hashtag = tags[Math.floor(Math.random(), tags.length)];
 					this.hashtagPostsName = hashtag;
 					axios.get('/api/v2/discover/tag', {
 						params: {
 							hashtag: hashtag
 						}
 					}).then(res => {
-						if(res.data.tags.length) {
+						if(res.data.tags.length > 3) {
 							this.showHashtagPosts = true;
 							this.hashtagPosts = res.data.tags.splice(0,3);
 						}
@@ -1210,7 +1211,7 @@
 
 			ctxMenuGoToPost() {
 				let status = this.ctxMenuStatus;
-				window.location.href = status.url;
+				window.location.href = this.statusUrl(status);
 				this.closeCtxMenu();
 				return;
 			},
@@ -1302,8 +1303,57 @@
 
 			formatCount(count) {
 				return App.util.format.count(count);
-			}
+			},
 
+			statusUrl(status) {
+				return status.url;
+
+				// if(status.local == true) {
+				// 	return status.url;
+				// }
+
+				// return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				return status.account.url;
+				// if(status.local == true) {
+				// 	return status.account.url;
+				// }
+
+				// return '/i/web/profile/_/' + status.account.id;
+			},
+
+			statusCardUsernameFormat(status) {
+				if(status.account.local == true) {
+					return status.account.username;
+				}
+
+				let fmt = window.App.config.username.remote.format;
+				let txt = window.App.config.username.remote.custom;
+				let usr = status.account.username;
+				let dom = document.createElement('a');
+				dom.href = status.account.url;
+				dom = dom.hostname;
+
+				switch(fmt) {
+					case '@':
+						return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
+					break;
+
+					case 'from':
+						return usr + '<span class="text-lighter font-weight-bold"> <span class="font-weight-normal">from</span> ' + dom + '</span>';
+					break;
+
+					case 'custom':
+						return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
+					break;
+
+					default: 
+						return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
+					break;
+				}
+			},
 		}
 	}
 </script>

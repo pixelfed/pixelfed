@@ -566,3 +566,7 @@ details summary::-webkit-details-marker {
 .VueCarousel-dot--active:focus {
   outline: 0px !important;
 }
+
+.status-content > p:first-child {
+    display: inline;
+}

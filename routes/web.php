@@ -149,7 +149,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
-            Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
+            // Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
             Route::get('bookmarks', 'InternalApiController@bookmarks');
             Route::get('collection/items/{id}', 'CollectionController@getItems');
             Route::post('collection/item', 'CollectionController@storeId');
@@ -318,8 +318,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('invites/create', 'UserInviteController@create')->name('settings.invites.create');
         Route::post('invites/create', 'UserInviteController@store');
         Route::get('invites', 'UserInviteController@show')->name('settings.invites');
-        Route::get('sponsor', 'SettingsController@sponsor')->name('settings.sponsor');
-        Route::post('sponsor', 'SettingsController@sponsorStore');
+        // Route::get('sponsor', 'SettingsController@sponsor')->name('settings.sponsor');
+        // Route::post('sponsor', 'SettingsController@sponsorStore');
     });
 
     Route::group(['prefix' => 'site'], function () {

@@ -15,7 +15,14 @@
 					</p>
 					<p v-if="owner == true" class="pt-3 text-center">
 						<span>
-							<button class="btn btn-outline-light btn-sm" @click.prevent="addToCollection">Add Photo</button>
+							<button class="btn btn-outline-light btn-sm" @click.prevent="addToCollection">
+								<span v-if="loadingPostList == false">Add Photo</span>
+								<span v-else class="px-4">
+									<div class="spinner-border spinner-border-sm" role="status">
+									  <span class="sr-only">Loading...</span>
+									</div>
+								</span>
+							</button>
 							 &nbsp; &nbsp; 
 							<button class="btn btn-outline-light btn-sm" @click.prevent="editCollection">Edit</button>
 							 &nbsp; &nbsp; 
@@ -62,7 +69,20 @@
 			<button type="button" class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right" @click.prevent="updateCollection">Save</button>
 		</form>
 	</b-modal>
-	<b-modal ref="addPhotoModal" id="add-photo-modal" hide-footer centered title="Add Photo" body-class="">
+	<b-modal ref="addPhotoModal" id="add-photo-modal" hide-footer centered title="Add Photo" body-class="m-3">
+		<div class="form-group">
+			<label for="title" class="font-weight-bold text-muted">Add Recent Post</label>
+			<div class="row m-1" v-if="postsList.length > 0">
+				<div v-for="(p, index) in postsList" :key="'postList-'+index" class="col-4 p-1 cursor-pointer">
+					<div class="square">
+						<div class="square-content" v-bind:style="'background-image: url(' + p.media_attachments[0].url + ');'"></div>
+					</div>
+				</div>
+				<div class="col-12">
+					<hr>
+				</div>
+			</div>
+		</div>
 		<form>
 			<div class="form-group">
 				<label for="title" class="font-weight-bold text-muted">Add Post by URL</label>
@@ -105,12 +125,15 @@ export default {
 		return {
 			loaded: false,
 			posts: [],
+			ids: [],
 			currentUser: false,
 			owner: false,
 			title: this.collectionTitle,
 			description: this.collectionDescription,
 			visibility: this.collectionVisibility,
-			photoId: ''
+			photoId: '',
+			postsList: [],
+			loadingPostList: false
 		}
 	},
 
@@ -135,6 +158,9 @@ export default {
 			axios.get('/api/local/collection/items/' + this.collectionId)
 			.then(res => {
 				this.posts = res.data;
+				this.ids = this.posts.map(p => {
+					return p.id;
+				});
 				this.loaded = true;
 			});
 		},
@@ -149,11 +175,34 @@ export default {
 		},
 
 		addToCollection() {
-			this.$refs.addPhotoModal.show();
+			let self = this;
+			this.loadingPostList = true;
+			if(this.postsList.length == 0) {
+				axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/statuses', {
+					params: {
+						min_id: 1,
+						limit: 13
+					}
+				})
+				.then(res => {
+					self.postsList = res.data.filter(l => {
+						return self.ids.indexOf(l.id) == -1;
+					}).splice(0,9);
+					self.loadingPostList = false;
+					self.$refs.addPhotoModal.show();
+				}).catch(err => {
+					self.loadingPostList = false;
+					swal('An Error Occured', 'We cannot process your request at this time, please try again later.', 'error');
+				})
+			} else {
+				this.$refs.addPhotoModal.show();
+				this.loadingPostList = false;
+			}
 		},
 
 		pushId() {
 			let max = 18;
+			let self = this;
 			if(this.posts.length >= max) {
 				swal('Error', 'You can only add ' + max + ' posts per collection', 'error');
 				return;
@@ -174,7 +223,7 @@ export default {
 				collection_id: this.collectionId,
 				post_id: split[5]
 			}).then(res => {
-				location.reload();
+				self.ids.push(...split[5]);
 			}).catch(err => {
 				swal('Invalid URL', 'The post you entered was invalid', 'error');
 				this.photoId = '';

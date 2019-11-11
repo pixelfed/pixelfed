@@ -3,10 +3,29 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Storage;
 
 class StoryItem extends Model
 {
+	use HasSnowflakePrimary;
+
+	/**
+	* Indicates if the IDs are auto-incrementing.
+	*
+	* @var bool
+	*/
+	public $incrementing = false;
+
+	/**
+	* The attributes that should be mutated to dates.
+	*
+	* @var array
+	*/
+	protected $dates = ['expires_at'];
+
+	protected $visible = ['id'];
+
 	public function story()
 	{
 		return $this->belongsTo(Story::class);
@@ -14,6 +33,6 @@ class StoryItem extends Model
 
 	public function url()
 	{
-		return Storage::url($this->media_path);
+		return url(Storage::url($this->media_path));
 	}
 }

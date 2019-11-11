@@ -36,6 +36,14 @@ class Config {
 				'site' => [
 					'domain' => config('pixelfed.domain.app'),
 					'url'    => config('app.url')
+				],
+
+				'username' => [
+					'remote' => [
+						'formats' => config('instance.username.remote.formats'),
+						'format' => config('instance.username.remote.format'),
+						'custom' => config('instance.username.remote.custom')
+					]
 				]
 			];
 		});

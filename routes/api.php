@@ -60,7 +60,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('statuses/{id}/unreblog', 'Api\ApiV1Controller@statusUnshare')->middleware($middleware);
 		Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware($middleware);
 		Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware($middleware);
-		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware);
+		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware)->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
 
 
 		Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
