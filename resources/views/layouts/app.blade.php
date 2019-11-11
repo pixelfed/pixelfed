@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@auth
 <html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
@@ -8,7 +9,7 @@
 
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+    <title>{{ $title ?? config('app.name', 'Pixelfed') }}</title>
     <link rel="manifest" href="/manifest.json">
 
     <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
@@ -36,11 +37,10 @@
     <script type="text/javascript">window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
     
 </head>
-<body class="{{Auth::check()?'loggedIn':''}}">
+<body class="loggedIn">
     @include('layouts.partial.nav')
     <main id="content">
         @yield('content')
-        @if(Auth::check())
         <div class="modal pr-0" tabindex="-1" role="dialog" id="composeModal">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -48,7 +48,6 @@
             </div>
           </div>
         </div>
-        @endif
     </main>
     @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>
@@ -56,7 +55,6 @@
     <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
     <script type="text/javascript" src="{{ mix('js/components.js') }}"></script>
     @stack('scripts')
-    @if(Auth::check())
     <div class="d-block d-sm-none mt-5"></div>
     <div class="d-block d-sm-none fixed-bottom">
         <div class="card card-body rounded-0 py-2 d-flex align-items-middle box-shadow" style="border-top:1px solid #F1F5F8">
@@ -79,6 +77,48 @@
             </ul>
         </div>
     </div>
-    @endif
 </body>
 </html>
+@endauth
+
+@guest
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <title>{{ $title ?? config('app.name', 'Pixelfed') }}</title>
+    <link rel="manifest" href="/manifest.json">
+
+    <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
+    <meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{request()->url()}}">
+    @stack('meta')
+
+    <meta name="medium" content="image">
+    <meta name="theme-color" content="#10c5f8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
+    <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
+    <link rel="canonical" href="{{request()->url()}}">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
+    
+    @stack('styles')
+</head>
+<body>
+    @include('layouts.partial.nav')
+    <main id="content">
+        @yield('content')
+    </main>
+    @include('layouts.partial.footer')
+    <script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/vendor.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/components.js') }}"></script>
+    @stack('scripts')
+</body>
+</html>
+@endguest
