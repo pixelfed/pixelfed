@@ -41,7 +41,8 @@ jobs:
           paths:
             - vendor
 
-      - run: cp .env.example .env
+      - run: cp .env.testing .env
+      - run: php artisan route:clear
       - run: php artisan storage:link
       - run: php artisan key:generate
       - run: php artisan config:clear
