@@ -48,7 +48,7 @@ class Status extends Model
 
     const MAX_HASHTAGS = 30;
 
-    const MAX_LINKS = 2;
+    const MAX_LINKS = 0;
 
     public function profile()
     {
