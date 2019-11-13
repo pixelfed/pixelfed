@@ -342,7 +342,7 @@
             </div>
             <div class="col-12 col-md-4 pt-4 pl-md-3">
                 <p class="lead font-weight-bold">Comments</p>
-                <div v-if="user" class="moment-comments">
+                <div v-if="user && user.length" class="moment-comments">
                   <div class="form-group">
                     <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
                     <p style="padding-top:4px;">
