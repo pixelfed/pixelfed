@@ -30,10 +30,6 @@
 					<li>Click on the <span class="font-weight-bold">Create Post</span> button.</li>
 				</ol>
 			</div>
-			<div class="py-3">
-				To create a post using a mobile app:
-				<p class="mb-0 pl-4 font-weight-bold text-muted">We do not support any mobile apps yet.</p>
-			</div>
 		</div>
 	</p>
 	<p>	
