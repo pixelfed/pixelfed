@@ -48,6 +48,9 @@ class FixUsernames extends Command
 
         $users = User::chunk(100, function($users) use($affected, $restricted) {
             foreach($users as $user) {
+                if($user->is_admin || $user->status == 'deleted') {
+                    continue;
+                }
                 if(in_array($user->username, $restricted)) {
                     $affected->push($user);
                 }
