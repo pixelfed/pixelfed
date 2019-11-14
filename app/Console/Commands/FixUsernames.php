@@ -51,7 +51,7 @@ class FixUsernames extends Command
                 if(in_array($user->username, $restricted)) {
                     $affected->push($user);
                 }
-                $val = str_replace(['-', '_'], '', $user->username);
+                $val = str_replace(['-', '_', '.'], '', $user->username);
                 if(!ctype_alnum($val)) {
                     $this->info('Found invalid username: ' . $user->username);
                     $affected->push($user);
