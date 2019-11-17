@@ -53,7 +53,7 @@
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
         <hr>
-        <button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
+        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
       </div>
     </div>
   </form>
