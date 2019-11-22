@@ -23,6 +23,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
             'reblog'                    => null,
             'content'                   => $status->rendered ?? $status->caption,
+            'content_text'              => $status->caption,
             'created_at'                => $status->created_at->format('c'),
             'emojis'                    => [],
             'reblogs_count'             => $status->reblogs_count ?? 0,
@@ -62,7 +63,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
     public function includeMediaAttachments(Status $status)
     {
         return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addDays(14), function() use($status) {
-            if(in_array($status->type, ['photo', 'video', 'photo:album', 'loop', 'photo:video:album'])) {
+            if(in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
                 $media = $status->media()->orderBy('order')->get();
                 return $this->collection($media, new MediaTransformer());
             }

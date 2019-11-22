@@ -28,7 +28,7 @@
     <hr>
     <div class="form-group row">
       <div class="col-12 text-right">
-        <button type="submit" class="btn btn-primary font-weight-bold float-right">Submit</button>
+        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
       </div>
     </div>
   </form>
