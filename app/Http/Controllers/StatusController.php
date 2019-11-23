@@ -51,6 +51,12 @@ class StatusController extends Controller
             }
         }
 
+        if($status->type == 'archived') {
+            if(Auth::user()->profile_id !== $status->profile_id) {
+                abort(404);
+            }
+        }
+
         if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $status);
         }
@@ -72,7 +78,7 @@ class StatusController extends Controller
     {
         abort(404);
         $profile = Profile::whereNull('status')->whereUsername($username)->first();
-        $status = Status::whereScope('private')->find($id);
+        $status = Status::whereProfileId($profile->id)->whereScope('public')->find($id);
         if(!$profile || !$status) {
             return view('status.embed-removed');
         }
