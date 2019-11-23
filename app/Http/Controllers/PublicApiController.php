@@ -264,7 +264,7 @@ class PublicApiController extends Controller
             } else {
                 $res = PublicTimelineService::get(0,4);
             }
-            return response($res);
+            return $res;
         } 
 
         if($min || $max) {
@@ -331,7 +331,6 @@ class PublicApiController extends Controller
 
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
-        // $res = $timeline;
         return response()->json($res);
 
     }
