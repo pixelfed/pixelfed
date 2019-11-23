@@ -10,10 +10,10 @@ use App\Util\Localization\Localization;
 
 class SiteController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
         if (Auth::check()) {
-            return $this->homeTimeline();
+            return $this->homeTimeline($request);
         } else {
             return $this->homeGuest();
         }
@@ -24,9 +24,13 @@ class SiteController extends Controller
         return view('site.index');
     }
 
-    public function homeTimeline()
+    public function homeTimeline(Request $request)
     {
-        return view('timeline.home');
+        $this->validate($request, [
+            'layout' => 'nullable|string|in:grid,feed'
+        ]);
+        $layout = $request->input('layout', 'feed');
+        return view('timeline.home', compact('layout'));
     }
 
     public function changeLocale(Request $request, $locale)
