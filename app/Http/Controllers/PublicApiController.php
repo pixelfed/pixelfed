@@ -256,16 +256,16 @@ class PublicApiController extends Controller
         // }
 
         $filtered = Auth::check() ? array_merge($private, UserFilterService::filters(Auth::user()->profile_id)) : [];
-        if($max == 0) {
-            $res = PublicTimelineService::count();
-            if($res == 0) {
-                PublicTimelineService::warmCache();
-                $res = PublicTimelineService::get(0,4);
-            } else {
-                $res = PublicTimelineService::get(0,4);
-            }
-            return response()->json($res);
-        } 
+        // if($max == 0) {
+        //     $res = PublicTimelineService::count();
+        //     if($res == 0) {
+        //         PublicTimelineService::warmCache();
+        //         $res = PublicTimelineService::get(0,4);
+        //     } else {
+        //         $res = PublicTimelineService::get(0,4);
+        //     }
+        //     return response()->json($res);
+        // } 
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
