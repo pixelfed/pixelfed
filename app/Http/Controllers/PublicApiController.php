@@ -264,7 +264,7 @@ class PublicApiController extends Controller
             } else {
                 $res = PublicTimelineService::get(0,4);
             }
-            return $res;
+            return response()->json($res);
         } 
 
         if($min || $max) {
