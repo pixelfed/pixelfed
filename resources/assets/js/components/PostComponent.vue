@@ -234,7 +234,7 @@
               </div>
               <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
                 <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
-                <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply"/>
+                <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply" :disabled="replyText.length == 0" />
               </form>
             </div>
           </div>
@@ -351,7 +351,7 @@
                       </span>
                       <button 
                       :class="[replyText.length > 1 ? 'btn btn-sm font-weight-bold float-right btn-outline-dark ':'btn btn-sm font-weight-bold float-right btn-outline-lighter']" 
-                      :disabled="replyText.length < 2" 
+                      :disabled="replyText.length == 0 ? 'disabled':''" 
                       @click="postReply"
                       >Post</button>
                     </p>
@@ -546,6 +546,10 @@
   .momentui .carousel.slide,
   .momentui .carousel-item {
     background: #000 !important;
+  }
+  .reply-btn[disabled] {
+    opacity: .3;
+    color: #3897f0;
   }
 </style>
 
