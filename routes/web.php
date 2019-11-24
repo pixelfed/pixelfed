@@ -117,6 +117,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('config', 'ApiController@siteConfiguration');
                 Route::get('discover', 'InternalApiController@discover');
                 Route::get('discover/posts', 'InternalApiController@discoverPosts');
+                Route::get('discover/profiles', 'DiscoverController@profilesDirectoryApi');
                 Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
                 Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
                 Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
