@@ -42,7 +42,7 @@
         {{$item->profile->username}}
       </a>
     </div>
-    <a href="{{$status->url()}}">
+    <a href="{{$status->url()}}" target="_blank">
     @php($status = $item)
     @switch($status->viewType())
       @case('photo')
@@ -53,7 +53,7 @@
             <p class="mb-0 lead font-weight-bold">CW / NSFW / Hidden Media</p>
             <p class="font-weight-light">(click to show)</p>
           </summary>
-          <a class="max-hide-overflow {{$status->firstMedia()->filter_class}}" href="{{$status->url()}}">
+          <a class="max-hide-overflow {{$status->firstMedia()->filter_class}}" href="{{$status->url()}}" target="_blank">
             <img class="card-img-top" src="{{$status->mediaUrl()}}">
           </a>
         </details>
