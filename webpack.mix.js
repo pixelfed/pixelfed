@@ -29,12 +29,14 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/lib/ace/ace.js', 'public/js')
 .js('resources/assets/js/lib/ace/mode-dot.js', 'public/js')
 .js('resources/assets/js/lib/ace/theme-monokai.js', 'public/js')
-// .js('resources/assets/js/embed.js', 'public')
-// .js('resources/assets/js/direct.js', 'public/js')
 .js('resources/assets/js/hashtag.js', 'public/js')
 .js('resources/assets/js/collectioncompose.js', 'public/js')
 .js('resources/assets/js/collections.js', 'public/js')
-//.js('resources/assets/js/admin.js', 'public/js')
+.js('resources/assets/js/profile-directory.js', 'public/js')
+// .js('resources/assets/js/embed.js', 'public')
+// .js('resources/assets/js/direct.js', 'public/js')
+// .js('resources/assets/js/admin.js', 'public/js')
+// .js('resources/assets/js/micro.js', 'public/js')
 
 .extract([
 	'lodash',
