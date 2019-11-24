@@ -71,6 +71,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::redirect('discover/personal', '/discover');
     Route::get('discover', 'DiscoverController@home')->name('discover');
     Route::get('discover/loops', 'DiscoverController@showLoops');
+    Route::get('discover/profiles', 'DiscoverController@profilesDirectory')->name('discover.profiles');
+    
     
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
