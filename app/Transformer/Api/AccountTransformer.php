@@ -33,6 +33,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'website' => $profile->website,
 			'local' => (bool) $local,
 			'is_admin' => (bool) $is_admin,
+			'created_at' => $profile->created_at->timestamp
 		];
 	}
 
