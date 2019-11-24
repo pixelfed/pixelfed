@@ -78,7 +78,8 @@ class StatusController extends Controller
     {
         $profile = Profile::whereNull(['domain','status'])->whereUsername($username)->first();
         if(!$profile) {
-            return view('status.embed-removed');
+            $content = view('status.embed-removed');
+            return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
         $status = Status::whereProfileId($profile->id)
             ->whereNull('uri')
@@ -87,12 +88,14 @@ class StatusController extends Controller
             ->whereIn('type', ['photo', 'video'])
             ->find($id);
         if(!$status) {
-            return view('status.embed-removed');
+            $content = view('status.embed-removed');
+            return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
         $showLikes = $request->filled('likes') && $request->likes == true;
         $showCaption = $request->filled('caption') && $request->caption !== false;
         $layout = $request->filled('layout') && $request->layout == 'compact' ? 'compact' : 'full';
-        return view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
+        $content = view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
+        return response($content)->header('X-Frame-Options', 'ALLOWALL');
     }
 
     public function showObject(Request $request, $username, int $id)
