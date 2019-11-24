@@ -11,31 +11,31 @@
 
 	<div v-if="!loading && !networkError" class="mt-5 row">
 
-		<div class="col-12 col-md-3 mb-4">
+		<div class="col-12 col-md-2 mb-4">
 			<div v-if="results.hashtags || results.profiles || results.statuses">
 				<p class="font-weight-bold">Filters</p>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter1" v-model="filters.hashtags">
-					<label class="custom-control-label text-muted font-weight-light" for="filter1">Show Hashtags</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter1">Hashtags</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter2" v-model="filters.profiles">
-					<label class="custom-control-label text-muted font-weight-light" for="filter2">Show Profiles</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter2">Profiles</label>
 				</div>
 				<div class="custom-control custom-checkbox">
 					<input type="checkbox" class="custom-control-input" id="filter3" v-model="filters.statuses">
-					<label class="custom-control-label text-muted font-weight-light" for="filter3">Show Statuses</label>
+					<label class="custom-control-label text-muted font-weight-light" for="filter3">Statuses</label>
 				</div>
 			</div>
 		</div>
-		<div class="col-12 col-md-9">
+		<div class="col-12 col-md-10">
 			<p class="h5 font-weight-bold">Showing results for <i>{{query}}</i></p>
 			<hr>
 
 			<div v-if="filters.hashtags && results.hashtags" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Hashtags</p>
 				<a v-for="(hashtag, index) in results.hashtags" class="col-12 col-md-3 mb-3" style="text-decoration: none;" :href="hashtag.url">
-					<div class="card card-body text-center">
+					<div class="card card-body text-center shadow-none border">
 						<p class="lead mb-0 text-truncate text-dark" data-toggle="tooltip" :title="hashtag.value">
 							#{{hashtag.value}}
 						</p>
@@ -49,7 +49,7 @@
 			<div v-if="filters.profiles && results.profiles" class="row mb-4">
 				<p class="col-12 font-weight-bold text-muted">Profiles</p>
 				<a v-for="(profile, index) in results.profiles" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="profile.url">
-					<div class="card card-body text-center">
+					<div class="card card-body text-center shadow-none border">
 						<p class="text-center">
 							<img :src="profile.entity.thumb" width="32px" height="32px" class="rounded-circle box-shadow">
 						</p>
