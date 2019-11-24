@@ -61,8 +61,6 @@
 
 <script type="text/javascript">
 	export default {
-		props: ['profileId'],
-
 		data() {
 			return {
 				loaded: false,
@@ -119,7 +117,6 @@
 				let statuses = profile.statuses_count;
 
 				let perDay = this.prettyCount(Math.floor(statuses / days));
-				console.log(perDay);
 				return perDay;
 			}
 		}
