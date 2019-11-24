@@ -95,7 +95,7 @@ class StatusController extends Controller
         $showCaption = $request->filled('caption') && $request->caption !== false;
         $layout = $request->filled('layout') && $request->layout == 'compact' ? 'compact' : 'full';
         $content = view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
-        return response($content)->withHeaders(['x-frame-options' => 'ALLOWALL']);
+        return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
 
     public function showObject(Request $request, $username, int $id)
