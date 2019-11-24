@@ -405,7 +405,7 @@
 		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
 		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
 		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
-		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.local == true" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
 		<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
 		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
 		<div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
