@@ -5,6 +5,7 @@
 ### Added
 - Added drafts API endpoint for Camera Roll ([bad2ecde](https://github.com/pixelfed/pixelfed/commit/bad2ecde))
 - Added AccountService ([885a1258](https://github.com/pixelfed/pixelfed/commit/885a1258))
+- Added post embeds ([1fecf717](https://github.com/pixelfed/pixelfed/commit/1fecf717))
 
 ### Fixed
 - Fixed like and share/reblog count on profiles ([86cb7d09](https://github.com/pixelfed/pixelfed/commit/86cb7d09))
