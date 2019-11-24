@@ -906,7 +906,9 @@ class ApiV1Controller extends Controller
                 'max_avatar_size' => config('pixelfed.max_avatar_size'),
                 'max_caption_length' => config('pixelfed.max_caption_length'),
                 'max_bio_length' => config('pixelfed.max_bio_length'),
-                'max_album_length' => config('pixelfed.max_album_length')
+                'max_album_length' => config('pixelfed.max_album_length'),
+                'mobile_apis' => config('pixelfed.oauth_enabled')
+
             ]
         ];
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);

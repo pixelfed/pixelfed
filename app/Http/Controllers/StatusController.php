@@ -51,6 +51,12 @@ class StatusController extends Controller
             }
         }
 
+        if($status->type == 'archived') {
+            if(Auth::user()->profile_id !== $status->profile_id) {
+                abort(404);
+            }
+        }
+
         if ($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $status);
         }
@@ -70,13 +76,29 @@ class StatusController extends Controller
 
     public function showEmbed(Request $request, $username, int $id)
     {
-        abort(404);
-        $profile = Profile::whereNull('status')->whereUsername($username)->first();
-        $status = Status::whereScope('private')->find($id);
-        if(!$profile || !$status) {
-            return view('status.embed-removed');
+        $profile = Profile::whereNull(['domain','status'])
+            ->whereIsPrivate(false)
+            ->whereUsername($username)
+            ->first();
+        if(!$profile) {
+            $content = view('status.embed-removed');
+            return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
-        return view('status.embed', compact('status'));
+        $status = Status::whereProfileId($profile->id)
+            ->whereNull('uri')
+            ->whereScope('public')
+            ->whereIsNsfw(false)
+            ->whereIn('type', ['photo', 'video'])
+            ->find($id);
+        if(!$status) {
+            $content = view('status.embed-removed');
+            return response($content)->header('X-Frame-Options', 'ALLOWALL');
+        }
+        $showLikes = $request->filled('likes') && $request->likes == true;
+        $showCaption = $request->filled('caption') && $request->caption !== false;
+        $layout = $request->filled('layout') && $request->layout == 'compact' ? 'compact' : 'full';
+        $content = view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
+        return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
 
     public function showObject(Request $request, $username, int $id)

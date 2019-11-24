@@ -71,6 +71,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::redirect('discover/personal', '/discover');
     Route::get('discover', 'DiscoverController@home')->name('discover');
     Route::get('discover/loops', 'DiscoverController@showLoops');
+    Route::get('discover/profiles', 'DiscoverController@profilesDirectory')->name('discover.profiles');
+    
     
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
@@ -117,6 +119,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('config', 'ApiController@siteConfiguration');
                 Route::get('discover', 'InternalApiController@discover');
                 Route::get('discover/posts', 'InternalApiController@discoverPosts');
+                Route::get('discover/profiles', 'DiscoverController@profilesDirectoryApi');
                 Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
                 Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
                 Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
@@ -373,6 +376,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
+    Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
     Route::get('p/{username}/{id}.json', 'StatusController@showObject');

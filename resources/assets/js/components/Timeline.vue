@@ -1,6 +1,6 @@
 <template>
 <div class="container" style="">
-	<div class="row">
+	<div v-if="layout === 'feed'" class="row">
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
 			<div class="d-none" data-id="StoryTimelineComponent"></div>
 			<div style="padding-top:10px;">
@@ -211,13 +211,13 @@
 						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white sticky-md-bottom p-0">
 							<form class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="status.id" data-truncate="false">
 								<textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
-								<input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="commentSubmit(status, $event)"/>
+								<input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0" />
 							</form>
 						</div>
 					</div>
 				</div>
 				<div v-if="!loading && feed.length">
-					<div class="card shadow-none border">
+					<div class="card shadow-none">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
 							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
@@ -227,7 +227,7 @@
 					</div>
 				</div>
 				<div v-if="!loading && scope == 'home' && feed.length == 0">
-					<div class="card">
+					<div class="card shadow-none border">
 						<div class="card-body text-center">
 							<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
 							<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
@@ -240,7 +240,7 @@
 		</div>
 
 		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
-			<div class="position-sticky" style="top:68px;">
+			<div class="position-sticky" style="top:78px;">
 				<div class="mb-4">
 					<div class="">
 						<div class="">
@@ -327,11 +327,11 @@
 						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
 							<a href="/site/about" class="text-dark pr-2">About Us</a>
 							<a href="/site/help" class="text-dark pr-2">Help</a>
-							<a href="/site/open-source" class="text-dark pr-2">Open Source</a>
 							<a href="/site/language" class="text-dark pr-2">Language</a>
-							<a href="/site/terms" class="text-dark pr-2">Terms</a>
-							<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
+							<a href="/discover/profiles" class="text-dark pr-2">Profiles</a>
 							<a href="/discover/places" class="text-dark pr-2">Places</a>
+							<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
+							<a href="/site/terms" class="text-dark pr-2">Terms</a>
 						</p>
 						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
 							<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by Pixelfed</a>
@@ -341,40 +341,91 @@
 			</div>
 		</div>
 	</div>
- <b-modal ref="ctxModal"
-    id="ctx-modal"
-    hide-header
-    hide-footer
-    centered
-    rounded
-    size="sm"
-    body-class="list-group-flush p-0 rounded">
-    <div class="list-group text-center">
-      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report inappropriate</div>
-      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-      <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
-      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
-      <!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
-      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
-      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
-      <div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
-	  <div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer" @click="deletePost(ctxMenuStatus)">Delete</div>
-      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
-    </div>
- </b-modal>
- <b-modal ref="ctxModModal"
-    id="ctx-mod-modal"
-    hide-header
-    hide-footer
-    centered
-    rounded
-    size="sm"
-    body-class="list-group-flush p-0 rounded">
-    <div class="list-group text-center">
-      <div class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'unlist')">Unlist from Timelines</div>
-      <div class="list-group-item rounded cursor-pointer" @click="">Add Content Warning</div>
-      <div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
-    </div>
+	<div v-else class="row pt-2">
+		<div class="col-12">
+			<div v-if="loading" class="text-center">
+				<div class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div v-else class="row">
+				<div class="col-12 col-md-4 p-1 p-md-3 mb-3" v-for="(s, index) in feed" :key="`${index}-${s.id}`">
+					<div class="card info-overlay card-md-border-0 shadow-sm border border-light" :href="statusUrl(s)">
+						<div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
+							<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+							<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+							<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+							<div class="square-content" v-bind:style="previewBackground(s)">
+							</div>
+							<div class="info-overlay-text px-4">
+								<p class="text-white m-auto text-center">
+									{{trimCaption(s.content_text)}}
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="py-3 media align-items-center">
+						<img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px">
+						<div class="media-body">
+							<p class="mb-0 font-weight-bold small">{{s.account.username}}</p>
+							<p class="mb-0" style="line-height: 0.7;">
+								<a :href="statusUrl(s)" class="small text-lighter">
+									<timeago :datetime="s.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(s.created_at)" v-b-tooltip.hover.bottom></timeago>
+								</a>
+							</p>
+						</div>
+						<div class="ml-3">
+							<p class="mb-0">
+								<span class="font-weight-bold small">{{s.favourites_count == 1 ? '1 like' : s.favourites_count+' likes'}}</span>
+								<span class="px-2"><i v-bind:class="[s.favourited ? 'fas fa-heart text-danger cursor-pointer' : 'far fa-heart like-btn text-lighter cursor-pointer']" v-on:click="likeStatus(s, $event)"></i></span>
+								<span class="mr-2 cursor-pointer"><i class="fas fa-ellipsis-v" @click="ctxMenu(s)"></i></span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div v-if="!loading && feed.length">
+					<infinite-loading @infinite="infiniteTimeline" :distance="800">
+					<div slot="no-more" class="font-weight-bold">No more posts to load</div>
+					<div slot="no-results" class="font-weight-bold">No more posts to load</div>
+					</infinite-loading>
+			</div>
+		</div>
+	</div>
+<b-modal ref="ctxModal"
+	id="ctx-modal"
+	hide-header
+	hide-footer
+	centered
+	rounded
+	size="sm"
+	body-class="list-group-flush p-0 rounded">
+	<div class="list-group text-center">
+		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report inappropriate</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
+		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.local == true" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
+		<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
+		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+		<div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
+		<div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer" @click="deletePost(ctxMenuStatus)">Delete</div>
+		<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+	</div>
+</b-modal>
+<b-modal ref="ctxModModal"
+	id="ctx-mod-modal"
+	hide-header
+	hide-footer
+	centered
+	rounded
+	size="sm"
+	body-class="list-group-flush p-0 rounded">
+	<div class="list-group text-center">
+		<div class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'unlist')">Unlist from Timelines</div>
+		<div class="list-group-item rounded cursor-pointer" @click="">Add Content Warning</div>
+		<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
+	</div>
  </b-modal>
  <b-modal ref="ctxShareModal"
     id="ctx-share-modal"
@@ -402,10 +453,10 @@
     size="md"
     body-class="p-2 rounded">
 	<div>
-		<textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 17px; min-height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
+		<textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 12px; height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
 		<hr>
 		<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="#">API Terms of Use</a>.</p>
+		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
 	</div>
   </b-modal>
   <b-modal
@@ -454,11 +505,15 @@
 		height: 0px;
 		background: transparent;
 	}
+	.reply-btn[disabled] {
+		opacity: .3;
+		color: #3897f0;
+	}
 </style>
 
 <script type="text/javascript">
 	export default {
-		props: ['scope'],
+		props: ['scope', 'layout'],
 		data() {
 			return {
 				ids: [],
@@ -1177,10 +1232,7 @@
 
 			ctxMenu(status) {
 				this.ctxMenuStatus = status;
-				// let payload = '<div class="pixlfed-media" data-id="'+ this.ctxMenuStatus.id + '"></div><script ';
-				// payload += 'src="https://pixelfed.dev/js/embed.js" async><';
-				// payload += '/script>';
-				// this.ctxEmbedPayload = payload;
+				this.ctxEmbedPayload = window.App.util.embed.post(status.url);
 				if(status.account.id == this.profile.id) {
 					this.$refs.ctxModal.show();
 				} else {
@@ -1354,6 +1406,21 @@
 					break;
 				}
 			},
+
+			previewUrl(status) {
+				return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
+			},
+
+			previewBackground(status) {
+				let preview = this.previewUrl(status);
+				return 'background-image: url(' + preview + ');';
+			},
+
+			trimCaption(caption, len = 60) {
+				return _.truncate(caption, {
+					length: len
+				});
+			}
 		}
 	}
 </script>

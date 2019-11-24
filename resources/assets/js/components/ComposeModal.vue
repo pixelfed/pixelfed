@@ -98,6 +98,22 @@
 								</div>
 							</a>
 
+							<a class="d-none card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" :click="showAddToStoryCard">
+								<div class="card-body">
+									<div class="media">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
+											<i class="fas fa-history text-white fa-lg"></i>
+										</div>	
+										<div class="media-body text-left">
+											<p class="mb-0">
+												<span class="h5 mt-0 font-weight-bold text-primary">Add to Story</span> 
+											</p>
+											<p class="mb-0 text-muted">Add a photo or video to your story.</p>
+										</div>
+									</div>
+								</div>
+							</a>
+
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
 								<div class="card-body">
 									<div class="media">
@@ -132,9 +148,8 @@
 									</div>
 								</div>
 							</div>
-							<hr>
-							<p>
-								<a class="font-weight-bold" href="/site/help">Need Help?</a>
+							<p class="pt-3">
+								<a class="font-weight-bold" href="/site/help">Help</a>
 							</p>
 						</div>
 					</div>
@@ -755,10 +770,6 @@ export default {
 			this.pageTitle = '';
 			
 			switch(this.page) {
-				case 'addToStory':
-					this.page = 1;
-				break;
-
 				case 'cropPhoto':
 				case 'editMedia':
 					this.page = 2;
@@ -906,7 +917,8 @@ export default {
 			.then(res => {
 				this.cameraRollMedia = res.data;
 			});
-		}
+		},
+
 	}
 }
 </script>

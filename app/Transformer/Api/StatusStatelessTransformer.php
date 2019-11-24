@@ -48,6 +48,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
             'thread'                    => false,
             'replies'                   => [],
             'parent'                    => $status->parent() ? $this->transform($status->parent()) : [],
+            'local'                     => (bool) $status->local,
         ];
     }
 

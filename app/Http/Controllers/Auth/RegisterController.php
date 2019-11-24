@@ -63,7 +63,7 @@ class RegisterController extends Controller
             'unique:users',
             function ($attribute, $value, $fail) {
                 if (!ctype_alpha($value[0])) {
-                    return $fail('Username is invalid. Username must be alpha-numeric and start with a letter.');
+                    return $fail('Username is invalid. Must start with a letter or number.');
                 }
                 $val = str_replace(['_', '-', '.'], '', $value);
                 if(!ctype_alnum($val)) {
@@ -73,6 +73,7 @@ class RegisterController extends Controller
         ];
 
         $rules = [
+            'agecheck' => 'required|accepted',
             'name'     => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email'    => 'required|string|email|max:255|unique:users',

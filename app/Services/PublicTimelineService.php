@@ -52,7 +52,7 @@ class PublicTimelineService {
 			$ids = Status::whereNull('uri')
 				->whereNull('in_reply_to_id')
 				->whereNull('reblog_of_id')
-				->whereIn('type', ['photo', 'photo:album'])
+				->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 				->whereScope('public')
 				->latest()
 				->limit($limit)

@@ -6,10 +6,11 @@ use Auth;
 use App\Profile;
 use League\Fractal;
 
-class AccountTransformer extends Fractal\TransformerAbstract
+class AccountWithStatusesTransformer extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = [
         // 'relationship',
+        'posts',
     ];
 
 	public function transform(Profile $profile)
@@ -37,8 +38,19 @@ class AccountTransformer extends Fractal\TransformerAbstract
 		];
 	}
 
-	protected function includeRelationship(Profile $profile)
+	protected function includePosts(Profile $profile)
 	{
-		return $this->item($profile, new RelationshipTransformer());
+		$posts = $profile
+				->statuses()
+				->whereIsNsfw(false)
+				->whereType('photo')
+				->whereScope('public')
+				->whereNull('in_reply_to_id')
+				->whereNull('reblog_of_id')
+				->latest()
+				->take(5)
+				->get();
+
+		return $this->collection($posts, new StatusStatelessTransformer());
 	}
 }

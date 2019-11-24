@@ -75,7 +75,7 @@
                 </div>
                 <div class="col-12 col-md-5 offset-md-1">
                     <div>
-                        <div class="card my-4">
+                        <div class="card my-4 shadow-none border">
                             <div class="card-body px-lg-5">
                                 <div class="text-center pt-3">
                                     <img src="/img/pixelfed-icon-color.svg">
@@ -86,7 +86,7 @@
                                 </div>
                                 <div>
                                     @if(true === config('pixelfed.open_registration'))
-                                    <form class="px-1" method="POST" action="{{ route('register') }}">
+                                    <form class="px-1" method="POST" action="{{ route('register') }}" id="register_form">
                                         @csrf
                                         <div class="form-group row">
                                             <div class="col-md-12">
@@ -102,7 +102,7 @@
 
                                         <div class="form-group row">
                                             <div class="col-md-12">
-                                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
+                                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required maxlength="15" minlength="2">
 
                                                 @if ($errors->has('username'))
                                                 <span class="invalid-feedback">
@@ -143,6 +143,16 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-md-12">
+                                                <div class="form-check">
+                                                  <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
+                                                  <label class="form-check-label" for="ageCheck">
+                                                    I am at least 16 years old
+                                                  </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-md-12">
                                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
                                                     {{ __('Register') }}
                                                 </button>
@@ -161,7 +171,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-body">
+                        <div class="card shadow-none border card-body">
                             <p class="text-center mb-0 font-weight-bold">Have an account? <a href="/login">Log in</a></p>
                         </div>
                     </div>

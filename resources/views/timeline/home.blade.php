@@ -2,9 +2,23 @@
 
 @section('content')
 
-<timeline scope="home"></timeline>
+<timeline scope="home" layout="feed"></timeline>
 
 @endsection
+
+
+@if($layout == 'grid')
+@push('styles')
+<style type="text/css">
+	body {
+		background: #fff !important;
+	}
+	.navbar.border-bottom {
+		border-bottom: none !important;
+	}
+</style>
+@endpush
+@endif
 
 @push('scripts')
 <script type="text/javascript" src="{{ mix('js/timeline.js') }}"></script>
