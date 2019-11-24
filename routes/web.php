@@ -373,6 +373,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
+    Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
     Route::get('p/{username}/{id}.json', 'StatusController@showObject');

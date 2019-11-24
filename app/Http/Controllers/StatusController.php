@@ -76,13 +76,23 @@ class StatusController extends Controller
 
     public function showEmbed(Request $request, $username, int $id)
     {
-        abort(404);
-        $profile = Profile::whereNull('status')->whereUsername($username)->first();
-        $status = Status::whereProfileId($profile->id)->whereScope('public')->find($id);
-        if(!$profile || !$status) {
+        $profile = Profile::whereNull(['domain','status'])->whereUsername($username)->first();
+        if(!$profile) {
             return view('status.embed-removed');
         }
-        return view('status.embed', compact('status'));
+        $status = Status::whereProfileId($profile->id)
+            ->whereNull('uri')
+            ->whereScope('public')
+            ->whereIsNsfw(false)
+            ->whereIn('type', ['photo', 'video'])
+            ->find($id);
+        if(!$status) {
+            return view('status.embed-removed');
+        }
+        $showLikes = $request->filled('likes') && $request->likes == true;
+        $showCaption = $request->filled('caption') && $request->caption !== false;
+        $layout = $request->filled('layout') && $request->layout == 'compact' ? 'compact' : 'full';
+        return view('status.embed', compact('status', 'showLikes', 'showCaption', 'layout'));
     }
 
     public function showObject(Request $request, $username, int $id)
