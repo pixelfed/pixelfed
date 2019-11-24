@@ -14,6 +14,8 @@ use App\{
 };
 use Auth, DB, Cache;
 use Illuminate\Http\Request;
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\AccountWithStatusesTransformer;
 use App\Transformer\Api\StatusStatelessTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -131,7 +133,31 @@ class DiscoverController extends Controller
 
     public function profilesDirectory(Request $request)
     {
-      $profiles = Profile::whereNull('domain')->simplePaginate(48);
-      return view('discover.profiles.home', compact('profiles'));
+      return view('discover.profiles.home');
+    }
+
+    public function profilesDirectoryApi(Request $request)
+    {
+      $this->validate($request, [
+        'page' => 'integer|max:10'
+      ]);
+
+      $page = $request->input('page') ?? 1;
+      $key = 'discover:profiles:page:' . $page;
+      $ttl = now()->addHours(12);
+
+      $res = Cache::remember($key, $ttl, function() {
+          $profiles = Profile::whereNull('domain')
+                ->whereNull('status')
+                ->whereIsPrivate(false)
+                ->has('statuses')
+                ->whereIsSuggestable(true)
+                // ->inRandomOrder()
+                ->simplePaginate(8);
+          $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
+          return $this->fractal->createData($resource)->toArray();
+      });
+
+      return $res;
     }
 }
