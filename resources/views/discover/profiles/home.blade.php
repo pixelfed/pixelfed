@@ -4,7 +4,7 @@
 
 <div class="container mt-5">	
 	<div class="col-12">
-		<profile-directory profile-id="{{Auth::user()->profile_id}}"></profile-directory>
+		<profile-directory></profile-directory>
 	</div>
 </div>
 
