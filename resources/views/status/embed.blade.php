@@ -167,7 +167,7 @@
       </div>
       <div>
         <a class="small font-weight-bold text-muted pr-1" href="{{config('app.url')}}" target="_blank">{{config('pixelfed.domain.app')}}</a>
-        <a href="https://pixelfed.org" target="_blank"><img src="/img/pixelfed-icon-color.svg" width="26px"></a>
+        <img src="/img/pixelfed-icon-color.svg" width="26px">
       </div>
     </div>
   </div>
