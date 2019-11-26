@@ -4,10 +4,10 @@
 			<img src="/img/pixelfed-icon-grey.svg">
 		</div>
 		<div v-else>
-			<!-- <div class="d-block d-md-none px-0 border-top-0 mx-n3">
+			<div class="d-block d-md-none px-0 border-top-0 mx-n3">
 				<input class="form-control rounded-0" placeholder="Search" v-model="searchTerm" v-on:keyup.enter="searchSubmit">
-			</div> -->
-			<!-- <section class="d-none d-md-flex mb-md-2 pt-5 discover-bar" style="width:auto; overflow: auto hidden;" v-if="categories.length > 0">
+			</div>
+			<section class="d-none d-md-flex mb-md-2 pt-5 discover-bar" style="width:auto; overflow: auto hidden;" v-if="categories.length > 0">
 				<a v-if="config.ab.loops == true" class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
 					<p class="text-success lead font-weight-bold mb-0">Loops</p>
 				</a>
@@ -15,12 +15,12 @@
 					<p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;">{{category.name}}</p>
 				</a>
 
-			</section> -->
+			</section>
 			<section class="mb-5 section-explore">
 				<div class="profile-timeline">
 					<div class="row p-0 mt-5">
 						<div class="col-12 col-md-6">
-							<div class="">
+							<div class="mb-4">
 								<a class="card info-overlay card-md-border-0" :href="posts[0].url">
 									<div class="square">
 										<span v-if="posts[0].type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
