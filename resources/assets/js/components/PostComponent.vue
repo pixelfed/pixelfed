@@ -34,6 +34,7 @@
               <span class="fas fa-ellipsis-v text-muted"></span>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
                   <div v-if="!owner()">
                     <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
                     <a class="dropdown-item font-weight-bold" v-on:click="muteProfile()">Mute Profile</a>
@@ -99,6 +100,7 @@
                     <span class="fas fa-ellipsis-v text-muted"></span>
                     </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                          <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
                           <span v-if="!owner()">
                             <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
                             <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
@@ -476,6 +478,21 @@
       <img :src="lightboxMedia.url" :class="lightboxMedia.filter_class + ' img-fluid'" style="min-height: 100%; min-width: 100%">
     </div>
   </b-modal>
+ <b-modal ref="embedModal"
+    id="ctx-embed-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="md"
+    body-class="p-2 rounded">
+    <div>
+      <textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 12px; height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
+      <hr>
+      <button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+      <p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+    </div>
+  </b-modal>
 </div>
 </template>
 
@@ -600,6 +617,8 @@ export default {
             emoji: window.App.util.emoji,
             showReadMore: true,
             showCaption: true,
+            ctxEmbedPayload: false,
+            copiedEmbed: false,
           }
     },
 
@@ -1167,7 +1186,17 @@ export default {
 
       redirect(url) {
         window.location.href = url;
-      }
+      },
+
+      showEmbedPostModal() {
+        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url)
+        this.$refs.embedModal.show();
+      },
+
+      ctxCopyEmbed() {
+        navigator.clipboard.writeText(this.ctxEmbedPayload);
+        this.$refs.embedModal.hide();
+      },
 
     },
 }
