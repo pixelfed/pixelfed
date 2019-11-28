@@ -61,6 +61,7 @@ class CommentController extends Controller
         }
 
         $reply = DB::transaction(function() use($comment, $status, $profile) {
+            $scope = $profile->is_private == true ? 'private' : 'public';
             $autolink = Autolink::create()->autolink($comment);
             $reply = new Status();
             $reply->profile_id = $profile->id;
@@ -68,6 +69,8 @@ class CommentController extends Controller
             $reply->rendered = $autolink;
             $reply->in_reply_to_id = $status->id;
             $reply->in_reply_to_profile_id = $status->profile_id;
+            $reply->scope = $scope;
+            $reply->visibility = $scope;
             $reply->save();
 
             $status->reply_count++;
