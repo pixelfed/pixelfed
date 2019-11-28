@@ -4,12 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>{{ config('app.name') }} - Authorization</title>
-
-    <!-- Styles -->
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
-
     <style>
         .passport-authorize .container {
             margin-top: 30px;
@@ -44,29 +40,32 @@
                 <div class="text-center mb-5">
                     <img src="/img/pixelfed-icon-grey.svg">
                 </div>
+                <p class="text-center h3 font-weight-light mb-3">Authorize {{ $client->name }}</p>
                 <div class="card card-default shadow-none border">
-                    <div class="card-header text-center font-weight-bold bg-white">
-                        Authorization Request
-                    </div>
                     <div class="card-body">
-                        <!-- Introduction -->
-                        <p><strong>{{ $client->name }}</strong> is requesting permission to access your <strong>{{request()->user()->username}}</strong> account.</p>
-
-                        <!-- Scope List -->
+                        <div class="media">
+                          <img src="/img/icon/alert-circle.svg" class="mr-3" width="32" height="32">
+                          <div class="media-body">
+                            <p class="my-0"><span class="font-weight-bold">{{ $client->name }}</span></p>
+                            <p class="mb-0 text-muted small">wants access to your <strong>{{request()->user()->username}}</strong> account</p>
+                          </div>
+                        </div>
+                        <hr>
                         @if (count($scopes) > 0)
                             <div class="scopes">
-                                    <p><strong>This application will be able to:</strong></p>
-
-                                    <ul>
-                                        @foreach ($scopes as $scope)
-                                            <li><b class="pr-3">{{$scope->id}}</b> {{ $scope->description }}</li>
-                                        @endforeach
-                                    </ul>
+                            @foreach ($scopes as $scope)
+                                <div class="media mb-3">
+                                  <img src="/img/icon/unlock.svg" class="mr-3" width="32" height="32">
+                                  <div class="media-body">
+                                    <p class="my-0"><span class="font-weight-bold">{{ $scope->id }}</span></p>
+                                    <p class="mb-0 text-muted small">{{$scope->description}}</p>
+                                  </div>
+                                </div>
+                            @endforeach
                             </div>
                         @endif
 
                         <div class="buttons">
-                            <!-- Authorize Button -->
                             <form method="post" action="{{ route('passport.authorizations.approve') }}">
                                 {{ csrf_field() }}
 
@@ -75,7 +74,6 @@
                                 <button type="submit" class="btn btn-success font-weight-bold btn-approve">Authorize</button>
                             </form>
 
-                            <!-- Cancel Button -->
                             <form method="post" action="{{ route('passport.authorizations.deny') }}">
                                 {{ csrf_field() }}
                                 {{ method_field('DELETE') }}
