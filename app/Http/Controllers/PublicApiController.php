@@ -115,19 +115,22 @@ class PublicApiController extends Controller
         $this->scopeCheck($profile, $status);
 
         if(Auth::check()) {
-            $pid = Auth::user()->profile->id;
-            $filtered = UserFilter::whereUserId($pid)
+            $p = Auth::user()->profile;
+            $filtered = UserFilter::whereUserId($p->id)
             ->whereFilterableType('App\Profile')
             ->whereIn('filter_type', ['mute', 'block'])
             ->pluck('filterable_id')->toArray();
+            $scope = $p->id == $status->profile_id ? ['public', 'private'] : ['public'];
         } else {
             $filtered = [];
+            $scope = ['public'];
         }
 
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
+                ->whereIn('scope', $scope)
                 ->whereNotIn('profile_id', $filtered)
                 ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '>=', $request->min_id)
@@ -137,6 +140,7 @@ class PublicApiController extends Controller
             if($request->filled('max_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
+                ->whereIn('scope', $scope)
                 ->whereNotIn('profile_id', $filtered)
                 ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '<=', $request->max_id)
@@ -146,6 +150,7 @@ class PublicApiController extends Controller
         } else {
             $replies = $status->comments()
             ->whereNull('reblog_of_id')
+            ->whereIn('scope', $scope)
             ->whereNotIn('profile_id', $filtered)
             ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
             ->orderBy('id', 'desc')
