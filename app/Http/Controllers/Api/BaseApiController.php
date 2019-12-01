@@ -193,11 +193,11 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function showTempMedia(Request $request, int $profileId, $mediaId, $timestamp)
+    public function showTempMedia(Request $request, $profileId, $mediaId, $timestamp)
     {
         abort_if(!$request->user(), 403);
         abort_if(!$request->hasValidSignature(), 404); 
-        abort_if(Auth::user()->profile_id !== $profileId, 404); 
+        abort_if(Auth::user()->profile_id != $profileId, 404); 
         $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
         $path = storage_path('app/'.$media->media_path);
         return response()->file($path);
