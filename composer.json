@@ -46,7 +46,7 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "nunomaduro/phpinsights": "^1.7",
+        "nunomaduro/phpinsights": "^1.9",
         "phpunit/phpunit": "^8.0"
     },
     "autoload": {
