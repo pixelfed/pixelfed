@@ -70,6 +70,17 @@
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                  <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
+                                  <label class="form-check-label" for="ageCheck">
+                                    I am at least 16 years old
+                                  </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
                         
                         <div class="form-group row">
