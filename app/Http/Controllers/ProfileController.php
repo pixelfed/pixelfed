@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use Cache;
+use View;
 use App\Follower;
 use App\FollowRequest;
 use App\Profile;
@@ -188,5 +189,30 @@ class ProfileController extends Controller
     {
         abort_if(!Auth::check(), 404);
         return redirect(Auth::user()->url());
+    }
+
+    public function embed(Request $request, $username)
+    {
+        $res = view('profile.embed-removed');
+
+        if(strlen($username) > 15 || strlen($username) < 2) {
+            return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+        }
+
+        $profile = Profile::whereUsername($username)
+            ->whereIsPrivate(false)
+            ->whereNull('status')
+            ->whereNull('domain')
+            ->first();
+
+        if(!$profile) {
+            return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+        }
+
+        $content = Cache::remember('profile:embed:'.$profile->id, now()->addHours(12), function() use($profile) {
+            return View::make('profile.embed')->with(compact('profile'))->render();
+        });
+        
+        return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
     }
 }
