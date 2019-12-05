@@ -6,19 +6,16 @@
 
 @endsection
 
-
-@if($layout == 'grid')
 @push('styles')
 <style type="text/css">
 	body {
 		background: #fff !important;
 	}
-	.navbar.border-bottom {
-		border-bottom: none !important;
+	.navbar {
+		border: none !important;
 	}
 </style>
 @endpush
-@endif
 
 @push('scripts')
 <script type="text/javascript" src="{{ mix('js/timeline.js') }}"></script>
