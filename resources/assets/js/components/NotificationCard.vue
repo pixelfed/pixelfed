@@ -15,7 +15,7 @@
 			</div>
 			<div class="card-body pt-2 px-0 py-0 contents" style="max-height: 230px; overflow-y: scroll;">
 				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
-					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
+					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">

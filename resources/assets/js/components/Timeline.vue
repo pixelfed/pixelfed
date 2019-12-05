@@ -182,7 +182,9 @@
 											<span v-html="reply.content"></span>
 										</span>
 										<span class="mb-0" style="min-width:38px">
-											<span v-on:click="likeStatus(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i></span>
+											<span v-on:click="likeStatus(reply, $event)">
+												<i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i>
+											</span>
 											<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> -->
 											<span class="text-lighter pl-2 cursor-pointer" @click="ctxMenu(reply)">
 												<span class="fas fa-ellipsis-v text-lighter"></span>
