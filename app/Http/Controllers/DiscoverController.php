@@ -115,8 +115,8 @@ class DiscoverController extends Controller
       abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);
 
       $this->validate($request, [
-        'hashtag' => 'required|alphanum|min:2|max:124',
-        'page' => 'nullable|integer|min:1|max:' . ($auth ? 19 : 3)
+        'hashtag' => 'required|alphanum|min:1|max:124',
+        'page' => 'nullable|integer|min:1|max:' . ($auth ? 29 : 10)
       ]);
 
       $page = $request->input('page') ?? '1';
