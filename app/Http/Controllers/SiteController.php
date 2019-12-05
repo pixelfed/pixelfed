@@ -7,6 +7,7 @@ use App, Auth, Cache, View;
 use App\Util\Lexer\PrettyNumber;
 use App\{Follower, Page, Profile, Status, User, UserFilter};
 use App\Util\Localization\Localization;
+use App\Services\FollowerService;
 
 class SiteController extends Controller
 {
@@ -97,5 +98,25 @@ class SiteController extends Controller
             return Page::whereSlug($slug)->whereActive(true)->first();
         });
         return View::make('site.terms')->with(compact('page'))->render();
+    }
+
+    public function redirectUrl(Request $request)
+    {
+        $this->validate($request, [
+            'url' => 'required|url'
+        ]);
+        $url = urldecode(request()->input('url'));
+        return view('site.redirect', compact('url'));
+    }
+
+    public function followIntent(Request $request)
+    {
+        $this->validate($request, [
+            'user' => 'string|min:1|max:15|exists:users,username',
+        ]);
+        $profile = Profile::whereUsername($request->input('user'))->firstOrFail();
+        $user = $request->user();
+        $following = $user != null ? FollowerService::follows($user->profile_id, $profile->id) : false;
+        return view('site.intents.follow', compact('profile', 'user', 'following'));
     }
 }
