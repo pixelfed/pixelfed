@@ -227,6 +227,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('collections/create', 'CollectionController@create');
 
         Route::get('me', 'ProfileController@meRedirect');
+        Route::get('intent/follow', 'SiteController@followIntent');
     });
 
     Route::group(['prefix' => 'account'], function () {
