@@ -116,7 +116,7 @@ class SiteController extends Controller
         ]);
         $profile = Profile::whereUsername($request->input('user'))->firstOrFail();
         $user = $request->user();
-        abort_if($profile->id == $user->profile_id, 404);
+        abort_if($user && $profile->id == $user->profile_id, 404);
         $following = $user != null ? FollowerService::follows($user->profile_id, $profile->id) : false;
         return view('site.intents.follow', compact('profile', 'user', 'following'));
     }
