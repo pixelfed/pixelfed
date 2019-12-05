@@ -23,18 +23,20 @@ class FollowerController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'item'    => 'required|string',
+            'item'     => 'required|string',
+            'force'    => 'nullable|boolean',
         ]);
+        $force = (bool) $request->input('force', true);
         $item = (int) $request->input('item');
-        $this->handleFollowRequest($item);
-        if($request->wantsJson()) {
+        $url = $this->handleFollowRequest($item, $force);
+        if($request->wantsJson() == true) {
             return response()->json(200);
         } else {
-            return redirect()->back();
+            return redirect($url);
         }
     }
 
-    protected function handleFollowRequest($item)
+    protected function handleFollowRequest($item, $force)
     {
         $user = Auth::user()->profile;
 
@@ -87,17 +89,19 @@ class FollowerController extends Controller
             } 
             FollowPipeline::dispatch($follower);
         } else {
-            $request = FollowRequest::whereFollowerId($user->id)->whereFollowingId($target->id)->exists();
-            $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
-            if($remote == true && $request && !$follower) {
-                $this->sendFollow($user, $target);
+            if($force == true) {
+                $request = FollowRequest::whereFollowerId($user->id)->whereFollowingId($target->id)->exists();
+                $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
+                if($remote == true && $request && !$follower) {
+                    $this->sendFollow($user, $target);
+                }
+                if($remote == true && $follower) {
+                    $this->sendUndoFollow($user, $target);
+                }
+                Follower::whereProfileId($user->id)
+                    ->whereFollowingId($target->id)
+                    ->delete();
             }
-            if($remote == true && $follower) {
-                $this->sendUndoFollow($user, $target);
-            }
-            Follower::whereProfileId($user->id)
-                ->whereFollowingId($target->id)
-                ->delete();
         }
 
         Cache::forget('profile:following:'.$target->id);
@@ -107,6 +111,8 @@ class FollowerController extends Controller
         Cache::forget('api:local:exp:rec:'.$user->id);
         Cache::forget('user:account:id:'.$target->user_id);
         Cache::forget('user:account:id:'.$user->user_id);
+
+        return $target->url();
     }
 
     public function sendFollow($user, $target)

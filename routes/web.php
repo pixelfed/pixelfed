@@ -227,6 +227,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('collections/create', 'CollectionController@create');
 
         Route::get('me', 'ProfileController@meRedirect');
+        Route::get('intent/follow', 'SiteController@followIntent');
     });
 
     Route::group(['prefix' => 'account'], function () {
@@ -381,5 +382,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
     Route::get('p/{username}/{id}.json', 'StatusController@showObject');
     Route::get('p/{username}/{id}', 'StatusController@show');
+    Route::get('{username}/embed', 'ProfileController@embed');
     Route::get('{username}', 'ProfileController@show');
 });
