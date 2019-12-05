@@ -24,6 +24,16 @@
         <meta property="og:video" content="{{$status->mediaUrl()}}">
     @endif
 @endpush
+@push('styles')
+<style type="text/css">
+  body {
+    background: #fff !important;
+  }
+  .navbar {
+    border: none !important;
+  }
+</style>
+@endpush
 
 @push('scripts')
 <script type="text/javascript" src="{{ mix('js/status.js') }}"></script>
