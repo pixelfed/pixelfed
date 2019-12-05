@@ -16,10 +16,21 @@ if (token) {
 
 window.App = window.App || {};
 
+window.App.redirect = function() {
+	document.querySelectorAll('a').forEach(function(i,k) { 
+		let a = i.getAttribute('href');
+		if(a && a.length > 5 && a.startsWith('https://')) {
+			let url = new URL(a);
+			if(url.host !== window.location.host && url.pathname !== '/i/redirect') {
+				i.setAttribute('href', '/i/redirect?url=' + encodeURIComponent(a));
+			}
+		}
+	});
+}
+
 window.App.boot = function() {
 	new Vue({ el: '#content'});
 }
-
 
 window.App.util = {
 	time: (function() { 
