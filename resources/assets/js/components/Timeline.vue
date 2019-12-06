@@ -280,6 +280,10 @@
 					</div>
 				</div>
 
+				<div class="mb-4">
+					<a class="btn btn-light btn-block btn-sm font-weight-bold text-dark mb-3 border" href="/i/compose" data-toggle="modal" data-target="#composeModal"><i class="far fa-plus-square pr-3 fa-lg pt-1"></i> Compose Post</a>
+				</div>
+
 				<div v-if="showTips" class="mb-4 card-tips">
 					<div class="card border shadow-none mb-3" style="max-width: 18rem;">
 						<div class="card-body">
@@ -561,6 +565,7 @@
 		beforeMount() {
 			this.fetchProfile();
 			this.fetchTimelineApi();
+
 		},
 
 		mounted() {
@@ -591,7 +596,11 @@
 			}
 
 			this.$nextTick(function () {
-				$('[data-toggle="tooltip"]').tooltip()
+				$('[data-toggle="tooltip"]').tooltip();
+				let u = new URLSearchParams(window.location.search);
+				if(u.has('a') && u.get('a') == 'co') {
+					$('#composeModal').modal('show');
+				}
 			});
 		},
 
