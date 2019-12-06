@@ -66,7 +66,7 @@
                 <a class="nav-link {{request()->is('discover')?'text-dark':'text-lighter'}}" href="/discover"><i class="fas fa-search fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <div class="nav-link text-lighter cursor-pointer" data-toggle="modal" data-target="#composeModal"><i class="fas fa-camera fa-lg"></i></div>
+                <div class="nav-link text-lighter cursor-pointer" onclick="App.util.compose.post()"><i class="fas fa-camera fa-lg"></i></div>
               </li>
               <li class="nav-item">
                 <a class="nav-link {{request()->is('account/activity')?'text-dark':'text-lighter'}}" href="/account/activity"><i class="far fa-heart fa-lg"></i></a>
