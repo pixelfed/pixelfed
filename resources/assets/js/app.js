@@ -99,8 +99,8 @@ window.App.util = {
 			return '<iframe src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
 		}),
 		profile: (function(url) {
-			// placeholder
-			console.error('This method is not supported yet');
+			let u = url + '/embed';
+			return '<iframe src="'+u+'" class="pixelfed__embed" style="max-width: 100%; border: 0" width="400" allowfullscreen="allowfullscreen"></iframe><script async defer src="'+window.location.origin +'/embed.js"><\/script>';
 		})
 	}
 
