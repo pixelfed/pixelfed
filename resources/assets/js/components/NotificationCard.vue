@@ -4,16 +4,16 @@
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
 					<span><i class="far fa-bell fa-lg text-white"></i></span>
-					<span class="small text-dark text-uppercase font-weight-bold">Notifications</span>
+					<span class="small text-dark text-uppercase font-weight-bold">Alerts</span>
 					<a class="text-decoration-none text-muted" href="/account/activity"><i class="fas fa-inbox fa-lg"></i></a>
 				</p>
 			</div>
-			<div class="card-body loader text-center" style="height: 230px;">
+			<div class="card-body loader text-center" style="height: 200px;">
 				<div class="spinner-border" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div class="card-body pt-2 px-0 py-0 contents" style="max-height: 230px; overflow-y: scroll;">
+			<div class="card-body pt-2 px-0 py-0 contents" style="max-height: 200px; overflow-y: scroll;">
 				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
 					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 					<div class="media-body font-weight-light small">
