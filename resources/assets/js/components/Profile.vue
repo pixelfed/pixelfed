@@ -101,7 +101,7 @@
 									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
 										<a class="btn btn-outline-secondary btn-sm" href="/settings/home" style="font-weight: 600;">Edit Profile</a>
 									</span>
-									<span class="pl-4" v-else>
+									<span class="pl-4">
 										<a class="fas fa-ellipsis-h fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
 									</span> 
 								</div>
