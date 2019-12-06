@@ -33,6 +33,32 @@ window.App.boot = function() {
 }
 
 window.App.util = {
+	compose: {
+		post: (function() {
+			let path = window.location.pathname;
+			let whitelist = [
+				'/',
+				'/timeline/public'
+			];
+			if(whitelist.includes(path)) {
+				$('#composeModal').modal('show');
+			} else {
+				window.location.href = '/?a=co';
+			}
+		}),
+		circle: (function() {
+			console.log('Unsupported method.');
+		}),
+		collection: (function() {
+			console.log('Unsupported method.');
+		}),
+		loop: (function() {
+			console.log('Unsupported method.');
+		}),
+		story: (function() {
+			console.log('Unsupported method.');
+		}),
+	},
 	time: (function() { 
 		return new Date; 
 	}),
