@@ -47,26 +47,21 @@
                             </a>
                         </li>
                     </div>
-                    <div class="d-none d-md-block">
-                        <li class="nav-item px-md-2">
-                            <div title="Create new post" data-toggle="tooltip" data-placement="bottom">
-                                <a href="{{route('compose')}}" class="nav-link" data-toggle="modal" data-target="#composeModal">
-                                  <i class="fas fa-camera-retro fa-lg text-muted"></i>
-                                </a>
-                            </div>
-                        </li>
-                    </div>
                     <li class="nav-item dropdown ml-2">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
                             <i class="far fa-user fa-lg text-muted"></i>
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <div class="dropdown-item font-weight-bold cursor-pointer" onclick="App.util.compose.post()">
+                                <span class="fas fa-camera-retro pr-1"></span>
+                                {{__('navmenu.composePost')}}
+                            </div>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="/i/me">
                                 <span class="far fa-user pr-1"></span>
                                 {{__('navmenu.myProfile')}}
                             </a>
-                            <div class="dropdown-divider"></div>
                             <a class="d-block d-md-none dropdown-item font-weight-bold" href="{{route('discover')}}">
                                 <span class="far fa-compass pr-1"></span>
                                 {{__('navmenu.discover')}}
@@ -75,16 +70,10 @@
                                 <span class="far fa-bell pr-1"></span>
                                 Notifications
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item font-weight-bold" href="{{route('timeline.personal')}}">
-                                <span class="fas fa-home pr-1"></span>
-                                {{__('navmenu.myTimeline')}}
-                            </a>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                 <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
-                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
@@ -94,8 +83,8 @@
                                 <span class="fas fa-cogs pr-1"></span>
                                 {{__('navmenu.admin')}}
                             </a>
-                            <div class="dropdown-divider"></div>
                             @endif
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{ route('logout') }}"
                                onclick="event.preventDefault();
                                              document.getElementById('logout-form').submit();">
