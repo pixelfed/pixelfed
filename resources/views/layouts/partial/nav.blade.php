@@ -70,10 +70,12 @@
                                 <span class="far fa-bell pr-1"></span>
                                 Notifications
                             </a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                 <span class="far fa-map pr-1"></span>
                                 {{__('navmenu.publicTimeline')}}
                             </a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
                                 <span class="fas fa-cog pr-1"></span>
                                 {{__('navmenu.settings')}}
