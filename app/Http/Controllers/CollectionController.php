@@ -205,4 +205,36 @@ class CollectionController extends Controller
                 ];
         });
     }
+
+    public function deleteId(Request $request)
+    {
+        $this->validate($request, [
+            'collection_id' => 'required|int|min:1|exists:collections,id',
+            'post_id'       => 'required|int|min:1|exists:statuses,id'
+        ]);
+        
+        $profileId = Auth::user()->profile_id;
+        $collectionId = $request->input('collection_id');
+        $postId = $request->input('post_id');
+
+        $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
+        $count = $collection->items()->count();
+
+        if($count == 1) {
+            abort(400, 'You cannot delete the only post of a collection!');
+        }
+
+        $status = Status::whereScope('public')
+            ->whereIn('type', ['photo', 'photo:album', 'video'])
+            ->findOrFail($postId);
+
+        $item = CollectionItem::whereCollectionId($collection->id)
+            ->whereObjectType('App\Status')
+            ->whereObjectId($status->id)
+            ->firstOrFail();
+
+        $item->delete();
+
+        return 200;
+    }
 }
