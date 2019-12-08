@@ -18,8 +18,7 @@ RUN apt-get update \
       --with-webp \
       --with-xpm \
  && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
- && pecl install imagick \
- && docker-php-ext-enable imagick pcntl imagick gd exif zip curl \
+ && docker-php-ext-enable pcntl gd exif zip curl \
  && a2enmod rewrite remoteip \
  && {\
      echo RemoteIPHeader X-Real-IP ;\
