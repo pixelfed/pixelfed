@@ -121,8 +121,8 @@ class CollectionController extends Controller
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
 
-        if($count >= 18) {
-            abort(400, 'You can only add 18 posts per collection');
+        if($count >= 50) {
+            abort(400, 'You can only add 50 posts per collection');
         }
 
         $status = Status::whereScope('public')
