@@ -22,6 +22,7 @@ use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
     StatusTransformer,
+    // StatusMediaContainerTransformer,
 };
 use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -89,7 +90,8 @@ class InternalApiController extends Controller
               ->whereDate('created_at', '>', now()->subMonths(3))
               ->with('media')
               ->inRandomOrder()
-              ->take(36)
+              ->latest()
+              ->take(37)
               ->get();
 
         $res = [
@@ -264,6 +266,7 @@ class InternalApiController extends Controller
         $attachments = [];
         $status = new Status;
         $mimes = [];
+        $place = $request->input('place');
         $cw = $request->input('cw');
 
         foreach($medias as $k => $media) {
@@ -287,8 +290,8 @@ class InternalApiController extends Controller
             array_push($mimes, $m->mime);
         }
 
-        if($request->filled('place')) {
-            $status->place_id = $request->input('place')['id'];
+        if($place && is_array($place)) {
+            $status->place_id = $place['id'];
         }
         
         if($request->filled('comments_disabled')) {
@@ -298,13 +301,16 @@ class InternalApiController extends Controller
         $status->caption = strip_tags($request->caption);
         $status->scope = 'draft';
         $status->profile_id = $profile->id;
-
         $status->save();
 
         foreach($attachments as $media) {
             $media->status_id = $status->id;
             $media->save();
         }
+
+        // $resource = new Fractal\Resource\Collection($status->media()->orderBy('order')->get(), new StatusMediaContainerTransformer());
+        // $mediaContainer = $this->fractal->createData($resource)->toArray();
+        // $status->media_container = json_encode($mediaContainer);
 
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
         $cw = $profile->cw == true ? true : $cw;
@@ -333,5 +339,116 @@ class InternalApiController extends Controller
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res);
+    }
+
+    public function remoteProfile(Request $request, $id)
+    {
+        $profile = Profile::whereNull('status')
+            ->whereNotNull('domain')
+            ->findOrFail($id);
+
+        $settings = [
+            'crawlable' => false,
+            'following' => [
+                'count' => true,
+                'list' => false
+            ], 
+            'followers' => [
+                'count' => true,
+                'list' => false
+            ]
+        ];
+
+        return view('profile.show', compact('profile', 'settings'));
+    }
+
+    public function accountStatuses(Request $request, $id)
+    {
+        $this->validate($request, [
+            'only_media' => 'nullable',
+            'pinned' => 'nullable',
+            'exclude_replies' => 'nullable',
+            'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+            'limit' => 'nullable|integer|min:1|max:24'
+        ]);
+
+        $profile = Profile::whereNull('status')->findOrFail($id);
+
+        $limit = $request->limit ?? 9;
+        $max_id = $request->max_id;
+        $min_id = $request->min_id;
+        $scope = $request->only_media == true ? 
+            ['photo', 'photo:album', 'video', 'video:album'] :
+            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+       
+        if($profile->is_private) {
+            if(!Auth::check()) {
+                return response()->json([]);
+            }
+            $pid = Auth::user()->profile->id;
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Follower::whereProfileId($pid)->pluck('following_id');
+                return $following->push($pid)->toArray();
+            });
+            $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
+        } else {
+            if(Auth::check()) {
+                $pid = Auth::user()->profile->id;
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                    $following = Follower::whereProfileId($pid)->pluck('following_id');
+                    return $following->push($pid)->toArray();
+                });
+                $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+            } else {
+                $visibility = ['public', 'unlisted'];
+            }
+        }
+
+        $dir = $min_id ? '>' : '<';
+        $id = $min_id ?? $max_id;
+        $timeline = Status::select(
+            'id', 
+            'uri',
+            'caption',
+            'rendered',
+            'profile_id', 
+            'type',
+            'in_reply_to_id',
+            'reblog_of_id',
+            'is_nsfw',
+            'likes_count',
+            'reblogs_count',
+            'scope',
+            'local',
+            'created_at',
+            'updated_at'
+          )->whereProfileId($profile->id)
+          ->whereIn('type', $scope)
+          ->where('id', $dir, $id)
+          ->whereIn('visibility', $visibility)
+          ->latest()
+          ->limit($limit)
+          ->get();
+
+        $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+
+        return response()->json($res);
+    }
+
+    public function remoteStatus(Request $request, $profileId, $statusId)
+    {
+        $user = Profile::whereNull('status')
+            ->whereNotNull('domain')
+            ->findOrFail($profileId);
+
+        $status = Status::whereProfileId($user->id)
+                        ->whereNull('reblog_of_id')
+                        ->whereVisibility('public')
+                        ->findOrFail($statusId);
+        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        return view($template, compact('user', 'status'));
     }
 }
