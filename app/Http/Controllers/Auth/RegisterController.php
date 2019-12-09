@@ -62,10 +62,23 @@ class RegisterController extends Controller
             'max:15',
             'unique:users',
             function ($attribute, $value, $fail) {
+                $dash = substr_count($value, '-');
+                $underscore = substr_count($value, '_');
+                $period = substr_count($value, '.');
+
+                if(($dash + $underscore + $period) > 1) {
+                    return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
+                }
+
                 if (!ctype_alpha($value[0])) {
                     return $fail('Username is invalid. Must start with a letter or number.');
                 }
-                $val = str_replace(['_', '-', '.'], '', $value);
+
+                if (!ctype_alnum($value[strlen($value) - 1])) {
+                    return $fail('Username is invalid. Must end with a letter or number.');
+                }
+
+                $val = str_replace(['_', '.', '-'], '', $value);
                 if(!ctype_alnum($val)) {
                     return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
                 }
@@ -77,7 +90,7 @@ class RegisterController extends Controller
             'name'     => 'nullable|string|max:'.config('pixelfed.max_name_length'),
             'username' => $usernameRules,
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:12|confirmed',
         ];
 
         return Validator::make($data, $rules);
@@ -145,8 +158,11 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
+        abort_if(config('pixelfed.open_registration') == false, 400);
+
         $count = User::count();
         $limit = config('pixelfed.max_users');
+
         if(false == config('pixelfed.open_registration') || $limit && $limit <= $count) {
             return abort(403);
         }
@@ -158,6 +174,6 @@ class RegisterController extends Controller
         $this->guard()->login($user);
 
         return $this->registered($request, $user)
-                        ?: redirect($this->redirectPath());
+            ?: redirect($this->redirectPath());
     }
 }
