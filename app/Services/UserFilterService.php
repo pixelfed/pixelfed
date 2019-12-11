@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use Cache, Redis;
+use Cache;
+use Illuminate\Support\Facades\Redis;
 
 use App\{
 	Follower,

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Auth; 
 use Cache; 
 use Mail; 
-use Redis;
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Illuminate\Http\Request;
@@ -264,7 +264,6 @@ class AccountController extends Controller
 
 		$pid = $user->id;
 		Cache::forget("user:filter:list:$pid");
-		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
 
 		return redirect()->back();

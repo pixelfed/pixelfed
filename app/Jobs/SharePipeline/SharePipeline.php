@@ -2,7 +2,8 @@
 
 namespace App\Jobs\SharePipeline;
 
-use Cache, Log, Redis;
+use Cache, Log;
+use Illuminate\Support\Facades\Redis;
 use App\{Status, Notification};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class Installer extends Command
 {

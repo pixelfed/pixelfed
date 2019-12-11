@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Redis;
+use Illuminate\Support\Facades\Redis;
 
 class NewStatusPipeline implements ShouldQueue
 {

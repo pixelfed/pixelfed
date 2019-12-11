@@ -95,6 +95,8 @@ class RestrictedNames
      'a',
      'app',
      'about',
+     'aboutus',
+     'about-us',
      'abuse',
      'account',
      'admins',
