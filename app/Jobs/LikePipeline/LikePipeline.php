@@ -2,7 +2,8 @@
 
 namespace App\Jobs\LikePipeline;
 
-use Cache, Log, Redis;
+use Cache, Log;
+use Illuminate\Support\Facades\Redis;
 use App\{Like, Notification};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -10,7 +10,8 @@ use App\{
     Profile,
     UserFilter
 };
-use Auth, Cache, Redis;
+use Auth, Cache;
+use Illuminate\Support\Facades\Redis;
 use App\Util\Site\Config;
 use Illuminate\Http\Request;
 use App\Services\SuggestionService;
