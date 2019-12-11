@@ -24,9 +24,6 @@
 
 @push('styles')
 <style type="text/css">
-  body {
-    background: #fff !important;
-  }
   .navbar {
     border: none !important;
   }

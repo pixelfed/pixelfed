@@ -49,6 +49,7 @@
 
 @push('scripts')
 <script type="text/javascript">
+App.boot();
 $(document).ready(function() {
   $(document).on('click', '.request-action', function(e) {
     e.preventDefault();
