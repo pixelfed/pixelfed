@@ -214,6 +214,10 @@ class FederationController extends Controller
         $bodyDecoded = json_decode($body, true, 8);
         $signature = $request->header('signature');
         $date = $request->header('date');
+        $digest = $request->header('digest');
+        if(!$digest) {
+            abort(400, 'Missing digest header');
+        }
         if(!$signature) {
             abort(400, 'Missing signature header');
         }

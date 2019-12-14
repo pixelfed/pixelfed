@@ -569,19 +569,16 @@
 			}
 		},
 		beforeMount() {
-			if(window.outerWidth < 576) {
-				$('nav.navbar').hide();
-				this.isMobile = true;
-			}
 			this.fetchRelationships();
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
+			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
+			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
+				this.layout = 'metro';
+			}
 			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
 				Vue.use(VueMasonry);
 				this.layout = 'moment';
-			}
-			if(u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
-				this.layout = 'metro';
 			}
 			if(this.layout == 'metro' && u.has('t')) {
 				if(this.modes.indexOf(u.get('t')) != -1) {
@@ -606,6 +603,10 @@
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
 				});
+			}
+			if(window.outerWidth < 576) {
+				$('nav.navbar').hide();
+				this.isMobile = true;
 			}
 		},
 

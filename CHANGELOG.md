@@ -7,6 +7,7 @@
 - Added AccountService ([885a1258](https://github.com/pixelfed/pixelfed/commit/885a1258))
 - Added post embeds ([1fecf717](https://github.com/pixelfed/pixelfed/commit/1fecf717))
 - Added profile embeds ([fb7a3cf0](https://github.com/pixelfed/pixelfed/commit/fb7a3cf0))
+- Added Force MetroUI labs experiment ([#1889](https://github.com/pixelfed/pixelfed/pull/1889))
 
 ### Fixed
 - Fixed like and share/reblog count on profiles ([86cb7d09](https://github.com/pixelfed/pixelfed/commit/86cb7d09))

@@ -10,7 +10,7 @@
     </div>
   </div>
   <div v-if="loaded && warning == false" class="postComponent">
-    <div v-if="profileLayout == 'metro'" class="container px-0">
+    <div v-if="layout == 'metro'" class="container px-0">
       <div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
         <div class="row px-0 mx-0">
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
@@ -245,7 +245,7 @@
       </div>
     </div>
 
-    <div v-if="profileLayout == 'moment'" class="momentui">
+    <div v-if="layout == 'moment'" class="momentui">
       <div class="bg-dark mt-md-n4">
         <div class="container" v-on:dblclick="likeStatus">
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
@@ -619,16 +619,18 @@ export default {
             showCaption: true,
             ctxEmbedPayload: false,
             copiedEmbed: false,
+            layout: this.profileLayout
           }
     },
 
     beforeMount() {
       let u = new URLSearchParams(window.location.search);
-      if(u.has('ui') && u.get('ui') == 'moment' && this.profileLayout != 'moment') {
-        this.profileLayout = 'moment';
+      let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
+      if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
+        this.layout = 'metro';
       }
-      if(u.has('ui') && u.get('ui') == 'metro' && this.profileLayout != 'metro') {
-        this.profileLayout = 'metro';
+      if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
+        this.layout = 'moment';
       }
     },
 
@@ -914,7 +916,7 @@ export default {
         .then(function(res) {
           let entity = res.data.entity;
           if(entity.in_reply_to_id == self.status.id) {
-            if(self.profileLayout == 'metro') {
+            if(self.layout == 'metro') {
               self.results.push(entity);
             } else {
               self.results.unshift(entity);
@@ -973,7 +975,7 @@ export default {
           axios.get(url)
             .then(response => {
                 let self = this;
-                this.results = this.profileLayout == 'metro' ? 
+                this.results = this.layout == 'metro' ? 
                   _.reverse(response.data.data) :
                   response.data.data;
                 this.pagination = response.data.meta.pagination;
