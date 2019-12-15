@@ -453,12 +453,8 @@ export default {
 						let data = res.data;
 						window.location.href = data;
 					}).catch(err => {
-						let res = err.response.data;
-						if(res.message == 'Too Many Attempts.') {
-							swal('You\'re posting too much!', 'We only allow 50 posts per hour or 100 per day. If you\'ve reached that limit, please try again later. If you think this is an error, please contact an administrator.', 'error');
-							return;
-						}
-						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
+						swal('Oops, something went wrong!', msg, 'error');
 					});
 					return;
 				break;
