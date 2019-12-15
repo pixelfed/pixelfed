@@ -744,7 +744,8 @@ export default {
 						let data = res.data;
 						window.location.href = data;
 					}).catch(err => {
-						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
+						swal('Oops, something went wrong!', msg, 'error');
 					});
 					return;
 				break;

@@ -290,6 +290,12 @@ class InternalApiController extends Controller
             array_push($mimes, $m->mime);
         }
 
+        $mediaType = StatusController::mimeTypeCheck($mimes);
+
+        if(in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
+            abort(400, __('exception.compose.invalid.album'));
+        }
+
         if($place && is_array($place)) {
             $status->place_id = $place['id'];
         }
@@ -317,7 +323,7 @@ class InternalApiController extends Controller
         $status->is_nsfw = $cw;
         $status->visibility = $visibility;
         $status->scope = $visibility;
-        $status->type = StatusController::mimeTypeCheck($mimes);
+        $status->type = $mediaType;
         $status->save();
 
         NewStatusPipeline::dispatch($status);
