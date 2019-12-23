@@ -14,7 +14,6 @@ use App\{
     Status,
     User
 };
-use App\Transformer\ActivityPub\ProfileOutbox;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
 use Auth;
@@ -22,114 +21,27 @@ use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
+use App\Util\Site\Nodeinfo;
 use App\Util\ActivityPub\{
     Helpers,
-    HttpSignature
+    HttpSignature,
+    Outbox
 };
 use \Zttp\Zttp;
 
 class FederationController extends Controller
 {
-    public function authCheck()
-    {
-        abort_if(!Auth::check(), 403);
-    }
-
-    // deprecated, remove in 0.10
-    public function authorizeFollow(Request $request)
-    {
-        abort(404);
-    }
-
-    // deprecated, remove in 0.10
-    public function remoteFollow()
-    {
-        abort(404);
-    }
-
-    // deprecated, remove in 0.10
-    public function remoteFollowStore(Request $request)
-    {
-        abort(404);
-    }
-
     public function nodeinfoWellKnown()
     {
         abort_if(!config('federation.nodeinfo.enabled'), 404);
-
-        $res = [
-        'links' => [
-          [
-            'href' => config('pixelfed.nodeinfo.url'),
-            'rel'  => 'http://nodeinfo.diaspora.software/ns/schema/2.0',
-          ],
-        ],
-      ];
-
-        return response()->json($res);
+        return response()->json(Nodeinfo::wellKnown());
     }
 
     public function nodeinfo()
     {
         abort_if(!config('federation.nodeinfo.enabled'), 404);
-
-        $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
-            $activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
-                $count = collect([]);
-                $likes = Like::select('profile_id')->with('actor')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
-                $count = $count->merge($likes);
-                $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
-                $count = $count->merge($statuses);
-                $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
-                $count = $count->merge($profiles);
-                return $count->unique()->count();
-            });
-            $activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(12), function() {
-                $count = collect([]);
-                $likes = Like::select('profile_id')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
-                $count = $count->merge($likes);
-                $statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
-                $count = $count->merge($statuses);
-                $profiles = Profile::select('id')->whereNull('domain')->where('created_at', '>', now()->subMonths(1)->toDateTimeString())->groupBy('id')->pluck('id')->toArray();
-                $count = $count->merge($profiles);
-                return $count->unique()->count();
-            });
-            return [
-                'metadata' => [
-                    'nodeName' => config('pixelfed.domain.app'),
-                    'software' => [
-                        'homepage'  => 'https://pixelfed.org',
-                        'repo'      => 'https://github.com/pixelfed/pixelfed',
-                    ],
-                    'config' => \App\Util\Site\Config::get()
-                ],
-                'protocols'         => [
-                    'activitypub',
-                ],
-                'services' => [
-                    'inbound'  => [],
-                    'outbound' => [],
-                ],
-                'software' => [
-                    'name'          => 'pixelfed',
-                    'version'       => config('pixelfed.version'),
-                ],
-                'usage' => [
-                    'localPosts'    => Status::whereLocal(true)->count(),
-                    'localComments' => 0,
-                    'users'         => [
-                        'total'          => User::count(),
-                        'activeHalfyear' => (int) $activeHalfYear,
-                        'activeMonth'    => (int) $activeMonth,
-                    ],
-                ],
-                'version' => '2.0',
-            ];
-        });
-        $res['openRegistrations'] = config('pixelfed.open_registration');
-        return response()->json($res, 200, [
-            'Access-Control-Allow-Origin' => '*'
-        ], JSON_PRETTY_PRINT);
+        return response()->json(Nodeinfo::get())
+            ->header('Access-Control-Allow-Origin','*');
     }
 
     public function webfinger(Request $request)
@@ -168,19 +80,9 @@ class FederationController extends Controller
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.outbox'), 404);
 
-        $profile = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
-        if($profile->status != null) {
-            return ProfileController::accountCheck($profile);
-        }
-        if($profile->is_private) {
-            return response()->json(['error'=>'403', 'msg' => 'private profile'], 403);
-        }
-        $timeline = $profile->statuses()->whereVisibility('public')->orderBy('created_at', 'desc')->paginate(10);
-        $fractal = new Fractal\Manager();
-        $resource = new Fractal\Resource\Item($profile, new ProfileOutbox());
-        $res = $fractal->createData($resource)->toArray();
+        $res = Outbox::get($username);
 
-        return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+        return response(json_encode($res))->header('Content-Type', 'application/activity+json');
     }
 
     public function userInbox(Request $request, $username)
