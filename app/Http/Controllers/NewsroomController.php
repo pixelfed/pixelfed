@@ -37,6 +37,7 @@ class NewsroomController extends Controller
 
 	public function search(Request $request)
 	{
+		abort(404);
 		$this->validate($request, [
 			'q'			=> 'nullable'
 		]);
@@ -44,6 +45,7 @@ class NewsroomController extends Controller
 
 	public function archive(Request $request)
 	{
+		abort(404);
 		return view('site.news.archive.index');
 	}
 
