@@ -9,6 +9,7 @@ use App\{
   Instance,
   Media,
   Like,
+  Newsroom,
   OauthClient,
   Profile,
   Report,
@@ -257,5 +258,154 @@ class AdminController extends Controller
       $message->read_at = now();
       $message->save();
       return;
+    }
+
+    public function newsroomHome(Request $request)
+    {
+      $newsroom = Newsroom::latest()->paginate(10);
+      return view('admin.newsroom.home', compact('newsroom'));
+    }
+
+    public function newsroomCreate(Request $request)
+    {
+      return view('admin.newsroom.create');
+    }
+
+    public function newsroomEdit(Request $request, $id)
+    {
+      $news = Newsroom::findOrFail($id);
+      return view('admin.newsroom.edit', compact('news'));
+    }
+
+    public function newsroomDelete(Request $request, $id)
+    {
+      $news = Newsroom::findOrFail($id);
+      $news->delete();
+      return redirect('/i/admin/newsroom');
+    }
+
+    public function newsroomUpdate(Request $request, $id)
+    {
+      $this->validate($request, [
+        'title' => 'required|string|min:1|max:100',
+        'summary' => 'nullable|string|max:200',
+        'body'  => 'nullable|string'
+      ]);
+      $changed = false;
+      $changedFields = [];
+      $news = Newsroom::findOrFail($id);
+      $fields = [
+        'title' => 'string',
+        'summary' => 'string',
+        'body' => 'string',
+        'category' => 'string',
+        'show_timeline' => 'boolean',
+        'auth_only' => 'boolean',
+        'show_link' => 'boolean',
+        'force_modal' => 'boolean',
+        'published' => 'published'
+      ];
+      foreach($fields as $field => $type) {
+        switch ($type) {
+          case 'string':
+            if($request->{$field} != $news->{$field}) {
+              if($field == 'title') {
+                $news->slug = str_slug($request->{$field});
+              }
+              $news->{$field} = $request->{$field};
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+
+          case 'boolean':
+            $state = $request->{$field} == 'on' ? true : false;
+            if($state != $news->{$field}) {
+              $news->{$field} = $state;
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+          case 'published':
+            $state = $request->{$field} == 'on' ? true : false;
+            $published = $news->published_at != null;
+            if($state != $published) {
+              $news->published_at = $state ? now() : null;
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+          
+        }
+      }
+
+      if($changed) {
+        $news->save();
+      }
+      $redirect = $news->published_at ? $news->permalink() : $news->editUrl();
+      return redirect($redirect);
+    }
+
+
+    public function newsroomStore(Request $request)
+    {
+      $this->validate($request, [
+        'title' => 'required|string|min:1|max:100',
+        'summary' => 'nullable|string|max:200',
+        'body'  => 'nullable|string'
+      ]);
+      $changed = false;
+      $changedFields = [];
+      $news = new Newsroom();
+      $fields = [
+        'title' => 'string',
+        'summary' => 'string',
+        'body' => 'string',
+        'category' => 'string',
+        'show_timeline' => 'boolean',
+        'auth_only' => 'boolean',
+        'show_link' => 'boolean',
+        'force_modal' => 'boolean',
+        'published' => 'published'
+      ];
+      foreach($fields as $field => $type) {
+        switch ($type) {
+          case 'string':
+            if($request->{$field} != $news->{$field}) {
+              if($field == 'title') {
+                $news->slug = str_slug($request->{$field});
+              }
+              $news->{$field} = $request->{$field};
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+
+          case 'boolean':
+            $state = $request->{$field} == 'on' ? true : false;
+            if($state != $news->{$field}) {
+              $news->{$field} = $state;
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+          case 'published':
+            $state = $request->{$field} == 'on' ? true : false;
+            $published = $news->published_at != null;
+            if($state != $published) {
+              $news->published_at = $state ? now() : null;
+              $changed = true;
+              array_push($changedFields, $field);
+            }
+            break;
+          
+        }
+      }
+
+      if($changed) {
+        $news->save();
+      }
+      $redirect = $news->published_at ? $news->permalink() : $news->editUrl();
+      return redirect($redirect);
     }
 }
