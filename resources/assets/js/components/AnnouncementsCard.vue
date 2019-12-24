@@ -65,7 +65,7 @@ export default {
 			let self = this;
 			let key = 'metro-tips-closed';
 			let cached = JSON.parse(window.localStorage.getItem(key));
-			axios.get('/api/v1/pixelfed/newsroom/timeline')
+			axios.get('/api/pixelfed/v1/newsroom/timeline')
 			.then(res => {
 				self.announcements = res.data.filter(p => {
 					if(cached) {
