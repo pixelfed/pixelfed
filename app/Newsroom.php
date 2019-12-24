@@ -19,4 +19,9 @@ class Newsroom extends Model
 
     	return url("/site/newsroom/{$year}/{$month}/{$slug}");
     }
+
+    public function editUrl()
+    {
+        return url("/i/admin/newsroom/edit/{$this->id}");
+    }
 }
