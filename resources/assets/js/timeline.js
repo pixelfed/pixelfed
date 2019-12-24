@@ -37,3 +37,8 @@ Vue.component(
     'timeline',
     require('./components/Timeline.vue').default
 );
+
+Vue.component(
+    'announcements-card',
+    require('./components/AnnouncementsCard.vue').default
+);
