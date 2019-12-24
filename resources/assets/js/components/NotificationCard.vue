@@ -1,5 +1,6 @@
 <template>
-	<div>
+<div>
+	<transition name="fade">
 		<div class="card notification-card shadow-none border">
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
@@ -57,7 +58,8 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</transition>
+</div>
 </template>
 
 <style type="text/css" scoped></style>
