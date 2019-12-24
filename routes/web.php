@@ -52,6 +52,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('messages/home', 'AdminController@messagesHome')->name('admin.messages');
     Route::get('messages/show/{id}', 'AdminController@messagesShow');
     Route::post('messages/mark-read', 'AdminController@messagesMarkRead');
+    Route::redirect('site-news', '/i/admin/newsroom');
+    Route::get('newsroom', 'AdminController@newsroomHome')->name('admin.newsroom.home');
+    Route::get('newsroom/create', 'AdminController@newsroomCreate')->name('admin.newsroom.create');
+    Route::get('newsroom/edit/{id}', 'AdminController@newsroomEdit');
+    Route::post('newsroom/edit/{id}', 'AdminController@newsroomUpdate');
+    Route::delete('newsroom/edit/{id}', 'AdminController@newsroomDelete');
+    Route::post('newsroom/create', 'AdminController@newsroomStore');
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
@@ -113,6 +120,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('notifications', 'ApiController@notifications');
                 Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
                 Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
+                Route::get('newsroom/timeline', 'NewsroomController@timelineApi');
+                Route::post('newsroom/markasread', 'NewsroomController@markAsRead');
             });
 
             Route::group(['prefix' => 'v2'], function() {
@@ -360,6 +369,10 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('report-something', 'site.help.report-something')->name('help.report-something');
             Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
         });
+        Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
+        Route::get('newsroom/archive', 'NewsroomController@archive');
+        Route::get('newsroom/search', 'NewsroomController@search');
+        Route::get('newsroom', 'NewsroomController@index');
     });
 
     Route::group(['prefix' => 'timeline'], function () {
