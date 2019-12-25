@@ -7,7 +7,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Http\File;
+use Cache;
 use FFMpeg;
+use Storage;
 use App\Media;
 
 class VideoThumbnail implements ShouldQueue
@@ -57,6 +60,28 @@ class VideoThumbnail implements ShouldQueue
 
         } catch (Exception $e) {
             
+        }
+
+        if(config('pixelfed.cloud_storage') == true) {
+            $path = storage_path('app/'.$media->media_path);
+            $thumb = storage_path('app/'.$media->thumbnail_path);
+            $p = explode('/', $media->media_path);
+            $monthHash = $p[2];
+            $userHash = $p[3];
+            $storagePath = "public/m/{$monthHash}/{$userHash}";
+            $file = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($path), 'public');
+            $url = Storage::disk(config('filesystems.cloud'))->url($file);
+            $thumbFile = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($thumb), 'public');
+            $thumbUrl = Storage::disk(config('filesystems.cloud'))->url($thumbFile);
+            $media->thumbnail_url = $thumbUrl;
+            $media->cdn_url = $url;
+            $media->optimized_url = $url;
+            $media->save();
+
+        }
+        
+        if($media->status_id) {
+            Cache::forget('status:transformer:media:attachments:' . $media->status_id);
         }
     }
 }
