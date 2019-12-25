@@ -80,6 +80,9 @@ class ImageUpdate implements ShouldQueue
             $storagePath = "public/m/{$monthHash}/{$userHash}";
             $file = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($path), 'public');
             $url = Storage::disk(config('filesystems.cloud'))->url($file);
+            $thumbFile = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($thumb), 'public');
+            $thumbUrl = Storage::disk(config('filesystems.cloud'))->url($thumbFile);
+            $media->thumbnail_url = $thumbUrl;
             $media->cdn_url = $url;
             $media->optimized_url = $url;
             $media->save();
