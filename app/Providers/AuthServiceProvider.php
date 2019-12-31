@@ -36,7 +36,6 @@ class AuthServiceProvider extends ServiceProvider
                 'read',
                 'write',
                 'follow',
-                'push'
             ]);
 
             Passport::tokensCan([
