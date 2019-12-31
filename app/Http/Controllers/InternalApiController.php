@@ -244,7 +244,7 @@ class InternalApiController extends Controller
             'cw' => 'nullable|boolean',
             'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
             'place' => 'nullable',
-            'comments_disabled' => 'nullable|boolean'
+            'comments_disabled' => 'nullable'
         ]);
 
         if(config('costar.enabled') == true) {
@@ -301,7 +301,7 @@ class InternalApiController extends Controller
         }
         
         if($request->filled('comments_disabled')) {
-            $status->comments_disabled = $request->input('comments_disabled');
+            $status->comments_disabled = (bool) $request->input('comments_disabled');
         }
 
         $status->caption = strip_tags($request->caption);
@@ -313,10 +313,6 @@ class InternalApiController extends Controller
             $media->status_id = $status->id;
             $media->save();
         }
-
-        // $resource = new Fractal\Resource\Collection($status->media()->orderBy('order')->get(), new StatusMediaContainerTransformer());
-        // $mediaContainer = $this->fractal->createData($resource)->toArray();
-        // $status->media_container = json_encode($mediaContainer);
 
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
         $cw = $profile->cw == true ? true : $cw;
