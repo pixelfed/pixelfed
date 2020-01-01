@@ -406,7 +406,6 @@ class Helpers {
 		$remoteUsername = "@{$username}@{$domain}";
 
 		abort_if(!self::validateUrl($res['inbox']), 400);
-		abort_if(!self::validateUrl($res['outbox']), 400);
 		abort_if(!self::validateUrl($res['id']), 400);
 
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
@@ -437,6 +436,22 @@ class Helpers {
 	}
 
 	public static function sendSignedObject($senderProfile, $url, $body)
+	{
+		abort_if(!self::validateUrl($url), 400);
+
+		$payload = json_encode($body);
+		$headers = HttpSignature::sign($senderProfile, $url, $body);
+
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		$response = curl_exec($ch);
+		return;
+	}
+
+	public static function apSignedPostRequest($senderProfile, $url, $body)
 	{
 		abort_if(!self::validateUrl($url), 400);
 
