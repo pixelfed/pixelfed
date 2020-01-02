@@ -35,7 +35,12 @@
 								<div class="d-block d-md-none mt-n3 mb-3">
 									<div class="row">
 										<div class="col-4">
-											<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border mr-2" :src="profile.avatar" width="77px" height="77px">
+											<div v-if="hasStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle" :src="profile.avatar" width="77px" height="77px">
+											</div>
+											<div v-else>
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border" :src="profile.avatar" width="77px" height="77px">
+											</div>
 										</div>
 										<div class="col-8">
 											<div class="d-block d-md-none mt-3 py-2">
@@ -72,7 +77,12 @@
 
 								<!-- DESKTOP PROFILE PICTURE -->
 								<div class="d-none d-md-block pb-5">
-									<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+									<div v-if="hasStory" class="has-story-lg cursor-pointer shadow-sm" @click="storyRedirect()">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+									</div>
+									<div v-else>
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+									</div>
 									<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-3">
 										<button type="button" @click="showSponsorModal" class="btn btn-outline-secondary font-weight-bold py-0">
 											<i class="fas fa-heart text-danger"></i>
@@ -523,6 +533,20 @@
 	.nav-topbar .nav-link .small {
 		font-weight: 600;
 	}
+	.has-story {
+		width: 83px;
+		height: 83px;
+		border-radius: 50%;
+		padding: 3px;
+		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+	}
+	.has-story-lg {
+		width: 156px;
+		height: 156px;
+		border-radius: 50%;
+		padding: 3px;
+		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+	}
 </style>
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
@@ -565,7 +589,8 @@
 				collectionsPage: 2,
 				isMobile: false,
 				ctxEmbedPayload: null,
-				copiedEmbed: false
+				copiedEmbed: false,
+				hasStory: null
 			}
 		},
 		beforeMount() {
@@ -620,6 +645,10 @@
 					this.profile = res.data;
 				}).then(res => {
 					this.fetchPosts();
+					axios.get('/api/stories/v1/exists/' + this.profileId)
+					.then(res => {
+						this.hasStory = res.data == true;
+					})
 				});
 			},
 
@@ -1133,6 +1162,10 @@
 				this.$refs.embedModal.hide();
 				this.$refs.visitorContextMenu.hide();
 			},
+
+			storyRedirect() {
+				window.location.href = '/stories/' + this.profileUsername;
+			}
 		}
 	}
 </script>
