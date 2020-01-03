@@ -10,6 +10,8 @@ class Story extends Model
 {
     use HasSnowflakePrimary;
 
+    public const MAX_PER_DAY = 10;
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
