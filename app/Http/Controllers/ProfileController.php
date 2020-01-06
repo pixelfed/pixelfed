@@ -237,10 +237,12 @@ class ProfileController extends Controller
         abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         $pid = $profile->id;
+        $authed = Auth::user()->profile;
+        abort_if($pid != $authed->id && $profile->followedBy($authed) == false, 404);
         $exists = Story::whereProfileId($pid)
             ->where('expires_at', '>', now())
             ->count();
-        abort_unless($exists > 1, 404);
+        abort_unless($exists > 0, 404);
         return view('profile.story', compact('pid'));
     }
 }
