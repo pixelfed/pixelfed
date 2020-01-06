@@ -101,16 +101,16 @@ trait User {
 
 	public function getMaxStoriesPerHourAttribute()
 	{
-		return 10;
+		return 20;
 	}
 
 	public function getMaxStoriesPerDayAttribute()
 	{
-		return 15;
+		return 30;
 	}
 
 	public function getMaxStoryDeletePerDayAttribute()
 	{
-		return 20;
+		return 35;
 	}
 }
