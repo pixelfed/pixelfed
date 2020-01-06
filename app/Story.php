@@ -46,4 +46,9 @@ class Story extends Model
 			->whereProfileId(Auth::user()->profile->id)
 			->exists();
 	}
+
+	public function permalink()
+	{
+		return url("/story/$this->id");
+	}
 }
