@@ -78,7 +78,7 @@
 								<!-- DESKTOP PROFILE PICTURE -->
 								<div class="d-none d-md-block pb-5">
 									<div v-if="hasStory" class="has-story-lg cursor-pointer shadow-sm" @click="storyRedirect()">
-										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150px" height="150px">
 									</div>
 									<div v-else>
 										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
@@ -534,18 +534,32 @@
 		font-weight: 600;
 	}
 	.has-story {
-		width: 83px;
-		height: 83px;
+		width: 84px;
+		height: 84px;
 		border-radius: 50%;
-		padding: 3px;
+		padding: 4px;
 		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
 	}
-	.has-story-lg {
-		width: 156px;
-		height: 156px;
+	.has-story img {
+		width: 76px;
+		height: 76px;
 		border-radius: 50%;
-		padding: 3px;
+		padding: 6px;
+		background: #fff;
+	}
+	.has-story-lg {
+		width: 159px;
+		height: 159px;
+		border-radius: 50%;
+		padding: 4px;
 		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+	}
+	.has-story-lg img {
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		padding: 6px;
+		background:#fff;
 	}
 </style>
 <script type="text/javascript">
