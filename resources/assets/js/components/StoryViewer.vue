@@ -15,12 +15,6 @@
 </div>
 </template>
 
-<style type="text/css" scoped>
-	#storyContainer > .story {
-		margin-right: 3rem;
-	}
-</style>
-
 <script type="text/javascript">
 	import 'zuck.js/dist/zuck.css';
 	import 'zuck.js/dist/skins/snapgram.css';
@@ -52,7 +46,7 @@
 					window._storyData = data;
 					window.stories = new Zuck('storyContainer', {
 						stories: data,
-						localStorage: true,
+						localStorage: false,
 						callbacks:  {
 							onOpen (storyId, callback) {
 								document.body.style.overflow = "hidden";
@@ -74,6 +68,8 @@
 						}
 					});
 					this.loading = false;
+
+					// todo: refactor this mess
 					document.querySelectorAll('#storyContainer .story')[0].click()
 				})
 				.catch(err => {
