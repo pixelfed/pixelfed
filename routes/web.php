@@ -178,6 +178,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'admin'], function () {
             Route::post('moderate', 'Api\AdminApiController@moderate');
         });
+        Route::group(['prefix' => 'stories'], function () {
+            Route::post('v1/add', 'StoryController@apiV1Add')->middleware('throttle:maxStoriesPerDay,1440');
+            Route::get('v1/fetch/{id}', 'StoryController@apiV1Fetch');
+            Route::get('v1/profile/{id}', 'StoryController@apiV1Profile');
+            Route::get('v1/exists/{id}', 'StoryController@apiV1Exists');
+            Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete')->middleware('throttle:maxStoryDeletePerDay,1440');
+        });
 
     });
 
@@ -238,6 +245,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::get('me', 'ProfileController@meRedirect');
         Route::get('intent/follow', 'SiteController@followIntent');
+        Route::post('stories/viewed', 'StoryController@apiV1Viewed');
+        Route::get('stories/new', 'StoryController@compose');
+        Route::get('my/story', 'StoryController@iRedirect');
     });
 
     Route::group(['prefix' => 'account'], function () {
@@ -389,6 +399,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('{username}', 'ProfileController@permalinkRedirect');
     });
 
+    Route::get('stories/{username}', 'ProfileController@stories');
     Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
