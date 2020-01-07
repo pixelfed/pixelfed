@@ -10,6 +10,8 @@ class Story extends Model
 {
     use HasSnowflakePrimary;
 
+    public const MAX_PER_DAY = 10;
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *
@@ -24,21 +26,13 @@ class Story extends Model
      */
     protected $dates = ['published_at', 'expires_at'];
 
+    protected $fillable = ['profile_id'];
+
 	protected $visible = ['id'];
 
 	public function profile()
 	{
 		return $this->belongsTo(Profile::class);
-	}
-
-	public function items()
-	{
-		return $this->hasMany(StoryItem::class);
-	}
-
-	public function reactions()
-	{
-		return $this->hasMany(StoryReaction::class);
 	}
 
 	public function views()
@@ -48,7 +42,13 @@ class Story extends Model
 
 	public function seen($pid = false)
 	{
-		$id = $pid ?? Auth::user()->profile->id;
-		return $this->views()->whereProfileId($id)->exists();
+		return StoryView::whereStoryId($this->id)
+			->whereProfileId(Auth::user()->profile->id)
+			->exists();
+	}
+
+	public function permalink()
+	{
+		return url("/story/$this->id");
 	}
 }

@@ -2,7 +2,7 @@
 <div class="container" style="">
 	<div v-if="layout === 'feed'" class="row">
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
-			<div class="d-none" data-id="StoryTimelineComponent"></div>
+			<story-component v-if="config.features.stories"></story-component>
 			<div style="padding-top:10px;">
 				<div v-if="loading" class="text-center">
 					<div class="spinner-border" role="status">
@@ -255,9 +255,9 @@
 					<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 				</div>
 
-				<div v-show="modes.notify == true && !loading" class="mb-4">
+				<!-- <div v-show="modes.notify == true && !loading" class="mb-4">
 					<notification-card></notification-card>
-				</div>
+				</div> -->
 
 				<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
 					<div class="card">

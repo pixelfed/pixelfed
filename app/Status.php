@@ -131,13 +131,9 @@ class Status extends Model
         $media = $this->firstMedia();
         $path = $media->media_path;
         $hash = is_null($media->processed_at) ? md5('unprocessed') : md5($media->created_at);
-        if(config('pixelfed.cloud_storage') == true) {
-            $url = Storage::disk(config('filesystems.cloud'))->url($path)."?v={$hash}";
-        } else {
-            $url = Storage::url($path)."?v={$hash}";
-        }
+        $url = $media->cdn_url ? $media->cdn_url . "?v={$hash}" : url(Storage::url($path)."?v={$hash}");
 
-        return url($url);
+        return $url;
     }
 
     public function likes()

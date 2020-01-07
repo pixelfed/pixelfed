@@ -179,8 +179,8 @@
 		</div>
 		<div class="form-check pb-3">
 			<input class="form-check-input" type="checkbox" id="show_tips">
-			<label class="form-check-label font-weight-bold">Show Tips</label>
-			<p class="text-muted small help-text">Show Tips on Timelines (Desktop Only)</p>
+			<label class="form-check-label font-weight-bold">Show Announcements</label>
+			<p class="text-muted small help-text">Show Announcements on Timelines (Desktop Only)</p>
 		</div>
 		<div class="form-check pb-3">
 			<input class="form-check-input" type="checkbox" id="force_metro">

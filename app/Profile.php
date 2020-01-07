@@ -303,4 +303,9 @@ class Profile extends Model
             ->whereFollowingId($this->id)
             ->exists();
     }
+
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
 }

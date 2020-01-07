@@ -84,52 +84,6 @@
 				<div class="card-body p-0 border-top">
 					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
 						<div class="text-center">
-							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/compose">
-								<div class="card-body">
-									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="far fa-image text-white fa-lg"></i>
-										</div>	
-										<div class="media-body text-left">
-											<h5 class="mt-0 font-weight-bold text-primary">New Post</h5>
-											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos.</p>
-										</div>
-									</div>
-								</div>
-							</a>
-
-							<a class="d-none card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" :click="showAddToStoryCard">
-								<div class="card-body">
-									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-history text-white fa-lg"></i>
-										</div>	
-										<div class="media-body text-left">
-											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">Add to Story</span> 
-											</p>
-											<p class="mb-0 text-muted">Add a photo or video to your story.</p>
-										</div>
-									</div>
-								</div>
-							</a>
-
-							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
-								<div class="card-body">
-									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-images text-white fa-lg"></i>
-										</div>	
-										<div class="media-body text-left">
-											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span> 
-											</p>
-											<p class="mb-0 text-muted">Create a curated collection of photos.</p>
-										</div>
-									</div>
-								</div>
-							</a>
-
 							<div v-if="media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addMedia" class="card-body">
 									<div class="media">
@@ -138,17 +92,53 @@
 										</div>	
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">Try ComposeUI v4</span> 
-												<sup>
-													<span class="badge badge-primary pb-1">BETA</span>
-												</sup>
+												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span> 
 											</p>
-											<p class="mb-0 text-muted">The next generation compose experience.</p>
+											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
 										</div>
 									</div>
 								</div>
 							</div>
-							<p class="pt-3">
+							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
+								<div class="card-body">
+									<div class="media">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-history text-primary fa-lg"></i>
+										</div>	
+										<div class="media-body text-left">
+											<p class="mb-0">
+												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span> 
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
+												</sup>
+											</p>
+											<p class="mb-0 text-muted">Add Photo to Story</p>
+										</div>
+									</div>
+								</div>
+							</a>
+
+							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
+								<div class="card-body">
+									<div class="media">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-images text-primary fa-lg"></i>
+										</div>	
+										<div class="media-body text-left">
+											<p class="mb-0">
+												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span> 
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
+												</sup>
+											</p>
+											<p class="mb-0 text-muted">New collection of posts</p>
+										</div>
+									</div>
+								</div>
+							</a>
+
+							
+							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>
 							</p>
 						</div>

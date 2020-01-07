@@ -9,6 +9,7 @@ use View;
 use App\Follower;
 use App\FollowRequest;
 use App\Profile;
+use App\Story;
 use App\User;
 use App\UserFilter;
 use League\Fractal;
@@ -135,6 +136,21 @@ class ProfileController extends Controller
         return false;
     }
 
+    public static function accountCheck(Profile $profile)   
+    {   
+        switch ($profile->status) { 
+            case 'disabled':    
+            case 'suspended':   
+            case 'delete':  
+                return view('profile.disabled');    
+                break;  
+                
+            default:    
+                break;  
+        }   
+        return abort(404);  
+    }
+
     protected function blockedProfileCheck(Profile $profile)
     {
         $pid = Auth::user()->profile->id;
@@ -214,5 +230,19 @@ class ProfileController extends Controller
         });
         
         return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+    }
+
+    public function stories(Request $request, $username)
+    {
+        abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        $pid = $profile->id;
+        $authed = Auth::user()->profile;
+        abort_if($pid != $authed->id && $profile->followedBy($authed) == false, 404);
+        $exists = Story::whereProfileId($pid)
+            ->where('expires_at', '>', now())
+            ->count();
+        abort_unless($exists > 0, 404);
+        return view('profile.story', compact('pid'));
     }
 }

@@ -47,4 +47,8 @@ return [
 			'custom' => env('USERNAME_REMOTE_CUSTOM_TEXT', null)
 		]
 	],
+
+	'stories' => [
+		'enabled' => env('STORIES_ENABLED', false),
+	]
 ];
