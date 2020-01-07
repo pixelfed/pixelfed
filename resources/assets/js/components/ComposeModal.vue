@@ -94,7 +94,7 @@
 											<p class="mb-0">
 												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span> 
 											</p>
-											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos.</p>
+											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
 										</div>
 									</div>
 								</div>
@@ -102,17 +102,17 @@
 							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
 								<div class="card-body">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-history text-white fa-lg"></i>
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-history text-primary fa-lg"></i>
 										</div>	
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">Add to Story</span> 
-												<sup>
-													<span class="badge badge-primary pb-1">BETA</span>
+												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span> 
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">Add a photo or video to your story.</p>
+											<p class="mb-0 text-muted">Add a photo to your story</p>
 										</div>
 									</div>
 								</div>
@@ -121,21 +121,24 @@
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
 								<div class="card-body">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-images text-white fa-lg"></i>
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-images text-primary fa-lg"></i>
 										</div>	
 										<div class="media-body text-left">
 											<p class="mb-0">
 												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span> 
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
+												</sup>
 											</p>
-											<p class="mb-0 text-muted">Create a curated collection of photos.</p>
+											<p class="mb-0 text-muted">New collection of posts</p>
 										</div>
 									</div>
 								</div>
 							</a>
 
 							
-							<p class="pt-3">
+							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>
 							</p>
 						</div>
