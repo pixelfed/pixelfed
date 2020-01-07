@@ -112,7 +112,7 @@
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">Add a photo to your story</p>
+											<p class="mb-0 text-muted">Add Photo to Story</p>
 										</div>
 									</div>
 								</div>
