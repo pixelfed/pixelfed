@@ -179,6 +179,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('moderate', 'Api\AdminApiController@moderate');
         });
         Route::group(['prefix' => 'stories'], function () {
+            Route::get('v1/recent', 'StoryController@apiV1Recent');
             Route::post('v1/add', 'StoryController@apiV1Add')->middleware('throttle:maxStoriesPerDay,1440');
             Route::get('v1/fetch/{id}', 'StoryController@apiV1Fetch');
             Route::get('v1/profile/{id}', 'StoryController@apiV1Profile');
