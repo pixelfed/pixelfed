@@ -2,7 +2,7 @@
 
 
 @section('content')
-<story-compose></story-compose>
+<story-compose profile-id="{{auth()->user()->profile_id}}"></story-compose>
 @endsection
 
 @push('scripts')
