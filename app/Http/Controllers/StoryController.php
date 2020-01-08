@@ -42,7 +42,9 @@ class StoryController extends Controller
         }
 
         $story = new Story();
+        $story->duration = 3;
 		$story->profile_id = $user->profile_id;
+		$story->expires_at = now()->addHours(24);
 		$story->save();
 
         $monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
