@@ -106,7 +106,7 @@ class StoryController extends Controller
 
 		$stories = Story::with('profile')
 			->whereIn('profile_id', $following)
-			->groupBy('profile_id')
+			->groupBy(['id', 'profile_id'])
 			->where('expires_at', '>', now())
 			->orderByDesc('expires_at')
 			->take(9)
