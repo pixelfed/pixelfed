@@ -255,9 +255,9 @@
 					<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 				</div>
 
-				<!-- <div v-show="modes.notify == true && !loading" class="mb-4">
+				<div v-show="modes.notify == true && !loading" class="mb-4">
 					<notification-card></notification-card>
-				</div> -->
+				</div>
 
 				<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
 					<div class="card">
