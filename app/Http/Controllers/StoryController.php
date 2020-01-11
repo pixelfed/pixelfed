@@ -103,7 +103,7 @@ class StoryController extends Controller
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
 		$profile = $request->user()->profile;
-		$following = FollowerService::build()->profile($profile)->following();
+		$following = $profile->following->pluck('id')->toArray();
 
 		$stories = Story::with('profile')
 		->whereIn('profile_id', $following)
@@ -136,8 +136,7 @@ class StoryController extends Controller
 		if($id == $profile->id) {
 			$publicOnly = true;
 		} else {
-			$following = FollowerService::build()->profile($profile)->following();
-			$publicOnly = in_array($id, $following);
+			$publicOnly = (bool) !$profile->followedBy($authed);
 		}
 
 		$stories = Story::whereProfileId($id)
@@ -173,8 +172,7 @@ class StoryController extends Controller
 		if($id == $authed->id) {
 			$publicOnly = true;
 		} else {
-			$following = FollowerService::build()->profile($authed)->following();
-			$publicOnly = in_array($id, $following);
+			$publicOnly = (bool) !$profile->followedBy($authed);
 		}
 
 		$stories = Story::whereProfileId($profile->id)
