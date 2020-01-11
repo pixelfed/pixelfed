@@ -43,12 +43,6 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="username" class="col-sm-3 col-form-label font-weight-bold">Username</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{Auth::user()->profile->username}}" readonly>
-      </div>
-    </div>
-    <div class="form-group row">
       <label for="website" class="col-sm-3 col-form-label font-weight-bold">Website</label>
       <div class="col-sm-9">
         <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}">
@@ -68,11 +62,12 @@
       <div class="col-sm-9">
         <select class="form-control" name="language">
         @foreach(App\Util\Localization\Localization::languages() as $lang)
-          <option value="{{$lang}}" {{Auth::user()->language == $lang ? 'selected':''}}>{{locale_get_display_language($lang, 'en')}} - {{locale_get_display_language($lang, $lang)}}</option>
+          <option value="{{$lang}}" {{Auth::user()->language ?? 'en' == $lang ? 'selected':''}}>{{locale_get_display_language($lang, 'en')}} - {{locale_get_display_language($lang, $lang)}}</option>
         @endforeach
         </select>
       </div>
     </div>
+    @if(config('pixelfed.enforce_account_limit'))
     <div class="pt-3">
       <p class="font-weight-bold text-muted text-center">Storage Usage</p>
     </div>
@@ -92,6 +87,7 @@
         </div>
       </div>
     </div>
+    @endif
     <hr>
     <div class="form-group row">
       <div class="col-12 text-right">
