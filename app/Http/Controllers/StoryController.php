@@ -26,7 +26,7 @@ class StoryController extends Controller
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
 		$this->validate($request, [
-			'file.*' => function() {
+			'file' => function() {
 				return [
 					'required',
 					'mimes:image/jpeg,image/png',
@@ -37,35 +37,36 @@ class StoryController extends Controller
 
 		$user = $request->user();
 
-        if(Story::whereProfileId($user->profile_id)->where('expires_at', '>', now())->count() >= Story::MAX_PER_DAY) {
-        	abort(400, 'You have reached your limit for new Stories today.');
-        }
+		if(Story::whereProfileId($user->profile_id)->where('expires_at', '>', now())->count() >= Story::MAX_PER_DAY) {
+			abort(400, 'You have reached your limit for new Stories today.');
+		}
 
-        $story = new Story();
-        $story->duration = 3;
-		$story->profile_id = $user->profile_id;
-		$story->expires_at = now()->addHours(24);
-		$story->save();
+		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
+		$sid = Str::uuid();
+		$rid = Str::random(6).'.'.Str::random(9);
 
-        $monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
-        $rid = Str::random(6).'.'.Str::random(9);
+		$photo = $request->file('file');
 
-        $photo = $request->file('file');
+		$mimes = explode(',', config('pixelfed.media_types'));
+		if(in_array($photo->getMimeType(), [
+			'image/jpeg',
+			'image/png'
+		]) == false) {
+			abort(400, 'Invalid media type');
+			return;
+		}
 
-        $mimes = explode(',', config('pixelfed.media_types'));
-        if(in_array($photo->getMimeType(), [
-        	'image/jpeg',
-        	'image/png'
-        ]) == false) {
-        	abort(400, 'Invalid media type');
-            return;
-        }
-
-		$storagePath = "public/_esm.t1/{$monthHash}/{$story->id}/{$rid}";
+		$storagePath = "public/_esm.t1/{$monthHash}/{$sid}/{$rid}";
 		$path = $photo->store($storagePath);
 
+		$story = new Story();
+		$story->duration = 3;
+		$story->profile_id = $user->profile_id;
+		$story->type = 'photo';
+		$story->mime = $photo->getMimeType();
 		$story->path = $path;
 		$story->local = true;
+		$story->size = $photo->getClientSize();
 		$story->expires_at = now()->addHours(24);
 		$story->save();
 
@@ -83,7 +84,7 @@ class StoryController extends Controller
 		$user = $request->user();
 
 		$story = Story::whereProfileId($user->profile_id)
-			->findOrFail($id);
+		->findOrFail($id);
 
 		if(Storage::exists($story->path) == true) {
 			Storage::delete($story->path);
@@ -105,23 +106,23 @@ class StoryController extends Controller
 		$following = FollowerService::build()->profile($profile)->following();
 
 		$stories = Story::with('profile')
-			->whereIn('profile_id', $following)
-			->where('expires_at', '>', now())
-			->groupBy('profile_id')
-			->orderByDesc('expires_at')
-			->take(9)
-			->get()
-			->map(function($s, $k) {
-				return [
-					'id' => (string) $s->id,
-					'photo' => $s->profile->avatarUrl(),
-					'name'	=> $s->profile->username,
-					'link'	=> $s->profile->url(),
-					'lastUpdated' => (int) $s->created_at->format('U'),
-					'seen' => $s->seen(),
-					'items' => [],
-					'pid' => (string) $s->profile->id
-				];
+		->whereIn('profile_id', $following)
+		->where('expires_at', '>', now())
+		->groupBy('profile_id')
+		->orderByDesc('expires_at')
+		->take(9)
+		->get()
+		->map(function($s, $k) {
+			return [
+				'id' => (string) $s->id,
+				'photo' => $s->profile->avatarUrl(),
+				'name'	=> $s->profile->username,
+				'link'	=> $s->profile->url(),
+				'lastUpdated' => (int) $s->created_at->format('U'),
+				'seen' => $s->seen(),
+				'items' => [],
+				'pid' => (string) $s->profile->id
+			];
 		});
 
 		return response()->json($stories, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
@@ -140,26 +141,26 @@ class StoryController extends Controller
 		}
 
 		$stories = Story::whereProfileId($id)
-			->orderBy('expires_at', 'desc')
-			->where('expires_at', '>', now())
-			->when(!$publicOnly, function($query, $publicOnly) {
-				return $query->wherePublic(true);
-			})
-			->get()
-			->map(function($s, $k) {
-				return [
-					'id' => (string) $s->id,
-					'type' => 'photo',
-					'length' => 3,
-					'src' => url(Storage::url($s->path)),
-					'preview' => null,
-					'link' => null,
-					'linkText' => null,
-					'time' => $s->created_at->format('U'),
-					'expires_at' => (int)  $s->expires_at->format('U'),
-					'seen' => $s->seen()
-				];
-			})->toArray();
+		->orderBy('expires_at', 'desc')
+		->where('expires_at', '>', now())
+		->when(!$publicOnly, function($query, $publicOnly) {
+			return $query->wherePublic(true);
+		})
+		->get()
+		->map(function($s, $k) {
+			return [
+				'id' => (string) $s->id,
+				'type' => 'photo',
+				'length' => 3,
+				'src' => url(Storage::url($s->path)),
+				'preview' => null,
+				'link' => null,
+				'linkText' => null,
+				'time' => $s->created_at->format('U'),
+				'expires_at' => (int)  $s->expires_at->format('U'),
+				'seen' => $s->seen()
+			];
+		})->toArray();
 		return response()->json($stories, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 	}
 
@@ -177,26 +178,26 @@ class StoryController extends Controller
 		}
 
 		$stories = Story::whereProfileId($profile->id)
-			->orderBy('expires_at')
-			->where('expires_at', '>', now())
-			->when(!$publicOnly, function($query, $publicOnly) {
-				return $query->wherePublic(true);
-			})
-			->get()
-			->map(function($s, $k) {
-				return [
-					'id' => $s->id,
-					'type' => 'photo',
-					'length' => 3,
-					'src' => url(Storage::url($s->path)),
-					'preview' => null,
-					'link' => null,
-					'linkText' => null,
-					'time' => $s->created_at->format('U'),
-					'expires_at' => (int) $s->expires_at->format('U'),
-					'seen' => $s->seen()
-				];
-			})->toArray();
+		->orderBy('expires_at')
+		->where('expires_at', '>', now())
+		->when(!$publicOnly, function($query, $publicOnly) {
+			return $query->wherePublic(true);
+		})
+		->get()
+		->map(function($s, $k) {
+			return [
+				'id' => $s->id,
+				'type' => 'photo',
+				'length' => 3,
+				'src' => url(Storage::url($s->path)),
+				'preview' => null,
+				'link' => null,
+				'linkText' => null,
+				'time' => $s->created_at->format('U'),
+				'expires_at' => (int) $s->expires_at->format('U'),
+				'seen' => $s->seen()
+			];
+		})->toArray();
 		if(count($stories) == 0) {
 			return [];
 		}
@@ -241,8 +242,8 @@ class StoryController extends Controller
 		abort_if(!config('instance.stories.enabled'), 404);
 
 		$res = (bool) Story::whereProfileId($id)
-			->where('expires_at', '>', now())
-			->count();
+		->where('expires_at', '>', now())
+		->count();
 
 		return response()->json($res);
 	}
