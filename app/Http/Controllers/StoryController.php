@@ -132,14 +132,15 @@ class StoryController extends Controller
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
-		$profile = $request->user()->profile;
-		if($id == $profile->id) {
+		$authed = $request->user()->profile;
+		$profile = Profile::findOrFail($id);
+		if($id == $authed->id) {
 			$publicOnly = true;
 		} else {
-			$publicOnly = (bool) !$profile->followedBy($authed);
+			$publicOnly = (bool) $profile->followedBy($authed);
 		}
 
-		$stories = Story::whereProfileId($id)
+		$stories = Story::whereProfileId($profile->id)
 		->orderBy('expires_at', 'desc')
 		->where('expires_at', '>', now())
 		->when(!$publicOnly, function($query, $publicOnly) {
@@ -172,7 +173,7 @@ class StoryController extends Controller
 		if($id == $authed->id) {
 			$publicOnly = true;
 		} else {
-			$publicOnly = (bool) !$profile->followedBy($authed);
+			$publicOnly = (bool) $profile->followedBy($authed);
 		}
 
 		$stories = Story::whereProfileId($profile->id)
