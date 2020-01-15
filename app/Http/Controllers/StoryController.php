@@ -104,11 +104,12 @@ class StoryController extends Controller
 
 		$profile = $request->user()->profile;
 		$following = $profile->following->pluck('id')->toArray();
+		$groupBy = config('database.default') == 'pgsql' ? 'id' : 'profile_id';
 
 		$stories = Story::with('profile')
 		->whereIn('profile_id', $following)
 		->where('expires_at', '>', now())
-		->groupBy('profile_id')
+		->groupBy($groupBy)
 		->orderByDesc('expires_at')
 		->take(9)
 		->get()
