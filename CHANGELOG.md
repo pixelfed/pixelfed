@@ -5,6 +5,7 @@
 
 ### Fixed
 - Fixed Story Compose bug affecting postgres instances ([#1918](https://github.com/pixelfed/pixelfed/pull/1918))
+- Fixed header background bug on MomentUI profiles ([#1933](https://github.com/pixelfed/pixelfed/pull/1933))
 
 
 ### Changed
