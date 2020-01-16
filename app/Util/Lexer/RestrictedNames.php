@@ -6,6 +6,7 @@ class RestrictedNames
 {
     public static $blacklist = [
      'autoconfig',
+     'bedpage',
      'blog',
      'broadcasthost',
      'copyright',
