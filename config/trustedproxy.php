@@ -1,5 +1,13 @@
 <?php
 
+$proxyString = env('TRUST_PROXIES', '');
+
+if ($proxyString == '*' || $proxyString == '**') {
+    $proxies = $proxyString;
+} else {
+    $proxies = explode(',', $proxyString);
+}
+
 return [
     /*
      * Set trusted proxy IP addresses.
@@ -23,5 +31,5 @@ return [
      * how many proxies that client's request has
      * subsequently passed through.
      */
-    'proxies' => explode(',', env('TRUST_PROXIES', '')),
+    'proxies' => $proxies,
 ];
