@@ -50,20 +50,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Restricted Usernames
-    |--------------------------------------------------------------------------
-    |
-    | Optional blacklist to prevent registering usernames that could
-    | be confused for admin or system services.
-    |
-    */
-    'restricted_names' => [
-      'reserved_routes' => true,
-      'use_blacklist'   => env('USERNAME_BLACKLIST', false),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Allow New Registrations
     |--------------------------------------------------------------------------
     |
@@ -278,4 +264,6 @@ return [
     'admin' => [
         'env_editor' => env('ADMIN_ENV_EDITOR', false)
     ],
+
+    'links_per_post' => env('MAX_LINKS_PER_POST', 0) 
 ];
