@@ -41,6 +41,7 @@ return [
 		]
 	],
 	'username' => [
+		'banned' => env('BANNED_USERNAMES'),
 		'remote' => [
 			'formats' => ['@', 'from', 'custom'],
 			'format' => in_array(env('USERNAME_REMOTE_FORMAT', '@'), ['@','from','custom']) ? env('USERNAME_REMOTE_FORMAT', '@') : '@',
