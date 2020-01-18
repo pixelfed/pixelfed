@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topbarNav" aria-controls="topbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -29,8 +29,8 @@
         <li class="nav-item mx-2 {{request()->is('*users*')?'active':''}}">
           <a class="nav-link font-weight-lighter text-muted" href="{{route('admin.users')}}">Users</a>
         </li>
-        <li class="nav-item dropdown mx-2 {{request()->is(['*settings*','*discover*', '*site-news*'])?'active':''}}">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <li class="nav-item dropdown mx-3 {{request()->is(['*settings*','*discover*', '*site-news*'])?'active':''}}">
+          <a class="nav-link dropdown-toggle px-4" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             More
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
