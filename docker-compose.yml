@@ -33,6 +33,7 @@ services:
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
+      - "./.env:/var/www/.env"
     networks:
       - external
       - internal
