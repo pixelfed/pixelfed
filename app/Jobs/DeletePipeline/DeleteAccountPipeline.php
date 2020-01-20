@@ -30,6 +30,8 @@ use App\{
     ReportLog,
     StatusHashtag,
     Status,
+    Story,
+    StoryView,
     User,
     UserDevice,
     UserFilter,
@@ -92,10 +94,24 @@ class DeleteAccountPipeline implements ShouldQueue
         });
 
         DB::transaction(function() use ($user) {
+            $pid = $this->user->profile_id;
+
+            StoryView::whereProfileId($pid)->delete();
+            $stories = Story::whereProfileId($pid)->get();
+            foreach($stories as $story) {
+                $path = storage_path('app/'.$story->path);
+                if(is_file($path)) {
+                    unlink($path);
+                }
+                $story->forceDelete();
+            }
+        });
+
+        DB::transaction(function() use ($user) {
             $medias = Media::whereUserId($user->id)->get();
             foreach($medias as $media) {
-                $path = $media->media_path;
-                $thumb = $media->thumbnail_path;
+                $path = storage_path('app/'.$media->media_path);
+                $thumb = storage_path('app/'.$media->thumbnail_path);
                 if(is_file($path)) {
                     unlink($path);
                 }
