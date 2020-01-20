@@ -25,13 +25,3 @@
 </div>
 
 @endsection
-
-@push('scripts')
-<script type="text/javascript">
-$(document).ready(function() {
-  $('a#composeModal').on('click', function() {
-    swal('Not Supported', 'You cannot compose a post from the admin dashboard.', 'error');
-  });
-});
-</script>
-@endpush
