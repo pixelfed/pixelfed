@@ -19,7 +19,7 @@
 					</video>
 
 					<div v-else-if="media.type == 'Image'" slot="img" :title="media.description">
-						<img :class="media.filter_class + ' d-block img-fluid w-100'" :src="media.url" :alt="media.description" loading="lazy">
+						<img :class="media.filter_class + ' d-block img-fluid w-100'" :src="media.url" :alt="media.description" loading="lazy" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 					</div>
 
 					<p v-else class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
@@ -58,7 +58,7 @@
 				</video>
 
 				<div v-else-if="media.type == 'Image'" :title="media.description">
-					<img :class="media.filter_class + ' img-fluid w-100'" :src="media.url" :alt="media.description" loading="lazy">
+					<img :class="media.filter_class + ' img-fluid w-100'" :src="media.url" :alt="media.description" loading="lazy"  onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 				</div>
 
 				<p v-else class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
