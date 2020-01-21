@@ -30,6 +30,8 @@ class Story extends Model
 
 	protected $visible = ['id'];
 
+	protected $hidden = ['json'];
+
 	public function profile()
 	{
 		return $this->belongsTo(Profile::class);
