@@ -10,6 +10,7 @@ use App\Story;
 use App\StoryView;
 use App\Services\StoryService;
 use Cache, Storage;
+use Image as Intervention;
 use App\Services\FollowerService;
 
 
@@ -41,23 +42,8 @@ class StoryController extends Controller
 			abort(400, 'You have reached your limit for new Stories today.');
 		}
 
-		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
-		$sid = Str::uuid();
-		$rid = Str::random(6).'.'.Str::random(9);
-
 		$photo = $request->file('file');
-
-		$mimes = explode(',', config('pixelfed.media_types'));
-		if(in_array($photo->getMimeType(), [
-			'image/jpeg',
-			'image/png'
-		]) == false) {
-			abort(400, 'Invalid media type');
-			return;
-		}
-
-		$storagePath = "public/_esm.t1/{$monthHash}/{$sid}/{$rid}";
-		$path = $photo->store($storagePath);
+		$path = $this->storePhoto($photo);
 
 		$story = new Story();
 		$story->duration = 3;
@@ -75,6 +61,30 @@ class StoryController extends Controller
 			'msg'  => 'Successfully added',
 			'media_url' => url(Storage::url($story->path))
 		];
+	}
+
+	protected function storePhoto($photo)
+	{
+		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
+		$sid = Str::uuid();
+		$rid = Str::random(6).'.'.Str::random(9);
+		$mimes = explode(',', config('pixelfed.media_types'));
+		if(in_array($photo->getMimeType(), [
+			'image/jpeg',
+			'image/png'
+		]) == false) {
+			abort(400, 'Invalid media type');
+			return;
+		}
+
+		$storagePath = "public/_esm.t1/{$monthHash}/{$sid}/{$rid}";
+		$path = $photo->store($storagePath);
+		$fpath = storage_path('app/' . $path);
+		$img = Intervention::make($fpath);
+		$img->orientate();
+		$img->save($fpath, config('pixelfed.image_quality'));
+		$img->destroy();
+		return $path;
 	}
 
 	public function apiV1Delete(Request $request, $id)
@@ -107,9 +117,9 @@ class StoryController extends Controller
 		$groupBy = config('database.default') == 'pgsql' ? 'id' : 'profile_id';
 
 		$stories = Story::with('profile')
+		->groupBy($groupBy)
 		->whereIn('profile_id', $following)
 		->where('expires_at', '>', now())
-		->groupBy($groupBy)
 		->orderByDesc('expires_at')
 		->take(9)
 		->get()
