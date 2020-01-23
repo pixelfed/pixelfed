@@ -1,7 +1,7 @@
 FROM php:7.4-apache-buster
 
-ARG COMPOSER_VERSION="1.9.1"
-ARG COMPOSER_CHECKSUM="1f210b9037fcf82670d75892dfc44400f13fe9ada7af9e787f93e50e3b764111"
+ARG COMPOSER_VERSION="1.9.2"
+ARG COMPOSER_CHECKSUM="58753998712ae435915a452d701ae28a9389653bbf36b3b6adf24e03d90a9467"
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends apt-utils \
@@ -17,8 +17,9 @@ RUN apt-get update \
       --with-jpeg \
       --with-webp \
       --with-xpm \
+ && pecl install imagick \
  && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
- && docker-php-ext-enable pcntl gd exif zip curl \
+ && docker-php-ext-enable pcntl gd exif zip curl imagick\
  && a2enmod rewrite remoteip \
  && {\
      echo RemoteIPHeader X-Real-IP ;\
