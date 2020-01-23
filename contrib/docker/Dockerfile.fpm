@@ -17,7 +17,7 @@ RUN apt-get update \
       --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
- && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
+ && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql bcmath ctype curl iconv intl json mbstring openssl tokenizer xml zip imagick pcntl gd exif \
  && pecl install imagick \
  && docker-php-ext-enable pcntl imagick gd exif zip curl \
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
