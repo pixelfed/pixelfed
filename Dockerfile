@@ -8,15 +8,14 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends git gosu \
       optipng pngquant jpegoptim gifsicle libpq-dev libsqlite3-dev locales zip unzip libzip-dev libcurl4-openssl-dev \
       libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-6 \
-      libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev mariadb-client libonig-dev \
+      libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev mariadb-client \
  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
  && locale-gen && update-locale \
  && docker-php-source extract \
-
- && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql bcmath ctype curl iconv intl json mbstring openssl tokenizer xml zip imagick pcntl exif \
+ && php -i \
+ && docker-php-ext-install -j$(nproc) pcntl exif zip curl bcmath intl \
  && pecl install imagick \
- && docker-php-ext-enable pcntl imagick exif zip curl \
- 
+ && docker-php-ext-enable pcntl imagick exif zip curl bcmath intl \
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
  && echo "${COMPOSER_CHECKSUM}  /usr/bin/composer" | sha256sum -c - \
  && chmod 755 /usr/bin/composer \
