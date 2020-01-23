@@ -15,7 +15,7 @@ services:
 ## App and Worker
   app:
     build:
-      context: .contrib/docker/
+      context: .
       dockerfile: Dockerfile
     image: pixelfed
     restart: unless-stopped
@@ -33,7 +33,7 @@ services:
 
   worker:
     build:
-      context: .contrib/docker/
+      context: .
       dockerfile: Dockerfile
     image: pixelfed
     restart: unless-stopped
