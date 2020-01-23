@@ -14,21 +14,11 @@ services:
 
 ## App and Worker
   app:
-    # Comment to use dockerhub image
     build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
+      context: .contrib/docker/
+      dockerfile: Dockerfile
     image: pixelfed
     restart: unless-stopped
-    ## If you have a traefik running, uncomment this to expose Pixelfed
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.frontend.rule=Host:your.url
-    #   - traefik.port=80
-    ## If you have a standard reverse proxy, uncommit this to expose Pixelfed
-    # ports:
-    #   - "127.0.0.1:8080:80"
     env_file:
       - ./.env
     volumes:
@@ -38,13 +28,13 @@ services:
     networks:
       - external
       - internal
+    ports:
+        - "9000:9000"
 
-  worker:  # Comment this whole block if HORIZON_EMBED is true.
-    # Comment to use dockerhub image
+  worker:
     build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
+      context: .contrib/docker/
+      dockerfile: Dockerfile
     image: pixelfed
     restart: unless-stopped
     env_file:
