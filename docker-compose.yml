@@ -48,7 +48,7 @@ services:
     command: gosu www-data php artisan horizon
 
 ## DB and Cache
-  redis:
+  redispf:
     image: redis:5-alpine
     restart: unless-stopped
     volumes:
@@ -58,7 +58,7 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
 
-  db:
+  dbpf:
     restart: unless-stopped
     image: postgres:12-alpine
     networks:
