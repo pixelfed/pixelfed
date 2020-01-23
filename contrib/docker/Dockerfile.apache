@@ -52,8 +52,8 @@ VOLUME /var/www/storage /var/www/bootstrap
 ENV APP_ENV=production \
     APP_DEBUG=false \
     LOG_CHANNEL=stderr \
-    DB_CONNECTION=mysql \
-    DB_PORT=3306 \
+    DB_CONNECTION=pgsql \
+    DB_PORT=5432 \
     DB_HOST=db \
     BROADCAST_DRIVER=log \
     QUEUE_DRIVER=redis \
