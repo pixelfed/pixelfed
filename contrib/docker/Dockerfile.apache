@@ -44,7 +44,7 @@ COPY . /var/www/
 WORKDIR /var/www/
 RUN cp -r storage storage.skel \
  && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
- && composer install --prefer-dist --no-interaction \
+ && composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader \
  && rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
@@ -52,6 +52,7 @@ VOLUME /var/www/storage /var/www/bootstrap
 ENV APP_ENV=production \
     APP_DEBUG=false \
     LOG_CHANNEL=stderr \
+    IMAGE_DRIVER=imagick \
     DB_CONNECTION=pgsql \
     DB_PORT=5432 \
     DB_HOST=db \
