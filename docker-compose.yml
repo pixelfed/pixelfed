@@ -12,6 +12,7 @@ version: '3'
 
 services:
 
+## App and Worker
   app:
     # Comment to use dockerhub image
     build:
@@ -33,6 +34,7 @@ services:
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
+      - "./.env:/var/www/.env"
     networks:
       - external
       - internal
@@ -54,21 +56,8 @@ services:
       - external  # Required for ActivityPub
       - internal
     command: gosu www-data php artisan horizon
-    
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      - MYSQL_DATABASE=pixelfed
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
-    volumes:
-      - "db-data:/var/lib/mysql"
 
+## DB and Cache
   redis:
     image: redis:5-alpine
     restart: unless-stopped
@@ -76,11 +65,27 @@ services:
       - "redis-data:/data"
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+
+  db:
+    restart: unless-stopped
+    image: postgres:12-alpine
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=pixelfed
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
 
 # Adjust your volume data in order to store data where you wish
 volumes:
   redis-data:
-  db-data:
+  postgres-data:
   app-storage:
   app-bootstrap:  
 
