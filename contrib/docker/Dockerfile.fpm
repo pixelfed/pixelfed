@@ -1,7 +1,7 @@
-FROM php:7.3-fpm-buster
+FROM php:7.4-fpm-buster
 
-ARG COMPOSER_VERSION="1.8.5"
-ARG COMPOSER_CHECKSUM="4e4c1cd74b54a26618699f3190e6f5fc63bb308b13fa660f71f2a2df047c0e17"
+ARG COMPOSER_VERSION="1.9.2"
+ARG COMPOSER_CHECKSUM="58753998712ae435915a452d701ae28a9389653bbf36b3b6adf24e03d90a9467"
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends apt-utils \
@@ -19,7 +19,7 @@ RUN apt-get update \
       --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
  && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
  && pecl install imagick \
- && docker-php-ext-enable imagick pcntl imagick gd exif zip curl \
+ && docker-php-ext-enable pcntl imagick gd exif zip curl \
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
  && echo "${COMPOSER_CHECKSUM}  /usr/bin/composer" | sha256sum -c - \
  && chmod 755 /usr/bin/composer \
