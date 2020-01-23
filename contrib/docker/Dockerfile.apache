@@ -18,7 +18,7 @@ RUN apt-get update \
       --with-webp \
       --with-xpm \
  && pecl install imagick \
- && docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite pcntl gd exif bcmath intl zip curl \
+ && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql bcmath ctype curl iconv intl json mbstring openssl tokenizer xml zip imagick pcntl gd exif \
  && docker-php-ext-enable pcntl gd exif zip curl imagick\
  && a2enmod rewrite remoteip \
  && {\
