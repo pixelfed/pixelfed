@@ -21,6 +21,7 @@ class Report extends Model
     public function reported()
     {
         $class = $this->object_type;
+
         switch ($class) {
             case 'App\Status':
              $column = 'id';
@@ -32,7 +33,12 @@ class Report extends Model
               break;
         }
 
-        return (new $class())->where($column, $this->object_id)->firstOrFail();
+        return (new $class())->where($column, $this->object_id)->first();
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'object_id');
     }
 
     public function reportedUser()
