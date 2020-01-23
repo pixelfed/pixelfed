@@ -8,7 +8,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends git gosu \
       optipng pngquant jpegoptim gifsicle libpq-dev libsqlite3-dev locales zip unzip libzip-dev libcurl4-openssl-dev \
       libfreetype6 libicu-dev libjpeg62-turbo libpng16-16 libxpm4 libwebp6 libmagickwand-6.q16-6 \
-      libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev mariadb-client\
+      libfreetype6-dev libjpeg62-turbo-dev libpng-dev libxpm-dev libwebp-dev libmagickwand-dev mariadb-client libonig-dev \
  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
  && locale-gen && update-locale \
  && docker-php-source extract \
