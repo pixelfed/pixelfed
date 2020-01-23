@@ -12,14 +12,11 @@ RUN apt-get update \
  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
  && locale-gen && update-locale \
  && docker-php-source extract \
- && docker-php-ext-configure gd \
-      --enable-freetype \
-      --with-jpeg-dir=/usr/lib/x86_64-linux-gnu/ \
-      --with-xpm-dir=/usr/lib/x86_64-linux-gnu/ \
-      --with-webp-dir=/usr/lib/x86_64-linux-gnu/ \
- && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql bcmath ctype curl iconv intl json mbstring openssl tokenizer xml zip imagick pcntl gd exif \
+
+ && docker-php-ext-install -j$(nproc) pdo_mysql pdo_pgsql bcmath ctype curl iconv intl json mbstring openssl tokenizer xml zip imagick pcntl exif \
  && pecl install imagick \
- && docker-php-ext-enable pcntl imagick gd exif zip curl \
+ && docker-php-ext-enable pcntl imagick exif zip curl \
+ 
  && curl -LsS https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o /usr/bin/composer \
  && echo "${COMPOSER_CHECKSUM}  /usr/bin/composer" | sha256sum -c - \
  && chmod 755 /usr/bin/composer \
@@ -39,25 +36,6 @@ RUN mkdir public.ext && cp -r storage storage.skel \
  && rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
-
-ENV APP_ENV=production \
-    APP_DEBUG=false \
-    LOG_CHANNEL=stderr \
-    IMAGE_DRIVER=imagick \
-    DB_CONNECTION=pgsql \
-    DB_PORT=5432 \
-    DB_HOST=db \
-    BROADCAST_DRIVER=log \
-    QUEUE_DRIVER=redis \
-    HORIZON_PREFIX=horizon-pixelfed \
-    REDIS_HOST=redis \
-    SESSION_SECURE_COOKIE=true \
-    API_BASE="/api/1/" \
-    API_SEARCH="/api/search" \
-    OPEN_REGISTRATION=true \
-    ENFORCE_EMAIL_VERIFICATION=true \
-    REMOTE_FOLLOW=false \
-    ACTIVITY_PUB=false
 
 CMD cp -r storage.skel/* storage/ \
  && cp -r public/* public.ext/ \
