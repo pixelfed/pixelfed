@@ -21,7 +21,7 @@
 
 <div class="container">
   <div class="col-12">
-    <div class="card mt-5">
+    <div class="card shadow-none border mt-5">
       <div class="card-body p-0">
         <div class="row">
           @include('settings.partial.sidebar')
