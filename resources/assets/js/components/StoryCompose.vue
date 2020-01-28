@@ -79,6 +79,12 @@
 				</p>
 			</div>
 
+			<!-- UPLOADING -->
+			<div v-if="page == 'uploading'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
+				<p v-if="uploadProgress != 100" class="display-4 mb-0">Uploading {{uploadProgress}}%</p>
+				<p v-else class="display-4 mb-0">Publishing Story</p>
+			</div>
+
 			<div v-if="page == 'edit'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center flex-fill mt-5 pt-5">
 					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
@@ -152,10 +158,11 @@
 					'crop',
 					'edit',
 					'confirm',
-					'error'
+					'error',
+					'uploading'
 				],
 				uploading: false,
-				uploadProgress: 100,
+				uploadProgress: 0,
 				cropper: {
 					aspectRatio: 9/16,
 					viewMode: 1,
@@ -192,6 +199,7 @@
 				let self = this;
 				self.uploading = true;
 				let io = document.querySelector('#pf-dz');
+				self.page = 'uploading';
 				Array.prototype.forEach.call(io.files, function(io, i) {
 					if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
 						swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
@@ -213,7 +221,7 @@
 
 					let xhrConfig = {
 						onUploadProgress: function(e) {
-							let progress = Math.round( (e.loaded * 100) / e.total );
+							let progress = Math.floor( (e.loaded * 100) / e.total );
 							self.uploadProgress = progress;
 						}
 					};
