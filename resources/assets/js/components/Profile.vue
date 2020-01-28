@@ -76,7 +76,7 @@
 								</div>
 
 								<!-- DESKTOP PROFILE PICTURE -->
-								<div class="d-none d-md-block pb-5">
+								<div class="d-none d-md-block pb-3">
 									<div v-if="hasStory" class="has-story-lg cursor-pointer shadow-sm" @click="storyRedirect()">
 										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150px" height="150px">
 									</div>
@@ -641,6 +641,12 @@
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
+					if(res.data.id == this.profileId || this.relationship.following == true) {
+						axios.get('/api/stories/v1/exists/' + this.profileId)
+						.then(res => {
+							this.hasStory = res.data == true;
+						})
+					}
 				});
 			}
 			if(window.outerWidth < 576) {
@@ -659,10 +665,7 @@
 					this.profile = res.data;
 				}).then(res => {
 					this.fetchPosts();
-					axios.get('/api/stories/v1/exists/' + this.profileId)
-					.then(res => {
-						this.hasStory = res.data == true;
-					})
+
 				});
 			},
 
