@@ -1,6 +1,6 @@
 <template>
 <div class="container mt-2 mt-md-5">
-	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" draggable="true" v-bind:accept="config.mimes">
+	<input type="file" id="pf-dz" name="media" class="d-none file-input" v-bind:accept="config.mimes">
 	<div class="row">
 		<div class="col-12 col-md-6 offset-md-3">
 
@@ -227,7 +227,8 @@
 					}).catch(function(e) {
 						self.uploading = false;
 						io.value = null;
-						swal('Oops!', e.response.data.message, 'warning');
+						let msg = e.response.data.message ? e.response.data.message : 'Something went wrong.'
+						swal('Oops!', msg, 'warning');
 					});
 					io.value = null;
 					self.uploadProgress = 0;
