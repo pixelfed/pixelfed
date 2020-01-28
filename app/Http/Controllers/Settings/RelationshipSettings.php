@@ -22,7 +22,7 @@ trait RelationshipSettings
 			'mode' => 'nullable|string|in:following,followers,hashtags'
 		]);
 
-		$mode = $request->input('mode');
+		$mode = $request->input('mode') ?? 'followers';
 		$profile = Auth::user()->profile;
 
 		switch ($mode) {
@@ -36,10 +36,6 @@ trait RelationshipSettings
 
 			case 'hashtags':
 				$data = $profile->hashtagFollowing()->with('hashtag')->simplePaginate(10);
-				break;
-			
-			default:
-				$data = [];
 				break;
 		}
 
