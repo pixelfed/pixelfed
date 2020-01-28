@@ -34,7 +34,7 @@
     
     @stack('styles')
     
-    <script type="text/javascript">window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
+    <script type="text/javascript">window._sharedData = {curUser: {}, version: 0}; window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
     
 </head>
 <body class="loggedIn">
