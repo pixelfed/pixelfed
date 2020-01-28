@@ -1,10 +1,12 @@
 <template>
 <div class="container" style="">
 	<div v-if="layout === 'feed'" class="row">
-		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 my-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 my-sm-3 timeline order-2 order-md-1']">
-			<story-component v-if="config.features.stories"></story-component>
-			<div style="padding-top:10px;">
-				<div v-if="loading" class="text-center">
+		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
+			<div v-if="config.features.stories">
+				<story-component v-if="config.features.stories"></story-component>
+			</div>
+			<div>
+				<div v-if="loading" class="text-center" style="padding-top:10px;">
 					<div class="spinner-border" role="status">
 						<span class="sr-only">Loading...</span>
 					</div>
@@ -21,7 +23,7 @@
 									<div class="card-body text-center pt-3">
 										<p class="mb-0">
 											<a :href="'/'+rec.username">
-												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px">
+												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 											</a>
 										</p>
 										<div class="py-3">
@@ -70,7 +72,13 @@
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
-							<img v-bind:src="status.account.avatar" width="32px" height="32px" class="cursor-pointer" style="border-radius: 32px;" @click="profileUrl(status)">
+							<img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
+								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+							</div>
+							<div v-else>
+								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+							</div> -->
 							<div class="pl-2">
 								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
 								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
@@ -207,13 +215,19 @@
 		</div>
 
 		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
-			<div class="position-sticky" style="top:78px;">
+			<div class="position-sticky" style="top:83px;">
 				<div class="mb-4">
-					<div class="">
-						<div class="">
+					<div class="card shadow-none border">
+						<div class="card-body pb-2">
 							<div class="media d-flex align-items-center">
-								<a :href="profile.url">
-									<img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px">
+								<a :href="!userStory ? profile.url : '/stories/' + profile.acct" class="mr-3">
+									<!-- <img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
+									<div v-if="userStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+									</div>
+									<div v-else>
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+									</div>
 								</a>
 								<div class="media-body d-flex justify-content-between word-break" >
 									<div>
@@ -226,7 +240,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="card-footer bg-transparent border-0 mt-2 py-1">
+						<div class="card-footer bg-transparent border-top mt-2 py-1">
 							<div class="d-flex justify-content-between text-center">
 								<span class="cursor-pointer" @click="redirect(profile.url)">
 									<p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
@@ -260,7 +274,7 @@
 				</div>
 
 				<div v-show="showSuggestions == true && suggestions.length && config.ab && config.ab.rec == true" class="mb-4">
-					<div class="card">
+					<div class="card shadow-none border">
 						<div class="card-header bg-white d-flex align-items-center justify-content-between">
 							<a class="small text-muted cursor-pointer" href="#" @click.prevent="refreshSuggestions" ref="suggestionRefresh"><i class="fas fa-sync-alt"></i></a>
 							<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
@@ -269,7 +283,7 @@
 						<div class="card-body pt-0">
 							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
 								<a :href="'/'+rec.username">
-									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3">
+									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 								</a>
 								<div class="media-body">
 									<p class="mb-0 font-weight-bold small">
@@ -328,7 +342,7 @@
 						</div>
 					</div>
 					<div class="py-3 media align-items-center">
-						<img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px">
+						<img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 						<div class="media-body">
 							<p class="mb-0 font-weight-bold small">{{s.account.username}}</p>
 							<p class="mb-0" style="line-height: 0.7;">
@@ -472,6 +486,34 @@
 		opacity: .3;
 		color: #3897f0;
 	}
+	.has-story {
+		width: 64px;
+		height: 64px;
+		border-radius: 50%;
+		padding: 2px;
+		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+	}
+	.has-story img {
+		width: 60px;
+		height: 60px;
+		border-radius: 50%;
+		padding: 3px;
+		background: #fff;
+	}
+	.has-story.has-story-sm {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		padding: 2px;
+		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+	}
+	.has-story.has-story-sm img {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		padding: 3px;
+		background: #fff;
+	}
 </style>
 
 <script type="text/javascript">
@@ -503,7 +545,7 @@
 				followingCursor: 1,
 				followingMore: true,
 				lightboxMedia: false,
-				showSuggestions: false,
+				showSuggestions: true,
 				showReadMore: true,
 				replyStatus: {},
 				replyText: '',
@@ -516,6 +558,7 @@
 				ctxEmbedPayload: false,
 				copiedEmbed: false,
 				showTips: true,
+				userStory: false,
 			}
 		},
 
@@ -525,8 +568,13 @@
 		},
 
 		mounted() {
-			if($('link[data-stylesheet="dark"]').length != 0) {
+			if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches || $('link[data-stylesheet="dark"]').length != 0) {
 				this.modes.dark = true;
+
+				// todo: release after dark mode updates
+				/* let el = document.querySelector('link[data-stylesheet="light"]');
+				el.setAttribute('href', '/css/appdark.css?id=' + Date.now());
+				el.setAttribute('data-stylesheet', 'dark'); */
 			}
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
@@ -573,7 +621,9 @@
 					if(this.profile.is_admin == true) {
 						this.modes.mod = true;
 					}
-					//this.expRec();
+					window._sharedData.curUser = res.data;
+					this.hasStory();
+					// this.expRec();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -1056,7 +1106,7 @@
 			},
 
 			expRec() {
-				return;
+				//return;
 
 				if(this.config.ab.rec == false) {
 					return;
@@ -1201,6 +1251,7 @@
 				this.ctxMenuStatus = status;
 				this.ctxEmbedPayload = window.App.util.embed.post(status.url);
 				if(status.account.id == this.profile.id) {
+					this.ctxMenuRelationship = false;
 					this.$refs.ctxModal.show();
 				} else {
 					axios.get('/api/pixelfed/v1/accounts/relationships', {
@@ -1240,12 +1291,6 @@
 				axios.post('/i/follow', {
 					item: id
 				}).then(res => {
-					this.feed.forEach(s => {
-						if(s.account.id == id) {
-							s.account.relationship.following = !s.account.relationship.following;
-						}
-					});
-
 					let username = this.ctxMenuStatus.account.acct;
 					this.closeCtxMenu();
 					setTimeout(function() {
@@ -1259,11 +1304,6 @@
 				axios.post('/i/follow', {
 					item: id
 				}).then(res => {
-					this.feed.forEach(s => {
-						if(s.account.id == id) {
-							s.account.relationship.following = !s.account.relationship.following;
-						}
-					});
 					let username = this.ctxMenuStatus.account.acct;
 					if(this.scope == 'home') {
 						this.feed = this.feed.filter(s => {
@@ -1383,6 +1423,13 @@
 					length: len
 				});
 			},
+
+			hasStory() {
+				axios.get('/api/stories/v1/exists/'+this.profile.id)
+				.then(res => {
+					this.userStory = res.data;
+				})
+			}
 		}
 	}
 </script>
