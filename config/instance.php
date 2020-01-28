@@ -3,10 +3,6 @@
 return [
 
 	'description' => env('INSTANCE_DESCRIPTION', null),
-	'announcement' => [
-		'enabled' => env('INSTANCE_ANNOUNCEMENT_ENABLED', false),
-		'message' => env('INSTANCE_ANNOUNCEMENT_MESSAGE', 'Example announcement message.<br><span class="font-weight-normal">Something else here</span>')
-	],
 
 	'contact' => [
 		'enabled' => env('INSTANCE_CONTACT_FORM', false),
@@ -15,7 +11,7 @@ return [
 
 	'discover' => [
 		'loops' => [
-			'enabled' => false
+			'enabled' => env('EXP_LOOPS', false),
 		],
 		'tags' => [
 			'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false)
@@ -51,5 +47,10 @@ return [
 
 	'stories' => [
 		'enabled' => env('STORIES_ENABLED', false),
+	],
+
+	'restricted' => [
+		'enabled' => env('RESTRICTED_INSTANCE', false),
+		'level' => 1
 	]
 ];
