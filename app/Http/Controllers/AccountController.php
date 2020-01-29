@@ -6,6 +6,7 @@ use Auth;
 use Cache; 
 use Mail; 
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Mail\ConfirmEmail;
 use Illuminate\Http\Request;
@@ -80,8 +81,8 @@ class AccountController extends Controller
 		EmailVerification::whereUserId(Auth::id())->delete();
 
 		$user = User::whereNull('email_verified_at')->find(Auth::id());
-		$utoken = str_random(64);
-		$rtoken = str_random(128);
+		$utoken = Str::uuid() . Str::random(mt_rand(5,9));
+		$rtoken = Str::random(mt_rand(64, 70));
 
 		$verify = new EmailVerification();
 		$verify->user_id = $user->id;
@@ -98,7 +99,7 @@ class AccountController extends Controller
 	public function confirmVerifyEmail(Request $request, $userToken, $randomToken)
 	{
 		$verify = EmailVerification::where('user_token', $userToken)
-		->where('created_at', '>', now()->subWeeks(2))
+		->where('created_at', '>', now()->subHours(24))
 		->where('random_token', $randomToken)
 		->firstOrFail();
 
