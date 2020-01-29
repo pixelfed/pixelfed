@@ -26,6 +26,7 @@
 - Update RelationshipSettings Controller, fixes #1605 ([4d2da2f1](https://github.com/pixelfed/pixelfed/commit/4d2da2f1))
 - Updated password reset, now expires after 24 hours ([829c41e1](https://github.com/pixelfed/pixelfed/commit/829c41e1))
 - Updated nav layout ([73249dc2](https://github.com/pixelfed/pixelfed/commit/73249dc2))
+- Updated views with noscript warnings ([eaca43a6](https://github.com/pixelfed/pixelfed/commit/eaca43a6))
 
 ### Changed
 
