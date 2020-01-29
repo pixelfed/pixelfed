@@ -43,7 +43,7 @@ return [
     /*
      * The maximum time in seconds each optimizer is allowed to run separately.
      */
-    'timeout' => 60,
+    'timeout' => 59,
 
     /*
      * If set to `true` all output of the optimizer binaries will be appended to the default log.
