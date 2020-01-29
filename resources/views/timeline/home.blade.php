@@ -4,6 +4,12 @@
 
 <timeline scope="home" layout="feed"></timeline>
 
+<noscript>
+	<div class="container">
+		<p class="pt-5 text-center lead">Please enable javascript to view this content.</p>
+	</div>
+</noscript>
+
 @endsection
 
 @push('scripts')

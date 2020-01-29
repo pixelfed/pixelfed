@@ -11,6 +11,13 @@
 @if($profile->website)
 <a class="d-none" href="{{$profile->website}}" rel="me">{{$profile->website}}</a>
 @endif
+
+<noscript>
+  <div class="container">
+    <p class="pt-5 text-center lead">Please enable javascript to view this content.</p>
+  </div>
+</noscript>
+
 @endsection
 
 @push('meta')<meta property="og:description" content="{{$profile->bio}}">
@@ -22,20 +29,7 @@
   @endif
 @endpush
 
-@push('styles')
-<style type="text/css">
-  .navbar {
-    border: none !important;
-  }
-</style>
-@endpush
+@push('scripts')<script type="text/javascript" src="{{ mix('js/profile.js') }}"></script>
+    <script type="text/javascript" defer>App.boot();</script>
 
-@push('scripts')
-<script type="text/javascript" src="{{ mix('js/profile.js') }}"></script>
-<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
-<script type="text/javascript">
-  new Vue({
-    el: '#content'
-  });
-</script>
 @endpush
