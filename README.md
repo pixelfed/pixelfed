@@ -28,10 +28,18 @@ Pixelfed is open-sourced software licensed under the AGPL license.
 The ways you can communicate on the project are below. Before interacting, please
 read through the [Code Of Conduct](CODE_OF_CONDUCT.md).
 
-* IRC: #pixelfed on irc.freenode.net ([#freenode_#pixelfed:matrix.org through
-Matrix](https://matrix.to/#/#freenode_#pixelfed:matrix.org))
-* Project on Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
+* IRC: [#pixelfed](irc://chat.freenode.net/pixelfed) on irc.freenode.net
+* Matrix: [#pixelfed:matrix.org](https://matrix.to/#/#pixelfed:matrix.org)
+* Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
 * E-mail: [hello@pixelfed.org](mailto:hello@pixelfed.org)
+
+### Development
+
+For more development focused communication methods, please visit the following:
+
+* IRC: [#pixelfed-dev](irc://chat.freenode.net/pixelfed-dev) on irc.freenode.net
+* Matrix: [#pixelfed-dev:matrix.org](https://matrix.to/#/#pixelfed-dev:matrix.org)
+* Mastodon: [@pixeldev@mastodon.social](https://mastodon.social/@pixeldev)
 
 
 ## Pixelfed Sponsors
