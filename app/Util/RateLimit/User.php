@@ -113,4 +113,14 @@ trait User {
 	{
 		return 35;
 	}
+
+	public function getMaxPostEditsPerHourAttribute()
+	{
+		return 10;
+	}
+
+	public function getMaxPostEditsPerDayAttribute()
+	{
+		return 20;
+	}
 }
