@@ -24,6 +24,7 @@ use App\Transformer\Api\{
     StatusTransformer
 };
 use League\Fractal;
+use App\Util\Media\Filter;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
@@ -231,6 +232,9 @@ class BaseApiController extends Controller
             }
         }
 
+        $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
+        $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
+
         $monthHash = hash('sha1', date('Y').date('m'));
         $userHash = hash('sha1', $user->id . (string) $user->created_at);
 
@@ -253,8 +257,8 @@ class BaseApiController extends Controller
         $media->original_sha256 = $hash;
         $media->size = $photo->getSize();
         $media->mime = $photo->getMimeType();
-        $media->filter_class = $request->input('filter_class');
-        $media->filter_name = $request->input('filter_name');
+        $media->filter_class = $filterClass;
+        $media->filter_name = $filterName;
         $media->save();
 
         $url = URL::temporarySignedRoute(
