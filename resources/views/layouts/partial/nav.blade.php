@@ -57,7 +57,7 @@
                                     New Post
                                 </div>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
+                                <a class="dropdown-item font-weight-bold" href="/">
                                     <span class="fas fa-home pr-2 text-lighter"></span>
                                     Home
                                 </a>
