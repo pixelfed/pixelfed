@@ -229,8 +229,8 @@ class StatusController extends Controller
         $user = Auth::user()->profile;
         $status = Status::whereProfileId($user->id)
                 ->with(['media'])
+                ->where('created_at', '>', now()->subHours(24))
                 ->findOrFail($id);
-
         return view('status.edit', compact('user', 'status'));
     }
 
@@ -240,6 +240,7 @@ class StatusController extends Controller
         $user = Auth::user()->profile;
         $status = Status::whereProfileId($user->id)
                 ->with(['media'])
+                ->where('created_at', '>', now()->subHours(24))
                 ->findOrFail($id);
 
         $this->validate($request, [
@@ -254,7 +255,7 @@ class StatusController extends Controller
 
         $media = Media::whereProfileId($user->id)
             ->whereStatusId($status->id)
-            ->find($id);
+            ->findOrFail($id);
 
         $changed = false;
 
@@ -263,7 +264,7 @@ class StatusController extends Controller
             $changed = true;
         }
 
-        if ($media->filter_class != $filter) {
+        if ($media->filter_class != $filter && in_array($filter, Filter::classes())) {
             $media->filter_class = $filter;
             $changed = true;
         }

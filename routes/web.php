@@ -405,7 +405,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
     Route::get('p/{username}/{id}/edit', 'StatusController@edit');
-    Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
+    Route::post('p/{username}/{id}/edit', 'StatusController@editStore')->middleware('throttle:maxPostEditsPerHour,60')->middleware('throttle:maxPostEditsPerDay,1440');
     Route::get('p/{username}/{id}.json', 'StatusController@showObject');
     Route::get('p/{username}/{id}', 'StatusController@show');
     Route::get('{username}/embed', 'ProfileController@embed');

@@ -38,7 +38,7 @@
 							@csrf
 							<input type="hidden" name="media_id" value="{{$media->id}}">
 							<div class="filter-wrapper {{$media->filter_class}}" data-filter="{{$media->filter_class}}">
-								<img class="img-fluid" src="{{$media->thumbnailUrl()}}" width="100%">
+								<img class="img-fluid" src="{{$media->url()}}" width="100%">
 							</div>
 							<div class="p-3">
 								<div class="form-group">
@@ -69,12 +69,9 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		new Vue({ 
-			el: '#content'
-		});
+		App.boot();
 		$('.form-filters').each(function(i,d) {
 			let el = $(d);
 			let filter = el.data('filter');

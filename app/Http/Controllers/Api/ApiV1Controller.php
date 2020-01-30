@@ -978,6 +978,9 @@ class ApiV1Controller extends Controller
             }
         }
 
+        $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
+        $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
+
         $monthHash = hash('sha1', date('Y').date('m'));
         $userHash = hash('sha1', $user->id . (string) $user->created_at);
 
@@ -1001,8 +1004,8 @@ class ApiV1Controller extends Controller
         $media->size = $photo->getSize();
         $media->mime = $photo->getMimeType();
         $media->caption = $request->input('description');
-        $media->filter_class = $request->input('filter_class');
-        $media->filter_name = $request->input('filter_name');
+        $media->filter_class = $filterClass;
+        $media->filter_name = $filterName;
         $media->save();
         
         switch ($media->mime) {
