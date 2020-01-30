@@ -31,6 +31,8 @@ class Kernel extends ConsoleKernel
                  ->hourly();
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
         $schedule->command('story:gc')->everyFiveMinutes();
+        $schedule->command('gc:failedjobs')->dailyAt(3);
+        $schedule->command('gc:passwordreset')->dailyAt('09:41');
     }
 
     /**

@@ -2,10 +2,8 @@
 
 @section('content')
 <noscript>
-  <div class="card">
-    <div class="card-body container text-center font-weight-bold">
-      This website requires javascript, please enable it and refresh the page.
-    </div>
+  <div class="container">
+    <p class="pt-5 text-center lead">Please enable javascript to view this content.</p>
   </div>
 </noscript>
 <div class="mt-md-4"></div>
