@@ -1,3 +1,4 @@
+@if(config('instance.restricted.enabled') == false)
   <footer>
     <div class="container py-5">
         <p class="d-flex flex-wrap justify-content-center mb-0 text-uppercase font-weight-bold small text-justify">
@@ -14,3 +15,4 @@
         </p>
     </div>
   </footer>
+  @endif
