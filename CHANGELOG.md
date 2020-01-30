@@ -1,6 +1,6 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.7...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.8...dev)
 ### Added
 
 ### Fixed
