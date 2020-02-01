@@ -118,7 +118,7 @@ class Image
 					$constraint->aspectRatio();
 				});
 			} else {
-				if(config('media.exif.database', false) == true) {
+				if(config('media.exif.database', false) == true && $metadata) {
 					$meta = [];
 					$keys = [
 						"COMPUTED",
