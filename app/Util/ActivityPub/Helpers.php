@@ -23,6 +23,7 @@ use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
+use App\Services\ActivityPubDeliveryService;
 
 class Helpers {
 
@@ -435,35 +436,22 @@ class Helpers {
 		return self::profileFirstOrNew($url);
 	}
 
-	public static function sendSignedObject($senderProfile, $url, $body)
+	public static function sendSignedObject($profile, $url, $body)
 	{
-		abort_if(!self::validateUrl($url), 400);
-
-		$payload = json_encode($body);
-		$headers = HttpSignature::sign($senderProfile, $url, $body);
-
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		$response = curl_exec($ch);
-		return;
+		ActivityPubDeliveryService::queue()
+			->from($profile)
+			->to($url)
+			->payload($body)
+			->send();
 	}
 
-	public static function apSignedPostRequest($senderProfile, $url, $body)
+	public static function apSignedPostRequest($profile, $url, $body)
 	{
-		abort_if(!self::validateUrl($url), 400);
+		ActivityPubDeliveryService::queue()
+			->from($profile)
+			->to($url)
+			->payload($body)
+			->send();
 
-		$payload = json_encode($body);
-		$headers = HttpSignature::sign($senderProfile, $url, $body);
-
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		$response = curl_exec($ch);
-		return;
 	}
 }
