@@ -12,6 +12,9 @@
 					</div>
 				</div>
 				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
+					<div v-if="index == 0 && showTips && !loading" class="mb-4 card-tips">
+						<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
+					</div>
 					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
@@ -263,10 +266,6 @@
 					<a class="btn btn-light btn-block btn-sm font-weight-bold text-dark mb-3 border bg-white" href="/i/compose" data-toggle="modal" data-target="#composeModal">
 						<i class="far fa-plus-square pr-3 fa-lg pt-1"></i> Compose Post
 					</a>
-				</div>
-
-				<div v-if="showTips && !loading" class="mb-4 card-tips">
-					<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 				</div>
 
 				<div v-show="modes.notify == true && !loading" class="mb-4">

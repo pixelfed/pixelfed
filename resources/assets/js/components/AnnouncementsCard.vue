@@ -1,11 +1,14 @@
 <template>
 <div>
 	<transition name="fade">
-		<div v-if="announcements.length" class="card border shadow-none mb-3" style="max-width: 18rem;">
+		<div v-if="announcements.length" class="card border shadow-none mb-3">
+			<div class="card-header text-muted bg-white">
+				<i class="fas fa-bullhorn mr-2"></i> <span class="text-weight-light">ANNOUNCEMENTS</span>
+				<span class="float-right cursor-pointer" title="Close" @click="close"><i class="fas fa-times text-lighter"></i></span>
+			</div>
 			<div class="card-body">
 				<div class="card-title mb-0">
 					<span class="font-weight-bold">{{announcement.title}}</span>
-					<span class="float-right cursor-pointer" title="Close" @click="close"><i class="fas fa-times text-lighter"></i></span>
 				</div>
 				<p class="card-text">
 					<span style="font-size:13px;">{{announcement.summary}}</span>
