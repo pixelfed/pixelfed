@@ -444,14 +444,4 @@ class Helpers {
 			->payload($body)
 			->send();
 	}
-
-	public static function apSignedPostRequest($profile, $url, $body)
-	{
-		ActivityPubDeliveryService::queue()
-			->from($profile)
-			->to($url)
-			->payload($body)
-			->send();
-
-	}
 }
