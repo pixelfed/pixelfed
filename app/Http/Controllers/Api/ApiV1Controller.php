@@ -367,7 +367,7 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
 
-        $target = Profile::where('id', '!=', $user->id)
+        $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
             ->findOrFail($id);
 
@@ -375,7 +375,7 @@ class ApiV1Controller extends Controller
         $remote = (bool) $target->domain;
         $blocked = UserFilter::whereUserId($target->id)
                 ->whereFilterType('block')
-                ->whereFilterableId($user->id)
+                ->whereFilterableId($user->profile_id)
                 ->whereFilterableType('App\Profile')
                 ->exists();
 
@@ -383,7 +383,7 @@ class ApiV1Controller extends Controller
             abort(400, 'You cannot follow this user.');
         }
 
-        $isFollowing = Follower::whereProfileId($user->id)
+        $isFollowing = Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->exists();
 
@@ -396,42 +396,42 @@ class ApiV1Controller extends Controller
         }
 
         // Rate limits, max 7500 followers per account
-        if($user->following()->count() >= Follower::MAX_FOLLOWING) {
+        if($user->profile->following()->count() >= Follower::MAX_FOLLOWING) {
             abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
         }
 
         // Rate limits, follow 30 accounts per hour max
-        if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+        if($user->profile->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
             abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
         }
 
         if($private == true) {
             $follow = FollowRequest::firstOrCreate([
-                'follower_id' => $user->id,
+                'follower_id' => $user->profile_id,
                 'following_id' => $target->id
             ]);
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-                (new FollowerController())->sendFollow($user, $target);
+                (new FollowerController())->sendFollow($user->profile, $target);
             } 
         } else {
             $follower = new Follower();
-            $follower->profile_id = $user->id;
+            $follower->profile_id = $user->profile_id;
             $follower->following_id = $target->id;
             $follower->save();
 
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-                (new FollowerController())->sendFollow($user, $target);
+                (new FollowerController())->sendFollow($user->profile, $target);
             } 
             FollowPipeline::dispatch($follower);
         } 
 
         Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
-        Cache::forget('profile:following:'.$user->id);
-        Cache::forget('profile:followers:'.$user->id);
-        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('profile:following:'.$user->profile_id);
+        Cache::forget('profile:followers:'.$user->profile_id);
+        Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
-        Cache::forget('user:account:id:'.$user->user_id);
+        Cache::forget('user:account:id:'.$user->id);
 
         $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -452,14 +452,14 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
 
-        $target = Profile::where('id', '!=', $user->id)
+        $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
             ->findOrFail($id);
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
 
-        $isFollowing = Follower::whereProfileId($user->id)
+        $isFollowing = Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->exists();
 
@@ -471,29 +471,29 @@ class ApiV1Controller extends Controller
         }
 
         // Rate limits, follow 30 accounts per hour max
-        if($user->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+        if($user->profile->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
             abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
         }
 
-        FollowRequest::whereFollowerId($user->id)
+        FollowRequest::whereFollowerId($user->profile_id)
             ->whereFollowingId($target->id)
             ->delete(); 
 
-        Follower::whereProfileId($user->id)
+        Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->delete();
 
         if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-            (new FollowerController())->sendUndoFollow($user, $target);
+            (new FollowerController())->sendUndoFollow($user->profile, $target);
         } 
 
         Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
-        Cache::forget('profile:following:'.$user->id);
-        Cache::forget('profile:followers:'.$user->id);
-        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('profile:following:'.$user->profile_id);
+        Cache::forget('profile:followers:'.$user->profile_id);
+        Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
-        Cache::forget('user:account:id:'.$user->user_id);
+        Cache::forget('user:account:id:'.$user->id);
 
         $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();
