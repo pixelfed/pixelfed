@@ -369,7 +369,7 @@ class ApiV1Controller extends Controller
 
         $target = Profile::where('id', '!=', $user->id)
             ->whereNull('status')
-            ->findOrFail($item);
+            ->findOrFail($id);
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
@@ -454,7 +454,7 @@ class ApiV1Controller extends Controller
 
         $target = Profile::where('id', '!=', $user->id)
             ->whereNull('status')
-            ->findOrFail($item);
+            ->findOrFail($id);
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
