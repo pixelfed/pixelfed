@@ -1164,34 +1164,43 @@ class ApiV1Controller extends Controller
     public function accountNotifications(Request $request)
     {
         abort_if(!$request->user(), 403);
+
         $this->validate($request, [
-            'page' => 'nullable|integer|min:1|max:10',
             'limit' => 'nullable|integer|min:1|max:80',
-            'max_id' => 'nullable|integer|min:1',
-            'min_id' => 'nullable|integer|min:0',
+            'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
         ]);
+
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit') ?? 20;
+        $limit = $request->input('limit', 20);
         $timeago = now()->subMonths(6);
+
+        $since = $request->input('since_id');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        if($min || $max) {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->where('id', $dir, $id)
-                ->orderByDesc('created_at')
-                ->limit($limit)
-                ->get();
-        } else {
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->orderByDesc('created_at')
-                ->simplePaginate($limit);
-        }
-        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+
+        abort_if(!$since && !$min && !$max, 400);
+
+        $dir = $since ? '>' : ($min ? '>=' : '<');
+        $id = $since ?? $min ?? $max;
+
+        $notifications = Notification::whereProfileId($pid)
+            ->where('id', $dir, $id)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+
+        $resource = new Fractal\Resource\Collection(
+            $notifications,
+            new NotificationTransformer()
+        );
+
+        $res = $this->fractal
+            ->createData($resource)
+            ->toArray();
+
         return response()->json($res);
     }
 
