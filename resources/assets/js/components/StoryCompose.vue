@@ -177,7 +177,7 @@
 
 		mounted() {
 			this.mediaWatcher();
-			axios.get('/api/stories/v1/fetch/' + this.profileId)
+			axios.get('/api/stories/v0/fetch/' + this.profileId)
 			.then(res => this.stories = res.data);
 		},
 
@@ -226,7 +226,7 @@
 						}
 					};
 
-					axios.post('/api/stories/v1/add', form, xhrConfig)
+					axios.post('/api/stories/v0/add', form, xhrConfig)
 					.then(function(e) {
 						self.uploadProgress = 100;
 						self.uploading = false;
@@ -264,7 +264,7 @@
 					return;
 				}
 
-				axios.delete('/api/stories/v1/delete/' + story.id)
+				axios.delete('/api/stories/v0/delete/' + story.id)
 				.then(res => {
 					this.stories.splice(index, 1);
 					if(this.stories.length == 0) {

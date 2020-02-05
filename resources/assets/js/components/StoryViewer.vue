@@ -36,7 +36,7 @@
 
 		methods: {
 			fetchStories() {
-				axios.get('/api/stories/v1/profile/' + this.pid)
+				axios.get('/api/stories/v0/profile/' + this.pid)
 				.then(res => {
 					let data = res.data;
 					if(data.length == 0) {

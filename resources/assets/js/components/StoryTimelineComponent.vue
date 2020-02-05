@@ -30,7 +30,7 @@
 
 		methods: {
 			fetchStories() {
-				axios.get('/api/stories/v1/recent')
+				axios.get('/api/stories/v0/recent')
 				.then(res => {
 					let data = res.data;
 					let stories = new Zuck('storyContainer', {
@@ -57,7 +57,7 @@
 					});
 
 					data.forEach(d => {
-						let url = '/api/stories/v1/fetch/' + d.pid;
+						let url = '/api/stories/v0/fetch/' + d.pid;
 						axios.get(url)
 						.then(res => {
 							res.data.forEach(item => {

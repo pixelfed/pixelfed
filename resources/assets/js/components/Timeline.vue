@@ -1424,7 +1424,7 @@
 			},
 
 			hasStory() {
-				axios.get('/api/stories/v1/exists/'+this.profile.id)
+				axios.get('/api/stories/v0/exists/'+this.profile.id)
 				.then(res => {
 					this.userStory = res.data;
 				})
