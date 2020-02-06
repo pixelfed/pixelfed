@@ -16,12 +16,6 @@ use App\Services\FollowerService;
 
 class StoryController extends Controller
 {
-
-	public function construct()
-	{
-		$this->middleware('auth');
-	}
-
 	public function apiV1Add(Request $request)
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
