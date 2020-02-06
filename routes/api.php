@@ -67,15 +67,15 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic');
 		Route::get('timelines/tag/{hashtag}', 'Api\ApiV1Controller@timelineHashtag')->middleware($middleware);
 	});
-    Route::group(['prefix' => 'stories'], function () {
+    Route::group(['prefix' => 'stories'], function () use($middleware) {
     	Route::get('v1/me', 'StoryController@apiV1Me');
         Route::get('v1/recent', 'StoryController@apiV1Recent');
-        Route::post('v1/add', 'StoryController@apiV1Add')->middleware('throttle:maxStoriesPerDay,1440');
+        Route::post('v1/add', 'StoryController@apiV1Add')->middleware(array_merge($middleware, ['throttle:maxStoriesPerDay,1440']));
         Route::get('v1/item/{id}', 'StoryController@apiV1Item');
         Route::get('v1/fetch/{id}', 'StoryController@apiV1Fetch');
         Route::get('v1/profile/{id}', 'StoryController@apiV1Profile');
         Route::get('v1/exists/{id}', 'StoryController@apiV1Exists');
-        Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete')->middleware('throttle:maxStoryDeletePerDay,1440');
+        Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete')->middleware(array_merge($middleware, ['throttle:maxStoryDeletePerDay,1440']));
         Route::post('v1/viewed', 'StoryController@apiV1Viewed');
-    })->middleware($middleware);
+    });
 });
