@@ -25,7 +25,7 @@ class SearchApiV2Service
 	{
 		$this->query = $query;
 
-		if($query->has('resolve') && $query->resolve == true) {
+		if($query->has('resolve') && $query->resolve == true && Helpers::validateUrl($query)) {
 			return [
 				'accounts' => [
 					$this->resolve()
