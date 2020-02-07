@@ -25,7 +25,7 @@ class SearchApiV2Service
 	{
 		$this->query = $query;
 
-		if($query->has('resolve') && $query->resolve == true && Helpers::validateUrl($query)) {
+		if($query->has('resolve') && $query->resolve == true && Helpers::validateUrl(urldecode($query))) {
 			return [
 				'accounts' => [
 					$this->resolve()
@@ -39,9 +39,7 @@ class SearchApiV2Service
 			switch ($query->input('type')) {
 				case 'accounts':
 					return [
-						'accounts' => [
-							$this->accounts()
-						],
+						'accounts' => $this->accounts(),
 						'hashtags' => [],
 						'statuses' => []
 					];
@@ -49,9 +47,7 @@ class SearchApiV2Service
 				case 'hashtags':
 					return [
 						'accounts' => [],
-						'hashtags' => [
-							$this->hashtags()
-						],
+						'hashtags' => $this->hashtags(),
 						'statuses' => []
 					];
 					break;
@@ -59,9 +55,7 @@ class SearchApiV2Service
 					return [
 						'accounts' => [],
 						'hashtags' => [],
-						'statuses' => [
-							$this->statuses()
-						]
+						'statuses' => $this->statuses()
 					];
 					break;
 			}
