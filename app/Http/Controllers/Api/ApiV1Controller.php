@@ -44,7 +44,10 @@ use App\Jobs\VideoPipeline\{
     VideoPostProcess,
     VideoThumbnail
 };
-use App\Services\NotificationService;
+use App\Services\{
+    NotificationService,
+    SearchApiV2Service
+};
 
 class ApiV1Controller extends Controller 
 {
@@ -1704,5 +1707,31 @@ class ApiV1Controller extends Controller
         // todo
         $res = [];
         return response()->json($res);
+    }
+
+    /**
+     * GET /api/v2/search
+     *
+     *
+     * @return array
+     */
+    public function searchV2(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'q' => 'required|string|min:1|max:80',
+            'account_id' => 'nullable|string',
+            'max_id' => 'nullable|string',
+            'min_id' => 'nullable|string',
+            'type' => 'nullable|in:accounts,hashtags,statuses',
+            'exclude_unreviewed' => 'nullable',
+            'resolve' => 'nullable',
+            'limit' => 'nullable|integer|max:40',
+            'offset' => 'nullable|integer',
+            'following' => 'nullable|following'
+        ]);
+
+        return SearchApiV2Service::query($request);
     }
 }
