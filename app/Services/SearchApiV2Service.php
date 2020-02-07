@@ -132,6 +132,7 @@ class SearchApiV2Service
 				return $q->offset($offset);
 			})
 			->limit($limit)
+			->orderByDesc('created_at')
 			->get();
 
 		$fractal = new Fractal\Manager();
