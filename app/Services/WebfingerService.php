@@ -34,7 +34,7 @@ class WebfingerService
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
 		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-        $res = $fractal->createData($resource)->toArray();
+		$res = $fractal->createData($resource)->toArray();
 		return $res;
 	}
 }
