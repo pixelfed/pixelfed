@@ -1729,7 +1729,7 @@ class ApiV1Controller extends Controller
             'resolve' => 'nullable',
             'limit' => 'nullable|integer|max:40',
             'offset' => 'nullable|integer',
-            'following' => 'nullable|following'
+            'following' => 'nullable'
         ]);
 
         return SearchApiV2Service::query($request);
