@@ -78,5 +78,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete')->middleware(array_merge($middleware, ['throttle:maxStoryDeletePerDay,1440']));
         Route::post('v1/viewed', 'StoryController@apiV1Viewed');
     });
-    Route::get('/api/v2/search', 'Api\ApiV1Controller@searchV2')->middlware($middleware);
+    Route::group(['prefix' => 'v2'], function() use($middleware) {
+    	Route::get('search', 'Api\ApiV1Controller@searchV2')->middleware($middleware);
+    });
 });
