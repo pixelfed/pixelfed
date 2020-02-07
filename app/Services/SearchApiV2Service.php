@@ -162,7 +162,7 @@ class SearchApiV2Service
 	protected function resolveQuery()
 	{
 		$query = urldecode($this->query->input('q'));
-		if(Helpers::validateLocalUrl($query, false)) {
+		if(Helpers::validateLocalUrl($query)) {
 			if(Str::contains($query, '/p/')) {
 				return $this->resolveLocalStatus();
 			} else {
