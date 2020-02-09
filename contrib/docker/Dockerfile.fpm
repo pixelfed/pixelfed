@@ -1,3 +1,4 @@
+FROM php:7.4-fpm-buster
 ARG COMPOSER_VERSION="1.9.1"
 ARG COMPOSER_CHECKSUM="1f210b9037fcf82670d75892dfc44400f13fe9ada7af9e787f93e50e3b764111"
 
@@ -32,7 +33,9 @@ COPY . /var/www/
 WORKDIR /var/www/
 RUN cp -r storage storage.skel \
  && cp contrib/docker/php.ini /usr/local/etc/php/conf.d/pixelfed.ini \
+ && composer global require hirak/prestissimo --no-interaction --no-suggest --prefer-dist \
  && composer install --prefer-dist --no-interaction \
+ && composer global remove hirak/prestissimo \
  && rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
