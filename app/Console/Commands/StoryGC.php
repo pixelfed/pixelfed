@@ -45,6 +45,47 @@ class StoryGC extends Command
      */
     public function handle()
     {
+        $this->directoryScan();
+        $this->deleteViews();
+        $this->deleteStories();
+    }
+
+    protected function directoryScan()
+    {
+        $day = now()->day;
+
+        if($day !== 3) {
+            return;
+        }
+
+        $monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
+
+        $t1 = Storage::directories('public/_esm.t1');
+        $t2 = Storage::directories('public/_esm.t2');
+
+        $dirs = array_merge($t1, $t2);
+
+        foreach($dirs as $dir) {
+            $hash = last(explode('/', $dir));
+            if($hash != $monthHash) {
+                $this->info('Found directory to delete: ' . $dir);
+                $this->deleteDirectory($dir);
+            }
+        }
+    }
+
+    protected function deleteDirectory($path)
+    {
+        Storage::deleteDirectory($path);
+    }
+
+    protected function deleteViews()
+    {
+        StoryView::where('created_at', '<', now()->subDays(2))->delete();
+    }
+
+    protected function deleteStories()
+    {
         $stories = Story::where('expires_at', '<', now())->take(50)->get();
 
         if($stories->count() == 0) {

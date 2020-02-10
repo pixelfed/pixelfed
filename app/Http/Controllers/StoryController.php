@@ -16,12 +16,6 @@ use App\Services\FollowerService;
 
 class StoryController extends Controller
 {
-
-	public function construct()
-	{
-		$this->middleware('auth');
-	}
-
 	public function apiV1Add(Request $request)
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
@@ -66,8 +60,8 @@ class StoryController extends Controller
 	protected function storePhoto($photo)
 	{
 		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
-		$sid = Str::uuid();
-		$rid = Str::random(6).'.'.Str::random(9);
+		$sid = (string) Str::uuid();
+		$rid = Str::random(9).'.'.Str::random(9);
 		$mimes = explode(',', config('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
@@ -77,7 +71,7 @@ class StoryController extends Controller
 			return;
 		}
 
-		$storagePath = "public/_esm.t1/{$monthHash}/{$sid}/{$rid}";
+		$storagePath = "public/_esm.t2/{$monthHash}/{$sid}/{$rid}";
 		$path = $photo->store($storagePath);
 		$fpath = storage_path('app/' . $path);
 		$img = Intervention::make($fpath);
@@ -175,6 +169,39 @@ class StoryController extends Controller
 		return response()->json($stories, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 	}
 
+	public function apiV1Item(Request $request, $id)
+	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+
+		$authed = $request->user()->profile;
+		$story = Story::with('profile')
+			->where('expires_at', '>', now())
+			->findOrFail($id);
+
+		$profile = $story->profile;
+		if($story->profile_id == $authed->id) {
+			$publicOnly = true;
+		} else {
+			$publicOnly = (bool) $profile->followedBy($authed);
+		}
+
+		abort_if(!$publicOnly, 403);
+		
+		$res = [
+			'id' => (string) $story->id,
+			'type' => 'photo',
+			'length' => 3,
+			'src' => url(Storage::url($story->path)),
+			'preview' => null,
+			'link' => null,
+			'linkText' => null,
+			'time' => $story->created_at->format('U'),
+			'expires_at' => (int)  $story->expires_at->format('U'),
+			'seen' => $story->seen()
+		];
+		return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+	}
+
 	public function apiV1Profile(Request $request, $id)
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
@@ -232,24 +259,33 @@ class StoryController extends Controller
 		$this->validate($request, [
 			'id'	=> 'required|integer|min:1|exists:stories',
 		]);
+		$id = $request->input('id');
+		$authed = $request->user()->profile;
+		$story = Story::with('profile')
+			->where('expires_at', '>', now())
+			->orderByDesc('expires_at')
+			->findOrFail($id);
+
+		$profile = $story->profile;
+		if($story->profile_id == $authed->id) {
+			$publicOnly = true;
+		} else {
+			$publicOnly = (bool) $profile->followedBy($authed);
+		}
+
+		abort_if(!$publicOnly, 403);
 
 		StoryView::firstOrCreate([
-			'story_id' => $request->input('id'),
-			'profile_id' => $request->user()->profile_id
+			'story_id' => $id,
+			'profile_id' => $authed->id
 		]);
 
 		return ['code' => 200];
 	}
 
-	public function compose(Request $request)
-	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
-		return view('stories.compose');
-	}
-
 	public function apiV1Exists(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled'), 404);
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
 		$res = (bool) Story::whereProfileId($id)
 		->where('expires_at', '>', now())
@@ -258,8 +294,54 @@ class StoryController extends Controller
 		return response()->json($res);
 	}
 
+	public function apiV1Me(Request $request)
+	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+
+		$profile = $request->user()->profile;
+		$stories = Story::whereProfileId($profile->id)
+			->orderBy('expires_at')
+			->where('expires_at', '>', now())
+			->get()
+			->map(function($s, $k) {
+				return [
+					'id' => $s->id,
+					'type' => 'photo',
+					'length' => 3,
+					'src' => url(Storage::url($s->path)),
+					'preview' => null,
+					'link' => null,
+					'linkText' => null,
+					'time' => $s->created_at->format('U'),
+					'expires_at' => (int) $s->expires_at->format('U'),
+					'seen' => true
+				];
+		})->toArray();
+		$ts = count($stories) ? last($stories)['time'] : null;
+		$res = [
+			'id' => (string) $profile->id,
+			'photo' => $profile->avatarUrl(),
+			'name' => $profile->username,
+			'link' => $profile->url(),
+			'lastUpdated' => $ts,
+			'seen' => true,
+			'items' => $stories
+		];
+
+		return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+	}
+
+	public function compose(Request $request)
+	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		
+		return view('stories.compose');
+	}
+
 	public function iRedirect(Request $request)
 	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+
 		$user = $request->user();
 		abort_if(!$user, 404);
 		$username = $user->username;

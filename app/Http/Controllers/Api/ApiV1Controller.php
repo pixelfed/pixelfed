@@ -44,7 +44,10 @@ use App\Jobs\VideoPipeline\{
     VideoPostProcess,
     VideoThumbnail
 };
-use App\Services\NotificationService;
+use App\Services\{
+    NotificationService,
+    SearchApiV2Service
+};
 
 class ApiV1Controller extends Controller 
 {
@@ -367,15 +370,15 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
 
-        $target = Profile::where('id', '!=', $user->id)
+        $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
-            ->findOrFail($item);
+            ->findOrFail($id);
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
         $blocked = UserFilter::whereUserId($target->id)
                 ->whereFilterType('block')
-                ->whereFilterableId($user->id)
+                ->whereFilterableId($user->profile_id)
                 ->whereFilterableType('App\Profile')
                 ->exists();
 
@@ -383,7 +386,7 @@ class ApiV1Controller extends Controller
             abort(400, 'You cannot follow this user.');
         }
 
-        $isFollowing = Follower::whereProfileId($user->id)
+        $isFollowing = Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->exists();
 
@@ -396,42 +399,42 @@ class ApiV1Controller extends Controller
         }
 
         // Rate limits, max 7500 followers per account
-        if($user->following()->count() >= Follower::MAX_FOLLOWING) {
+        if($user->profile->following()->count() >= Follower::MAX_FOLLOWING) {
             abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
         }
 
         // Rate limits, follow 30 accounts per hour max
-        if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+        if($user->profile->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
             abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
         }
 
         if($private == true) {
             $follow = FollowRequest::firstOrCreate([
-                'follower_id' => $user->id,
+                'follower_id' => $user->profile_id,
                 'following_id' => $target->id
             ]);
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-                (new FollowerController())->sendFollow($user, $target);
+                (new FollowerController())->sendFollow($user->profile, $target);
             } 
         } else {
             $follower = new Follower();
-            $follower->profile_id = $user->id;
+            $follower->profile_id = $user->profile_id;
             $follower->following_id = $target->id;
             $follower->save();
 
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-                (new FollowerController())->sendFollow($user, $target);
+                (new FollowerController())->sendFollow($user->profile, $target);
             } 
             FollowPipeline::dispatch($follower);
         } 
 
         Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
-        Cache::forget('profile:following:'.$user->id);
-        Cache::forget('profile:followers:'.$user->id);
-        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('profile:following:'.$user->profile_id);
+        Cache::forget('profile:followers:'.$user->profile_id);
+        Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
-        Cache::forget('user:account:id:'.$user->user_id);
+        Cache::forget('user:account:id:'.$user->id);
 
         $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -452,14 +455,14 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
 
-        $target = Profile::where('id', '!=', $user->id)
+        $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
-            ->findOrFail($item);
+            ->findOrFail($id);
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
 
-        $isFollowing = Follower::whereProfileId($user->id)
+        $isFollowing = Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->exists();
 
@@ -471,29 +474,29 @@ class ApiV1Controller extends Controller
         }
 
         // Rate limits, follow 30 accounts per hour max
-        if($user->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+        if($user->profile->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
             abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
         }
 
-        FollowRequest::whereFollowerId($user->id)
+        FollowRequest::whereFollowerId($user->profile_id)
             ->whereFollowingId($target->id)
             ->delete(); 
 
-        Follower::whereProfileId($user->id)
+        Follower::whereProfileId($user->profile_id)
             ->whereFollowingId($target->id)
             ->delete();
 
         if($remote == true && config('federation.activitypub.remoteFollow') == true) {
-            (new FollowerController())->sendUndoFollow($user, $target);
+            (new FollowerController())->sendUndoFollow($user->profile, $target);
         } 
 
         Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
-        Cache::forget('profile:following:'.$user->id);
-        Cache::forget('profile:followers:'.$user->id);
-        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('profile:following:'.$user->profile_id);
+        Cache::forget('profile:followers:'.$user->profile_id);
+        Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
-        Cache::forget('user:account:id:'.$user->user_id);
+        Cache::forget('user:account:id:'.$user->id);
 
         $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -1164,34 +1167,43 @@ class ApiV1Controller extends Controller
     public function accountNotifications(Request $request)
     {
         abort_if(!$request->user(), 403);
+
         $this->validate($request, [
-            'page' => 'nullable|integer|min:1|max:10',
             'limit' => 'nullable|integer|min:1|max:80',
-            'max_id' => 'nullable|integer|min:1',
-            'min_id' => 'nullable|integer|min:0',
+            'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
+            'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
+            'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
         ]);
+
         $pid = $request->user()->profile_id;
-        $limit = $request->input('limit') ?? 20;
+        $limit = $request->input('limit', 20);
         $timeago = now()->subMonths(6);
+
+        $since = $request->input('since_id');
         $min = $request->input('min_id');
         $max = $request->input('max_id');
-        if($min || $max) {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->where('id', $dir, $id)
-                ->orderByDesc('created_at')
-                ->limit($limit)
-                ->get();
-        } else {
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->orderByDesc('created_at')
-                ->simplePaginate($limit);
-        }
-        $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+
+        abort_if(!$since && !$min && !$max, 400);
+
+        $dir = $since ? '>' : ($min ? '>=' : '<');
+        $id = $since ?? $min ?? $max;
+
+        $notifications = Notification::whereProfileId($pid)
+            ->where('id', $dir, $id)
+            ->whereDate('created_at', '>', $timeago)
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+
+        $resource = new Fractal\Resource\Collection(
+            $notifications,
+            new NotificationTransformer()
+        );
+
+        $res = $this->fractal
+            ->createData($resource)
+            ->toArray();
+
         return response()->json($res);
     }
 
@@ -1695,5 +1707,31 @@ class ApiV1Controller extends Controller
         // todo
         $res = [];
         return response()->json($res);
+    }
+
+    /**
+     * GET /api/v2/search
+     *
+     *
+     * @return array
+     */
+    public function searchV2(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'q' => 'required|string|min:1|max:80',
+            'account_id' => 'nullable|string',
+            'max_id' => 'nullable|string',
+            'min_id' => 'nullable|string',
+            'type' => 'nullable|in:accounts,hashtags,statuses',
+            'exclude_unreviewed' => 'nullable',
+            'resolve' => 'nullable',
+            'limit' => 'nullable|integer|max:40',
+            'offset' => 'nullable|integer',
+            'following' => 'nullable'
+        ]);
+
+        return SearchApiV2Service::query($request);
     }
 }

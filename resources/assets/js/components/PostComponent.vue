@@ -680,6 +680,7 @@ export default {
                 let self = this;
                 self.status = response.data.status;
                 self.user = response.data.user;
+                window._sharedData.curUser = self.user;
                 self.media = self.status.media_attachments;
                 self.reactions = response.data.reactions;
                 self.likes = response.data.likes;

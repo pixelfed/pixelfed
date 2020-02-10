@@ -642,7 +642,7 @@
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
 					if(res.data.id == this.profileId || this.relationship.following == true) {
-						axios.get('/api/stories/v1/exists/' + this.profileId)
+						axios.get('/api/stories/v0/exists/' + this.profileId)
 						.then(res => {
 							this.hasStory = res.data == true;
 						})
