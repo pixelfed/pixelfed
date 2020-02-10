@@ -3,7 +3,7 @@ version: '3'
 services:
 
 ## DB and Cache
-  redispf:
+  redis:
     image: redis:5-buster
     restart: unless-stopped
     volumes:
@@ -13,7 +13,7 @@ services:
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
 
-  dbpf:
+  postgres:
     restart: unless-stopped
     image: postgres:12
     networks:
