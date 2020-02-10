@@ -1,0 +1,12 @@
+FROM php:7.4-fpm-buster
+
+# Use the default production configuration
+COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
+
+# Install Composer
+ENV COMPOSER_VERSION 1.9.2
+RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
+  && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+  && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
+  && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} && rm -rf /tmp/composer-setup.php
+
