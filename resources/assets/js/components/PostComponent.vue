@@ -300,7 +300,7 @@
               <div class="media align-items-center mt-3">
                 <div class="media-body">
                   <h2 class="font-weight-bold">
-                    {{status.content.length < 100 ? status.content.slice(0,100) : 'Untitled Post'}}
+                    {{status.content.length > 100 ? status.content.slice(0,100) : 'Untitled Post'}}
                   </h2>
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
