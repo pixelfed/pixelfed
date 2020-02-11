@@ -14,9 +14,9 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 RUN apt-get update
 
 # Install OS Packages (Comments why they're included)
+RUN apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y --no-install-recommends \
 ## Standard
-      apt-utils \
       locales locales-all \
       git \
 #      gosu \
