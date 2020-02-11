@@ -63,6 +63,7 @@ RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
 RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 
 #PHP extensions (dependencies)
+RUN apt-get install -y --no-install-recommends libonig-dev
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl ctype iconv json mbstring openssl tokenizer xml
 #RUN docker-php-ext-enable intl bcmath zip pcntl exif curl ctype iconv json mbstring openssl tokenizer xml
