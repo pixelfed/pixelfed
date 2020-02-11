@@ -65,7 +65,7 @@ RUN docker-php-ext-enable imagick
 
 
 #Install DB PHP extensions
-#RUN apt-get install -y --no-install-recommends 
+RUN apt-get install -y --no-install-recommends libpq-dev
 RUN docker-php-ext-install pdo_mysql pdo_pgsql
 
 
