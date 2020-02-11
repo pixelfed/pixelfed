@@ -37,7 +37,6 @@ RUN apt-get install -y --no-install-recommends \
 #      libjpeg62-turbo-dev \
 #      libpng16-16 \
 #      libpng-dev \
-       ## image manipulation library -- quantum depth Q16
 #      libmagickwand-6.q16-6 \
 #      libmagickwand-dev \
 #      libxpm4 \
