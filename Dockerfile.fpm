@@ -10,3 +10,44 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
   && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} && rm -rf /tmp/composer-setup.php
 
+# Update OS Packages
+RUN apt-get update
+
+# Install OS Packages (Comments why they're included)
+RUN apt-get install -y --no-install-recommends 
+## Standard
+      apt-utils \
+      locales locales-all \
+      git \
+#      gosu \  # 
+#      zip \  # 
+#      unzip \  #  
+#      libzip-dev \  #  
+#      libcurl4-openssl-dev \  # 
+#      libicu-dev \  # 
+#      libfreetype6 \  # 
+#      libfreetype6-dev \  # 
+## Image Optimization
+      optipng \  # 
+      pngquant  \  # 
+      jpegoptim \  # 
+      gifsicle \  # 
+## Image Processing
+#      libjpeg62-turbo \  # 
+#      libjpeg62-turbo-dev \  # 
+#      libpng16-16 \  # 
+#      libpng-dev \  # 
+#      libmagickwand-6.q16-6 \  # image manipulation library -- quantum depth Q16
+#      libmagickwand-dev \  # 
+#      libxpm4 \  # 
+#      libxpm-dev \  # 
+#      libwebp6 \  # 
+#      libwebp-dev \  # 
+## Database
+#      libsqlite3-dev \  # 
+#      mariadb-client  #
+#      libpq-dev \  #
+
+# Update Local data
+RUN sed -i '/en_US/s/^#//g' /etc/locale.gen && locale-gen && update-locale
+
