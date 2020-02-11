@@ -84,6 +84,10 @@ RUN composer global require hirak/prestissimo --no-interaction --no-suggest --pr
 RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader
 RUN composer global remove hirak/prestissimo
 
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+RUN php artisan storage:link
 
 #Bootstrap FPM
 CMD ["php-fpm"]
