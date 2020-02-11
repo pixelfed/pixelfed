@@ -38,7 +38,7 @@ RUN apt-get install -y --no-install-recommends \
 #      libpng16-16 \
 #      libpng-dev \
 #      libmagickwand-6.q16-6 \
-#      libmagickwand-dev \
+      libmagickwand-dev \
 #      libxpm4 \
 #      libxpm-dev \
 #      libwebp6 \
@@ -51,3 +51,30 @@ RUN apt-get install -y --no-install-recommends \
 # Update Local data
 RUN sed -i '/en_US/s/^#//g' /etc/locale.gen && locale-gen && update-locale
 
+
+# DEBUG 
+RUN php -i
+
+# Install PHP extensions
+RUN docker-php-source extract
+
+
+#Install Imagemagick PHP Imagick ext
+RUN pecl install imagick
+RUN docker-php-ext-enable imagick
+
+
+
+
+
+#Cleanup PHP
+RUN docker-php-source delete
+
+#Cleanup APT
+RUN apt-get autoremove --purge -y
+RUN rm -rf /var/cache/apt
+RUN rm -rf /var/lib/apt/lists/*
+
+
+#Bootstrap FPM
+CMD ["php-fpm"]
