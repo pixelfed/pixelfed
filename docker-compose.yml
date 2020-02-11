@@ -24,8 +24,8 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=pixelfed
-      - POSTGRES_USER=pixelfeduser
-      - POSTGRES_PASSWORD=pixelfedpass
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
 ## App and Worker
   frontend:
