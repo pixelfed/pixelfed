@@ -80,14 +80,15 @@ RUN php -i
 COPY . /var/www/
 WORKDIR /var/www/
 
+RUN rm -rf html && ln -s public html
+
 RUN composer global require hirak/prestissimo --no-interaction --no-suggest --prefer-dist
 RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader
 RUN composer global remove hirak/prestissimo
 
+# Prepare Environment
+RUN chown -R www-data:www-data storage/
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 RUN php artisan storage:link
-
-#Bootstrap FPM
-CMD ["php-fpm"]

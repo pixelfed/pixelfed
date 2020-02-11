@@ -43,6 +43,7 @@ services:
       - internal
     ports:
         - "9000:9000"
+    command: gosu www-data php-fpm
 
   worker:
     build:
