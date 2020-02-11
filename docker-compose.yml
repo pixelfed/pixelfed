@@ -24,8 +24,38 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=pixelfed
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=pixelfeduser
+      - POSTGRES_PASSWORD=pixelfedpass
+
+## App and Worker
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.fpm
+    image: pixelfed
+    restart: unless-stopped
+    env_file:
+      - ./.env.docker
+    volumes:
+      - "./.env.docker:/var/www/.env"
+    networks:
+      - external
+      - internal
+    ports:
+        - "9000:9000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.fpm
+    image: pixelfed
+    restart: unless-stopped
+    env_file:
+      - ./.env.docker
+    networks:
+      - external  # Required for ActivityPub
+      - internal
+    command: gosu www-data php artisan horizon
 
 networks:
   internal:
