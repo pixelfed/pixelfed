@@ -37,7 +37,8 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - ./:/var/www
+      - "./storage:/var/www/storage"
+      - "./bootstrap:/var/www/bootstrap"
       - "./.env.docker:/var/www/.env"
     networks:
       - external
@@ -54,7 +55,10 @@ services:
     restart: unless-stopped
     env_file:
       - .env.docker
-    networks:
+    volumes:
+      - "./storage:/var/www/storage"
+      - "./bootstrap:/var/www/bootstrap"
+      networks:
       - external  # Required for ActivityPub
       - internal
     command: gosu www-data php artisan horizon
