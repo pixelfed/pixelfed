@@ -58,7 +58,7 @@ services:
     volumes:
       - "./storage:/var/www/storage"
       - "./bootstrap:/var/www/bootstrap"
-      networks:
+    networks:
       - external  # Required for ActivityPub
       - internal
     command: gosu www-data php artisan horizon
