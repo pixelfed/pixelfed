@@ -37,6 +37,7 @@ services:
     env_file:
       - .env.docker
     volumes:
+      - ./:/var/www
       - "./.env.docker:/var/www/.env"
     networks:
       - external

@@ -77,7 +77,7 @@ RUN rm -rf /var/lib/apt/lists/*
 # DEBUG AGAIN
 RUN php -i
 
-COPY . /var/www/
+COPY --chown=www-data:www-data . /var/www
 WORKDIR /var/www/
 
 RUN rm -rf html && ln -s public html
@@ -87,7 +87,6 @@ RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloa
 RUN composer global remove hirak/prestissimo
 
 # Prepare Environment
-RUN chown -R www-data:www-data storage/
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
