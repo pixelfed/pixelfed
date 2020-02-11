@@ -59,7 +59,6 @@ RUN apt-get install -y --no-install-recommends libmagickwand-dev
 RUN pecl install imagick
 RUN docker-php-ext-enable imagick
 
-
 #PHP Database extensions
 RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
 RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
@@ -67,9 +66,7 @@ RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 #PHP extensions (dependencies)
 #RUN apt-get install -y libicu-dev \
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install -j$(nproc) intl bcmath \
-
-
+RUN docker-php-ext-install -j$(nproc) intl bcmath
 
 #Cleanup PHP
 RUN docker-php-source delete
