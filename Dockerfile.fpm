@@ -19,7 +19,7 @@ RUN apt-get install -y --no-install-recommends \
 ## Standard
       locales locales-all \
       git \
-#      gosu \
+      gosu \
       zip \
       unzip \ 
       libzip-dev \ 
