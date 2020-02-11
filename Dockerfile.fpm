@@ -29,7 +29,7 @@ RUN apt-get install -y --no-install-recommends \
 #      libfreetype6-dev \  # 
 ## Image Optimization
       optipng \  # 
-      pngquant  \  # 
+      pngquant \  # 
       jpegoptim \  # 
       gifsicle \  # 
 ## Image Processing
