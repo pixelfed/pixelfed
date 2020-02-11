@@ -35,7 +35,7 @@ services:
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env.docker
+      - .env.docker
     volumes:
       - "./.env.docker:/var/www/.env"
     networks:
@@ -43,7 +43,7 @@ services:
       - internal
     ports:
         - "9000:9000"
-    command: gosu www-data php-fpm
+    command: php-fpm
 
   worker:
     build:
@@ -52,7 +52,7 @@ services:
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env.docker
+      - .env.docker
     networks:
       - external  # Required for ActivityPub
       - internal
