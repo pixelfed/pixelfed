@@ -19,34 +19,35 @@ RUN apt-get install -y --no-install-recommends \
       apt-utils \
       locales locales-all \
       git \
-#      gosu \  # 
-#      zip \  # 
-#      unzip \  #  
-#      libzip-dev \  #  
-#      libcurl4-openssl-dev \  # 
-#      libicu-dev \  # 
-#      libfreetype6 \  # 
-#      libfreetype6-dev \  # 
+#      gosu \
+#      zip \
+#      unzip \ 
+#      libzip-dev \ 
+#      libcurl4-openssl-dev \
+#      libicu-dev \
+#      libfreetype6 \
+#      libfreetype6-dev \
 ## Image Optimization
-      optipng \  # 
-      pngquant \  # 
-      jpegoptim \  # 
-      gifsicle \  # 
+      optipng \
+      pngquant \
+      jpegoptim \
+      gifsicle \
 ## Image Processing
-#      libjpeg62-turbo \  # 
-#      libjpeg62-turbo-dev \  # 
-#      libpng16-16 \  # 
-#      libpng-dev \  # 
-#      libmagickwand-6.q16-6 \  # image manipulation library -- quantum depth Q16
-#      libmagickwand-dev \  # 
-#      libxpm4 \  # 
-#      libxpm-dev \  # 
-#      libwebp6 \  # 
-#      libwebp-dev \  # 
+#      libjpeg62-turbo \
+#      libjpeg62-turbo-dev \
+#      libpng16-16 \
+#      libpng-dev \
+       ## image manipulation library -- quantum depth Q16
+#      libmagickwand-6.q16-6 \
+#      libmagickwand-dev \
+#      libxpm4 \
+#      libxpm-dev \
+#      libwebp6 \
+#      libwebp-dev \
 ## Database
-#      libsqlite3-dev \  # 
-#      mariadb-client  #
-#      libpq-dev \  #
+#      libsqlite3-dev \
+#      mariadb-client \
+#      libpq-dev
 
 # Update Local data
 RUN sed -i '/en_US/s/^#//g' /etc/locale.gen && locale-gen && update-locale
