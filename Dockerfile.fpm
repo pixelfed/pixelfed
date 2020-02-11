@@ -41,10 +41,7 @@ RUN apt-get install -y --no-install-recommends \
 #      libxpm-dev \
 #      libwebp6 \
 #      libwebp-dev \
-## Database
-#      libsqlite3-dev \
-#      mariadb-client \
-#      libpq-dev
+
       apt-utils
 
 # Update Local data
@@ -66,7 +63,7 @@ RUN docker-php-ext-enable imagick
 
 #Install DB PHP extensions
 RUN apt-get install -y --no-install-recommends libpq-dev
-RUN docker-php-ext-install pdo_mysql pdo_pgsql
+RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 
 
 #Cleanup PHP
@@ -79,6 +76,14 @@ RUN rm -rf /var/lib/apt/lists/*
 
 # DEBUG AGAIN
 RUN php -i
+
+COPY . /var/www/
+WORKDIR /var/www/
+
+RUN composer global require hirak/prestissimo --no-interaction --no-suggest --prefer-dist
+RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader
+RUN composer global remove hirak/prestissimo
+
 
 #Bootstrap FPM
 CMD ["php-fpm"]
