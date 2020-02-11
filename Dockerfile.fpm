@@ -20,9 +20,9 @@ RUN apt-get install -y --no-install-recommends \
       locales locales-all \
       git \
 #      gosu \
-#      zip \
-#      unzip \ 
-#      libzip-dev \ 
+      zip \
+      unzip \ 
+      libzip-dev \ 
 #      libcurl4-openssl-dev \
 #      libicu-dev \
 #      libfreetype6 \
@@ -64,14 +64,11 @@ RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
 RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 
 #PHP extensions (dependencies)
-#RUN apt-get install -y libicu-dev \
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install -j$(nproc) intl bcmath
+RUN docker-php-ext-install -j$(nproc) intl bcmath zip
 
-#Cleanup PHP
+#Cleanup
 RUN docker-php-source delete
-
-#Cleanup APT
 RUN apt-get autoremove --purge -y
 RUN rm -rf /var/cache/apt
 RUN rm -rf /var/lib/apt/lists/*
