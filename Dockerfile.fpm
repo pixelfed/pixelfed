@@ -46,7 +46,7 @@ RUN apt-get install -y --no-install-recommends \
 ## Database
 #      libsqlite3-dev \
 #      mariadb-client \
-#      libpq-dev
+      libpq-dev
 
 # Update Local data
 RUN sed -i '/en_US/s/^#//g' /etc/locale.gen && locale-gen && update-locale
