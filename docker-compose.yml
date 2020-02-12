@@ -32,13 +32,13 @@ services:
   nginx:
     image: nginx
     volumes:
-    - ./:/var/www
+    - ./:/var/www/
     ports:
     - "8080:8080"
     networks:
       - external
-      - internal
-    command: /bin/bash -c "envsubst < /var/www/contrib/docker/nginx.conf > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+      - internal                                                          
+    command: /bin/bash -c "cat /var/www/contrib/docker/nginx.conf > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
 
   phpfpm:
     build:
