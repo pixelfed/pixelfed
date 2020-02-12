@@ -5,6 +5,7 @@ COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # Install Composer
 ENV COMPOSER_VERSION 1.9.2
+ENV COMPOSER_HOME /var/www/.composer
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
   && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
