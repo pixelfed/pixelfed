@@ -11,8 +11,5 @@ php artisan route:cache
 php artisan view:cache
 php artisan config:cache
 
-# Run other specific migratins if required
-# gosu www-data:www-data php artisan update
-
 # Finally run Apache
 exec apache2-foreground
