@@ -29,7 +29,7 @@ services:
     shm_size: 64M
 
 ## App and Worker
-  web:
+  nginx:
     image: nginx
     volumes:
     - ./:/var/www
@@ -50,6 +50,8 @@ services:
       - "./storage:/var/www/storage"
       - "./bootstrap:/var/www/bootstrap"
       - "./.env.docker:/var/www/.env"
+      - "./contrib/docker/fpm.conf:/usr/local/etc/php-fpm.d/www.conf"
+
     networks:
       - external
       - internal
