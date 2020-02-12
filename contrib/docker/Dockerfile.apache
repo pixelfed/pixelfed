@@ -92,9 +92,7 @@ RUN rm -rf /var/lib/apt/lists/*
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 
 COPY . /var/www/
-
 WORKDIR /var/www/
-
 
 RUN cp -r storage storage.skel
 RUN composer global require hirak/prestissimo --no-interaction --no-suggest --prefer-dist
