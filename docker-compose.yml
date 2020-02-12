@@ -7,7 +7,7 @@ services:
     image: redis:5-buster
     restart: unless-stopped
     volumes:
-      - "./redis-data:/data"
+      - "./redis:/data"
     networks:
       - internal
     healthcheck:
@@ -21,14 +21,24 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=pixelfed
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    shm_size: 64M
 
 ## App and Worker
-  frontend:
+  web:
+    image: nginx
+    volumes:
+    - ./:/var/www
+    ports:
+    - "8080:8080"
+    environment:
+    command: /bin/bash -c "envsubst < /var/www/contrib/docker/nginx.conf > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"
+
+  phpfpm:
     build:
       context: .
       dockerfile: Dockerfile.fpm
