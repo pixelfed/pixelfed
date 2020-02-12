@@ -63,6 +63,7 @@ RUN docker-php-ext-configure gd \
       --with-jpeg \
       --with-webp \
       --with-xpm
+RUN docker-php-ext-install -j$(nproc) gd
 
 #PHP Database extensions
 RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
@@ -70,7 +71,7 @@ RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 
 #PHP extensions (dependencies)
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl gd
+RUN docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl
 
 #Cleanup
 RUN docker-php-source delete
