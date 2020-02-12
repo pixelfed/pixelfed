@@ -29,6 +29,8 @@ services:
     networks:
       - external
       - internal
+    ports:
+    - "8080:80"
 
   worker:
     build:
