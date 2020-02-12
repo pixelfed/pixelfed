@@ -90,11 +90,5 @@ RUN composer global remove hirak/prestissimo
 RUN rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
-
-CMD cp -r storage.skel/* storage/ \
- && chown -R www-data:www-data storage/ \
- && php artisan storage:link \
- && php artisan update \
- && exec php-fpm
  
 CMD /var/www/contrib/docker/start.fpm.sh
