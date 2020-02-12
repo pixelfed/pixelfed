@@ -308,4 +308,10 @@ class Profile extends Model
     {
         return $this->hasMany(Story::class);
     }
+
+
+    public function reported()
+    {
+        return $this->hasMany(Report::class, 'object_id');
+    }
 }
