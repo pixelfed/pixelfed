@@ -21,11 +21,11 @@ services:
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
-      - "./.env:/var/www/.env"
+      - "./.env.docker:/var/www/.env"
     networks:
       - external
       - internal
@@ -37,7 +37,7 @@ services:
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
