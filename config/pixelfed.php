@@ -249,6 +249,4 @@ return [
     'admin' => [
         'env_editor' => env('ADMIN_ENV_EDITOR', false)
     ],
-
-    'links_per_post' => env('MAX_LINKS_PER_POST', 0) 
 ];
