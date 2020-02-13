@@ -6,3 +6,5 @@ docker-compose*.yml
 .git
 .gitignore
 .env
+postgres-data
+redis-data
