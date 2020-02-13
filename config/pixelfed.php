@@ -257,10 +257,6 @@ return [
 
     'oauth_enabled' => env('OAUTH_ENABLED', false),
 
-    'sanitizer' => [
-        'restrict_html_types' => env('RESTRICT_HTML_TYPES', true)
-    ],
-
     'admin' => [
         'env_editor' => env('ADMIN_ENV_EDITOR', false)
     ],
