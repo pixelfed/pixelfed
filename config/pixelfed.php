@@ -60,17 +60,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | ActivityPub
-    |--------------------------------------------------------------------------
-    |
-    */
-    'activitypub_enabled' => env('ACTIVITY_PUB', false),
-    'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
-    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
-    'remote_follow_enabled' => false,
-
-    /*
-    |--------------------------------------------------------------------------
     | Account file size limit
     |--------------------------------------------------------------------------
     |
