@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
     <meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="{{request()->url()}}">
+    <meta property="og:url" content="{{url(request()->url())}}">
     @stack('meta')
 
     <meta name="medium" content="image">
@@ -23,7 +23,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
-    <link rel="canonical" href="{{request()->url()}}">
+    <link rel="canonical" href="{{url(request()->url())}}">
     @if(request()->cookie('dark-mode')) 
     
     <link href="{{ mix('css/appdark.css') }}" rel="stylesheet" data-stylesheet="dark">
