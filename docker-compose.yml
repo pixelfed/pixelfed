@@ -59,7 +59,7 @@ services:
     image: redis:5-buster
     restart: unless-stopped
     volumes:
-      - "redis-data:/data"
+      - "./redis-data:/data"
     networks:
       - internal
     healthcheck:
@@ -73,7 +73,7 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=pixelfed
       - POSTGRES_USER=postgres
@@ -82,8 +82,6 @@ services:
 
 # Adjust your volume data in order to store data where you wish
 volumes:
-  redis-data:
-  db-data:
   app-storage:
   app-bootstrap:  
 
