@@ -20,3 +20,5 @@ yarn-error.log
 .git-credentials
 /.composer/
 /nginx.conf
+/postgres-data
+/redis-data
