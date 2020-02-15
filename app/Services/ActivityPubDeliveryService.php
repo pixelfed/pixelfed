@@ -6,7 +6,8 @@ use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 
-class ActivityPubDeliveryService {
+class ActivityPubDeliveryService
+{
 
 	public $sender;
 	public $to;

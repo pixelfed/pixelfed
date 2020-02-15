@@ -42,7 +42,9 @@ class DiscoverController extends Controller
     {
         abort_if(!config('instance.discover.tags.is_public') && !Auth::check(), 403);
 
-        $tag = Hashtag::whereSlug($hashtag)->firstOrFail();
+        $tag = Hashtag::whereName($hashtag)
+          ->orWhere('slug', $hashtag)
+          ->firstOrFail();
         $tagCount = StatusHashtagService::count($tag->id);
         return view('discover.tags.show', compact('tag', 'tagCount'));
     }
