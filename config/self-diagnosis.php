@@ -28,12 +28,6 @@ return [
             ],
         ],
         \BeyondCode\SelfDiagnosis\Checks\EnvFileExists::class,
-        \BeyondCode\SelfDiagnosis\Checks\LocalesAreInstalled::class => [
-            'required_locales' => [
-                'en_US',
-                PHP_OS === 'Darwin' ? 'en_US.UTF-8' : 'en_US.utf8',
-            ],
-        ],
         \BeyondCode\SelfDiagnosis\Checks\MaintenanceModeNotEnabled::class,
         \BeyondCode\SelfDiagnosis\Checks\MigrationsAreUpToDate::class,
         \BeyondCode\SelfDiagnosis\Checks\PhpExtensionsAreInstalled::class => [
@@ -56,7 +50,7 @@ return [
             'include_composer_extensions' => true,
         ],
         \BeyondCode\SelfDiagnosis\Checks\RedisCanBeAccessed::class => [
-           'default_connection' => true,
+           'default_connection' => false,
            'connections' => [],
         ],
         \BeyondCode\SelfDiagnosis\Checks\StorageDirectoryIsLinked::class,
