@@ -25,19 +25,14 @@ RUN apt-get install -y --no-install-recommends \
       unzip \ 
       libzip-dev \ 
       libcurl4-openssl-dev \
-#      libicu-dev \
-#      libfreetype6 \
-#      libfreetype6-dev \
 ## Image Optimization
       optipng \
       pngquant \
       jpegoptim \
       gifsicle \
 ## Image Processing
-#      libjpeg62-turbo \
-#      libjpeg62-turbo-dev \
-#      libpng16-16 \
-#      libpng-dev \
+      libjpeg62-turbo-dev \
+      libpng-dev \
 # Required for GD
       libxpm4 \
       libxpm-dev \
