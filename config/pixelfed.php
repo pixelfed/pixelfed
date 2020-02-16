@@ -34,7 +34,7 @@ return [
     |
     */
     'nodeinfo' => [
-      'url' => config('app.url').'/api/nodeinfo/2.0.json',
+      'url' => config('app.url').'/'.'api/nodeinfo/2.0.json',
     ],
 
     /*
