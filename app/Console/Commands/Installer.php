@@ -97,7 +97,6 @@ class Installer extends Command
             if(extension_loaded($ext) == false) {
                 $this->error("- {$ext} extension not found, aborting installation");
                 exit;
-            } else {
             }
         }
         $this->info("- Required PHP extensions found!");
@@ -221,7 +220,7 @@ class Installer extends Command
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
 
-        if ($existing = $this->existingEnv($key, $payload)) {
+        if ($existing == $this->existingEnv($key, $payload)) {
             $payload = str_replace("{$key}={$existing}", "{$key}=\"{$value}\"", $payload);
             $this->storeEnv($payload);
         } else {
