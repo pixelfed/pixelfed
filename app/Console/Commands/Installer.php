@@ -221,7 +221,7 @@ class Installer extends Command
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
 
-        if ($existing == $this->existingEnv($key, $payload)) {
+        if ($existing = $this->existingEnv($key, $payload)) {
             $payload = str_replace("{$key}={$existing}", "{$key}=\"{$value}\"", $payload);
             $this->storeEnv($payload);
         } else {
