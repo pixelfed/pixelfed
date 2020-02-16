@@ -31,9 +31,8 @@ class PrettyNumber
           ['B', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'] :
           ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         for ($i = 0; ($size / 1024) > 0.9; $i++, $size /= 1024) {
-        }
         $res = round($size, $precision).$units[$i];
-
+        }
         return $res;
     }
 }
