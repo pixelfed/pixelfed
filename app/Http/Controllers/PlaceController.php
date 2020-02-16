@@ -33,7 +33,7 @@ class PlaceController extends Controller
 
     public function directoryCities(Request $request, $country)
     {
-        $country = urldecode($country);
+        $country = ucfirst(urldecode($country));
         $places = Place::whereCountry($country)
             ->orderBy('name', 'asc')
             ->distinct('name')
