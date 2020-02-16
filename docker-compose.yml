@@ -34,7 +34,7 @@ services:
     depends_on:
       - postgres
       - redis
-      
+
   worker:
     build:
       context: .
@@ -80,10 +80,9 @@ services:
       - POSTGRES_PASSWORD=postgres
     shm_size: 64M
 
-# Adjust your volume data in order to store data where you wish
 volumes:
   app-storage:
-  app-bootstrap:  
+  app-bootstrap:
 
 networks:
   internal:
