@@ -19,6 +19,10 @@ class UserObserver
      */
     public function saved(User $user)
     {
+        if($user->status == 'deleted') {
+            return;
+        }
+        
         if (empty($user->profile)) {
             $profile = DB::transaction(function() use($user) {
                 $profile = new Profile();
