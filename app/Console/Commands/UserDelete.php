@@ -13,7 +13,7 @@ class UserDelete extends Command
      *
      * @var string
      */
-    protected $signature = 'user:delete {id}';
+    protected $signature = 'user:delete {id} {--force}';
 
     /**
      * The console command description.
@@ -40,10 +40,22 @@ class UserDelete extends Command
     public function handle()
     {
         $id = $this->argument('id');
-        $user = User::whereUsername($id)->orWhere('id', $id)->first();
+        $force = $this->option('force');
+
+        if(ctype_digit($id) == true) {
+            $user = User::find($id);
+        } else {
+            $user = User::whereUsername($id)->first();
+        }
+
         if(!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
+        }
+
+        if($user->status == 'deleted' && $force == false) {
+            $this->error('Account has already been deleted.');
+            return;
         }
 
         if($user->is_admin == true) {
@@ -62,10 +74,12 @@ class UserDelete extends Command
             exit;
         }
 
-        $profile = $user->profile;
-        $profile->status = $user->status = 'deleted';
-        $profile->save();
-        $user->save();
+        if($user->status !== 'deleted') {
+            $profile = $user->profile;
+            $profile->status = $user->status = 'deleted';
+            $profile->save();
+            $user->save();
+        }
 
         DeleteAccountPipeline::dispatch($user)->onQueue('high');
     }
