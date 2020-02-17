@@ -412,14 +412,14 @@ class Helpers {
 		$profile = Profile::whereRemoteUrl($res['id'])->first();
 		if(!$profile) {
 			$profile = new Profile();
-			$profile->domain = $domain;
-			$profile->username = (string) Purify::clean($remoteUsername);
+			$profile->domain = strtolower($domain);
+			$profile->username = strtolower(Purify::clean($remoteUsername));
 			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
 			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-			$profile->inbox_url = $res['inbox'];
-			$profile->outbox_url = $res['outbox'];
-			$profile->remote_url = $res['id'];
+			$profile->inbox_url = strtolower($res['inbox']);
+			$profile->outbox_url = strtolower($res['outbox']);
+			$profile->remote_url = strtolower($res['id']);
 			$profile->public_key = $res['publicKey']['publicKeyPem'];
 			$profile->key_id = $res['publicKey']['id'];
 			$profile->save();

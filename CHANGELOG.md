@@ -4,6 +4,7 @@
 ### Added
 
 ### Fixed
+- Stories on postgres instances ([5ffa71da](https://github.com/pixelfed/pixelfed/commit/5ffa71da))
 
 ### Updated
 - Updated StatusController, restrict edits to 24 hours ([ae24433b](https://github.com/pixelfed/pixelfed/commit/ae24433b))
