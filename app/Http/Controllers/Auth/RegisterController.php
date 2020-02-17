@@ -55,6 +55,7 @@ class RegisterController extends Controller
     {
         if(config('database.default') == 'pgsql') {
             $data['username'] = strtolower($data['username']);
+            $data['email'] = strtolower($data['email']);
         }
 
         $this->validateUsername($data['username']);
@@ -111,8 +112,9 @@ class RegisterController extends Controller
     {
         if(config('database.default') == 'pgsql') {
             $data['username'] = strtolower($data['username']);
+            $data['email'] = strtolower($data['email']);
         }
-        
+
         return User::create([
             'name'     => $data['name'],
             'username' => $data['username'],
