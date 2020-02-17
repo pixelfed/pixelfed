@@ -53,6 +53,10 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        if(config('database.default') == 'pgsql') {
+            $data['username'] = strtolower($data['username']);
+        }
+
         $this->validateUsername($data['username']);
         $this->validateEmail($data['email']);
 
@@ -105,6 +109,10 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        if(config('database.default') == 'pgsql') {
+            $data['username'] = strtolower($data['username']);
+        }
+        
         return User::create([
             'name'     => $data['name'],
             'username' => $data['username'],

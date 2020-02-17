@@ -22,6 +22,10 @@ class ProfileController extends Controller
 {
     public function show(Request $request, $username)
     {
+        if(config('database.default') == 'pgsql') {
+            $username = strtolower($username);
+        }
+        
         $user = Profile::whereNull('domain')
             ->whereNull('status')
             ->whereUsername($username)
