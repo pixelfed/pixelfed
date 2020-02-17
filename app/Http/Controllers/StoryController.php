@@ -108,16 +108,25 @@ class StoryController extends Controller
 
 		$profile = $request->user()->profile;
 		$following = $profile->following->pluck('id')->toArray();
-		$groupBy = config('database.default') == 'pgsql' ? 'id' : 'profile_id';
 
-		$stories = Story::with('profile')
-		->groupBy($groupBy)
-		->whereIn('profile_id', $following)
-		->where('expires_at', '>', now())
-		->orderByDesc('expires_at')
-		->take(9)
-		->get()
-		->map(function($s, $k) {
+		if(config('database.default') == 'pgsql') {
+			$db = Story::with('profile')
+			->whereIn('profile_id', $following)
+			->where('expires_at', '>', now())
+			->distinct('profile_id')
+			->take(9)
+			->get();
+		} else {
+			$db = Story::with('profile')
+			->whereIn('profile_id', $following)
+			->where('expires_at', '>', now())
+			->orderByDesc('expires_at')
+			->groupBy('profile_id')
+			->take(9)
+			->get();
+		}
+
+		$stories = $db->map(function($s, $k) {
 			return [
 				'id' => (string) $s->id,
 				'photo' => $s->profile->avatarUrl(),
