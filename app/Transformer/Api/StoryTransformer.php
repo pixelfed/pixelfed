@@ -16,19 +16,16 @@ class StoryTransformer extends Fractal\TransformerAbstract
         return [
             'id'                        => (string) $story->id,
             'photo'                     => $story->profile->avatarUrl(),
-            'name'                      => '',
-            'link'                      => '',
+            'name'                      => $story->profile->username,
+            'link'                      => $story->profile->url(),
             'lastUpdated'               => $story->updated_at->format('U'),
             'seen'                      => $story->seen(),
-            'items'                     => [],
         ];
     }
 
     public function includeItems(Story $story)
     {
-        $items = $story->items;
-
-        return $this->collection($items, new StoryItemTransformer());
+        return $this->item($story, new StoryItemTransformer());
     }
 
 }
