@@ -23,11 +23,7 @@ class CommentController extends Controller
 {
     public function showAll(Request $request, $username, int $id)
     {
-        $profile = Profile::whereNull(['status', 'domain'])->whereUsername($username)->firstOrFail();
-        $status = Status::whereProfileId($profile->id)->findOrFail($id);
-        $replies = Status::whereInReplyToId($id)->simplePaginate(40);
-
-        return view('status.comments', compact('profile', 'status', 'replies'));
+        abort(404);
     }
 
     public function store(Request $request)
