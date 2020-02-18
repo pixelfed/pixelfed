@@ -270,7 +270,6 @@ class AccountController extends Controller
 		return redirect()->back();
 	}
 
-
 	public function unblock(Request $request)
 	{
 		$this->validate($request, [
@@ -362,6 +361,13 @@ class AccountController extends Controller
 
 	public function sudoMode(Request $request)
 	{
+        if($request->session()->has('sudoModeAttempts') && $request->session()->get('sudoModeAttempts') >= 3) {
+        	$request->session()->pull('2fa.session.active');
+            $request->session()->pull('redirectNext');
+            $request->session()->pull('sudoModeAttempts');
+            Auth::logout();
+            return redirect(route('login'));
+        } 
 		return view('auth.sudo');
 	}
 
@@ -373,6 +379,12 @@ class AccountController extends Controller
 		$user = Auth::user();
 		$password = $request->input('password');
 		$next = $request->session()->get('redirectNext', '/');
+		if($request->session()->has('sudoModeAttempts')) {
+			$count = (int) $request->session()->get('sudoModeAttempts');
+			$request->session()->put('sudoModeAttempts', $count + 1);
+		} else {
+			$request->session()->put('sudoModeAttempts', 1);
+		}
 		if(password_verify($password, $user->password) === true) {
 			$request->session()->put('sudoMode', time());
 			return redirect($next);
