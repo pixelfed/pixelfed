@@ -20,11 +20,19 @@ class TimelineController extends Controller
 
     public function local(Request $request)
     {
-        return view('timeline.local');
+        $this->validate($request, [
+            'layout' => 'nullable|string|in:grid,feed'
+        ]);
+        $layout = $request->input('layout', 'feed');
+        return view('timeline.local', compact('layout'));
     }
 
     public function network(Request $request)
     {
-        return view('timeline.network');
+        $this->validate($request, [
+            'layout' => 'nullable|string|in:grid,feed'
+        ]);
+        $layout = $request->input('layout', 'feed');
+        return view('timeline.network', compact('layout'));
     }
 }
