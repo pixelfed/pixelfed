@@ -50,13 +50,13 @@ class CollectionController extends Controller
     	return $request->all();
     }
 
-    public function store(Request $request, int $id)
+    public function store(Request $request, $id)
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
             'title'         => 'nullable',
             'description'   => 'nullable',
-            'visibility'    => 'required|alpha|in:public,private'
+            'visibility'    => 'nullable|string|in:public,private'
         ]);
 
         $profile = Auth::user()->profile;   
@@ -140,7 +140,7 @@ class CollectionController extends Controller
         return 200;
     }
 
-    public function get(Request $request, int $id)
+    public function get(Request $request, $id)
     {
         $profile = Auth::check() ? Auth::user()->profile : [];
 
