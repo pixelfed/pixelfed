@@ -65,7 +65,7 @@ class NewsroomController extends Controller
 			->map(function($post) {
 				return [
 					'id' => $post->id,
-					'title' => Str::limit($post->title, 25),
+					'title' => Str::limit($post->title, 40),
 					'summary' => $post->summary,
 					'url' => $post->show_link ? $post->permalink() : null,
 					'published_at' => $post->published_at->format('F m, Y')
