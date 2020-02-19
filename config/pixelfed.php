@@ -232,7 +232,7 @@ return [
     |
     */ 
     'user_invites' => [
-        'enabled' => false, //env('PF_USER_INVITES', false),
+        'enabled' => env('PF_USER_INVITES', false),
         'limit' => [
             'total' => (int) env('PF_USER_INVITES_TOTAL_LIMIT', 0),
             'daily' => (int) env('PF_USER_INVITES_DAILY_LIMIT', 0),
