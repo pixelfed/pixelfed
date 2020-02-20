@@ -54,51 +54,34 @@
 			<div class="col-12 col-md-6">
 				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
 					@csrf
+					<input type="hidden" name="action" value="cw">
 					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-primary py-0 font-weight-bold">Enforce CW</button>
+					<button class="btn btn-outline-{{$profile->cw ? 'secondary' : 'primary'}} py-0 font-weight-bold">
+						{{$profile->cw ? 'Remove CW Enforcement' : 'Enforce CW'}}
+					</button>
 					<p class="help-text text-muted font-weight-bold small">Adds a CW to every post made by this account.</p>
 				</form>
 			</div>
 			<div class="col-12 col-md-6">
 				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
 					@csrf
+					<input type="hidden" name="action" value="unlisted">
 					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-primary py-0 font-weight-bold">Unlisted Posts</button>
+					<button class="btn btn-outline-{{$profile->unlisted ? 'secondary' : 'primary'}} py-0 font-weight-bold">
+						{{$profile->unlisted ? 'Remove Unlisting' : 'Unlisted Posts'}}
+					</button>
 					<p class="help-text text-muted font-weight-bold small">Removes account from public/network timelines.</p>
 				</form>
 			</div>
 			<div class="col-12 col-md-6">
 				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
 					@csrf
+					<input type="hidden" name="action" value="no_autolink">
 					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-primary py-0 font-weight-bold">No Autolinking</button>
+					<button class="btn btn-outline-{{$profile->no_autolink ? 'secondary' : 'primary'}} py-0 font-weight-bold">
+						{{$profile->no_autolink ? 'Remove No Autolinking' : 'No Autolinking'}}
+					</button>
 					<p class="help-text text-muted font-weight-bold small">Do not transform mentions, hashtags or urls into HTML.</p>
-				</form>
-			</div>
-			<div class="col-12 col-md-6">
-				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
-					@csrf
-					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-primary py-0 font-weight-bold">Disable Account</button>
-					<p class="help-text text-muted font-weight-bold small">Temporarily disable account until next time user log in.</p>
-				</form>
-			</div>
-
-			<div class="col-12 col-md-6">
-				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
-					@csrf
-					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-primary py-0 font-weight-bold">Suspend Account</button>
-					<p class="help-text text-muted font-weight-bold small">This prevents any new interactions, without deleting existing data.</p>
-				</form>
-			</div>
-
-			<div class="col-12 col-md-6">
-				<form method="post" action="/i/admin/users/moderation/update" class="pb-3">
-					@csrf
-					<input type="hidden" name="profile_id" value="{{$profile->id}}">
-					<button class="btn btn-outline-danger py-0 font-weight-bold">Lock down Account</button>
-					<p class="help-text text-muted font-weight-bold small">This disables the account and changes the password, forcing account to reset password via verified email.</p>
 				</form>
 			</div>
 		</div>

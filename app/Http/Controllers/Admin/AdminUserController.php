@@ -168,25 +168,44 @@ trait AdminUserController
 		$action = $request->input('action');
 		$profile = Profile::findOrFail($pid);
 
+		if($profile->user->is_admin == true) {
+			$mid = $request->user()->id;
+			abort_if($profile->user_id < $mid, 403);
+		}
+
 		switch ($action) {
 			case 'cw':
-				$profile->cw = true;
-				$msg = "Successfully added Content Warnings to {$profile->username}'s future posts!";
+				$profile->cw = !$profile->cw;
+				$msg = "Success!";
 				break;
 
 			case 'no_autolink':
-				$profile->no_autolink = true;
-				$msg = "Successfully applied No Autolinking to {$profile->username}'s future posts!";
+				$profile->no_autolink = !$profile->no_autolink;
+				$msg = "Success!";
 				break;
 
 			case 'unlisted':
-				$profile->unlisted = true;
-				$msg = "Successfully applied Unlisted scope to {$profile->username}'s future posts!";
+				$profile->unlisted = !$profile->unlisted;
+				$msg = "Success!";
 				break;
 		}
-		
+
 		$profile->save();
+
+		ModLogService::boot()
+			->objectUid($profile->user_id)
+			->objectId($profile->user_id)
+			->objectType('App\User::class')
+			->user($request->user())
+			->action('admin.user.moderate')
+			->metadata([
+				'action' => $action,
+				'message' => $msg
+			])
+			->accessLevel('admin')
+			->save();
+
 		$request->session()->flash('status', $msg);
-		return redirect('/i/admin/users/show/' . $profile->user_id);
+		return redirect('/i/admin/users/modtools/' . $profile->user_id);
 	}
 }
