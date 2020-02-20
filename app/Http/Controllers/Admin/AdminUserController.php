@@ -267,4 +267,18 @@ trait AdminUserController
 		$request->session()->flash('status', $msg);
 		return redirect('/i/admin/users/modtools/' . $profile->user_id);
 	}
+
+	public function userModLogDelete(Request $request, $id)
+	{
+		$this->validate($request, [
+			'mid' => 'required|integer|exists:mod_logs,id'
+		]);
+		$user = User::findOrFail($id);
+		$uid = $request->user()->id;
+		$mid = $request->input('mid');
+		$ml = ModLog::whereUserId($uid)->findOrFail($mid)->delete();
+		$msg = "Successfully deleted modlog comment!";
+		$request->session()->flash('status', $msg);
+		return redirect('/i/admin/users/modlogs/' . $user->id);
+	}
 }

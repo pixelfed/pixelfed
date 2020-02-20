@@ -18,12 +18,24 @@ class ModLog extends Model
 		$msg = 'Unknown action';
 
 		switch ($this->action) {
-			case 'admin.user.message':
-				$msg = "Sent Email Message";
+			case 'admin.user.mail':
+				$msg = "Sent Message";
 				break;
 
 			case 'admin.user.action.cw.warn':
 				$msg = "Sent CW reminder";
+				break;
+
+			case 'admin.user.edit':
+				$msg = "Changed Profile";
+				break;
+
+			case 'admin.user.moderate':
+				$msg = "Moderation";
+				break;
+
+			case 'admin.user.delete':
+				$msg = "Deleted Account";
 				break;
 			
 			default:

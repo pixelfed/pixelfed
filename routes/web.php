@@ -25,6 +25,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('users/modtools/{id}', 'AdminController@userModTools');
     Route::get('users/modlogs/{id}', 'AdminController@userModLogs');
     Route::post('users/modlogs/{id}', 'AdminController@userModLogsMessage');
+    Route::post('users/modlogs/{id}/delete', 'AdminController@userModLogDelete');
     Route::get('users/delete/{id}', 'AdminController@userDelete');
     Route::post('users/delete/{id}', 'AdminController@userDeleteProcess');
     Route::post('users/moderation/update', 'AdminController@userModerate');

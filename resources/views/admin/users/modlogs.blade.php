@@ -78,13 +78,13 @@
 				@if($logs->count() > 0)
 				<div class="list-group">
 					@foreach($logs as $log)
-					<div class="list-group-item d-flex justify-content-between align-items-center">
+					<div class="list-group-item">
 						@if($log->message != null)
 						<div class="d-flex justify-content-between">
 							<div class="mr-3">
 								<img src="{{$log->admin->profile->avatarUrl()}}" width="40px" height="40px" class="border p-1 rounded-circle">
 							</div>
-							<div style="min-width: 400px;">
+							<div style="flex-grow: 1;">
 								@if($log->user_id != Auth::id())
 								<div class="p-3 bg-primary rounded">
 									<p class="mb-0 text-white" style="font-weight: 500;">{{$log->message}}</p>
@@ -103,17 +103,33 @@
 									</span>
 								</div>
 							</div>
+							@if($log->user_id == Auth::id())
+							<div class="align-self-top ml-2">
+								<form method="post" action="/i/admin/users/modlogs/{{$user->id}}/delete">
+									@csrf
+									<input type="hidden" name="mid" value="{{$log->id}}">
+									<button type="submit" class="btn btn-text">
+										<i class="fas fa-times text-lighter"></i>
+									</button>
+								</form>
+							</div>
+							@endif
 						</div>
 						@else
-						<div>
-							<p class="small text-muted font-weight-bold mb-0">{{$log->created_at->diffForHumans()}}</p>
-							<p class="lead mb-0">{{$log->actionToText()}}</p>
-							<p class="small text-muted font-weight-bold mb-0">
-								by: {{$log->user_username}}
-							</p>
-						</div>
-						<div>
-							<i class="fas fa-chevron-right fa-lg text-lighter"></i>
+						<div class="d-flex justify-content-between align-items-center">
+							<div class="mr-3">
+								<img src="{{$log->admin->profile->avatarUrl()}}" width="40px" height="40px" class="border p-1 rounded-circle">
+							</div>
+							<div style="flex-grow: 1;">
+								<p class="small text-muted font-weight-bold mb-0">{{$log->created_at->diffForHumans()}}</p>
+								<p class="lead mb-0">{{$log->actionToText()}}</p>
+								<p class="small text-muted font-weight-bold mb-0">
+									by: {{$log->user_username}}
+								</p>
+							</div>
+							<div>
+								<i class="fas fa-chevron-right fa-lg text-lighter"></i>
+							</div>
 						</div>
 						@endif
 					</div>
