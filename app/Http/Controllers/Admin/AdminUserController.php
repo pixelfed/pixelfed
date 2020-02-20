@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Cache, DB;
 use Illuminate\Http\Request;
 use App\ModLog;
+use App\Profile;
 use App\User;
 use App\Mail\AdminMessage;
 use Illuminate\Support\Facades\Mail;
@@ -154,5 +155,38 @@ trait AdminUserController
 		$user = User::findOrFail($id);
 		$profile = $user->profile;
 		return view('admin.users.delete', compact('user', 'profile'));
+	}
+
+	public function userModerate(Request $request)
+	{
+		$this->validate($request, [
+			'profile_id' => 'required|exists:profiles,id',
+			'action' => 'required|in:cw,no_autolink,unlisted'
+		]);
+
+		$pid = $request->input('profile_id');
+		$action = $request->input('action');
+		$profile = Profile::findOrFail($pid);
+
+		switch ($action) {
+			case 'cw':
+				$profile->cw = true;
+				$msg = "Successfully added Content Warnings to {$profile->username}'s future posts!";
+				break;
+
+			case 'no_autolink':
+				$profile->no_autolink = true;
+				$msg = "Successfully applied No Autolinking to {$profile->username}'s future posts!";
+				break;
+
+			case 'unlisted':
+				$profile->unlisted = true;
+				$msg = "Successfully applied Unlisted scope to {$profile->username}'s future posts!";
+				break;
+		}
+		
+		$profile->save();
+		$request->session()->flash('status', $msg);
+		return redirect('/i/admin/users/show/' . $profile->user_id);
 	}
 }
