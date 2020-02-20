@@ -314,6 +314,10 @@ class BaseApiController extends Controller
     {
         $user = $request->user();
         abort_if(!$user, 403);
+        if($user->status != null) {
+            Auth::logout();
+            return redirect('/login');
+        }
         $resource = new Fractal\Resource\Item($user->profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
