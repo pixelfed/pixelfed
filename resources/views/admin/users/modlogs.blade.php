@@ -87,14 +87,14 @@
 							<div style="flex-grow: 1;">
 								@if($log->user_id != Auth::id())
 								<div class="p-3 bg-primary rounded">
-									<p class="mb-0 text-white" style="font-weight: 500;">{{$log->message}}</p>
+									<p class="mb-0 text-white" style="font-weight: 600;">{{$log->message}}</p>
 								</div>
 								@else
-								<div class="p-3 bg-light rounded">
-									<p class="mb-0 text-dark" style="font-weight: 500;">{{$log->message}}</p>
+								<div class="p-3 bg-white border rounded">
+									<p class="mb-0 text-dark" style="font-weight: 600;">{{$log->message}}</p>
 								</div>
 								@endif
-								<div class="d-flex justify-content-between small text-muted font-weight-bold mb-0">
+								<div class="d-flex justify-content-between small text-muted font-weight-bold mb-0 pt-2">
 									<span class="mr-4">
 										&commat;{{$log->user_username}}
 									</span>
