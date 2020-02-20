@@ -10,6 +10,7 @@ use App\User;
 use App\Mail\AdminMessage;
 use Illuminate\Support\Facades\Mail;
 use App\Services\ModLogService;
+use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 
 trait AdminUserController
 {
@@ -155,6 +156,35 @@ trait AdminUserController
 		$user = User::findOrFail($id);
 		$profile = $user->profile;
 		return view('admin.users.delete', compact('user', 'profile'));
+	}
+
+	public function userDeleteProcess(Request $request, $id)
+	{
+		$user = User::findOrFail($id);
+		$profile = $user->profile;
+
+		if(config('pixelfed.account_deletion') == false) {
+			abort(404);
+		}
+
+		if($user->is_admin == true) {
+			$mid = $request->user()->id;
+			abort_if($user->id < $mid, 403);
+		}
+
+		$ts = now()->addMonth();
+		$user->status = 'delete';
+		$profile->status = 'delete';
+		$user->delete_after = $ts;
+		$profile->delete_after = $ts;
+		$user->save();
+		$profile->save();
+		Cache::forget('profiles:private');
+		DeleteAccountPipeline::dispatch($user)->onQueue('high');
+
+		$msg = "Successfully deleted {$user->username}!";
+		$request->session()->flash('status', $msg);
+		return redirect('/i/admin/users/list');
 	}
 
 	public function userModerate(Request $request)
