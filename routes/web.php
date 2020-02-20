@@ -26,7 +26,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('users/modlogs/{id}', 'AdminController@userModLogs');
     Route::post('users/modlogs/{id}', 'AdminController@userModLogsMessage');
     Route::get('users/delete/{id}', 'AdminController@userDelete');
-    Route::post('users/delete/{id}', 'AdminController@userDelete');
+    Route::post('users/delete/{id}', 'AdminController@userDeleteProcess');
     Route::post('users/moderation/update', 'AdminController@userModerate');
     Route::get('media', 'AdminController@media')->name('admin.media');
     Route::redirect('media/list', '/i/admin/media');
