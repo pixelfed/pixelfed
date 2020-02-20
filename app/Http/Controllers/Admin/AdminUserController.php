@@ -77,21 +77,21 @@ trait AdminUserController
 		}
 
 		if($changed == true) {
+			ModLogService::boot()
+				->objectUid($user->id)
+				->objectId($user->id)
+				->objectType('App\User::class')
+				->user($request->user())
+				->action('admin.user.edit')
+				->metadata([
+					'fields' => $fields
+				])
+				->accessLevel('admin')
+				->save();
 			$profile->save();
 			$user->save();
 		}
 
-		ModLogService::boot()
-			->objectUid($user->id)
-			->objectId($user->id)
-			->objectType('App\User::class')
-			->user($request->user())
-			->action('admin.user.edit')
-			->metadata([
-				'fields' => $fields
-			])
-			->accessLevel('admin')
-			->save();
 
 		return redirect('/i/admin/users/show/' . $user->id);
 	}
