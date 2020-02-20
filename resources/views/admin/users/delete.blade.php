@@ -49,12 +49,26 @@
 		<div class="card card-body">
 			<p class="lead text-center py-5">Are you sure you want to delete this account?</p>
 			<p class="mb-0">
-				<form method="post">
+				<form method="post" id="deleteForm">
 					@csrf
-					<button type="submit" class="btn btn-danger btn-block font-weight-bold">DELETE ACCOUNT</button>
+					<button type="button" id="confirmDelete" class="btn btn-danger btn-block font-weight-bold">DELETE ACCOUNT</button>
 				</form>
 			</p>
 		</div>
 	</div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+	$('#confirmDelete').click(function(e) {
+		e.preventDefault();
+
+		if(window.confirm('Are you sure you want to delete this account?') == true) {
+			if(window.confirm('Are you absolutely sure you want to delete this account?') == true) {
+				$('#deleteForm').submit();
+			}
+		}
+	})
+</script>
+@endpush
