@@ -45,12 +45,15 @@ trait AdminUserController
 		$user = User::findOrFail($id);
 		$profile = $user->profile;
 		$changed = false;
+		$fields = [];
 
 		if($request->filled('name') && $request->input('name') != $user->name) {
+			$fields['name'] = ['old' => $user->name, 'new' => $request->input('name')];
 			$user->name = $profile->name = $request->input('name');
 			$changed = true;
 		}
 		if($request->filled('username') && $request->input('username') != $user->username) {
+			$fields['username'] = ['old' => $user->username, 'new' => $request->input('username')];
 			$user->username = $profile->username = $request->input('username');
 			$changed = true;
 		}
@@ -58,14 +61,17 @@ trait AdminUserController
 			if(filter_var($request->input('email'), FILTER_VALIDATE_EMAIL) == false) {
 				abort(500, 'Invalid email address');
 			}
+			$fields['email'] = ['old' => $user->email, 'new' => $request->input('email')];
 			$user->email = $request->input('email');
 			$changed = true;
 		}
 		if($request->input('bio') != $profile->bio) {
+			$fields['bio'] = ['old' => $user->bio, 'new' => $request->input('bio')];
 			$profile->bio = $request->input('bio');
 			$changed = true;
 		}
 		if($request->input('website') != $profile->website) {
+			$fields['website'] = ['old' => $user->website, 'new' => $request->input('website')];
 			$profile->website = $request->input('website');
 			$changed = true;
 		}
@@ -74,6 +80,19 @@ trait AdminUserController
 			$profile->save();
 			$user->save();
 		}
+
+		ModLogService::boot()
+			->objectUid($user->id)
+			->objectId($user->id)
+			->objectType('App\User::class')
+			->user($request->user())
+			->action('admin.user.edit')
+			->metadata([
+				'fields' => $fields
+			])
+			->accessLevel('admin')
+			->save();
+
 		return redirect('/i/admin/users/show/' . $user->id);
 	}
 
@@ -179,6 +198,16 @@ trait AdminUserController
 		$profile->delete_after = $ts;
 		$user->save();
 		$profile->save();
+
+		ModLogService::boot()
+			->objectUid($user->id)
+			->objectId($user->id)
+			->objectType('App\User::class')
+			->user($request->user())
+			->action('admin.user.delete')
+			->accessLevel('admin')
+			->save();
+
 		Cache::forget('profiles:private');
 		DeleteAccountPipeline::dispatch($user)->onQueue('high');
 
