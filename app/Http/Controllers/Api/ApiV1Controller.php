@@ -152,7 +152,7 @@ class ApiV1Controller extends Controller
         $this->validate($request, [
             'display_name'      => 'nullable|string',
             'note'              => 'nullable|string',
-            'locked'            => 'nullable|boolean',
+            'locked'            => 'nullable',
             // 'source.privacy'    => 'nullable|in:unlisted,public,private',
             // 'source.sensitive'  => 'nullable|boolean'
         ]);

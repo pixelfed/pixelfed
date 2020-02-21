@@ -12,14 +12,15 @@ class StoryItemTransformer extends Fractal\TransformerAbstract
     public function transform(StoryItem $item)
     {
         return [
-            'id'                        => (string) Str::uuid(),
+            'id'                        => (string) $item->id,
             'type'                      => $item->type,
-            'length'                    => $item->duration,
+            'length'                    => $item->duration != 0 ? $item->duration : 3,
             'src'                       => $item->url(),
             'preview'                   => null,
             'link'                      => null,
             'linkText'                  => null,
-            'time'                      => $item->updated_at->format('U'),
+            'time'                      => $item->created_at->format('U'),
+            'expires_at'                => $item->created_at->addHours(24)->format('U'),
             'seen'                      => $item->story->seen(),
         ];
     }

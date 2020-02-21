@@ -21,7 +21,8 @@ use App\Http\Controllers\Admin\{
 	AdminReportController,
 	AdminMediaController,
 	AdminSettingsController,
-	AdminSupportController
+	AdminSupportController,
+	AdminUserController
 };
 use Illuminate\Validation\Rule;
 use App\Services\AdminStatsService;
@@ -32,11 +33,13 @@ class AdminController extends Controller
 	AdminDiscoverController, 
 	AdminMediaController, 
 	AdminSettingsController, 
-	AdminInstanceController;
+	AdminInstanceController,
+	AdminUserController;
 
 	public function __construct()
 	{
 		$this->middleware('admin');
+		$this->middleware('dangerzone');
 		$this->middleware('twofactor');
 	}
 
@@ -44,25 +47,6 @@ class AdminController extends Controller
 	{
 		$data = AdminStatsService::get();
 		return view('admin.home', compact('data'));
-	}
-
-	public function users(Request $request)
-	{
-		$col = $request->query('col') ?? 'id';
-		$dir = $request->query('dir') ?? 'desc';
-		$users = User::select('id', 'username', 'status')
-			->withCount('statuses')
-			->orderBy($col, $dir)
-			->simplePaginate(10);
-
-		return view('admin.users.home', compact('users'));
-	}
-
-	public function editUser(Request $request, $id)
-	{
-		$user = User::findOrFail($id);
-		$profile = $user->profile;
-		return view('admin.users.edit', compact('user', 'profile'));
 	}
 
 	public function statuses(Request $request)
@@ -109,22 +93,25 @@ class AdminController extends Controller
 				'nullable',
 				'string',
 				Rule::in(['all', 'local', 'remote'])
-			],
-			'limit' => 'nullable|integer|min:1|max:50'
+			]
 		]);
 		$search = $request->input('search');
 		$filter = $request->input('filter');
 		$limit = 12;
-		if($search) {
-			$profiles = Profile::select('id','username')
-			->where('username', 'like', "%$search%")
-			->orderBy('id','desc')
+		$profiles = Profile::select('id','username')
+			->whereNull('status')
+			->when($search, function($q, $search) {
+				return $q->where('username', 'like', "%$search%");
+			})->when($filter, function($q, $filter) {
+				if($filter == 'local') {
+					return $q->whereNull('domain');
+				}
+				if($filter == 'remote') {
+					return $q->whereNotNull('domain');
+				}
+				return $q;
+			})->orderByDesc('id')
 			->simplePaginate($limit);
-		} else if($filter) {
-			$profiles = Profile::select('id','username')->withCount(['likes','statuses','followers'])->orderBy($filter, $order)->simplePaginate($limit);
-		} else {
-			$profiles = Profile::select('id','username')->orderBy('id','desc')->simplePaginate($limit);
-		}
 
 		return view('admin.profiles.home', compact('profiles'));
 	}

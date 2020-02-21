@@ -16,6 +16,12 @@ class DangerZone
      */
     public function handle($request, Closure $next)
     {
+        if( $request->session()->get('sudoModeAttempts') > 3) {
+            $request->session()->pull('redirectNext');
+            $request->session()->pull('sudoModeAttempts');
+            Auth::logout();
+            return redirect(route('login'));
+        } 
         if(!Auth::check()) {
             return redirect(route('login'));
         }

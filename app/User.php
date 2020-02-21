@@ -83,4 +83,9 @@ class User extends Authenticatable
         return 'profile:storage:used:' . $this->id;
     }
 
+    public function accountLog()
+    {
+        return $this->hasMany(AccountLog::class);
+    }
+
 }
