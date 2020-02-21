@@ -22,14 +22,11 @@ class ProfileController extends Controller
 {
     public function show(Request $request, $username)
     {
-        if(config('database.default') == 'pgsql') {
-            $username = strtolower($username);
-        }
-        
         $user = Profile::whereNull('domain')
             ->whereNull('status')
             ->whereUsername($username)
             ->firstOrFail();
+        
         if($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
@@ -247,6 +244,6 @@ class ProfileController extends Controller
             ->where('expires_at', '>', now())
             ->count();
         abort_unless($exists > 0, 404);
-        return view('profile.story', compact('pid'));
+        return view('profile.story', compact('pid', 'profile'));
     }
 }
