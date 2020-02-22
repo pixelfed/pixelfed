@@ -11,7 +11,6 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class StatusService
 {
-
     const CACHE_KEY = 'pf:services:status:';
 
     public static function get($id)

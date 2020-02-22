@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Redis;
 
 class NewsroomController extends Controller
 {
-
     public function index(Request $request)
     {
         if (Auth::check()) {

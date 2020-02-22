@@ -35,7 +35,7 @@ class HashtagFollowController extends Controller
 
         if ($hashtagFollow->wasRecentlyCreated) {
             $state = 'created';
-            // todo: send to HashtagFollowService
+        // todo: send to HashtagFollowService
         } else {
             $state = 'deleted';
             $hashtagFollow->delete();
@@ -53,7 +53,7 @@ class HashtagFollowController extends Controller
             ->take(3)
             ->get()
             ->map(function ($follow, $k) {
-                  return $follow->hashtag->name;
+                return $follow->hashtag->name;
             });
     }
 }

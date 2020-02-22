@@ -55,7 +55,7 @@ class AudienceScopeTest extends TestCase
              "scope" => "public",
          ];
 
-         $this->assertEquals($scope, $actual);
+        $this->assertEquals($scope, $actual);
     }
 
     public function testPleromaAudienceScope()
@@ -70,7 +70,7 @@ class AudienceScopeTest extends TestCase
             "scope" => "unlisted",
         ];
 
-         $this->assertEquals($scope, $actual);
+        $this->assertEquals($scope, $actual);
     }
 
     public function testInvalidAudienceScope()

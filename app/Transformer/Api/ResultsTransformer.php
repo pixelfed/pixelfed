@@ -6,7 +6,6 @@ use League\Fractal;
 
 class ResultsTransformer extends Fractal\TransformerAbstract
 {
-
     protected $defaultIncludes = [
         'accounts',
         'statuses',

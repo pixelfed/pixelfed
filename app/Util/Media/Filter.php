@@ -4,7 +4,6 @@ namespace App\Util\Media;
 
 class Filter
 {
-
     public static $filters = [
         '1977' => 'filter-1977',
         'Aden' => 'filter-aden',

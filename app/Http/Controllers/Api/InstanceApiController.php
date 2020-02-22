@@ -11,7 +11,6 @@ use Cache;
 
 class InstanceApiController extends Controller
 {
-
     protected function getData()
     {
         $contact = Cache::remember('api:v1:instance:contact', now()->addMinutes(1440), function () {

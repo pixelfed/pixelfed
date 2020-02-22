@@ -7,7 +7,6 @@ use Illuminate\Support\Arr;
 
 class Localization
 {
-
     public static function languages()
     {
         return Cache::remember('core:localization:languages', now()->addDays(1), function () {

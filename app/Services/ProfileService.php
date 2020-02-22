@@ -10,7 +10,6 @@ use App\Profile;
 
 class ProfileService
 {
-
     protected $profile;
     protected $profile_prefix;
 

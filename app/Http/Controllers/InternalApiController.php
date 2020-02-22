@@ -20,7 +20,7 @@ use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\AccountTransformer;
 use App\Transformer\Api\StatusTransformer;
-    // StatusMediaContainerTransformer,
+// StatusMediaContainerTransformer,
 
 use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;

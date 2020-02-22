@@ -41,7 +41,6 @@ class FixHashtags extends Command
      */
     public function handle()
     {
-
         $this->info('       ____  _           ______         __  ');
         $this->info('      / __ \(_)  _____  / / __/__  ____/ /  ');
         $this->info('     / /_/ / / |/_/ _ \/ / /_/ _ \/ __  /   ');

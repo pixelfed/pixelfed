@@ -10,7 +10,6 @@ class CreateNote extends Fractal\TransformerAbstract
 {
     public function transform(Status $status)
     {
-
         $mentions = $status->mentions->map(function ($mention) {
             $webfinger = $mention->emailUrl();
             $name = Str::startsWith($webfinger, '@') ?

@@ -19,7 +19,6 @@ use Illuminate\Http\Request;
 
 trait PrivacySettings
 {
-
     public function privacy()
     {
         $settings = Auth::user()->settings;

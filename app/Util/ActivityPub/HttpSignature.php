@@ -89,14 +89,14 @@ class HttpSignature
     private static function _headersToSigningString($headers)
     {
         return implode("\n", array_map(function ($k, $v) {
-             return strtolower($k).': '.$v;
+            return strtolower($k).': '.$v;
         }, array_keys($headers), $headers));
     }
 
     private static function _headersToCurlArray($headers)
     {
         return array_map(function ($k, $v) {
-             return "$k: $v";
+            return "$k: $v";
         }, array_keys($headers), $headers);
     }
 

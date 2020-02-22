@@ -151,7 +151,6 @@ class DeleteAccountPipeline implements ShouldQueue
 
     protected function deleteUserSettings($user)
     {
-
         DB::transaction(function () use ($user) {
             UserDevice::whereUserId($user->id)->forceDelete();
             UserFilter::whereUserId($user->id)->forceDelete();

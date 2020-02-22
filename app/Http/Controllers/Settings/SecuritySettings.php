@@ -18,7 +18,6 @@ use PragmaRX\Google2FA\Google2FA;
 
 trait SecuritySettings
 {
-
     public function security()
     {
         $user = Auth::user();

@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 
 trait RelationshipSettings
 {
-
     public function relationshipsHome(Request $request)
     {
         $this->validate($request, [

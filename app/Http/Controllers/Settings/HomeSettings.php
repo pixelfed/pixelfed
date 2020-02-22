@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 
 trait HomeSettings
 {
-
     public function home()
     {
         $id = Auth::user()->profile->id;

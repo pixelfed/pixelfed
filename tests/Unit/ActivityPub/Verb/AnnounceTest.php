@@ -9,7 +9,6 @@ use App\Util\ActivityPub\Validator\Announce;
 
 class AnnounceTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();

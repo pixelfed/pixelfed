@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OauthClient extends Model
 {
-
     protected $table = 'oauth_clients';
 
     public function user()

@@ -4,7 +4,6 @@ namespace App\Util\RateLimit;
 
 trait User
 {
-    
     public function isTrustedAccount()
     {
         return $this->created_at->lt(now()->subDays(60));

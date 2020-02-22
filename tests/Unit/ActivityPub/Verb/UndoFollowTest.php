@@ -9,7 +9,6 @@ use App\Util\ActivityPub\Validator\UndoFollow;
 
 class UndoFollowTest extends TestCase
 {
-
     protected $validUndo;
     protected $invalidUndo;
 

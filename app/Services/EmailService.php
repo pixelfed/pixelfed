@@ -4,7 +4,6 @@ namespace App\Services;
 
 class EmailService
 {
-
     public static function isBanned($email)
     {
         if (filter_var($email, FILTER_VALIDATE_EMAIL) == false) {

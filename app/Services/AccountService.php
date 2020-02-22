@@ -10,7 +10,6 @@ use League\Fractal\Serializer\ArraySerializer;
 
 class AccountService
 {
-
     const CACHE_KEY = 'pf:services:account:';
 
     public static function get($id)

@@ -204,7 +204,7 @@ class BaseApiController extends Controller
         abort_if(!$request->user(), 403);
         $this->validate($request, [
               'file.*'      => function () {
-                return [
+                  return [
                     'required',
                     'mimes:' . config('pixelfed.media_types'),
                     'max:' . config('pixelfed.max_photo_size'),

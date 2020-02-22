@@ -12,7 +12,6 @@ use Illuminate\Validation\Rule;
 
 trait AdminInstanceController
 {
-
     public function instances(Request $request)
     {
         $this->validate($request, [

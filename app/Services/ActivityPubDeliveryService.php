@@ -8,7 +8,6 @@ use App\Util\ActivityPub\HttpSignature;
 
 class ActivityPubDeliveryService
 {
-
     public $sender;
     public $to;
     public $payload;

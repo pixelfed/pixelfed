@@ -101,10 +101,10 @@ class ApiV1Controller extends Controller
         $id = $request->user()->id;
 
         //$res = Cache::remember('mastoapi:user:account:id:'.$id, now()->addHours(6), function() use($id) {
-            $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
-            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-            $res['source'] = [
+        $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['source'] = [
                 'privacy' => $profile->is_private ? 'private' : 'public',
                 'sensitive' => $profile->cw ? true : false,
                 'language' => null,
@@ -114,7 +114,7 @@ class ApiV1Controller extends Controller
         //     return $res;
         // });
 
-            return response()->json($res);
+        return response()->json($res);
     }
 
     /**
@@ -950,7 +950,7 @@ class ApiV1Controller extends Controller
 
         $this->validate($request, [
           'file.*'      => function () {
-            return [
+              return [
                 'required',
                 'mimes:' . config('pixelfed.media_types'),
                 'max:' . config('pixelfed.max_photo_size'),

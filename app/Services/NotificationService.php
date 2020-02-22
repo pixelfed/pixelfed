@@ -13,7 +13,6 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class NotificationService
 {
-
     const CACHE_KEY = 'pf:services:notifications:ids:';
 
     public static function get($id, $start = 0, $stop = 400)

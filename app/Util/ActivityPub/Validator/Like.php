@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class Like
 {
-
     public static function validate($payload)
     {
         $valid = Validator::make($payload, [

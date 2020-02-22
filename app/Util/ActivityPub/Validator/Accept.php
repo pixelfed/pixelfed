@@ -7,7 +7,6 @@ use Illuminate\Validation\Rule;
 
 class Accept
 {
-
     public static function validate($payload)
     {
         $valid = Validator::make($payload, [

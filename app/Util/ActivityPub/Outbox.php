@@ -9,7 +9,6 @@ use App\Transformer\ActivityPub\ProfileOutbox;
 
 class Outbox
 {
-
     public static function get($username)
     {
         abort_if(!config('federation.activitypub.enabled'), 404);

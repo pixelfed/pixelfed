@@ -40,7 +40,6 @@ class StatusDedupe extends Command
      */
     public function handle()
     {
-
         if (config('database.default') == 'pgsql') {
             $this->info('This command is not compatible with Postgres, we are working on a fix.');
             return;

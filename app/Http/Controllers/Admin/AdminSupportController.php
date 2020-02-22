@@ -16,5 +16,4 @@ use App\User;
 
 trait AdminSupportController
 {
-
 }

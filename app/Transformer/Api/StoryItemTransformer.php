@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 
 class StoryItemTransformer extends Fractal\TransformerAbstract
 {
-
     public function transform(StoryItem $item)
     {
         return [

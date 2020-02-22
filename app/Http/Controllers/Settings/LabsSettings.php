@@ -9,7 +9,6 @@ use App\Services\SuggestionService;
 
 trait LabsSettings
 {
-
     public function __constructor()
     {
         $this->middleware('auth');

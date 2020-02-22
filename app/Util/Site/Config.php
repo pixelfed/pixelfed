@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class Config
 {
-
     public static function get()
     {
         return Cache::remember('api:site:configuration', now()->addMinutes(30), function () {

@@ -10,7 +10,6 @@ class MediaDraftTransformer extends Fractal\TransformerAbstract
 {
     public function transform(Media $media)
     {
-
         $url = URL::temporarySignedRoute(
             'temp-media',
             now()->addHours(1),

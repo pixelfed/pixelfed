@@ -7,7 +7,6 @@ use App\Profile;
 
 class SuggestionService
 {
-
     const CACHE_KEY = 'pf:services:suggestion:ids';
 
     public static function get($start = 0, $stop = -1)

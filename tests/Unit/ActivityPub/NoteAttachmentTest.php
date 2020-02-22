@@ -9,7 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class NoteAttachmentTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();

@@ -171,7 +171,7 @@ class Inbox
                 'follower_id' => $actor->id,
                 'following_id' => $target->id
             ]);
-            // todo: send notification
+        // todo: send notification
         } else {
             // store new follower
             $follower = Follower::firstOrCreate([
@@ -250,7 +250,6 @@ class Inbox
 
     public function handleAcceptActivity()
     {
-
         $actor = $this->payload['object']['actor'];
         $obj = $this->payload['object']['object'];
         $type = $this->payload['object']['type'];

@@ -31,7 +31,6 @@ use App\Services\ActivityPubDeliveryService;
 
 class Helpers
 {
-
     public static function validateObject($data)
     {
         $verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];

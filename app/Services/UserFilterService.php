@@ -11,7 +11,6 @@ use App\UserFilter;
 
 class UserFilterService
 {
-
     const USER_MUTES_KEY = 'pf:services:mutes:ids:';
     const USER_BLOCKS_KEY = 'pf:services:blocks:ids:';
 

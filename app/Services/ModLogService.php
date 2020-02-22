@@ -9,7 +9,6 @@ use App\User;
 
 class ModLogService
 {
-
     protected $log;
 
     public function __construct()

@@ -9,7 +9,6 @@ use App\UserFilter;
 
 class PublicTimelineService
 {
-
     const CACHE_KEY = 'pf:services:timeline:public';
 
     public static function get($start = 0, $stop = 10)

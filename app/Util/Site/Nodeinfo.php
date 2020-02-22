@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 
 class Nodeinfo
 {
-
     public static function get()
     {
         $res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {

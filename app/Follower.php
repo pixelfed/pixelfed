@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Follower extends Model
 {
-
     protected $fillable = ['profile_id', 'following_id', 'local_profile'];
 
     const MAX_FOLLOWING = 7500;

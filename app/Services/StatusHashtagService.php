@@ -13,7 +13,6 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class StatusHashtagService
 {
-
     const CACHE_KEY = 'pf:services:status-hashtag:collection:';
 
     public static function get($id, $page = 1, $stop = 9)

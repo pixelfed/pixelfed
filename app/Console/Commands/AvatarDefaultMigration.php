@@ -64,7 +64,6 @@ class AvatarDefaultMigration extends Command
                 }
                 
                 DB::transaction(function () use ($avatar, $bar) {
-
                     if (is_file(storage_path('app/' . $avatar->media_path))) {
                         @unlink(storage_path('app/' . $avatar->media_path));
                     }
