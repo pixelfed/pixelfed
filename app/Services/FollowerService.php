@@ -12,8 +12,8 @@ use App\{
 class FollowerService {
 
 	protected $profile;
-	static $follower_prefix = 'px:profile:followers-v1.3:';
-	static $following_prefix = 'px:profile:following-v1.3:';
+	public static $follower_prefix = 'px:profile:followers-v1.3:';
+	public static $following_prefix = 'px:profile:following-v1.3:';
 
 	public static function build()
 	{
