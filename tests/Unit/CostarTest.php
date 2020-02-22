@@ -12,7 +12,7 @@ class CostarTest extends TestCase
     /** @test */
     public function blockedDomain()
     {
-        $domains = config('costar.domain.block');
+    	$domains = config('costar.domain.block');
         $this->assertTrue(in_array('example.net', $domains));
 
         $blockedDomain = 'https://example.org/user/replyGuy';

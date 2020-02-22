@@ -40,7 +40,7 @@ class UserShow extends Command
     {
         $id = $this->argument('id');
         $user = User::whereUsername($id)->orWhere('id', $id)->first();
-        if (!$user) {
+        if(!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
         }

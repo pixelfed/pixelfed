@@ -6,6 +6,6 @@ return [
   'startedFollowingYou' => 'seni takip etmeye başladı.',
   'commented'           => 'gönderine yorum yaptı.',
   'mentionedYou'        => 'seni etiketledi.',
-  'shared'              => 'gönderini paylaştı.',
+  'shared'				=> 'gönderini paylaştı.',
 
 ];

@@ -1,4 +1,4 @@
 Vue.component(
-    'micro-ui',
-    require('./components/Micro.vue').default
+	'micro-ui',
+	require('./components/Micro.vue').default
 );

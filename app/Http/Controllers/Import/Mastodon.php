@@ -8,6 +8,6 @@ trait Mastodon
 {
     public function mastodon()
     {
-        return view('settings.import.mastodon.home');
+      return view('settings.import.mastodon.home');
     }
 }

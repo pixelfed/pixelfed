@@ -10,6 +10,6 @@ return [
   'alreadyFollow'         => 'Already follow :username?',
   'loginToSeeProfile'     => 'to see their photos and videos.',
 
-  'status.disabled.header'    => 'Profile Unavailable',
-  'status.disabled.body'      => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+  'status.disabled.header' 	  => 'Profile Unavailable',
+  'status.disabled.body'	  => 'Sorry, this profile is not available at the moment. Please try again shortly.',
 ];

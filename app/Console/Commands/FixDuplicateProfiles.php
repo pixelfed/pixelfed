@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-use App\Like;
-use App\Media;
-use App\Profile;
-use App\Status;
-use App\User;
+use App\{
+    Like,
+    Media,
+    Profile,
+    Status,
+    User
+};
 
 class FixDuplicateProfiles extends Command
 {
@@ -45,7 +47,7 @@ class FixDuplicateProfiles extends Command
     {
         $profiles = Profile::selectRaw('count(user_id) as count,user_id')->whereNotNull('user_id')->groupBy('user_id')->orderBy('user_id', 'desc')->get()->where('count', '>', 1);
         $count = $profiles->count();
-        if ($count == 0) {
+        if($count == 0) {
             $this->info("No duplicate profiles found!");
             return;
         }
@@ -56,9 +58,10 @@ class FixDuplicateProfiles extends Command
         foreach ($profiles as $profile) {
             $dup = Profile::whereUserId($profile->user_id)->get();
 
-            if ($dup->first()->username === $dup->last()->username &&
-                $dup->last()->statuses()->count() == 0 &&
-                $dup->last()->followers()->count() == 0 &&
+            if(
+                $dup->first()->username === $dup->last()->username && 
+                $dup->last()->statuses()->count() == 0 && 
+                $dup->last()->followers()->count() == 0 && 
                 $dup->last()->likes()->count() == 0 &&
                 $dup->last()->media()->count() == 0
             ) {

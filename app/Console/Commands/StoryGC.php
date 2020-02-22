@@ -3,10 +3,14 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use App\Story;
-use App\StoryView;
+use Illuminate\Support\Facades\{
+    DB,
+    Storage
+};
+use App\{
+    Story,
+    StoryView
+};
 
 class StoryGC extends Command
 {
@@ -50,7 +54,7 @@ class StoryGC extends Command
     {
         $day = now()->day;
 
-        if ($day !== 3) {
+        if($day !== 3) {
             return;
         }
 
@@ -61,9 +65,9 @@ class StoryGC extends Command
 
         $dirs = array_merge($t1, $t2);
 
-        foreach ($dirs as $dir) {
+        foreach($dirs as $dir) {
             $hash = last(explode('/', $dir));
-            if ($hash != $monthHash) {
+            if($hash != $monthHash) {
                 $this->info('Found directory to delete: ' . $dir);
                 $this->deleteDirectory($dir);
             }
@@ -84,15 +88,15 @@ class StoryGC extends Command
     {
         $stories = Story::where('expires_at', '<', now())->take(50)->get();
 
-        if ($stories->count() == 0) {
+        if($stories->count() == 0) {
             exit;
         }
 
-        foreach ($stories as $story) {
-            if (Storage::exists($story->path) == true) {
+        foreach($stories as $story) {
+            if(Storage::exists($story->path) == true) {
                 Storage::delete($story->path);
             }
-            DB::transaction(function () use ($story) {
+            DB::transaction(function() use($story) {
                 StoryView::whereStoryId($story->id)->delete();
                 $story->delete();
             });

@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Jobs\StatusPipeline\StatusDelete;
-use Auth;
-use Cache;
+use Auth, Cache;
 use Carbon\Carbon;
-use App\Like;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\{
+    Like,
+    Media,
+    Profile,
+    Status
+};
 
 use App\Services\NotificationService;
 
@@ -29,10 +30,10 @@ class AdminApiController extends Controller
         $limit = request()->input('limit', 20);
 
         $activity['captions'] = Status::select(
-            'id',
-            'caption',
-            'rendered',
-            'uri',
+            'id', 
+            'caption', 
+            'rendered', 
+            'uri', 
             'profile_id',
             'type',
             'in_reply_to_id',
@@ -46,10 +47,10 @@ class AdminApiController extends Controller
         ->paginate($limit);
 
         $activity['comments'] = Status::select(
-            'id',
-            'caption',
-            'rendered',
-            'uri',
+            'id', 
+            'caption', 
+            'rendered', 
+            'uri', 
             'profile_id',
             'type',
             'in_reply_to_id',
@@ -99,9 +100,10 @@ class AdminApiController extends Controller
                 default:
                     break;
             }
-        } elseif ($type == 'profile') {
+        } else if ($type == 'profile') {
             $profile = Profile::findOrFail($id);
             switch ($action) {
+
                 case 'delete':
                     StatusDelete::dispatch($status);
                     break;
@@ -110,5 +112,7 @@ class AdminApiController extends Controller
                     break;
             }
         }
+
     }
+
 }

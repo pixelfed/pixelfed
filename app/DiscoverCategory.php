@@ -3,8 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Status;
-use App\StatusHashtag;
+use App\{Status, StatusHashtag};
 
 class DiscoverCategory extends Model
 {
@@ -12,22 +11,22 @@ class DiscoverCategory extends Model
 
     public function media()
     {
-        return $this->belongsTo(Media::class);
+    	return $this->belongsTo(Media::class);
     }
 
     public function url()
     {
-        return url('/discover/c/'.$this->slug);
+    	return url('/discover/c/'.$this->slug);
     }
 
     public function editUrl()
     {
-        return url('/i/admin/discover/category/edit/' . $this->id);
+    	return url('/i/admin/discover/category/edit/' . $this->id);
     }
 
     public function thumb()
     {
-        return $this->media->thumb();
+    	return $this->media->thumb();
     }
 
     public function mediaUrl()
@@ -38,28 +37,28 @@ class DiscoverCategory extends Model
 
     public function items()
     {
-        return $this->hasMany(DiscoverCategoryHashtag::class, 'discover_category_id');
+    	return $this->hasMany(DiscoverCategoryHashtag::class, 'discover_category_id');
     }
 
     public function hashtags()
     {
-        return $this->hasManyThrough(
-            Hashtag::class,
-            DiscoverCategoryHashtag::class,
-            'discover_category_id',
-            'id',
-            'id',
-            'hashtag_id'
-        );
+    	return $this->hasManyThrough(
+    		Hashtag::class,
+    		DiscoverCategoryHashtag::class,
+    		'discover_category_id',
+    		'id',
+    		'id',
+    		'hashtag_id'
+    	);
     }
 
     public function posts()
     {
-        return Status::select('*')
-            ->join('status_hashtags', 'statuses.id', '=', 'status_hashtags.status_id')
-            ->join('hashtags', 'status_hashtags.hashtag_id', '=', 'hashtags.id')
-            ->join('discover_category_hashtags', 'hashtags.id', '=', 'discover_category_hashtags.hashtag_id')
-            ->join('discover_categories', 'discover_category_hashtags.discover_category_id', '=', 'discover_categories.id')
-            ->where('discover_categories.id', $this->id);
+    	return Status::select('*')
+    		->join('status_hashtags', 'statuses.id', '=', 'status_hashtags.status_id')
+    		->join('hashtags', 'status_hashtags.hashtag_id', '=', 'hashtags.id')
+    		->join('discover_category_hashtags', 'hashtags.id', '=', 'discover_category_hashtags.hashtag_id')
+    		->join('discover_categories', 'discover_category_hashtags.discover_category_id', '=', 'discover_categories.id')
+    		->where('discover_categories.id', $this->id);
     }
 }

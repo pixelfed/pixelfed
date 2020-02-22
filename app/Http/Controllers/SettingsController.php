@@ -7,20 +7,18 @@ use App\Following;
 use App\ProfileSponsor;
 use App\Report;
 use App\UserFilter;
-use Auth;
-use Cookie;
-use DB;
-use Cache;
-use Purify;
+use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Http\Controllers\Settings\ExportSettings;
-use App\Http\Controllers\Settings\LabsSettings;
-use App\Http\Controllers\Settings\HomeSettings;
-use App\Http\Controllers\Settings\PrivacySettings;
-use App\Http\Controllers\Settings\RelationshipSettings;
-use App\Http\Controllers\Settings\SecuritySettings;
+use App\Http\Controllers\Settings\{
+    ExportSettings,
+    LabsSettings,
+    HomeSettings,
+    PrivacySettings,
+    RelationshipSettings,
+    SecuritySettings
+};
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 
 class SettingsController extends Controller
@@ -125,7 +123,7 @@ class SettingsController extends Controller
 
     public function removeAccountPermanentSubmit(Request $request)
     {
-        if (config('pixelfed.account_deletion') == false) {
+        if(config('pixelfed.account_deletion') == false) {
             abort(404);
         }
         $user = Auth::user();
@@ -166,7 +164,7 @@ class SettingsController extends Controller
         
         $mode = $request->input('mode');
 
-        if ($mode == 'dark') {
+        if($mode == 'dark') {
             $cookie = Cookie::make('dark-mode', true, 43800);
         } else {
             $cookie = Cookie::forget('dark-mode');
@@ -195,25 +193,24 @@ class SettingsController extends Controller
             'opencollective' => 'nullable|string'
         ]);
 
-        $patreon = Str::startsWith($request->input('patreon'), 'https://') ?
-            substr($request->input('patreon'), 8) :
+        $patreon = Str::startsWith($request->input('patreon'), 'https://') ? 
+            substr($request->input('patreon'), 8) : 
             $request->input('patreon');
 
-        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ?
-            substr($request->input('liberapay'), 8) :
+        $liberapay = Str::startsWith($request->input('liberapay'), 'https://') ? 
+            substr($request->input('liberapay'), 8) : 
             $request->input('liberapay');
             
-        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ?
-            substr($request->input('opencollective'), 8) :
+        $opencollective = Str::startsWith($request->input('opencollective'), 'https://') ? 
+            substr($request->input('opencollective'), 8) : 
             $request->input('opencollective');
 
         $patreon = Str::startsWith($patreon, 'patreon.com/') ? e($patreon) : null;
         $liberapay = Str::startsWith($liberapay, 'liberapay.com/') ? e($liberapay) : null;
         $opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
 
-        if (empty($patreon) && empty($liberapay) && empty($opencollective)) {
-            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
-            ;
+        if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
+            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
         }
 
         $res = [
@@ -228,7 +225,8 @@ class SettingsController extends Controller
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();
         $sponsors = $res;
-        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
-        ;
+        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
     }
+
 }
+

@@ -39,7 +39,7 @@ class MediaFix extends Command
      */
     public function handle()
     {
-        if (!version_compare(config('pixelfed.version'), '0.10.8', 'ge')) {
+        if(!version_compare(config('pixelfed.version'),'0.10.8','ge')) {
             $this->error('Please update to version 0.10.8 or newer.');
             exit;
         }
@@ -47,15 +47,15 @@ class MediaFix extends Command
         $classes = Filter::classes();
 
         Media::whereNotNull('filter_class')
-            ->chunk(50, function ($filters) use ($classes) {
-                foreach ($filters as $filter) {
+            ->chunk(50, function($filters) use($classes) {
+                foreach($filters as $filter) {
                     $match = $filter->filter_class ? in_array($filter->filter_class, $classes) : true;
-                    if (!$match) {
+                    if(!$match) {
                         $filter->filter_class = null;
                         $filter->filter_name = null;
                         $filter->save();
                     }
                 }
-            });
+        });
     }
 }

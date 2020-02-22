@@ -48,7 +48,7 @@ class ImageUpdate implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if (!$media) {
+        if(!$media) {
             return;
         }
         $path = storage_path('app/'.$media->media_path);
@@ -73,7 +73,7 @@ class ImageUpdate implements ShouldQueue
         $media->size = $total;
         $media->save();
 
-        if (config('pixelfed.cloud_storage') == true) {
+        if(config('pixelfed.cloud_storage') == true) {
             $p = explode('/', $media->media_path);
             $monthHash = $p[2];
             $userHash = $p[3];

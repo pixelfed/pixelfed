@@ -3,8 +3,10 @@
 namespace App\Transformer\Api;
 
 use Auth;
-use App\FollowRequest;
-use App\Profile;
+use App\{
+    FollowRequest,
+    Profile
+};
 use League\Fractal;
 
 class RelationshipTransformer extends Fractal\TransformerAbstract
@@ -12,12 +14,12 @@ class RelationshipTransformer extends Fractal\TransformerAbstract
     public function transform(Profile $profile)
     {
         $auth = Auth::check();
-        if (!$auth) {
+        if(!$auth) {
             return [];
         }
         $user = $auth ? Auth::user()->profile : false;
         $requested = false;
-        if ($user) {
+        if($user) {
             $requested = FollowRequest::whereFollowerId($user->id)
                 ->whereFollowingId($profile->id)
                 ->exists();

@@ -6,5 +6,5 @@ return [
     'startedFollowingYou'    =>    'a commencé à vous suivre.',
     'commented'              =>    'a commenté votre publication.',
     'mentionedYou'           =>    'vous a mentionné.',
-    'shared'                 =>    'a partagé votre publication.',
+    'shared'			     =>    'a partagé votre publication.',
 ];

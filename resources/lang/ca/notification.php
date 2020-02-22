@@ -5,5 +5,5 @@ return [
   'startedFollowingYou' => 'ha començat a seguir-vos.',
   'commented'           => 'ha comentat la vostra publicació.',
   'mentionedYou'        => 'us ha esmentat.',
-  'shared'              => 'ha compartit la vostra publicació.',
+  'shared'				=> 'ha compartit la vostra publicació.',
 ];

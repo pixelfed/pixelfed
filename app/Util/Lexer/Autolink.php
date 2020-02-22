@@ -415,7 +415,7 @@ class Autolink extends Regex
         $beginIndex = 0;
         foreach ($entities as $entity) {
             if (isset($entity['screen_name'])) {
-                if (Str::startsWith($entity['screen_name'], '@')) {
+                if(Str::startsWith($entity['screen_name'], '@')) {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);
                 } else {
                     $text .= StringUtils::substr($tweet, $beginIndex, $entity['indices'][0] - $beginIndex);

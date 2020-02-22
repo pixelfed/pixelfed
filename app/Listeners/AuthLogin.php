@@ -2,14 +2,15 @@
 
 namespace App\Listeners;
 
-use DB;
-use Cache;
-use App\Follower;
-use App\Profile;
-use App\User;
-use App\UserDevice;
-use App\UserFilter;
-use App\UserSetting;
+use DB, Cache;
+use App\{
+    Follower,
+    Profile,
+    User,
+    UserDevice,
+    UserFilter,
+    UserSetting
+};
 use Illuminate\Queue\InteractsWithQueue;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +27,7 @@ class AuthLogin
     {
         $user = $event->user;
 
-        if (!$user) {
+        if(!$user) {
             return;
         }
 
@@ -41,9 +42,9 @@ class AuthLogin
     protected function userProfile($user)
     {
         if (empty($user->profile)) {
-            DB::transaction(function () use ($user) {
+            DB::transaction(function() use($user) {
                 $profile = Profile::firstOrCreate(['user_id' => $user->id]);
-                if ($profile->wasRecentlyCreated == true) {
+                if($profile->wasRecentlyCreated == true) {
                     $profile->username = $user->username;
                     $profile->name = $user->name;
                     $pkiConfig = [
@@ -63,13 +64,14 @@ class AuthLogin
                     CreateAvatar::dispatch($profile);
                 }
             });
+
         }
     }
 
     protected function userSettings($user)
     {
         if (empty($user->settings)) {
-            DB::transaction(function () use ($user) {
+            DB::transaction(function() use($user) {
                 UserSetting::firstOrCreate([
                     'user_id' => $user->id
                 ]);
@@ -79,9 +81,9 @@ class AuthLogin
 
     protected function userState($user)
     {
-        if ($user->status != null) {
+        if($user->status != null) {
             $profile = $user->profile;
-            if (!$profile) {
+            if(!$profile) {
                 return;
             }
             switch ($user->status) {
@@ -110,7 +112,7 @@ class AuthLogin
 
     protected function userDevice($user)
     {
-        $device = DB::transaction(function () use ($user) {
+        $device = DB::transaction(function() use($user) {
             return UserDevice::firstOrCreate([
                 'user_id'       => $user->id,
                 'ip'            => request()->ip(),
@@ -121,10 +123,10 @@ class AuthLogin
 
     protected function userProfileId($user)
     {
-        if ($user->profile_id == null) {
-            DB::transaction(function () use ($user) {
+        if($user->profile_id == null) {
+            DB::transaction(function() use($user) {
                 $profile = $user->profile;
-                if ($profile) {
+                if($profile) {
                     $user->profile_id = $profile->id;
                     $user->save();
                 }

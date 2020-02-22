@@ -51,7 +51,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
               'mediaType' => $media->mime,
               'url'       => $media->url(),
               'name'      => $media->caption
-              ];
+            ];
           }),
           'tag' => [],
           'location' => $status->place_id ? [
@@ -61,6 +61,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
               'latitude' => $status->place->lat,
               'country' => $status->place->country
             ] : null,
-        ];
+      ];
     }
 }

@@ -6,11 +6,11 @@ use League\Fractal;
 
 class ApplicationTransformer extends Fractal\TransformerAbstract
 {
-    public function transform()
-    {
-        return [
-            'name'    => '',
-            'website' => null,
-        ];
-    }
+	public function transform()
+	{
+		return [
+			'name'    => '',
+			'website' => null,
+		];
+	}
 }

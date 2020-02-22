@@ -30,7 +30,7 @@ class LogFailedLogin
         $user = $event->user;
         $request = request();
 
-        if (!$user) {
+        if(!$user) {
             return;
         }
         

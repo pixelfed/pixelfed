@@ -62,7 +62,7 @@ class RemoteFollowImportRecent implements ShouldQueue
     public function fetchOutbox($url = false)
     {
         $url = ($url == false) ? $this->actor['outbox'] : $url;
-        if (Helpers::validateUrl($url) == false) {
+        if(Helpers::validateUrl($url) == false) {
             return;
         }
         $response = Zttp::withHeaders([

@@ -5,38 +5,40 @@ namespace App\Services;
 use Cache;
 use Illuminate\Support\Facades\Redis;
 
-use App\Follower;
-use App\Profile;
+use App\{
+	Follower,
+	Profile
+};
 
-class ProfileService
-{
+class ProfileService {
 
-    protected $profile;
-    protected $profile_prefix;
+	protected $profile;
+	protected $profile_prefix;
 
-    public static function build()
-    {
-        return new self();
-    }
+	public static function build()
+	{
+		return new self();
+	}
 
-    public function profile(Profile $profile)
-    {
-        $this->profile = $profile;
-        $this->profile_prefix = 'profile:model:'.$profile->id;
-        return $this;
-    }
+	public function profile(Profile $profile)
+	{
+		$this->profile = $profile;
+		$this->profile_prefix = 'profile:model:'.$profile->id;
+		return $this;
+	}
 
-    public function profileId($id)
-    {
-        return Cache::rememberForever('profile:model:'.$id, function () use ($id) {
-            return Profile::findOrFail($id);
-        });
-    }
+	public function profileId($id)
+	{
+		return Cache::rememberForever('profile:model:'.$id, function() use($id) {
+			return Profile::findOrFail($id);
+		});
+	}
 
-    public function get()
-    {
-        return Cache::rememberForever($this->profile_prefix, function () {
-            return $this->profile;
-        });
-    }
+	public function get()
+	{
+		return Cache::rememberForever($this->profile_prefix, function() {
+			return $this->profile;
+		});
+	}
+
 }

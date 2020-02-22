@@ -44,6 +44,6 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'mediaType' => 'image/jpeg',
             'url'       => $profile->avatarUrl(),
           ],
-        ];
+      ];
     }
 }

@@ -2,13 +2,10 @@
 
 namespace App;
 
-use Auth;
-use Cache;
-use Storage;
+use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 class Profile extends Model
 {
@@ -48,7 +45,7 @@ class Profile extends Model
 
     public function emailUrl()
     {
-        if ($this->domain) {
+        if($this->domain) {
             return $this->username;
         }
         
@@ -151,7 +148,7 @@ class Profile extends Model
 
     public function statusCount()
     {
-        return Cache::remember('profile:status_count:'.$this->id, now()->addMonths(1), function () {
+        return Cache::remember('profile:status_count:'.$this->id, now()->addMonths(1), function() {
             return $this->statuses()
                 ->getQuery()
                 ->whereHas('media')
@@ -195,7 +192,7 @@ class Profile extends Model
     public function mutedProfileUrls()
     {
         $ids = $this->mutedIds();
-        return $this->whereIn('id', $ids)->get()->map(function ($i) {
+        return $this->whereIn('id', $ids)->get()->map(function($i) {
             return $i->url();
         });
     }
@@ -203,7 +200,7 @@ class Profile extends Model
     public function blockedProfileUrls()
     {
         $ids = $this->blockedIds();
-        return $this->whereIn('id', $ids)->get()->map(function ($i) {
+        return $this->whereIn('id', $ids)->get()->map(function($i) {
             return $i->url();
         });
     }
@@ -240,7 +237,7 @@ class Profile extends Model
 
     public function getAudience($scope = false)
     {
-        if ($this->remote_url) {
+        if($this->remote_url) {
             return [];
         }
         $scope = $scope ?? $this->getDefaultScope();
@@ -266,9 +263,9 @@ class Profile extends Model
             ->followers()
             ->whereLocalProfile(false)
             ->get()
-            ->map(function ($follow) {
+            ->map(function($follow) {
                 return $follow->sharedInbox ?? $follow->inbox_url;
-            })
+             })
             ->unique()
             ->toArray();
     }

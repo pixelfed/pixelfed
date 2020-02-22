@@ -6,6 +6,6 @@ return [
   'startedFollowingYou' => 'começou a te seguir.',
   'commented'           => 'comentou em seu post.',
   'mentionedYou'        => 'te mencionou.',
-  'shared'      => 'compartilhou seu post.',
+  'shared'		=> 'compartilhou seu post.',
 
 ];

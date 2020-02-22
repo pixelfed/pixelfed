@@ -12,7 +12,7 @@ trait AdminReportController
     public function updateReport(Request $request, $id)
     {
         $this->validate($request, [
-            'action'    => 'required|string',
+            'action'	=> 'required|string',
         ]);
 
         $action = $request->input('action');
@@ -106,7 +106,7 @@ trait AdminReportController
         $action = $this->actionMap()[$request->input('action')];
         $ids = $request->input('ids');
         $reports = Report::whereIn('id', $ids)->whereNull('admin_seen')->get();
-        foreach ($reports as $report) {
+        foreach($reports as $report) {
             $this->handleReportAction($report, $action);
         }
         $res = [

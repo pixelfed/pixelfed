@@ -12,9 +12,7 @@ class MediaDraftTransformer extends Fractal\TransformerAbstract
     {
 
         $url = URL::temporarySignedRoute(
-            'temp-media',
-            now()->addHours(1),
-            ['profileId' => $media->profile_id, 'mediaId' => $media->id, 'timestamp' => time()]
+            'temp-media', now()->addHours(1), ['profileId' => $media->profile_id, 'mediaId' => $media->id, 'timestamp' => time()]
         );
 
         //$url = $media->thumbnailUrl();

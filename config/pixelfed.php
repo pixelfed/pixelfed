@@ -215,11 +215,11 @@ return [
     | User invites
     |--------------------------------------------------------------------------
     |
-    | Allow users to invite others via email.
+    | Allow users to invite others via email. 
     | Will respect max user limit and prevent invites after the
     | limit is reached. Default: off
     |
-    */
+    */ 
     'user_invites' => [
         'enabled' => false, //env('PF_USER_INVITES', false),
         'limit' => [

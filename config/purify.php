@@ -67,7 +67,7 @@ return [
         |
         */
 
-        'HTML.Allowed' => env('RESTRICT_HTML_TYPES', true) ?
+        'HTML.Allowed' => env('RESTRICT_HTML_TYPES', true) ? 
             'a[href|title|rel],p,span,br' :
             'a[href|title|rel],p,span,strong,em,del,b,i,s,strike,h1,h2,h3,h4,h5,h6,ul,ol,li,br',
 

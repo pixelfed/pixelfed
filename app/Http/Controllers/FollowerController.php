@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
-use App\FollowRequest;
-use App\Profile;
-use App\UserFilter;
-use Auth;
-use Cache;
+use App\{
+    Follower,
+    FollowRequest,
+    Profile,
+    UserFilter
+};
+use Auth, Cache;
 use Illuminate\Http\Request;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Util\ActivityPub\Helpers;
@@ -28,7 +29,7 @@ class FollowerController extends Controller
         $force = (bool) $request->input('force', true);
         $item = (int) $request->input('item');
         $url = $this->handleFollowRequest($item, $force);
-        if ($request->wantsJson() == true) {
+        if($request->wantsJson() == true) {
             return response()->json(200);
         } else {
             return redirect($url);
@@ -48,18 +49,18 @@ class FollowerController extends Controller
                 ->whereFilterableType('App\Profile')
                 ->exists();
 
-        if ($blocked == true) {
+        if($blocked == true) {
             abort(400, 'You cannot follow this user.');
         }
 
         $isFollowing = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
 
-        if ($private == true && $isFollowing == 0) {
-            if ($user->following()->count() >= Follower::MAX_FOLLOWING) {
+        if($private == true && $isFollowing == 0) {
+            if($user->following()->count() >= Follower::MAX_FOLLOWING) {
                 abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
             }
 
-            if ($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+            if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
                 abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
             }
 
@@ -67,15 +68,15 @@ class FollowerController extends Controller
                 'follower_id' => $user->id,
                 'following_id' => $target->id
             ]);
-            if ($remote == true && config('federation.activitypub.remoteFollow') == true) {
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
                 $this->sendFollow($user, $target);
-            }
+            } 
         } elseif ($private == false && $isFollowing == 0) {
-            if ($user->following()->count() >= Follower::MAX_FOLLOWING) {
+            if($user->following()->count() >= Follower::MAX_FOLLOWING) {
                 abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
             }
 
-            if ($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
+            if($user->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
                 abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
             }
             $follower = new Follower();
@@ -83,18 +84,18 @@ class FollowerController extends Controller
             $follower->following_id = $target->id;
             $follower->save();
 
-            if ($remote == true && config('federation.activitypub.remoteFollow') == true) {
+            if($remote == true && config('federation.activitypub.remoteFollow') == true) {
                 $this->sendFollow($user, $target);
-            }
+            } 
             FollowPipeline::dispatch($follower);
         } else {
-            if ($force == true) {
+            if($force == true) {
                 $request = FollowRequest::whereFollowerId($user->id)->whereFollowingId($target->id)->exists();
                 $follower = Follower::whereProfileId($user->id)->whereFollowingId($target->id)->exists();
-                if ($remote == true && $request && !$follower) {
+                if($remote == true && $request && !$follower) {
                     $this->sendFollow($user, $target);
                 }
-                if ($remote == true && $follower) {
+                if($remote == true && $follower) {
                     $this->sendUndoFollow($user, $target);
                 }
                 Follower::whereProfileId($user->id)
@@ -120,7 +121,7 @@ class FollowerController extends Controller
 
     public function sendFollow($user, $target)
     {
-        if ($target->domain == null || $user->domain != null) {
+        if($target->domain == null || $user->domain != null) {
             return;
         }
 
@@ -139,7 +140,7 @@ class FollowerController extends Controller
 
     public function sendUndoFollow($user, $target)
     {
-        if ($target->domain == null || $user->domain != null) {
+        if($target->domain == null || $user->domain != null) {
             return;
         }
 

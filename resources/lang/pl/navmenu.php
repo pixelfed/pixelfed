@@ -3,9 +3,9 @@
 return [
 
     'search'         => 'Szukaj',
-    'home'           => 'Strona główna',
-    'local'          => 'Lokalne',
-    'discover'       => 'Odkrywaj',
+	'home'           => 'Strona główna',
+	'local'	         => 'Lokalne',
+	'discover'       => 'Odkrywaj',
     'viewMyProfile'  => 'Pokaż mój profil',
     'myTimeline'     => 'Moja oś czasu',
     'publicTimeline' => 'Publiczna oś czasu',

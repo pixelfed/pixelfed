@@ -54,7 +54,7 @@ class Installer extends Command
         $this->info(' ');
         $this->info('Pixelfed version: ' . config('pixelfed.version'));
         $this->line(' ');
-        $this->info('Scanning system...');
+        $this->info('Scanning system...');                               
         $this->preflightCheck();
     }
     protected function preflightCheck()
@@ -62,7 +62,7 @@ class Installer extends Command
         $this->line(' ');
         $this->info('Checking for installed dependencies...');
         $redis = Redis::connection();
-        if ($redis->ping()) {
+        if($redis->ping()) {
             $this->info('- Found redis!');
         } else {
             $this->error('- Redis not found, aborting installation');
@@ -84,7 +84,7 @@ class Installer extends Command
             'openssl'
         ];
         $ffmpeg = exec('which ffmpeg');
-        if (empty($ffmpeg)) {
+        if(empty($ffmpeg)) {
             $this->error('FFmpeg not found, please install it.');
             $this->error('Cancelling installation.');
             exit;
@@ -93,8 +93,8 @@ class Installer extends Command
         }
         $this->line('');
         $this->info('Checking for required php extensions...');
-        foreach ($extensions as $ext) {
-            if (extension_loaded($ext) == false) {
+        foreach($extensions as $ext) {
+            if(extension_loaded($ext) == false) {
                 $this->error("- {$ext} extension not found, aborting installation");
                 exit;
             } else {
@@ -113,8 +113,8 @@ class Installer extends Command
             base_path('storage')
         ];
 
-        foreach ($paths as $path) {
-            if (is_writeable($path) == false) {
+        foreach($paths as $path) {
+            if(is_writeable($path) == false) {
                 $this->error("- Invalid permission found! Aborting installation.");
                 $this->error("  Please make the following path writeable by the web server:");
                 $this->error("  $path");
@@ -127,24 +127,24 @@ class Installer extends Command
 
     protected function envCheck()
     {
-        if (!file_exists(base_path('.env')) || filesize(base_path('.env')) == 0) {
+        if(!file_exists(base_path('.env')) || filesize(base_path('.env')) == 0) {
             $this->line('');
             $this->info('No .env configuration file found. We will create one now!');
             $this->createEnv();
         } else {
             $confirm = $this->confirm('Found .env file, do you want to overwrite it?');
-            if (!$confirm) {
+            if(!$confirm) {
                 $this->info('Cancelling installation.');
                 exit;
             }
             $confirm = $this->confirm('Are you really sure you want to overwrite it?');
-            if (!$confirm) {
+            if(!$confirm) {
                 $this->info('Cancelling installation.');
                 exit;
             }
             $this->error('Warning ... if you did not backup your .env before its overwritten it will be permanently deleted.');
             $confirm = $this->confirm('The application may be installed already, are you really sure you want to overwrite it?');
-            if (!$confirm) {
+            if(!$confirm) {
                 $this->info('Cancelling installation.');
                 exit;
             }
@@ -156,9 +156,9 @@ class Installer extends Command
     {
         $this->line('');
         // copy env
-        if (!file_exists(app()->environmentFilePath())) {
+        if(!file_exists(app()->environmentFilePath())) {
             exec('cp .env.example .env');
-            $this->call('key:generate');
+            $this->call('key:generate');            
         }
 
         $name = $this->ask('Site name [ex: Pixelfed]');
@@ -189,7 +189,8 @@ class Installer extends Command
                 $db_pass = str_random(64);
                 $database_password = $this->secret('Select database password', $db_pass);
                 $this->updateEnvFile('DB_PASSWORD', $database_password);
-                break;
+            break;
+            
         }
 
         $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
@@ -212,6 +213,7 @@ class Installer extends Command
 
         $enforce_email_verification = $this->choice('Enforce email verification?', ['true', 'false'], 0);
         $this->updateEnvFile('ENFORCE_EMAIL_VERIFICATION', $enforce_email_verification);
+
     }
 
     protected function updateEnvFile($key, $value)

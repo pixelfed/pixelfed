@@ -24,8 +24,7 @@ class BookmarkController extends Controller
         $status = Status::findOrFail($request->input('item'));
 
         $bookmark = Bookmark::firstOrCreate(
-            ['status_id' => $status->id],
-            ['profile_id' => $profile->id]
+            ['status_id' => $status->id], ['profile_id' => $profile->id]
         );
 
         if (!$bookmark->wasRecentlyCreated) {

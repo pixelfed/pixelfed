@@ -3,32 +3,37 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\AvatarController;
-use Auth;
-use Cache;
-use Storage;
-use URL;
+use App\Http\Controllers\{
+    Controller,
+    AvatarController
+};
+use Auth, Cache, Storage, URL;
 use Carbon\Carbon;
-use App\Avatar;
-use App\Notification;
-use App\Media;
-use App\Profile;
-use App\Status;
-use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\NotificationTransformer;
-use App\Transformer\Api\MediaTransformer;
-use App\Transformer\Api\MediaDraftTransformer;
-use App\Transformer\Api\StatusTransformer;
+use App\{
+    Avatar,
+    Notification,
+    Media,
+    Profile,
+    Status
+};
+use App\Transformer\Api\{
+    AccountTransformer,
+    NotificationTransformer,
+    MediaTransformer,
+    MediaDraftTransformer,
+    StatusTransformer
+};
 use League\Fractal;
 use App\Util\Media\Filter;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\VideoPipeline\VideoOptimize;
-use App\Jobs\VideoPipeline\VideoPostProcess;
-use App\Jobs\VideoPipeline\VideoThumbnail;
+use App\Jobs\VideoPipeline\{
+    VideoOptimize,
+    VideoPostProcess,
+    VideoThumbnail
+};
 use App\Services\NotificationService;
 
 class BaseApiController extends Controller
@@ -47,7 +52,7 @@ class BaseApiController extends Controller
         abort_if(!$request->user(), 403);
         $pid = $request->user()->profile_id;
         $pg = $request->input('pg');
-        if ($pg == true) {
+        if($pg == true) {
             $timeago = Carbon::now()->subMonths(6);
             $notifications = Notification::whereProfileId($pid)
                 ->whereDate('created_at', '>', $timeago)
@@ -121,25 +126,25 @@ class BaseApiController extends Controller
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
         $account = Profile::whereNull('status')->findOrFail($id);
-        $statuses = $account->statuses()->getQuery();
-        if ($only_media == true) {
+        $statuses = $account->statuses()->getQuery(); 
+        if($only_media == true) {
             $statuses = $statuses
                 ->whereHas('media')
                 ->whereNull('in_reply_to_id')
                 ->whereNull('reblog_of_id');
         }
-        if ($id == $account->id && !$max_id && !$min_id && !$since_id) {
+        if($id == $account->id && !$max_id && !$min_id && !$since_id) {
             $statuses = $statuses->orderBy('id', 'desc')
                 ->paginate($limit);
-        } elseif ($since_id) {
+        } else if($since_id) {
             $statuses = $statuses->where('id', '>', $since_id)
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
-        } elseif ($min_id) {
+        } else if($min_id) {
             $statuses = $statuses->where('id', '>', $min_id)
                 ->orderBy('id', 'ASC')
                 ->paginate($limit);
-        } elseif ($max_id) {
+        } else if($max_id) {
             $statuses = $statuses->where('id', '<', $max_id)
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
@@ -192,8 +197,8 @@ class BaseApiController extends Controller
     public function showTempMedia(Request $request, $profileId, $mediaId, $timestamp)
     {
         abort_if(!$request->user(), 403);
-        abort_if(!$request->hasValidSignature(), 404);
-        abort_if(Auth::user()->profile_id != $profileId, 404);
+        abort_if(!$request->hasValidSignature(), 404); 
+        abort_if(Auth::user()->profile_id != $profileId, 404); 
         $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
         $path = storage_path('app/'.$media->media_path);
         return response()->file($path);
@@ -203,7 +208,7 @@ class BaseApiController extends Controller
     {
         abort_if(!$request->user(), 403);
         $this->validate($request, [
-              'file.*'      => function () {
+              'file.*'      => function() {
                 return [
                     'required',
                     'mimes:' . config('pixelfed.media_types'),
@@ -217,13 +222,13 @@ class BaseApiController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
 
-        if (config('pixelfed.enforce_account_limit') == true) {
-            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function () use ($user) {
+        if(config('pixelfed.enforce_account_limit') == true) {
+            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
                 return Media::whereUserId($user->id)->sum('size') / 1000;
-            });
+            }); 
             $limit = (int) config('pixelfed.max_account_size');
             if ($size >= $limit) {
-                abort(403, 'Account size limit reached.');
+               abort(403, 'Account size limit reached.');
             }
         }
 
@@ -236,7 +241,7 @@ class BaseApiController extends Controller
         $photo = $request->file('file');
 
         $mimes = explode(',', config('pixelfed.media_types'));
-        if (in_array($photo->getMimeType(), $mimes) == false) {
+        if(in_array($photo->getMimeType(), $mimes) == false) {
             return;
         }
 
@@ -257,9 +262,7 @@ class BaseApiController extends Controller
         $media->save();
 
         $url = URL::temporarySignedRoute(
-            'temp-media',
-            now()->addHours(1),
-            ['profileId' => $profile->id, 'mediaId' => $media->id, 'timestamp' => time()]
+            'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id, 'timestamp' => time()]
         );
 
         switch ($media->mime) {
@@ -311,7 +314,7 @@ class BaseApiController extends Controller
     {
         $user = $request->user();
         abort_if(!$user, 403);
-        if ($user->status != null) {
+        if($user->status != null) {
             Auth::logout();
             return redirect('/login');
         }

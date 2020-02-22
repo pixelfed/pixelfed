@@ -27,7 +27,7 @@ class ProfileController extends Controller
             ->whereUsername($username)
             ->firstOrFail();
         
-        if ($request->wantsJson() && config('federation.activitypub.enabled')) {
+        if($request->wantsJson() && config('federation.activitypub.enabled')) {
             return $this->showActivityPub($request, $user);
         }
         return $this->buildProfile($request, $user);
@@ -39,10 +39,10 @@ class ProfileController extends Controller
         $loggedIn = Auth::check();
         $isPrivate = false;
         $isBlocked = false;
-        if (!$loggedIn) {
+        if(!$loggedIn) {
             $key = 'profile:settings:' . $user->id;
             $ttl = now()->addHours(6);
-            $settings = Cache::remember($key, $ttl, function () use ($user) {
+            $settings = Cache::remember($key, $ttl, function() use($user) {
                 return $user->user->settings;
             });
 
@@ -60,7 +60,7 @@ class ProfileController extends Controller
                 'following' => [
                     'count' => $settings->show_profile_following_count,
                     'list' => $settings->show_profile_following
-                ],
+                ], 
                 'followers' => [
                     'count' => $settings->show_profile_follower_count,
                     'list' => $settings->show_profile_followers
@@ -70,7 +70,7 @@ class ProfileController extends Controller
         } else {
             $key = 'profile:settings:' . $user->id;
             $ttl = now()->addHours(6);
-            $settings = Cache::remember($key, $ttl, function () use ($user) {
+            $settings = Cache::remember($key, $ttl, function() use($user) {
                 return $user->user->settings;
             });
 
@@ -88,7 +88,7 @@ class ProfileController extends Controller
                     ->whereFollowingId($user->id)
                     ->exists() : false;
                 return view('profile.private', compact('user', 'is_following', 'requested'));
-            }
+            } 
 
             $is_admin = is_null($user->domain) ? $user->user->is_admin : false;
             $profile = $user;
@@ -97,7 +97,7 @@ class ProfileController extends Controller
                 'following' => [
                     'count' => $settings->show_profile_following_count,
                     'list' => $settings->show_profile_following
-                ],
+                ], 
                 'followers' => [
                     'count' => $settings->show_profile_follower_count,
                     'list' => $settings->show_profile_followers
@@ -125,7 +125,7 @@ class ProfileController extends Controller
         }
 
         $user = Auth::user()->profile;
-        if ($user->id == $profile->id || !$profile->is_private) {
+        if($user->id == $profile->id || !$profile->is_private) {
             return false;
         }
 
@@ -137,19 +137,19 @@ class ProfileController extends Controller
         return false;
     }
 
-    public static function accountCheck(Profile $profile)
-    {
-        switch ($profile->status) {
-            case 'disabled':
-            case 'suspended':
-            case 'delete':
-                return view('profile.disabled');
-                break;
+    public static function accountCheck(Profile $profile)   
+    {   
+        switch ($profile->status) { 
+            case 'disabled':    
+            case 'suspended':   
+            case 'delete':  
+                return view('profile.disabled');    
+                break;  
                 
-            default:
-                break;
-        }
-        return abort(404);
+            default:    
+                break;  
+        }   
+        return abort(404);  
     }
 
     protected function blockedProfileCheck(Profile $profile)
@@ -174,7 +174,7 @@ class ProfileController extends Controller
         $key = 'profile:ap:' . $user->id;
         $ttl = now()->addHours(6);
 
-        return Cache::remember($key, $ttl, function () use ($user) {
+        return Cache::remember($key, $ttl, function() use($user) {
             $fractal = new Fractal\Manager();
             $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
             $res = $fractal->createData($resource)->toArray();
@@ -187,17 +187,17 @@ class ProfileController extends Controller
         abort_if(!config('federation.atom.enabled'), 404);
 
         $profile = $user = Profile::whereNull('status')->whereNull('domain')->whereUsername($user)->whereIsPrivate(false)->firstOrFail();
-        if ($profile->status != null) {
+        if($profile->status != null) {
             return $this->accountCheck($profile);
         }
-        if ($profile->is_private || Auth::check()) {
+        if($profile->is_private || Auth::check()) {
             $blocked = $this->blockedProfileCheck($profile);
             $check = $this->privateProfileCheck($profile, null);
-            if ($check || $blocked) {
+            if($check || $blocked) {
                 return redirect($profile->url());
             }
         }
-        $items = $profile->statuses()->whereHas('media')->whereIn('visibility', ['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
+        $items = $profile->statuses()->whereHas('media')->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
         return response()->view('atom.user', compact('profile', 'items'))
         ->header('Content-Type', 'application/atom+xml');
     }
@@ -212,7 +212,7 @@ class ProfileController extends Controller
     {
         $res = view('profile.embed-removed');
 
-        if (strlen($username) > 15 || strlen($username) < 2) {
+        if(strlen($username) > 15 || strlen($username) < 2) {
             return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
         }
 
@@ -222,11 +222,11 @@ class ProfileController extends Controller
             ->whereNull('domain')
             ->first();
 
-        if (!$profile) {
+        if(!$profile) {
             return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
         }
 
-        $content = Cache::remember('profile:embed:'.$profile->id, now()->addHours(12), function () use ($profile) {
+        $content = Cache::remember('profile:embed:'.$profile->id, now()->addHours(12), function() use($profile) {
             return View::make('profile.embed')->with(compact('profile'))->render();
         });
         

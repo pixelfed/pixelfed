@@ -44,14 +44,14 @@ class UserCreate extends Command
 
         $username = $this->ask('Username');
 
-        if (User::whereUsername($username)->exists()) {
+        if(User::whereUsername($username)->exists()) {
             $this->error('Username already in use, please try again...');
             exit;
         }
 
         $email = $this->ask('Email');
 
-        if (User::whereEmail($email)->exists()) {
+        if(User::whereEmail($email)->exists()) {
             $this->error('Email already in use, please try again...');
             exit;
         }
@@ -59,7 +59,7 @@ class UserCreate extends Command
         $password = $this->secret('Password');
         $confirm = $this->secret('Confirm Password');
 
-        if ($password !== $confirm) {
+        if($password !== $confirm) {
             $this->error('Password mismatch, please try again...');
             exit;
         }
@@ -67,10 +67,10 @@ class UserCreate extends Command
         $is_admin = $this->confirm('Make this user an admin?');
         $confirm_email = $this->confirm('Manually verify email address?');
 
-        if ($this->confirm('Are you sure you want to create this user?') &&
+        if($this->confirm('Are you sure you want to create this user?') && 
             $username &&
-            $name &&
-            $email &&
+            $name && 
+            $email && 
             $password
         ) {
             $user = new User;

@@ -45,14 +45,14 @@ class UpdateCommand extends Command
     public function update()
     {
         $v = $this->getVersionFile();
-        if ($v && isset($v['commit_hash']) && $v['commit_hash'] == exec('git rev-parse HEAD') && \App\StatusHashtag::whereNull('profile_id')->count() == 0) {
+        if($v && isset($v['commit_hash']) && $v['commit_hash'] == exec('git rev-parse HEAD') && \App\StatusHashtag::whereNull('profile_id')->count() == 0) {
             $this->info('No updates found.');
             return;
         }
         $bar = $this->output->createProgressBar(\App\StatusHashtag::whereNull('profile_id')->count());
-        \App\StatusHashtag::whereNull('profile_id')->with('status')->chunk(50, function ($sh) use ($bar) {
-            foreach ($sh as $status_hashtag) {
-                if (!$status_hashtag->status) {
+        \App\StatusHashtag::whereNull('profile_id')->with('status')->chunk(50, function($sh) use ($bar) {
+            foreach($sh as $status_hashtag) {
+                if(!$status_hashtag->status) {
                     $status_hashtag->delete();
                 } else {
                     $status_hashtag->profile_id = $status_hashtag->status->profile_id;
@@ -68,13 +68,12 @@ class UpdateCommand extends Command
     protected function getVersionFile()
     {
         $path = storage_path('app/version.json');
-        return is_file($path) ?
+        return is_file($path) ? 
             json_decode(file_get_contents($path), true) :
             false;
     }
 
-    protected function updateVersionFile()
-    {
+    protected function updateVersionFile() {
         $path = storage_path('app/version.json');
         $contents = [
             'commit_hash' => exec('git rev-parse HEAD'),

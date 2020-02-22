@@ -7,6 +7,6 @@ return [
   'startedFollowingYou' => 'wedi dechrau eich dilyn .',
   'commented'           => 'gwnaeth sylwadau ar eich swydd.',
   'mentionedYou'        => 'soniodd amdanoch chi.',
-  'shared'              => 'wedi rhannu eich post.',
+  'shared'				=> 'wedi rhannu eich post.',
   
 ];

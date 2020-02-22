@@ -3,17 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App;
-use Auth;
-use Cache;
-use View;
+use App, Auth, Cache, View;
 use App\Util\Lexer\PrettyNumber;
-use App\Follower;
-use App\Page;
-use App\Profile;
-use App\Status;
-use App\User;
-use App\UserFilter;
+use App\{Follower, Page, Profile, Status, User, UserFilter};
 use App\Util\Localization\Localization;
 use App\Services\FollowerService;
 
@@ -46,13 +38,13 @@ class SiteController extends Controller
     {
         // todo: add other locales after pushing new l10n strings
         $locales = Localization::languages();
-        if (in_array($locale, $locales)) {
-            if ($request->user()) {
+        if(in_array($locale, $locales)) {
+            if($request->user()) {
                 $user = $request->user();
                 $user->language = $locale;
                 $user->save();
             }
-            session()->put('locale', $locale);
+          session()->put('locale', $locale);
         }
 
         return redirect(route('site.language'));
@@ -60,7 +52,7 @@ class SiteController extends Controller
 
     public function about()
     {
-        return Cache::remember('site:about', now()->addHours(12), function () {
+        return Cache::remember('site:about', now()->addHours(12), function() {
             app()->setLocale('en');
             $page = Page::whereSlug('/site/about')->whereActive(true)->first();
             $stats = [
@@ -68,7 +60,7 @@ class SiteController extends Controller
                 'users' => User::whereNull('status')->count(),
                 'admin' => User::whereIsAdmin(true)->first()
             ];
-            if ($page) {
+            if($page) {
                 return View::make('site.about-custom')->with(compact('page', 'stats'))->render();
             } else {
                 return View::make('site.about')->with(compact('stats'))->render();
@@ -78,12 +70,12 @@ class SiteController extends Controller
 
     public function language()
     {
-        return view('site.language');
+      return view('site.language');
     }
 
     public function communityGuidelines(Request $request)
     {
-        return Cache::remember('site:help:community-guidelines', now()->addDays(120), function () {
+        return Cache::remember('site:help:community-guidelines', now()->addDays(120), function() {
             $slug = '/site/kb/community-guidelines';
             $page = Page::whereSlug($slug)->whereActive(true)->first();
             return View::make('site.help.community-guidelines')->with(compact('page'))->render();
@@ -92,7 +84,7 @@ class SiteController extends Controller
 
     public function privacy(Request $request)
     {
-        $page = Cache::remember('site:privacy', now()->addDays(120), function () {
+        $page = Cache::remember('site:privacy', now()->addDays(120), function() {
             $slug = '/site/privacy';
             $page = Page::whereSlug($slug)->whereActive(true)->first();
         });
@@ -101,7 +93,7 @@ class SiteController extends Controller
 
     public function terms(Request $request)
     {
-        $page = Cache::remember('site:terms', now()->addDays(120), function () {
+        $page = Cache::remember('site:terms', now()->addDays(120), function() {
             $slug = '/site/terms';
             return Page::whereSlug($slug)->whereActive(true)->first();
         });

@@ -12,8 +12,7 @@ use App\Status;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
-use Auth;
-use Cache;
+use Auth, Cache;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Media\Filter;
@@ -25,35 +24,35 @@ class StatusController extends Controller
     {
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
-        if ($user->status != null) {
+        if($user->status != null) {
             return ProfileController::accountCheck($user);
         }
 
         $status = Status::whereProfileId($user->id)
                 ->whereNull('reblog_of_id')
-                ->whereNotIn('visibility', ['draft','direct'])
+                ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
-        if ($status->uri || $status->url) {
+        if($status->uri || $status->url) {
             $url = $status->uri ?? $status->url;
-            if (ends_with($url, '/activity')) {
+            if(ends_with($url, '/activity')) {
                 $url = str_replace('/activity', '', $url);
             }
             return redirect($url);
         }
 
-        if ($status->visibility == 'private' || $user->is_private) {
-            if (!Auth::check()) {
+        if($status->visibility == 'private' || $user->is_private) {
+            if(!Auth::check()) {
                 abort(404);
             }
             $pid = Auth::user()->profile;
-            if ($user->followedBy($pid) == false && $user->id !== $pid->id && Auth::user()->is_admin == false) {
+            if($user->followedBy($pid) == false && $user->id !== $pid->id && Auth::user()->is_admin == false) {
                 abort(404);
             }
         }
 
-        if ($status->type == 'archived') {
-            if (Auth::user()->profile_id !== $status->profile_id) {
+        if($status->type == 'archived') {
+            if(Auth::user()->profile_id !== $status->profile_id) {
                 abort(404);
             }
         }
@@ -81,7 +80,7 @@ class StatusController extends Controller
             ->whereIsPrivate(false)
             ->whereUsername($username)
             ->first();
-        if (!$profile) {
+        if(!$profile) {
             $content = view('status.embed-removed');
             return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
@@ -91,7 +90,7 @@ class StatusController extends Controller
             ->whereIsNsfw(false)
             ->whereIn('type', ['photo', 'video'])
             ->find($id);
-        if (!$status) {
+        if(!$status) {
             $content = view('status.embed-removed');
             return response($content)->header('X-Frame-Options', 'ALLOWALL');
         }
@@ -106,22 +105,22 @@ class StatusController extends Controller
     {
         $user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
-        if ($user->status != null) {
+        if($user->status != null) {
             return ProfileController::accountCheck($user);
         }
 
         $status = Status::whereProfileId($user->id)
-                ->whereNotIn('visibility', ['draft','direct'])
+                ->whereNotIn('visibility',['draft','direct'])
                 ->findOrFail($id);
 
         abort_if($status->uri, 404);
 
-        if ($status->visibility == 'private' || $user->is_private) {
-            if (!Auth::check()) {
+        if($status->visibility == 'private' || $user->is_private) {
+            if(!Auth::check()) {
                 abort(403);
             }
             $pid = Auth::user()->profile;
-            if ($user->followedBy($pid) == false && $user->id !== $pid->id) {
+            if($user->followedBy($pid) == false && $user->id !== $pid->id) {
                 abort(403);
             }
         }
@@ -155,7 +154,7 @@ class StatusController extends Controller
             Cache::forget('profile:status_count:'.$status->profile_id);
             StatusDelete::dispatch($status);
         }
-        if ($request->wantsJson()) {
+        if($request->wantsJson()) {
             return response()->json(['Status successfully deleted.']);
         } else {
             return redirect(Auth::user()->url());
@@ -199,7 +198,7 @@ class StatusController extends Controller
             SharePipeline::dispatch($share);
         }
  
-        if ($count >= 0) {
+        if($count >= 0) {
             $status->reblogs_count = $count;
             $status->save();
         }
@@ -297,36 +296,35 @@ class StatusController extends Controller
         $count = count($mimes);
         $photos = 0;
         $videos = 0;
-        foreach ($mimes as $mime) {
-            if (in_array($mime, $allowed) == false && $mime !== 'video/mp4') {
+        foreach($mimes as $mime) {
+            if(in_array($mime, $allowed) == false && $mime !== 'video/mp4') {
                 continue;
             }
-            if (str_contains($mime, 'image/')) {
+            if(str_contains($mime, 'image/')) {
                 $photos++;
             }
-            if (str_contains($mime, 'video/')) {
+            if(str_contains($mime, 'video/')) {
                 $videos++;
             }
         }
-        if ($photos == 1 && $videos == 0) {
+        if($photos == 1 && $videos == 0) {
             return 'photo';
         }
-        if ($videos == 1 && $photos == 0) {
+        if($videos == 1 && $photos == 0) {
             return 'video';
         }
-        if ($photos > 1 && $videos == 0) {
+        if($photos > 1 && $videos == 0) {
             return 'photo:album';
         }
-        if ($videos > 1 && $photos == 0) {
+        if($videos > 1 && $photos == 0) {
             return 'video:album';
         }
-        if ($photos >= 1 && $videos >= 1) {
+        if($photos >= 1 && $videos >= 1) {
             return 'photo:video:album';
         }
     }
 
-    public function toggleVisibility(Request $request)
-    {
+    public function toggleVisibility(Request $request) {
         $this->authCheck();
         $this->validate($request, [
             'item' => 'required|string|min:1|max:20',
@@ -339,7 +337,7 @@ class StatusController extends Controller
 
         $status = Status::findOrFail($id);
 
-        if ($status->profile_id != $user->profile->id && $user->is_admin == false) {
+        if($status->profile_id != $user->profile->id && $user->is_admin == false) {
             abort(403);
         }
 

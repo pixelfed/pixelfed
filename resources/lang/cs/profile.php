@@ -10,6 +10,6 @@ return [
   'alreadyFollow'         => 'Již uživatele :username sledujete?',
   'loginToSeeProfile'     => 'pro zobrazení jeho/jejích fotek a videí.',
 
-  'status.disabled.header'    => 'Profil nedostupný',
-  'status.disabled.body'      => 'Omlouváme se, tento profil není v tuto chvíli dostupný. Prosím zkuste to znovu zakrátko.',
+  'status.disabled.header' 	  => 'Profil nedostupný',
+  'status.disabled.body'	  => 'Omlouváme se, tento profil není v tuto chvíli dostupný. Prosím zkuste to znovu zakrátko.',
 ];

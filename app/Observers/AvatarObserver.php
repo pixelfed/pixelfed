@@ -48,11 +48,11 @@ class AvatarObserver
     public function deleting(Avatar $avatar)
     {
         $path = storage_path('app/'.$avatar->media_path);
-        if (is_file($path) && $avatar->media_path != 'public/avatars/default.png') {
+        if(is_file($path) && $avatar->media_path != 'public/avatars/default.png') {
             @unlink($path);
         }
         $path = storage_path('app/'.$avatar->thumb_path);
-        if (is_file($path) && $avatar->thumb_path != 'public/avatars/default.png') {
+        if(is_file($path) && $avatar->thumb_path != 'public/avatars/default.png') {
             @unlink($path);
         }
     }

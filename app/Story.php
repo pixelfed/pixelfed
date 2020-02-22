@@ -28,29 +28,29 @@ class Story extends Model
 
     protected $fillable = ['profile_id'];
 
-    protected $visible = ['id'];
+	protected $visible = ['id'];
 
-    protected $hidden = ['json'];
+	protected $hidden = ['json'];
 
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
+	public function profile()
+	{
+		return $this->belongsTo(Profile::class);
+	}
 
-    public function views()
-    {
-        return $this->hasMany(StoryView::class);
-    }
+	public function views()
+	{
+		return $this->hasMany(StoryView::class);
+	}
 
-    public function seen($pid = false)
-    {
-        return StoryView::whereStoryId($this->id)
-            ->whereProfileId(Auth::user()->profile->id)
-            ->exists();
-    }
+	public function seen($pid = false)
+	{
+		return StoryView::whereStoryId($this->id)
+			->whereProfileId(Auth::user()->profile->id)
+			->exists();
+	}
 
-    public function permalink()
-    {
-        return url("/story/$this->id");
-    }
+	public function permalink()
+	{
+		return url("/story/$this->id");
+	}
 }

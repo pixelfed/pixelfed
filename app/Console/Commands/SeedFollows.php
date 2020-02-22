@@ -47,7 +47,7 @@ class SeedFollows extends Command
                 $actor = Profile::whereDomain(false)->inRandomOrder()->firstOrFail();
                 $target = Profile::whereDomain(false)->inRandomOrder()->firstOrFail();
 
-                if ($actor->id == $target->id) {
+                if($actor->id == $target->id) {
                     continue;
                 }
 
@@ -55,7 +55,7 @@ class SeedFollows extends Command
                     'profile_id'    => $actor->id,
                     'following_id'  => $target->id
                 ]);
-                if ($follow->wasRecentlyCreated == true) {
+                if($follow->wasRecentlyCreated == true) {
                     FollowPipeline::dispatch($follow);
                 }
             } catch (Exception $e) {

@@ -2,10 +2,7 @@
 
 namespace App;
 
-use Auth;
-use Cache;
-use Hashids;
-use Storage;
+use Auth, Cache, Hashids, Storage;
 use Illuminate\Database\Eloquent\Model;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
@@ -70,7 +67,7 @@ class Status extends Model
 
     public function viewType()
     {
-        if ($this->type) {
+        if($this->type) {
             return $this->type;
         }
         return $this->setType();
@@ -78,12 +75,12 @@ class Status extends Model
 
     public function setType()
     {
-        if (in_array($this->type, self::STATUS_TYPES)) {
+        if(in_array($this->type, self::STATUS_TYPES)) {
             return $this->type;
         }
         $mimes = $this->media->pluck('mime')->toArray();
         $type = StatusController::mimeTypeCheck($mimes);
-        if ($type) {
+        if($type) {
             $this->type = $type;
             $this->save();
             return $type;
@@ -92,10 +89,10 @@ class Status extends Model
 
     public function thumb($showNsfw = false)
     {
-        return Cache::remember('status:thumb:'.$this->id, now()->addMinutes(15), function () use ($showNsfw) {
+        return Cache::remember('status:thumb:'.$this->id, now()->addMinutes(15), function() use ($showNsfw) {
             $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-            if ($this->media->count() == 0 || $is_nsfw || !in_array($type, ['photo', 'photo:album', 'video'])) {
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album', 'video'])) {
                 return url(Storage::url('public/no-preview.png'));
             }
 
@@ -105,7 +102,7 @@ class Status extends Model
 
     public function url()
     {
-        if ($this->uri) {
+        if($this->uri) {
             return $this->uri;
         } else {
             $id = $this->id;
@@ -146,12 +143,12 @@ class Status extends Model
 
     public function liked() : bool
     {
-        if (Auth::check() == false) {
+        if(Auth::check() == false) {
             return false;
         }
         $user = Auth::user();
         $id = $this->id;
-        return Cache::remember('status:'.$this->id.':likedby:userid:'.$user->id, now()->addHours(30), function () use ($user, $id) {
+        return Cache::remember('status:'.$this->id.':likedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
             $profile = $user->profile;
             return Like::whereProfileId($profile->id)->whereStatusId($id)->count();
         });
@@ -191,12 +188,12 @@ class Status extends Model
 
     public function shared() : bool
     {
-        if (Auth::check() == false) {
+        if(Auth::check() == false) {
             return false;
         }
         $user = Auth::user();
         $id = $this->id;
-        return Cache::remember('status:'.$this->id.':sharedby:userid:'.$user->id, now()->addHours(30), function () use ($user, $id) {
+        return Cache::remember('status:'.$this->id.':sharedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
             $profile = $user->profile;
             return self::whereProfileId($profile->id)->whereReblogOfId($id)->count();
         });
@@ -232,25 +229,25 @@ class Status extends Model
     public function hashtags()
     {
         return $this->hasManyThrough(
-            Hashtag::class,
-            StatusHashtag::class,
-            'status_id',
-            'id',
-            'id',
-            'hashtag_id'
-        );
+        Hashtag::class,
+        StatusHashtag::class,
+        'status_id',
+        'id',
+        'id',
+        'hashtag_id'
+      );
     }
 
     public function mentions()
     {
         return $this->hasManyThrough(
-            Profile::class,
-            Mention::class,
-            'status_id',
-            'id',
-            'id',
-            'profile_id'
-        );
+        Profile::class,
+        Mention::class,
+        'status_id',
+        'id',
+        'id',
+        'profile_id'
+      );
     }
 
     public function reportUrl()
@@ -264,17 +261,17 @@ class Status extends Model
         $mediaCollection = [];
         foreach ($media as $image) {
             $mediaCollection[] = [
-            'type'      => 'Link',
-            'href'      => $image->url(),
-            'mediaType' => $image->mime,
-            ];
+          'type'      => 'Link',
+          'href'      => $image->url(),
+          'mediaType' => $image->mime,
+        ];
         }
         $obj = [
         '@context' => 'https://www.w3.org/ns/activitystreams',
         'type'     => 'Image',
         'name'     => null,
         'url'      => $mediaCollection,
-        ];
+      ];
 
         return $obj;
     }
@@ -318,7 +315,7 @@ class Status extends Model
 
     public function toActivityPubObject()
     {
-        if ($this->local == false) {
+        if($this->local == false) {
             return;
         }
         $profile = $this->profile;
@@ -344,7 +341,7 @@ class Status extends Model
                 'cc' => $cc,
                 'sensitive' => (bool) $this->is_nsfw,
                 'content' => $this->rendered,
-                'attachment' => $this->media->map(function ($media) {
+                'attachment' => $this->media->map(function($media) {
                     return [
                         'type' => 'Document',
                         'mediaType' => $media->mime,
@@ -358,7 +355,7 @@ class Status extends Model
 
     public function scopeToAudience($audience)
     {
-        if (!in_array($audience, ['to', 'cc']) || $this->local == false) {
+        if(!in_array($audience, ['to', 'cc']) || $this->local == false) { 
             return;
         }
         $res = [];
@@ -369,9 +366,9 @@ class Status extends Model
             return $mention->permalink();
         })->toArray();
 
-        if ($this->in_reply_to_id != null) {
+        if($this->in_reply_to_id != null) {
             $parent = $this->parent();
-            if ($parent) {
+            if($parent) {
                 $mentions = array_merge([$parent->profile->permalink()], $mentions);
             }
         }
@@ -409,4 +406,5 @@ class Status extends Model
     {
         return $this->belongsTo(Place::class);
     }
+
 }

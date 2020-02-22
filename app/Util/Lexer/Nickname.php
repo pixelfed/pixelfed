@@ -21,6 +21,7 @@ class Nickname
         $domain = null;
 
         foreach ($parts as $part) {
+
         // skip empty array slices
             if (empty($part)) {
                 continue;

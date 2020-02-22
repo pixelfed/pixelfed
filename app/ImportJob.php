@@ -13,17 +13,17 @@ class ImportJob extends Model
     
     public function url()
     {
-        return url("/i/import/job/{$this->uuid}/{$this->stage}");
+    	return url("/i/import/job/{$this->uuid}/{$this->stage}");
     }
 
     public function files()
     {
-        return $this->hasMany(ImportData::class, 'job_id');
+    	return $this->hasMany(ImportData::class, 'job_id');
     }
 
     public function mediaJson()
     {
-        $path = storage_path("app/$this->media_json");
-        return json_decode(file_get_contents($path), true);
+    	$path = storage_path("app/$this->media_json");
+    	return json_decode(file_get_contents($path), true);
     }
 }

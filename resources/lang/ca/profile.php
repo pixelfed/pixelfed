@@ -8,6 +8,6 @@ return [
   'privateProfileWarning' => 'Aquest compte és privat',
   'alreadyFollow'         => 'Ja seguiu a :username?',
   'loginToSeeProfile'     => 'per veure les seves fotos i vídeos.',
-  'status.disabled.header'    => 'Perfil no disponible',
-  'status.disabled.body'      => 'Perdoneu, aquest perfil no està disponible en aquest moment. Proveu d\'accedir-hi d\'aquí a una estona.',
+  'status.disabled.header' 	  => 'Perfil no disponible',
+  'status.disabled.body'	  => 'Perdoneu, aquest perfil no està disponible en aquest moment. Proveu d\'accedir-hi d\'aquí a una estona.',
 ];

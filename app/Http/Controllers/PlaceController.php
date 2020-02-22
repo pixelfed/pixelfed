@@ -3,21 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Place;
-use App\Status;
+use App\{
+	Place,
+	Status
+};
 
 class PlaceController extends Controller
 {
     public function show(Request $request, $id, $slug)
     {
-        $place = Place::whereSlug($slug)->findOrFail($id);
-        $posts = Status::wherePlaceId($place->id)
+    	$place = Place::whereSlug($slug)->findOrFail($id);
+    	$posts = Status::wherePlaceId($place->id)
             ->whereNull('uri')
-            ->whereScope('public')
-            ->orderByDesc('created_at')
-            ->simplePaginate(10);
+    		->whereScope('public')
+    		->orderByDesc('created_at')
+    		->simplePaginate(10);
 
-        return view('discover.places.show', compact('place', 'posts'));
+    	return view('discover.places.show', compact('place', 'posts'));
     }
 
     public function directoryHome(Request $request)

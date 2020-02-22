@@ -3,10 +3,12 @@
 namespace App\Jobs\StatusPipeline;
 
 use DB;
-use App\Notification;
-use App\Report;
-use App\Status;
-use App\StatusHashtag;
+use App\{
+    Notification,
+    Report,
+    Status,
+    StatusHashtag,
+};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -53,11 +55,12 @@ class StatusDelete implements ShouldQueue
     {
         $status = $this->status;
 
-        if (config('federation.activitypub.enabled') == true) {
+        if(config('federation.activitypub.enabled') == true) {
             $this->fanoutDelete($status);
         } else {
             $this->unlinkRemoveMedia($status);
         }
+
     }
 
     public function unlinkRemoveMedia($status)
@@ -77,14 +80,14 @@ class StatusDelete implements ShouldQueue
             } catch (Exception $e) {
             }
         }
-        if ($status->in_reply_to_id) {
-            DB::transaction(function () use ($status) {
+        if($status->in_reply_to_id) {
+            DB::transaction(function() use($status) {
                 $parent = Status::findOrFail($status->in_reply_to_id);
                 --$parent->reply_count;
                 $parent->save();
             });
         }
-        DB::transaction(function () use ($status) {
+        DB::transaction(function() use($status) {
             $comments = Status::where('in_reply_to_id', $status->id)->get();
             foreach ($comments as $comment) {
                 $comment->in_reply_to_id = null;
@@ -125,13 +128,13 @@ class StatusDelete implements ShouldQueue
             'timeout'  => config('federation.activitypub.delivery.timeout')
         ]);
 
-        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
-            foreach ($audience as $url) {
+        $requests = function($audience) use ($client, $activity, $profile, $payload) {
+            foreach($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function () use ($client, $url, $headers, $payload) {
+                yield function() use ($client, $url, $headers, $payload) {
                     return $client->postAsync($url, [
                         'curl' => [
-                            CURLOPT_HTTPHEADER => $headers,
+                            CURLOPT_HTTPHEADER => $headers, 
                             CURLOPT_POSTFIELDS => $payload,
                             CURLOPT_HEADER => true
                         ]
@@ -151,5 +154,6 @@ class StatusDelete implements ShouldQueue
         $promise = $pool->promise();
 
         $promise->wait();
+
     }
 }

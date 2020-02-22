@@ -38,9 +38,9 @@ class FailedJobGC extends Command
      */
     public function handle()
     {
-        FailedJob::chunk(50, function ($jobs) {
-            foreach ($jobs as $job) {
-                if ($job->failed_at->lt(now()->subMonth())) {
+        FailedJob::chunk(50, function($jobs) {
+            foreach($jobs as $job) {
+                if($job->failed_at->lt(now()->subMonth())) {
                     $job->delete();
                 }
             }

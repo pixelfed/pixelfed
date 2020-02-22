@@ -11,5 +11,5 @@ return [
     'loginToSeeProfile'         =>    'pour pouvoir consulter leurs photos et vidéos.',
 
     'status.disabled.header'    =>    'Profil indisponible',
-    'status.disabled.body'      =>    'Désolé, ce profil n’est pas disponible pour le moment. Veuillez réessayer plus tard.',
+    'status.disabled.body'	    =>    'Désolé, ce profil n’est pas disponible pour le moment. Veuillez réessayer plus tard.',
 ];

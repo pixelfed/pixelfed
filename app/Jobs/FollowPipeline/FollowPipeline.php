@@ -46,7 +46,7 @@ class FollowPipeline implements ShouldQueue
         $actor = $follower->actor;
         $target = $follower->target;
 
-        if ($target->domain || !$target->private_key) {
+        if($target->domain || !$target->private_key) {
             return;
         }
 

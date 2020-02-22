@@ -11,13 +11,13 @@ class Hashtag extends Model
     public function posts()
     {
         return $this->hasManyThrough(
-            Status::class,
-            StatusHashtag::class,
-            'hashtag_id',
-            'id',
-            'id',
-            'status_id'
-        );
+        Status::class,
+        StatusHashtag::class,
+        'hashtag_id',
+        'id',
+        'id',
+        'status_id'
+      );
     }
 
     public function url($suffix = '')

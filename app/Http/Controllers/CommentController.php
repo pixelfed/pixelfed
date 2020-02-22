@@ -42,7 +42,7 @@ class CommentController extends Controller
         $profile = $user->profile;
         $status = Status::findOrFail($statusId);
 
-        if ($status->comments_disabled == true) {
+        if($status->comments_disabled == true) {
             return;
         }
 
@@ -52,11 +52,11 @@ class CommentController extends Controller
             ->whereFilterableId($profile->id)
             ->exists();
 
-        if ($filtered == true) {
+        if($filtered == true) {
             return;
         }
 
-        $reply = DB::transaction(function () use ($comment, $status, $profile) {
+        $reply = DB::transaction(function() use($comment, $status, $profile) {
             $scope = $profile->is_private == true ? 'private' : 'public';
             $autolink = Autolink::create()->autolink($comment);
             $reply = new Status();
@@ -84,11 +84,11 @@ class CommentController extends Controller
             $entity = new Fractal\Resource\Item($reply, new StatusTransformer());
             $entity = $fractal->createData($entity)->toArray();
             $response = [
-                'code' => 200,
-                'msg' => 'Comment saved',
-                'username' => $profile->username,
-                'url' => $reply->url(),
-                'profile' => $profile->url(),
+                'code' => 200, 
+                'msg' => 'Comment saved', 
+                'username' => $profile->username, 
+                'url' => $reply->url(), 
+                'profile' => $profile->url(), 
                 'comment' => $reply->caption,
                 'entity' => $entity,
             ];

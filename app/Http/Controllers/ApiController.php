@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Follower;
-use App\Like;
-use App\Place;
-use App\Profile;
-use App\UserFilter;
-use Auth;
-use Cache;
+use App\{
+    Follower,
+    Like,
+    Place,
+    Profile,
+    UserFilter
+};
+use Auth, Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Util\Site\Config;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class ApiController extends BaseApiController
 
         $id = Auth::user()->profile->id;
 
-        $following = Cache::remember('profile:following:'.$id, now()->addHours(12), function () use ($id) {
+        $following = Cache::remember('profile:following:'.$id, now()->addHours(12), function() use ($id) {
             return Follower::whereProfileId($id)->pluck('following_id')->toArray();
         });
         array_push($following, $id);
@@ -49,11 +50,11 @@ class ApiController extends BaseApiController
         $key = config('cache.prefix').':api:local:exp:rec:'.$id;
         $ttl = (int) Redis::ttl($key);
 
-        if ($request->filled('refresh') == true  && (290 > $ttl) == true) {
+        if($request->filled('refresh') == true  && (290 > $ttl) == true) {
             Cache::forget('api:local:exp:rec:'.$id);
         }
 
-        $res = Cache::remember('api:local:exp:rec:'.$id, now()->addMinutes(5), function () use ($id, $following, $ids) {
+        $res = Cache::remember('api:local:exp:rec:'.$id, now()->addMinutes(5), function() use($id, $following, $ids) {
             return Profile::select(
                 'id',
                 'username'
@@ -66,7 +67,7 @@ class ApiController extends BaseApiController
             ->inRandomOrder()
             ->take(3)
             ->get()
-            ->map(function ($item, $key) {
+            ->map(function($item, $key) {
                 return [
                     'id' => $item->id,
                     'avatar' => $item->avatarUrl(),
@@ -88,20 +89,21 @@ class ApiController extends BaseApiController
         $q = filter_var($request->input('q'), FILTER_SANITIZE_STRING);
         $hash = hash('sha256', $q);
         $key = 'search:location:id:' . $hash;
-        $places = Cache::remember($key, now()->addMinutes(15), function () use ($q) {
+        $places = Cache::remember($key, now()->addMinutes(15), function() use($q) {
             $q = '%' . $q . '%';
             return Place::where('name', 'like', $q)
                 ->take(80)
                 ->get()
-                ->map(function ($r) {
+                ->map(function($r) {
                     return [
                         'id' => $r->id,
                         'name' => $r->name,
                         'country' => $r->country,
                         'url'   => $r->url()
                     ];
-                });
+            });
         });
         return $places;
     }
+
 }
