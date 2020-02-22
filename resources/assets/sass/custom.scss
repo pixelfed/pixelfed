@@ -46,9 +46,6 @@ body, button, input, textarea {
   opacity: .4;
 }
 
-.card.status-container {
-}
-
 .card-img-top {
   height: auto;
 }
@@ -240,7 +237,6 @@ body, button, input, textarea {
  100% {
   transform:rotate(1turn);
   top: 2.5rem;
-  left: 0em;
   font-size:0;
   left: 0.9rem
  }
@@ -528,7 +524,7 @@ details summary::-webkit-details-marker {
 
 .text-lighter {
   color:#B8C2CC !important;
-} 
+}
 
 .btn-outline-lighter {
     color: #B8C2CC !important;

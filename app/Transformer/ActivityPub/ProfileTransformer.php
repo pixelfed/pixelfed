@@ -39,10 +39,6 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'owner'        => $profile->permalink(),
             'publicKeyPem' => $profile->public_key,
           ],
-          // remove shared inbox support until proper support
-          // 'endpoints' => [
-          //   'sharedInbox' => config('routes.api.sharedInbox'),
-          // ],
           'icon' => [
             'type'      => 'Image',
             'mediaType' => 'image/jpeg',
