@@ -60,17 +60,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | ActivityPub
-    |--------------------------------------------------------------------------
-    |
-    */
-    'activitypub_enabled' => env('ACTIVITY_PUB', false),
-    'ap_delivery_timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
-    'ap_delivery_concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
-    'remote_follow_enabled' => false,
-
-    /*
-    |--------------------------------------------------------------------------
     | Account file size limit
     |--------------------------------------------------------------------------
     |
@@ -257,13 +246,7 @@ return [
 
     'oauth_enabled' => env('OAUTH_ENABLED', false),
 
-    'sanitizer' => [
-        'restrict_html_types' => env('RESTRICT_HTML_TYPES', true)
-    ],
-
     'admin' => [
         'env_editor' => env('ADMIN_ENV_EDITOR', false)
     ],
-
-    'links_per_post' => env('MAX_LINKS_PER_POST', 0) 
 ];
