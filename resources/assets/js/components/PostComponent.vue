@@ -675,9 +675,9 @@ export default {
       },
 
       fetchData() {
+          let self = this;
           axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId)
             .then(response => {
-                let self = this;
                 self.status = response.data.status;
                 self.user = response.data.user;
                 window._sharedData.curUser = self.user;
@@ -696,15 +696,7 @@ export default {
                 this.loaded = true;
                 $('head title').text(this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes');
             }).catch(error => {
-              if(!error.response) {
-              } else {
-                switch(error.response.status) {
-                  case 401:
-                  break;
-                  default:
-                  break;
-                }
-              }
+              swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
       },
 

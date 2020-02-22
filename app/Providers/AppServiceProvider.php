@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Observers\{
     AvatarObserver,
     NotificationObserver,
+    ModLogObserver,
     StatusHashtagObserver,
     UserObserver,
     UserFilterObserver,
@@ -12,6 +13,7 @@ use App\Observers\{
 use App\{
     Avatar,
     Notification,
+    ModLog,
     StatusHashtag,
     User,
     UserFilter
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
 
         Avatar::observe(AvatarObserver::class);
         Notification::observe(NotificationObserver::class);
+        ModLog::observe(ModLogObserver::class);
         StatusHashtag::observe(StatusHashtagObserver::class);
         User::observe(UserObserver::class);
         UserFilter::observe(UserFilterObserver::class);

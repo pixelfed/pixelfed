@@ -4,7 +4,7 @@
 		<div class="card notification-card shadow-none border">
 			<div class="card-header bg-white">
 				<p class="mb-0 d-flex align-items-center justify-content-between">
-					<span><i class="far fa-bell fa-lg text-white"></i></span>
+					<span data-toggle="tooltip" data-placement="bottom"><i class="fas fa-redo fa-lg text-white"></i></span>
 					<span class="small text-dark text-uppercase font-weight-bold">Alerts</span>
 					<a class="text-decoration-none text-muted" href="/account/activity"><i class="fas fa-inbox fa-lg"></i></a>
 				</p>
@@ -41,6 +41,11 @@
 						<div v-else-if="n.type == 'share'">
 							<p class="my-0">
 								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+							</p>
+						</div>
+						<div v-else-if="n.type == 'modlog'">
+							<p class="my-0">
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> updated a <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
 							</p>
 						</div>
 					</div>
@@ -193,6 +198,32 @@
 						}
 					});
 				}, interval);
+			},
+
+			refreshNotifications() {
+				let self = this;
+				axios.get('/api/pixelfed/v1/notifications')
+				.then(res => {
+					let data = res.data.filter(n => {
+						if(n.type == 'share' || self.notificationMaxId >= n.id) {
+							return false;
+						}
+						return true;
+					});
+					if(data.length > 0) {
+						let ids = data.map(n => n.id);
+						let max = Math.max(ids);
+						if(max <= self.notificationMaxId) {
+							return;
+						} else {
+							self.notificationMaxId = max;
+							self.notifications = data;
+							let beep = new Audio('/static/beep.mp3');
+							beep.volume = 0.7;
+							beep.play();
+						}
+					}
+				});
 			}
 		}
 	}
