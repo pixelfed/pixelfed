@@ -39,7 +39,7 @@ trait HomeSettings
         'bio'     => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
         'website' => 'nullable|url',
         'language' => 'nullable|string|min:2|max:5'
-      ]);
+        ]);
 
         $changes = false;
         $name = strip_tags(Purify::clean($request->input('name')));
@@ -49,7 +49,7 @@ trait HomeSettings
         $user = Auth::user();
         $profile = $user->profile;
         $layout = $request->input('profile_layout');
-        if($layout) {
+        if ($layout) {
             $layout = !in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
         }
 
@@ -73,7 +73,7 @@ trait HomeSettings
                 $profile->bio = $bio;
             }
 
-            if($user->language != $language &&
+            if ($user->language != $language &&
                 in_array($language, \App\Util\Localization\Localization::languages())
             ) {
                 $changes = true;
@@ -104,7 +104,7 @@ trait HomeSettings
         'current'                => 'required|string',
         'password'               => 'required|string',
         'password_confirmation'  => 'required|string',
-      ]);
+        ]);
 
         $current = $request->input('current');
         $new = $request->input('password');
@@ -131,7 +131,6 @@ trait HomeSettings
         } else {
             return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
         }
-
     }
 
     public function email()
@@ -182,12 +181,10 @@ trait HomeSettings
         } else {
             return redirect('/settings/email');
         }
-
     }
 
     public function avatar()
     {
         return view('settings.avatar');
     }
-
 }

@@ -3,27 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-    DirectMessage,
-    DiscoverCategory,
-    Hashtag,
-    Follower,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    StatusHashtag,
-    Status,
-    UserFilter,
-};
-use Auth,Cache;
+use App\DirectMessage;
+use App\DiscoverCategory;
+use App\Hashtag;
+use App\Follower;
+use App\Like;
+use App\Media;
+use App\Notification;
+use App\Profile;
+use App\StatusHashtag;
+use App\Status;
+use App\UserFilter;
+use Auth;
+useCache;
 use Carbon\Carbon;
 use League\Fractal;
-use App\Transformer\Api\{
-    AccountTransformer,
-    StatusTransformer,
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\StatusTransformer;
     // StatusMediaContainerTransformer,
-};
+
 use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
@@ -58,10 +56,10 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
         $pid = $profile->id;
-        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(15), function() use ($pid) {
+        $following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(15), function () use ($pid) {
             return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
         });
-        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(15), function() use($pid) {
+        $filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(15), function () use ($pid) {
             $private = Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)
@@ -77,11 +75,11 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $posts = Status::select(
-                'id', 
-                'caption', 
-                'profile_id',
-                'type'
-              )
+            'id',
+            'caption',
+            'profile_id',
+            'type'
+        )
               ->whereNull('uri')
               ->whereIn('type', ['photo','photo:album', 'video'])
               ->whereIsNsfw(false)
@@ -95,7 +93,7 @@ class InternalApiController extends Controller
               ->get();
 
         $res = [
-            'posts' => $posts->map(function($post) {
+            'posts' => $posts->map(function ($post) {
                 return [
                     'type' => $post->type,
                     'url' => $post->url(),
@@ -110,12 +108,12 @@ class InternalApiController extends Controller
     {
         $profile = Auth::user()->profile;
 
-        if($profileId != $profile->id) { 
-            abort(403); 
+        if ($profileId != $profile->id) {
+            abort(403);
         }
 
         $msg = DirectMessage::whereToId($profile->id)
-            ->orWhere('from_id',$profile->id)
+            ->orWhere('from_id', $profile->id)
             ->findOrFail($threadId);
 
         $thread = DirectMessage::with('status')->whereIn('to_id', [$profile->id, $msg->from_id])
@@ -143,13 +141,12 @@ class InternalApiController extends Controller
 
     public function stories(Request $request)
     {
-        
     }
 
     public function discoverCategories(Request $request)
     {
         $categories = DiscoverCategory::whereActive(true)->orderBy('order')->take(10)->get();
-        $res = $categories->map(function($item) {
+        $res = $categories->map(function ($item) {
             return [
                 'name' => $item->name,
                 'url' => $item->url(),
@@ -186,24 +183,24 @@ class InternalApiController extends Controller
         $item_id = $request->input('item_id');
         $item_type = $request->input('item_type');
 
-        switch($action) {
+        switch ($action) {
             case 'autocw':
                 $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
                 $profile->cw = true;
                 $profile->save();
-            break;
+                break;
 
             case 'noautolink':
                 $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
                 $profile->no_autolink = true;
                 $profile->save();
-            break;
+                break;
 
             case 'unlisted':
                 $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
                 $profile->unlisted = true;
                 $profile->save();
-            break;
+                break;
 
             case 'disable':
                 $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
@@ -212,7 +209,7 @@ class InternalApiController extends Controller
                 $user->status = 'disabled';
                 $profile->save();
                 $user->save();
-            break;
+                break;
 
 
             case 'suspend':
@@ -222,7 +219,7 @@ class InternalApiController extends Controller
                 $user->status = 'suspended';
                 $profile->save();
                 $user->save();
-            break;
+                break;
             
             default:
                 # code...
@@ -247,12 +244,12 @@ class InternalApiController extends Controller
             'comments_disabled' => 'nullable'
         ]);
 
-        if(config('costar.enabled') == true) {
+        if (config('costar.enabled') == true) {
             $blockedKeywords = config('costar.keyword.block');
-            if($blockedKeywords !== null && $request->caption) {
+            if ($blockedKeywords !== null && $request->caption) {
                 $keywords = config('costar.keyword.block');
-                foreach($keywords as $kw) {
-                    if(Str::contains($request->caption, $kw) == true) {
+                foreach ($keywords as $kw) {
+                    if (Str::contains($request->caption, $kw) == true) {
                         abort(400, 'Invalid object');
                     }
                 }
@@ -269,19 +266,19 @@ class InternalApiController extends Controller
         $place = $request->input('place');
         $cw = $request->input('cw');
 
-        foreach($medias as $k => $media) {
-            if($k + 1 > config('pixelfed.max_album_length')) {
+        foreach ($medias as $k => $media) {
+            if ($k + 1 > config('pixelfed.max_album_length')) {
                 continue;
             }
             $m = Media::findOrFail($media['id']);
-            if($m->profile_id !== $profile->id || $m->status_id) {
+            if ($m->profile_id !== $profile->id || $m->status_id) {
                 abort(403, 'Invalid media id');
             }
             $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
             $m->license = $media['license'];
             $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
             $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-            if($cw == true || $profile->cw == true) {
+            if ($cw == true || $profile->cw == true) {
                 $m->is_nsfw = $cw;
                 $status->is_nsfw = $cw;
             }
@@ -292,15 +289,15 @@ class InternalApiController extends Controller
 
         $mediaType = StatusController::mimeTypeCheck($mimes);
 
-        if(in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
+        if (in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
             abort(400, __('exception.compose.invalid.album'));
         }
 
-        if($place && is_array($place)) {
+        if ($place && is_array($place)) {
             $status->place_id = $place['id'];
         }
         
-        if($request->filled('comments_disabled')) {
+        if ($request->filled('comments_disabled')) {
             $status->comments_disabled = (bool) $request->input('comments_disabled');
         }
 
@@ -309,7 +306,7 @@ class InternalApiController extends Controller
         $status->profile_id = $profile->id;
         $status->save();
 
-        foreach($attachments as $media) {
+        foreach ($attachments as $media) {
             $media->status_id = $status->id;
             $media->save();
         }
@@ -354,7 +351,7 @@ class InternalApiController extends Controller
             'following' => [
                 'count' => true,
                 'list' => false
-            ], 
+            ],
             'followers' => [
                 'count' => true,
                 'list' => false
@@ -381,24 +378,24 @@ class InternalApiController extends Controller
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
-        $scope = $request->only_media == true ? 
+        $scope = $request->only_media == true ?
             ['photo', 'photo:album', 'video', 'video:album'] :
             ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
        
-        if($profile->is_private) {
-            if(!Auth::check()) {
+        if ($profile->is_private) {
+            if (!Auth::check()) {
                 return response()->json([]);
             }
             $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
                 return $following->push($pid)->toArray();
             });
             $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
         } else {
-            if(Auth::check()) {
+            if (Auth::check()) {
                 $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
                     return $following->push($pid)->toArray();
                 });
@@ -411,11 +408,11 @@ class InternalApiController extends Controller
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
-            'id', 
+            'id',
             'uri',
             'caption',
             'rendered',
-            'profile_id', 
+            'profile_id',
             'type',
             'in_reply_to_id',
             'reblog_of_id',
@@ -426,7 +423,7 @@ class InternalApiController extends Controller
             'local',
             'created_at',
             'updated_at'
-          )->whereProfileId($profile->id)
+        )->whereProfileId($profile->id)
           ->whereIn('type', $scope)
           ->where('id', $dir, $id)
           ->whereIn('visibility', $visibility)

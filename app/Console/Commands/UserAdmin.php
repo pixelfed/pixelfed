@@ -40,14 +40,14 @@ class UserAdmin extends Command
     {
         $id = $this->argument('id');
         $user = User::whereUsername($id)->orWhere('id', $id)->first();
-        if(!$user) {
+        if (!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
         }
         $this->info('Found username: ' . $user->username);
         $state = $user->is_admin ? 'Remove admin privileges from this user?' : 'Add admin privileges to this user?';
         $confirmed = $this->confirm($state);
-        if(!$confirmed) {
+        if (!$confirmed) {
             exit;
         }
 

@@ -19,12 +19,12 @@ class UserObserver
      */
     public function saved(User $user)
     {
-        if($user->status == 'deleted') {
+        if ($user->status == 'deleted') {
             return;
         }
         
         if (empty($user->profile)) {
-            $profile = DB::transaction(function() use($user) {
+            $profile = DB::transaction(function () use ($user) {
                 $profile = new Profile();
                 $profile->user_id = $user->id;
                 $profile->username = $user->username;
@@ -44,18 +44,17 @@ class UserObserver
                 $profile->save();
                 return $profile;
             });
-            DB::transaction(function() use($user, $profile) {
+            DB::transaction(function () use ($user, $profile) {
                 $user = User::findOrFail($user->id);
                 $user->profile_id = $profile->id;
                 $user->save();
 
                 CreateAvatar::dispatch($profile);
             });
-
         }
 
         if (empty($user->settings)) {
-            DB::transaction(function() use($user) {
+            DB::transaction(function () use ($user) {
                 UserSetting::firstOrCreate([
                     'user_id' => $user->id
                 ]);

@@ -4,17 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
-use App\{
-    Collection,
-    CollectionItem,
-    Profile,
-    Status
-};
+use App\Collection;
+use App\CollectionItem;
+use App\Profile;
+use App\Status;
 use League\Fractal;
-use App\Transformer\Api\{
-    AccountTransformer,
-    StatusTransformer,
-};
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\StatusTransformer;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
@@ -35,19 +31,19 @@ class CollectionController extends Controller
     public function show(Request $request, int $collection)
     {
         $collection = Collection::with('profile')->whereNotNull('published_at')->findOrFail($collection);
-        if($collection->profile->status != null) {
+        if ($collection->profile->status != null) {
             abort(404);
         }
-        if($collection->visibility !== 'public') {
+        if ($collection->visibility !== 'public') {
             abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
         }
-    	return view('collection.show', compact('collection'));
+        return view('collection.show', compact('collection'));
     }
 
     public function index(Request $request)
     {
         abort_if(!Auth::check(), 403);
-    	return $request->all();
+        return $request->all();
     }
 
     public function store(Request $request, $id)
@@ -59,7 +55,7 @@ class CollectionController extends Controller
             'visibility'    => 'nullable|string|in:public,private'
         ]);
 
-        $profile = Auth::user()->profile;   
+        $profile = Auth::user()->profile;
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
         $collection->title = e($request->input('title'));
         $collection->description = e($request->input('description'));
@@ -77,9 +73,9 @@ class CollectionController extends Controller
             'description'   => 'nullable',
             'visibility'    => 'required|alpha|in:public,private'
         ]);
-        $profile = Auth::user()->profile;   
+        $profile = Auth::user()->profile;
         $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
-        if($collection->items()->count() == 0) {
+        if ($collection->items()->count() == 0) {
             abort(404);
         }
         $collection->title = e($request->input('title'));
@@ -100,7 +96,7 @@ class CollectionController extends Controller
         $collection->items()->delete();
         $collection->delete();
 
-        if($request->wantsJson()) {
+        if ($request->wantsJson()) {
             return 200;
         }
 
@@ -121,7 +117,7 @@ class CollectionController extends Controller
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
 
-        if($count >= 50) {
+        if ($count >= 50) {
             abort(400, 'You can only add 50 posts per collection');
         }
 
@@ -133,7 +129,7 @@ class CollectionController extends Controller
             'collection_id' => $collection->id,
             'object_type'   => 'App\Status',
             'object_id'     => $status->id
-        ],[
+        ], [
             'order'         => $count,
         ]);
 
@@ -145,8 +141,8 @@ class CollectionController extends Controller
         $profile = Auth::check() ? Auth::user()->profile : [];
 
         $collection = Collection::whereVisibility('public')->findOrFail($id);
-        if($collection->published_at == null) {
-            if(!Auth::check() || $profile->id !== $collection->profile_id) {
+        if ($collection->published_at == null) {
+            if (!Auth::check() || $profile->id !== $collection->profile_id) {
                 abort(404);
             }
         }
@@ -162,7 +158,7 @@ class CollectionController extends Controller
     public function getItems(Request $request, int $id)
     {
         $collection = Collection::findOrFail($id);
-        if($collection->visibility !== 'public') {
+        if ($collection->visibility !== 'public') {
             abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
         }
         $posts = $collection->posts()->orderBy('order', 'asc')->paginate(18);
@@ -181,7 +177,7 @@ class CollectionController extends Controller
             ->whereNull('domain')
             ->findOrFail($id);
 
-        if($profile->is_private) {
+        if ($profile->is_private) {
             abort_if(!Auth::check(), 404);
             abort_if(!$profile->followedBy(Auth::user()->profile) && $profile->id != Auth::user()->profile_id, 404);
         }
@@ -194,7 +190,7 @@ class CollectionController extends Controller
             ->whereNotNull('published_at')
             ->orderByDesc('published_at')
             ->paginate(9)
-            ->map(function($collection) {
+            ->map(function ($collection) {
                 return [
                     'id' => $collection->id,
                     'title' => $collection->title,
@@ -203,7 +199,7 @@ class CollectionController extends Controller
                     'url' => $collection->url(),
                     'published_at' => $collection->published_at
                 ];
-        });
+            });
     }
 
     public function deleteId(Request $request)
@@ -220,7 +216,7 @@ class CollectionController extends Controller
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
 
-        if($count == 1) {
+        if ($count == 1) {
             abort(400, 'You cannot delete the only post of a collection!');
         }
 

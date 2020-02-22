@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\InboxPipeline\{
-    InboxWorker,
-    InboxValidator
-};
+use App\Jobs\InboxPipeline\InboxWorker;
+use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
-use App\{
-    AccountLog,
-    Like,
-    Profile,
-    Status,
-    User
-};
+use App\AccountLog;
+use App\Like;
+use App\Profile;
+use App\Status;
+use App\User;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
 use Auth;
@@ -22,11 +18,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Site\Nodeinfo;
-use App\Util\ActivityPub\{
-    Helpers,
-    HttpSignature,
-    Outbox
-};
+use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
+use App\Util\ActivityPub\Outbox;
 use \Zttp\Zttp;
 
 class FederationController extends Controller
@@ -41,7 +35,7 @@ class FederationController extends Controller
     {
         abort_if(!config('federation.nodeinfo.enabled'), 404);
         return response()->json(Nodeinfo::get())
-            ->header('Access-Control-Allow-Origin','*');
+            ->header('Access-Control-Allow-Origin', '*');
     }
 
     public function webfinger(Request $request)
@@ -52,12 +46,12 @@ class FederationController extends Controller
 
         $resource = $request->input('resource');
         $parsed = Nickname::normalizeProfileUrl($resource);
-        if($parsed['domain'] !== config('pixelfed.domain.app')) {
+        if ($parsed['domain'] !== config('pixelfed.domain.app')) {
             abort(404);
         }
         $username = $parsed['username'];
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-        if($profile->status != null) {
+        if ($profile->status != null) {
             return ProfileController::accountCheck($profile);
         }
         $webfinger = (new Webfinger($profile))->generate();
@@ -94,14 +88,14 @@ class FederationController extends Controller
         // $payload = $request->getContent();
         // InboxValidator::dispatch($username, $headers, $payload);
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-        if($profile->status != null) {
+        if ($profile->status != null) {
             return ProfileController::accountCheck($profile);
         }
         $body = $request->getContent();
         $bodyDecoded = json_decode($body, true, 8);
-        if($this->verifySignature($request, $profile) == true) {
+        if ($this->verifySignature($request, $profile) == true) {
             InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else if($this->blindKeyRotation($request, $profile) == true) {
+        } elseif ($this->blindKeyRotation($request, $profile) == true) {
             InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
         } else {
             abort(400, 'Bad Signature');
@@ -117,16 +111,16 @@ class FederationController extends Controller
         $signature = $request->header('signature');
         $date = $request->header('date');
         $digest = $request->header('digest');
-        if(!$digest) {
+        if (!$digest) {
             abort(400, 'Missing digest header');
         }
-        if(!$signature) {
+        if (!$signature) {
             abort(400, 'Missing signature header');
         }
-        if(!$date) {
+        if (!$date) {
             abort(400, 'Missing date header');
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
+        if (!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
             abort(400, 'Invalid date');
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
@@ -134,31 +128,31 @@ class FederationController extends Controller
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        if($keyDomain == config('pixelfed.domain.app') || $idDomain == config('pixelfed.domain.app')) {
+        if ($keyDomain == config('pixelfed.domain.app') || $idDomain == config('pixelfed.domain.app')) {
             return false;
         }
-        if(isset($bodyDecoded['object']) 
+        if (isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
-            if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
+            if (parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
                 abort(400, 'Invalid request');
             }
         }
-        if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
+        if (!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
             abort(400, 'Invalid request');
         }
         $actor = Profile::whereKeyId($keyId)->first();
-        if(!$actor) {
+        if (!$actor) {
             $actor = Helpers::profileFirstOrNew($bodyDecoded['actor']);
         }
-        if(!$actor) {
+        if (!$actor) {
             return false;
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
         list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $request->headers->all(), $inboxPath, $body);
-        if($verified == 1) { 
+        if ($verified == 1) {
             return true;
         } else {
             return false;
@@ -169,13 +163,13 @@ class FederationController extends Controller
     {
         $signature = $request->header('signature');
         $date = $request->header('date');
-        if(!$signature) {
+        if (!$signature) {
             abort(400, 'Missing signature header');
         }
-        if(!$date) {
+        if (!$date) {
             abort(400, 'Missing date header');
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
+        if (!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
             abort(400, 'Invalid date');
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
@@ -186,7 +180,7 @@ class FederationController extends Controller
           'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($actor->remote_url);
         $res = json_decode($res->body(), true, 8);
-        if($res['publicKey']['id'] !== $actor->key_id) {
+        if ($res['publicKey']['id'] !== $actor->key_id) {
             return false;
         }
         $actor->public_key = $res['publicKey']['publicKeyPem'];
@@ -203,7 +197,7 @@ class FederationController extends Controller
             ->whereIsPrivate(false)
             ->firstOrFail();
             
-        if($profile->status != null) {
+        if ($profile->status != null) {
             abort(404);
         }
 
@@ -214,7 +208,7 @@ class FederationController extends Controller
             'totalItems' => 0,
             'orderedItems' => []
         ];
-        return response()->json($obj); 
+        return response()->json($obj);
     }
 
     public function userFollowers(Request $request, $username)
@@ -226,7 +220,7 @@ class FederationController extends Controller
             ->whereIsPrivate(false)
             ->firstOrFail();
 
-        if($profile->status != null) {
+        if ($profile->status != null) {
             abort(404);
         }
 
@@ -238,6 +232,6 @@ class FederationController extends Controller
             'orderedItems' => []
         ];
 
-        return response()->json($obj); 
+        return response()->json($obj);
     }
 }

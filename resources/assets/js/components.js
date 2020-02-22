@@ -10,24 +10,24 @@ Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
 Vue.use(VueTimeago, {
-  name: 'Timeago',
-  locale: 'en'
+    name: 'Timeago',
+    locale: 'en'
 });
 
 pixelfed.readmore = () => {
-  $('.read-more').each(function(k,v) {
-      let el = $(this);
-      let attr = el.attr('data-readmore');
-      if(typeof attr !== typeof undefined && attr !== false) {
-        return;
-      }
-      el.readmore({
-        collapsedHeight: 45,
-        heightMargin: 48,
-        moreLink: '<a href="#" class="d-block small text-muted text-center">Read more ...</a>',
-        lessLink: '<a href="#" class="d-block small text-muted text-center">Hide</a>',
-      });
-  });
+    $('.read-more').each(function (k,v) {
+        let el = $(this);
+        let attr = el.attr('data-readmore');
+        if (typeof attr !== typeof undefined && attr !== false) {
+            return;
+        }
+        el.readmore({
+            collapsedHeight: 45,
+            heightMargin: 48,
+            moreLink: '<a href="#" class="d-block small text-muted text-center">Read more ...</a>',
+            lessLink: '<a href="#" class="d-block small text-muted text-center">Hide</a>',
+        });
+    });
 };
 
 try {

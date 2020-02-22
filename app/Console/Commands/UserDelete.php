@@ -42,39 +42,39 @@ class UserDelete extends Command
         $id = $this->argument('id');
         $force = $this->option('force');
 
-        if(ctype_digit($id) == true) {
+        if (ctype_digit($id) == true) {
             $user = User::find($id);
         } else {
             $user = User::whereUsername($id)->first();
         }
 
-        if(!$user) {
+        if (!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
         }
 
-        if($user->status == 'deleted' && $force == false) {
+        if ($user->status == 'deleted' && $force == false) {
             $this->error('Account has already been deleted.');
             return;
         }
 
-        if($user->is_admin == true) {
+        if ($user->is_admin == true) {
             $this->error('Cannot delete an admin account from CLI.');
             exit;
         }
 
-        if(!$this->confirm('Are you sure you want to delete this account?')) {
+        if (!$this->confirm('Are you sure you want to delete this account?')) {
             exit;
         }
 
         $confirmation = $this->ask('Enter the username to confirm deletion');
 
-        if($confirmation !== $user->username) {
+        if ($confirmation !== $user->username) {
             $this->error('Username does not match, exiting...');
             exit;
         }
 
-        if($user->status !== 'deleted') {
+        if ($user->status !== 'deleted') {
             $profile = $user->profile;
             $profile->status = $user->status = 'deleted';
             $profile->save();

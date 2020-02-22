@@ -9,12 +9,12 @@ class SeasonalController extends Controller
 {
     public function __construct()
     {
-    	$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function yearInReview()
     {
-    	$profile = Auth::user()->profile;
-    	return view('account.yir', compact('profile'));
+        $profile = Auth::user()->profile;
+        return view('account.yir', compact('profile'));
     }
 }

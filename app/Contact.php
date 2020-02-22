@@ -8,11 +8,11 @@ class Contact extends Model
 {
     public function user()
     {
-    	return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function adminUrl()
     {
-    	return url('/i/admin/messages/show/' . $this->id);
+        return url('/i/admin/messages/show/' . $this->id);
     }
 }

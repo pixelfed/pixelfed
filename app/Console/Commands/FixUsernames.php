@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\{Profile, User};
+use App\Profile;
+use App\User;
 use DB;
 use App\Util\Lexer\RestrictedNames;
 
@@ -46,22 +47,22 @@ class FixUsernames extends Command
 
         $restricted = RestrictedNames::get();
 
-        $users = User::chunk(100, function($users) use($affected, $restricted) {
-            foreach($users as $user) {
-                if($user->is_admin || $user->status == 'deleted') {
+        $users = User::chunk(100, function ($users) use ($affected, $restricted) {
+            foreach ($users as $user) {
+                if ($user->is_admin || $user->status == 'deleted') {
                     continue;
                 }
-                if(in_array($user->username, $restricted)) {
+                if (in_array($user->username, $restricted)) {
                     $affected->push($user);
                 }
                 $val = str_replace(['-', '_', '.'], '', $user->username);
-                if(!ctype_alnum($val)) {
+                if (!ctype_alnum($val)) {
                     $this->info('Found invalid username: ' . $user->username);
                     $affected->push($user);
                 }
             }
         });
-        if($affected->count() > 0) {
+        if ($affected->count() > 0) {
             $this->info('Found: ' . $affected->count() . ' affected usernames');
 
             $opts = [
@@ -71,7 +72,7 @@ class FixUsernames extends Command
                 'Skip (do not replace. Use at your own risk)'
             ];
 
-            foreach($affected as $u) {
+            foreach ($affected as $u) {
                 $old = $u->username;
                 $this->info("Found user: {$old}");
                 $opt = $this->choice('Select fix method:', $opts, 3);
@@ -84,7 +85,7 @@ class FixUsernames extends Command
 
                     case $opts[1]:
                         $new = filter_var($old, FILTER_SANITIZE_STRING|FILTER_FLAG_STRIP_LOW);
-                        if(strlen($new) < 6) {
+                        if (strlen($new) < 6) {
                             $new = $new . '_' . str_random(4);
                         }
                         $this->info('New username: ' . $new);
@@ -104,8 +105,8 @@ class FixUsernames extends Command
                         break;
                 }
 
-                if($new) {
-                    DB::transaction(function() use($u, $new) {
+                if ($new) {
+                    DB::transaction(function () use ($u, $new) {
                         $profile = $u->profile;
                         $profile->username = $new;
                         $u->username = $new;

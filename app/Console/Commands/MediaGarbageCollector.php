@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\{Media, Status};
+use App\Media;
+use App\Status;
 use Carbon\Carbon;
 
 class MediaGarbageCollector extends Command
@@ -43,19 +44,19 @@ class MediaGarbageCollector extends Command
         
         $gc = Media::doesntHave('status')
         ->where('created_at', '<', Carbon::now()->subHours(1)->toDateTimeString())
-        ->orderBy('created_at','asc')
+        ->orderBy('created_at', 'asc')
         ->take($limit)
         ->get();
 
         $bar = $this->output->createProgressBar($gc->count());
         $bar->start();
-        foreach($gc as $media) {
+        foreach ($gc as $media) {
             $path = storage_path("app/$media->media_path");
             $thumb = storage_path("app/$media->thumbnail_path");
-            if(is_file($path)) {
+            if (is_file($path)) {
                 unlink($path);
             }
-            if(is_file($thumb)) {
+            if (is_file($thumb)) {
                 unlink($thumb);
             }
             $media->forceDelete();

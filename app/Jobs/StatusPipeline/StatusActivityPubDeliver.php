@@ -2,7 +2,8 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use Cache, Log;
+use Cache;
+use Log;
 use App\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,13 +52,13 @@ class StatusActivityPubDeliver implements ShouldQueue
         $status = $this->status;
         $profile = $status->profile;
 
-        if($status->local == false || $status->url || $status->uri) {
+        if ($status->local == false || $status->url || $status->uri) {
             return;
         }
 
         $audience = $status->profile->getAudienceInbox();
 
-        if(empty($audience) || !in_array($status->scope, ['public', 'unlisted', 'private'])) {
+        if (empty($audience) || !in_array($status->scope, ['public', 'unlisted', 'private'])) {
             // Return on profiles with no remote followers
             return;
         }
@@ -74,13 +75,13 @@ class StatusActivityPubDeliver implements ShouldQueue
             'timeout'  => config('federation.activitypub.delivery.timeout')
         ]);
 
-        $requests = function($audience) use ($client, $activity, $profile, $payload) {
-            foreach($audience as $url) {
+        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
+            foreach ($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function() use ($client, $url, $headers, $payload) {
+                yield function () use ($client, $url, $headers, $payload) {
                     return $client->postAsync($url, [
                         'curl' => [
-                            CURLOPT_HTTPHEADER => $headers, 
+                            CURLOPT_HTTPHEADER => $headers,
                             CURLOPT_POSTFIELDS => $payload,
                             CURLOPT_HEADER => true
                         ]

@@ -14,7 +14,7 @@ class AddIndexes extends Migration
     public function up()
     {
         Schema::table('statuses', function (Blueprint $table) {
-            $table->index('visibility','statuses_visibility_index');
+            $table->index('visibility', 'statuses_visibility_index');
             $table->index(['in_reply_to_id', 'reblog_of_id'], 'statuses_in_reply_or_reblog_index');
             $table->index('uri', 'statuses_uri_index');
             $table->index('is_nsfw', 'statuses_is_nsfw_index');
@@ -24,7 +24,7 @@ class AddIndexes extends Migration
         });
 
         Schema::table('notifications', function (Blueprint $table) {
-            $table->index('created_at','notifications_created_at_index');
+            $table->index('created_at', 'notifications_created_at_index');
             $table->index('actor_id', 'notifications_actor_id_index');
         });
 

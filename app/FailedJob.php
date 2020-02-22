@@ -14,6 +14,6 @@ class FailedJob extends Model
 
     public function getFailedAtAttribute($val)
     {
-    	return Carbon::parse($val);
+        return Carbon::parse($val);
     }
 }

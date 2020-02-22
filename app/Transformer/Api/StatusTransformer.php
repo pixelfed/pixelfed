@@ -62,8 +62,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
 
     public function includeMediaAttachments(Status $status)
     {
-        return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addMinutes(14), function() use($status) {
-            if(in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
+        return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addMinutes(14), function () use ($status) {
+            if (in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
                 $media = $status->media()->orderBy('order')->get();
                 return $this->collection($media, new MediaTransformer());
             }

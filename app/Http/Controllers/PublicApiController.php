@@ -3,34 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-    Hashtag,
-    Follower,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    StatusHashtag,
-    Status,
-    UserFilter
-};
-use Auth,Cache;
+use App\Hashtag;
+use App\Follower;
+use App\Like;
+use App\Media;
+use App\Notification;
+use App\Profile;
+use App\StatusHashtag;
+use App\Status;
+use App\UserFilter;
+use Auth;
+useCache;
 use Carbon\Carbon;
 use League\Fractal;
-use App\Transformer\Api\{
-    AccountTransformer,
-    RelationshipTransformer,
-    StatusTransformer,
-};
-use App\Services\{
-    AccountService,
-    PublicTimelineService,
-    UserFilterService
-};
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\RelationshipTransformer;
+use App\Transformer\Api\StatusTransformer;
+use App\Services\AccountService;
+use App\Services\PublicTimelineService;
+use App\Services\UserFilterService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
-
 
 class PublicApiController extends Controller
 {
@@ -44,23 +38,23 @@ class PublicApiController extends Controller
 
     protected function getUserData($user)
     {
-    	if(!$user) {
-    		return [];
-    	} else {
+        if (!$user) {
+            return [];
+        } else {
             return AccountService::get($user->profile_id);
-    	}
+        }
     }
 
     protected function getLikes($status)
     {
-        if(false == Auth::check()) {
+        if (false == Auth::check()) {
             return [];
         } else {
             $profile = Auth::user()->profile;
-            if($profile->status) {
+            if ($profile->status) {
                 return [];
             }
-            $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
+            $likes = $status->likedBy()->orderBy('created_at', 'desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
         }
@@ -68,14 +62,14 @@ class PublicApiController extends Controller
 
     protected function getShares($status)
     {
-        if(false == Auth::check()) {
+        if (false == Auth::check()) {
             return [];
         } else {
             $profile = Auth::user()->profile;
-            if($profile->status) {
+            if ($profile->status) {
                 return [];
             }
-            $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
+            $shares = $status->sharedBy()->orderBy('created_at', 'desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
         }
@@ -88,8 +82,8 @@ class PublicApiController extends Controller
         $this->scopeCheck($profile, $status);
         $item = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = [
-        	'status' => $this->fractal->createData($item)->toArray(),
-        	'user' => $this->getUserData($request->user()),
+            'status' => $this->fractal->createData($item)->toArray(),
+            'user' => $this->getUserData($request->user()),
             'likes' => $this->getLikes($status),
             'shares' => $this->getShares($status),
             'reactions' => [
@@ -114,7 +108,7 @@ class PublicApiController extends Controller
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
 
-        if(Auth::check()) {
+        if (Auth::check()) {
             $p = Auth::user()->profile;
             $filtered = UserFilter::whereUserId($p->id)
             ->whereFilterableType('App\Profile')
@@ -126,8 +120,8 @@ class PublicApiController extends Controller
             $scope = ['public'];
         }
 
-        if($request->filled('min_id') || $request->filled('max_id')) {
-            if($request->filled('min_id')) {
+        if ($request->filled('min_id') || $request->filled('max_id')) {
+            if ($request->filled('min_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
                 ->whereIn('scope', $scope)
@@ -137,7 +131,7 @@ class PublicApiController extends Controller
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             }
-            if($request->filled('max_id')) {
+            if ($request->filled('max_id')) {
                 $replies = $status->comments()
                 ->whereNull('reblog_of_id')
                 ->whereIn('scope', $scope)
@@ -187,9 +181,9 @@ class PublicApiController extends Controller
 
     protected function scopeCheck(Profile $profile, Status $status)
     {
-        if($profile->is_private == true && Auth::check() == false) {
+        if ($profile->is_private == true && Auth::check() == false) {
             abort(404);
-        } 
+        }
 
         switch ($status->scope) {
             case 'public':
@@ -197,11 +191,11 @@ class PublicApiController extends Controller
                 break;
             case 'private':
                 $user = Auth::check() ? Auth::user() : false;
-                if(!$user) {
+                if (!$user) {
                     abort(403);
                 } else {
                     $follows = $profile->followedBy($user->profile);
-                    if($follows == false && $profile->id !== $user->profile->id && $user->is_admin == false) {
+                    if ($follows == false && $profile->id !== $user->profile->id && $user->is_admin == false) {
                         abort(404);
                     }
                 }
@@ -223,14 +217,14 @@ class PublicApiController extends Controller
 
     public function publicTimelineApi(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'limit'       => 'nullable|integer|max:30'
         ]);
 
-        if(config('instance.timeline.local.is_public') == false && !Auth::check()) {
+        if (config('instance.timeline.local.is_public') == false && !Auth::check()) {
             abort(403, 'Authentication required.');
         }
 
@@ -239,7 +233,7 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
 
-        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
+        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function () {
             return Profile::whereIsPrivate(true)
                 ->orWhere('unlisted', true)
                 ->orWhere('status', '!=', null)
@@ -270,31 +264,31 @@ class PublicApiController extends Controller
         //         $res = PublicTimelineService::get(0,4);
         //     }
         //     return response()->json($res);
-        // } 
+        // }
 
-        if($min || $max) {
+        if ($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
-                        'uri',
-                        'caption',
-                        'rendered',
-                        'profile_id', 
-                        'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
-                        'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'created_at',
-                        'updated_at'
-                      )->where('id', $dir, $id)
+                'id',
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id',
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'reply_count',
+                'comments_disabled',
+                'place_id',
+                'likes_count',
+                'reblogs_count',
+                'created_at',
+                'updated_at'
+            )->where('id', $dir, $id)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereLocal(true)
@@ -306,25 +300,25 @@ class PublicApiController extends Controller
                       //->toSql();
         } else {
             $timeline = Status::select(
-                        'id', 
-                        'uri',
-                        'caption',
-                        'rendered',
-                        'profile_id', 
-                        'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
-                        'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'created_at',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                'id',
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id',
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'reply_count',
+                'comments_disabled',
+                'created_at',
+                'place_id',
+                'likes_count',
+                'reblogs_count',
+                'updated_at'
+            )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereNotIn('profile_id', $filtered)
@@ -337,16 +331,15 @@ class PublicApiController extends Controller
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
-
     }
 
     public function homeTimelineApi(Request $request)
     {
-        if(!Auth::check()) {
+        if (!Auth::check()) {
             return abort(403);
         }
 
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -362,7 +355,7 @@ class PublicApiController extends Controller
         // $timeline = Timeline::build()->local();
         $pid = Auth::user()->profile->id;
 
-        $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+        $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
             $following = Follower::whereProfileId($pid)->pluck('following_id');
             return $following->push($pid)->toArray();
         });
@@ -384,62 +377,62 @@ class PublicApiController extends Controller
 
         $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
 
-        if($min || $max) {
+        if ($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
-                        'uri',
-                        'caption',
-                        'rendered',
-                        'profile_id', 
-                        'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
-                        'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'created_at',
-                        'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                'id',
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id',
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'reply_count',
+                'comments_disabled',
+                'place_id',
+                'likes_count',
+                'reblogs_count',
+                'created_at',
+                'updated_at'
+            )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
-                        'uri',
-                        'caption',
-                        'rendered',
-                        'profile_id', 
-                        'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
-                        'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'created_at',
-                        'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                'id',
+                'uri',
+                'caption',
+                'rendered',
+                'profile_id',
+                'type',
+                'in_reply_to_id',
+                'reblog_of_id',
+                'is_nsfw',
+                'scope',
+                'local',
+                'reply_count',
+                'comments_disabled',
+                'place_id',
+                'likes_count',
+                'reblogs_count',
+                'created_at',
+                'updated_at'
+            )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
@@ -447,7 +440,6 @@ class PublicApiController extends Controller
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
-
     }
 
 
@@ -458,7 +450,7 @@ class PublicApiController extends Controller
 
     public function relationships(Request $request)
     {
-        if(!Auth::check()) {
+        if (!Auth::check()) {
             return response()->json([]);
         }
 
@@ -467,7 +459,7 @@ class PublicApiController extends Controller
             'id.*'  => 'required|integer'
         ]);
         $ids = collect($request->input('id'));
-        $filtered = $ids->filter(function($v) { 
+        $filtered = $ids->filter(function ($v) {
             return $v != Auth::user()->profile->id;
         });
         $relations = Profile::whereNull('status')->findOrFail($filtered->all());
@@ -486,7 +478,7 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_followers) {
+        if (Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_followers) {
             return response()->json([]);
         }
         $followers = $profile->followers()->orderByDesc('followers.created_at')->paginate(10);
@@ -500,7 +492,7 @@ class PublicApiController extends Controller
     {
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_following) {
+        if (Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_following) {
             return response()->json([]);
         }
         $following = $profile->following()->orderByDesc('followers.created_at')->paginate(10);
@@ -527,24 +519,24 @@ class PublicApiController extends Controller
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
-        $scope = $request->only_media == true ? 
+        $scope = $request->only_media == true ?
             ['photo', 'photo:album', 'video', 'video:album'] :
             ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
        
-        if($profile->is_private) {
-            if(!Auth::check()) {
+        if ($profile->is_private) {
+            if (!Auth::check()) {
                 return response()->json([]);
             }
             $pid = Auth::user()->profile->id;
-            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+            $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
                 return $following->push($pid)->toArray();
             });
             $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
         } else {
-            if(Auth::check()) {
+            if (Auth::check()) {
                 $pid = Auth::user()->profile->id;
-                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+                $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function () use ($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
                     return $following->push($pid)->toArray();
                 });
@@ -557,11 +549,11 @@ class PublicApiController extends Controller
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
-            'id', 
+            'id',
             'uri',
             'caption',
             'rendered',
-            'profile_id', 
+            'profile_id',
             'type',
             'in_reply_to_id',
             'reblog_of_id',
@@ -572,7 +564,7 @@ class PublicApiController extends Controller
             'local',
             'created_at',
             'updated_at'
-          )->whereProfileId($profile->id)
+        )->whereProfileId($profile->id)
           ->whereIn('type', $scope)
           ->whereLocal(true)
           ->whereNull('uri')
@@ -587,5 +579,4 @@ class PublicApiController extends Controller
 
         return response()->json($res);
     }
-
 }

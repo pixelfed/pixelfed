@@ -10,6 +10,6 @@ return [
   'alreadyFollow'         => 'Já segue :username?',
   'loginToSeeProfile'     => 'para ver suas fotos e vídeos.',
 
-  'status.disabled.header' 	  => 'Perfil Indisponível',
-  'status.disabled.body'	  => 'Desculpe, este perfil não está disponível no momento. Por favor, tente novamente em breve.',
+  'status.disabled.header'    => 'Perfil Indisponível',
+  'status.disabled.body'      => 'Desculpe, este perfil não está disponível no momento. Por favor, tente novamente em breve.',
 ];

@@ -10,7 +10,7 @@ return [
   'alreadyFollow'         => 'Följer du redan :username?',
   'loginToSeeProfile'     => 'för att se hens foton och videos.',
 
-  'status.disabled.header' 	  => 'Profilen är otillgänglig',
-  'status.disabled.body'	  => 'Förlåt, men den här profilen är otillgänglig just nu. Försök igen om en stund.',
+  'status.disabled.header'    => 'Profilen är otillgänglig',
+  'status.disabled.body'      => 'Förlåt, men den här profilen är otillgänglig just nu. Försök igen om en stund.',
 
 ];

@@ -50,7 +50,7 @@ class StatusEntityLexer implements ShouldQueue
     public function handle()
     {
         $profile = $this->status->profile;
-        if($profile->no_autolink == false) {
+        if ($profile->no_autolink == false) {
             $this->parseEntities();
         }
     }
@@ -89,7 +89,7 @@ class StatusEntityLexer implements ShouldQueue
         $status = $this->status;
 
         foreach ($tags as $tag) {
-            if(mb_strlen($tag) > 124) {
+            if (mb_strlen($tag) > 124) {
                 continue;
             }
             DB::transaction(function () use ($status, $tag) {
@@ -99,7 +99,7 @@ class StatusEntityLexer implements ShouldQueue
                 );
                 StatusHashtag::firstOrCreate(
                     [
-                        'status_id' => $status->id, 
+                        'status_id' => $status->id,
                         'hashtag_id' => $hashtag->id,
                         'profile_id' => $status->profile_id,
                         'status_visibility' => $status->visibility,
@@ -136,7 +136,7 @@ class StatusEntityLexer implements ShouldQueue
 
     public function deliver()
     {
-        if(config('federation.activitypub.enabled') == true) {
+        if (config('federation.activitypub.enabled') == true) {
             StatusActivityPubDeliver::dispatch($this->status);
         }
     }

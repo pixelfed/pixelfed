@@ -39,11 +39,11 @@ class BannedEmailCheck extends Command
      */
     public function handle()
     {
-        $users = User::whereNull('status')->get()->filter(function($u) {
+        $users = User::whereNull('status')->get()->filter(function ($u) {
             return EmailService::isBanned($u->email) == true;
         });
 
-        foreach($users as $user) {
+        foreach ($users as $user) {
             $this->info('Found banned domain: ' . $user->email . PHP_EOL);
         }
     }

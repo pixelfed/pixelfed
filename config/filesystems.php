@@ -77,8 +77,8 @@ return [
             'options' => [
                 'CacheControl' => 'max-age=31536000'
             ],
-            'root' => env('DO_SPACES_ROOT','/'),
-            'url' => str_replace(env('DO_SPACES_REGION'),env('DO_SPACES_BUCKET').'.'.env('DO_SPACES_REGION'),str_replace("digitaloceanspaces","cdn.digitaloceanspaces",env('DO_SPACES_ENDPOINT'))),
+            'root' => env('DO_SPACES_ROOT', '/'),
+            'url' => str_replace(env('DO_SPACES_REGION'), env('DO_SPACES_BUCKET').'.'.env('DO_SPACES_REGION'), str_replace("digitaloceanspaces", "cdn.digitaloceanspaces", env('DO_SPACES_ENDPOINT'))),
         ],
 
     ],

@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Media;
-use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline; 
+use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
 
 class VideoThumbnail extends Command
 {
@@ -45,7 +45,7 @@ class VideoThumbnail extends Command
                         ->whereNull('thumbnail_path')
                         ->take($limit)
                         ->get();
-        foreach($videos as $video) {
+        foreach ($videos as $video) {
             Pipeline::dispatchNow($video);
         }
     }
