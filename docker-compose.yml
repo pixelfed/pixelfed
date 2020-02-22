@@ -12,78 +12,77 @@ version: '3'
 
 services:
 
+## App and Worker
   app:
     # Comment to use dockerhub image
     build:
       context: .
       dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
-    ## If you have a traefik running, uncomment this to expose Pixelfed
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.frontend.rule=Host:your.url
-    #   - traefik.port=80
-    ## If you have a standard reverse proxy, uncommit this to expose Pixelfed
-    # ports:
-    #   - "127.0.0.1:8080:80"
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
-      - "./.env:/var/www/.env"
+      - "./.env.docker:/var/www/.env"
     networks:
       - external
       - internal
+    ports:
+    - "8080:80"
+    depends_on:
+      - postgres
+      - redis
 
-  worker:  # Comment this whole block if HORIZON_EMBED is true.
-    # Comment to use dockerhub image
+  worker:
     build:
       context: .
       dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
     networks:
-      - external  # Required for ActivityPub
+      - external
       - internal
     command: gosu www-data php artisan horizon
-    
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      - MYSQL_DATABASE=pixelfed
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
-    volumes:
-      - "db-data:/var/lib/mysql"
+    depends_on:
+      - postgres
+      - redis
 
+## DB and Cache
   redis:
-    image: redis:5-alpine
+    image: redis:5-buster
     restart: unless-stopped
     volumes:
-      - "redis-data:/data"
+      - "./redis-data:/data"
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
 
-# Adjust your volume data in order to store data where you wish
+  postgres:
+    restart: unless-stopped
+    image: postgres:12
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=pixelfed
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    shm_size: 64M
+
 volumes:
-  redis-data:
-  db-data:
   app-storage:
-  app-bootstrap:  
+  app-bootstrap:
 
 networks:
   internal:
