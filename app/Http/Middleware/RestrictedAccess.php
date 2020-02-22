@@ -18,10 +18,10 @@ class RestrictedAccess
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if(config('instance.restricted.enabled')) {
+        if (config('instance.restricted.enabled')) {
             if (!Auth::guard($guard)->check()) {
                 $p = ['login', 'password*', 'loginAs*'];
-                if(!$request->is($p)) {
+                if (!$request->is($p)) {
                     return redirect('/login');
                 }
             }

@@ -3,7 +3,7 @@
 namespace App\Jobs\RemoteFollowPipeline;
 
 use App\Jobs\AvatarPipeline\CreateAvatar;
-use App\{Profile};
+use App\Profile;
 use GuzzleHttp\Client;
 use HttpSignatures\Context;
 use HttpSignatures\GuzzleHttpSignatures;

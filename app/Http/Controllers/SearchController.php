@@ -10,11 +10,9 @@ use Illuminate\Http\Request;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use App\Transformer\Api\{
-    AccountTransformer,
-    HashtagTransformer,
-    StatusTransformer,
-};
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\HashtagTransformer;
+use App\Transformer\Api\StatusTransformer;
 
 class SearchController extends Controller
 {
@@ -36,12 +34,12 @@ class SearchController extends Controller
         $hash = hash('sha256', $tag);
         $tokens = Cache::remember('api:search:tag:'.$hash, now()->addMinutes(5), function () use ($tag) {
             $tokens = [];
-            if(Helpers::validateUrl($tag) != false && config('federation.activitypub.enabled') == true && config('federation.activitypub.remoteFollow') == true) {
+            if (Helpers::validateUrl($tag) != false && config('federation.activitypub.enabled') == true && config('federation.activitypub.remoteFollow') == true) {
                 abort_if(Helpers::validateLocalUrl($tag), 404);
                 $remote = Helpers::fetchFromUrl($tag);
-                if(isset($remote['type']) && in_array($remote['type'], ['Note', 'Person']) == true) {
+                if (isset($remote['type']) && in_array($remote['type'], ['Note', 'Person']) == true) {
                     $type = $remote['type'];
-                    if($type == 'Person') {
+                    if ($type == 'Person') {
                         $item = Helpers::profileFirstOrNew($tag);
                         $tokens['profiles'] = [[
                             'count'  => 1,
@@ -58,7 +56,7 @@ class SearchController extends Controller
                                 'local' => (bool) !$item->domain
                             ]
                         ]];
-                    } else if ($type == 'Note') {
+                    } elseif ($type == 'Note') {
                         $item = Helpers::statusFetch($tag);
                         $tokens['posts'] = [[
                             'count'  => 0,
@@ -78,7 +76,7 @@ class SearchController extends Controller
                 ->whereHas('posts')
                 ->limit(20)
                 ->get();
-            if($hashtags->count() > 0) {
+            if ($hashtags->count() > 0) {
                 $tags = $hashtags->map(function ($item, $key) {
                     return [
                         'count'  => $item->posts()->count(),
@@ -102,7 +100,7 @@ class SearchController extends Controller
             ->limit(20)
             ->get();
 
-        if($users->count() > 0) {
+        if ($users->count() > 0) {
             $profiles = $users->map(function ($item, $key) {
                 return [
                     'count'  => 0,
@@ -122,7 +120,7 @@ class SearchController extends Controller
                     ]
                 ];
             });
-            if(isset($tokens['profiles'])) {
+            if (isset($tokens['profiles'])) {
                 array_push($tokens['profiles'], $profiles);
             } else {
                 $tokens['profiles'] = $profiles;
@@ -138,8 +136,8 @@ class SearchController extends Controller
                     ->limit(10)
                     ->get();
 
-        if($posts->count() > 0) {
-            $posts = $posts->map(function($item, $key) {
+        if ($posts->count() > 0) {
+            $posts = $posts->map(function ($item, $key) {
                 return [
                     'count'  => 0,
                     'url'    => $item->url(),
@@ -165,5 +163,4 @@ class SearchController extends Controller
         
         return view('search.results');
     }
-
 }

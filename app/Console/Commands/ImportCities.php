@@ -77,7 +77,7 @@ class ImportCities extends Command
     {
         $path = storage_path('app/cities.json');
 
-        if(hash_file('sha512', $path) !== self::CHECKSUM) {
+        if (hash_file('sha512', $path) !== self::CHECKSUM) {
             $this->error('Invalid or corrupt storage/app/cities.json data.');
             $this->line('');
             $this->info('Run the following command to fix:');
@@ -111,10 +111,10 @@ class ImportCities extends Command
         
         foreach ($cities as $city) {
             $buffer[] = [
-                "name" => $city->name, 
-                "slug" => Str::slug($city->name), 
-                "country" => $this->codeToCountry($city->country), 
-                "lat" => $city->lat, 
+                "name" => $city->name,
+                "slug" => Str::slug($city->name),
+                "country" => $this->codeToCountry($city->country),
+                "lat" => $city->lat,
                 "long" => $city->lng
             ];
 
@@ -147,7 +147,7 @@ class ImportCities extends Command
     private function codeToCountry($code)
     {
         $countries = $this->countries;
-        if(isset($countries[$code])) {
+        if (isset($countries[$code])) {
             return $countries[$code];
         }
 

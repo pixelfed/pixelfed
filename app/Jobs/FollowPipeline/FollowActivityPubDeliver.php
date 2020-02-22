@@ -8,7 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-use Cache, Log;
+use Cache;
+use Log;
 use Illuminate\Support\Facades\Redis;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -50,8 +51,8 @@ class FollowActivityPubDeliver implements ShouldQueue
         $actor = $follow->actor;
         $target = $follow->target;
 
-        if($target->domain == null || $target->inbox_url == null || !$actor->private_key) {
-        	return;
+        if ($target->domain == null || $target->inbox_url == null || !$actor->private_key) {
+            return;
         }
 
         $fractal = new Fractal\Manager();

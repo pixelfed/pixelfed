@@ -7,29 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 class StatusHashtag extends Model
 {
     public $fillable = [
-    	'status_id', 
-    	'hashtag_id', 
-    	'profile_id',
-    	'status_visibility'
+        'status_id',
+        'hashtag_id',
+        'profile_id',
+        'status_visibility'
     ];
 
-	public function status()
-	{
-		return $this->belongsTo(Status::class);
-	}
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
 
-	public function hashtag()
-	{
-		return $this->belongsTo(Hashtag::class);
-	}
+    public function hashtag()
+    {
+        return $this->belongsTo(Hashtag::class);
+    }
 
-	public function profile()
-	{
-		return $this->belongsTo(Profile::class);
-	}
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
 
-	public function media()
-	{
+    public function media()
+    {
         return $this->hasManyThrough(
             Media::class,
             Status::class,
@@ -38,5 +38,5 @@ class StatusHashtag extends Model
             'status_id',
             'id'
         );
-	}
+    }
 }

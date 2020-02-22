@@ -16,15 +16,14 @@ class TwoFactorAuth
      */
     public function handle($request, Closure $next)
     {
-        if($request->user()) {
+        if ($request->user()) {
             $user = $request->user();
             $enabled = (bool) $user->{'2fa_enabled'};
-            if($enabled != false) {
+            if ($enabled != false) {
                 $checkpoint = 'i/auth/checkpoint';
-                if($request->session()->has('2fa.session.active') !== true && !$request->is($checkpoint))
-                {
+                if ($request->session()->has('2fa.session.active') !== true && !$request->is($checkpoint)) {
                     return redirect('/i/auth/checkpoint');
-                } elseif($request->session()->has('2fa.attempts') && (int) $request->session()->get('2fa.attempts') > 3) {
+                } elseif ($request->session()->has('2fa.attempts') && (int) $request->session()->get('2fa.attempts') > 3) {
                     $request->session()->pull('2fa.attempts');
                     Auth::logout();
                 }

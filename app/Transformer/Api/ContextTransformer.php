@@ -6,11 +6,11 @@ use League\Fractal;
 
 class ContextTransformer extends Fractal\TransformerAbstract
 {
-	public function transform()
-	{
-		return [
-			'ancestors' => [],
-			'descendants' => []
-		];
-	}
+    public function transform()
+    {
+        return [
+            'ancestors' => [],
+            'descendants' => []
+        ];
+    }
 }

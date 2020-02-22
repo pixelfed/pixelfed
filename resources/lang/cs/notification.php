@@ -7,6 +7,6 @@ return [
   'startedFollowingYou' => 'vás začal/a sledovat.',
   'commented'           => 'okomentoval/a vaši fotku.',
   'mentionedYou'        => 'vás zmínil/a.',
-  'shared'				=> 'sdílel/a váš příspěvek.',
+  'shared'              => 'sdílel/a váš příspěvek.',
 
 ];

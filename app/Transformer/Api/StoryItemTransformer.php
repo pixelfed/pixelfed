@@ -24,5 +24,4 @@ class StoryItemTransformer extends Fractal\TransformerAbstract
             'seen'                      => $item->story->seen(),
         ];
     }
-
 }

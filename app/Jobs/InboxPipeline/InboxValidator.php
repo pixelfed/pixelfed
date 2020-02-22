@@ -3,11 +3,9 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Profile;
-use App\Util\ActivityPub\{
-    Helpers,
-    HttpSignature,
-    Inbox
-};
+use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
+use App\Util\ActivityPub\Inbox;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -48,22 +46,21 @@ class InboxValidator implements ShouldQueue
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
-        if(empty($profile) || empty($headers) || empty($payload)) {
+        if (empty($profile) || empty($headers) || empty($payload)) {
             return true;
         }
 
-        if($profile->status != null) {
+        if ($profile->status != null) {
             return true;
         }
 
-        if($this->verifySignature($headers, $profile, $payload) == true) {
+        if ($this->verifySignature($headers, $profile, $payload) == true) {
             InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
-        } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
+        } elseif ($this->blindKeyRotation($headers, $profile, $payload) == true) {
             InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
         } else {
             return;
         }
-
     }
 
     protected function verifySignature($headers, $profile, $payload)
@@ -72,13 +69,13 @@ class InboxValidator implements ShouldQueue
         $bodyDecoded = $payload;
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
         $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
-        if(!$signature) {
+        if (!$signature) {
             abort(400, 'Missing signature header');
         }
-        if(!$date) {
+        if (!$date) {
             abort(400, 'Missing date header');
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
+        if (!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
             abort(400, 'Invalid date');
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
@@ -86,29 +83,29 @@ class InboxValidator implements ShouldQueue
         $id = Helpers::validateUrl($bodyDecoded['id']);
         $keyDomain = parse_url($keyId, PHP_URL_HOST);
         $idDomain = parse_url($id, PHP_URL_HOST);
-        if(isset($bodyDecoded['object']) 
+        if (isset($bodyDecoded['object'])
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
-            if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
+            if (parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
                 abort(400, 'Invalid request');
             }
         }
-        if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
+        if (!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
             abort(400, 'Invalid request');
         }
         $actor = Profile::whereKeyId($keyId)->first();
-        if(!$actor) {
+        if (!$actor) {
             $actorUrl = is_array($bodyDecoded['actor']) ? $bodyDecoded['actor'][0] : $bodyDecoded['actor'];
             $actor = Helpers::profileFirstOrNew($actorUrl);
         }
-        if(!$actor) {
+        if (!$actor) {
             return false;
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
         list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
-        if($verified == 1) { 
+        if ($verified == 1) {
             return true;
         } else {
             return false;
@@ -119,22 +116,22 @@ class InboxValidator implements ShouldQueue
     {
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
         $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
-        if(!$signature) {
+        if (!$signature) {
             return false;
         }
-        if(!$date) {
+        if (!$date) {
             return false;
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
+        if (!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
             return false;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
         $actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->first();
-        if(!$actor) {
+        if (!$actor) {
             return false;
         }
-        if(Helpers::validateUrl($actor->remote_url) == false) {
+        if (Helpers::validateUrl($actor->remote_url) == false) {
             return false;
         }
         $res = Zttp::timeout(5)->withHeaders([
@@ -142,7 +139,7 @@ class InboxValidator implements ShouldQueue
           'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($actor->remote_url);
         $res = json_decode($res->body(), true, 8);
-        if($res['publicKey']['id'] !== $actor->key_id) {
+        if ($res['publicKey']['id'] !== $actor->key_id) {
             return false;
         }
         $actor->public_key = $res['publicKey']['publicKeyPem'];

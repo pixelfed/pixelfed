@@ -8,7 +8,7 @@ use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 class Collection extends Model
 {
-	use HasSnowflakePrimary;
+    use HasSnowflakePrimary;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -21,10 +21,10 @@ class Collection extends Model
 
     public $dates = ['published_at'];
 
-	public function profile()
-	{
-		return $this->belongsTo(Profile::class);
-	}
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class);
+    }
 
     public function items()
     {

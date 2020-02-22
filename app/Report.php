@@ -24,13 +24,13 @@ class Report extends Model
 
         switch ($class) {
             case 'App\Status':
-             $column = 'id';
-              break;
+                $column = 'id';
+                break;
 
             default:
-             $class = 'App\Status';
-             $column = 'id';
-              break;
+                $class = 'App\Status';
+                $column = 'id';
+                break;
         }
 
         return (new $class())->where($column, $this->object_id)->first();

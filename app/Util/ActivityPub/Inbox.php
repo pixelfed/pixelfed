@@ -2,26 +2,27 @@
 
 namespace App\Util\ActivityPub;
 
-use Cache, DB, Log, Purify, Redis, Validator;
-use App\{
-    Activity,
-    Follower,
-    FollowRequest,
-    Like,
-    Notification,
-    Profile,
-    Status,
-    StatusHashtag,
-};
+use Cache;
+use DB;
+use Log;
+use Purify;
+use Redis;
+use Validator;
+use App\Activity;
+use App\Follower;
+use App\FollowRequest;
+use App\Like;
+use App\Notification;
+use App\Profile;
+use App\Status;
+use App\StatusHashtag;
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
-use App\Util\ActivityPub\Validator\{
-    Accept,
-    Follow
-};
+use App\Util\ActivityPub\Validator\Accept;
+use App\Util\ActivityPub\Validator\Follow;
 
 class Inbox
 {
@@ -59,7 +60,9 @@ class Inbox
                 break;
 
             case 'Accept':
-                if(Accept::validate($this->payload) == false) { return; }
+                if (Accept::validate($this->payload) == false) {
+                    return;
+                }
                 $this->handleAcceptActivity();
                 break;
 
@@ -89,8 +92,8 @@ class Inbox
     {
         $activity = $this->payload['object'];
 
-        if(isset($activity['inReplyTo']) && 
-            !empty($activity['inReplyTo']) && 
+        if (isset($activity['inReplyTo']) &&
+            !empty($activity['inReplyTo']) &&
             Helpers::validateUrl($activity['inReplyTo'])
         ) {
             // reply detected, skip attachment check
@@ -110,13 +113,12 @@ class Inbox
     public function handleCreateActivity()
     {
         $activity = $this->payload['object'];
-        if(!$this->verifyNoteAttachment()) {
+        if (!$this->verifyNoteAttachment()) {
             return;
         }
-        if($activity['type'] == 'Note' && !empty($activity['inReplyTo'])) {
+        if ($activity['type'] == 'Note' && !empty($activity['inReplyTo'])) {
             $this->handleNoteReply();
-
-        } elseif($activity['type'] == 'Note' && !empty($activity['attachment'])) {
+        } elseif ($activity['type'] == 'Note' && !empty($activity['attachment'])) {
             $this->handleNoteCreate();
         }
     }
@@ -125,7 +127,7 @@ class Inbox
     {
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        if(!$actor || $actor->domain == null) {
+        if (!$actor || $actor->domain == null) {
             return;
         }
 
@@ -140,16 +142,16 @@ class Inbox
     {
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        if(!$actor || $actor->domain == null) {
+        if (!$actor || $actor->domain == null) {
             return;
         }
 
-        if($actor->followers()->count() == 0) {
+        if ($actor->followers()->count() == 0) {
             return;
         }
 
         $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
-        if(Status::whereUrl($url)->exists()) {
+        if (Status::whereUrl($url)->exists()) {
             return;
         }
         Helpers::statusFetch($url);
@@ -159,11 +161,11 @@ class Inbox
     public function handleFollowActivity()
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        if(!$actor || $actor->domain == null) {
+        if (!$actor || $actor->domain == null) {
             return;
         }
         $target = $this->profile;
-        if($target->is_private == true) {
+        if ($target->is_private == true) {
             // make follow request
             FollowRequest::firstOrCreate([
                 'follower_id' => $actor->id,
@@ -177,7 +179,7 @@ class Inbox
                 'following_id' => $target->id,
                 'local_profile' => empty($actor->domain)
             ]);
-            if($follower->wasRecentlyCreated == true && $target->domain == null) {
+            if ($follower->wasRecentlyCreated == true && $target->domain == null) {
                 // send notification
                 Notification::firstOrCreate([
                     'profile_id' => $target->id,
@@ -212,17 +214,17 @@ class Inbox
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         $activity = $this->payload['object'];
 
-        if(!$actor || $actor->domain == null) {
+        if (!$actor || $actor->domain == null) {
             return;
         }
 
-        if(Helpers::validateLocalUrl($activity) == false) {
+        if (Helpers::validateLocalUrl($activity) == false) {
             return;
         }
 
         $parent = Helpers::statusFetch($activity);
 
-        if(empty($parent)) {
+        if (empty($parent)) {
             return;
         }
 
@@ -253,14 +255,14 @@ class Inbox
         $obj = $this->payload['object']['object'];
         $type = $this->payload['object']['type'];
 
-        if($type !== 'Follow') {
+        if ($type !== 'Follow') {
             return;
         }
 
         $actor = Helpers::validateLocalUrl($actor);
         $target = Helpers::validateUrl($obj);
 
-        if(!$actor || !$target) {
+        if (!$actor || !$target) {
             return;
         }
         $actor = Helpers::profileFetch($actor);
@@ -271,7 +273,7 @@ class Inbox
             ->whereIsRejected(false)
             ->first();
 
-        if(!$request) {
+        if (!$request) {
             return;
         }
 
@@ -286,9 +288,9 @@ class Inbox
 
     public function handleDeleteActivity()
     {
-        if(!isset(
-            $this->payload['actor'], 
-            $this->payload['object'], 
+        if (!isset(
+            $this->payload['actor'],
+            $this->payload['object'],
             $this->payload['object']['id'],
             $this->payload['object']['type']
         )) {
@@ -298,19 +300,19 @@ class Inbox
         $obj = $this->payload['object'];
         $type = $this->payload['object']['type'];
         $typeCheck = in_array($type, ['Person', 'Tombstone']);
-        if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
+        if (!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
             return;
         }
-        if(parse_url($obj['id'], PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
+        if (parse_url($obj['id'], PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
             return;
         }
         $id = $this->payload['object']['id'];
         switch ($type) {
             case 'Person':
                     $profile = Helpers::profileFetch($actor);
-                    if(!$profile || $profile->private_key != null) {
-                        return;
-                    }
+                if (!$profile || $profile->private_key != null) {
+                    return;
+                }
                     Notification::whereActorId($profile->id)->delete();
                     $profile->avatar()->delete();
                     $profile->followers()->delete();
@@ -329,14 +331,14 @@ class Inbox
                         ->orWhere('url', $id)
                         ->orWhere('object_url', $id)
                         ->first();
-                    if(!$status) {
-                        return;
-                    }
+                if (!$status) {
+                    return;
+                }
                     $status->media()->delete();
                     $status->likes()->delete();
                     $status->shares()->delete();
                     $status->delete();
-                    return;
+                return;
                 break;
             
             default:
@@ -349,17 +351,17 @@ class Inbox
     {
         $actor = $this->payload['actor'];
 
-        if(!Helpers::validateUrl($actor)) {
+        if (!Helpers::validateUrl($actor)) {
             return;
         }
 
         $profile = self::actorFirstOrCreate($actor);
         $obj = $this->payload['object'];
-        if(!Helpers::validateUrl($obj)) {
+        if (!Helpers::validateUrl($obj)) {
             return;
         }
         $status = Helpers::statusFirstOrFetch($obj);
-        if(!$status || !$profile) {
+        if (!$status || !$profile) {
             return;
         }
         $like = Like::firstOrCreate([
@@ -367,7 +369,7 @@ class Inbox
             'status_id' => $status->id
         ]);
 
-        if($like->wasRecentlyCreated == true) {
+        if ($like->wasRecentlyCreated == true) {
             $status->likes_count = $status->likes()->count();
             $status->save();
             LikePipeline::dispatch($like);
@@ -379,7 +381,6 @@ class Inbox
 
     public function handleRejectActivity()
     {
-
     }
 
     public function handleUndoActivity()
@@ -394,11 +395,11 @@ class Inbox
                 
             case 'Announce':
                 $obj = $obj['object'];
-                if(!Helpers::validateLocalUrl($obj)) {
+                if (!Helpers::validateLocalUrl($obj)) {
                     return;
                 }
                 $status = Helpers::statusFetch($obj);
-                if(!$status) {
+                if (!$status) {
                     return;
                 }
                 Status::whereProfileId($profile->id)
@@ -417,7 +418,7 @@ class Inbox
 
             case 'Follow':
                 $following = self::actorFirstOrCreate($obj['object']);
-                if(!$following) {
+                if (!$following) {
                     return;
                 }
                 Follower::whereProfileId($profile->id)
@@ -427,7 +428,7 @@ class Inbox
                 
             case 'Like':
                 $status = Helpers::statusFirstOrFetch($obj['object']);
-                if(!$status) {
+                if (!$status) {
                     return;
                 }
                 Like::whereProfileId($profile->id)

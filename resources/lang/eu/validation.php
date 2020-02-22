@@ -74,7 +74,7 @@ return [
     'required_unless'      => ':attribute eremua derrigorrezkoa da :other :values izan ezean.',
     'required_with'        => ':values dagoenean, :attribute eremua derrigorrezkoa da.',
     'required_with_all'    => ':values dagoenean, :attribute eremua derrigorrezkoa da.',
-    'required_without'     => ':attribute eremua derrigorrezkoa da :values eremua ez dagoenean.',    
+    'required_without'     => ':attribute eremua derrigorrezkoa da :values eremua ez dagoenean.',
     'required_without_all' => ':attribute eremua beharrezkoa da :values bat bera ere ez dagoenean.',
     'same'                 => ':attribute eta :other bat etorri behar dira.',
     'size'                 => [

@@ -8,6 +8,6 @@ return [
   'privateProfileWarning' => 'Akun ini Privat',
   'alreadyFollow'         => 'Sudah mengikuti :username?',
   'loginToSeeProfile'     => 'untuk melihat foro dan videonya.',
-  'status.disabled.header' 	  => 'Profil Tidak Tersedia',
-  'status.disabled.body'	  => 'Maaf, profil ini sedang tidak tersedia. Silakan coba lagi kemudian.',
+  'status.disabled.header'    => 'Profil Tidak Tersedia',
+  'status.disabled.body'      => 'Maaf, profil ini sedang tidak tersedia. Silakan coba lagi kemudian.',
 ];

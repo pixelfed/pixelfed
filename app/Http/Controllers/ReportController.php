@@ -23,7 +23,7 @@ class ReportController extends Controller
         $this->validate($request, [
           'type'    => 'required|alpha_dash',
           'id'      => 'required|integer|min:1',
-      ]);
+        ]);
 
         return view('report.form');
     }
@@ -90,7 +90,7 @@ class ReportController extends Controller
           'type'    => 'required|alpha_dash',
           'id'      => 'required|integer|min:1',
           'msg'     => 'nullable|string|max:150',
-      ]);
+        ]);
 
         $profile = Auth::user()->profile;
         $reportType = $request->input('report');
@@ -105,19 +105,19 @@ class ReportController extends Controller
         }
 
         switch ($object_type) {
-        case 'post':
-          $object = Status::findOrFail($object_id);
-          $object_type = 'App\Status';
-          $exists = Report::whereUserId(Auth::id())
+            case 'post':
+                $object = Status::findOrFail($object_id);
+                $object_type = 'App\Status';
+                $exists = Report::whereUserId(Auth::id())
                     ->whereObjectId($object->id)
                     ->whereObjectType('App\Status')
                     ->count();
-          break;
+                break;
 
-        default:
-          return redirect('/timeline')->with('error', 'Invalid report type');
-          break;
-      }
+            default:
+                return redirect('/timeline')->with('error', 'Invalid report type');
+            break;
+        }
 
         if ($exists !== 0) {
             return redirect('/timeline')->with('error', 'You have already reported this!');

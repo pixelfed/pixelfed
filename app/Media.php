@@ -29,7 +29,7 @@ class Media extends Model
 
     public function url()
     {
-        if(!empty($this->remote_media) && $this->remote_url) {
+        if (!empty($this->remote_media) && $this->remote_url) {
             //$url = \App\Services\MediaProxyService::get($this->remote_url, $this->mime);
             $url = $this->remote_url;
         } else {
@@ -86,11 +86,11 @@ class Media extends Model
 
     public function getModel()
     {
-        if(empty($this->metadata)) {
+        if (empty($this->metadata)) {
             return false;
         }
         $meta = $this->getMetadata();
-        if($meta && isset($meta['Model'])) {
+        if ($meta && isset($meta['Model'])) {
             return $meta['Model'];
         }
     }

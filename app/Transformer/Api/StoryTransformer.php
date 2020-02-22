@@ -27,5 +27,4 @@ class StoryTransformer extends Fractal\TransformerAbstract
     {
         return $this->item($story, new StoryItemTransformer());
     }
-
 }

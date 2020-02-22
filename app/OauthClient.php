@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class OauthClient extends Model
 {
 
-	protected $table = 'oauth_clients';
+    protected $table = 'oauth_clients';
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
-
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

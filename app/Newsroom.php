@@ -13,11 +13,11 @@ class Newsroom extends Model
 
     public function permalink()
     {
-    	$year = $this->published_at->year;
-    	$month = $this->published_at->format('m');
-    	$slug = $this->slug;
+        $year = $this->published_at->year;
+        $month = $this->published_at->format('m');
+        $slug = $this->slug;
 
-    	return url("/site/newsroom/{$year}/{$month}/{$slug}");
+        return url("/site/newsroom/{$year}/{$month}/{$slug}");
     }
 
     public function editUrl()

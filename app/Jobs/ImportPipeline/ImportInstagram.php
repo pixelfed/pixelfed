@@ -12,13 +12,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\{
-    ImportJob,
-    ImportData,
-    Media,
-    Profile,
-    Status,
-};
+use App\ImportJob;
+use App\ImportData;
+use App\Media;
+use App\Profile;
+use App\Status;
 
 class ImportInstagram implements ShouldQueue
 {
@@ -50,7 +48,7 @@ class ImportInstagram implements ShouldQueue
      */
     public function handle()
     {
-        if(config('pixelfed.import.instagram.enabled') != true) {
+        if (config('pixelfed.import.instagram.enabled') != true) {
             return;
         }
 
@@ -63,30 +61,35 @@ class ImportInstagram implements ShouldQueue
         $userHash = hash('sha1', $profile->id . (string) $profile->created_at);
         $fs = new Filesystem;
 
-        foreach($collection as $import)
-        {
+        foreach ($collection as $import) {
             $caption = $import['caption'];
             try {
                 $min = Carbon::create(2010, 10, 6, 0, 0, 0);
                 $taken_at = Carbon::parse($import['taken_at']);
-                if(!$min->lt($taken_at)) {
+                if (!$min->lt($taken_at)) {
                     $taken_at = Carbon::now();
                 }
             } catch (Exception $e) {
-                
             }
-            $filename = last( explode('/', $import['path']) );
+            $filename = last(explode('/', $import['path']));
             $importData = ImportData::whereJobId($job->id)
                 ->whereOriginalName($filename)
                 ->first();
 
-            if(empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
+            if (empty($importData) || is_file(storage_path("app/$importData->path")) == false) {
                 continue;
             }
 
-            DB::transaction(function() use(
-                $fs, $job, $profile, $caption, $taken_at, $filename,
-                $monthHash, $userHash, $importData
+            DB::transaction(function () use (
+                $fs,
+                $job,
+                $profile,
+                $caption,
+                $taken_at,
+                $filename,
+                $monthHash,
+                $userHash,
+                $importData
             ) {
                 $status = new Status();
                 $status->profile_id = $profile->id;
@@ -102,7 +105,7 @@ class ImportInstagram implements ShouldQueue
                 $path = storage_path("app/$importData->path");
                 $storagePath = "public/m/{$monthHash}/{$userHash}";
                 $newPath = "app/$storagePath/$filename";
-                $fs->move($path,storage_path($newPath));
+                $fs->move($path, storage_path($newPath));
                 $path = $newPath;
                 $hash = \hash_file('sha256', storage_path($path));
                 $media = new Media();

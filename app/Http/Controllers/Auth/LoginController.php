@@ -66,7 +66,7 @@ class LoginController extends Controller
      */
     protected function authenticated($request, $user)
     {
-        if($user->status == 'deleted') {
+        if ($user->status == 'deleted') {
             return;
         }
 

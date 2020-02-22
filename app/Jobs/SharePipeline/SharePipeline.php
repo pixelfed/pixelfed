@@ -2,9 +2,11 @@
 
 namespace App\Jobs\SharePipeline;
 
-use Cache, Log;
+use Cache;
+use Log;
 use Illuminate\Support\Facades\Redis;
-use App\{Status, Notification};
+use App\Status;
+use App\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +15,9 @@ use Illuminate\Queue\SerializesModels;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\Announce;
-use GuzzleHttp\{Pool, Client, Promise};
+use GuzzleHttp\Pool;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
 
 class SharePipeline implements ShouldQueue
@@ -67,7 +71,7 @@ class SharePipeline implements ShouldQueue
             return true;
         }
 
-        if( $exists !== 0) {
+        if ($exists !== 0) {
             return true;
         }
 
@@ -94,7 +98,7 @@ class SharePipeline implements ShouldQueue
 
     public function remoteAnnounceDeliver()
     {
-        if(config('federation.activitypub.enabled') == false) {
+        if (config('federation.activitypub.enabled') == false) {
             return true;
         }
         $status = $this->status;
@@ -107,7 +111,7 @@ class SharePipeline implements ShouldQueue
 
         $audience = $status->profile->getAudienceInbox();
 
-        if(empty($audience) || $status->scope != 'public') {
+        if (empty($audience) || $status->scope != 'public') {
             // Return on profiles with no remote followers
             return;
         }
@@ -118,13 +122,13 @@ class SharePipeline implements ShouldQueue
             'timeout'  => config('federation.activitypub.delivery.timeout')
         ]);
 
-        $requests = function($audience) use ($client, $activity, $profile, $payload) {
-            foreach($audience as $url) {
+        $requests = function ($audience) use ($client, $activity, $profile, $payload) {
+            foreach ($audience as $url) {
                 $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function() use ($client, $url, $headers, $payload) {
+                yield function () use ($client, $url, $headers, $payload) {
                     return $client->postAsync($url, [
                         'curl' => [
-                            CURLOPT_HTTPHEADER => $headers, 
+                            CURLOPT_HTTPHEADER => $headers,
                             CURLOPT_POSTFIELDS => $payload,
                             CURLOPT_HEADER => true
                         ]
@@ -144,6 +148,5 @@ class SharePipeline implements ShouldQueue
         $promise = $pool->promise();
 
         $promise->wait();
-
     }
 }

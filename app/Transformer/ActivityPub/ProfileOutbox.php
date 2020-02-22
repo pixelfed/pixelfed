@@ -19,7 +19,7 @@ class ProfileOutbox extends Fractal\TransformerAbstract
           'id'           => $profile->permalink('/outbox'),
           'type'         => 'OrderedCollection',
           'totalItems'   => $count,
-      ];
+        ];
     }
 
     public function includeOrderedItems(Profile $profile)

@@ -53,7 +53,7 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        if(config('database.default') == 'pgsql') {
+        if (config('database.default') == 'pgsql') {
             $data['username'] = strtolower($data['username']);
             $data['email'] = strtolower($data['email']);
         }
@@ -71,7 +71,7 @@ class RegisterController extends Controller
                 $underscore = substr_count($value, '_');
                 $period = substr_count($value, '.');
 
-                if(($dash + $underscore + $period) > 1) {
+                if (($dash + $underscore + $period) > 1) {
                     return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
                 }
 
@@ -84,7 +84,7 @@ class RegisterController extends Controller
                 }
 
                 $val = str_replace(['_', '.', '-'], '', $value);
-                if(!ctype_alnum($val)) {
+                if (!ctype_alnum($val)) {
                     return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
                 }
             },
@@ -110,7 +110,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        if(config('database.default') == 'pgsql') {
+        if (config('database.default') == 'pgsql') {
             $data['username'] = strtolower($data['username']);
             $data['email'] = strtolower($data['email']);
         }
@@ -135,7 +135,7 @@ class RegisterController extends Controller
     public function validateEmail($email)
     {
         $banned = EmailService::isBanned($email);
-        if($banned) {
+        if ($banned) {
             return abort(403, 'Invalid email.');
         }
     }
@@ -147,9 +147,9 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        if(config('pixelfed.open_registration')) {
+        if (config('pixelfed.open_registration')) {
             $limit = config('pixelfed.max_users');
-            if($limit) {
+            if ($limit) {
                 abort_if($limit <= User::count(), 404);
                 return view('auth.register');
             } else {
@@ -173,7 +173,7 @@ class RegisterController extends Controller
         $count = User::count();
         $limit = config('pixelfed.max_users');
 
-        if(false == config('pixelfed.open_registration') || $limit && $limit <= $count) {
+        if (false == config('pixelfed.open_registration') || $limit && $limit <= $count) {
             return abort(403);
         }
 

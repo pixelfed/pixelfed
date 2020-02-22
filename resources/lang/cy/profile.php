@@ -11,7 +11,7 @@ return [
   'alreadyFollow'         => 'Eisoes yn dilyn :username?',
   'loginToSeeProfile'     => 'i weld eu lluniau a\'u fideos.',
   
-  'status.disabled.header' 	  => 'Proffil Ddim ar Gael',
-  'status.disabled.body'	  => 'Mae\'n ddrwg gennym, nid yw\'r proffil hwn ar gael ar hyn o bryd. Rhowch gynnig arall arni cyn bo hir.',
+  'status.disabled.header'    => 'Proffil Ddim ar Gael',
+  'status.disabled.body'      => 'Mae\'n ddrwg gennym, nid yw\'r proffil hwn ar gael ar hyn o bryd. Rhowch gynnig arall arni cyn bo hir.',
   
 ];

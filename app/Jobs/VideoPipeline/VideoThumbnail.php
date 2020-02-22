@@ -37,7 +37,7 @@ class VideoThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if($media->mime != 'video/mp4') {
+        if ($media->mime != 'video/mp4') {
             return;
         }
         $base = $media->media_path;
@@ -57,12 +57,10 @@ class VideoThumbnail implements ShouldQueue
 
             $media->thumbnail_path = $save;
             $media->save();
-
         } catch (Exception $e) {
-            
         }
 
-        if(config('pixelfed.cloud_storage') == true) {
+        if (config('pixelfed.cloud_storage') == true) {
             $path = storage_path('app/'.$media->media_path);
             $thumb = storage_path('app/'.$media->thumbnail_path);
             $p = explode('/', $media->media_path);
@@ -77,10 +75,9 @@ class VideoThumbnail implements ShouldQueue
             $media->cdn_url = $url;
             $media->optimized_url = $url;
             $media->save();
-
         }
         
-        if($media->status_id) {
+        if ($media->status_id) {
             Cache::forget('status:transformer:media:attachments:' . $media->status_id);
         }
     }

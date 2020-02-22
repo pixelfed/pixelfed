@@ -2,13 +2,13 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use App\{
-    Notification,
-    Status,
-    UserFilter
-};
+use App\Notification;
+use App\Status;
+use App\UserFilter;
 use App\Services\NotificationService;
-use DB, Cache, Log;
+use DB;
+use Cache;
+use Log;
 use Illuminate\Support\Facades\Redis;
 
 use Illuminate\Bus\Queueable;
@@ -65,11 +65,11 @@ class CommentPipeline implements ShouldQueue
             ->whereFilterableId($actor->id)
             ->exists();
 
-        if($filtered == true) {
+        if ($filtered == true) {
             return;
         }
 
-        DB::transaction(function() use($target, $actor, $comment) {
+        DB::transaction(function () use ($target, $actor, $comment) {
             $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
