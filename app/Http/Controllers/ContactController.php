@@ -42,6 +42,7 @@ class ContactController extends Controller
 		$contact->user_id = $user->id;
 		$contact->response_requested = $request_response;
 		$contact->message = $message;
+		$contact->response = '';
 		$contact->save();
 
 		ContactPipeline::dispatchNow($contact);

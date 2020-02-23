@@ -19,7 +19,6 @@ class InstanceApiController extends Controller {
 				'acct'			  => $admin->username,
 				'display_name' 	  => e($admin->name),
 				'locked' 		  => (bool) $admin->is_private,
-				'bot'			  => false,
 				'created_at' 	  => $admin->created_at->format('c'),
 				'note' 			  => e($admin->bio),
 				'url' 			  => $admin->url(),
