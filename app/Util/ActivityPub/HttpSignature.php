@@ -14,6 +14,7 @@ class HttpSignature {
    */
 
   public static function sign(Profile $profile, $url, $body = false, $addlHeaders = []) {
+    $digest = null;
     if($body) {
       $digest = self::_digest($body);
     }

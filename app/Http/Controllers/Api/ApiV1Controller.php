@@ -1556,6 +1556,7 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
         $user = $request->user();
 
+        $status = null;
         if($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
 

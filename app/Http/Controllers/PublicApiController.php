@@ -126,6 +126,7 @@ class PublicApiController extends Controller
             $scope = ['public'];
         }
 
+        $replies = null;
         if($request->filled('min_id') || $request->filled('max_id')) {
             if($request->filled('min_id')) {
                 $replies = $status->comments()
