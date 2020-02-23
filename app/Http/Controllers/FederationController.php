@@ -101,7 +101,7 @@ class FederationController extends Controller
         $bodyDecoded = json_decode($body, true, 8);
         if($this->verifySignature($request, $profile) == true) {
             InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else if($this->blindKeyRotation($request, $profile) == true) {
+        } elseif($this->blindKeyRotation($request, $profile) == true) {
             InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
         } else {
             abort(400, 'Bad Signature');

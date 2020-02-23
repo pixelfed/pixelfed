@@ -79,7 +79,7 @@ class SearchApiV2Service
 		$query = urldecode($this->query->input('q'));
 		if(Str::startsWith($query, '@') == true) {
 			return WebfingerService::lookup($this->query->input('q'));
-		} else if (Str::startsWith($query, 'https://') == true) {
+		} elseif (Str::startsWith($query, 'https://') == true) {
 			return $this->resolveQuery();
 		}
 	}

@@ -58,7 +58,7 @@ class SearchController extends Controller
                                 'local' => (bool) !$item->domain
                             ]
                         ]];
-                    } else if ($type == 'Note') {
+                    } elseif ($type == 'Note') {
                         $item = Helpers::statusFetch($tag);
                         $tokens['posts'] = [[
                             'count'  => 0,

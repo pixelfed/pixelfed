@@ -285,7 +285,7 @@ class ApiV1Controller extends Controller
        
         if($pid == $profile->id) {
             $visibility = ['public', 'unlisted', 'private'];
-        } else if($profile->is_private) {
+        } elseif($profile->is_private) {
             $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
                 return $following->push($pid)->toArray();
@@ -1568,7 +1568,7 @@ class ApiV1Controller extends Controller
             $status->in_reply_to_id = $parent->id;
             $status->in_reply_to_profile_id = $parent->profile_id;
             $status->save();
-        } else if($ids) {
+        } elseif($ids) {
             $status = new Status;
             $status->caption = strip_tags($request->input('status'));
             $status->profile_id = $user->profile_id;

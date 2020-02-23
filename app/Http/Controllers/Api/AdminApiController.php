@@ -100,7 +100,7 @@ class AdminApiController extends Controller
                 default:
                     break;
             }
-        } else if ($type == 'profile') {
+        } elseif ($type == 'profile') {
             $profile = Profile::findOrFail($id);
             switch ($action) {
 

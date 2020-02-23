@@ -136,15 +136,15 @@ class BaseApiController extends Controller
         if($id == $account->id && !$max_id && !$min_id && !$since_id) {
             $statuses = $statuses->orderBy('id', 'desc')
                 ->paginate($limit);
-        } else if($since_id) {
+        } elseif($since_id) {
             $statuses = $statuses->where('id', '>', $since_id)
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
-        } else if($min_id) {
+        } elseif($min_id) {
             $statuses = $statuses->where('id', '>', $min_id)
                 ->orderBy('id', 'ASC')
                 ->paginate($limit);
-        } else if($max_id) {
+        } elseif($max_id) {
             $statuses = $statuses->where('id', '<', $max_id)
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
