@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App, Auth, Closure;
+use App;
+use Auth;
+use Closure;
 use Carbon\Carbon;
 
 class DangerZone

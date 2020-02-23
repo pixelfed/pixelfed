@@ -3,7 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\{Like, Status};
+use App\Like;
+use App\Status;
 use DB;
 
 class FixLikes extends Command

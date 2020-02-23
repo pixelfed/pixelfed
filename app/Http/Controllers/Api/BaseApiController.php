@@ -3,37 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\{
-    Controller,
-    AvatarController
-};
-use Auth, Cache, Storage, URL;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\AvatarController;
+use Auth;
+use Cache;
+use Storage;
+use URL;
 use Carbon\Carbon;
-use App\{
-    Avatar,
-    Notification,
-    Media,
-    Profile,
-    Status
-};
-use App\Transformer\Api\{
-    AccountTransformer,
-    NotificationTransformer,
-    MediaTransformer,
-    MediaDraftTransformer,
-    StatusTransformer
-};
+use App\Avatar;
+use App\Notification;
+use App\Media;
+use App\Profile;
+use App\Status;
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\NotificationTransformer;
+use App\Transformer\Api\MediaTransformer;
+use App\Transformer\Api\MediaDraftTransformer;
+use App\Transformer\Api\StatusTransformer;
 use League\Fractal;
 use App\Util\Media\Filter;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\VideoPipeline\{
-    VideoOptimize,
-    VideoPostProcess,
-    VideoThumbnail
-};
+use App\Jobs\VideoPipeline\VideoOptimize;
+use App\Jobs\VideoPipeline\VideoPostProcess;
+use App\Jobs\VideoPipeline\VideoThumbnail;
 use App\Services\NotificationService;
 
 class BaseApiController extends Controller

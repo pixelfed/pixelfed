@@ -4,10 +4,8 @@ namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\Redis;
-use App\{
-	Notification,
-	Profile
-};
+use App\Notification;
+use App\Profile;
 use App\Transformer\Api\NotificationTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

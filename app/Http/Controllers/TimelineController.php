@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Auth, Cache;
+use Auth;
+use Cache;
 use App\Follower;
 use App\Profile;
 use App\Status;

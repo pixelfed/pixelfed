@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\{
-    Follower,
-    Like,
-    Place,
-    Profile,
-    UserFilter
-};
-use Auth, Cache;
+use App\Follower;
+use App\Like;
+use App\Place;
+use App\Profile;
+use App\UserFilter;
+use Auth;
+use Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Util\Site\Config;
 use Illuminate\Http\Request;

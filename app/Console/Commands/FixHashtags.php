@@ -4,11 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use DB;
-use App\{
-    Hashtag,
-    Status,
-    StatusHashtag
-};
+use App\Hashtag;
+use App\Status;
+use App\StatusHashtag;
 
 class FixHashtags extends Command
 {

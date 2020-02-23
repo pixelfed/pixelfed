@@ -3,11 +3,9 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Redis;
-use App\{
-	Profile,
-	Status,
-	UserFilter
-};
+use App\Profile;
+use App\Status;
+use App\UserFilter;
 
 class PublicTimelineService {
 

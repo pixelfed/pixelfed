@@ -2,10 +2,8 @@
 
 namespace App\Transformer\Api;
 
-use App\{
-	Notification,
-	Status
-};
+use App\Notification;
+use App\Status;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract

@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Auth;
-use App\{
-	Circle,
-	CircleProfile,
-	Profile,
-	Status,
-};
+use App\Circle;
+use App\CircleProfile;
+use App\Profile;
+use App\Status;
 
 class CircleController extends Controller
 {

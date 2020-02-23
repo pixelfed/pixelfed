@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Import;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Auth, DB;
-use App\{
-	ImportData,
-	ImportJob,
-	Profile, 
-	User
-};
+use Auth;
+use DB;
+use App\ImportData;
+use App\ImportJob;
+use App\Profile;
+use App\User;
 use App\Jobs\ImportPipeline\ImportInstagram;
 
 trait Instagram

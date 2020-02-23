@@ -3,27 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-    DirectMessage,
-    DiscoverCategory,
-    Hashtag,
-    Follower,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    StatusHashtag,
-    Status,
-    UserFilter,
-};
-use Auth,Cache;
+use App\DirectMessage;
+use App\DiscoverCategory;
+use App\Hashtag;
+use App\Follower;
+use App\Like;
+use App\Media;
+use App\Notification;
+use App\Profile;
+use App\StatusHashtag;
+use App\Status;
+use App\UserFilter;
+use Auth;
+use Cache;
 use Carbon\Carbon;
 use League\Fractal;
-use App\Transformer\Api\{
-    AccountTransformer,
-    StatusTransformer,
-    // StatusMediaContainerTransformer,
-};
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\StatusTransformer// StatusMediaContainerTransformer,
+;
 use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;

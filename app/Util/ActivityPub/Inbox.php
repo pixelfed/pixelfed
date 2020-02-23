@@ -2,26 +2,27 @@
 
 namespace App\Util\ActivityPub;
 
-use Cache, DB, Log, Purify, Redis, Validator;
-use App\{
-    Activity,
-    Follower,
-    FollowRequest,
-    Like,
-    Notification,
-    Profile,
-    Status,
-    StatusHashtag,
-};
+use Cache;
+use DB;
+use Log;
+use Purify;
+use Redis;
+use Validator;
+use App\Activity;
+use App\Follower;
+use App\FollowRequest;
+use App\Like;
+use App\Notification;
+use App\Profile;
+use App\Status;
+use App\StatusHashtag;
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
-use App\Util\ActivityPub\Validator\{
-    Accept,
-    Follow
-};
+use App\Util\ActivityPub\Validator\Accept;
+use App\Util\ActivityPub\Validator\Follow;
 
 class Inbox
 {

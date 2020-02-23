@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\{
-	Contact,
-	Hashtag,
-	Newsroom,
-	OauthClient,
-	Profile,
-	Report,
-	Status,
-	User
-};
-use DB, Cache;
+use App\Contact;
+use App\Hashtag;
+use App\Newsroom;
+use App\OauthClient;
+use App\Profile;
+use App\Report;
+use App\Status;
+use App\User;
+use DB;
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Admin\{
-	AdminDiscoverController,
-	AdminInstanceController,
-	AdminReportController,
-	AdminMediaController,
-	AdminSettingsController,
-	AdminSupportController,
-	AdminUserController
-};
+use App\Http\Controllers\Admin\AdminDiscoverController;
+use App\Http\Controllers\Admin\AdminInstanceController;
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminMediaController;
+use App\Http\Controllers\Admin\AdminSettingsController;
+use App\Http\Controllers\Admin\AdminSupportController;
+use App\Http\Controllers\Admin\AdminUserController;
 use Illuminate\Validation\Rule;
 use App\Services\AdminStatsService;
 

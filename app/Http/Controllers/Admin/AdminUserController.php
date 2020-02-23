@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Cache, DB;
+use Cache;
+use DB;
 use Illuminate\Http\Request;
 use App\ModLog;
 use App\Profile;

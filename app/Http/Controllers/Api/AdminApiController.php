@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Jobs\StatusPipeline\StatusDelete;
-use Auth, Cache;
+use Auth;
+use Cache;
 use Carbon\Carbon;
-use App\{
-    Like,
-    Media,
-    Profile,
-    Status
-};
+use App\Like;
+use App\Media;
+use App\Profile;
+use App\Status;
 
 use App\Services\NotificationService;
 

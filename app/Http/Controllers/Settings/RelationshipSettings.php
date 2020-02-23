@@ -10,7 +10,9 @@ use App\Profile;
 use App\User;
 use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
-use Auth, Cache, DB;
+use Auth;
+use Cache;
+use DB;
 use Illuminate\Http\Request;
 
 trait RelationshipSettings

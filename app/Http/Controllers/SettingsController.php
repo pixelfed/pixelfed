@@ -7,18 +7,20 @@ use App\Following;
 use App\ProfileSponsor;
 use App\Report;
 use App\UserFilter;
-use Auth, Cookie, DB, Cache, Purify;
+use Auth;
+use Cookie;
+use DB;
+use Cache;
+use Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Http\Controllers\Settings\{
-    ExportSettings,
-    LabsSettings,
-    HomeSettings,
-    PrivacySettings,
-    RelationshipSettings,
-    SecuritySettings
-};
+use App\Http\Controllers\Settings\ExportSettings;
+use App\Http\Controllers\Settings\LabsSettings;
+use App\Http\Controllers\Settings\HomeSettings;
+use App\Http\Controllers\Settings\PrivacySettings;
+use App\Http\Controllers\Settings\RelationshipSettings;
+use App\Http\Controllers\Settings\SecuritySettings;
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 
 class SettingsController extends Controller
