@@ -18,6 +18,8 @@ class InboxWorker implements ShouldQueue
     protected $profile;
     protected $payload;
 
+    public $timeout = 5;
+    public $tries = 1;
 
     /**
      * Create a new job instance.
