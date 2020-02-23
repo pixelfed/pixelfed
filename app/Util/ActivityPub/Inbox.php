@@ -28,7 +28,7 @@ class Inbox
     protected $headers;
     protected $profile;
     protected $payload;
-    protected $logger;
+
 
     public function __construct($headers, $profile, $payload)
     {
