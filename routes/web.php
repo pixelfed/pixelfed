@@ -274,8 +274,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::group(['prefix' => 'settings'], function () {
         Route::redirect('/', '/settings/home');
-        Route::get('home', 'SettingsController@home')
-        ->name('settings');
+        Route::get('home', 'SettingsController@home')->name('settings');
         Route::post('home', 'SettingsController@homeUpdate');
         Route::get('avatar', 'SettingsController@avatar')->name('settings.avatar');
         Route::post('avatar', 'AvatarController@store');
@@ -305,35 +304,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
 
         Route::group(['prefix' => 'security', 'middleware' => 'dangerzone'], function() {
-            Route::get(
-                '/',
-                'SettingsController@security'
-            )->name('settings.security');
-            Route::get(
-                '2fa/setup',
-                'SettingsController@securityTwoFactorSetup'
-            )->name('settings.security.2fa.setup');
-            Route::post(
-                '2fa/setup',
-                'SettingsController@securityTwoFactorSetupStore'
-            );
-            Route::get(
-                '2fa/edit',
-                'SettingsController@securityTwoFactorEdit'
-            )->name('settings.security.2fa.edit');
-            Route::post(
-                '2fa/edit',
-                'SettingsController@securityTwoFactorUpdate'
-            );
-            Route::get(
-                '2fa/recovery-codes',
-                'SettingsController@securityTwoFactorRecoveryCodes'
-            )->name('settings.security.2fa.recovery');
-            Route::post(
-                '2fa/recovery-codes',
-                'SettingsController@securityTwoFactorRecoveryCodesRegenerate'
-            );
-
+            Route::get('/', 'SettingsController@security')->name('settings.security');
+            Route::get('2fa/setup', 'SettingsController@securityTwoFactorSetup')->name('settings.security.2fa.setup');
+            Route::post('2fa/setup', 'SettingsController@securityTwoFactorSetupStore');
+            Route::get('2fa/edit', 'SettingsController@securityTwoFactorEdit')->name('settings.security.2fa.edit');
+            Route::post('2fa/edit', 'SettingsController@securityTwoFactorUpdate');
+            Route::get('2fa/recovery-codes', 'SettingsController@securityTwoFactorRecoveryCodes')->name('settings.security.2fa.recovery');
+            Route::post('2fa/recovery-codes', 'SettingsController@securityTwoFactorRecoveryCodesRegenerate');
         });
 
         Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
