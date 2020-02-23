@@ -75,7 +75,7 @@ class ImportInstagram implements ShouldQueue
             } catch (Exception $e) {
                 
             }
-            $filename = last( explode('/', $import['path']) );
+            $filename = last(explode('/', $import['path']));
             $importData = ImportData::whereJobId($job->id)
                 ->whereOriginalName($filename)
                 ->first();

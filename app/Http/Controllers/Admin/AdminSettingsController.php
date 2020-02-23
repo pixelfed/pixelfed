@@ -122,7 +122,7 @@ trait AdminSettingsController
 			case 'mysql':
 			$sys['database'] = [
 				'name' => 'MySQL',
-				'version' => DB::select( DB::raw("select version()") )[0]->{'version()'}
+				'version' => DB::select(DB::raw("select version()"))[0]->{'version()'}
 			];
 			break;
 

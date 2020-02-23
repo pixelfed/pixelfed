@@ -16,7 +16,7 @@ class DangerZone
      */
     public function handle($request, Closure $next)
     {
-        if( $request->session()->get('sudoModeAttempts') > 3) {
+        if($request->session()->get('sudoModeAttempts') > 3) {
             $request->session()->pull('redirectNext');
             $request->session()->pull('sudoModeAttempts');
             Auth::logout();
@@ -26,11 +26,11 @@ class DangerZone
             return redirect(route('login'));
         }
         if(!$request->is('i/auth/sudo')) {
-            if( !$request->session()->has('sudoMode') ) {
+            if(!$request->session()->has('sudoMode')) {
                 $request->session()->put('redirectNext', $request->url());
                 return redirect('/i/auth/sudo');
             } 
-            if( $request->session()->get('sudoMode') < Carbon::now()->subMinutes(30)->timestamp ) {
+            if($request->session()->get('sudoMode') < Carbon::now()->subMinutes(30)->timestamp) {
                 $request->session()->put('redirectNext', $request->url());
                 return redirect('/i/auth/sudo');
             } 

@@ -67,7 +67,7 @@ class SharePipeline implements ShouldQueue
             return true;
         }
 
-        if( $exists !== 0) {
+        if($exists !== 0) {
             return true;
         }
 
