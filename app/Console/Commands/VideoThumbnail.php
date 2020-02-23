@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Media;
-use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline; 
+use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
 
 class VideoThumbnail extends Command
 {

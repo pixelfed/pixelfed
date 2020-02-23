@@ -13,7 +13,6 @@ use Cache, Storage;
 use Image as Intervention;
 use App\Services\FollowerService;
 
-
 class StoryController extends Controller
 {
 	public function apiV1Add(Request $request)

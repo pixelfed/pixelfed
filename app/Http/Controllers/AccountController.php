@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Auth; 
-use Cache; 
-use Mail; 
+use Auth;
+use Cache;
+use Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Carbon\Carbon;

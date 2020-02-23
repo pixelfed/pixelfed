@@ -31,7 +31,6 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
-
 class PublicApiController extends Controller
 {
     protected $fractal;
