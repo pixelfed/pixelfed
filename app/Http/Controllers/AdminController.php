@@ -69,7 +69,7 @@ class AdminController extends Controller
 			'filter' => 'nullable|string|in:all,open,closed'
 		]);
 		$filter = $request->input('filter');
-		$reports = Report::orderBy('created_at','desc')
+		$reports = Report::orderBy('created_at', 'desc')
 		->when($filter, function($q, $filter) {
 			return $filter == 'open' ? 
 			$q->whereNull('admin_seen') :
@@ -98,7 +98,7 @@ class AdminController extends Controller
 		$search = $request->input('search');
 		$filter = $request->input('filter');
 		$limit = 12;
-		$profiles = Profile::select('id','username')
+		$profiles = Profile::select('id', 'username')
 			->whereNull('status')
 			->when($search, function($q, $search) {
 				return $q->where('username', 'like', "%$search%");

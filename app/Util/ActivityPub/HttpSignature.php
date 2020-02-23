@@ -66,7 +66,7 @@ class HttpSignature {
   public static function verify($publicKey, $signatureData, $inputHeaders, $path, $body) {
     $digest = 'SHA-256='.base64_encode(hash('sha256', $body, true));
     $headersToSign = [];
-    foreach(explode(' ',$signatureData['headers']) as $h) {
+    foreach(explode(' ', $signatureData['headers']) as $h) {
       if($h == '(request-target)') {
         $headersToSign[$h] = 'post '.$path;
       } elseif($h == 'digest') {

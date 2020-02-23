@@ -197,7 +197,7 @@ class ProfileController extends Controller
                 return redirect($profile->url());
             }
         }
-        $items = $profile->statuses()->whereHas('media')->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
+        $items = $profile->statuses()->whereHas('media')->whereIn('visibility', ['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
         return response()->view('atom.user', compact('profile', 'items'))
         ->header('Content-Type', 'application/atom+xml');
     }

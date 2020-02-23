@@ -77,8 +77,8 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $posts = Status::select(
-                'id', 
-                'caption', 
+                'id',
+                'caption',
                 'profile_id',
                 'type'
               )
@@ -115,7 +115,7 @@ class InternalApiController extends Controller
         }
 
         $msg = DirectMessage::whereToId($profile->id)
-            ->orWhere('from_id',$profile->id)
+            ->orWhere('from_id', $profile->id)
             ->findOrFail($threadId);
 
         $thread = DirectMessage::with('status')->whereIn('to_id', [$profile->id, $msg->from_id])
@@ -411,11 +411,11 @@ class InternalApiController extends Controller
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
-            'id', 
+            'id',
             'uri',
             'caption',
             'rendered',
-            'profile_id', 
+            'profile_id',
             'type',
             'in_reply_to_id',
             'reblog_of_id',

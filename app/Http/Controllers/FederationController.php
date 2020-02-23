@@ -41,7 +41,7 @@ class FederationController extends Controller
     {
         abort_if(!config('federation.nodeinfo.enabled'), 404);
         return response()->json(Nodeinfo::get())
-            ->header('Access-Control-Allow-Origin','*');
+            ->header('Access-Control-Allow-Origin', '*');
     }
 
     public function webfinger(Request $request)

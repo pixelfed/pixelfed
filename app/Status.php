@@ -92,7 +92,7 @@ class Status extends Model
         return Cache::remember('status:thumb:'.$this->id, now()->addMinutes(15), function() use ($showNsfw) {
             $type = $this->type ?? $this->setType();
             $is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-            if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album', 'video'])) {
+            if ($this->media->count() == 0 || $is_nsfw || !in_array($type, ['photo', 'photo:album', 'video'])) {
                 return url(Storage::url('public/no-preview.png'));
             }
 

@@ -43,7 +43,7 @@ class MediaGarbageCollector extends Command
         
         $gc = Media::doesntHave('status')
         ->where('created_at', '<', Carbon::now()->subHours(1)->toDateTimeString())
-        ->orderBy('created_at','asc')
+        ->orderBy('created_at', 'asc')
         ->take($limit)
         ->get();
 

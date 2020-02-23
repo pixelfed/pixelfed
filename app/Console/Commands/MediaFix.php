@@ -39,7 +39,7 @@ class MediaFix extends Command
      */
     public function handle()
     {
-        if(!version_compare(config('pixelfed.version'),'0.10.8','ge')) {
+        if(!version_compare(config('pixelfed.version'), '0.10.8', 'ge')) {
             $this->error('Please update to version 0.10.8 or newer.');
             exit;
         }

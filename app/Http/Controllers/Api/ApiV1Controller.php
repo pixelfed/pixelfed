@@ -303,11 +303,11 @@ class ApiV1Controller extends Controller
             $dir = $min_id ? '>' : '<';
             $id = $min_id ?? $max_id;
             $timeline = Status::select(
-                'id', 
+                'id',
                 'uri',
                 'caption',
                 'rendered',
-                'profile_id', 
+                'profile_id',
                 'type',
                 'in_reply_to_id',
                 'reblog_of_id',
@@ -328,11 +328,11 @@ class ApiV1Controller extends Controller
               ->get();
         } else {
             $timeline = Status::select(
-                'id', 
+                'id',
                 'uri',
                 'caption',
                 'rendered',
-                'profile_id', 
+                'profile_id',
                 'type',
                 'in_reply_to_id',
                 'reblog_of_id',
@@ -583,7 +583,7 @@ class ApiV1Controller extends Controller
         $user = $request->user();
         $limit = $request->input('limit') ?? 40;
 
-        $blocked = UserFilter::select('filterable_id','filterable_type','filter_type','user_id')
+        $blocked = UserFilter::select('filterable_id', 'filterable_type', 'filter_type', 'user_id')
             ->whereUserId($user->profile_id)
             ->whereFilterableType('App\Profile')
             ->whereFilterType('block')
@@ -1217,7 +1217,7 @@ class ApiV1Controller extends Controller
     {
         abort_if(!$request->user(), 403);
 
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -1240,11 +1240,11 @@ class ApiV1Controller extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -1262,17 +1262,17 @@ class ApiV1Controller extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->latest()
                       ->limit($limit)
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -1289,7 +1289,7 @@ class ApiV1Controller extends Controller
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->latest()
                       ->simplePaginate($limit);
         }
@@ -1321,7 +1321,7 @@ class ApiV1Controller extends Controller
      */
     public function timelinePublic(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -1337,11 +1337,11 @@ class ApiV1Controller extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -1365,11 +1365,11 @@ class ApiV1Controller extends Controller
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',

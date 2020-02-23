@@ -133,7 +133,7 @@ class CollectionController extends Controller
             'collection_id' => $collection->id,
             'object_type'   => 'App\Status',
             'object_id'     => $status->id
-        ],[
+        ], [
             'order'         => $count,
         ]);
 

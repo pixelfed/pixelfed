@@ -60,7 +60,7 @@ class PublicApiController extends Controller
             if($profile->status) {
                 return [];
             }
-            $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
+            $likes = $status->likedBy()->orderBy('created_at', 'desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
         }
@@ -75,7 +75,7 @@ class PublicApiController extends Controller
             if($profile->status) {
                 return [];
             }
-            $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
+            $shares = $status->sharedBy()->orderBy('created_at', 'desc')->paginate(10);
             $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
             return $this->fractal->createData($collection)->toArray();
         }
@@ -223,7 +223,7 @@ class PublicApiController extends Controller
 
     public function publicTimelineApi(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -276,11 +276,11 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -306,11 +306,11 @@ class PublicApiController extends Controller
                       //->toSql();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -346,7 +346,7 @@ class PublicApiController extends Controller
             return abort(403);
         }
 
-        $this->validate($request,[
+        $this->validate($request, [
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
           'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -388,11 +388,11 @@ class PublicApiController extends Controller
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -411,17 +411,17 @@ class PublicApiController extends Controller
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
         } else {
             $timeline = Status::select(
-                        'id', 
+                        'id',
                         'uri',
                         'caption',
                         'rendered',
-                        'profile_id', 
+                        'profile_id',
                         'type',
                         'in_reply_to_id',
                         'reblog_of_id',
@@ -439,7 +439,7 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereIn('visibility',['public', 'unlisted', 'private'])
+                      ->whereIn('visibility', ['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
@@ -557,11 +557,11 @@ class PublicApiController extends Controller
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
-            'id', 
+            'id',
             'uri',
             'caption',
             'rendered',
-            'profile_id', 
+            'profile_id',
             'type',
             'in_reply_to_id',
             'reblog_of_id',

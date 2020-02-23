@@ -30,7 +30,7 @@ class StatusController extends Controller
 
         $status = Status::whereProfileId($user->id)
                 ->whereNull('reblog_of_id')
-                ->whereNotIn('visibility',['draft','direct'])
+                ->whereNotIn('visibility', ['draft','direct'])
                 ->findOrFail($id);
 
         if($status->uri || $status->url) {
@@ -110,7 +110,7 @@ class StatusController extends Controller
         }
 
         $status = Status::whereProfileId($user->id)
-                ->whereNotIn('visibility',['draft','direct'])
+                ->whereNotIn('visibility', ['draft','direct'])
                 ->findOrFail($id);
 
         abort_if($status->uri, 404);

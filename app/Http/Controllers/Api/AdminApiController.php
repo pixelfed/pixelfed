@@ -30,10 +30,10 @@ class AdminApiController extends Controller
         $limit = request()->input('limit', 20);
 
         $activity['captions'] = Status::select(
-            'id', 
-            'caption', 
-            'rendered', 
-            'uri', 
+            'id',
+            'caption',
+            'rendered',
+            'uri',
             'profile_id',
             'type',
             'in_reply_to_id',
@@ -47,10 +47,10 @@ class AdminApiController extends Controller
         ->paginate($limit);
 
         $activity['comments'] = Status::select(
-            'id', 
-            'caption', 
-            'rendered', 
-            'uri', 
+            'id',
+            'caption',
+            'rendered',
+            'uri',
             'profile_id',
             'type',
             'in_reply_to_id',
