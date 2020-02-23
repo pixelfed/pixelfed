@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-	Place,
-	Status
-};
+use App\Place;
+use App\Status;
 
 class PlaceController extends Controller
 {

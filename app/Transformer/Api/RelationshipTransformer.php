@@ -3,10 +3,8 @@
 namespace App\Transformer\Api;
 
 use Auth;
-use App\{
-    FollowRequest,
-    Profile
-};
+use App\FollowRequest;
+use App\Profile;
 use League\Fractal;
 
 class RelationshipTransformer extends Fractal\TransformerAbstract

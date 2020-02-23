@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\InboxPipeline\{
-    InboxWorker,
-    InboxValidator
-};
+use App\Jobs\InboxPipeline\InboxWorker;
+use App\Jobs\InboxPipeline\InboxValidator;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
-use App\{
-    AccountLog,
-    Like,
-    Profile,
-    Status,
-    User
-};
+use App\AccountLog;
+use App\Like;
+use App\Profile;
+use App\Status;
+use App\User;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
 use Auth;
@@ -22,11 +18,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Site\Nodeinfo;
-use App\Util\ActivityPub\{
-    Helpers,
-    HttpSignature,
-    Outbox
-};
+use App\Util\ActivityPub\Helpers;
+use App\Util\ActivityPub\HttpSignature;
+use App\Util\ActivityPub\Outbox;
 use Zttp\Zttp;
 
 class FederationController extends Controller

@@ -3,7 +3,10 @@
 namespace App\Util\Site;
 
 use Cache;
-use App\{Like, Profile, Status, User};
+use App\Like;
+use App\Profile;
+use App\Status;
+use App\User;
 use Illuminate\Support\Str;
 
 class Nodeinfo {

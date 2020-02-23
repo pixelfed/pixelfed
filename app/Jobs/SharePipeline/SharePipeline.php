@@ -2,9 +2,11 @@
 
 namespace App\Jobs\SharePipeline;
 
-use Cache, Log;
+use Cache;
+use Log;
 use Illuminate\Support\Facades\Redis;
-use App\{Status, Notification};
+use App\Status;
+use App\Notification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +15,9 @@ use Illuminate\Queue\SerializesModels;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\Announce;
-use GuzzleHttp\{Pool, Client, Promise};
+use GuzzleHttp\Pool;
+use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
 
 class SharePipeline implements ShouldQueue

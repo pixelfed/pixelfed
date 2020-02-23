@@ -2,15 +2,14 @@
 
 namespace App\Listeners;
 
-use DB, Cache;
-use App\{
-    Follower,
-    Profile,
-    User,
-    UserDevice,
-    UserFilter,
-    UserSetting
-};
+use DB;
+use Cache;
+use App\Follower;
+use App\Profile;
+use App\User;
+use App\UserDevice;
+use App\UserFilter;
+use App\UserSetting;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use Illuminate\Contracts\Queue\ShouldQueue;

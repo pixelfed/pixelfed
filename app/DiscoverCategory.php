@@ -3,7 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\{Status, StatusHashtag};
+use App\Status;
+use App\StatusHashtag;
 
 class DiscoverCategory extends Model
 {

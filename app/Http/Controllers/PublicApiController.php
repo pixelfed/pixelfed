@@ -3,30 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-    Hashtag,
-    Follower,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    StatusHashtag,
-    Status,
-    UserFilter
-};
-use Auth,Cache;
+use App\Hashtag;
+use App\Follower;
+use App\Like;
+use App\Media;
+use App\Notification;
+use App\Profile;
+use App\StatusHashtag;
+use App\Status;
+use App\UserFilter;
+use Auth;
+use Cache;
 use Carbon\Carbon;
 use League\Fractal;
-use App\Transformer\Api\{
-    AccountTransformer,
-    RelationshipTransformer,
-    StatusTransformer,
-};
-use App\Services\{
-    AccountService,
-    PublicTimelineService,
-    UserFilterService
-};
+use App\Transformer\Api\AccountTransformer;
+use App\Transformer\Api\RelationshipTransformer;
+use App\Transformer\Api\StatusTransformer;
+use App\Services\AccountService;
+use App\Services\PublicTimelineService;
+use App\Services\UserFilterService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;

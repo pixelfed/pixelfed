@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DB, Cache;
-use App\{Instance, Profile};
+use DB;
+use Cache;
+use App\Instance;
+use App\Profile;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

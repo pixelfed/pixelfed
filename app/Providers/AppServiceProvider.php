@@ -2,23 +2,21 @@
 
 namespace App\Providers;
 
-use App\Observers\{
-    AvatarObserver,
-    NotificationObserver,
-    ModLogObserver,
-    StatusHashtagObserver,
-    UserObserver,
-    UserFilterObserver,
-};
-use App\{
-    Avatar,
-    Notification,
-    ModLog,
-    StatusHashtag,
-    User,
-    UserFilter
-};
-use Auth, Horizon, URL;
+use App\Observers\AvatarObserver;
+use App\Observers\NotificationObserver;
+use App\Observers\ModLogObserver;
+use App\Observers\StatusHashtagObserver;
+use App\Observers\UserObserver;
+use App\Observers\UserFilterObserver;
+use App\Avatar;
+use App\Notification;
+use App\ModLog;
+use App\StatusHashtag;
+use App\User;
+use App\UserFilter;
+use Auth;
+use Horizon;
+use URL;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;

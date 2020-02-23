@@ -8,24 +8,23 @@ use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
-use Auth, Cache, DB, URL;
-use App\{
-    Follower,
-    FollowRequest,
-    Like,
-    Media,
-    Notification,
-    Profile,
-    Status,
-    UserFilter,
-};
+use Auth;
+use Cache;
+use DB;
+use URL;
+use App\Follower;
+use App\FollowRequest;
+use App\Like;
+use App\Media;
+use App\Notification;
+use App\Profile;
+use App\Status;
+use App\UserFilter;
 use League\Fractal;
-use App\Transformer\Api\Mastodon\v1\{
-    AccountTransformer,
-    MediaTransformer,
-    NotificationTransformer,
-    StatusTransformer,
-};
+use App\Transformer\Api\Mastodon\v1\AccountTransformer;
+use App\Transformer\Api\Mastodon\v1\MediaTransformer;
+use App\Transformer\Api\Mastodon\v1\NotificationTransformer;
+use App\Transformer\Api\Mastodon\v1\StatusTransformer;
 use App\Transformer\Api\{
     RelationshipTransformer,
 };
@@ -39,15 +38,11 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\VideoPipeline\{
-    VideoOptimize,
-    VideoPostProcess,
-    VideoThumbnail
-};
-use App\Services\{
-    NotificationService,
-    SearchApiV2Service
-};
+use App\Jobs\VideoPipeline\VideoOptimize;
+use App\Jobs\VideoPipeline\VideoPostProcess;
+use App\Jobs\VideoPipeline\VideoThumbnail;
+use App\Services\NotificationService;
+use App\Services\SearchApiV2Service;
 
 class ApiV1Controller extends Controller 
 {

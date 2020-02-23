@@ -4,10 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Redis;
 
-use App\{
-	Follower,
-	Profile
-};
+use App\Follower;
+use App\Profile;
 
 class FollowerService {
 

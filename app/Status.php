@@ -2,7 +2,10 @@
 
 namespace App;
 
-use Auth, Cache, Hashids, Storage;
+use Auth;
+use Cache;
+use Hashids;
+use Storage;
 use Illuminate\Database\Eloquent\Model;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;

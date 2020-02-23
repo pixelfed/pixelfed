@@ -2,10 +2,13 @@
 
 namespace App;
 
-use Auth, Cache, Storage;
+use Auth;
+use Cache;
+use Storage;
 use App\Util\Lexer\PrettyNumber;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
-use Illuminate\Database\Eloquent\{Model, SoftDeletes};
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profile extends Model
 {

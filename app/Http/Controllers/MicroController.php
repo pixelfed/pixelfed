@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\{
-	Profile, 
-	Status, 
-};
-use Auth, DB, Purify;
+use App\Profile;
+use App\Status;
+use Auth;
+use DB;
+use Purify;
 use Illuminate\Validation\Rule;
 
 class MicroController extends Controller
