@@ -110,7 +110,7 @@ class FederationController extends Controller
     }
 
 
-    protected function verifySignature(Request $request, Profile $profile)
+    protected function verifySignature(Request $request, Profile $profile): bool
     {
         $body = $request->getContent();
         $bodyDecoded = json_decode($body, true, 8);

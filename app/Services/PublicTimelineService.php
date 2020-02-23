@@ -13,7 +13,7 @@ class PublicTimelineService {
 
 	const CACHE_KEY = 'pf:services:timeline:public';
 
-	public static function get($start = 0, $stop = 10)
+	public static function get($start = 0, $stop = 10): array
 	{
 		if($stop > 100) {
 			$stop = 100;
@@ -46,7 +46,7 @@ class PublicTimelineService {
 		return Redis::zcount(self::CACHE_KEY, '-inf', '+inf');
 	}
 
-	public static function warmCache($force = false, $limit = 100)
+	public static function warmCache($force = false, $limit = 100): int
 	{
 		if(self::count() == 0 || $force == true) {
 			$ids = Status::whereNull('uri')

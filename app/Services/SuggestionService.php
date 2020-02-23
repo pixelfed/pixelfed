@@ -39,7 +39,7 @@ class SuggestionService {
 		return Redis::zcount(self::CACHE_KEY, '-inf', '+inf');
 	}
 
-	public static function warmCache($force = false)
+	public static function warmCache($force = false): int
 	{
 		if(self::count() == 0 || $force == true) {
 			$ids = Profile::whereNull('domain')

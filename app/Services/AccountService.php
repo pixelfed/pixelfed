@@ -12,7 +12,7 @@ class AccountService {
 
 	const CACHE_KEY = 'pf:services:account:';
 
-	public static function get($id)
+	public static function get($id): array
 	{
 		// $key = self::CACHE_KEY . ':' . $id;
 		// $ttl = now()->addSeconds(10);

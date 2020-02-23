@@ -39,9 +39,9 @@ class MentionPipeline implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return null|true
      */
-    public function handle()
+    public function handle(): ?bool
     {
         $status = $this->status;
         $mention = $this->mention;

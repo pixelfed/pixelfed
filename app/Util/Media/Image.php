@@ -32,7 +32,7 @@ class Image
 		$this->orientation = null;
 	}
 
-	public function orientations()
+	public function orientations(): array
 	{
 		return [
 			'square' => [
@@ -50,7 +50,7 @@ class Image
 		];
 	}
 
-	public function getAspectRatio($mediaPath, $thumbnail = false)
+	public function getAspectRatio(string $mediaPath, $thumbnail = false): array
 	{
 		if (!is_file($mediaPath)) {
 			throw new \Exception('Invalid Media Path');
@@ -74,6 +74,9 @@ class Image
 		];
 	}
 
+	/**
+	 * @return void
+	 */
 	public function resizeImage(Media $media)
 	{
 		$basePath = storage_path('app/'.$media->media_path);
@@ -81,6 +84,9 @@ class Image
 		$this->handleResizeImage($media);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function resizeThumbnail(Media $media)
 	{
 		$basePath = storage_path('app/'.$media->media_path);
@@ -88,17 +94,26 @@ class Image
 		$this->handleThumbnailImage($media);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handleResizeImage(Media $media)
 	{
 		$this->handleImageTransform($media, false);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handleThumbnailImage(Media $media)
 	{
 		$this->handleImageTransform($media, true);
 	}
 
-	public function handleImageTransform(Media $media, $thumbnail = false)
+	/**
+	 * @return void
+	 */
+	public function handleImageTransform(Media $media, bool $thumbnail = false)
 	{
 		$path = $media->media_path;
 		$file = storage_path('app/'.$path);
@@ -185,7 +200,7 @@ class Image
 		}
 	}
 
-	public function setBaseName($basePath, $thumbnail, $extension)
+	public function setBaseName($basePath, $thumbnail, $extension): array
 	{
 		$png = false;
 		$path = explode('.', $basePath);

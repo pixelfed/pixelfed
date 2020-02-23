@@ -122,7 +122,7 @@ class Helpers {
 		return $audience;
 	}
 
-	public static function userInAudience($profile, $data)
+	public static function userInAudience($profile, $data): bool
 	{
 		$audience = self::normalizeAudience($data);
 		$url = $profile->permalink();
@@ -167,7 +167,7 @@ class Helpers {
 		return $valid;
 	}
 
-	public static function validateLocalUrl($url)
+	public static function validateLocalUrl(string $url)
 	{
 		$url = self::validateUrl($url);
 		if($url == true) {
@@ -179,7 +179,7 @@ class Helpers {
 		return false;
 	}
 
-	public static function zttpUserAgent()
+	public static function zttpUserAgent(): array
 	{
 		return [
 			'Accept'     => 'application/activity+json',
@@ -187,7 +187,7 @@ class Helpers {
 		];
 	}
 
-	public static function fetchFromUrl($url)
+	public static function fetchFromUrl(string $url)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {
@@ -207,7 +207,7 @@ class Helpers {
 		return self::fetchFromUrl($url);
 	}
 
-	public static function statusFirstOrFetch($url, $replyTo = false)
+	public static function statusFirstOrFetch($url, bool $replyTo = false)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {
@@ -339,11 +339,14 @@ class Helpers {
 		}
 	}
 
-	public static function statusFetch($url)
+	public static function statusFetch(string $url)
 	{
 		return self::statusFirstOrFetch($url);
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function importNoteAttachment($data, Status $status)
 	{
 		if(self::verifyAttachments($data) == false) {
@@ -379,7 +382,7 @@ class Helpers {
 		return;
 	}
 
-	public static function profileFirstOrNew($url, $runJobs = false)
+	public static function profileFirstOrNew(string $url, $runJobs = false)
 	{
 		$url = self::validateUrl($url);
 		if($url == false) {
@@ -436,7 +439,10 @@ class Helpers {
 		return self::profileFirstOrNew($url);
 	}
 
-	public static function sendSignedObject($profile, $url, $body)
+	/**
+	 * @return void
+	 */
+	public static function sendSignedObject($profile, $url, array $body)
 	{
 		ActivityPubDeliveryService::queue()
 			->from($profile)

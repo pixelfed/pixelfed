@@ -118,7 +118,7 @@ class ProfileController extends Controller
         return redirect($user->url());
     }
 
-    protected function privateProfileCheck(Profile $profile, $loggedIn)
+    protected function privateProfileCheck(Profile $profile, $loggedIn): bool
     {
         if (!Auth::check()) {
             return true;
@@ -152,7 +152,7 @@ class ProfileController extends Controller
         return abort(404);  
     }
 
-    protected function blockedProfileCheck(Profile $profile)
+    protected function blockedProfileCheck(Profile $profile): bool
     {
         $pid = Auth::user()->profile->id;
         $blocks = UserFilter::whereUserId($profile->id)

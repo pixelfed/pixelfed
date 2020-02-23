@@ -32,7 +32,7 @@ class HttpSignature {
     return self::_headersToCurlArray($headers);
   }
 
-  public static function parseSignatureHeader($signature) {
+  public static function parseSignatureHeader($signature): array {
     $parts = explode(',', $signature);
     $signatureData = [];
 
@@ -63,7 +63,7 @@ class HttpSignature {
     return $signatureData;
   }
 
-  public static function verify($publicKey, $signatureData, $inputHeaders, $path, $body) {
+  public static function verify($publicKey, array $signatureData, array $inputHeaders, string $path, $body): array {
     $digest = 'SHA-256='.base64_encode(hash('sha256', $body, true));
     $headersToSign = [];
     foreach(explode(' ',$signatureData['headers']) as $h) {
@@ -82,26 +82,26 @@ class HttpSignature {
     return [$verified, $signingString];
   }
 
-  private static function _headersToSigningString($headers) {
+  private static function _headersToSigningString(array $headers): string {
     return implode("\n", array_map(function($k, $v){
              return strtolower($k).': '.$v;
            }, array_keys($headers), $headers));
   }
 
-  private static function _headersToCurlArray($headers) {
+  private static function _headersToCurlArray(array $headers): array {
     return array_map(function($k, $v){
              return "$k: $v";
            }, array_keys($headers), $headers);
   }
 
-  private static function _digest($body) {
+  private static function _digest($body): string {
     if(is_array($body)) {
       $body = json_encode($body);
     }
     return base64_encode(hash('sha256', $body, true));
   }
 
-  protected static function _headersToSign($url, $digest = false) {
+  protected static function _headersToSign($url, $digest = false): array {
     $date = new DateTime('UTC');
 
     $headers = [

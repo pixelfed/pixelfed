@@ -139,7 +139,10 @@ class ImportCities extends Command
         return;
     }
 
-    private function insertBuffer($buffer)
+    /**
+     * @return void
+     */
+    private function insertBuffer(array $buffer)
     {
         DB::table('places')->insert($buffer);
     }

@@ -48,12 +48,12 @@ class Filter {
 		'X-Pro II' => 'filter-xpro-ii'
 	];
 
-	public static function classes()
+	public static function classes(): array
 	{
 		return array_values(self::$filters);
 	}
 
-	public static function names()
+	public static function names(): array
 	{
 		return array_keys(self::$filters);
 	}

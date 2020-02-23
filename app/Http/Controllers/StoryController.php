@@ -16,7 +16,7 @@ use App\Services\FollowerService;
 
 class StoryController extends Controller
 {
-	public function apiV1Add(Request $request)
+	public function apiV1Add(Request $request): array
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
@@ -81,7 +81,7 @@ class StoryController extends Controller
 		return $path;
 	}
 
-	public function apiV1Delete(Request $request, $id)
+	public function apiV1Delete(Request $request, $id): array
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
@@ -261,7 +261,7 @@ class StoryController extends Controller
 		return response()->json($stories, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 	}
 
-	public function apiV1Viewed(Request $request)
+	public function apiV1Viewed(Request $request): array
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 

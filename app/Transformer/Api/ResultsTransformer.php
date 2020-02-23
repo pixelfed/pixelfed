@@ -13,7 +13,7 @@ class ResultsTransformer extends Fractal\TransformerAbstract
 		'hashtags',
 	];
 
-	public function transform($results)
+	public function transform($results): array
 	{
 		return [
 			'accounts' => [],

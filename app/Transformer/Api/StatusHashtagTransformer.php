@@ -7,7 +7,7 @@ use League\Fractal;
 
 class StatusHashtagTransformer extends Fractal\TransformerAbstract
 {
-	public function transform(StatusHashtag $statusHashtag)
+	public function transform(StatusHashtag $statusHashtag): array
 	{
 		$hashtag = $statusHashtag->hashtag;
 		$status = $statusHashtag->status;

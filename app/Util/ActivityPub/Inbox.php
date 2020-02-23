@@ -37,11 +37,17 @@ class Inbox
         $this->payload = $payload;
     }
 
+    /**
+     * @return void
+     */
     public function handle()
     {
         $this->handleVerb();
     }
 
+    /**
+     * @return void
+     */
     public function handleVerb()
     {
         $verb = (string) $this->payload['type'];
@@ -107,6 +113,9 @@ class Inbox
         return Helpers::profileFetch($actorUrl);
     }
 
+    /**
+     * @return void
+     */
     public function handleCreateActivity()
     {
         $activity = $this->payload['object'];
@@ -121,6 +130,9 @@ class Inbox
         }
     }
 
+    /**
+     * @return void
+     */
     public function handleNoteReply()
     {
         $activity = $this->payload['object'];
@@ -136,6 +148,9 @@ class Inbox
         return;
     }
 
+    /**
+     * @return void
+     */
     public function handleNoteCreate()
     {
         $activity = $this->payload['object'];
@@ -156,6 +171,9 @@ class Inbox
         return;
     }
 
+    /**
+     * @return void
+     */
     public function handleFollowActivity()
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
@@ -207,6 +225,9 @@ class Inbox
         }
     }
 
+    /**
+     * @return void
+     */
     public function handleAnnounceActivity()
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
@@ -246,6 +267,9 @@ class Inbox
         $parent->save();
     }
 
+    /**
+     * @return void
+     */
     public function handleAcceptActivity()
     {
 
@@ -284,6 +308,9 @@ class Inbox
         $request->delete();
     }
 
+    /**
+     * @return void
+     */
     public function handleDeleteActivity()
     {
         if(!isset(
@@ -345,6 +372,9 @@ class Inbox
         }
     }
 
+    /**
+     * @return void
+     */
     public function handleLikeActivity()
     {
         $actor = $this->payload['actor'];
@@ -377,11 +407,17 @@ class Inbox
     }
 
 
+    /**
+     * @return void
+     */
     public function handleRejectActivity()
     {
 
     }
 
+    /**
+     * @return void
+     */
     public function handleUndoActivity()
     {
         $actor = $this->payload['actor'];

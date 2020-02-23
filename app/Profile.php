@@ -230,12 +230,12 @@ class Profile extends Model
         return $this->sharedInbox ?? $this->inboxUrl();
     }
 
-    public function getDefaultScope()
+    public function getDefaultScope(): string
     {
         return $this->is_private == true ? 'private' : 'public';
     }
 
-    public function getAudience($scope = false)
+    public function getAudience($scope = false): array
     {
         if($this->remote_url) {
             return [];

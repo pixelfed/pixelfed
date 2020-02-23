@@ -35,13 +35,16 @@ class UpdateCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->update();
     }
 
+    /**
+     * @return void
+     */
     public function update()
     {
         $v = $this->getVersionFile();
@@ -73,6 +76,9 @@ class UpdateCommand extends Command
             false;
     }
 
+    /**
+     * @return void
+     */
     protected function updateVersionFile() {
         $path = storage_path('app/version.json');
         $contents = [

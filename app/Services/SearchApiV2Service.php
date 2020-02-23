@@ -84,7 +84,7 @@ class SearchApiV2Service
 		}
 	}
 
-	protected function accounts()
+	protected function accounts(): array
 	{
 		$limit = $this->query->input('limit', 20);
 		$query = '%' . $this->query->input('q') . '%';
@@ -122,7 +122,7 @@ class SearchApiV2Service
 			});
 	}
 
-	protected function statuses()
+	protected function statuses(): array
 	{
 		$limit = $this->query->input('limit', 20);
 		$query = '%' . $this->query->input('q') . '%';
@@ -141,7 +141,7 @@ class SearchApiV2Service
 		return $fractal->createData($resource)->toArray();
 	}
 
-	protected function statusesById()
+	protected function statusesById(): array
 	{
 		$accountId = $this->query->input('account_id');
 		$limit = $this->query->input('limit', 20);
@@ -178,7 +178,7 @@ class SearchApiV2Service
 		}
 	}
 
-	protected function resolveLocalStatus()
+	protected function resolveLocalStatus(): array
 	{
 		$query = urldecode($this->query->input('q'));
 		$query = last(explode('/', $query));
@@ -204,7 +204,7 @@ class SearchApiV2Service
 		];
 	}
 
-	protected function resolveLocalProfile()
+	protected function resolveLocalProfile(): array
 	{
 		$query = urldecode($this->query->input('q'));
 		$query = last(explode('/', $query));

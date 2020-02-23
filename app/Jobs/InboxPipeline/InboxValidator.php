@@ -38,7 +38,7 @@ class InboxValidator implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return null|true
      */
     public function handle()
     {
@@ -66,7 +66,7 @@ class InboxValidator implements ShouldQueue
 
     }
 
-    protected function verifySignature($headers, $profile, $payload)
+    protected function verifySignature($headers, $profile, $payload): bool
     {
         $body = $this->payload;
         $bodyDecoded = $payload;

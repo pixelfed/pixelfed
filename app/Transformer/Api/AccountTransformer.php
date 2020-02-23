@@ -12,7 +12,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
         // 'relationship',
     ];
 
-	public function transform(Profile $profile)
+	public function transform(Profile $profile): array
 	{
 		$local = $profile->domain == null;
 		$is_admin = !$local ? false : $profile->user->is_admin;

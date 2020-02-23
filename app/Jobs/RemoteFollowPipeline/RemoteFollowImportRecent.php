@@ -59,6 +59,9 @@ class RemoteFollowImportRecent implements ShouldQueue
         // $outbox = $this->fetchOutbox();
     }
 
+    /**
+     * @return void
+     */
     public function fetchOutbox($url = false)
     {
         $url = ($url == false) ? $this->actor['outbox'] : $url;
@@ -73,6 +76,9 @@ class RemoteFollowImportRecent implements ShouldQueue
         $this->parseOutbox($this->outbox);
     }
 
+    /**
+     * @return void
+     */
     public function parseOutbox($outbox)
     {
         $types = ['OrderedCollection', 'OrderedCollectionPage'];
@@ -145,7 +151,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         }
     }
 
-    public function detectSupportedMedia($attachments)
+    public function detectSupportedMedia($attachments): int
     {
         $supported = $this->supported;
         $count = 0;
@@ -158,6 +164,9 @@ class RemoteFollowImportRecent implements ShouldQueue
         return $count;
     }
 
+    /**
+     * @return null|true
+     */
     public function importActivity($activity)
     {
         $profile = $this->profile;
@@ -205,7 +214,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         }
     }
 
-    public function importMedia($url, $mime, $status)
+    public function importMedia($url, $mime, Status $status): bool
     {
         $user = $this->profile;
         $monthHash = hash('sha1', date('Y').date('m'));

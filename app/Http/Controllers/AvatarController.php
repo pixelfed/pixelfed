@@ -64,7 +64,10 @@ class AvatarController extends Controller
         return $res;
     }
 
-    public function checkDir($path)
+    /**
+     * @return void
+     */
+    public function checkDir(string $path)
     {
         if (!is_dir($path)) {
             mkdir($path);

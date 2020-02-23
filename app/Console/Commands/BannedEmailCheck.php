@@ -35,9 +35,9 @@ class BannedEmailCheck extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $users = User::whereNull('status')->get()->filter(function($u) {
             return EmailService::isBanned($u->email) == true;

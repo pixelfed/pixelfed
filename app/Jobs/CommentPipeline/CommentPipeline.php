@@ -45,7 +45,7 @@ class CommentPipeline implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return null|true
      */
     public function handle()
     {

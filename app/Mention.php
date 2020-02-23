@@ -26,14 +26,14 @@ class Mention extends Model
         return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
-    public function toText()
+    public function toText(): string
     {
         $actorName = $this->status->profile->username;
 
         return "{$actorName} ".__('notification.mentionedYou');
     }
 
-    public function toHtml()
+    public function toHtml(): string
     {
         $actorName = $this->status->profile->username;
         $actorUrl = $this->status->profile->url();

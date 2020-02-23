@@ -17,7 +17,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		'modlog'
 	];
 
-	public function transform(Notification $notification)
+	public function transform(Notification $notification): array
 	{
 		return [
 			'id'       		=> (string) $notification->id,
@@ -46,7 +46,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		}
 	}
 
-	public function replaceTypeVerb($verb)
+	public function replaceTypeVerb($verb): string
 	{
 		$verbs = [
 			'follow' => 'follow',

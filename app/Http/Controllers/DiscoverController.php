@@ -111,7 +111,7 @@ class DiscoverController extends Controller
         return response()->json(200);
     }
 
-    public function getHashtags(Request $request)
+    public function getHashtags(Request $request): array
     {
       $auth = Auth::check();
       abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);

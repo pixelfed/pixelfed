@@ -13,7 +13,7 @@ class PageController extends Controller
 		$this->middleware(['auth', 'admin']);
 	}
 
-	protected function cacheKeys() {
+	protected function cacheKeys(): array {
 		return [
 			'/site/about' => 'site:about',
 			'/site/privacy' => 'site:privacy',
@@ -22,7 +22,10 @@ class PageController extends Controller
 		];
 	}
 
-	protected function authCheck($admin_only = false)
+	/**
+	 * @return void
+	 */
+	protected function authCheck(bool $admin_only = false)
 	{
 		$auth = $admin_only ?
 			Auth::check() && Auth::user()->is_admin == true :

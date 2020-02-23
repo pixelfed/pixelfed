@@ -66,6 +66,9 @@ class AdminApiController extends Controller
         return response()->json($activity, 200, [], JSON_PRETTY_PRINT);
     }
 
+    /**
+     * @return void
+     */
     public function moderateStatus(Request $request)
     {
         abort(400, 'Unpublished API');

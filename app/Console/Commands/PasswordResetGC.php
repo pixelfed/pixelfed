@@ -34,9 +34,9 @@ class PasswordResetGC extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         EmailVerification::where('created_at', '<', now()->subMinutes(1441))
             ->chunk(50, function($emails) {

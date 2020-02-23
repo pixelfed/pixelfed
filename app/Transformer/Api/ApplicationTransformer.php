@@ -6,7 +6,7 @@ use League\Fractal;
 
 class ApplicationTransformer extends Fractal\TransformerAbstract
 {
-	public function transform()
+	public function transform(): array
 	{
 		return [
 			'name'    => '',

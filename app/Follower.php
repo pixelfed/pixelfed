@@ -33,14 +33,14 @@ class Follower extends Model
         return url($path);
     }
 
-    public function toText()
+    public function toText(): string
     {
         $actorName = $this->actor->username;
 
         return "{$actorName} ".__('notification.startedFollowingYou');
     }
 
-    public function toHtml()
+    public function toHtml(): string
     {
         $actorName = $this->actor->username;
         $actorUrl = $this->actor->url();

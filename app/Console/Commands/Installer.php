@@ -34,13 +34,16 @@ class Installer extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->welcome();
     }
 
+    /**
+     * @return void
+     */
     protected function welcome()
     {
         $this->info('       ____  _           ______         __  ');
@@ -57,6 +60,9 @@ class Installer extends Command
         $this->info('Scanning system...');                               
         $this->preflightCheck();
     }
+    /**
+     * @return void
+     */
     protected function preflightCheck()
     {
         $this->line(' ');
@@ -73,6 +79,9 @@ class Installer extends Command
         $this->envCheck();
     }
 
+    /**
+     * @return void
+     */
     protected function checkPhpDependencies()
     {
         $extensions = [
@@ -103,6 +112,9 @@ class Installer extends Command
         $this->info("- Required PHP extensions found!");
     }
 
+    /**
+     * @return void
+     */
     protected function checkPermissions()
     {
         $this->line('');
@@ -125,6 +137,9 @@ class Installer extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function envCheck()
     {
         if(!file_exists(base_path('.env')) || filesize(base_path('.env')) == 0) {
@@ -152,6 +167,9 @@ class Installer extends Command
         $this->postInstall();
     }
 
+    /**
+     * @return void
+     */
     protected function createEnv()
     {
         $this->line('');
@@ -216,7 +234,10 @@ class Installer extends Command
 
     }
 
-    protected function updateEnvFile($key, $value)
+    /**
+     * @return void
+     */
+    protected function updateEnvFile(string $key, string $value)
     {
         $envPath = app()->environmentFilePath();
         $payload = file_get_contents($envPath);
@@ -230,6 +251,9 @@ class Installer extends Command
         }
     }
 
+    /**
+     * @return false|string
+     */
     protected function existingEnv($needle, $haystack)
     {
         preg_match("/^{$needle}=[^\r\n]*/m", $haystack, $matches);
@@ -239,13 +263,19 @@ class Installer extends Command
         return false;
     }
 
-    protected function storeEnv($payload)
+    /**
+     * @return void
+     */
+    protected function storeEnv(string $payload)
     {
         $file = fopen(app()->environmentFilePath(), 'w');
         fwrite($file, $payload);
         fclose($file);
     }
 
+    /**
+     * @return void
+     */
     protected function postInstall()
     {
         $this->callSilent('config:cache');

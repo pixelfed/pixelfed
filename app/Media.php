@@ -51,12 +51,12 @@ class Media extends Model
         return $this->thumbnailUrl();
     }
 
-    public function mimeType()
+    public function mimeType(): string
     {
         return explode('/', $this->mime)[0];
     }
 
-    public function activityVerb()
+    public function activityVerb(): string
     {
         $verb = 'Image';
         switch ($this->mimeType()) {

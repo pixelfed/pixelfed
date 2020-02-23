@@ -15,12 +15,15 @@ class MediaController extends Controller
 		$this->middleware('auth');
 	}
 
+	/**
+	 * @return void
+	 */
 	public function index(Request $request)
 	{
 		//return view('settings.drive.index');
 	}
 
-	public function composeUpdate(Request $request, $id)
+	public function composeUpdate(Request $request, $id): array
 	{
 		$this->validate($request, [
 			'file'      => function() {

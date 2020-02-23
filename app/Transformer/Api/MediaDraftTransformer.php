@@ -8,7 +8,7 @@ use URL;
 
 class MediaDraftTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Media $media)
+    public function transform(Media $media): array
     {
 
         $url = URL::temporarySignedRoute(

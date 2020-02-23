@@ -6,7 +6,7 @@ use League\Fractal;
 
 class EmojiTransformer extends Fractal\TransformerAbstract
 {
-	public function transform($emoji)
+	public function transform($emoji): array
 	{
 		return [
 			'shortcode' 			=> '',

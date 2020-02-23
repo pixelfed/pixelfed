@@ -7,7 +7,7 @@ use League\Fractal;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
           '@context' => [

@@ -112,7 +112,7 @@ class Status extends Model
         }
     }
 
-    public function permalink($suffix = '/activity')
+    public function permalink(string $suffix = '/activity')
     {
         $id = $this->id;
         $username = $this->profile->username;
@@ -121,7 +121,7 @@ class Status extends Model
         return url($path);
     }
 
-    public function editUrl()
+    public function editUrl(): string
     {
         return $this->url().'/edit';
     }
@@ -250,12 +250,12 @@ class Status extends Model
       );
     }
 
-    public function reportUrl()
+    public function reportUrl(): string
     {
         return route('report.form')."?type=post&id={$this->id}";
     }
 
-    public function toActivityStream()
+    public function toActivityStream(): array
     {
         $media = $this->media;
         $mediaCollection = [];
@@ -276,14 +276,14 @@ class Status extends Model
         return $obj;
     }
 
-    public function replyToText()
+    public function replyToText(): string
     {
         $actorName = $this->profile->username;
 
         return "{$actorName} ".__('notification.commented');
     }
 
-    public function replyToHtml()
+    public function replyToHtml(): string
     {
         $actorName = $this->profile->username;
         $actorUrl = $this->profile->url();
@@ -292,14 +292,14 @@ class Status extends Model
           __('notification.commented');
     }
 
-    public function shareToText()
+    public function shareToText(): string
     {
         $actorName = $this->profile->username;
 
         return "{$actorName} ".__('notification.shared');
     }
 
-    public function shareToHtml()
+    public function shareToHtml(): string
     {
         $actorName = $this->profile->username;
         $actorUrl = $this->profile->url();
@@ -353,7 +353,7 @@ class Status extends Model
         ];
     }
 
-    public function scopeToAudience($audience)
+    public function scopeToAudience(string $audience)
     {
         if(!in_array($audience, ['to', 'cc']) || $this->local == false) { 
             return;

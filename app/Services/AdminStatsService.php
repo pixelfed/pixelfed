@@ -19,7 +19,7 @@ use App\{
 
 class AdminStatsService
 {
-	public static function get()
+	public static function get(): array
 	{
 		return array_merge(self::recentData(), self::additionalData());
 	}

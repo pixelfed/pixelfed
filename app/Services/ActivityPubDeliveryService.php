@@ -41,6 +41,9 @@ class ActivityPubDeliveryService
 		return $this->queueDelivery();
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function queueDelivery()
 	{
 		abort_if(!$this->sender || !$this->to || !$this->payload, 400);

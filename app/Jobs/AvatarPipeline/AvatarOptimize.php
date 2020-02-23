@@ -68,6 +68,9 @@ class AvatarOptimize implements ShouldQueue
         }
     }
 
+    /**
+     * @return void
+     */
     protected function deleteOldAvatar($new, $current)
     {
         if (storage_path('app/'.$new) == $current || Str::endsWith($current, 'avatars/default.png')) {

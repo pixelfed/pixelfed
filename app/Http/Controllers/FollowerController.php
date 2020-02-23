@@ -36,7 +36,7 @@ class FollowerController extends Controller
         }
     }
 
-    protected function handleFollowRequest($item, $force)
+    protected function handleFollowRequest(int $item, bool $force)
     {
         $user = Auth::user()->profile;
 
@@ -119,6 +119,9 @@ class FollowerController extends Controller
         return $target->url();
     }
 
+    /**
+     * @return void
+     */
     public function sendFollow($user, $target)
     {
         if($target->domain == null || $user->domain != null) {
@@ -138,6 +141,9 @@ class FollowerController extends Controller
         Helpers::sendSignedObject($user, $inbox, $payload);
     }
 
+    /**
+     * @return void
+     */
     public function sendUndoFollow($user, $target)
     {
         if($target->domain == null || $user->domain != null) {

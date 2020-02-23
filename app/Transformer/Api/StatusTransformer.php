@@ -13,7 +13,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         'media_attachments',
     ];
 
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             'id'                        => (string) $status->id,

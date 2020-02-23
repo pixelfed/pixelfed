@@ -29,7 +29,7 @@ class NewMention implements ShouldBroadcastNow
         $this->data = $data;
     }
 
-    public function broadcastAs()
+    public function broadcastAs(): string
     {
         return 'notification.new.mention';
     }
@@ -44,7 +44,7 @@ class NewMention implements ShouldBroadcastNow
         return ['id' => $this->user->id];
     }
 
-    public function via()
+    public function via(): string
     {
         return 'broadcast';
     }

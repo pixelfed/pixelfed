@@ -41,15 +41,18 @@ class StoryGC extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->directoryScan();
         $this->deleteViews();
         $this->deleteStories();
     }
 
+    /**
+     * @return void
+     */
     protected function directoryScan()
     {
         $day = now()->day;
@@ -74,16 +77,25 @@ class StoryGC extends Command
         }
     }
 
+    /**
+     * @return void
+     */
     protected function deleteDirectory($path)
     {
         Storage::deleteDirectory($path);
     }
 
+    /**
+     * @return void
+     */
     protected function deleteViews()
     {
         StoryView::where('created_at', '<', now()->subDays(2))->delete();
     }
 
+    /**
+     * @return void
+     */
     protected function deleteStories()
     {
         $stories = Story::where('expires_at', '<', now())->take(50)->get();

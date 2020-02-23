@@ -44,13 +44,13 @@ class CollectionController extends Controller
     	return view('collection.show', compact('collection'));
     }
 
-    public function index(Request $request)
+    public function index(Request $request): array
     {
         abort_if(!Auth::check(), 403);
     	return $request->all();
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request, $id): int
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
@@ -107,7 +107,7 @@ class CollectionController extends Controller
         return redirect('/');
     }
 
-    public function storeId(Request $request)
+    public function storeId(Request $request): int
     {
         $this->validate($request, [
             'collection_id' => 'required|int|min:1|exists:collections,id',
@@ -140,7 +140,7 @@ class CollectionController extends Controller
         return 200;
     }
 
-    public function get(Request $request, $id)
+    public function get(Request $request, $id): array
     {
         $profile = Auth::check() ? Auth::user()->profile : [];
 
@@ -206,7 +206,7 @@ class CollectionController extends Controller
         });
     }
 
-    public function deleteId(Request $request)
+    public function deleteId(Request $request): int
     {
         $this->validate($request, [
             'collection_id' => 'required|int|min:1|exists:collections,id',

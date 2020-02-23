@@ -17,7 +17,7 @@ class HashtagFollowController extends Controller
     	$this->middleware('auth');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): array
     {
     	$this->validate($request, [
     		'name' => 'required|alpha_num|min:1|max:124|exists:hashtags,name'

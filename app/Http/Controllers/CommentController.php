@@ -21,6 +21,9 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
 class CommentController extends Controller
 {
+    /**
+     * @return void
+     */
     public function showAll(Request $request, $username, int $id)
     {
         abort(404);

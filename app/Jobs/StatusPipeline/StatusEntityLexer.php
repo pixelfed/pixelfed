@@ -55,23 +55,35 @@ class StatusEntityLexer implements ShouldQueue
         }
     }
 
+    /**
+     * @return void
+     */
     public function parseEntities()
     {
         $this->extractEntities();
     }
 
+    /**
+     * @return void
+     */
     public function extractEntities()
     {
         $this->entities = Extractor::create()->extract($this->status->caption);
         $this->autolinkStatus();
     }
 
+    /**
+     * @return void
+     */
     public function autolinkStatus()
     {
         $this->autolink = Autolink::create()->autolink($this->status->caption);
         $this->storeEntities();
     }
 
+    /**
+     * @return void
+     */
     public function storeEntities()
     {
         $this->storeHashtags();
@@ -83,6 +95,9 @@ class StatusEntityLexer implements ShouldQueue
         });
     }
 
+    /**
+     * @return void
+     */
     public function storeHashtags()
     {
         $tags = array_unique($this->entities['hashtags']);
@@ -110,6 +125,9 @@ class StatusEntityLexer implements ShouldQueue
         $this->storeMentions();
     }
 
+    /**
+     * @return void
+     */
     public function storeMentions()
     {
         $mentions = array_unique($this->entities['mentions']);
@@ -134,6 +152,9 @@ class StatusEntityLexer implements ShouldQueue
         $this->deliver();
     }
 
+    /**
+     * @return void
+     */
     public function deliver()
     {
         if(config('federation.activitypub.enabled') == true) {

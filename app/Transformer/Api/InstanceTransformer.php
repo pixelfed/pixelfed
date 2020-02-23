@@ -7,7 +7,7 @@ use League\Fractal;
 
 class InstanceTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Instance $instance)
+    public function transform(Instance $instance): array
     {
         return [
             'uri'               => $instance->url,

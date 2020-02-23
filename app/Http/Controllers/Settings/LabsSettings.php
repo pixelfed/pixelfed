@@ -14,6 +14,9 @@ trait LabsSettings {
 		$this->middleware('auth');
 	}
 
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
 	public function labs(Request $request)
 	{
 		$profile = $request->user()->profile;
@@ -79,7 +82,7 @@ trait LabsSettings {
 			->cookie($cookie);
 	}
 
-	protected function momentBackgrounds()
+	protected function momentBackgrounds(): array
 	{
 		return [
 			'default',

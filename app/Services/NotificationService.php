@@ -92,7 +92,7 @@ class NotificationService {
 		});
 	} 
 
-	public static function warmCache($id, $stop = 400, $force = false)
+	public static function warmCache($id, $stop = 400, $force = false): int
 	{
 		if(self::count($id) == 0 || $force == true) {
 			$ids = Notification::whereProfileId($id)

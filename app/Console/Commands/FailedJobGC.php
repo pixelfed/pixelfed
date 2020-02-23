@@ -34,9 +34,9 @@ class FailedJobGC extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         FailedJob::chunk(50, function($jobs) {
             foreach($jobs as $job) {

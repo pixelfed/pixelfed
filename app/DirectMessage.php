@@ -22,7 +22,7 @@ class DirectMessage extends Model
     	return $this->hasOne(Profile::class, 'id', 'from_id');
     }
 
-    public function me()
+    public function me(): bool
     {
     	return Auth::user()->profile->id === $this->from_id;
     }

@@ -31,7 +31,7 @@ class NewPublicPost implements ShouldBroadcastNow
         $this->status = $status;
     }
 
-    public function broadcastAs()
+    public function broadcastAs(): string
     {
         return 'status';
     }
@@ -50,7 +50,7 @@ class NewPublicPost implements ShouldBroadcastNow
         ];
     }
 
-    public function via()
+    public function via(): string
     {
         return 'broadcast';
     }

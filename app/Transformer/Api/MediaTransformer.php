@@ -7,7 +7,7 @@ use League\Fractal;
 
 class MediaTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Media $media)
+    public function transform(Media $media): array
     {
         return [
             'id'            => (string) $media->id,

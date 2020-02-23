@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailVerification extends Model
 {
-    public function url()
+    public function url(): string
     {
         $base = config('app.url');
         $path = '/i/confirm-email/'.$this->user_token.'/'.$this->random_token;

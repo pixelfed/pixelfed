@@ -49,6 +49,9 @@ class InternalApiController extends Controller
     }
 
     // deprecated
+    /**
+     * @return void
+     */
     public function discover(Request $request)
     {
         return;
@@ -141,6 +144,9 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
+    /**
+     * @return void
+     */
     public function stories(Request $request)
     {
         
@@ -159,7 +165,7 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function modAction(Request $request)
+    public function modAction(Request $request): array
     {
         abort_unless(Auth::user()->is_admin, 403);
         $this->validate($request, [

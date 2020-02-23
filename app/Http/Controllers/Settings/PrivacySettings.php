@@ -173,7 +173,7 @@ trait PrivacySettings
         return view('settings.privacy.blocked-keywords');
     }
 
-    public function privateAccountOptions(Request $request)
+    public function privateAccountOptions(Request $request): array
     {
         $this->validate($request, [
             'mode' => 'required|string|in:keep-all,mutual-only,only-followers,remove-all',

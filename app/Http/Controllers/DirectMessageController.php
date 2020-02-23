@@ -51,6 +51,9 @@ class DirectMessageController extends Controller
     	return view('account.message', compact('msg', 'profile', 'thread'));
     }
 
+    /**
+     * @return void
+     */
     public function compose(Request $request)
     {
         $profile = Auth::user()->profile;

@@ -6,7 +6,7 @@ use App\Util\Lexer\Nickname;
 
 class WebfingerUrl
 {
-    public static function generateWebfingerUrl($url)
+    public static function generateWebfingerUrl($url): string
     {
         $url = Nickname::normalizeProfileUrl($url);
         $domain = $url['domain'];

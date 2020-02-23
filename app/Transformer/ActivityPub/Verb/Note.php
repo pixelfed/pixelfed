@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class Note extends Fractal\TransformerAbstract
 {
-	public function transform(Status $status)
+	public function transform(Status $status): array
 	{
 
 		$mentions = $status->mentions->map(function ($mention) {

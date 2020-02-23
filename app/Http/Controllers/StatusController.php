@@ -135,6 +135,9 @@ class StatusController extends Controller
         return view('status.compose');
     }
 
+    /**
+     * @return void
+     */
     public function store(Request $request)
     {
         return;
@@ -277,6 +280,9 @@ class StatusController extends Controller
         return response()->json([], 200);
     }
 
+    /**
+     * @return void
+     */
     protected function authCheck()
     {
         if (Auth::check() == false) {
@@ -290,7 +296,10 @@ class StatusController extends Controller
         return in_array($visibility, $allowed) ? $visibility : 'public';
     }
 
-    public static function mimeTypeCheck($mimes)
+    /**
+     * @return null|string
+     */
+    public static function mimeTypeCheck(array $mimes)
     {
         $allowed = explode(',', config('pixelfed.media_types'));
         $count = count($mimes);

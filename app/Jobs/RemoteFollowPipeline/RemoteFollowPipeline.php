@@ -36,9 +36,9 @@ class RemoteFollowPipeline implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return true
      */
-    public function handle()
+    public function handle(): bool
     {
         $follower = $this->follower;
         $url = $this->url;
@@ -52,6 +52,9 @@ class RemoteFollowPipeline implements ShouldQueue
         return true;
     }
 
+    /**
+     * @return void
+     */
     public function discover($url)
     {
         $context = new Context([
@@ -71,6 +74,9 @@ class RemoteFollowPipeline implements ShouldQueue
         $this->storeProfile();
     }
 
+    /**
+     * @return void
+     */
     public function storeProfile()
     {
         $res = $this->response;
@@ -92,6 +98,9 @@ class RemoteFollowPipeline implements ShouldQueue
         CreateAvatar::dispatch($profile);
     }
 
+    /**
+     * @return void
+     */
     public function sendActivity()
     {
         $res = $this->response;

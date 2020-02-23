@@ -11,7 +11,7 @@ class StoryTransformer extends Fractal\TransformerAbstract
         'items',
     ];
 
-    public function transform(Story $story)
+    public function transform(Story $story): array
     {
         return [
             'id'                        => (string) $story->id,

@@ -35,6 +35,9 @@ class NewsroomController extends Controller
 		return view('site.news.post.show', compact('post'));
 	}
 
+	/**
+	 * @return void
+	 */
 	public function search(Request $request)
 	{
 		abort(404);

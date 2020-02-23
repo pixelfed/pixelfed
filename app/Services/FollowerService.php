@@ -55,7 +55,7 @@ class FollowerService {
 		}
 	}
 
-	public static function follows(string $actor, string $target)
+	public static function follows(string $actor, string $target): bool
 	{
 		$key = self::$follower_prefix . $target;
 		if(Redis::zcard($key) == 0) {

@@ -51,7 +51,7 @@ class PublicApiController extends Controller
     	}
     }
 
-    protected function getLikes($status)
+    protected function getLikes(Status $status)
     {
         if(false == Auth::check()) {
             return [];
@@ -66,7 +66,7 @@ class PublicApiController extends Controller
         }
     }
 
-    protected function getShares($status)
+    protected function getShares(Status $status)
     {
         if(false == Auth::check()) {
             return [];
@@ -185,6 +185,9 @@ class PublicApiController extends Controller
         ]);
     }
 
+    /**
+     * @return void
+     */
     protected function scopeCheck(Profile $profile, Status $status)
     {
         if($profile->is_private == true && Auth::check() == false) {

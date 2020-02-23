@@ -62,6 +62,9 @@ class UserFilterObserver
 		$this->filterDelete($userFilter);
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function filterCreate(UserFilter $userFilter)
 	{
 		if($userFilter->filterable_type !== 'App\Profile') {
@@ -80,6 +83,9 @@ class UserFilterObserver
 	}
 
 
+	/**
+	 * @return void
+	 */
 	protected function filterDelete(UserFilter $userFilter)
 	{
 		if($userFilter->filterable_type !== 'App\Profile') {

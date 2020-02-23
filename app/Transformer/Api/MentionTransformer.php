@@ -7,7 +7,7 @@ use League\Fractal;
 
 class MentionTransformer extends Fractal\TransformerAbstract
 {
-    public function transform(Profile $profile)
+    public function transform(Profile $profile): array
     {
         return [
             'id'       => (string) $profile->id,

@@ -18,7 +18,7 @@ class StatusService {
 		return Redis::get(self::CACHE_KEY . $id) ?? self::coldGet($id);
 	}
 
-	public static function coldGet($id)
+	public static function coldGet($id): string
 	{
 		$status = Status::findOrFail($id);
 		$fractal = new Fractal\Manager();
@@ -29,7 +29,7 @@ class StatusService {
 		return $res;
 	}
 
-	public static function set($key, $val)
+	public static function set($key, string $val)
 	{
 		return Redis::set(self::CACHE_KEY . $key, $val);
 	}

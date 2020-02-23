@@ -15,7 +15,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         'tags',
     ];
 
-    public function transform(Status $status)
+    public function transform(Status $status): array
     {
         return [
             'id'                        => (string) $status->id,

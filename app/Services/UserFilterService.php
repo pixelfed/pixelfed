@@ -57,7 +57,7 @@ class UserFilterService {
 		return array_merge(self::mutes($profile_id), self::blocks($profile_id));
 	}
 
-	public static function mute(int $profile_id, int $muted_id)
+	public static function mute(int $profile_id, int $muted_id): bool
 	{
 		$key = self::USER_MUTES_KEY . $profile_id;
 		$mutes = self::mutes($profile_id);
@@ -68,7 +68,7 @@ class UserFilterService {
 		return true;
 	}
 
-	public static function unmute(int $profile_id, string $muted_id)
+	public static function unmute(int $profile_id, string $muted_id): bool
 	{
 		$key = self::USER_MUTES_KEY . $profile_id;
 		$mutes = self::mutes($profile_id);
@@ -79,7 +79,7 @@ class UserFilterService {
 		return true;
 	}
 
-	public static function block(int $profile_id, int $blocked_id)
+	public static function block(int $profile_id, int $blocked_id): bool
 	{
 		$key = self::USER_BLOCKS_KEY . $profile_id;
 		$exists = in_array($blocked_id, self::blocks($profile_id));
@@ -89,7 +89,7 @@ class UserFilterService {
 		return true;
 	}
 
-	public static function unblock(int $profile_id, string $blocked_id)
+	public static function unblock(int $profile_id, string $blocked_id): bool
 	{
 		$key = self::USER_BLOCKS_KEY . $profile_id;
 		$exists = in_array($blocked_id, self::blocks($profile_id));

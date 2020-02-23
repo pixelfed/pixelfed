@@ -41,7 +41,7 @@ class LikePipeline implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return null|true
      */
     public function handle()
     {
@@ -85,6 +85,9 @@ class LikePipeline implements ShouldQueue
         }
     }
 
+    /**
+     * @return void
+     */
     public function remoteLikeDeliver()
     {
         $like = $this->like;

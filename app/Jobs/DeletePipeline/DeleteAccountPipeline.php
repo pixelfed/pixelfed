@@ -54,6 +54,9 @@ class DeleteAccountPipeline implements ShouldQueue
 		$this->user = $user;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function handle()
 	{
 		$user = $this->user;
@@ -143,6 +146,9 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function deleteProfile($user) {
 		DB::transaction(function() use ($user) {
 			Profile::whereUserId($user->id)->delete();
@@ -150,6 +156,9 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function deleteUserSettings($user) {
 
 		DB::transaction(function() use ($user) {
@@ -160,6 +169,9 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function deleteUserColumns($user)
 	{
 		DB::transaction(function() use ($user) {

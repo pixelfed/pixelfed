@@ -42,7 +42,7 @@ class SharePipeline implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @return void
+     * @return null|true
      */
     public function handle()
     {
@@ -92,6 +92,9 @@ class SharePipeline implements ShouldQueue
         }
     }
 
+    /**
+     * @return null|true
+     */
     public function remoteAnnounceDeliver()
     {
         if(config('federation.activitypub.enabled') == false) {

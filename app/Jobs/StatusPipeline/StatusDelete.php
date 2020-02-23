@@ -63,7 +63,7 @@ class StatusDelete implements ShouldQueue
 
     }
 
-    public function unlinkRemoveMedia($status)
+    public function unlinkRemoveMedia(Status $status): bool
     {
         foreach ($status->media as $media) {
             $thumbnail = storage_path("app/{$media->thumbnail_path}");
@@ -110,7 +110,10 @@ class StatusDelete implements ShouldQueue
         return true;
     }
 
-    protected function fanoutDelete($status)
+    /**
+     * @return void
+     */
+    protected function fanoutDelete(Status $status)
     {
         $audience = $status->profile->getAudienceInbox();
         $profile = $status->profile;

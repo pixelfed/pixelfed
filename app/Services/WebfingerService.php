@@ -19,7 +19,7 @@ class WebfingerService
 		return (new self)->run($query);
 	}
 
-	protected function run($query)
+	protected function run($query): array
 	{
 		$url = WebfingerUrl::generateWebfingerUrl($query);
 		if(!Helpers::validateUrl($url)) {

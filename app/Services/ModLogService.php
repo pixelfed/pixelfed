@@ -104,6 +104,9 @@ class ModLogService {
 		return $this;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function fanout()
 	{
 		$log = $this->log;
@@ -133,6 +136,9 @@ class ModLogService {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function unfanout()
 	{
 		Notification::whereItemType('App\ModLog')

@@ -27,7 +27,7 @@ class Like extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function toText($type = 'post')
+    public function toText(string $type = 'post'): string
     {
         $actorName = $this->actor->username;
         $msg = $type == 'post' ? __('notification.likedPhoto') : __('notification.likedComment');
@@ -35,7 +35,7 @@ class Like extends Model
         return "{$actorName} ".$msg;
     }
 
-    public function toHtml($type = 'post')
+    public function toHtml(string $type = 'post'): string
     {
         $actorName = $this->actor->username;
         $actorUrl = $this->actor->url();

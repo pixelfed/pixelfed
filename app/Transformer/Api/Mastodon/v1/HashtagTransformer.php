@@ -7,7 +7,7 @@ use League\Fractal;
 
 class HashtagTransformer extends Fractal\TransformerAbstract
 {
-	public function transform(Hashtag $hashtag)
+	public function transform(Hashtag $hashtag): array
 	{
 		return [
 			'name' => $hashtag->name,

@@ -430,7 +430,10 @@ class AccountController extends Controller
 		}
 	}
 
-	protected function twoFactorBackupCheck($request, $code, User $user)
+	/**
+	 * @return bool|null
+	 */
+	protected function twoFactorBackupCheck(Request $request, $code, User $user)
 	{
 		$backupCodes = $user->{'2fa_backup_codes'};
 		if($backupCodes) {
@@ -451,6 +454,9 @@ class AccountController extends Controller
 		}  
 	}
 
+	/**
+	 * @return void
+	 */
 	public function accountRestored(Request $request)
 	{
 	}

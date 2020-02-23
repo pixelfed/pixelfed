@@ -39,6 +39,9 @@ class AuthLogin
         $this->userLanguage($user);
     }
 
+    /**
+     * @return void
+     */
     protected function userProfile($user)
     {
         if (empty($user->profile)) {
@@ -68,6 +71,9 @@ class AuthLogin
         }
     }
 
+    /**
+     * @return void
+     */
     protected function userSettings($user)
     {
         if (empty($user->settings)) {
@@ -79,6 +85,9 @@ class AuthLogin
         }
     }
 
+    /**
+     * @return void
+     */
     protected function userState($user)
     {
         if($user->status != null) {
@@ -110,6 +119,9 @@ class AuthLogin
         }
     }
 
+    /**
+     * @return void
+     */
     protected function userDevice($user)
     {
         $device = DB::transaction(function() use($user) {
@@ -121,6 +133,9 @@ class AuthLogin
         });
     }
 
+    /**
+     * @return void
+     */
     protected function userProfileId($user)
     {
         if($user->profile_id == null) {
@@ -134,6 +149,9 @@ class AuthLogin
         }
     }
 
+    /**
+     * @return void
+     */
     protected function userLanguage($user)
     {
         session()->put('locale', $user->language ?? 'en');
