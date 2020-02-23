@@ -27,7 +27,7 @@ use App\Util\ActivityPub\{
     HttpSignature,
     Outbox
 };
-use \Zttp\Zttp;
+use Zttp\Zttp;
 
 class FederationController extends Controller
 {

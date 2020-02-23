@@ -23,7 +23,7 @@
 - Updated AdminUserController, add moderation method ([a4cf21ea](https://github.com/pixelfed/pixelfed/commit/a4cf21ea))
 - Updated BaseApiController, invalidate session after account deletion ([826978ce](https://github.com/pixelfed/pixelfed/commit/826978ce))
 - Updated AdminUserController, add account deletion handler ([9be19ad8](https://github.com/pixelfed/pixelfed/commit/9be19ad8))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Updated ContactController, fixes #2042 ([c9057e87](https://github.com/pixelfed/pixelfed/commit/c9057e87))
 
 ## [v0.10.8 (2020-01-29)](https://github.com/pixelfed/pixelfed/compare/v0.10.7...v0.10.8)
 ### Added

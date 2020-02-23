@@ -360,9 +360,10 @@
 		hide-footer
 		centered
 		title="Following"
-		body-class="list-group-flush p-0">
+		body-class="list-group-flush py-3 px-0"
+		dialog-class="follow-modal">
 		<div class="list-group">
-			<div class="list-group-item border-0" v-for="(user, index) in following" :key="'following_'+index">
+			<div class="list-group-item border-0 py-1" v-for="(user, index) in following" :key="'following_'+index">
 				<div class="media">
 					<a :href="user.url">
 						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
@@ -378,7 +379,7 @@
 						</p>
 					</div>
 					<div v-if="owner">
-						<a class="btn btn-outline-secondary btn-sm" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Unfollow</a>
+						<a class="btn btn-outline-dark btn-sm font-weight-bold" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Following</a>
 					</div>
 				</div>
 			</div>
@@ -397,23 +398,26 @@
 		hide-footer
 		centered
 		title="Followers"
-		body-class="list-group-flush p-0">
+		body-class="list-group-flush py-3 px-0"
+		dialog-class="follow-modal"
+		>
 		<div class="list-group">
-			<div class="list-group-item border-0" v-for="(user, index) in followers" :key="'follower_'+index">
-				<div class="media">
+			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
+				<div class="media mb-0">
 					<a :href="user.url">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
+						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy">
 					</a>
-					<div class="media-body">
+					<div class="media-body mb-0">
 						<p class="mb-0" style="font-size: 14px">
 							<a :href="user.url" class="font-weight-bold text-dark">
 								{{user.username}}
 							</a>
 						</p>
-						<p class="text-muted mb-0" style="font-size: 14px">
+						<p class="text-secondary mb-0" style="font-size: 13px">
 							{{user.display_name}}
 						</p>
 					</div>
+					<!-- <button class="btn btn-primary font-weight-bold btn-sm py-1">FOLLOW</button> -->
 				</div>
 			</div>
 			<div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
