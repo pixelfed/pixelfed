@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DB;
-use Cache;
-use App\Media;
-use App\Profile;
-use App\Status;
+use DB, Cache;
+use App\{
+	Media,
+	Profile,
+	Status
+};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

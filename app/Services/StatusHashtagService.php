@@ -4,8 +4,7 @@ namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Status;
-use App\StatusHashtag;
+use App\{Status, StatusHashtag};
 use App\Transformer\Api\StatusHashtagTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

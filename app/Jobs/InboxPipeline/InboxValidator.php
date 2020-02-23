@@ -3,9 +3,11 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Profile;
-use App\Util\ActivityPub\Helpers;
-use App\Util\ActivityPub\HttpSignature;
-use App\Util\ActivityPub\Inbox;
+use App\Util\ActivityPub\{
+    Helpers,
+    HttpSignature,
+    Inbox
+};
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

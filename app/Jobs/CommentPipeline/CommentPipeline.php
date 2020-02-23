@@ -2,13 +2,13 @@
 
 namespace App\Jobs\CommentPipeline;
 
-use App\Notification;
-use App\Status;
-use App\UserFilter;
+use App\{
+    Notification,
+    Status,
+    UserFilter
+};
 use App\Services\NotificationService;
-use DB;
-use Cache;
-use Log;
+use DB, Cache, Log;
 use Illuminate\Support\Facades\Redis;
 
 use Illuminate\Bus\Queueable;

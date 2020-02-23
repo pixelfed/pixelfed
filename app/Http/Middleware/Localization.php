@@ -2,8 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Session;
+use Closure, Session;
 
 class Localization
 {

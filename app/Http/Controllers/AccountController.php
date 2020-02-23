@@ -12,13 +12,15 @@ use App\Mail\ConfirmEmail;
 use Illuminate\Http\Request;
 use PragmaRX\Google2FA\Google2FA;
 use App\Jobs\FollowPipeline\FollowPipeline;
-use App\EmailVerification;
-use App\Follower;
-use App\FollowRequest;
-use App\Notification;
-use App\Profile;
-use App\User;
-use App\UserFilter;
+use App\{
+	EmailVerification,
+	Follower,
+	FollowRequest,
+	Notification,
+	Profile,
+	User,
+	UserFilter
+};
 
 class AccountController extends Controller
 {

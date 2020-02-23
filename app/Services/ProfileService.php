@@ -5,8 +5,10 @@ namespace App\Services;
 use Cache;
 use Illuminate\Support\Facades\Redis;
 
-use App\Follower;
-use App\Profile;
+use App\{
+	Follower,
+	Profile
+};
 
 class ProfileService {
 

@@ -9,8 +9,7 @@ use App\Profile;
 use App\Story;
 use App\StoryView;
 use App\Services\StoryService;
-use Cache;
-use Storage;
+use Cache, Storage;
 use Image as Intervention;
 use App\Services\FollowerService;
 

@@ -4,16 +4,18 @@ namespace App\Services;
 
 use Cache;
 use App\Util\Lexer\PrettyNumber;
-use App\Contact;
-use App\FailedJob;
-use App\Hashtag;
-use App\Instance;
-use App\Media;
-use App\Like;
-use App\Profile;
-use App\Report;
-use App\Status;
-use App\User;
+use App\{
+	Contact,
+	FailedJob,
+	Hashtag,
+	Instance,
+	Media,
+	Like,
+	Profile,
+	Report,
+	Status,
+	User
+};
 
 class AdminStatsService
 {

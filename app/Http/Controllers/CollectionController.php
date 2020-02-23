@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
-use App\Collection;
-use App\CollectionItem;
-use App\Profile;
-use App\Status;
+use App\{
+    Collection,
+    CollectionItem,
+    Profile,
+    Status
+};
 use League\Fractal;
-use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\StatusTransformer;
+use App\Transformer\Api\{
+    AccountTransformer,
+    StatusTransformer,
+};
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 

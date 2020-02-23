@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Media;
-use App\Status;
+use App\{Media, Status};
 use Carbon\Carbon;
 
 class MediaGarbageCollector extends Command

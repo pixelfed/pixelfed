@@ -5,9 +5,11 @@ namespace App\Services;
 use Cache;
 use Illuminate\Support\Facades\Redis;
 
-use App\Follower;
-use App\Profile;
-use App\UserFilter;
+use App\{
+	Follower,
+	Profile,
+	UserFilter
+};
 
 class UserFilterService {
 

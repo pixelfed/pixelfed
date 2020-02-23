@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\HashtagTransformer;
-use App\Transformer\Api\StatusTransformer;
+use App\Transformer\Api\{
+    AccountTransformer,
+    HashtagTransformer,
+    StatusTransformer,
+};
 
 class SearchController extends Controller
 {

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Illuminate\Http\Request;
-use App\DirectMessage;
-use App\Profile;
-use App\Status;
+use App\{
+	DirectMessage,
+	Profile,
+	Status
+};
 
 class DirectMessageController extends Controller
 {

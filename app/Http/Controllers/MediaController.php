@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth;
-use Storage;
-use URL;
+use Auth, Storage, URL;
 use App\Media;
 use Image as Intervention;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;

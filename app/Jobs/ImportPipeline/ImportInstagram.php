@@ -12,11 +12,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
-use App\ImportJob;
-use App\ImportData;
-use App\Media;
-use App\Profile;
-use App\Status;
+use App\{
+    ImportJob,
+    ImportData,
+    Media,
+    Profile,
+    Status,
+};
 
 class ImportInstagram implements ShouldQueue
 {

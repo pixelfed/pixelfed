@@ -7,15 +7,13 @@ use App\Following;
 use App\Report;
 use App\Status;
 use App\UserFilter;
-use Auth;
-use Cookie;
-use DB;
-use Cache;
-use Purify;
+use Auth, Cookie, DB, Cache, Purify;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Transformer\ActivityPub\ProfileTransformer;
-use App\Transformer\ActivityPub\StatusTransformer;
+use App\Transformer\ActivityPub\{
+	ProfileTransformer,
+	StatusTransformer
+};
 use App\Transformer\Api\StatusTransformer as StatusApiTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;

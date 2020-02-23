@@ -2,19 +2,16 @@
 
 namespace App\Util\ActivityPub;
 
-use DB;
-use Cache;
-use Purify;
-use Storage;
-use Request;
-use Validator;
-use App\Activity;
-use App\Follower;
-use App\Like;
-use App\Media;
-use App\Notification;
-use App\Profile;
-use App\Status;
+use DB, Cache, Purify, Storage, Request, Validator;
+use App\{
+	Activity,
+	Follower,
+	Like,
+	Media,
+	Notification,
+	Profile,
+	Status
+};
 use Zttp\Zttp;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -22,8 +19,7 @@ use Illuminate\Http\File;
 use Illuminate\Validation\Rule;
 use App\Jobs\AvatarPipeline\CreateAvatar;
 use App\Jobs\RemoteFollowPipeline\RemoteFollowImportRecent;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
+use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;

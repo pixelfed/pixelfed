@@ -3,8 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Profile;
-use App\User;
+use App\{Profile, User};
 use DB;
 use App\Util\Lexer\RestrictedNames;
 

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\DiscoverCategory;
-use App\Follower;
-use App\Hashtag;
-use App\HashtagFollow;
-use App\Profile;
-use App\Status;
-use App\StatusHashtag;
-use App\UserFilter;
-use Auth;
-use DB;
-use Cache;
+use App\{
+  DiscoverCategory,
+  Follower,
+  Hashtag,
+  HashtagFollow,
+  Profile,
+  Status, 
+  StatusHashtag, 
+  UserFilter
+};
+use Auth, DB, Cache;
 use Illuminate\Http\Request;
 use App\Transformer\Api\AccountTransformer;
 use App\Transformer\Api\AccountWithStatusesTransformer;

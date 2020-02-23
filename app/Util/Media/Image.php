@@ -4,8 +4,7 @@ namespace App\Util\Media;
 
 use App\Media;
 use Image as Intervention;
-use Cache;
-use Storage;
+use Cache, Storage;
 
 class Image
 {

@@ -2,19 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Artisan;
-use Cache;
-use DB;
+use Artisan, Cache, DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Comment;
-use App\Like;
-use App\Media;
-use App\Page;
-use App\Profile;
-use App\Report;
-use App\Status;
-use App\User;
+use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
 use App\Http\Controllers\Controller;
 use App\Util\Lexer\PrettyNumber;
 

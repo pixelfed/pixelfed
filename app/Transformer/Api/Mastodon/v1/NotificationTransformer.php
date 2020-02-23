@@ -2,8 +2,10 @@
 
 namespace App\Transformer\Api\Mastodon\v1;
 
-use App\Notification;
-use App\Status;
+use App\{
+	Notification,
+	Status
+};
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract

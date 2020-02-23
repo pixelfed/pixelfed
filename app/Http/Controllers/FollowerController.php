@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Follower;
-use App\FollowRequest;
-use App\Profile;
-use App\UserFilter;
-use Auth;
-use Cache;
+use App\{
+    Follower,
+    FollowRequest,
+    Profile,
+    UserFilter
+};
+use Auth, Cache;
 use Illuminate\Http\Request;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Util\ActivityPub\Helpers;

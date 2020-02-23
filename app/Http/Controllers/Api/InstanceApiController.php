@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Profile;
-use App\Status;
-use App\User;
+use App\{Profile, Status, User};
 use Cache;
 
 class InstanceApiController extends Controller {

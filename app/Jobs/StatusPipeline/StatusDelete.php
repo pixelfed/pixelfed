@@ -3,10 +3,12 @@
 namespace App\Jobs\StatusPipeline;
 
 use DB;
-use App\Notification;
-use App\Report;
-use App\Status;
-use App\StatusHashtag;
+use App\{
+    Notification,
+    Report,
+    Status,
+    StatusHashtag,
+};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

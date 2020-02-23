@@ -4,9 +4,7 @@ namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\Redis;
-use App\Hashtag;
-use App\Profile;
-use App\Status;
+use App\{Hashtag, Profile, Status};
 use App\Transformer\Api\AccountTransformer;
 use App\Transformer\Api\StatusTransformer;
 use League\Fractal;

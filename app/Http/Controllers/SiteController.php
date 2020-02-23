@@ -3,17 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App;
-use Auth;
-use Cache;
-use View;
+use App, Auth, Cache, View;
 use App\Util\Lexer\PrettyNumber;
-use App\Follower;
-use App\Page;
-use App\Profile;
-use App\Status;
-use App\User;
-use App\UserFilter;
+use App\{Follower, Page, Profile, Status, User, UserFilter};
 use App\Util\Localization\Localization;
 use App\Services\FollowerService;
 

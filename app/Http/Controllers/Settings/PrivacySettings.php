@@ -12,9 +12,7 @@ use App\User;
 use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
 use App\Util\ActivityPub\Helpers;
-use Auth;
-use Cache;
-use DB;
+use Auth, Cache, DB;
 use Illuminate\Http\Request;
 
 trait PrivacySettings

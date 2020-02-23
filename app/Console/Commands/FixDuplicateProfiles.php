@@ -4,11 +4,13 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-use App\Like;
-use App\Media;
-use App\Profile;
-use App\Status;
-use App\User;
+use App\{
+    Like,
+    Media,
+    Profile,
+    Status,
+    User
+};
 
 class FixDuplicateProfiles extends Command
 {

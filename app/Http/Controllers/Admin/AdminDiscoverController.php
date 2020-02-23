@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DB;
-use Cache;
-use App\DiscoverCategory;
-use App\DiscoverCategoryHashtag;
-use App\Hashtag;
-use App\Media;
-use App\Profile;
-use App\StatusHashtag;
+use DB, Cache;
+use App\{
+	DiscoverCategory, 
+	DiscoverCategoryHashtag, 
+	Hashtag, 
+	Media, 
+	Profile, 
+	StatusHashtag
+};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

@@ -4,8 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Avatar;
-use Cache;
-use DB;
+use Cache, DB;
 use Illuminate\Support\Str;
 
 class AvatarDefaultMigration extends Command
