@@ -197,7 +197,7 @@ class Installer extends Command
         $this->updateEnvFile('CACHE_DRIVER', $cache ?? 'redis');
 
         $session = $this->choice('Select session driver', ["redis", "file", "cookie", "database", "apc", "memcached", "array"], 0);
-        $this->updateEnvFile('SESSION_DRIVER', $cache ?? 'redis');
+        $this->updateEnvFile('SESSION_DRIVER', $session ?? 'redis');
 
         $redis_host = $this->ask('Set redis host', 'localhost');
         $this->updateEnvFile('REDIS_HOST', $redis_host);
