@@ -19,6 +19,7 @@ use App\{
     Profile,
     Status,
 };
+use function hash_file;
 
 class ImportInstagram implements ShouldQueue
 {
@@ -61,7 +62,7 @@ class ImportInstagram implements ShouldQueue
         $files = $job->files;
         $monthHash = hash('sha1', date('Y').date('m'));
         $userHash = hash('sha1', $profile->id . (string) $profile->created_at);
-        $fs = new Filesystem;
+        $fs = new Filesystem();
 
         foreach($collection as $import)
         {
@@ -104,7 +105,7 @@ class ImportInstagram implements ShouldQueue
                 $newPath = "app/$storagePath/$filename";
                 $fs->move($path,storage_path($newPath));
                 $path = $newPath;
-                $hash = \hash_file('sha256', storage_path($path));
+                $hash = hash_file('sha256', storage_path($path));
                 $media = new Media();
                 $media->status_id = $status->id;
                 $media->profile_id = $profile->id;

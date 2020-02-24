@@ -264,7 +264,7 @@ class InternalApiController extends Controller
         $visibility = $request->input('visibility');
         $medias = $request->input('media');
         $attachments = [];
-        $status = new Status;
+        $status = new Status();
         $mimes = [];
         $place = $request->input('place');
         $cw = $request->input('cw');

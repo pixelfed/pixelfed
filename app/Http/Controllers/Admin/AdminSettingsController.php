@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Artisan, Cache, DB;
+use DirectoryIterator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
@@ -19,7 +20,7 @@ trait AdminSettingsController
 	public function settingsBackups(Request $request)
 	{
 		$path = storage_path('app/'.config('app.name'));
-		$files = is_dir($path) ? new \DirectoryIterator($path) : [];
+		$files = is_dir($path) ? new DirectoryIterator($path) : [];
 		return view('admin.settings.backups', compact('files'));
 	}
 

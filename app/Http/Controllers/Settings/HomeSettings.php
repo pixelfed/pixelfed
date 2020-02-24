@@ -9,6 +9,7 @@ use App\Profile;
 use App\User;
 use App\UserFilter;
 use App\Util\Lexer\PrettyNumber;
+use App\Util\Localization\Localization;
 use Auth;
 use Cache;
 use DB;
@@ -74,7 +75,7 @@ trait HomeSettings
             }
 
             if($user->language != $language &&
-                in_array($language, \App\Util\Localization\Localization::languages())
+                in_array($language, Localization::languages())
             ) {
                 $changes = true;
                 $user->language = $language;

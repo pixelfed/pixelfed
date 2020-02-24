@@ -4,6 +4,7 @@ namespace App\Jobs\AvatarPipeline;
 
 use App\Avatar;
 use App\Profile;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -47,7 +48,7 @@ class CreateAvatar implements ShouldQueue
         $avatar->media_path = $path;
         $avatar->thumb_path = $path;
         $avatar->change_count = 0;
-        $avatar->last_processed_at = \Carbon\Carbon::now();
+        $avatar->last_processed_at = Carbon::now();
         $avatar->save();
     }
 }

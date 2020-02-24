@@ -176,7 +176,7 @@ class ProfileController extends Controller
 
         return Cache::remember($key, $ttl, function() use($user) {
             $fractal = new Fractal\Manager();
-            $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
+            $resource = new Fractal\Resource\Item($user, new ProfileTransformer());
             $res = $fractal->createData($resource)->toArray();
             return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
         });

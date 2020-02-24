@@ -38,7 +38,7 @@ class UserInviteController extends Controller
 			'tos'	=> 'required|accepted'
 		]);
 
-		$invite = new UserInvite;
+		$invite = new UserInvite();
 		$invite->user_id = Auth::id();
 		$invite->profile_id = Auth::user()->profile->id;
 		$invite->email = $request->input('email');

@@ -12,6 +12,7 @@ use App\{
 	User
 };
 use App\Jobs\ImportPipeline\ImportInstagram;
+use Log;
 
 trait Instagram
 {
@@ -46,7 +47,7 @@ trait Instagram
     		->whereNull('completed_at')
     		->first();
     	} else {
-    		$job = new ImportJob;
+    		$job = new ImportJob();
     		$job->profile_id = $profile->id;
     		$job->service = 'instagram';
     		$job->uuid = (string) Str::uuid();
@@ -91,7 +92,7 @@ trait Instagram
             $storagePath = "import/{$job->uuid}";
             $path = $v->store($storagePath);
             DB::transaction(function() use ($profile, $job, $path, $original) {
-		        $data = new ImportData;
+		        $data = new ImportData();
 		        $data->profile_id = $profile->id;
 		        $data->job_id = $job->id;
 		        $data->service = 'instagram';
@@ -170,7 +171,7 @@ trait Instagram
             ->firstOrFail();
             ImportInstagram::dispatch($import);
         } catch (Exception $e) {
-            \Log::info($e);
+            Log::info($e);
         }
 
         return redirect(route('settings'))->with(['status' => [

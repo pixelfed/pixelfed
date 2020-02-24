@@ -3,6 +3,7 @@
 namespace App\Util\Media;
 
 use App\Media;
+use Exception;
 use Image as Intervention;
 use Cache, Storage;
 
@@ -53,7 +54,7 @@ class Image
 	public function getAspectRatio($mediaPath, $thumbnail = false)
 	{
 		if (!is_file($mediaPath)) {
-			throw new \Exception('Invalid Media Path');
+			throw new Exception('Invalid Media Path');
 		}
 		if ($thumbnail) {
 			return [

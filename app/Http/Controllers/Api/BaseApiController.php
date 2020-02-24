@@ -35,6 +35,7 @@ use App\Jobs\VideoPipeline\{
     VideoThumbnail
 };
 use App\Services\NotificationService;
+use function hash_file;
 
 class BaseApiController extends Controller
 {
@@ -126,7 +127,7 @@ class BaseApiController extends Controller
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
         $account = Profile::whereNull('status')->findOrFail($id);
-        $statuses = $account->statuses()->getQuery(); 
+        $statuses = $account->statuses()->getQuery();
         if($only_media == true) {
             $statuses = $statuses
                 ->whereHas('media')
@@ -247,7 +248,7 @@ class BaseApiController extends Controller
 
         $storagePath = "public/m/{$monthHash}/{$userHash}";
         $path = $photo->store($storagePath);
-        $hash = \hash_file('sha256', $photo);
+        $hash = hash_file('sha256', $photo);
 
         $media = new Media();
         $media->status_id = null;

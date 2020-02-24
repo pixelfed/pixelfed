@@ -314,7 +314,7 @@ class Helpers {
 			}
 			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
 			$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope) {
-				$status = new Status;
+				$status = new Status();
 				$status->profile_id = $profile->id;
 				$status->url = isset($res['url']) ? $res['url'] : $url;
 				$status->uri = isset($res['url']) ? $res['url'] : $url;

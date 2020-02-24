@@ -44,7 +44,7 @@ class MicroController extends Controller
 		$visibility = $request->input('visibility');
 
 		$status = DB::transaction(function() use($profile, $content, $visibility, $title) {
-			$status = new Status;
+			$status = new Status();
 			$status->type = 'text';
 			$status->profile_id = $profile->id;
 			$status->caption = strip_tags($content);

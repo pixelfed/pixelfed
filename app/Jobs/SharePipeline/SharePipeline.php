@@ -74,7 +74,7 @@ class SharePipeline implements ShouldQueue
         $this->remoteAnnounceDeliver();
 
         try {
-            $notification = new Notification;
+            $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'share';

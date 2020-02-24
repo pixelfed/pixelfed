@@ -2,6 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
+use Exception;
 use Zttp\Zttp;
 
 class DiscoverActor
@@ -41,7 +42,7 @@ class DiscoverActor
         $res = $this->getResponse();
 
         if (empty($res) || !in_array('type', $res) || $res['type'] !== 'Person') {
-            throw new \Exception('Invalid Actor Object');
+            throw new Exception('Invalid Actor Object');
         }
 
         return $res;

@@ -145,7 +145,7 @@ trait PrivacySettings
         }
         $domain = parse_url($domain, PHP_URL_HOST);
         $instance = Instance::firstOrCreate(['domain' => $domain]);
-        $filter = new UserFilter;
+        $filter = new UserFilter();
         $filter->user_id = Auth::user()->profile->id;
         $filter->filterable_id = $instance->id;
         $filter->filterable_type = 'App\Instance';

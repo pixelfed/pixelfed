@@ -38,7 +38,7 @@ class ContactController extends Controller
 			return redirect()->back()->with('error', 'You have recently sent a message. Please try again later.');
 		}
 
-		$contact = new Contact;
+		$contact = new Contact();
 		$contact->user_id = $user->id;
 		$contact->response_requested = $request_response;
 		$contact->message = $message;

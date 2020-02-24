@@ -48,6 +48,7 @@ use App\Services\{
     NotificationService,
     SearchApiV2Service
 };
+use function hash_file;
 
 class ApiV1Controller extends Controller 
 {
@@ -996,7 +997,7 @@ class ApiV1Controller extends Controller
 
         $storagePath = "public/m/{$monthHash}/{$userHash}";
         $path = $photo->store($storagePath);
-        $hash = \hash_file('sha256', $photo);
+        $hash = hash_file('sha256', $photo);
 
         $media = new Media();
         $media->status_id = null;
@@ -1559,7 +1560,7 @@ class ApiV1Controller extends Controller
         if($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
 
-            $status = new Status;
+            $status = new Status();
             $status->caption = strip_tags($request->input('status'));
             $status->scope = $request->input('visibility');
             $status->visibility = $request->input('visibility');
@@ -1569,7 +1570,7 @@ class ApiV1Controller extends Controller
             $status->in_reply_to_profile_id = $parent->profile_id;
             $status->save();
         } else if($ids) {
-            $status = new Status;
+            $status = new Status();
             $status->caption = strip_tags($request->input('status'));
             $status->profile_id = $user->profile_id;
             $status->scope = 'draft';

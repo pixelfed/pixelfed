@@ -29,14 +29,14 @@ use App\Services\AdminStatsService;
 
 class AdminController extends Controller
 {
-	use AdminReportController, 
-	AdminDiscoverController, 
-	AdminMediaController, 
-	AdminSettingsController, 
-	AdminInstanceController,
-	AdminUserController;
+    use AdminDiscoverController;
+    use AdminInstanceController;
+    use AdminMediaController;
+    use AdminReportController;
+    use AdminSettingsController;
+    use AdminUserController;
 
-	public function __construct()
+    public function __construct()
 	{
 		$this->middleware('admin');
 		$this->middleware('dangerzone');
