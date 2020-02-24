@@ -542,7 +542,6 @@ export default {
 			composeState: 'publish',
 			visibility: 'public',
 			visibilityTag: 'Public',
-			nsfw: false,
 			place: false,
 			commentsDisabled: false,
 			pageTitle: '',
