@@ -210,7 +210,7 @@ class SettingsController extends Controller
         $opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
 
         if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
-            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
+            return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
         }
 
         $res = [
@@ -225,7 +225,7 @@ class SettingsController extends Controller
         $sponsors->sponsors = json_encode($res);
         $sponsors->save();
         $sponsors = $res;
-        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
+        return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');
     }
 
 }
