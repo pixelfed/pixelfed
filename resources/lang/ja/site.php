@@ -14,7 +14,7 @@ return [
 	'selectLocale'  => 'リストの中からロケール（言語）を選択してください',
 	'contact'		=> 'コンタクト',
 	'contact-us'	=> 'お問い合わせ',
-	'places'        => 'プレイス',
+	'places'        => '場所',
 	'profiles'      => 'プロフィール',
 
 ];
