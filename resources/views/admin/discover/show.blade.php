@@ -234,7 +234,7 @@ $(document).ready(function() {
 }
 .bootstrap-tagsinput .badge [data-role="remove"]:after {
   content: "×";
-  padding: 0px 4px;
+  padding: 0 4px;
   background-color:rgba(0, 0, 0, 0.1);
   border-radius:50%;
   font-size:13px
