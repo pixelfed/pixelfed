@@ -119,7 +119,6 @@
 					},
 					cw: {
 						text: autocw == 0 ? "CW Media" : "Remove AutoCW",
-						text: autocw == 0 ? "CW Media" : "Remove AutoCW",
 						className: "bg-warning",
 						value: "autocw",
 					},
