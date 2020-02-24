@@ -476,7 +476,6 @@
 		flex-wrap:unset;
 	}
 	.media-drawer-filters::-webkit-scrollbar {
-		width: 0px;
 		background: transparent;
 	}
 	.media-drawer-filters .nav-link {
@@ -542,7 +541,6 @@ export default {
 			composeState: 'publish',
 			visibility: 'public',
 			visibilityTag: 'Public',
-			nsfw: false,
 			place: false,
 			commentsDisabled: false,
 			pageTitle: '',

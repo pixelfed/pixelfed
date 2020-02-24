@@ -81,7 +81,7 @@ class AccountController extends Controller
 		EmailVerification::whereUserId(Auth::id())->delete();
 
 		$user = User::whereNull('email_verified_at')->find(Auth::id());
-		$utoken = Str::uuid() . Str::random(mt_rand(5,9));
+		$utoken = Str::uuid()->toString();
 		$rtoken = Str::random(mt_rand(64, 70));
 
 		$verify = new EmailVerification();

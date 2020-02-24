@@ -46,7 +46,6 @@
                  Roboto,Helvetica,Arial,sans-serif;
     font-size: 16px;
     height: 100%;
-    margin: 0px;
     position: relative;
 }
 </style>
