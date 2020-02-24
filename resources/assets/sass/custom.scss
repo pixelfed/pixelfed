@@ -426,7 +426,7 @@ details summary::-webkit-details-marker {
   border: 6px solid #6c757d;
   border-radius: 50%;
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #6c757d transparent transparent transparent;
+  border-color: #6c757d transparent transparent;
 }
 
 .lds-ring div:nth-child(1) {
@@ -549,14 +549,14 @@ details summary::-webkit-details-marker {
 }
 
 .carousel-control-prev-icon, .carousel-control-next-icon {
-    filter: drop-shadow(0px 0px 1px black);
+    filter: drop-shadow(0 0 1px black);
 }
 
 .VueCarousel:focus,
 .VueCarousel-navigation-button:focus,
 .VueCarousel-dot:focus,
 .VueCarousel-dot--active:focus {
-  outline: 0px !important;
+  outline: 0 !important;
 }
 
 .status-content > p:first-child {
