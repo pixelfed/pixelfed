@@ -426,7 +426,7 @@ details summary::-webkit-details-marker {
   border: 6px solid #6c757d;
   border-radius: 50%;
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #6c757d transparent transparent;
+  border-color: #6c757d transparent transparent transparent;
 }
 
 .lds-ring div:nth-child(1) {
