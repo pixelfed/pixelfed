@@ -1,7 +1,7 @@
 @component('mail::message')
 # Email Confirmation
 
-Hello <b>{{ '@' . $verify->user->username}}</b>, please confirm your email address.
+Hello **{{'@'.$verify->user->username}}**, please confirm your email address.
 
 If you did not create this account, please disregard this email.
 
