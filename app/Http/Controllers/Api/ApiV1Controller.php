@@ -205,19 +205,32 @@ class ApiV1Controller extends Controller
     public function accountFollowersById(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
+
+        $user = $request->user();
         $profile = Profile::whereNull('status')->findOrFail($id);
+        $limit = $request->input('limit') ?? 40;
 
         if($profile->domain) {
             $res = [];
         } else {
-            $settings = $profile->user->settings;
-            if($settings->show_profile_followers == true) {
-                $limit = $request->input('limit') ?? 40;
+            if($profile->id == $user->profile_id) {
                 $followers = $profile->followers()->paginate($limit);
                 $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
                 $res = $this->fractal->createData($resource)->toArray();
             } else {
-                $res = [];
+                if($profile->is_private) {
+                    abort_if(!$profile->followedBy($user->profile), 403);
+                }
+                $settings = $profile->user->settings;
+                if( in_array($user->profile_id, $profile->blockedIds()->toArray()) || 
+                    $settings->show_profile_followers == false
+                ) {
+                    $res = [];
+                } else {
+                    $followers = $profile->followers()->paginate($limit);
+                    $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
+                    $res = $this->fractal->createData($resource)->toArray();
+                }
             }
         }
         return response()->json($res);
@@ -233,21 +246,35 @@ class ApiV1Controller extends Controller
     public function accountFollowingById(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
+
+        $user = $request->user();
         $profile = Profile::whereNull('status')->findOrFail($id);
+        $limit = $request->input('limit') ?? 40;
 
         if($profile->domain) {
             $res = [];
         } else {
-            $settings = $profile->user->settings;
-            if($settings->show_profile_following == true) {
-                $limit = $request->input('limit') ?? 40;
+            if($profile->id == $user->profile_id) {
                 $following = $profile->following()->paginate($limit);
                 $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
                 $res = $this->fractal->createData($resource)->toArray();
             } else {
-                $res = [];
+                if($profile->is_private) {
+                    abort_if(!$profile->followedBy($user->profile), 403);
+                }
+                $settings = $profile->user->settings;
+                if( in_array($user->profile_id, $profile->blockedIds()->toArray()) || 
+                    $settings->show_profile_following == false
+                ) {
+                    $res = [];
+                } else {
+                    $following = $profile->following()->paginate($limit);
+                    $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
+                    $res = $this->fractal->createData($resource)->toArray();
+                }
             }
         }
+
 
         return response()->json($res);
     }
@@ -1764,7 +1791,7 @@ class ApiV1Controller extends Controller
                 abort_if(!in_array($status->scope, ['public','unlisted']), 403);
             }
         }
-        
+
         Status::whereProfileId($user->profile_id)
           ->whereReblogOfId($status->id)
           ->delete();
