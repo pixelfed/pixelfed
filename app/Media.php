@@ -42,8 +42,12 @@ class Media extends Model
 
     public function thumbnailUrl()
     {
-        $path = $this->thumbnail_path ?? 'public/no-preview.png';
-        return url(Storage::url($path));
+        if($this->remote_media == true) {
+            return $this->remote_url;
+        } else {
+            $path = $this->thumbnail_path ?? 'public/no-preview.png';
+            return url(Storage::url($path));
+        }
     }
 
     public function thumb()
