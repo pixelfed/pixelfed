@@ -55,15 +55,15 @@ services:
       - redis
 
 ## DB and Cache
-  redis:
-    image: redis:5-buster
+  keydb:
+    image: eqalpha/keydb
     restart: unless-stopped
     volumes:
-      - "./redis-data:/data"
+      - "./keydb-data:/data"
     networks:
       - internal
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "keydb-cli", "ping"]
 
   postgres:
     restart: unless-stopped
