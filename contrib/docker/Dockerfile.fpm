@@ -60,6 +60,10 @@ RUN docker-php-ext-configure gd \
       --with-xpm
 RUN docker-php-ext-install -j$(nproc) gd
 
+#PHP Redis extensions
+RUN pecl install redis
+RUN docker-php-ext-enable redis
+
 #PHP Database extensions
 RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
 RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
