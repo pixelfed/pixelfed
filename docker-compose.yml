@@ -59,7 +59,7 @@ services:
     image: eqalpha/keydb
     restart: unless-stopped
     volumes:
-      - "./keydb-data:/data"
+      - "keydb-data:/data"
     networks:
       - internal
     healthcheck:
@@ -73,7 +73,7 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=pixelfed
       - POSTGRES_USER=postgres
@@ -81,6 +81,8 @@ services:
     shm_size: 64M
 
 volumes:
+  keydb-data:
+  postgres-data:
   app-storage:
   app-bootstrap:
 
