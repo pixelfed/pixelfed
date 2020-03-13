@@ -86,8 +86,10 @@ RUN a2enmod rewrite remoteip \
 #Cleanup
 RUN docker-php-source delete
 RUN apt-get autoremove --purge -y
+RUN apt-get clean
 RUN rm -rf /var/cache/apt
 RUN rm -rf /var/lib/apt/lists/*
+
 
 ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
 
@@ -102,4 +104,4 @@ RUN rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
 
-CMD /var/www/contrib/docker/start.apache.sh
+CMD ["/var/www/contrib/docker/start.apache.sh"]
