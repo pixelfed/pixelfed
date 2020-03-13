@@ -91,4 +91,4 @@ RUN rm -rf html && ln -s public html
 
 VOLUME /var/www/storage /var/www/bootstrap
  
-CMD /var/www/contrib/docker/start.fpm.sh
+CMD ["/var/www/contrib/docker/start.fpm.sh"]
