@@ -95,7 +95,10 @@
 						<div class="list-group">
 							<div v-for="(story, index) in stories" class="list-group-item text-center text-dark" href="#">
 								<div class="media align-items-center">
-									<img :src="story.src" class="img-fluid mr-3 cursor-pointer" width="70px" height="70px" @click="showLightbox(story)">
+									<div class="mr-3 cursor-pointer" @click="showLightbox(story)">
+										<img :src="story.src" class="img-fluid" width="70px" height="70px">
+										<p class="small text-muted text-center mb-0">(expand)</p>
+									</div>
 									<div class="media-body">
 										<p class="mb-0">Expires</p>
 										<p class="mb-0 text-muted small"><span>{{expiresTimestamp(story.expires_at)}}</span></p>
