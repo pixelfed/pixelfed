@@ -405,9 +405,9 @@
     hide-footer
     centered
     title="Likes"
-    body-class="list-group-flush p-0">
+    body-class="list-group-flush py-3 px-0">
     <div class="list-group">
-      <div class="list-group-item border-0" v-for="(user, index) in likes" :key="'modal_likes_'+index">
+      <div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
         <div class="media">
           <a :href="user.url">
             <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
@@ -418,9 +418,11 @@
                 {{user.username}}
               </a>
             </p>
-            <p class="text-muted mb-0" style="font-size: 14px">
-                {{user.display_name}}
-              </a>
+            <p v-if="!user.local" class="text-muted mb-0 text-truncate mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
+              <span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
+            </p>
+            <p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
+              {{user.display_name}}
             </p>
           </div>
         </div>
@@ -959,7 +961,6 @@ export default {
           this.replyToIndex = index;
           this.replyingToId = e.id;
           this.reply_to_profile_id = e.account.id;
-          this.replyText = '@' + e.account.username + ' ';
           $('textarea[name="comment"]').focus();
       },
 
