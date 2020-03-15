@@ -374,10 +374,13 @@ class AccountController extends Controller
 	public function sudoModeVerify(Request $request)
 	{
 		$this->validate($request, [
-			'password' => 'required|string|max:500'
+			'password' => 'required|string|max:500',
+			'trustDevice' => 'nullable'
 		]);
+
 		$user = Auth::user();
 		$password = $request->input('password');
+		$trustDevice = $request->input('trustDevice') == 'on';
 		$next = $request->session()->get('redirectNext', '/');
 		if($request->session()->has('sudoModeAttempts')) {
 			$count = (int) $request->session()->get('sudoModeAttempts');
@@ -387,6 +390,9 @@ class AccountController extends Controller
 		}
 		if(password_verify($password, $user->password) === true) {
 			$request->session()->put('sudoMode', time());
+			if($trustDevice == true) {
+				$request->session()->put('sudoTrustDevice', 1);
+			}
 			return redirect($next);
 		} else {
 			return redirect()
