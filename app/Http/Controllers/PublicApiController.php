@@ -499,11 +499,31 @@ class PublicApiController extends Controller
     public function accountFollowing(Request $request, $id)
     {
         abort_unless(Auth::check(), 403);
-        $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_following) {
-            return response()->json([]);
+
+        $profile = Profile::with('user')
+            ->whereNull('status')
+            ->whereNull('domain')
+            ->findOrFail($id);
+
+        // filter by username
+        $search = $request->input('fbu');
+        $owner = Auth::id() == $profile->user_id;
+        $filter = ($owner == true) && ($search != null);
+
+        abort_if($owner == false && $profile->is_private == true && !$profile->followedBy(Auth::user()->profile), 404);
+        abort_if($profile->user->settings->show_profile_following == false && $owner == false, 404);
+
+        if($search) {
+            abort_if(!$owner, 404);
+            $following = $profile->following()
+                    ->where('profiles.username', 'like', '%'.$search.'%')
+                    ->orderByDesc('followers.created_at')
+                    ->paginate(10);
+        } else {
+            $following = $profile->following()
+                ->orderByDesc('followers.created_at')
+                ->paginate(10);
         }
-        $following = $profile->following()->orderByDesc('followers.created_at')->paginate(10);
         $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
