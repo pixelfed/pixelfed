@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.8...dev)
 ### Added
+- Profile Following Search ([e3280c11](https://github.com/pixelfed/pixelfed/commit/e3280c11))
 
 ### Fixed
 - Stories on postgres instances ([5ffa71da](https://github.com/pixelfed/pixelfed/commit/5ffa71da))
@@ -28,6 +29,7 @@
 - Updated PostComponent, improve likes modal ([664fd272](https://github.com/pixelfed/pixelfed/commit/664fd272))
 - Updated StoryViewer, preload media ([336571d0](https://github.com/pixelfed/pixelfed/commit/336571d0))
 - Updated StoryCompose, add expand label for lightbox preview ([fdf59753](https://github.com/pixelfed/pixelfed/commit/fdf59753))
+- Updated session config, increase session timeout from 2 days to 60 days ([b8795271](https://github.com/pixelfed/pixelfed/commit/b8795271))
 
 ## [v0.10.8 (2020-01-29)](https://github.com/pixelfed/pixelfed/compare/v0.10.7...v0.10.8)
 ### Added
