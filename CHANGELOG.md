@@ -2,8 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.8...dev)
 ### Added
-- Profile Following Search ([e3280c11](https://github.com/pixelfed/pixelfed/commit/e3280c11))
-
+- Added Profile Following Search ([e3280c11](https://github.com/pixelfed/pixelfed/commit/e3280c11))
+- Added Trusted Devices to Sudo Mode ([0c82c970](https://github.com/pixelfed/pixelfed/commit/0c82c970))
+ 
 ### Fixed
 - Stories on postgres instances ([5ffa71da](https://github.com/pixelfed/pixelfed/commit/5ffa71da))
 
