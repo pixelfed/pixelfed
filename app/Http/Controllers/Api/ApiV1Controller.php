@@ -1226,7 +1226,9 @@ class ApiV1Controller extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
 
-        abort_if(!$since && !$min && !$max, 400);
+        if(!$since && !$min && !$max) {
+            $min = 1;
+        }
 
         $dir = $since ? '>' : ($min ? '>=' : '<');
         $id = $since ?? $min ?? $max;
