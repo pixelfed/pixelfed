@@ -1254,11 +1254,31 @@ class ApiV1Controller extends Controller
 
         $baseUrl = config('app.url') . '/api/v1/notifications?';
 
-        $link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+        if($minId == $maxId) {
+            $minId = null;
+        }
 
-        return response()->json($res)->withHeaders([
-            'Link' => $link,
-        ]);
+        if($maxId) {
+            $link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+        }
+
+        if($minId) {
+            $link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+        }
+
+        if($maxId && $minId) {
+            $link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+        }
+
+        $res = response()->json($res);
+
+        if(isset($link)) {
+            $res->withHeaders([
+                'Link' => $link,
+            ]);
+        }
+
+        return $res;
     }
 
     /**
