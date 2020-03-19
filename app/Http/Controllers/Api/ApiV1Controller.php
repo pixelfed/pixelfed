@@ -946,7 +946,7 @@ class ApiV1Controller extends Controller
             'title' => 'Pixelfed (' . config('pixelfed.domain.app') . ')',
             'uri' => config('app.url'),
             'urls' => [],
-            'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
+            'version' => '2.7.2',
             'environment' => [
                 'max_photo_size' => config('pixelfed.max_photo_size'),
                 'max_avatar_size' => config('pixelfed.max_avatar_size'),
