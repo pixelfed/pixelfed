@@ -1240,6 +1240,9 @@ class ApiV1Controller extends Controller
             ->limit($limit)
             ->get();
 
+        $minId = $notifications->min('id');
+        $maxId = $notifications->max('id');
+
         $resource = new Fractal\Resource\Collection(
             $notifications,
             new NotificationTransformer()
@@ -1249,7 +1252,13 @@ class ApiV1Controller extends Controller
             ->createData($resource)
             ->toArray();
 
-        return response()->json($res);
+        $baseUrl = config('app.url') . '/api/v1/notifications?';
+
+        $link = "{$baseUrl}max_id={$maxId}; rel='next',{$baseUrl}min_id={$minId};";
+
+        return response()->json($res)->withHeaders([
+            'Link' => $link,
+        ]);
     }
 
     /**
