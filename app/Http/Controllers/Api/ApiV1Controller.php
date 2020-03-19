@@ -1254,7 +1254,7 @@ class ApiV1Controller extends Controller
 
         $baseUrl = config('app.url') . '/api/v1/notifications?';
 
-        $link = "{$baseUrl}max_id={$maxId}; rel='next',{$baseUrl}min_id={$minId};";
+        $link = "<{$baseUrl}max_id={$maxId}>; rel='next',<{$baseUrl}min_id={$minId}>; rel='prev'";
 
         return response()->json($res)->withHeaders([
             'Link' => $link,
