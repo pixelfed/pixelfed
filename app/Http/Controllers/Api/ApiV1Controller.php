@@ -828,7 +828,7 @@ class ApiV1Controller extends Controller
             ->first();
 
         if($like) {
-            $like->delete();
+            $like->forceDelete();
             $status->likes_count = $status->likes()->count();
             $status->save();
         }
@@ -946,7 +946,7 @@ class ApiV1Controller extends Controller
             'title' => 'Pixelfed (' . config('pixelfed.domain.app') . ')',
             'uri' => config('app.url'),
             'urls' => [],
-            'version' => '2.7.2',
+            'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
             'environment' => [
                 'max_photo_size' => config('pixelfed.max_photo_size'),
                 'max_avatar_size' => config('pixelfed.max_avatar_size'),
