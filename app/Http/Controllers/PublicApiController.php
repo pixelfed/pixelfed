@@ -239,39 +239,6 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
 
-        $private = Cache::remember('profiles:private', now()->addMinutes(1440), function() {
-            return Profile::whereIsPrivate(true)
-                ->orWhere('unlisted', true)
-                ->orWhere('status', '!=', null)
-                ->pluck('id')
-                ->toArray();
-        });
-
-        // if(Auth::check()) {
-        //     // $pid = Auth::user()->profile->id;
-        //     // $filters = UserFilter::whereUserId($pid)
-        //     //           ->whereFilterableType('App\Profile')
-        //     //           ->whereIn('filter_type', ['mute', 'block'])
-        //     //           ->pluck('filterable_id')->toArray();
-        //     // $filtered = array_merge($private->toArray(), $filters);
-        //     $filtered = UserFilterService::filters(Auth::user()->profile_id);
-        // } else {
-        //     // $filtered = $private->toArray();
-        //     $filtered = [];
-        // }
-
-        $filtered = Auth::check() ? array_merge($private, UserFilterService::filters(Auth::user()->profile_id)) : [];
-        // if($max == 0) {
-        //     $res = PublicTimelineService::count();
-        //     if($res == 0) {
-        //         PublicTimelineService::warmCache();
-        //         $res = PublicTimelineService::get(0,4);
-        //     } else {
-        //         $res = PublicTimelineService::get(0,4);
-        //     }
-        //     return response()->json($res);
-        // } 
-
         if($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
@@ -295,15 +262,12 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
-                      ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereLocal(true)
-                      ->whereNotIn('profile_id', $filtered)
                       ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
-                      //->toSql();
         } else {
             $timeline = Status::select(
                         'id', 
@@ -327,11 +291,9 @@ class PublicApiController extends Controller
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
-                      ->whereNotIn('profile_id', $filtered)
                       ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
-                      //->toSql();
         }
 
         $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
@@ -594,8 +556,6 @@ class PublicApiController extends Controller
             'updated_at'
           )->whereProfileId($profile->id)
           ->whereIn('type', $scope)
-          ->whereLocal(true)
-          ->whereNull('uri')
           ->where('id', $dir, $id)
           ->whereIn('visibility', $visibility)
           ->latest()
