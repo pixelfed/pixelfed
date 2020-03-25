@@ -9,86 +9,192 @@
 		<p class="lead font-weight-lighter">An error occured, results could not be loaded.<br> Please try again later.</p>
 	</div>
 
-	<div v-if="!loading && !networkError" class="mt-5 row">
-
-		<div class="col-12 col-md-2 mb-4">
-			<div v-if="results.hashtags || results.profiles || results.statuses">
-				<p class="font-weight-bold">Filters</p>
-				<div class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input" id="filter1" v-model="filters.hashtags">
-					<label class="custom-control-label text-muted font-weight-light" for="filter1">Hashtags</label>
-				</div>
-				<div class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input" id="filter2" v-model="filters.profiles">
-					<label class="custom-control-label text-muted font-weight-light" for="filter2">Profiles</label>
-				</div>
-				<div class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input" id="filter3" v-model="filters.statuses">
-					<label class="custom-control-label text-muted font-weight-light" for="filter3">Statuses</label>
-				</div>
+	<div v-if="!loading && !networkError" class="mt-5">
+		<div v-if="analysis == 'all'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
 			</div>
-		</div>
-		<div class="col-12 col-md-10">
-			<p class="h5 font-weight-bold">Showing results for <i>{{query}}</i></p>
-			<hr>
-
-			<div v-if="filters.hashtags && results.hashtags" class="row mb-4">
-				<p class="col-12 font-weight-bold text-muted">Hashtags</p>
-				<a v-for="(hashtag, index) in results.hashtags" class="col-12 col-md-3 mb-3" style="text-decoration: none;" :href="hashtag.url">
-					<div class="card card-body text-center shadow-none border">
-						<p class="lead mb-0 text-truncate text-dark" data-toggle="tooltip" :title="hashtag.value">
-							#{{hashtag.value}}
-						</p>
-						<p class="lead mb-0 small font-weight-bold text-dark">
-							{{hashtag.count}} posts
-						</p>
-					</div>
-				</a>
-			</div>
-
-			<div v-if="filters.profiles && results.profiles" class="row mb-4">
-				<p class="col-12 font-weight-bold text-muted">Profiles</p>
-				<a v-for="(profile, index) in results.profiles" class="col-12 col-md-4 mb-3" style="text-decoration: none;" :href="profile.url">
-					<div class="card card-body text-center shadow-none border">
-						<p class="text-center">
-							<img :src="profile.entity.thumb" width="32px" height="32px" class="rounded-circle box-shadow">
-						</p>
-						<p class="font-weight-bold text-truncate text-dark">
-							{{profile.value}}
-						</p>
-						<p class="mb-0 text-center">
-							<button v-if="profile.entity.follow_request" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" disabled>Follow Requested</button>
-							<button v-if="!profile.entity.follow_request && profile.entity.following" type="button" class="btn btn-secondary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Unfollow</button>
-							<button v-if="!profile.entity.follow_request && !profile.entity.following" type="button" class="btn btn-primary btn-sm py-1 font-weight-bold" @click.prevent="followProfile(profile, index)">Follow</button>
-						</p>
-					</div>
-				</a>
-			</div>
-
-			<div v-if="filters.statuses && results.statuses" class="row mb-4">
-				<p class="col-12 font-weight-bold text-muted">Statuses</p>
-				<div v-for="(status, index) in results.statuses" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
-					<a class="card info-overlay card-md-border-0" :href="status.url">
-						<div :class="[status.filter ? 'square ' + status.filter : 'square']">
-							<div class="square-content" :style="'background-image: url('+status.thumb+')'"></div>
+			<div class="col-md-3">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">HASHTAGS <span class="pl-1 text-lighter">({{results.hashtags.length}})</span></p>
+				</div>
+				<div v-if="results.hashtags.length">
+					<a v-for="(hashtag, index) in results.hashtags" class="mb-2 result-card" :href="buildUrl('hashtag', hashtag)">
+						<div class="pb-3">
+							<div class="media align-items-center py-2 pr-3">
+								<span class="d-inline-flex align-items-center justify-content-center border rounded-circle mr-3" style="width: 50px;height: 50px;">
+								<i class="fas fa-hashtag text-muted"></i>
+								</span>
+								<div class="media-body text-truncate">
+									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
+										#{{hashtag.value}}
+									</p>
+									<p v-if="hashtag.count > 2" class="mb-0 small font-weight-bold text-muted text-uppercase">
+									{{hashtag.count}} posts
+								</p>
+								</div>
+							</div>
 						</div>
 					</a>
 				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
 			</div>
-
-			<div v-if="!results.hashtags && !results.profiles && !results.statuses">
-				<p class="text-center lead">No results found!</p>
+			<div class="col-md-5">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">PROFILES <span class="pl-1 text-lighter">({{results.profiles.length}})</span></p>
+				</div>
+				<div v-if="results.profiles.length">
+					<a v-for="(profile, index) in results.profiles" class="mb-2 result-card" :href="buildUrl('profile', profile)">
+						<div class="pb-3">
+							<div class="media align-items-center py-2 pr-3">
+								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50px" height="50px">
+								<div class="media-body">
+									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
+										{{profile.value}}
+									</p>
+									<p class="mb-0 small font-weight-bold text-muted text-uppercase">
+										{{profile.entity.post_count}} Posts
+									</p>
+								</div>
+								<div class="ml-3">
+									<a v-if="profile.entity.following" class="btn btn-primary btn-sm font-weight-bold text-uppercase py-0" :href="buildUrl('profile', profile)">Following</a>
+									<a v-else class="btn btn-outline-primary btn-sm font-weight-bold text-uppercase py-0" :href="buildUrl('profile', profile)">View</a>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
 			</div>
-
+			<div class="col-md-4">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">STATUSES <span class="pl-1 text-lighter">({{results.statuses.length}})</span></p>
+				</div>
+				<div v-if="results.statuses.length">
+					<a v-for="(status, index) in results.statuses" class="mr-2 result-card" :href="buildUrl('status', status)">
+						<img :src="status.thumb" width="90px" height="90px" class="mb-2">
+					</a>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
+			</div>
 		</div>
-
+		<div v-else-if="analysis == 'hashtag'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
+			</div>
+			<div class="col-md-6 offset-md-3">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">HASHTAGS <span class="pl-1 text-lighter">({{results.hashtags.length}})</span></p>
+				</div>
+				<div v-if="results.hashtags.length">
+					<a v-for="(hashtag, index) in results.hashtags" class="mb-2 result-card" :href="buildUrl('hashtag', hashtag)">
+						<div class="pb-3">
+							<div class="media align-items-center py-2 pr-3">
+								<span class="d-inline-flex align-items-center justify-content-center border rounded-circle mr-3" style="width: 50px;height: 50px;">
+								<i class="fas fa-hashtag text-muted"></i>
+								</span>
+								<div class="media-body">
+									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
+										#{{hashtag.value}}
+									</p>
+									<p v-if="hashtag.count > 2" class="mb-0 small font-weight-bold text-muted text-uppercase">
+									{{hashtag.count}} posts
+								</p>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
+			</div>
+		</div>
+		<div v-else-if="analysis == 'profile'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
+			</div>
+			<div class="col-md-6 offset-md-3">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">PROFILES <span class="pl-1 text-lighter">({{results.profiles.length}})</span></p>
+				</div>
+				<div v-if="results.profiles.length">
+					<div v-for="(profile, index) in results.profiles" class="card mb-4">
+						<div class="card-header p-0 m-0">
+							<div style="width: 100%;height: 140px;background: #0070b7"></div>
+						</div>
+						<div class="card-body">
+							<div class="text-center mt-n5 mb-4">
+								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90px" height="90px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+							</div>
+							<p class="text-center lead font-weight-bold mb-1">{{profile.value}}</p>
+							<p class="text-center text-muted small text-uppercase mb-4"><!-- 2 followers --></p>
+							<div class="d-flex justify-content-center">
+								<button v-if="profile.entity.following" type="button" class="btn btn-outline-secondary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3" style="font-weight: 500">Following</button>
+								<a class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" :href="buildUrl('profile',profile)" style="font-weight: 500">View Profile</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
+			</div>
+		</div>
+		<div v-else-if="analysis == 'webfinger'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
+				<div class="col-md-6 offset-md-3">
+					<div v-for="(profile, index) in results.profiles" class="card mb-2">
+						<div class="card-header p-0 m-0">
+							<div style="width: 100%;height: 140px;background: #0070b7"></div>
+						</div>
+						<div class="card-body">
+							<div class="text-center mt-n5 mb-4">
+								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90px" height="90px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+							</div>
+							<p class="text-center lead font-weight-bold mb-1">{{profile.value}}</p>
+							<p class="text-center text-muted small text-uppercase mb-4"><!-- 2 followers --></p>
+							<div class="d-flex justify-content-center">
+								<!-- <button v-if="profile.entity.following" type="button" class="btn btn-outline-secondary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3" style="font-weight: 500">Unfollow</button> -->
+								<!-- <button v-else type="button" class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3" style="font-weight: 500">Follow</button> -->
+								<a class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" :href="'/i/web/profile/_/' + profile.entity.id" style="font-weight: 500">View Profile</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div v-else class="col-12">
+			<p class="text-center text-muted lead font-weight-bold">No results found</p>
+		</div>
 	</div>
 
 </div>
 </template>
 
 <style type="text/css" scoped>
-
+.result-card {
+	text-decoration: none;
+}
+.result-card .media:hover {
+	background: #EDF2F7;
+}
+@media (min-width: 1200px) {
+	.container {
+		max-width: 995px;
+	}
+}
 </style>
 
 <script type="text/javascript">
@@ -108,36 +214,25 @@ export default {
 				hashtags: true,
 				profiles: true,
 				statuses: true
-			}
+			},
+			analysis: 'profile',
 		}
 	},
 	beforeMount() {
-		this.fetchSearchResults();
+		this.bootSearch();
 	},
 	mounted() {
 		$('.search-bar input').val(this.query);
 	},
-	updated() {
-
-	},
 	methods: {
+		bootSearch() {
+			let lexer = this.searchLexer();
+			this.analysis = lexer;
+			this.fetchSearchResults();
+		},
+
 		fetchSearchResults() {
-			axios.get('/api/search', {
-				params: {
-					'q': this.query,
-					'src': 'metro',
-					'v': 1
-				}
-			}).then(res => {
-				let results = res.data;
-				this.results.hashtags = results.hashtags;
-				this.results.profiles = results.profiles;
-				this.results.statuses = results.posts;
-				this.loading = false;
-			}).catch(err => {
-				this.loading = false;
-				// this.networkError = true;
-			})
+			this.searchContext(this.analysis);
 		},
 
 		followProfile(profile, index) {
@@ -159,6 +254,141 @@ export default {
 				}
 			});
 		},
+
+		searchLexer() {
+			let q = this.query;
+
+			if(q.startsWith('#')) {
+				return 'hashtag';
+			}
+
+			if((q.match(/@/g) || []).length == 2) {
+				return 'webfinger';
+			}
+
+			if(q.startsWith('@') || q.search('@') != -1) {
+				return 'profile';
+			}
+
+			if(q.startsWith('https://')) {
+				return 'remote';
+			}
+
+			return 'all';
+		},
+
+		buildUrl(type = 'hashtag', obj) {
+			switch(type) {
+				case 'hashtag':
+					return obj.url + '?src=search';
+				break;
+
+				case 'profile':
+					if(obj.entity.local == true) {
+						return obj.url;
+					}
+					return '/i/web/profile/_/' + obj.entity.id;
+				break;
+
+				default:
+					return obj.url + '?src=search';
+				break;
+
+			}
+		},
+
+		searchContext(type) {
+			switch(type) {
+				case 'all': 
+					axios.get('/api/search', {
+						params: {
+							'q': this.query,
+							'src': 'metro',
+							'v': 1,
+							'scope': 'all'
+						}
+					}).then(res => {
+						let results = res.data;
+						this.results.hashtags = results.hashtags ? results.hashtags : [];
+						this.results.profiles = results.profiles ? results.profiles : [];
+						this.results.statuses = results.posts ? results.posts : [];
+						this.loading = false;
+					}).catch(err => {
+						this.loading = false;
+						console.log(err);
+						this.networkError = true;
+					});
+				break;
+
+				case 'hashtag':
+					axios.get('/api/search', {
+						params: {
+							'q': this.query.slice(1),
+							'src': 'metro',
+							'v': 1,
+							'scope': 'hashtag'
+						}
+					}).then(res => {
+						let results = res.data;
+						this.results.hashtags = results.hashtags ? results.hashtags : [];
+						this.results.profiles = results.profiles ? results.profiles : [];
+						this.results.statuses = results.posts ? results.posts : [];
+						this.loading = false;
+					}).catch(err => {
+						this.loading = false;
+						console.log(err);
+						this.networkError = true;
+					});
+				break;
+
+				case 'profile':
+					axios.get('/api/search', {
+						params: {
+							'q': this.query,
+							'src': 'metro',
+							'v': 1,
+							'scope': 'profile'
+						}
+					}).then(res => {
+						let results = res.data;
+						this.results.hashtags = results.hashtags ? results.hashtags : [];
+						this.results.profiles = results.profiles ? results.profiles : [];
+						this.results.statuses = results.posts ? results.posts : [];
+						this.loading = false;
+					}).catch(err => {
+						this.loading = false;
+						console.log(err);
+						this.networkError = true;
+					});
+				break;
+
+				case 'webfinger':
+					axios.get('/api/search', {
+						params: {
+							'q': this.query,
+							'src': 'metro',
+							'v': 1,
+							'scope': 'webfinger'
+						}
+					}).then(res => {
+						let results = res.data;
+						this.results.hashtags = [];
+						this.results.profiles = results.profiles;
+						this.results.statuses = [];
+						this.loading = false;
+					}).catch(err => {
+						this.loading = false;
+						console.log(err);
+						this.networkError = true;
+					});
+				break;
+
+				default:
+					this.loading = false;
+					this.networkError = true;
+				break;
+			}
+		}
 	}
 
 }
