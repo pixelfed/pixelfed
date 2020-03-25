@@ -8,14 +8,14 @@
 				<a class="dropdown-item font-weight-bold text-decoration-none" :href="status.url">Go to post</a>
 				<!-- <a class="dropdown-item font-weight-bold text-decoration-none" href="#">Share</a>
 				<a class="dropdown-item font-weight-bold text-decoration-none" href="#">Embed</a> -->
-				<span v-if="statusOwner(status) == false">
+				<span v-if="activeSession == true && statusOwner(status) == false">
 					<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 				</span>
-				<span v-if="statusOwner(status) == true">
+				<span v-if="activeSession == true && statusOwner(status) == true">
 					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="muteProfile(status)">Mute Profile</a>
 					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="blockProfile(status)">Block Profile</a>
 				</span>
-				<span v-if="profile.is_admin == true">
+				<span v-if="activeSession == true && profile.is_admin == true">
 					<div class="dropdown-divider"></div>
 					<a class="dropdown-item font-weight-bold text-danger text-decoration-none" v-on:click="deletePost(status)">Delete</a>
 					<div class="dropdown-divider"></div>
@@ -57,13 +57,13 @@
 								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
 								<a class="list-group-item text-dark text-decoration-none" href="#" @click="hidePost(status)">Hide</a>
-								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" :href="reportUrl(status)">Report</a>
-								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
-								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="blockProfile(status)" href="#">Block Profile</a>
-								<span v-if="statusOwner(status) == true || profile.is_admin == true">
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" :href="reportUrl(status)">Report</a>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="blockProfile(status)" href="#">Block Profile</a>
+								<span v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true">
 									<a class="list-group-item text-danger text-decoration-none" v-on:click="deletePost">Delete</a>
 								</span>
-								<span v-if="profile.is_admin == true">
+								<span v-if="activeSession == true && profile.is_admin == true">
 									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'autocw')" href="#">
 										<p class="mb-0">Enforce CW</p>
 										<p class="mb-0  small text-muted">Adds a CW to every post <br> made by this account.</p>
@@ -107,6 +107,17 @@
 <script type="text/javascript">
 	export default {
 		props: ['feed', 'status', 'profile', 'size', 'modal'],
+
+		data() {
+			return {
+				activeSession: false
+			};
+		},
+
+		mounted() {
+			let el = document.querySelector('body');
+			this.activeSession = el.classList.contains('loggedIn') ? true : false;
+		},
 
 		methods: {
 			reportUrl(status) {
