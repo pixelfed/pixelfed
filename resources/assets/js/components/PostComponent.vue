@@ -711,7 +711,6 @@ export default {
                   this.fetchComments();
                 }
                 this.loaded = true;
-                $('head title').text(this.status.account.username + ' posted a photo: ' + this.status.favourites_count + ' likes');
             }).catch(error => {
               swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
