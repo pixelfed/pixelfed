@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => "{$user->username} shared a photo"])
+@extends('layouts.app',['title' => "{$user->username} shared a post"])
 
 @section('content')
 <noscript>
