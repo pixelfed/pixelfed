@@ -180,18 +180,18 @@
 							</div>
 						</div>
 
-						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white px-2 py-0">
+						<!--<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white px-2 py-0">
 							<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
 								<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
 							</ul>
-						</div>
+						</div>-->
 
-						<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white sticky-md-bottom p-0">
+						<!--<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white sticky-md-bottom p-0">
 							<form class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="status.id" data-truncate="false">
 								<textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
 								<input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0" />
 							</form>
-						</div>
+						</div>-->
 					</div>
 				</div>
 				<div v-if="!loading && feed.length">
@@ -448,6 +448,44 @@
   		<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%">
   	</div>
   </b-modal>
+<b-modal ref="replyModal"
+	id="ctx-reply-modal"
+	hide-footer
+	centered
+	rounded
+	:title-html="replyStatus.account ? 'Reply to <span class=text-dark>' + replyStatus.account.username + '</span>' : ''"
+	title-tag="p"
+	title-class="font-weight-bold text-muted"
+	size="md"
+	body-class="p-2 rounded">
+	<div>
+		<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: nowrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+		</textarea>
+
+		<div class="border-top border-bottom my-2">
+			<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+				<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+			</ul>
+		</div>
+		<div class="d-flex justify-content-between align-items-center">
+			<div>
+				<span class="pl-2 small text-muted font-weight-bold text-monospace">
+					{{replyText.length}}/600
+				</span>
+			</div>
+			<div class="d-flex align-items-center">
+				<!-- <select class="custom-select custom-select-sm my-0 mr-2">
+					<option value="public" selected="">Public</option>
+					<option value="unlisted">Unlisted</option>
+					<option value="followers">Followers Only</option>
+				</select> -->
+				<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0">
+				{{replySending == true ? 'POSTING' : 'POST'}}
+			</button>
+			</div>
+		</div>
+	</div>
+</b-modal>
 </div>
 </template>
 
@@ -513,6 +551,11 @@
 		padding: 3px;
 		background: #fff;
 	}
+	#ctx-reply-modal .form-control:focus {
+		border: none;
+		outline: 0;
+		box-shadow: none;
+	}
 </style>
 
 <script type="text/javascript">
@@ -558,6 +601,7 @@
 				copiedEmbed: false,
 				showTips: true,
 				userStory: false,
+				replySending: false,
 			}
 		},
 
@@ -736,15 +780,20 @@
 			},
 
 			commentFocus(status, $event) {
-				if(this.replyId == status.id || status.comments_disabled) {
+				if(status.comments_disabled) {
 					return;
 				}
+
+				this.status = status;
 				this.replies = {};
 				this.replyStatus = {};
 				this.replyText = '';
 				this.replyId = status.id;
 				this.replyStatus = status;
+				this.$refs.replyModal.show();
 				this.fetchStatusComments(status, '');
+				return;
+
 			},
 
 			likeStatus(status) {
@@ -864,6 +913,7 @@
 			},
 
 			commentSubmit(status, $event) {
+				this.replySending = true;
 				let id = status.id;
 				let comment = this.replyText;
 				axios.post('/i/comment', {
@@ -871,8 +921,10 @@
 					comment: comment
 				}).then(res => {
 					this.replyText = '';
-					this.replies.push(res.data.entity);
+					this.replies.unshift(res.data.entity);
+					this.$refs.replyModal.hide();
 				});
+				this.replySending = false;
 			},
 
 			moderatePost(status, action, $event) {
@@ -1428,6 +1480,13 @@
 				.then(res => {
 					this.userStory = res.data;
 				})
+			},
+
+			usernameLookup(text, cb) {
+				axios.get('/api/pixelfed/v2/username/lookup?q=' + text)
+				.then(res => {
+					cb(res.data);
+				});
 			}
 		}
 	}
