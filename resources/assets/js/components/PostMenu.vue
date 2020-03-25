@@ -51,38 +51,36 @@
 			<div class="modal" tabindex="-1" role="dialog" :id="'mt_pid_'+status.id">
 				<div class="modal-dialog modal-sm" role="document">
 					<div class="modal-content">
-						<div class="modal-body">
-							<div class="list-group">
-								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Go to post</a>
-								<!-- <a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
+						<div class="modal-body text-center">
+							<div class="list-group text-dark">
+								<a class="list-group-item text-dark text-decoration-none" :href="status.url">Go to post</a>
+								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
-								<a class="list-group-item font-weight-bold text-decoration-none" href="#" @click="hidePost(status)">Hide</a>
-								<span v-if="statusOwner(status) == false">
-									<a class="list-group-item font-weight-bold text-decoration-none" :href="reportUrl(status)">Report</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="blockProfile(status)" href="#">Block Profile</a>
-								</span>
+								<a class="list-group-item text-dark text-decoration-none" href="#" @click="hidePost(status)">Hide</a>
+								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" :href="reportUrl(status)">Report</a>
+								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
+								<a v-if="!statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="blockProfile(status)" href="#">Block Profile</a>
 								<span v-if="statusOwner(status) == true || profile.is_admin == true">
-									<a class="list-group-item font-weight-bold text-danger text-decoration-none" v-on:click="deletePost">Delete</a>
+									<a class="list-group-item text-danger text-decoration-none" v-on:click="deletePost">Delete</a>
 								</span>
 								<span v-if="profile.is_admin == true">
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'autocw')" href="#">
+									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'autocw')" href="#">
 										<p class="mb-0">Enforce CW</p>
 										<p class="mb-0  small text-muted">Adds a CW to every post <br> made by this account.</p>
 									</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'noautolink')" href="#">
+									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'noautolink')" href="#">
 										<p class="mb-0">No Autolinking</p>
 										<p class="mb-0 small text-muted">Do not transform mentions, <br> hashtags or urls into HTML.</p>
 									</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'unlisted')" href="#">
+									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'unlisted')" href="#">
 										<p class="mb-0">Unlisted Posts</p>
 										<p class="mb-0 small text-muted">Removes account from <br> public/network timelines.</p>
 									</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'disable')" href="#">
+									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'disable')" href="#">
 										<p class="mb-0">Disable Account</p>
 										<p class="mb-0 small text-muted">Temporarily disable account <br> until next time user log in.</p>
 									</a>
-									<a class="list-group-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'suspend')" href="#">
+									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'suspend')" href="#">
 										<p class="mb-0">Suspend Account</p>
 										<p class="mb-0 small text-muted">This prevents any new interactions, <br> without deleting existing data.</p>
 									</a>
