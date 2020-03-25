@@ -40,7 +40,7 @@
 						</div>
 						<div v-else-if="n.type == 'share'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'modlog'">
@@ -90,12 +90,7 @@
 			fetchNotifications() {
 				axios.get('/api/pixelfed/v1/notifications')
 				.then(res => {
-					let data = res.data.filter(n => {
-						if(n.type == 'share' && !status) {
-							return false;
-						}
-						return true;
-					});
+					let data = res.data;
 					let ids = res.data.map(n => n.id);
 					this.notificationMaxId = Math.min(...ids);
 					this.notifications = data;
