@@ -137,8 +137,7 @@ class Profile extends Model
         $url = Cache::remember('avatar:'.$this->id, now()->addYears(1), function () {
             $avatar = $this->avatar;
             $path = $avatar->media_path;
-            $version = hash('sha256', $avatar->change_count);
-            $path = "{$path}?v={$version}";
+            $path = "{$path}?v={$avatar->change_count}";
 
             return config('app.url') . Storage::url($path);
         });
