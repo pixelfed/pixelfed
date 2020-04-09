@@ -1411,22 +1411,19 @@
 			},
 
 			statusUrl(status) {
-				return status.url;
+				if(status.local == true) {
+					return status.url;
+				}
 
-				// if(status.local == true) {
-				// 	return status.url;
-				// }
-
-				// return '/i/web/post/_/' + status.account.id + '/' + status.id;
+				return '/i/web/post/_/' + status.account.id + '/' + status.id;
 			},
 
 			profileUrl(status) {
-				return status.account.url;
-				// if(status.local == true) {
-				// 	return status.account.url;
-				// }
+				if(status.local == true) {
+					return status.account.url;
+				}
 
-				// return '/i/web/profile/_/' + status.account.id;
+				return '/i/web/profile/_/' + status.account.id;
 			},
 
 			statusCardUsernameFormat(status) {
@@ -1480,13 +1477,6 @@
 				.then(res => {
 					this.userStory = res.data;
 				})
-			},
-
-			usernameLookup(text, cb) {
-				axios.get('/api/pixelfed/v2/username/lookup?q=' + text)
-				.then(res => {
-					cb(res.data);
-				});
 			}
 		}
 	}
