@@ -263,6 +263,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('stories/viewed', 'StoryController@apiV1Viewed');
         Route::get('stories/new', 'StoryController@compose');
         Route::get('my/story', 'StoryController@iRedirect');
+        Route::get('web/profile/_/{id}', 'InternalApiController@remoteProfile');
+        Route::get('web/post/_/{profileId}/{statusid}', 'InternalApiController@remoteStatus');
     });
 
     Route::group(['prefix' => 'account'], function () {

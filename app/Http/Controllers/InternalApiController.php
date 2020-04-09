@@ -343,27 +343,6 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
-    public function remoteProfile(Request $request, $id)
-    {
-        $profile = Profile::whereNull('status')
-            ->whereNotNull('domain')
-            ->findOrFail($id);
-
-        $settings = [
-            'crawlable' => false,
-            'following' => [
-                'count' => true,
-                'list' => false
-            ], 
-            'followers' => [
-                'count' => true,
-                'list' => false
-            ]
-        ];
-
-        return view('profile.show', compact('profile', 'settings'));
-    }
-
     public function accountStatuses(Request $request, $id)
     {
         $this->validate($request, [
@@ -440,6 +419,15 @@ class InternalApiController extends Controller
         return response()->json($res);
     }
 
+    public function remoteProfile(Request $request, $id)
+    {
+        $profile = Profile::whereNull('status')
+            ->findOrFail($id);
+        $user = Auth::user();
+
+        return view('profile.remote', compact('profile', 'user'));
+    }
+
     public function remoteStatus(Request $request, $profileId, $statusId)
     {
         $user = Profile::whereNull('status')
@@ -450,7 +438,7 @@ class InternalApiController extends Controller
                         ->whereNull('reblog_of_id')
                         ->whereVisibility('public')
                         ->findOrFail($statusId);
-        $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        $template = $status->in_reply_to_id ? 'status.reply' : 'status.remote';
         return view($template, compact('user', 'status'));
     }
 }
