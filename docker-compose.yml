@@ -32,7 +32,7 @@ services:
     ports:
     - "8080:80"
     depends_on:
-      - postgres
+      - db
       - redis
 
   worker:
@@ -51,7 +51,7 @@ services:
       - internal
     command: gosu www-data php artisan horizon
     depends_on:
-      - postgres
+      - db
       - redis
 
 ## DB and Cache
