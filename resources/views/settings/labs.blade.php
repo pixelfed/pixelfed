@@ -9,6 +9,9 @@
 	<div class="alert alert-primary px-3 h6 text-center">
 		<strong>Warning:</strong> Some experimental features may contain bugs or missing functionality
 	</div>
+	<div class="alert alert-warning px-3 h6">
+		We are deprecating Labs in a future version. Some features will no longer be supported. For more information, click <a href="{{route('help.labs-deprecation')}}" class="font-weight-bold">here</a>.
+	</div>
 	<div class="py-3">
 		<p class="font-weight-bold text-muted text-center">UI</p>
 		<hr>

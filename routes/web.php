@@ -395,6 +395,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('blocking-accounts', 'site.help.blocking-accounts')->name('help.blocking-accounts');
             Route::view('report-something', 'site.help.report-something')->name('help.report-something');
             Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
+            Route::view('labs-deprecation', 'site.help.labs-deprecation')->name('help.labs-deprecation');
+
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
         Route::get('newsroom/archive', 'NewsroomController@archive');

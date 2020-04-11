@@ -3,12 +3,6 @@
 @section('content')
 
 <div class="container px-0 mt-0 mt-md-4 mb-md-5 pb-md-5">
-  <div class="col-12">
-    <div class="alert alert-info">
-      <p class="lead mb-0">Some sections may contain out of date information</p>
-      <p class="mb-0">We apologize for any inconvenience, we are working on updating the Help Center.</p>
-    </div>
-  </div>
   <div class="col-12 px-0">
     <div class="card mt-md-5 px-0 mx-md-3">
       <div class="card-header font-weight-bold text-muted bg-white py-4">
