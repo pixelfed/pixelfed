@@ -23,7 +23,7 @@
     </ul>
   </div>
   <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
-    <div class="card-header text-light font-weight-bold h4 p-4">Discover Tips</div>
+    <div class="card-header text-light font-weight-bold h4 p-4 bg-primary">Discover Tips</div>
     <div class="card-body bg-white p-3">
       <ul class="pt-3">
         <li class="lead  mb-4">To make your posts more discoverable, add hashtags to your posts.</li>
