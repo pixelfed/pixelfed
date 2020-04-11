@@ -78,8 +78,8 @@ services:
       - internal
 
 volumes:
-  keydb-data:
-  postgres-data:
+  db-data:
+  redis-data:
   app-storage:
   app-bootstrap:
 
