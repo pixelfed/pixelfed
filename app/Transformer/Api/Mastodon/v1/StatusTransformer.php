@@ -20,7 +20,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         return [
             'id'                        => (string) $status->id,
             'created_at'                => $status->created_at->toJSON(),
-            'in_reply_to_id'            => $status->in_reply_to_id,
+            'in_reply_to_id'            => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
             'sensitive'                 => (bool) $status->is_nsfw,
             'spoiler_text'              => $status->cw_summary ?? '',
