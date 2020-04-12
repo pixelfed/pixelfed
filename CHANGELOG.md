@@ -49,8 +49,7 @@
 - Updated Timeline.vue, add remote post/profile links ([d4147083](https://github.com/pixelfed/pixelfed/commit/d4147083))
 - Updated StoryTimelineComponent, added list prop for new timeline layout ([1692a95a](https://github.com/pixelfed/pixelfed/commit/1692a95a))
 - Updated blank layout, add sharedData js ([4a293ed9](https://github.com/pixelfed/pixelfed/commit/4a293ed9))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Updated oauth api, allow multiple redirect_uris. Fixes #2106 ([0540a28a](https://github.com/pixelfed/pixelfed/commit/0540a28a))
 
 ## [v0.10.8 (2020-01-29)](https://github.com/pixelfed/pixelfed/compare/v0.10.7...v0.10.8)
 ### Added
