@@ -80,9 +80,19 @@ class FederationController extends Controller
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.outbox'), 404);
 
-        $res = Outbox::get($username);
+        $profile = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereIsPrivate(false)
+            ->whereUsername($username)
+            ->firstOrFail();
 
-        return response(json_encode($res))->header('Content-Type', 'application/activity+json');
+        $key = 'ap:outbox:latest_10:pid:' . $profile->id;
+        $ttl = now()->addMinutes(15);
+        $res = Cache::remember($key, $ttl, function() use($profile) {
+            return Outbox::get($profile);
+        });
+
+        return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
     }
 
     public function userInbox(Request $request, $username)
