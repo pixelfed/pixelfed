@@ -70,11 +70,13 @@ class ApiV1Controller extends Controller
 			'website' 			=> 'nullable'
 		]);
 
+        $uris = implode(',', explode('\n', $request->redirect_uris));
+
         $client = Passport::client()->forceFill([
             'user_id' => null,
             'name' => e($request->client_name),
             'secret' => Str::random(40),
-            'redirect' => $request->redirect_uris,
+            'redirect' => $uris,
             'personal_access_client' => false,
             'password_client' => false,
             'revoked' => false,
