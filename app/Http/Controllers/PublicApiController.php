@@ -20,7 +20,7 @@ use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
     RelationshipTransformer,
-    StatusTransformer,
+    StatusTransformer
 };
 use App\Services\{
     AccountService,
