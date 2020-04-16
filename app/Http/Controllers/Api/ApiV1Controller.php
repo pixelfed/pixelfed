@@ -1688,8 +1688,8 @@ class ApiV1Controller extends Controller
 
             $status = new Status;
             $status->caption = strip_tags($request->input('status'));
-            $status->scope = $request->input('visibility');
-            $status->visibility = $request->input('visibility');
+            $status->scope = $request->input('visibility', 'public');
+            $status->visibility = $request->input('visibility', 'public');
             $status->profile_id = $user->profile_id;
             $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
             $status->in_reply_to_id = $parent->id;
@@ -1723,8 +1723,8 @@ class ApiV1Controller extends Controller
                 abort(500, 'Invalid media ids');
             }
 
-            $status->scope = $request->input('visibility');
-            $status->visibility = $request->input('visibility');
+            $status->scope = $request->input('visibility', 'public');
+            $status->visibility = $request->input('visibility', 'public');
             $status->type = StatusController::mimeTypeCheck($mimes);
             $status->save();
         }
@@ -1789,7 +1789,9 @@ class ApiV1Controller extends Controller
         $share = Status::firstOrCreate([
             'profile_id' => $user->profile_id,
             'reblog_of_id' => $status->id,
-            'in_reply_to_profile_id' => $status->profile_id
+            'in_reply_to_profile_id' => $status->profile_id,
+            'scope' => 'public',
+            'visibility' => 'public'
         ]);
 
         if($share->wasRecentlyCreated == true) {
