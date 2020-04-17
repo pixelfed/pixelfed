@@ -230,7 +230,7 @@
                             </div>
                             <div class="media-body">
                                 <p class="h5 font-weight-bold mt-2 mb-0">Albums</p>
-                                Create an album with up to <span class="font-weight-bold">10</span> photos
+                                Create an album with up to <span class="font-weight-bold">{{config('pixelfed.max_album_length')}}</span> photos
                             </div>
                         </div>
                     </div>
@@ -281,6 +281,7 @@
                             </div>
                         </div>
                     </div>
+                    @if(config('instance.stories.enabled'))
                     <div class="mb-5">
                         <div class="media">
                             <div class="feature-circle">
@@ -292,6 +293,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </section>
