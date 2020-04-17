@@ -170,7 +170,7 @@
                                 </span>
                               </p>
                               <p class="">
-                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
+                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="purl(reply.account, false)"></a>
                                 <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
                                 <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
                               </p>
@@ -205,7 +205,6 @@
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
               <div class="card-body flex-grow-0 py-1">
@@ -1012,6 +1011,16 @@ export default {
       redirect(url) {
         window.location.href = url;
       },
+
+      purl(profile, showOrigin = false) {
+        if(profile.local == true) {
+          return profile.url;
+        } else {
+          return showOrigin ? 
+            profile.url :
+            '/i/web/profile/_/' + profile.id; 
+        }
+      }
 
     },
 }

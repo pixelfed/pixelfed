@@ -11,7 +11,7 @@
 	</div>
 	<div v-if="!loading && !warning" class="container">
 		<div class="row">
-			<div class="col-12 col-md-4 pt-5" style="margin-top:40px;">
+			<div class="col-12 col-md-4 pt-5">
 				<div class="card shadow-none border">
 					<div class="card-header p-0 m-0">
 						<img v-if="profile.header_bg" :src="profile.header_bg" style="width: 100%; height: 140px; object-fit: cover;">
@@ -34,7 +34,7 @@
 						</div>
 						<p class="pl-2 h4 font-weight-bold mb-1">{{profile.display_name}}</p>
 						<p class="pl-2 font-weight-bold mb-1 text-muted">{{profile.acct}}</p>
-						<p class="pl-2 text-muted small" v-html="profile.note"></p>
+						<p class="pl-2 text-muted small pt-3" v-html="profile.note"></p>
 						<p class="pl-2 text-muted small d-flex justify-content-between">
 							<span>
 								<span class="font-weight-bold text-dark">{{profile.statuses_count}}</span>
@@ -54,26 +54,18 @@
 			</div>
 			<div class="col-12 col-md-8 pt-5">
 				<div class="row">
-					<div class="col-12 text-center mb-2">
-						<div class="custom-control custom-switch">
-							<label :class="layoutType ? ' pr-5 font-weight-bold text-lighter' : 'pr-5 font-weight-bold text-dark'" @click="layoutType = !layoutType">Grid</label>
-							<input type="checkbox" class="custom-control-input" id="customSwitch1" v-model="layoutType">
-							<label :class="!layoutType ? 'pl-2 custom-control-label font-weight-bold text-lighter' : 'pl-2 custom-control-label font-weight-bold text-dark'" for="customSwitch1">Feed</label>
-						</div>
-					</div>
-					<div v-if="layoutType == false" class="col-12 col-md-4 mb-3 d-flex justify-content-center align-items-center" v-for="(post, index) in feed" :key="'remprop' + index">
-						<a :href="remotePostUrl(post)">
-							<img :src="post.thumb" class="img-fluid rounded border">
-						</a>
-					</div>
-
-					<div v-if="layoutType == true" class="col-12 mb-2" v-for="(status, index) in feed" :key="'remprop' + index">
+					<div class="col-12 mb-2" v-for="(status, index) in feed" :key="'remprop' + index">
 						<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border cursor-pointer">
 								<div class="card-header d-inline-flex align-items-center bg-white">
 									<img v-bind:src="profile.avatar" width="38px" height="38px" style="border-radius: 38px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 									<div class="pl-2">
 										<span class="username font-weight-bold text-dark">{{profile.username}}
 										</span>
+									</div>
+									<div class="text-right" style="flex-grow:1;">
+										<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
+											<span class="fas fa-ellipsis-h text-lighter"></span>
+										</button>
 									</div>
 								</div>
 
@@ -142,6 +134,25 @@
 				</div>
 			</div>
 		</b-modal>
+		<b-modal ref="ctxModal"
+			id="ctx-modal"
+			hide-header
+			hide-footer
+			centered
+			rounded
+			size="sm"
+			body-class="list-group-flush p-0 rounded">
+			<div class="list-group text-center">
+				<div v-if="ctxMenuStatus && profile.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report inappropriate</div>
+				<div v-if="ctxMenuStatus && profile.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+				<div v-if="ctxMenuStatus && profile.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
+				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
+				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+				<div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
+				<div v-if="ctxMenuStatus && (profile.is_admin || profile.id == profile.id)" class="list-group-item rounded cursor-pointer" @click="deletePost(ctxMenuStatus)">Delete</div>
+				<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+			</div>
+		</b-modal>
 	</div>
 </div>
 </template>
@@ -161,9 +172,11 @@
 				max_id: null,
 				loading: true,
 				owner: false,
-				layoutType: false,
+				layoutType: true,
 				relationship: null,
 				warning: false,
+				ctxMenuStatus: false,
+				ctxMenuRelationship: false,
 			}
 		},
 
@@ -361,7 +374,66 @@
 			reportProfile() {
 				window.location.href = '/l/i/report?type=profile&id=' + this.profileId;
 				this.$refs.visitorContextMenu.hide();
-			}
+			},
+
+			ctxMenu(status) {
+				this.ctxMenuStatus = status;
+				let self = this;
+				axios.get('/api/pixelfed/v1/accounts/relationships', {
+					params: {
+						'id[]': self.profileId
+					}
+				}).then(res => {
+					self.ctxMenuRelationship = res.data[0];
+					self.$refs.ctxModal.show();
+				});
+			},
+
+			closeCtxMenu() {
+				this.ctxMenuStatus = false;
+				this.ctxMenuRelationship = false;
+				this.$refs.ctxModal.hide();
+			},
+
+			ctxMenuCopyLink() {
+				let status = this.ctxMenuStatus;
+				navigator.clipboard.writeText(status.url);
+				this.closeCtxMenu();
+				return;
+			},
+
+			ctxMenuGoToPost() {
+				let status = this.ctxMenuStatus;
+				window.location.href = this.statusUrl(status);
+				this.closeCtxMenu();
+				return;
+			},
+
+			statusUrl(status) {
+				return '/i/web/post/_/' + this.profile.id + '/' + status.id;
+			},
+
+			deletePost(status) {
+				if(this.user.is_admin == false) {
+					return;
+				}
+
+				if(window.confirm('Are you sure you want to delete this post?') == false) {
+					return;
+				}
+
+				axios.post('/i/delete', {
+					type: 'status',
+					item: status.id
+				}).then(res => {
+					this.feed = this.feed.filter(s => {
+						return s.id != status.id;
+					});
+					this.$refs.ctxModal.hide();
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
 		}
 	}
 </script>
