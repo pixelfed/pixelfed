@@ -422,6 +422,7 @@ class InternalApiController extends Controller
     public function remoteProfile(Request $request, $id)
     {
         $profile = Profile::whereNull('status')
+            ->whereNotNull('domain')
             ->findOrFail($id);
         $user = Auth::user();
 
