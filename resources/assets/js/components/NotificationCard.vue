@@ -88,7 +88,7 @@
 
 		methods: {
 			fetchNotifications() {
-				axios.get('/api/pixelfed/v1/notifications')
+				axios.get('/api/pixelfed/v1/notifications?pg=true')
 				.then(res => {
 					let data = res.data;
 					let ids = res.data.map(n => n.id);
