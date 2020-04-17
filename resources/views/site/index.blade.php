@@ -23,161 +23,277 @@
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <link href="{{ mix('css/landing.css') }}" rel="stylesheet">
-    <script type="text/javascript">window.App = {}; window.App.config = {!!App\Util\Site\Config::json()!!}</script>
+    <style type="text/css">
+        .feature-circle {
+            display: flex !important;
+            -webkit-box-pack: center !important;
+            justify-content: center !important;
+            -webkit-box-align: center !important;
+            align-items: center !important;
+            margin-right: 1rem !important;
+            background-color: #08d !important;
+            color: #fff;
+            border-radius: 50% !important;
+            width: 60px;
+            height:60px;
+        }
+        .section-spacer {
+            height: 13vh;
+        }
+    </style>
 </head>
 <body class="">
     <main id="content">
         <section class="container">
-            <div class="row py-5 mb-5">
+            <div class="section-spacer"></div>
+            <div class="row pt-md-5 mt-5">
                 <div class="col-12 col-md-6 d-none d-md-block">
-                    <div class="m-md-4" style="position: absolute; transform: scale(0.66)">
-                        <div class="marvel-device note8" style="position: absolute;z-index:10;">
-                            <div class="inner"></div>
-                            <div class="overflow">
-                                <div class="shadow"></div>
-                            </div>
-                            <div class="speaker"></div>
-                            <div class="sensors"></div>
-                            <div class="more-sensors"></div>
-                            <div class="sleep"></div>
-                            <div class="volume"></div>
-                            <div class="camera"></div>
-                            <div class="screen">
-                                <img src="/img/landing/android_1.jpg" class="img-fluid" loading="lazy">
+                    <div class="m-my-4">
+                        <p class="display-2 font-weight-bold">Photo Sharing</p>
+                        <p class="h1 font-weight-bold">For Everyone.</p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-5 offset-md-1">
+                    <div>
+                        <div class="pt-md-3 d-flex justify-content-center align-items-center">
+                            <img src="/img/pixelfed-icon-color.svg" loading="lazy" width="50px" height="50px">
+                            <span class="font-weight-bold h3 ml-2 pt-2">Pixelfed</span>
+                        </div>
+                        <div class="d-block d-md-none">
+                            <p class="font-weight-bold mb-0 text-center">Photo Sharing. For Everyone</p>
+                        </div>
+                        <div class="card my-4 shadow-none border">
+                            <div class="card-body px-lg-5">
+                                <div class="text-center">
+                                    <p class="small text-uppercase font-weight-bold text-muted">Account Login</p>
+                                </div>
+                                <div>
+                                    <form class="px-1" method="POST" action="{{ route('login') }}" id="login_form">
+                                        @csrf
+                                        <div class="form-group row">
+
+                                            <div class="col-md-12">
+                                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
+
+                                                @if ($errors->has('email'))
+                                                    <span class="invalid-feedback">
+                                                        <strong>{{ $errors->first('email') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+
+                                            <div class="col-md-12">
+                                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+
+                                                @if ($errors->has('password'))
+                                                    <span class="invalid-feedback">
+                                                        <strong>{{ $errors->first('password') }}</strong>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <div class="col-md-12">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
+                                                        <span class="font-weight-bold small ml-1 text-muted">
+                                                            {{ __('Remember Me') }}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row mb-0">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold text-uppercase">
+                                                    {{ __('Login') }}
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                        <div class="marvel-device iphone-x" style="position: absolute;z-index: 20;margin: 99px 0 0 151px;">
-                            <div class="notch">
-                                <div class="camera"></div>
-                                <div class="speaker"></div>
+                        <div class="card shadow-none border card-body">
+                            <p class="text-center mb-0 font-weight-bold small">
+                                <a href="/register">Register</a>
+                                <span class="px-1">·</span>
+                                <a href="/password/reset">Password Reset</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-spacer"></div>
+            <div class="row py-5 mt-5 mb-5">
+                <div class="col-12 col-md-6 d-none d-md-block">
+                    <div>
+                        <div class="row mt-4 mb-1">
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/1.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
                             </div>
-                            <div class="top-bar"></div>
-                            <div class="sleep"></div>
-                            <div class="bottom-bar"></div>
-                            <div class="volume"></div>
-                            <div class="overflow">
-                                <div class="shadow shadow--tr"></div>
-                                <div class="shadow shadow--tl"></div>
-                                <div class="shadow shadow--br"></div>
-                                <div class="shadow shadow--bl"></div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/2.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
                             </div>
-                            <div class="inner-shadow"></div>
-                            <div class="screen">
-                                <div id="iosDevice">
-                                    <img src="/img/landing/ios_4.jpg" class="img-fluid" loading="lazy">
-                                    <img src="/img/landing/ios_3.jpg" class="img-fluid" loading="lazy">
-                                    <img src="/img/landing/ios_2.jpg" class="img-fluid" loading="lazy">
-                                    <img src="/img/landing/ios_1.jpg" class="img-fluid" loading="lazy">
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/3.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/4.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/5.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/6.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/7.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/8.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                </div>
+                            </div>
+                            <div class="col-4 mt-2 px-0">
+                                <div class="px-1 shadow-none">
+                                    <img src="/_landing/9.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-5 offset-md-1">
-                    <div>
-                        <div class="card my-4 shadow-none border">
-                            <div class="card-body px-lg-5">
-                                <div class="text-center pt-3">
-                                    <img src="/img/pixelfed-icon-color.svg">
-                                </div>
-                                <div class="py-3 text-center">
-                                    <h3 class="font-weight-bold">Pixelfed</h3>
-                                    <p class="mb-0 lead">Photo sharing for everyone</p>
-                                </div>
-                                <div>
-                                    @if(true === config('pixelfed.open_registration'))
-                                    <form class="px-1" method="POST" action="{{ route('register') }}" id="register_form">
-                                        @csrf
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
-
-                                                @if ($errors->has('name'))
-                                                <span class="invalid-feedback">
-                                                    <strong>{{ $errors->first('name') }}</strong>
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required maxlength="15" minlength="2">
-
-                                                @if ($errors->has('username'))
-                                                <span class="invalid-feedback">
-                                                    <strong>{{ $errors->first('username') }}</strong>
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
-
-                                                @if ($errors->has('email'))
-                                                <span class="invalid-feedback">
-                                                    <strong>{{ $errors->first('email') }}</strong>
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
-
-                                                @if ($errors->has('password'))
-                                                <span class="invalid-feedback">
-                                                    <strong>{{ $errors->first('password') }}</strong>
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <div class="form-check">
-                                                  <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
-                                                  <label class="form-check-label" for="ageCheck">
-                                                    I am at least 16 years old
-                                                  </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-md-12">
-                                                <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
-                                                    {{ __('Register') }}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <p class="mb-0 font-weight-bold text-lighter small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="text-muted">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="text-muted">Privacy Policy</a>.</p>
-                                    </form>
-                                    @else
-                                    <div style="min-height: 350px" class="d-flex justify-content-center align-items-center">
-                                        <div class="text-center">
-                                            <p class="lead">Registrations are closed.</p>
-                                            <p class="text-lighter small">You can find a list of other instances on <a href="https://the-federation.info/pixelfed" class="text-muted font-weight-bold">the-federation.info/pixelfed</a> or <a href="https://fediverse.network/pixelfed" class="text-muted font-weight-bold">fediverse.network/pixelfed</a></p>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
+                    <div class="section-spacer"></div>
+                    <div class="mt-5">
+                        <p class="text-center h1 font-weight-bold">Simple. Powerful.</p>
+                    </div>
+                    <div class="mt-5">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-center">
+                                <span class="font-weight-bold h1">{{$data['stats']['posts']}}</span>
+                                <span class="d-block text-muted text-uppercase">Posts</span>
+                            </span>
+                            <span class="text-center">
+                                <span class="font-weight-bold h1">{{$data['stats']['likes']}}</span>
+                                <span class="d-block text-muted text-uppercase">Likes</span>
+                            </span>
+                            <span class="text-center">
+                                <span class="font-weight-bold h1">{{$data['stats']['hashtags']}}</span>
+                                <span class="d-block text-muted text-uppercase">Hashtags Used</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <p class="lead text-muted text-center">A free and ethical photo sharing platform.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row py-5 mb-5">
+                <div class="col-12 col-md-8 offset-md-2">
+                    <div class="section-spacer"></div>
+                    <div class="mt-5">
+                        <p class="text-center display-4 font-weight-bold">Feature Packed.</p>
+                    </div>
+                    <div class="my-2">
+                        <p class="h4 font-weight-light text-muted text-center">The best for the brightest.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row pb-5 mb-5">
+                <div class="col-12 col-md-5 offset-md-1">
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="far fa-images fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Albums</p>
+                                Create an album with up to <span class="font-weight-bold">10</span> photos
                             </div>
                         </div>
-                        <div class="card shadow-none border card-body">
-                            <p class="text-center mb-0 font-weight-bold">Have an account? <a href="/login">Log in</a></p>
+                    </div>
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="far fa-folder fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Collections</p>
+                                Organize your posts
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="fas fa-image fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Filters</p>
+                                Add a filter to your photos
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="col-12 col-md-5 offset-md-1">
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="far fa-comment fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Comments</p>
+                                Comment on a post, or send a reply
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="far fa-list-alt fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Discover</p>
+                                Explore categories, hashtags and topics
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <div class="media">
+                            <div class="feature-circle">
+                                <i class="fas fa-history fa-lg"></i>
+                            </div>
+                            <div class="media-body">
+                                <p class="h5 font-weight-bold mt-2 mb-0">Stories</p>
+                                Share posts that disappear after 24h
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
     </main>
     @include('layouts.partial.footer')

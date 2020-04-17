@@ -22,7 +22,16 @@ class SiteController extends Controller
 
     public function homeGuest()
     {
-        return view('site.index');
+        $data = Cache::remember('site:landing:data', now()->addHours(3), function() {
+            return [
+                'stats' => [
+                    'posts' => App\Util\Lexer\PrettyNumber::convert(App\Status::count()),
+                    'likes' => App\Util\Lexer\PrettyNumber::convert(App\Like::count()),
+                    'hashtags' => App\Util\Lexer\PrettyNumber::convert(App\StatusHashtag::count())
+                ],
+            ];
+        });
+        return view('site.index', compact('data'));
     }
 
     public function homeTimeline(Request $request)
@@ -105,7 +114,7 @@ class SiteController extends Controller
         $this->validate($request, [
             'url' => 'required|url'
         ]);
-        $url = urldecode(request()->input('url'));
+        $url = request()->input('url');
         return view('site.redirect', compact('url'));
     }
 
