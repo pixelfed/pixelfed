@@ -170,7 +170,7 @@
                                 </span>
                               </p>
                               <p class="">
-                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="purl(reply.account, false)"></a>
+                                <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="permalinkUrl(reply, false)"></a>
                                 <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
                                 <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
                               </p>
@@ -1012,13 +1012,14 @@ export default {
         window.location.href = url;
       },
 
-      purl(profile, showOrigin = false) {
+      permalinkUrl(reply, showOrigin = false) {
+        let profile = reply.account;
         if(profile.local == true) {
           return profile.url;
         } else {
           return showOrigin ? 
-            profile.url :
-            '/i/web/profile/_/' + profile.id; 
+            reply.url :
+            '/i/web/post/_/' + profile.id + '/' + reply.id; 
         }
       }
 
