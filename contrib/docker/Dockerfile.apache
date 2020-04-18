@@ -58,7 +58,7 @@ RUN docker-php-ext-configure gd \
       --with-jpeg \
       --with-webp \
       --with-xpm
-RUN docker-php-ext-install "-j$(nproc) gd"
+RUN docker-php-ext-install -j$(nproc) gd
 
 #PHP Redis extensions
 RUN pecl install redis
@@ -70,7 +70,7 @@ RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
 
 #PHP extensions (dependencies)
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install "-j$(nproc) intl bcmath zip pcntl exif curl"
+RUN docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl
 
 #APACHE Bootstrap
 RUN a2enmod rewrite remoteip \
