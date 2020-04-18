@@ -26,11 +26,11 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
     @stack('styles')
 
-    <script type="text/javascript">window.App = {}; window.App.config = {!!App\Util\Site\Config::json()!!}</script>
+    <script type="text/javascript">window._sharedData = {curUser: {}, version: 0}; window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
 
 </head>
-<body class="">
-    <main id="content">
+<body class="w-100 h-100">
+    <main id="content" class="w-100 h-100">
         @yield('content')
     </main>
     <script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>

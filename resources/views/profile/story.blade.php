@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<story-viewer pid="{{$pid}}"></story-viewer>
+<story-viewer pid="{{$pid}}" redirect="{{$profile->url()}}"></story-viewer>
 @endsection
 
 @push('scripts')

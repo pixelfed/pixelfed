@@ -25,7 +25,7 @@ class LikeController extends Controller
 
         $user = Auth::user();
         $profile = $user->profile;
-        $status = Status::withCount('likes')->findOrFail($request->input('item'));
+        $status = Status::findOrFail($request->input('item'));
 
         $count = $status->likes_count;
 
@@ -36,14 +36,16 @@ class LikeController extends Controller
             $status->likes_count = $count;
             $status->save();
         } else {
-            $like = new Like();
-            $like->profile_id = $profile->id;
-            $like->status_id = $status->id;
-            $like->save();
-            $count++;
-            $status->likes_count = $count;
-            $status->save();
-            LikePipeline::dispatch($like);
+            $like = Like::firstOrCreate([
+                'profile_id' => $user->profile_id,
+                'status_id' => $status->id
+            ]);
+            if($like->wasRecentlyCreated == true) {
+                $count++;
+                $status->likes_count = $count;
+                $status->save();
+                LikePipeline::dispatch($like);
+            }
         }
 
         Cache::forget('status:'.$status->id.':likedby:userid:'.$user->id);

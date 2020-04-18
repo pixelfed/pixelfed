@@ -12,50 +12,49 @@ version: '3'
 
 services:
 
+## App and Worker
   app:
     # Comment to use dockerhub image
     build:
       context: .
       dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
-    ## If you have a traefik running, uncomment this to expose Pixelfed
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.frontend.rule=Host:your.url
-    #   - traefik.port=80
-    ## If you have a standard reverse proxy, uncommit this to expose Pixelfed
-    # ports:
-    #   - "127.0.0.1:8080:80"
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
-      - "./.env:/var/www/.env"
+      - "./.env.docker:/var/www/.env"
     networks:
       - external
       - internal
+    ports:
+    - "8080:80"
+    depends_on:
+      - db
+      - redis
 
-  worker:  # Comment this whole block if HORIZON_EMBED is true.
-    # Comment to use dockerhub image
+  worker:
     build:
       context: .
       dockerfile: contrib/docker/Dockerfile.apache
-      #dockerfile: contrib/docker/Dockerfile.fpm
     image: pixelfed
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.docker
     volumes:
       - "app-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
     networks:
-      - external  # Required for ActivityPub
+      - external
       - internal
     command: gosu www-data php artisan horizon
-    
+    depends_on:
+      - db
+      - redis
+
+## DB and Cache
   db:
     image: mysql:8.0
     restart: unless-stopped
@@ -78,12 +77,11 @@ services:
     networks:
       - internal
 
-# Adjust your volume data in order to store data where you wish
 volumes:
-  redis-data:
   db-data:
+  redis-data:
   app-storage:
-  app-bootstrap:  
+  app-bootstrap:
 
 networks:
   internal:

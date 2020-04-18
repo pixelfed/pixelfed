@@ -80,7 +80,7 @@ class SharePipeline implements ShouldQueue
             $notification->action = 'share';
             $notification->message = $status->shareToText();
             $notification->rendered = $status->shareToHtml();
-            $notification->item_id = $status->id;
+            $notification->item_id = $status->reblog_of_id ?? $status->id;
             $notification->item_type = "App\Status";
             $notification->save();
 

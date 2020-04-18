@@ -1,10 +1,10 @@
 // Landing Page bundle
 
+@import "fonts";
+@import "lib/fontawesome";
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
 @import 'custom';
-@import 'landing/carousel';
-@import 'landing/devices';
 
 .container.slim {
 	width: auto;

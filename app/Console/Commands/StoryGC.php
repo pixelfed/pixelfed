@@ -54,7 +54,7 @@ class StoryGC extends Command
     {
         $day = now()->day;
 
-        if($day !== 3) {
+        if($day != 3) {
             return;
         }
 
@@ -81,12 +81,12 @@ class StoryGC extends Command
 
     protected function deleteViews()
     {
-        StoryView::where('created_at', '<', now()->subDays(2))->delete();
+        StoryView::where('created_at', '<', now()->subMinutes(1441))->delete();
     }
 
     protected function deleteStories()
     {
-        $stories = Story::where('expires_at', '<', now())->take(50)->get();
+        $stories = Story::where('created_at', '<', now()->subMinutes(1441))->take(50)->get();
 
         if($stories->count() == 0) {
             exit;

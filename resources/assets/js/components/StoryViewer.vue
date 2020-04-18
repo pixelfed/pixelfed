@@ -27,6 +27,7 @@
 			return {
 				loading: true,
 				stories: {},
+				preloadIndex: null
 			}
 		},
 
@@ -36,14 +37,43 @@
 
 		methods: {
 			fetchStories() {
+				let self = this;
 				axios.get('/api/stories/v0/profile/' + this.pid)
 				.then(res => {
-					let data = res.data;
-					if(data.length == 0) {
+					self.stories = res.data;
+					if(res.data.length == 0) {
 						window.location.href = '/';
 						return;
 					}
-					window._storyData = data;
+					self.preloadImages();
+				})
+				.catch(err => {
+					console.log(err);
+					// window.location.href = '/';
+					return;
+				});
+			},
+
+			preloadImages() {
+				let self = this;
+				for (var i = 0; i < this.stories[0].items.length; i++) {
+					var preload = new Image();
+					$(preload).on('load', function() {
+
+						self.preloadIndex = i;
+						if(i == self.stories[0].items.length) {
+							self.loadViewer();
+							return;
+						}
+					});
+					preload.src = self.stories[0].items[i].src;
+				}
+			},
+
+			loadViewer() {
+				let data = this.stories;
+
+				if(!window.stories) {
 					window.stories = new Zuck('storyContainer', {
 						stories: data,
 						localStorage: false,
@@ -67,15 +97,12 @@
 							},
 						}
 					});
-					this.loading = false;
 
+					this.loading = false;
 					// todo: refactor this mess
-					document.querySelectorAll('#storyContainer .story')[0].click()
-				})
-				.catch(err => {
-					window.location.href = '/';
-					return;
-				});
+					document.querySelectorAll('#storyContainer .story')[0].click();
+				}
+				return;
 			}
 		}
 	}

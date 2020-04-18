@@ -38,6 +38,9 @@ mix.js('resources/assets/js/app.js', 'public/js')
 // .js('resources/assets/js/direct.js', 'public/js')
 // .js('resources/assets/js/admin.js', 'public/js')
 // .js('resources/assets/js/micro.js', 'public/js')
+.js('resources/assets/js/rempro.js', 'public/js')
+.js('resources/assets/js/rempos.js', 'public/js')
+//.js('resources/assets/js/timeline_next.js', 'public/js')
 
 .extract([
 	'lodash',

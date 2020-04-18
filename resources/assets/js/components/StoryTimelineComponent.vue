@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div v-if="stories.length != 0">
-			<div id="storyContainer" class="m-3"></div>
+			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'m-3']"></div>
 		</div>
 	</div>
 </template>
@@ -18,6 +18,7 @@
 	let Zuck = require('zuck.js');
 
 	export default {
+		props: ['list'],
 		data() {
 			return {
 				stories: {},
@@ -34,6 +35,7 @@
 				.then(res => {
 					let data = res.data;
 					let stories = new Zuck('storyContainer', {
+						list: this.list == true ? true : false,
 						stories: data,
 						localStorage: true,
 						callbacks:  {

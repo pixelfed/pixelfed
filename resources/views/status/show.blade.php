@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => "A post by " . $user->username])
+@extends('layouts.app',['title' => "{$user->username} shared a post"])
 
 @section('content')
 <noscript>
@@ -25,7 +25,6 @@
 
 @push('scripts')
 <script type="text/javascript" src="{{ mix('js/status.js') }}"></script>
-<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
   new Vue({ 

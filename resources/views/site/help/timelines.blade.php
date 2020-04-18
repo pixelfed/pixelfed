@@ -28,7 +28,7 @@
   </ul>
   <div class="py-3"></div>
   <div class="card bg-primary border-primary" style="box-shadow: none !important;border: 3px solid #08d!important;">
-    <div class="card-header text-light font-weight-bold h4 p-4">Timeline Tips</div>
+    <div class="card-header text-light font-weight-bold h4 p-4 bg-primary">Timeline Tips</div>
     <div class="card-body bg-white p-3">
       <ul class="pt-3">
         <li class="lead mb-4">You can mute or block accounts to prevent them from appearing in timelines.</li>

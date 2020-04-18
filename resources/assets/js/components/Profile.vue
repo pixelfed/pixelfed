@@ -173,8 +173,8 @@
 			<div class="container px-0">
 				<div class="profile-timeline mt-md-4">
 					<div class="row" v-if="mode == 'grid'">
-						<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline">
-							<a class="card info-overlay card-md-border-0" :href="statusUrl(s)">
+						<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline" :key="'tlob:'+index">
+							<a class="card info-overlay card-md-border-0" :href="statusUrl(s)" v-once>
 								<div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
 									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
 									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
@@ -355,26 +355,47 @@
 			</div>
 		</div>
 	</div>
-	<b-modal ref="followingModal"
+	<b-modal
+		v-if="profile && following"
+		ref="followingModal"
 		id="following-modal"
 		hide-footer
 		centered
 		title="Following"
 		body-class="list-group-flush py-3 px-0"
 		dialog-class="follow-modal">
-		<div class="list-group">
+		<div v-if="!loading" class="list-group" style="min-height: 60vh;">
+			<div v-if="owner == true" class="list-group-item border-0 pt-0 px-0 mt-n2 mb-3">
+				<span class="d-flex px-4 pb-0 align-items-center">
+					<i class="fas fa-search text-lighter"></i>
+					<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Search Following..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
+				</span>
+			</div>
+			<div v-if="owner == true" class="btn-group rounded-0 mt-n3 mb-3 border-top" role="group" aria-label="Following">
+					<!-- <button type="button" :class="[followingModalTab == 'following' ? ' btn btn-light py-3 rounded-0 font-weight-bold modal-tab-active' : 'btn btn-light py-3 rounded-0 font-weight-bold']" style="font-size: 12px;">FOLLOWING</button> -->
+					<!-- <button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">MUTED</button>
+					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">BLOCKED</button> -->
+			</div>
+			<div v-else class="btn-group rounded-0 mt-n3 mb-3" role="group" aria-label="Following">
+					<!-- <button type="button" class="btn btn-light py-3 rounded-0 border-primary border-left-0 border-right-0 border-top-0 font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'following'">FOLLOWING</button>
+					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'mutual'">MUTUAL</button>
+					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'blocked'">BLOCKED</button> -->
+			</div>
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in following" :key="'following_'+index">
 				<div class="media">
 					<a :href="user.url">
 						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
 					</a>
-					<div class="media-body">
+					<div class="media-body text-truncate">
 						<p class="mb-0" style="font-size: 14px">
 							<a :href="user.url" class="font-weight-bold text-dark">
 								{{user.username}}
 							</a>
 						</p>
-						<p class="text-muted mb-0" style="font-size: 14px">
+						<p v-if="!user.local" class="text-muted mb-0 text-truncate mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
+							<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
+						</p>
+						<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
 							{{user.display_name}}
 						</p>
 					</div>
@@ -383,12 +404,12 @@
 					</div>
 				</div>
 			</div>
-			<div v-if="following.length == 0" class="list-group-item border-0">
-				<div class="list-group-item border-0">
-					<p class="p-3 text-center mb-0 lead"></p>
+			<div v-if="followingModalSearch && following.length == 0" class="list-group-item border-0">
+				<div class="list-group-item border-0 pt-5">
+					<p class="p-3 text-center mb-0 lead">No Results Found</p>
 				</div>
 			</div>
-			<div v-if="followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+			<div v-if="following.length > 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
 				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
 			</div>
 		</div>
@@ -565,6 +586,14 @@
 		padding: 6px;
 		background:#fff;
 	}
+	.no-focus {
+		border-color: none;
+		outline: 0;
+		box-shadow: none;
+	}
+	.modal-tab-active {
+		border-bottom: 1px solid #08d;
+	}
 </style>
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
@@ -608,7 +637,10 @@
 				isMobile: false,
 				ctxEmbedPayload: null,
 				copiedEmbed: false,
-				hasStory: null
+				hasStory: null,
+				followingModalSearch: null,
+				followingModalSearchCache: null,
+				followingModalTab: 'following',
 			}
 		},
 		beforeMount() {
@@ -1013,6 +1045,7 @@
 					})
 					.then(res => {
 						this.following = res.data;
+						this.followingModalSearchCache = res.data;
 						this.followingCursor++;
 						if(res.data.length < 10) {
 							this.followingMore = false;
@@ -1059,15 +1092,18 @@
 				}
 				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
 					params: {
-						page: this.followingCursor
+						page: this.followingCursor,
+						fbu: this.followingModalSearch
 					}
 				})
 				.then(res => {
 					if(res.data.length > 0) {
 						this.following.push(...res.data);
 						this.followingCursor++;
+						this.followingModalSearchCache = this.following;
 					}
 					if(res.data.length < 10) {
+						this.followingModalSearchCache = this.following;
 						this.followingMore = false;
 					}
 				});
@@ -1186,6 +1222,28 @@
 
 			storyRedirect() {
 				window.location.href = '/stories/' + this.profileUsername;
+			},
+
+			followingModalSearchHandler() {
+				let self = this;
+				let q = this.followingModalSearch;
+
+				if(q.length == 0) {
+					this.following = this.followingModalSearchCache;
+					this.followingModalSearch = null;
+				}
+				if(q.length > 0) {
+					let url = '/api/pixelfed/v1/accounts/' + 
+						self.profileId + '/following?page=1&fbu=' + 
+						q;
+
+					axios.get(url).then(res => {
+						this.following = res.data;
+					}).catch(err => {
+						self.following = self.followingModalSearchCache;
+						self.followingModalSearch = null;
+					});
+				}
 			}
 		}
 	}

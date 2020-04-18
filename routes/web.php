@@ -171,7 +171,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
-            Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');;
+            Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
             // Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
             Route::get('bookmarks', 'InternalApiController@bookmarks');
@@ -263,6 +263,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::post('stories/viewed', 'StoryController@apiV1Viewed');
         Route::get('stories/new', 'StoryController@compose');
         Route::get('my/story', 'StoryController@iRedirect');
+        Route::get('web/profile/_/{id}', 'InternalApiController@remoteProfile');
+        Route::get('web/post/_/{profileId}/{statusid}', 'InternalApiController@remoteStatus');
     });
 
     Route::group(['prefix' => 'account'], function () {
@@ -393,6 +395,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('blocking-accounts', 'site.help.blocking-accounts')->name('help.blocking-accounts');
             Route::view('report-something', 'site.help.report-something')->name('help.report-something');
             Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
+            Route::view('labs-deprecation', 'site.help.labs-deprecation')->name('help.labs-deprecation');
+
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
         Route::get('newsroom/archive', 'NewsroomController@archive');

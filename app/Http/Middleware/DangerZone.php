@@ -25,7 +25,7 @@ class DangerZone
         if(!Auth::check()) {
             return redirect(route('login'));
         }
-        if(!$request->is('i/auth/sudo')) {
+        if(!$request->is('i/auth/sudo') && $request->session()->get('sudoTrustDevice') != 1) {
             if( !$request->session()->has('sudoMode') ) {
                 $request->session()->put('redirectNext', $request->url());
                 return redirect('/i/auth/sudo');
