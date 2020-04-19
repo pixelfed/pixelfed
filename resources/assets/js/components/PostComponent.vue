@@ -164,11 +164,11 @@
                             <div v-else>
                               <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                                 <span>
-                                  <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+                                  <a class="text-dark font-weight-bold mr-1 text-break" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
                                   <span class="text-break " v-html="reply.content"></span>
                                 </span>
-                                <span class="pl-2">
-                                   <!-- <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span> -->
+                                <span style="min-width:38px;">
+                                   <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
                                     <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block px-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
                                 </span>
                               </p>
