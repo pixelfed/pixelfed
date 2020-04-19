@@ -10,7 +10,7 @@
 
 
 return [
-	'enabled' => env('PF_COSTAR_ENABLED', false),
+	'enabled' => false,
 
 	'domain' => [
 		'block' => env('CS_BLOCKED_DOMAINS', null) ? explode(',', env('CS_BLOCKED_DOMAINS')) : null,
