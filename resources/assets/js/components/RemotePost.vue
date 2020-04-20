@@ -1015,7 +1015,7 @@ export default {
       permalinkUrl(reply, showOrigin = false) {
         let profile = reply.account;
         if(profile.local == true) {
-          return profile.url;
+          return reply.url;
         } else {
           return showOrigin ? 
             reply.url :
