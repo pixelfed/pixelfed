@@ -437,7 +437,7 @@ class InternalApiController extends Controller
 
         $status = Status::whereProfileId($user->id)
                         ->whereNull('reblog_of_id')
-                        ->whereVisibility('public')
+                        ->whereIn('visibility', ['public', 'unlisted'])
                         ->findOrFail($statusId);
         $template = $status->in_reply_to_id ? 'status.reply' : 'status.remote';
         return view($template, compact('user', 'status'));
