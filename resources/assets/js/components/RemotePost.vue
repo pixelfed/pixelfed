@@ -127,14 +127,13 @@
                     </span>
                   </div>
                   <div v-else>
-                    <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
-                      <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="profileUrl">{{statusUsername}}</a>
+                    <p :class="[status.content.length > 620 ? 'mb-0 read-more' : 'mb-0']" style="overflow: hidden;">
+                      <!-- <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="profileUrl">{{statusUsername}}</a> -->
                       <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                     </p>
                   </div>
 
                   <div v-if="showComments">
-                    <hr>
                     <div class="postCommentsLoader text-center py-2">
                       <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
@@ -165,7 +164,7 @@
                                   <a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
                                   <span class="text-break " v-html="reply.content"></span>
                                 </span>
-                                <span class="pl-2">
+                                <span style="min-width:38px;">
                                     <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
                                     <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block px-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
                                 </span>
