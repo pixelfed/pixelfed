@@ -70,9 +70,23 @@
 								</div>
 
 								<div class="card-body p-0">
-									<a :href="status.url">
-										<img v-once :src="status.thumb" class="w-100 h-100">
-									</a>
+									<div v-if="status.sensitive == true">
+										<details class="details-animated" @click="status.sensitive = false;">
+											<summary>
+												<p class="mb-0 lead font-weight-bold">CW / NSFW / Hidden Media</p>
+												<p class="font-weight-light">(click to show)</p>
+											</summary>
+											<a :href="status.url">
+												<img v-once :src="status.thumb" class="w-100 h-100">
+											</a>
+										</details>
+									</div>
+									<div v-else>
+										<a :href="status.url">
+											<img v-once :src="status.thumb" class="w-100 h-100">
+										</a>
+										<button v-if="status.cw == true && status.sensitive == false" class="btn btn-block btn-primary font-weight-bold rounded-0" @click="status.sensitive = true;">Hide Media</button>
+									</div>
 									
 								</div>
 
@@ -225,7 +239,9 @@
 								media: status.media_attachments,
 								timestamp: status.created_at,
 								type: status.pf_type,
-								url: status.url
+								url: status.url,
+								sensitive: status.sensitive,
+								cw: status.sensitive
 							}
 						});
 					let ids = data.map(status => status.id);
