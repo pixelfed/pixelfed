@@ -327,6 +327,8 @@ class Helpers {
 				$status->is_nsfw = $cw;
 				$status->scope = $scope;
 				$status->visibility = $scope;
+				$status->cw_summary = $cw == true && isset($res['summary']) ?
+					Purify::clean(strip_tags($res['summary'])) : null;
 				$status->save();
 				if($reply_to == null) {
 					self::importNoteAttachment($res, $status);
@@ -404,7 +406,8 @@ class Helpers {
 		if(empty($username)) {
 			return;
 		}
-		$remoteUsername = "@{$username}@{$domain}";
+		$remoteUsername = $username;
+		$webfinger = "@{$username}@{$domain}";
 
 		abort_if(!self::validateUrl($res['inbox']), 400);
 		abort_if(!self::validateUrl($res['id']), 400);
@@ -422,6 +425,8 @@ class Helpers {
 			$profile->remote_url = strtolower($res['id']);
 			$profile->public_key = $res['publicKey']['publicKeyPem'];
 			$profile->key_id = $res['publicKey']['id'];
+			$profile->webfinger = strtolower(Purify::clean($webfinger));
+			$profile->last_fetched_at = now();
 			$profile->save();
 			if($runJobs == true) {
 				// RemoteFollowImportRecent::dispatch($res, $profile);

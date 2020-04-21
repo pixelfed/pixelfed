@@ -552,6 +552,7 @@ class PublicApiController extends Controller
             'reblogs_count',
             'scope',
             'local',
+            'cw_summary',
             'created_at',
             'updated_at'
           )->whereProfileId($profile->id)

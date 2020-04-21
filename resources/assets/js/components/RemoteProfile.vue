@@ -73,16 +73,16 @@
 									<div v-if="status.sensitive == true">
 										<details class="details-animated" @click="status.sensitive = false;">
 											<summary>
-												<p class="mb-0 lead font-weight-bold">CW / NSFW / Hidden Media</p>
+												<p class="mb-0 lead font-weight-bold">{{status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
 												<p class="font-weight-light">(click to show)</p>
 											</summary>
-											<a :href="status.url">
+											<a :href="remotePostUrl(status)">
 												<img v-once :src="status.thumb" class="w-100 h-100">
 											</a>
 										</details>
 									</div>
 									<div v-else>
-										<a :href="status.url">
+										<a :href="remotePostUrl(status)">
 											<img v-once :src="status.thumb" class="w-100 h-100">
 										</a>
 										<button v-if="status.cw == true && status.sensitive == false" class="btn btn-block btn-primary font-weight-bold rounded-0" @click="status.sensitive = true;">Hide Media</button>
@@ -241,7 +241,8 @@
 								type: status.pf_type,
 								url: status.url,
 								sensitive: status.sensitive,
-								cw: status.sensitive
+								cw: status.sensitive,
+								spoiler_text: status.spoiler_text
 							}
 						});
 					let ids = data.map(status => status.id);
