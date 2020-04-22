@@ -350,7 +350,7 @@ export default {
 				return 'webfinger';
 			}
 
-			if(q.startsWith('@') || q.search('@') != -1) {
+			if(q.startsWith('@')) {
 				return 'profile';
 			}
 
