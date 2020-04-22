@@ -416,7 +416,7 @@ class Helpers {
 		if(!$profile) {
 			$profile = new Profile();
 			$profile->domain = strtolower($domain);
-			$profile->username = strtolower(Purify::clean($remoteUsername));
+			$profile->username = strtolower(Purify::clean($webfinger));
 			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
 			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
