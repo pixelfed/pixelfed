@@ -40,8 +40,14 @@ class FixUsernames extends Command
      */
     public function handle()
     {
+        $this->line(' ');
         $this->info('Collecting data ...');
+        $this->line(' ');
+        $this->restrictedCheck();
+    }
 
+    protected function restrictedCheck()
+    {
         $affected = collect([]);
 
         $restricted = RestrictedNames::get();
@@ -61,6 +67,7 @@ class FixUsernames extends Command
                 }
             }
         });
+        
         if($affected->count() > 0) {
             $this->info('Found: ' . $affected->count() . ' affected usernames');
 
@@ -118,7 +125,40 @@ class FixUsernames extends Command
 
             $this->info('Fixed ' . $affected->count() . ' usernames!');
         } else {
-            $this->info('No affected usernames found!');
+            $this->info('No restricted usernames found!');
         }
+        $this->line(' ');
+        $this->versionZeroTenNineFix();
+    }
+
+    protected function versionZeroTenNineFix()
+    {
+        $profiles = Profile::whereNotNull('domain')
+            ->whereNull('private_key')
+            ->where('username', 'not like', '@%@%')
+            ->get();
+
+        $count = $profiles->count();
+
+        if($count > 0) {
+            $this->info("Found {$count} remote usernames to fix ...");
+            $this->line(' ');
+        } else {
+            $this->info('No remote fixes found!');
+            $this->line(' ');
+            return;
+        }
+        foreach($profiles as $p) {
+            $this->info("Fixed $p->username => $p->webfinger");
+            $p->username = $p->webfinger ?? "@{$p->username}@{$p->domain}";
+            if(Profile::whereUsername($p->username)->exists()) {
+                return;
+            }
+            $p->save();
+        }
+        if($count > 0) {
+            $this->line(' ');
+        }
+
     }
 }
