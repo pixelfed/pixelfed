@@ -175,6 +175,82 @@
 				</div>
 			</div>
 		</div>
+		<div v-else-if="analysis == 'remote'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
+			</div>
+			<div v-if="results.profiles.length" class="col-md-6 offset-3">
+				<a v-for="(profile, index) in results.profiles" class="mb-2 result-card" :href="buildUrl('profile', profile)">
+					<div class="pb-3">
+						<div class="media align-items-center py-2 pr-3">
+							<img class="mr-3 rounded-circle border" :src="profile.entity.thumb" width="50px" height="50px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+							<div class="media-body">
+								<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
+									{{profile.value}}
+								</p>
+								<p class="mb-0 small font-weight-bold text-muted text-uppercase">
+									{{profile.entity.post_count}} Posts
+								</p>
+							</div>
+							<div class="ml-3">
+								<a v-if="profile.entity.following" class="btn btn-primary btn-sm font-weight-bold text-uppercase py-0" :href="buildUrl('profile', profile)">Following</a>
+								<a v-else class="btn btn-outline-primary btn-sm font-weight-bold text-uppercase py-0" :href="buildUrl('profile', profile)">View</a>
+							</div>
+						</div>
+					</div>
+				</a>
+			</div>
+			<div v-if="results.statuses.length" class="col-md-6 offset-3">
+				<a v-for="(status, index) in results.statuses" class="mr-2 result-card" :href="buildUrl('status', status)">
+					<img :src="status.thumb" width="90px" height="90px" class="mb-2" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+				</a>
+			</div>
+		</div>
+		<div v-else-if="analysis == 'remotePost'" class="row">
+			<div class="col-12 mb-5">
+				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<hr>
+			</div>
+			<div class="col-md-6 offset-md-3">
+				<div v-if="results.statuses.length">
+					<div v-for="(status, index) in results.statuses" class="card mb-4 shadow-none border">
+						<div class="card-header p-0 m-0">
+							<div style="width: 100%;height: 200px;background: #fff">
+								<div class="pt-4 text-center">
+									<img :src="status.thumb" class="img-fluid border" style="max-height: 140px;">
+								</div>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="mt-n4 mb-2">
+								<div class="media">
+									
+									<img class="rounded-circle p-1 mr-2 border mt-n3 bg-white shadow" src="/storage/avatars/default.png" width="70px" height="70px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+									<div class="media-body pt-3">
+										<p class="font-weight-bold mb-0">{{status.username}}</p>
+									</div>
+									<div class="float-right pt-3">
+										<p class="small mb-0 text-muted">{{status.timestamp}}</p>
+									</div>
+								</div>
+							</div>
+							<p class="text-center mb-3 lead" v-html="status.caption"></p>
+							<!-- <p class="text-center text-muted small text-uppercase mb-4">2 likes</p> -->
+							<!-- <div class="d-flex justify-content-center">
+								<a class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" :href="status.url" style="font-weight: 500">View Post</a>
+							</div> -->
+						</div>
+						<div class="card-footer">
+							<a class="btn btn-primary btn-block font-weight-bold rounded-0" :href="status.url">View Post</a>
+						</div>
+					</div>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>
+			</div>
+		</div>
 		<div v-else class="col-12">
 			<p class="text-center text-muted lead font-weight-bold">No results found</p>
 		</div>
@@ -232,6 +308,14 @@ export default {
 		},
 
 		fetchSearchResults() {
+			if(this.analysis == 'remote') {
+				let term = this.query;
+				let parsed = new URL(term);
+				if(parsed.host === window.location.host) {
+					window.location.href = term;
+					return;
+				}
+			}
 			this.searchContext(this.analysis);
 		},
 
@@ -266,7 +350,7 @@ export default {
 				return 'webfinger';
 			}
 
-			if(q.startsWith('@') || q.search('@') != -1) {
+			if(q.startsWith('@')) {
 				return 'profile';
 			}
 
@@ -312,6 +396,34 @@ export default {
 						this.results.hashtags = results.hashtags ? results.hashtags : [];
 						this.results.profiles = results.profiles ? results.profiles : [];
 						this.results.statuses = results.posts ? results.posts : [];
+						this.loading = false;
+					}).catch(err => {
+						this.loading = false;
+						console.log(err);
+						this.networkError = true;
+					});
+				break;
+
+				case 'remote': 
+					axios.get('/api/search', {
+						params: {
+							'q': this.query,
+							'src': 'metro',
+							'v': 1,
+							'scope': 'remote'
+						}
+					}).then(res => {
+						let results = res.data;
+						this.results.hashtags = results.hashtags ? results.hashtags : [];
+						this.results.profiles = results.profiles ? results.profiles : [];
+						this.results.statuses = results.posts ? results.posts : [];
+
+						if(this.results.profiles.length) {
+							this.analysis = 'profile';
+						}
+						if(this.results.statuses.length) {
+							this.analysis = 'remotePost';
+						}
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
