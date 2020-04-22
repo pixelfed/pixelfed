@@ -61,6 +61,10 @@ class SearchController extends Controller
                 $this->webfingerSearch();
                 break;
 
+            case 'remote':
+                $this->remoteLookupSearch();
+                break;
+
             default:
                 break;
         }
@@ -179,24 +183,15 @@ class SearchController extends Controller
                             'following' => $item->followedBy(Auth::user()->profile),
                             'follow_request' => $item->hasFollowRequestById(Auth::user()->profile_id),
                             'thumb' => $item->avatarUrl(),
-                            'local' => (bool) !$item->domain
+                            'local' => (bool) !$item->domain,
+                            'post_count' => $item->statuses()->count()
                         ]
                     ]];
                     return $tokens;
                 });
             }
         } 
-        // elseif( Str::containsAll($tag, ['@', '.'])
-        //     config('federation.activitypub.enabled') == true && 
-        //     config('federation.activitypub.remoteFollow') == true
-        // ) {
-        //     if(substr_count($tag, '@') == 2) {
-        //         $domain = last(explode('@', sub_str($u, 1)));
-        //     } else {
-        //         $domain = last(explode('@', $u));
-        //     }
 
-        // } 
         else {
             $this->tokens['profiles'] = Cache::remember($key, $ttl, function() use($tag) {
                 $users = Profile::select('domain', 'username', 'name', 'id')
@@ -267,5 +262,54 @@ class SearchController extends Controller
             ]
         ];
         return;
+    }
+
+    protected function remotePostLookup()
+    {
+        $tag = $this->term;
+        $hash = hash('sha256', $tag);
+        $local = Helpers::validateLocalUrl($tag);
+        $valid = Helpers::validateUrl($tag);
+
+        if($valid == false || $local == true) {
+            return;
+        } 
+            
+        if(Status::whereUri($tag)->whereLocal(false)->exists()) {
+            $item = Status::whereUri($tag)->first();
+            $this->tokens['posts'] = [[
+                'count'  => 0,
+                'url'    => "/i/web/post/_/$item->profile_id/$item->id",
+                'type'   => 'status',
+                'username' => $item->profile->username,
+                'caption'   => $item->rendered ?? $item->caption,
+                'thumb'  => $item->firstMedia()->remote_url,
+                'timestamp' => $item->created_at->diffForHumans()
+            ]];
+        }
+
+        $remote = Helpers::fetchFromUrl($tag);
+
+        if(isset($remote['type']) && $remote['type'] == 'Note') {
+            $item = Helpers::statusFetch($tag);
+            $this->tokens['posts'] = [[
+                'count'  => 0,
+                'url'    => "/i/web/post/_/$item->profile_id/$item->id",
+                'type'   => 'status',
+                'username' => $item->profile->username,
+                'caption'   => $item->rendered ?? $item->caption,
+                'thumb'  => $item->firstMedia()->remote_url,
+                'timestamp' => $item->created_at->diffForHumans()
+            ]];
+        }
+    }
+
+    protected function remoteLookupSearch()
+    {
+        if(!Helpers::validateUrl($this->term)) {
+            return;
+        }
+        $this->getProfiles();
+        $this->remotePostLookup();
     }
 }
