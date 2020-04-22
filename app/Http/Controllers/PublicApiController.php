@@ -239,6 +239,11 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
 
+        $filtered = UserFilter::whereUserId(Auth::user()->profile_id)
+                  ->whereFilterableType('App\Profile')
+                  ->whereIn('filter_type', ['mute', 'block'])
+                  ->pluck('filterable_id')->toArray();
+
         if($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
@@ -263,6 +268,7 @@ class PublicApiController extends Controller
                         'updated_at'
                       )->where('id', $dir, $id)
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
                       ->whereVisibility('public')
                       ->orderBy('created_at', 'desc')
@@ -289,6 +295,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'updated_at'
                       )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereVisibility('public')
