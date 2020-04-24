@@ -31,6 +31,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use App\Services\ModLogService;
+use App\Services\PublicTimelineService;
 
 class InternalApiController extends Controller
 {
@@ -227,7 +228,7 @@ class InternalApiController extends Controller
                 $status = Status::whereScope('public')->findOrFail($item_id);
                 $status->scope = $status->visibility = 'unlisted';
                 $status->save();
-                App\Services\PublicTimelineService::del($status->id);
+                PublicTimelineService::del($status->id);
                 ModLogService::boot()
                     ->user(Auth::user())
                     ->objectUid($status->profile->user_id)
