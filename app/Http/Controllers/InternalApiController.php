@@ -30,6 +30,8 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use App\Services\ModLogService;
+use App\Services\PublicTimelineService;
 
 class InternalApiController extends Controller
 {
@@ -161,24 +163,23 @@ class InternalApiController extends Controller
 
     public function modAction(Request $request)
     {
-        abort_unless(Auth::user()->is_admin, 403);
+        abort_unless(Auth::user()->is_admin, 400);
         $this->validate($request, [
             'action' => [
                 'required',
                 'string',
                 Rule::in([
-                    'autocw',
-                    'noautolink',
-                    'unlisted',
-                    'disable',
-                    'suspend'
+                    'addcw',
+                    'remcw',
+                    'unlist'
+                    
                 ])
             ],
             'item_id' => 'required|integer|min:1',
             'item_type' => [
                 'required',
                 'string',
-                Rule::in(['status'])
+                Rule::in(['profile', 'status'])
             ]
         ]);
 
@@ -187,48 +188,61 @@ class InternalApiController extends Controller
         $item_type = $request->input('item_type');
 
         switch($action) {
-            case 'autocw':
-                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
-                $profile->cw = true;
-                $profile->save();
+            case 'addcw':
+                $status = Status::findOrFail($item_id);
+                $status->is_nsfw = true;
+                $status->save();
+                ModLogService::boot()
+                    ->user(Auth::user())
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
+                    ->action('admin.status.moderate')
+                    ->metadata([
+                        'action' => 'cw',
+                        'message' => 'Success!'
+                    ])
+                    ->accessLevel('admin')
+                    ->save();
             break;
 
-            case 'noautolink':
-                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
-                $profile->no_autolink = true;
-                $profile->save();
+            case 'remcw':
+                $status = Status::findOrFail($item_id);
+                $status->is_nsfw = false;
+                $status->save();
+                ModLogService::boot()
+                    ->user(Auth::user())
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
+                    ->action('admin.status.moderate')
+                    ->metadata([
+                        'action' => 'remove_cw',
+                        'message' => 'Success!'
+                    ])
+                    ->accessLevel('admin')
+                    ->save();
             break;
 
-            case 'unlisted':
-                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
-                $profile->unlisted = true;
-                $profile->save();
+            case 'unlist':
+                $status = Status::whereScope('public')->findOrFail($item_id);
+                $status->scope = $status->visibility = 'unlisted';
+                $status->save();
+                PublicTimelineService::del($status->id);
+                ModLogService::boot()
+                    ->user(Auth::user())
+                    ->objectUid($status->profile->user_id)
+                    ->objectId($status->id)
+                    ->objectType('App\Status::class')
+                    ->action('admin.status.moderate')
+                    ->metadata([
+                        'action' => 'unlist',
+                        'message' => 'Success!'
+                    ])
+                    ->accessLevel('admin')
+                    ->save();
             break;
-
-            case 'disable':
-                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
-                $user = $profile->user;
-                $profile->status = 'disabled';
-                $user->status = 'disabled';
-                $profile->save();
-                $user->save();
-            break;
-
-
-            case 'suspend':
-                $profile = $item_type == 'status' ? Status::findOrFail($item_id)->profile : null;
-                $user = $profile->user;
-                $profile->status = 'suspended';
-                $user->status = 'suspended';
-                $profile->save();
-                $user->save();
-            break;
-            
-            default:
-                # code...
-                break;
         }
-        Cache::forget('profiles:private');
         return ['msg' => 200];
     }
 
