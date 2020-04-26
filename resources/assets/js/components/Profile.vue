@@ -760,8 +760,13 @@
 								self.ids.push(d.id);
 							} 
 						});
+						let max = Math.min(...this.ids);
+						if(max == this.max_id) {
+							$state.complete();
+							return;
+						}
 						this.min_id = Math.max(...this.ids);
-						this.max_id = Math.min(...this.ids);
+						this.max_id = max;
 						$state.loaded();
 						this.loading = false;
 					} else {
