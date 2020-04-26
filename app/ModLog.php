@@ -8,6 +8,8 @@ class ModLog extends Model
 {
 	protected $visible = ['id'];
 
+	protected $fillable = ['*'];
+
 	public function admin()
 	{
 		return $this->belongsTo(User::class, 'user_id');
