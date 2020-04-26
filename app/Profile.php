@@ -18,7 +18,10 @@ class Profile extends Model
      */
     public $incrementing = false;
     
-    protected $dates = ['deleted_at'];
+    protected $dates = [
+        'deleted_at',
+        'last_fetched_at'
+    ];
     protected $hidden = ['private_key'];
     protected $visible = ['id', 'user_id', 'username', 'name'];
     protected $fillable = ['user_id'];
