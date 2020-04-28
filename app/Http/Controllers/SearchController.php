@@ -194,11 +194,14 @@ class SearchController extends Controller
 
         else {
             $this->tokens['profiles'] = Cache::remember($key, $ttl, function() use($tag) {
-                $users = Profile::select('domain', 'username', 'name', 'id')
+                if(Str::startsWith($tag, '@')) {
+                    $tag = substr($tag, 1);
+                }
+                $users = Profile::select('status', 'domain', 'username', 'name', 'id')
                     ->whereNull('status')
-                    ->where('id', '!=', Auth::user()->profile->id)
                     ->where('username', 'like', '%'.$tag.'%')
                     ->limit(20)
+                    ->orderBy('domain')
                     ->get();
 
                 if($users->count() > 0) {
