@@ -33,8 +33,7 @@
 							</span>
 						</div>
 						<p class="pl-2 h4 font-weight-bold mb-1">{{profile.display_name}}</p>
-						<p class="pl-2 font-weight-bold mb-1 text-muted">{{profile.acct}}</p>
-						<p class="pl-2 text-muted small pt-3" v-html="profile.note"></p>
+						<p class="pl-2 font-weight-bold mb-2 text-muted">{{profile.acct}}</p>
 						<p class="pl-2 text-muted small d-flex justify-content-between">
 							<span>
 								<span class="font-weight-bold text-dark">{{profile.statuses_count}}</span>
@@ -49,8 +48,10 @@
 								<span>Followers</span>
 							</span>
 						</p>
+						<p class="pl-2 text-muted small pt-2" v-html="profile.note"></p>
 					</div>
 				</div>
+				<p class="small text-lighter p-2">Last updated: <time :datetime="profile.last_fetched_at">{{timeAgo(profile.last_fetched_at, 'ago')}}</time></p>
 			</div>
 			<div class="col-12 col-md-8 pt-5">
 				<div class="row">
@@ -110,9 +111,18 @@
 						</div>
 					</div>
 
-					<!-- <div class="col-12 mt-4">
+					<div v-if="feed.length == 0" class="col-12 mb-2">
+						<div class="d-flex justify-content-center align-items-center bg-white border rounded" style="height:60vh;">
+							<div class="text-center">
+								<p class="mb-0 lead">No posts found.</p>
+								<p class="">We haven't seen any posts from this account.</p>
+							</div>
+						</div>
+					</div>
+
+					<div v-else class="col-12 mt-4">
 						<p class="text-center mb-0 px-0"><button class="btn btn-outline-primary btn-block font-weight-bold">Load More</button></p>
-					</div> -->
+					</div>
 				</div>
 			</div>
 		</div>
@@ -191,6 +201,8 @@
 				warning: false,
 				ctxMenuStatus: false,
 				ctxMenuRelationship: false,
+				fetchingRemotePosts: false,
+				showMutualFollowers: false
 			}
 		},
 
@@ -450,6 +462,24 @@
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
+			},
+
+			manuallyFetchRemotePosts($event) {
+				this.fetchingRemotePosts = true;
+				event.target.blur();
+				swal(
+					'Fetching Remote Posts',
+					'Check back in a few minutes!',
+					'info'
+				);
+			},
+
+			timeAgo(ts, suffix = false) {
+				if(ts == null) {
+					return 'never';
+				}
+				suffix = suffix ? ' ' + suffix : '';
+				return App.util.format.timeAgo(ts) + suffix;
 			},
 		}
 	}

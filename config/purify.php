@@ -68,8 +68,8 @@ return [
         */
 
         'HTML.Allowed' => env('RESTRICT_HTML_TYPES', true) ? 
-            'a[href|title|rel],p,span,br' :
-            'a[href|title|rel],p,span,strong,em,del,b,i,s,strike,h1,h2,h3,h4,h5,h6,ul,ol,li,br',
+            'a[href|title|rel|class],p[class],span[class],br' :
+            'a[href|title|rel|class],p[class],span[class],strong,em,del,b,i,s,strike,h1,h2,h3,h4,h5,h6,ul,ol,li,br',
 
 
         /*
@@ -132,6 +132,27 @@ return [
         */
 
         'AutoFormat.RemoveEmpty' => false,
+
+        'Attr.AllowedClasses' => [
+            'h-feed',
+            'h-entry',
+            'h-cite',
+            'h-card',
+            'p-author',
+            'p-name',
+            'p-in-reply-to',
+            'p-repost-of',
+            'p-comment',
+            'u-photo',
+            'u-uid',
+            'u-url',
+            'dt-published',
+            'e-content',
+            'mention',
+            'hashtag',
+            'ellipsis',
+            'invisible'
+        ],
 
         'Attr.AllowedRel' => [
             'noreferrer',

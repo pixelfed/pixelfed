@@ -272,6 +272,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('activity', 'AccountController@notifications')->name('notifications');
         Route::get('follow-requests', 'AccountController@followRequests')->name('follow-requests');
         Route::post('follow-requests', 'AccountController@followRequestHandle');
+        Route::get('follow-requests.json', 'AccountController@followRequestsJson');
     });
 
     Route::group(['prefix' => 'settings'], function () {
