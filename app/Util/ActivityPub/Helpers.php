@@ -181,9 +181,11 @@ class Helpers {
 
 	public static function zttpUserAgent()
 	{
+		$version = config('pixelfed.version');
+		$url = config('app.url');
 		return [
 			'Accept'     => 'application/activity+json',
-			'User-Agent' => 'PixelfedBot - https://pixelfed.org',
+			'User-Agent' => "(Pixelfed/{$version}; +{$url})",
 		];
 	}
 
@@ -234,10 +236,6 @@ class Helpers {
 				$activity = $res;
 			} else {
 				$activity = ['object' => $res];
-			}
-
-			if(isset($activity['object']['content']) == false) {
-				abort(400, 'Invalid object');
 			}
 
 			$scope = 'private';
