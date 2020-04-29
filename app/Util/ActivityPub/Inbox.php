@@ -323,6 +323,8 @@ class Inbox
                 break;
 
             case 'Tombstone':
+                    // todo: fix race condition
+                    return; 
                     $profile = Helpers::profileFetch($actor);
                     $status = Status::whereProfileId($profile->id)
                         ->whereUri($id)
