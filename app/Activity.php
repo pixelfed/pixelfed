@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     protected $dates = ['processed_at'];
+    protected $fillable = ['*'];
 
 	public function toProfile()
 	{
