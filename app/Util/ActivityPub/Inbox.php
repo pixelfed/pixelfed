@@ -40,6 +40,10 @@ class Inbox
     public function handle()
     {
         $this->handleVerb();
+
+        (new Activity())->create([
+            'data' => json_encode($this->payload)
+        ]);
     }
 
     public function handleVerb()
@@ -307,6 +311,8 @@ class Inbox
         $id = $this->payload['object']['id'];
         switch ($type) {
             case 'Person':
+                    // todo: fix race condition
+                    return; 
                     $profile = Helpers::profileFetch($actor);
                     if(!$profile || $profile->private_key != null) {
                         return;
@@ -323,8 +329,6 @@ class Inbox
                 break;
 
             case 'Tombstone':
-                    // todo: fix race condition
-                    return; 
                     $profile = Helpers::profileFetch($actor);
                     $status = Status::whereProfileId($profile->id)
                         ->whereUri($id)
