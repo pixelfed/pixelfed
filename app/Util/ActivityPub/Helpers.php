@@ -285,10 +285,10 @@ class Helpers {
 				} 
 			}
 
-			if(!self::validateUrl($res['id']) ||
+			if(!self::validateUrl($activity['object']['id']) ||
 			   !self::validateUrl($activity['object']['attributedTo'])
 			) {
-				abort(400, 'Invalid object url');
+				return;
 			}
 
 			$idDomain = parse_url($res['id'], PHP_URL_HOST);
@@ -300,7 +300,7 @@ class Helpers {
 				$actorDomain !== $urlDomain || 
 				$idDomain !== $actorDomain
 			) {
-				abort(400, 'Invalid object');
+				return;
 			}
 
 			$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
