@@ -40,6 +40,10 @@ class Inbox
     public function handle()
     {
         $this->handleVerb();
+
+        (new Activity())->save([
+            'data' => json_encode($this->payload)
+        ]);
     }
 
     public function handleVerb()
