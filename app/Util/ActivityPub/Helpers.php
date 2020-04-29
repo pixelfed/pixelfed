@@ -236,7 +236,7 @@ class Helpers {
 				$activity = ['object' => $res];
 			}
 
-			if(isset($res['content']) == false) {
+			if(isset($activity['object']['content']) == false) {
 				abort(400, 'Invalid object');
 			}
 
