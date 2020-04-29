@@ -41,7 +41,7 @@ class Inbox
     {
         $this->handleVerb();
 
-        (new Activity())->save([
+        (new Activity())->create([
             'data' => json_encode($this->payload)
         ]);
     }
