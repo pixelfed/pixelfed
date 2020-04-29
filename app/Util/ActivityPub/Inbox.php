@@ -300,6 +300,9 @@ class Inbox
         }
         $actor = $this->payload['actor'];
         $obj = $this->payload['object'];
+        if(is_string($obj) == true) {
+            return;
+        }
         $type = $this->payload['object']['type'];
         $typeCheck = in_array($type, ['Person', 'Tombstone']);
         if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
