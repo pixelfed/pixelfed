@@ -16,11 +16,11 @@ class Announce {
 				'required',
 				Rule::in(['Announce'])
 			],
-			'actor' => 'required|url|active_url',
+			'actor' => 'required|url',
 			'published' => 'required|date',
 			'to'	=> 'required',
 			'cc'	=> 'required',
-			'object' => 'required|url|active_url'
+			'object' => 'required|url'
 		])->passes();
 
 		return $valid;
