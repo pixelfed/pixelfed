@@ -41,9 +41,15 @@ class Inbox
     {
         $this->handleVerb();
 
-        (new Activity())->create([
-            'data' => json_encode($this->payload)
-        ]);
+        if(!Activity::where('data->id', $this->payload['id'])->exists()){
+            (new Activity())->create([
+                'to_id' => $this->profile->id,
+                'data' => json_encode($this->payload)
+            ]);
+        }
+
+        return;
+
     }
 
     public function handleVerb()
