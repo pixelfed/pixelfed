@@ -135,6 +135,7 @@ class DiscoverController extends Controller
 
     public function profilesDirectory(Request $request)
     {
+      return redirect('/')->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
       return view('discover.profiles.home');
     }
 
@@ -143,6 +144,8 @@ class DiscoverController extends Controller
       $this->validate($request, [
         'page' => 'integer|max:10'
       ]);
+
+      return ['error' => 'Temporarily unavailable.'];
 
       $page = $request->input('page') ?? 1;
       $key = 'discover:profiles:page:' . $page;
