@@ -4,7 +4,8 @@
 ### Added
 - ActivityPubFetchService for signed GET requests ([8763bfc5](https://github.com/pixelfed/pixelfed/commit/8763bfc5))
 - Custom content warnings for remote posts ([6afc61a4](https://github.com/pixelfed/pixelfed/commit/6afc61a4))
-- Thai translations ([https://github.com/pixelfed/pixelfed/commit/74cd536](https://github.com/pixelfed/pixelfed/commit/74cd536))
+- Thai translations ([74cd536](https://github.com/pixelfed/pixelfed/commit/74cd536))
+- Added Bookmarks to v1 api ([99cb48c5](https://github.com/pixelfed/pixelfed/commit/99cb48c5))
 
 ### Updated
 - Updated PostComponent, fix remote urls ([42716ccc](https://github.com/pixelfed/pixelfed/commit/42716ccc))
