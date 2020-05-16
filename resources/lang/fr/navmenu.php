@@ -14,4 +14,5 @@ return [
     'admin'             =>    'Admin',
     'logout'            =>    'Se déconnecter',
 	'directMessages'    =>    'Messages Directs',
+    'composePost'       =>    'Composer une publication',
 ];

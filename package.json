@@ -14,7 +14,7 @@
         "axios": "^0.18.1",
         "bootstrap": "^4.4.1",
         "cross-env": "^5.2.1",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "lodash": ">=4.17.13",
         "popper.js": "^1.16.1",
         "resolve-url-loader": "^2.3.2",

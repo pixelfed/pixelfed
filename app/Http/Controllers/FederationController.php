@@ -46,14 +46,14 @@ class FederationController extends Controller
 
     public function webfinger(Request $request)
     {
-        abort_if(!config('federation.webfinger.enabled'), 404);
+        abort_if(!config('federation.webfinger.enabled'), 400);
 
-        $this->validate($request, ['resource'=>'required|string|min:3|max:255']);
+        abort_if(!$request->filled('resource'), 400);
 
         $resource = $request->input('resource');
         $parsed = Nickname::normalizeProfileUrl($resource);
         if($parsed['domain'] !== config('pixelfed.domain.app')) {
-            abort(404);
+            abort(400);
         }
         $username = $parsed['username'];
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
@@ -108,7 +108,7 @@ class FederationController extends Controller
             return ProfileController::accountCheck($profile);
         }
         $body = $request->getContent();
-        $bodyDecoded = json_decode($body, true, 8);
+        $bodyDecoded = json_decode($body, true, 12);
         if($this->verifySignature($request, $profile) == true) {
             InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
         } else if($this->blindKeyRotation($request, $profile) == true) {

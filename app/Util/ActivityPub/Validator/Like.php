@@ -16,8 +16,8 @@ class Like {
 				'required',
 				Rule::in(['Like'])
 			],
-			'actor' => 'required|url|active_url',
-			'object' => 'required|url|active_url'
+			'actor' => 'required|url',
+			'object' => 'required|url'
 		])->passes();
 
 		return $valid;

@@ -126,6 +126,44 @@ class AnnounceTest extends TestCase
 			],
 			"object" => "https://example.org/p/bob/100000000000000",
 		];
+
+		$this->mastodonAnnounce = [
+			"type" => "Announce",
+			"to" => [
+				"https://www.w3.org/ns/activitystreams#Public",
+			],
+			"signature" => [
+				"type" => "RsaSignature2017",
+				"signatureValue" => "T95DRE0eAligvMuRMkQA01lsoz2PKi4XXF+cyZ0BqbrO12p751TEWTyyRn5a+HH0e4kc77EUhQVXwMq80WAYDzHKVUTf2XBJPBa68vl0j6RXw3+HK4ef5hR4KWFNBU34yePS7S1fEmc1mTG4Yx926wtmZwDpEMTp1CXOeVEjCYzmdyHpepPPH2ZZettiacmPRSqBLPGWZoot7kH/SioIdnrMGY0I7b+rqkIdnnEcdhu9N1BKPEO9Sr+KmxgAUiidmNZlbBXX6gCxp8BiIdH4ABsIcwoDcGNkM5EmWunGW31LVjsEQXhH5c1Wly0ugYYPCg/0eHLNBOhKkY/teSM8Lg==",
+				"creator" => "https://mastodon.example.org/users/admin#main-key",
+				"created" => "2018-02-17T19:39:15Z",
+			],
+			"published" => "2018-02-17T19:39:15Z",
+			"object" => "https://mastodon.example.org/@admin/99541947525187367",
+			"id" => "https://mastodon.example.org/users/admin/statuses/99542391527669785/activity",
+			"cc" => [
+				"https://mastodon.example.org/users/admin",
+				"https://mastodon.example.org/users/admin/followers",
+			],
+			"atomUri" => "https://mastodon.example.org/users/admin/statuses/99542391527669785/activity",
+			"actor" => "https://mastodon.example.org/users/admin",
+			"@context" => [
+				"https://www.w3.org/ns/activitystreams",
+				"https://w3id.org/security/v1",
+				[
+					"toot" => "https://joinmastodon.org/ns#",
+					"sensitive" => "as:sensitive",
+					"ostatus" => "https://ostatus.org#",
+					"movedTo" => "as:movedTo",
+					"manuallyApprovesFollowers" => "as:manuallyApprovesFollowers",
+					"inReplyToAtomUri" => "ostatus:inReplyToAtomUri",
+					"conversation" => "ostatus:conversation",
+					"atomUri" => "ostatus:atomUri",
+					"Hashtag" => "as:Hashtag",
+					"Emoji" => "toot:Emoji",
+				],
+			],
+		];
 	}
 
 	/** @test */
@@ -164,5 +202,11 @@ class AnnounceTest extends TestCase
 	{
 		$this->assertFalse(Announce::validate($this->invalidActor));
 		$this->assertFalse(Announce::validate($this->invalidActor2));
+	}
+
+	/** @test */
+	public function mastodon_announce()
+	{
+		$this->assertTrue(Announce::validate($this->mastodonAnnounce));
 	}
 }

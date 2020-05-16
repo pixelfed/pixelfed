@@ -1397,8 +1397,6 @@ class ApiV1Controller extends Controller
      */
     public function timelinePublic(Request $request)
     {
-        abort_if(!config('instance.timeline.local.is_public') && !$request->user(), 403);
-        
         $this->validate($request,[
           'page'        => 'nullable|integer|max:40',
           'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,

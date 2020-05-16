@@ -18,10 +18,11 @@ use App\Util\ActivityPub\Helpers;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
-use App\Util\ActivityPub\Validator\{
-    Accept,
-    Follow
-};
+use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
+use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
+use App\Util\ActivityPub\Validator\Follow as FollowValidator;
+use App\Util\ActivityPub\Validator\Like as LikeValidator;
+use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
 class Inbox
 {
@@ -41,9 +42,15 @@ class Inbox
     {
         $this->handleVerb();
 
-        (new Activity())->create([
-            'data' => json_encode($this->payload)
-        ]);
+        if(!Activity::where('data->id', $this->payload['id'])->exists()){
+            (new Activity())->create([
+                'to_id' => $this->profile->id,
+                'data' => json_encode($this->payload)
+            ]);
+        }
+
+        return;
+
     }
 
     public function handleVerb()
@@ -59,11 +66,12 @@ class Inbox
                 break;
 
             case 'Announce':
+                if(AnnounceValidator::validate($this->payload) == false) { return; }
                 $this->handleAnnounceActivity();
                 break;
 
             case 'Accept':
-                if(Accept::validate($this->payload) == false) { return; }
+                if(AcceptValidator::validate($this->payload) == false) { return; }
                 $this->handleAcceptActivity();
                 break;
 
