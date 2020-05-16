@@ -1,11 +1,11 @@
 <?php
 
 return [
-	'search'			=>    'Rechercher',
-	'home'				=>    'Accueil',
-	'local'				=>    'Local',
-	'network'			=>    'Réseau',
-	'discover'			=>    'Découvrir',
+    'search'            =>    'Rechercher',
+    'home'              =>    'Accueil',
+    'local'             =>    'Local',
+    'network'           =>    'Réseau',
+    'discover'          =>    'Découvrir',
     'viewMyProfile'     =>    'Voir mon profil',
     'myTimeline'        =>    'Ma Chronologie',
     'publicTimeline'    =>    'Chronologie Publique',
@@ -13,6 +13,6 @@ return [
     'settings'          =>    'Paramètres',
     'admin'             =>    'Admin',
     'logout'            =>    'Se déconnecter',
-	'directMessages'    =>    'Messages Directs',
+    'directMessages'    =>    'Messages Directs',
     'composePost'       =>    'Composer une publication',
 ];
