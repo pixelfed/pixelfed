@@ -86,13 +86,12 @@ class SearchApiV2Service
 
 	protected function accounts()
 	{
-		$limit = $this->query->input('limit', 20);
+		$limit = $this->query->input('limit') ?? 20;
+		$offset = $this->query->input('offset') ?? 0;
 		$query = '%' . $this->query->input('q') . '%';
 		$results = Profile::whereNull('status')
 			->where('username', 'like', $query)
-			->when($this->query->input('offset') != null, function($q, $offset) {
-				return $q->offset($offset);
-			})
+			->offset($offset)
 			->limit($limit)
 			->get();
 
@@ -104,13 +103,12 @@ class SearchApiV2Service
 
 	protected function hashtags()
 	{
-		$limit = $this->query->input('limit', 20);
+		$limit = $this->query->input('limit') ?? 20;
+		$offset = $this->query->input('offset') ?? 0;
 		$query = '%' . $this->query->input('q') . '%';
 		return Hashtag::whereIsBanned(false)
 			->where('name', 'like', $query)
-			->when($this->query->input('offset') != null, function($q, $offset) {
-				return $q->offset($offset);
-			})
+			->offset($offset)
 			->limit($limit)
 			->get()
 			->map(function($tag) {
@@ -124,21 +122,8 @@ class SearchApiV2Service
 
 	protected function statuses()
 	{
-		$limit = $this->query->input('limit', 20);
-		$query = '%' . $this->query->input('q') . '%';
-		$results = Status::where('caption', 'like', $query)
-			->whereScope('public')
-			->when($this->query->input('offset') != null, function($q, $offset) {
-				return $q->offset($offset);
-			})
-			->limit($limit)
-			->orderByDesc('created_at')
-			->get();
-
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Collection($results, new StatusTransformer());
-		return $fractal->createData($resource)->toArray();
+		// Removed until we provide more relevent sorting/results
+		return [];
 	}
 
 	protected function statusesById()
@@ -148,9 +133,6 @@ class SearchApiV2Service
 		$query = '%' . $this->query->input('q') . '%';
 		$results = Status::where('caption', 'like', $query)
 			->whereProfileId($accountId)
-			->when($this->query->input('offset') != null, function($q, $offset) {
-				return $q->offset($offset);
-			})
 			->limit($limit)
 			->get();
 
