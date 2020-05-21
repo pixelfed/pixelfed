@@ -183,7 +183,7 @@ class Inbox
                 ->exists() ||
             FollowRequest::whereFollowerId($actor->id)
                 ->whereFollowingId($target->id)
-                ->exists();
+                ->exists()
         ) {
             return;
         }
