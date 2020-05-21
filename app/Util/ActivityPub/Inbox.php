@@ -194,9 +194,9 @@ class Inbox
             ]);
         } else {
             $follower = new Follower;
-            $follower->profile_id => $actor->id;
-            $follower->following_id => $target->id;
-            $follower->local_profile => empty($actor->domain);
+            $follower->profile_id = $actor->id;
+            $follower->following_id = $target->id;
+            $follower->local_profile = empty($actor->domain);
 
             if($target->domain == null) {
                 Notification::firstOrCreate([
