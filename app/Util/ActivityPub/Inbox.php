@@ -42,12 +42,12 @@ class Inbox
     {
         $this->handleVerb();
 
-        if(!Activity::where('data->id', $this->payload['id'])->exists()){
-            (new Activity())->create([
-                'to_id' => $this->profile->id,
-                'data' => json_encode($this->payload)
-            ]);
-        }
+        // if(!Activity::where('data->id', $this->payload['id'])->exists()) {
+        //     (new Activity())->create([
+        //         'to_id' => $this->profile->id,
+        //         'data' => json_encode($this->payload)
+        //     ]);
+        // }
 
         return;
 
@@ -62,6 +62,7 @@ class Inbox
                 break;
 
             case 'Follow':
+                if(FollowValidator::validate($this->payload) == false) { return; }
                 $this->handleFollowActivity();
                 break;
 
@@ -80,6 +81,7 @@ class Inbox
                 break;
 
             case 'Like':
+                if(LikeValidator::validate($this->payload) == false) { return; }
                 $this->handleLikeActivity();
                 break;
 
@@ -171,26 +173,32 @@ class Inbox
     public function handleFollowActivity()
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        if(!$actor || $actor->domain == null) {
+        $target = $this->profile;
+        if(!$actor || $actor->domain == null || $target->domain !== null) {
             return;
         }
-        $target = $this->profile;
+        if(
+            Follower::whereProfileId($actor->id)
+                ->whereFollowingId($target->id)
+                ->exists() ||
+            FollowRequest::whereFollowerId($actor->id)
+                ->whereFollowingId($target->id)
+                ->exists();
+        ) {
+            return;
+        }
         if($target->is_private == true) {
-            // make follow request
             FollowRequest::firstOrCreate([
                 'follower_id' => $actor->id,
                 'following_id' => $target->id
             ]);
-            // todo: send notification
         } else {
-            // store new follower
-            $follower = Follower::firstOrCreate([
-                'profile_id' => $actor->id,
-                'following_id' => $target->id,
-                'local_profile' => empty($actor->domain)
-            ]);
-            if($follower->wasRecentlyCreated == true && $target->domain == null) {
-                // send notification
+            $follower = new Follower;
+            $follower->profile_id => $actor->id;
+            $follower->following_id => $target->id;
+            $follower->local_profile => empty($actor->domain);
+
+            if($target->domain == null) {
                 Notification::firstOrCreate([
                     'profile_id' => $target->id,
                     'actor_id' => $actor->id,
