@@ -285,7 +285,7 @@ class Helpers {
 				} 
 			}
 
-			if(!self::validateUrl($activity['object']['id']) ||
+			if(!self::validateUrl($res['id']) ||
 			   !self::validateUrl($activity['object']['attributedTo'])
 			) {
 				return;
@@ -400,7 +400,10 @@ class Helpers {
 			return;
 		}
 		$domain = parse_url($res['id'], PHP_URL_HOST);
-		$username = (string) Purify::clean($res['preferredUsername']);
+		if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
+			return;
+		}
+		$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
 		if(empty($username)) {
 			return;
 		}
