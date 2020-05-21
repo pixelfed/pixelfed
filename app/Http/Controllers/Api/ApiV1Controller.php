@@ -1902,6 +1902,59 @@ class ApiV1Controller extends Controller
     }
 
     /**
+     * POST /api/v1/statuses/{id}/bookmark
+     *
+     *
+     *
+     * @return StatusTransformer
+     */
+    public function bookmarkStatus(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('uri')
+            ->whereScope('public')
+            ->findOrFail($id);
+
+        Bookmark::firstOrCreate([
+            'status_id' => $status->id,
+            'profile_id' => $request->user()->profile_id
+        ]);
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
+     * POST /api/v1/statuses/{id}/unbookmark
+     *
+     *
+     *
+     * @return StatusTransformer
+     */
+    public function unbookmarkStatus(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('uri')
+            ->whereScope('public')
+            ->findOrFail($id);
+
+        Bookmark::firstOrCreate([
+            'status_id' => $status->id,
+            'profile_id' => $request->user()->profile_id
+        ]);
+        $bookmark = Bookmark::whereStatusId($status->id)
+            ->whereProfileId($request->user()->profile_id)
+            ->firstOrFail();
+        $bookmark->delete();
+
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
+    }
+
+    /**
      * GET /api/v2/search
      *
      *

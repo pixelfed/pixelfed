@@ -60,6 +60,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('statuses/{id}/favourited_by', 'Api\ApiV1Controller@statusFavouritedBy')->middleware($middleware);
 		Route::post('statuses/{id}/reblog', 'Api\ApiV1Controller@statusShare')->middleware($middleware);
 		Route::post('statuses/{id}/unreblog', 'Api\ApiV1Controller@statusUnshare')->middleware($middleware);
+		Route::post('statuses/{id}/bookmark', 'Api\ApiV1Controller@bookmarkStatus')->middleware($middleware);
+		Route::post('statuses/{id}/unbookmark', 'Api\ApiV1Controller@unbookmarkStatus')->middleware($middleware);
 		Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware($middleware);
 		Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware($middleware);
 		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware)->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');

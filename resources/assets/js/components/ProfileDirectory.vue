@@ -17,9 +17,6 @@
 										<span>{{prettyCount(profile.statuses_count)}}</span> POSTS
 									</span>
 									<span>
-										<span>{{postsPerDay(profile)}}</span> POSTS/DAY
-									</span>
-									<span>
 										<span>{{prettyCount(profile.followers_count)}}</span> FOLLOWERS
 									</span>
 								</p>
@@ -105,19 +102,6 @@
 
 			thumbUrl(p) {
 				return p.media_attachments[0].url;
-			},
-
-			postsPerDay(profile) {
-				let created = profile.created_at;
-				let now = Date.now();
-				let diff = Math.abs(created, now)
-				let day = 1000 * 60 * 60 * 24;
-				let days = Math.round(diff / day);
-
-				let statuses = profile.statuses_count;
-
-				let perDay = this.prettyCount(Math.floor(statuses / days));
-				return perDay;
 			}
 		}
 	}

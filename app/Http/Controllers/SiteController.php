@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App, Auth, Cache, View;
 use App\Util\Lexer\PrettyNumber;
 use App\{Follower, Page, Profile, Status, User, UserFilter};
@@ -128,5 +129,28 @@ class SiteController extends Controller
         abort_if($user && $profile->id == $user->profile_id, 404);
         $following = $user != null ? FollowerService::follows($user->profile_id, $profile->id) : false;
         return view('site.intents.follow', compact('profile', 'user', 'following'));
+    }
+
+    public function legacyProfileRedirect(Request $request, $username)
+    {
+        $username = Str::contains($username, '@') ? '@' . $username : $username;
+        if(str_contains($username, '@')) {
+            $profile = Profile::whereUsername($username)
+                ->firstOrFail();
+
+            if($profile->domain == null) {
+                $url = "/$profile->username";
+            } else {
+                $url = "/i/web/profile/_/{$profile->id}";
+            }
+
+        } else {
+            $profile = Profile::whereUsername($username)
+                ->whereNull('domain')
+                ->firstOrFail();
+            $url = "/$profile->username";
+        }
+
+        return redirect($url);
     }
 }

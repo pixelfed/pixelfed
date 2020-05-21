@@ -1,6 +1,6 @@
 <template>
 <div>
-	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" draggable="true" v-bind:accept="config.uploader.media_types" multiple="">
+	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" v-bind:accept="config.uploader.media_types">
 	<div class="timeline">
 		<div v-if="uploading">
 			<div class="card status-card card-md-rounded-0 w-100 h-100 bg-light py-3" style="border-bottom: 1px solid #f1f1f1">
@@ -616,6 +616,7 @@ export default {
 		mediaWatcher() {
 			let self = this;
 			$(document).on('change', '#pf-dz', function(e) {
+				e.preventDefault();
 				self.mediaUpload();
 			});
 		},
