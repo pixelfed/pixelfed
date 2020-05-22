@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 
-$middleware = ['auth:api','twofactor','validemail','localization'];
+$middleware = ['auth:api','twofactor','validemail','localization', 'throttle:60,1'];
 
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
 
