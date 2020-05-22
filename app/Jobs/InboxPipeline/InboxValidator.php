@@ -64,9 +64,11 @@ class InboxValidator implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
-            (new Inbox($headers, $profile, $payload))->handle()
+            (new Inbox($headers, $profile, $payload))->handle();
+            return;
         } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
-            (new Inbox($headers, $profile, $payload))->handle()
+            (new Inbox($headers, $profile, $payload))->handle();
+            return;
         } else {
             return;
         }
