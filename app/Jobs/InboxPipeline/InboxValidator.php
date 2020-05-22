@@ -61,9 +61,11 @@ class InboxValidator implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
-            InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
+            dispatch(new \App\Jobs\InboxPipeline\InboxWorker($headers, $profile, $payload));
+            return;
         } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
-            InboxWorker::dispatchNow($headers, $profile, $payload)->onQueue('high');
+            dispatch(new \App\Jobs\InboxPipeline\InboxWorker($headers, $profile, $payload));
+            return;
         } else {
             return;
         }
@@ -115,7 +117,7 @@ class InboxValidator implements ShouldQueue
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
-        list($verified, $headers) = HTTPSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
+        list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if($verified == 1) { 
             return true;
         } else {
