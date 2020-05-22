@@ -23,6 +23,9 @@ class InboxValidator implements ShouldQueue
     protected $headers;
     protected $payload;
 
+    public $timeout = 5;
+    public $tries = 1;
+
     /**
      * Create a new job instance.
      *
@@ -61,11 +64,9 @@ class InboxValidator implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
-            dispatch(new \App\Jobs\InboxPipeline\InboxWorker($headers, $profile, $payload));
-            return;
+            (new Inbox($headers, $profile, $payload))->handle()
         } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
-            dispatch(new \App\Jobs\InboxPipeline\InboxWorker($headers, $profile, $payload));
-            return;
+            (new Inbox($headers, $profile, $payload))->handle()
         } else {
             return;
         }
