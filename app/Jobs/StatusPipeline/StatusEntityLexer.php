@@ -8,6 +8,7 @@ use App\Mention;
 use App\Profile;
 use App\Status;
 use App\StatusHashtag;
+use App\Services\PublicTimelineService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use DB;
@@ -136,7 +137,13 @@ class StatusEntityLexer implements ShouldQueue
 
     public function deliver()
     {
-        if(config('federation.activitypub.enabled') == true) {
+        $status = $this->status;
+
+        if($status->uri == null && $status->scope == 'public') {
+            PublicTimelineService::add($status->id);
+        }
+
+        if(config('federation.activitypub.enabled') == true && config('app.env') == 'production') {
             StatusActivityPubDeliver::dispatch($this->status);
         }
     }
