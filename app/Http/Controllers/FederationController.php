@@ -100,22 +100,22 @@ class FederationController extends Controller
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.inbox'), 404);
 
-        // $headers = $request->headers->all();
-        // $payload = $request->getContent();
-        // InboxValidator::dispatch($username, $headers, $payload);
-        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-        if($profile->status != null) {
-            return ProfileController::accountCheck($profile);
-        }
-        $body = $request->getContent();
-        $bodyDecoded = json_decode($body, true, 12);
-        if($this->verifySignature($request, $profile) == true) {
-            InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else if($this->blindKeyRotation($request, $profile) == true) {
-            InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
-        } else {
-            abort(400, 'Bad Signature');
-        }
+        $headers = $request->headers->all();
+        $payload = $request->getContent();
+        InboxValidator::dispatch($username, $headers, $payload);
+        // $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        // if($profile->status != null) {
+        //     return ProfileController::accountCheck($profile);
+        // }
+        // $body = $request->getContent();
+        // $bodyDecoded = json_decode($body, true, 12);
+        // if($this->verifySignature($request, $profile) == true) {
+        //     InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
+        // } else if($this->blindKeyRotation($request, $profile) == true) {
+        //     InboxWorker::dispatch($request->headers->all(), $profile, $bodyDecoded);
+        // } else {
+        //     abort(400, 'Bad Signature');
+        // }
         return;
     }
 

@@ -48,12 +48,16 @@ class InboxValidator implements ShouldQueue
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
+        if(!isset($headers['signature']) || !isset($headers['date'])) {
+            return;
+        }
+
         if(empty($profile) || empty($headers) || empty($payload)) {
-            return true;
+            return;
         }
 
         if($profile->status != null) {
-            return true;
+            return;
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
@@ -73,13 +77,15 @@ class InboxValidator implements ShouldQueue
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
         $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
         if(!$signature) {
-            abort(400, 'Missing signature header');
+            return;
         }
         if(!$date) {
-            abort(400, 'Missing date header');
+            return;
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
-            abort(400, 'Invalid date');
+        if(!now()->parse($date)->gt(now()->subDays(1)) || 
+           !now()->parse($date)->lt(now()->addDays(1))
+       ) {
+            return;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
@@ -91,10 +97,12 @@ class InboxValidator implements ShouldQueue
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
             if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
+                return;
                 abort(400, 'Invalid request');
             }
         }
         if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
+            return;
             abort(400, 'Invalid request');
         }
         $actor = Profile::whereKeyId($keyId)->first();
@@ -103,7 +111,7 @@ class InboxValidator implements ShouldQueue
             $actor = Helpers::profileFirstOrNew($actorUrl);
         }
         if(!$actor) {
-            return false;
+            return;
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         $inboxPath = "/users/{$profile->username}/inbox";
@@ -120,22 +128,24 @@ class InboxValidator implements ShouldQueue
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
         $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
         if(!$signature) {
-            return false;
+            return;
         }
         if(!$date) {
-            return false;
+            return;
         }
-        if(!now()->parse($date)->gt(now()->subDays(1)) || !now()->parse($date)->lt(now()->addDays(1))) {
-            return false;
+        if(!now()->parse($date)->gt(now()->subDays(1)) || 
+           !now()->parse($date)->lt(now()->addDays(1))
+       ) {
+            return;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
         $actor = Profile::whereKeyId($keyId)->whereNotNull('remote_url')->first();
         if(!$actor) {
-            return false;
+            return;
         }
         if(Helpers::validateUrl($actor->remote_url) == false) {
-            return false;
+            return;
         }
         $res = Zttp::timeout(5)->withHeaders([
           'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
@@ -143,7 +153,7 @@ class InboxValidator implements ShouldQueue
         ])->get($actor->remote_url);
         $res = json_decode($res->body(), true, 8);
         if($res['publicKey']['id'] !== $actor->key_id) {
-            return false;
+            return;
         }
         $actor->public_key = $res['publicKey']['publicKeyPem'];
         $actor->save();
