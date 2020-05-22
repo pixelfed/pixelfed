@@ -616,7 +616,6 @@ export default {
 		mediaWatcher() {
 			let self = this;
 			$(document).on('change', '#pf-dz', function(e) {
-				e.preventDefault();
 				self.mediaUpload();
 			});
 		},
