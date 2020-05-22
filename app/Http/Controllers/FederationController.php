@@ -102,7 +102,7 @@ class FederationController extends Controller
 
         $headers = $request->headers->all();
         $payload = $request->getContent();
-        InboxValidator::dispatchNow($username, $headers, $payload)->onQueue('high');
+        dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
         return;
     }
 
