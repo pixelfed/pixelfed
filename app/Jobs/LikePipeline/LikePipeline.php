@@ -28,6 +28,9 @@ class LikePipeline implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
+    public $timeout = 5;
+    public $tries = 1;
+
     /**
      * Create a new job instance.
      *
