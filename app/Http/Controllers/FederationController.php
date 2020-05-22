@@ -102,7 +102,7 @@ class FederationController extends Controller
 
         $headers = $request->headers->all();
         $payload = $request->getContent();
-        InboxValidator::dispatch($username, $headers, $payload);
+        InboxValidator::dispatchNow($username, $headers, $payload)->onQueue('high');
         // $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
         // if($profile->status != null) {
         //     return ProfileController::accountCheck($profile);
