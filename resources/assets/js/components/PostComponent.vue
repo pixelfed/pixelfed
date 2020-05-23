@@ -310,7 +310,7 @@
               <div class="media align-items-center mt-3">
                 <div class="media-body">
                   <h2 class="font-weight-bold">
-                    {{status.content.length > 100 ? status.content.slice(0,100) : 'Untitled Post'}}
+                    {{status.content_text}}
                   </h2>
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
@@ -330,7 +330,6 @@
                     <i class="far fa-clock text-lighter mr-3"></i> {{timeAgo(status.created_at)}} ago
                   </span>
                 </p>
-                <!-- <div v-if="status.content.length > 100" class="lead" v-html="status.content"></div> -->
                 <!-- <div class="pt-4">
                   <p class="lead">
                     <span class="mr-3"><i class="fas fa-camera text-lighter"></i></span>
@@ -354,21 +353,17 @@
             </div>
             <div class="col-12 col-md-4 pt-4 pl-md-3">
                 <p class="lead font-weight-bold">Comments</p>
-                <div v-if="user && user.length" class="moment-comments">
+                <div v-if="user" class="moment-comments">
                   <div class="form-group">
                     <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
                     <p style="padding-top:4px;">
                       <span class="small text-lighter font-weight-bold">
                         {{replyText.length}}/{{config.uploader.max_caption_length}}
                       </span>
-                      <button 
-                      :class="[replyText.length > 1 ? 'btn btn-sm font-weight-bold float-right btn-outline-dark ':'btn btn-sm font-weight-bold float-right btn-outline-lighter']" 
-                      :disabled="replyText.length == 0 ? 'disabled':''" 
-                      @click="postReply"
-                      >Post</button>
+                      <button class="btn btn-sm font-weight-bold float-right btn-outline-primary" 
+                      v-if="replyText.length > 2" @click="postReply">Post</button>
                     </p>
                   </div>
-                  <hr>
                 </div>
                 <div class="comment mt-3" style="max-height: 500px; overflow-y: auto;">
                   <div v-for="(reply, index) in results" :key="'tl' + reply.id + '_' + index" class="media mb-3">
@@ -383,26 +378,6 @@
                       <p v-html="reply.content"></p>
                     </div>
                   </div> 
-                  <!-- <div class="media mb-3">
-                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
-                    <div class="media-body">
-                      <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">mona</span>
-                        <span class="text-lighter small">2h ago</span>
-                      </div>
-                      <p>Stunning my friend!</p>
-                    </div>
-                  </div>  
-                  <div class="media mb-3">
-                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
-                    <div class="media-body">
-                      <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Andre</span>
-                        <span class="text-lighter small">3h ago</span>
-                      </div>
-                      <p>Wow</p>
-                    </div>
-                  </div>   -->
                 </div>
             </div>
           </div>
