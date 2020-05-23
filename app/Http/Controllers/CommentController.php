@@ -34,9 +34,11 @@ class CommentController extends Controller
         $this->validate($request, [
             'item'    => 'required|integer|min:1',
             'comment' => 'required|string|max:'.(int) config('pixelfed.max_caption_length'),
+            'sensitive' => 'nullable|boolean'
         ]);
         $comment = $request->input('comment');
-        $statusId = $request->item;
+        $statusId = $request->input('item');
+        $nsfw = $request->input('sensitive', false);
 
         $user = Auth::user();
         $profile = $user->profile;
@@ -56,11 +58,12 @@ class CommentController extends Controller
             return;
         }
 
-        $reply = DB::transaction(function() use($comment, $status, $profile) {
+        $reply = DB::transaction(function() use($comment, $status, $profile, $nsfw) {
             $scope = $profile->is_private == true ? 'private' : 'public';
             $autolink = Autolink::create()->autolink($comment);
             $reply = new Status();
             $reply->profile_id = $profile->id;
+            $reply->is_nsfw = $nsfw;
             $reply->caption = e($comment);
             $reply->rendered = $autolink;
             $reply->in_reply_to_id = $status->id;

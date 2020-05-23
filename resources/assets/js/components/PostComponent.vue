@@ -3,10 +3,10 @@
   <div v-if="!loaded" style="height: 80vh;" class="d-flex justify-content-center align-items-center">
       <img src="/img/pixelfed-icon-grey.svg" class="">
   </div>
-  <div v-if="loaded && warning" class="bg-white pt-3 border-bottom">
+  <div v-if="loaded && warning" class="bg-white mt-n4 pt-3 border-bottom">
     <div class="container">
       <p class="text-center font-weight-bold">You are blocking this account</p>
-      <p class="text-center font-weight-bold">Click <a href="#" class="cursor-pointer" @click.prevent="warning = false; fetchData()">here</a> to view this status</p>
+      <p class="text-center font-weight-bold"><a href="#" class="btn btn-primary font-weight-bold px-5" @click.prevent="warning = false; fetchData()">View Status</a></p>
     </div>
   </div>
   <div v-if="loaded && warning == false" class="postComponent">
@@ -257,7 +257,7 @@
 
     <div v-if="layout == 'moment'" class="momentui">
       <div class="bg-dark mt-md-n4">
-        <div class="container" v-on:dblclick="likeStatus">
+        <div class="container" style="max-width: 700px;">
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
                 <div v-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
@@ -301,16 +301,24 @@
                   <div class="share-count font-weight-bold mt-2 rounded border" v-if="status.visibility == 'public'" style="cursor:pointer;" v-on:click="sharesModal">{{status.reblogs_count || 0}}</div>
                 </div>
               </div>
-              <!-- <div class="reaction-counts font-weight-bold mb-0">
-                  <span class="like-count">{{status.favourites_count || 0}}</span> likes
-                <span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
-                  <span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
-                </span>
-              </div> -->
-              <div class="media align-items-center mt-3">
+              <div v-if="status.length && status.content_text.includes('#') || status.content_text.includes('https://') || status.content_text.includes('@') || status.content_text.length > 45" class="media align-items-center mt-3">
                 <div class="media-body">
-                  <h2 class="font-weight-bold">
-                    {{status.content.length > 100 ? status.content.slice(0,100) : 'Untitled Post'}}
+                  <p class="lead mr-2" v-html="status.content">
+                  </p>
+                  <p class="lead mb-0">
+                    by <a :href="statusProfileUrl">{{statusUsername}}</a>
+                    <span v-if="relationship && profile && user && !relationship.following && profile.id != user.id">
+                      <span class="px-1 text-lighter">•</span> 
+                      <a class="font-weight-bold small" href="#">Follow</a>
+                    </span>
+                  </p>
+                </div>
+                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px"></a>
+              </div>
+              <div v-else class="media align-items-center mt-3">
+                <div class="media-body">
+                  <h2 class="font-weight-bold mr-2">
+                    {{status.content_text.length ? status.content_text : 'Untitled Post'}}
                   </h2>
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
@@ -318,7 +326,7 @@
                     <a class="font-weight-bold small" href="#">Follow</a> -->
                   </p>
                 </div>
-                <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px">
+                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px"></a>
               </div>
               <hr>
               <div>
@@ -330,8 +338,7 @@
                     <i class="far fa-clock text-lighter mr-3"></i> {{timeAgo(status.created_at)}} ago
                   </span>
                 </p>
-                <!-- <div v-if="status.content.length > 100" class="lead" v-html="status.content"></div> -->
-                <!-- <div class="pt-4">
+                <!-- <div class="">
                   <p class="lead">
                     <span class="mr-3"><i class="fas fa-camera text-lighter"></i></span>
                     <span>Nikon D850</span>
@@ -353,57 +360,64 @@
               </div>
             </div>
             <div class="col-12 col-md-4 pt-4 pl-md-3">
-                <p class="lead font-weight-bold">Comments</p>
-                <div v-if="user && user.length" class="moment-comments">
-                  <div class="form-group">
-                    <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
-                    <p style="padding-top:4px;">
-                      <span class="small text-lighter font-weight-bold">
-                        {{replyText.length}}/{{config.uploader.max_caption_length}}
+              <p class="lead font-weight-bold">Comments</p>
+              <div v-if="user != false" class="moment-comments">
+                <div class="form-group">
+                  <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
+                  <p class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="small text-lighter font-weight-bold">
+                      {{replyText.length}}/{{config.uploader.max_caption_length}}
+                    </span>
+                    <span v-if="replyText.length > 2">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" @click="!!replySensitive" v-model="replySensitive" id="sensitiveReply">
+                        <label class="custom-control-label small font-weight-bold text-muted" style="padding-top: 3px" for="sensitiveReply">Add Content Warning</label>
+                      </div>
+                    </span>
+                    <button class="btn btn-sm font-weight-bold btn-outline-primary py-1" 
+                    v-if="replyText.length > 2" @click="postReply">Post</button>
+                  </p>
+                </div>
+              </div>
+              <div class="comment mt-4" style="max-height: 500px; overflow-y: auto;">
+                <div v-for="(reply, index) in results" :key="'tl' + reply.id + '_' + index" class="media mb-3 mt-2">
+                  <a :href="reply.account.url" :title="reply.account.username"><img :src="reply.account.avatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px"></a>
+                  <div class="media-body">
+                    <div class="d-flex justify-content-between">
+                      <span>
+                        <a class="font-weight-bold text-dark" :href="reply.account.url">{{reply.account.username}}</a>
                       </span>
-                      <button 
-                      :class="[replyText.length > 1 ? 'btn btn-sm font-weight-bold float-right btn-outline-dark ':'btn btn-sm font-weight-bold float-right btn-outline-lighter']" 
-                      :disabled="replyText.length == 0 ? 'disabled':''" 
-                      @click="postReply"
-                      >Post</button>
+                      <span class="text-lighter">
+                        <span v-if="reply.favourited" class="cursor-pointer mr-2" @click="likeReply(reply)">
+                          <i class="fas fa-heart text-danger"></i>
+                        </span>
+                        <span v-else class="cursor-pointer mr-2" @click="likeReply(reply)">
+                          <i class="far fa-heart"></i>
+                        </span>
+                        <span class="">
+                          <post-menu :status="reply" :profile="user" :size="'sm'" :modal="'true'" class="d-inline-block px-2" v-on:deletePost="deleteComment(reply.id, index)"></post-menu>
+                        </span>
+                      </span>
+                    </div>
+                    <div v-if="reply.sensitive == true">
+                      <span class="py-3">
+                        <span class="text-break">
+                          <span class="font-italic text-muted">This comment may contain sensitive material</span>
+                          <span class="badge badge-primary cursor-pointer ml-2 py-1" @click="reply.sensitive = false;">Show</span>
+                        </span>
+                      </span>
+                    </div>
+                    <div v-else class="read-more" style="overflow-y: hidden;">
+                      <p v-html="reply.content" class="mb-0">loading ...</p>
+                    </div>
+                    <p>
+                      <span class="small">
+                        <a class="text-lighter text-decoration-none" :href="reply.url">{{timeAgo(reply.created_at)}}</a>
+                      </span>
                     </p>
                   </div>
-                  <hr>
-                </div>
-                <div class="comment mt-3" style="max-height: 500px; overflow-y: auto;">
-                  <div v-for="(reply, index) in results" :key="'tl' + reply.id + '_' + index" class="media mb-3">
-                    <img :src="reply.account.avatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
-                    <div class="media-body">
-                      <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">{{reply.account.username}}</span>
-                        <span class="small">
-                          <a class="text-lighter text-decoration-none" :href="reply.url">{{timeAgo(reply.created_at)}}</a>
-                        </span>
-                      </div>
-                      <p v-html="reply.content"></p>
-                    </div>
-                  </div> 
-                  <!-- <div class="media mb-3">
-                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
-                    <div class="media-body">
-                      <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">mona</span>
-                        <span class="text-lighter small">2h ago</span>
-                      </div>
-                      <p>Stunning my friend!</p>
-                    </div>
-                  </div>  
-                  <div class="media mb-3">
-                    <img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px">
-                    <div class="media-body">
-                      <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Andre</span>
-                        <span class="text-lighter small">3h ago</span>
-                      </div>
-                      <p>Wow</p>
-                    </div>
-                  </div>   -->
-                </div>
+                </div> 
+              </div>
             </div>
           </div>
         </div>
@@ -617,6 +631,7 @@ export default {
             sharesPage: 1,
             lightboxMedia: false,
             replyText: '',
+            replySensitive: false,
             relationship: {},
             results: [],
             pagination: {},
@@ -916,7 +931,8 @@ export default {
         }
         let data = {
           item: this.replyingToId,
-          comment: this.replyText
+          comment: this.replyText,
+          sensitive: this.replySensitive
         }
         
         this.replyText = '';
