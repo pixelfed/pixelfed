@@ -56,12 +56,12 @@
 								<a class="list-group-item text-dark text-decoration-none" :href="status.url">Go to post</a>
 								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
-								<a class="list-group-item text-dark text-decoration-none" href="#" @click="hidePost(status)">Hide</a>
+								<a class="list-group-item text-dark text-decoration-none" href="#" @click.prevent="hidePost(status)">Hide</a>
 								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" :href="reportUrl(status)">Report</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="muteProfile(status)" href="#">Mute Profile</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" v-on:click="blockProfile(status)" href="#">Block Profile</a>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" @click.prevent="muteProfile(status)" href="#">Mute Profile</a>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" @click.prevent="blockProfile(status)" href="#">Block Profile</a>
 								<span v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true">
-									<a class="list-group-item text-danger text-decoration-none" v-on:click="deletePost">Delete</a>
+									<a class="list-group-item text-danger text-decoration-none" @click.prevent="deletePost">Delete</a>
 								</span>
 								<span v-if="activeSession == true && profile.is_admin == true">
 									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'autocw')" href="#">
