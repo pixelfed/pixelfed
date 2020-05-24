@@ -197,18 +197,9 @@ class Inbox
             $follower->profile_id = $actor->id;
             $follower->following_id = $target->id;
             $follower->local_profile = empty($actor->domain);
+            $follower->save();
 
-            if($target->domain == null) {
-                Notification::firstOrCreate([
-                    'profile_id' => $target->id,
-                    'actor_id' => $actor->id,
-                    'action' => 'follow',
-                    'message' => $follower->toText(),
-                    'rendered' => $follower->toHtml(),
-                    'item_id' => $target->id,
-                    'item_type' => 'App\Profile'
-                ]);
-            }
+            FollowPipeline::dispatch($follower);
 
             // send Accept to remote profile
             $accept = [
@@ -446,6 +437,12 @@ class Inbox
                 Follower::whereProfileId($profile->id)
                     ->whereFollowingId($following->id)
                     ->delete();
+                Notification::whereProfileId($following->id)
+                    ->whereActorId($profile->id)
+                    ->whereAction('follow')
+                    ->whereItemId($following->id)
+                    ->whereItemType('App\Profile')
+                    ->forceDelete();
                 break;
                 
             case 'Like':
