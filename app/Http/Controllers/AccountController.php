@@ -446,12 +446,16 @@ class AccountController extends Controller
 			}
 
 			if($request->session()->has('2fa.attempts')) {
-				$count = (int) $request->session()->has('2fa.attempts');
-				$request->session()->push('2fa.attempts', $count + 1);
+				$count = (int) $request->session()->get('2fa.attempts');
+				if($count == 3) {
+					Auth::logout();
+					return redirect('/');
+				}
+				$request->session()->put('2fa.attempts', $count + 1);
 			} else {
-				$request->session()->push('2fa.attempts', 1);
+				$request->session()->put('2fa.attempts', 1);
 			}
-			return redirect()->back()->withErrors([
+			return redirect('/i/auth/checkpoint')->withErrors([
 				'code' => 'Invalid code'
 			]);
 		}
