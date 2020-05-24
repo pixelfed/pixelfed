@@ -42,7 +42,7 @@
                   </div>
                   <div v-if="ownerOrAdmin()">
                     <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                    <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                    <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                     <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
                   </div>
                 </div>
@@ -108,7 +108,7 @@
                           </span>
                           <span v-if="ownerOrAdmin()">
                             <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                            <a class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                            <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
                             <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
                           </span>
                         </div>
@@ -675,7 +675,8 @@ export default {
             ctxEmbedShowCaption: true,
             ctxEmbedShowLikes: false,
             ctxEmbedCompactMode: false,
-            layout: this.profileLayout
+            layout: this.profileLayout,
+            canEdit: false
           }
     },
     watch: {
@@ -772,6 +773,13 @@ export default {
                 if(self.status.comments_disabled == false) {
                   self.showComments = true;
                   this.fetchComments();
+                }
+                if(this.ownerOrAdmin()) {
+                  let od = new Date(this.status.created_at).getTime() + (1 * 24 * 60 * 60 * 1000);
+                  let now = new Date().getTime();
+                  if(od > now) {
+                    this.canEdit = true;
+                  }
                 }
                 this.loaded = true;
             }).catch(error => {
