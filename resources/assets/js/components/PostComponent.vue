@@ -513,7 +513,7 @@
     body-class="p-2 rounded">
     <div>
       <div class="form-group">
-        <textarea class="form-control disabled text-monospace" rows="6" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
+        <textarea class="form-control disabled text-monospace" rows="8" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
       </div>
       <div class="form-group pl-2 d-flex justify-content-center">
         <div class="form-check mr-3">
