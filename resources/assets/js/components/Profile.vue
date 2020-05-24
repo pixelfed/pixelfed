@@ -518,7 +518,7 @@
 	size="md"
 	body-class="p-2 rounded">
 	<div>
-		<textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 12px; height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
+		<textarea class="form-control disabled text-monospace" rows="6" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
 		<hr>
 		<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
 		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
@@ -1215,7 +1215,8 @@
 			},
 
 			showEmbedProfileModal() {
-				this.ctxEmbedPayload = window.App.util.embed.profile(this.profile.url)
+				this.ctxEmbedPayload = window.App.util.embed.profile(this.profile.url);
+				this.$refs.visitorContextMenu.hide();
 				this.$refs.embedModal.show();
 			},
 
