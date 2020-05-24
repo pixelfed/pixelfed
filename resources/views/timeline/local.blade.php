@@ -2,13 +2,21 @@
 
 @section('content')
 
-<timeline scope="local" layout="feed"></timeline>
-
 <noscript>
 	<div class="container">
 		<p class="pt-5 text-center lead">Please enable javascript to view this content.</p>
 	</div>
 </noscript>
+
+<timeline scope="local" layout="feed"></timeline>
+
+<div class="modal pr-0" tabindex="-1" role="dialog" id="composeModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<compose-modal></compose-modal>
+		</div>
+	</div>
+</div>
 
 @endsection
 
