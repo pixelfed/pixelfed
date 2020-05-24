@@ -558,6 +558,7 @@ class PublicApiController extends Controller
             'likes_count',
             'reblogs_count',
             'scope',
+            'visibility',
             'local',
             'cw_summary',
             'created_at',
@@ -568,12 +569,13 @@ class PublicApiController extends Controller
           ->whereIn('visibility', $visibility)
           ->latest()
           ->limit($limit)
+          ->orderByDesc('created_at')
           ->get();
 
         $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
-        return response()->json($res);
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
 }

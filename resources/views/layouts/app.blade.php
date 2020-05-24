@@ -47,13 +47,6 @@
             </div>
         
         </noscript>
-        <div class="modal pr-0" tabindex="-1" role="dialog" id="composeModal">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <compose-modal></compose-modal>
-            </div>
-          </div>
-        </div>
     </main>
     @include('layouts.partial.footer')
     <script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>

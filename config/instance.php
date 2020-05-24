@@ -10,6 +10,9 @@ return [
 	],
 
 	'discover' => [
+		'loops' => [
+			'enabled' => env('EXP_LOOPS', false),
+		],
 		'tags' => [
 			'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false)
 		],
@@ -49,5 +52,12 @@ return [
 	'restricted' => [
 		'enabled' => env('RESTRICTED_INSTANCE', false),
 		'level' => 1
+	],
+
+	'oauth' => [
+		'pat' => [
+			'enabled' => env('OAUTH_PAT_ENABLED', false),
+			'id' 	  => env('OAUTH_PAT_ID'),
+		]
 	]
 ];

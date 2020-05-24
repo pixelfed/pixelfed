@@ -21,7 +21,11 @@ return [
 
 		'delivery' => [
 			'timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 2.0),
-			'concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10)
+			'concurrency' => env('ACTIVITYPUB_DELIVERY_CONCURRENCY', 10),
+			'logger' => [
+				'enabled' => env('AP_LOGGER_ENABLED', false),
+				'driver' => 'log'
+			]
 		]
 	],
 
