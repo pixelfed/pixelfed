@@ -1,6 +1,11 @@
 <template>
 <div class="container" style="">
 	<div v-if="layout === 'feed'" class="row">
+		<div v-if="morePostsAvailable == true" class="col-12 mt-5 pt-3 mb-3 fixed-top">
+			<p class="text-center">
+				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
+			</p>
+		</div>
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
 			<div v-if="config.features.stories">
 				<story-component v-if="config.features.stories"></story-component>
@@ -74,7 +79,7 @@
 					</div>
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
-						<div v-if="!modes.distractionFree" class="card-header d-inline-flex align-items-center bg-white">
+						<div v-if="!modes.distractionFree && status" class="card-header d-inline-flex align-items-center bg-white">
 							<img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
 								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
@@ -628,6 +633,12 @@
 				ctxEmbedShowCaption: true,
 				ctxEmbedShowLikes: false,
 				ctxEmbedCompactMode: false,
+				morePostsAvailable: false,
+				mpCount: 0,
+				mpData: false,
+				mpInterval: 15000,
+				mpEnabled: false,
+				mpPoller: null
 			}
 		},
 		watch: {
@@ -761,6 +772,7 @@
 						this.fetchHashtagPosts();
 					}
 					// this.fetchStories();
+					this.rtw();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -1488,7 +1500,66 @@
 				.then(res => {
 					this.userStory = res.data;
 				})
+			},
+
+			// real time watcher
+			rtw() {
+				this.mpPoller = setInterval(() => {
+					let apiUrl = false;
+					this.mpCount++;
+					if(this.mpCount > 10) {
+						this.mpInterval = 30000;
+					}
+					if(this.mpCount > 50) {
+						this.mpInterval = (5 * 60 * 1000);
+					}
+					switch(this.scope) {
+						case 'home':
+						apiUrl = '/api/pixelfed/v1/timelines/home';
+						break;
+
+						case 'local':
+						apiUrl = '/api/pixelfed/v1/timelines/public';
+						break;
+
+						case 'network':
+						apiUrl = '/api/pixelfed/v1/timelines/network';
+						break;
+					}
+					axios.get(apiUrl, {
+						params: {
+							max_id: 0,
+							limit: 20
+						}
+					}).then(res => {
+						let self = this;
+						let data = res.data.filter(d => {
+							return d.id > self.min_id
+						});
+						let ids = data.map(status => status.id);
+						let max = Math.max(...ids).toString();
+						let newer = max > this.min_id;
+						if(newer) {
+							this.morePostsAvailable = true;
+							this.mpData = data;
+						}
+					});
+				}, this.mpInterval);
+			},
+
+			syncNewPosts() {
+				let self = this;
+				let data = this.mpData;
+				let ids = data.map(s => s.id);
+				this.min_id = Math.max(...ids).toString();
+				this.max_id = Math.min(...ids).toString();
+				this.feed.unshift(...data);
+				this.morePostsAvailable = false;
+				this.mpData = null;
 			}
-		}
+		},
+		beforeDestroy () {
+			clearInterval(this.mpInterval);
+		},
 	}
 </script>
