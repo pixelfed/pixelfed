@@ -512,7 +512,29 @@
     size="md"
     body-class="p-2 rounded">
     <div>
-      <textarea class="form-control disabled" rows="1" style="border: 1px solid #efefef; font-size: 14px; line-height: 12px; height: 37px; margin: 0 0 7px; resize: none; white-space: nowrap;" v-model="ctxEmbedPayload"></textarea>
+      <div class="form-group">
+        <textarea class="form-control disabled text-monospace" rows="6" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
+      </div>
+      <div class="form-group pl-2 d-flex justify-content-center">
+        <div class="form-check mr-3">
+          <input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
+          <label class="form-check-label font-weight-light">
+            Show Caption
+          </label>
+        </div>
+        <div class="form-check mr-3">
+          <input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
+          <label class="form-check-label font-weight-light">
+            Show Likes
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
+          <label class="form-check-label font-weight-light">
+            Compact Mode
+          </label>
+        </div>
+      </div>
       <hr>
       <button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
       <p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
@@ -650,10 +672,36 @@ export default {
             showCaption: true,
             ctxEmbedPayload: false,
             copiedEmbed: false,
+            ctxEmbedShowCaption: true,
+            ctxEmbedShowLikes: false,
+            ctxEmbedCompactMode: false,
             layout: this.profileLayout
           }
     },
-
+    watch: {
+      ctxEmbedShowCaption: function (n,o) {
+        if(n == true) {
+          this.ctxEmbedCompactMode = false;
+        }
+        let mode = this.ctxEmbedCompactMode ? 'compact' : 'full';
+        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
+      },
+      ctxEmbedShowLikes: function (n,o) {
+        if(n == true) {
+          this.ctxEmbedCompactMode = false;
+        }
+        let mode = this.ctxEmbedCompactMode ? 'compact' : 'full';
+        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
+      },
+      ctxEmbedCompactMode: function (n,o) {
+        if(n == true) {
+          this.ctxEmbedShowCaption = false;
+          this.ctxEmbedShowLikes = false;
+        }
+        let mode = this.ctxEmbedCompactMode ? 'compact' : 'full';
+        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
+      }
+    },
     beforeMount() {
       let u = new URLSearchParams(window.location.search);
       let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
@@ -1195,7 +1243,8 @@ export default {
       },
 
       showEmbedPostModal() {
-        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url)
+        let mode = this.ctxEmbedCompactMode ? 'compact' : 'full';
+        this.ctxEmbedPayload = window.App.util.embed.post(this.status.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
         this.$refs.embedModal.show();
       },
 
