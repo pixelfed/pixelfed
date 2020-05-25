@@ -172,7 +172,7 @@ class ProfileController extends Controller
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if($user->domain, 404);
         $key = 'profile:ap:' . $user->id;
-        $ttl = now()->addHours(6);
+        $ttl = now()->addMinutes(15);
 
         return Cache::remember($key, $ttl, function() use($user) {
             $fractal = new Fractal\Manager();
