@@ -6,15 +6,15 @@ use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    use Import\Instagram, Import\Mastodon;
+	use Import\Instagram, Import\Mastodon;
 
-    public function __construct()
-    {
-        $this->middleware('auth');
+	public function __construct()
+	{
+		$this->middleware('auth');
 
-        if(config('pixelfed.import.instagram.enabled') != true) {
-        	abort(404, 'Feature not enabled');
-        }
-    }
+		if(config('pixelfed.import.instagram.enabled') != true) {
+			abort(404, 'Feature not enabled');
+		}
+	}
 
 }

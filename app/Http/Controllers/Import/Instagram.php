@@ -27,7 +27,7 @@ trait Instagram
             ->whereNotNull('completed_at')
             ->exists();
         if($completed == true) {
-            return redirect(route('settings'))->with(['errors' => ['You can only import from Instagram once.']]);
+            return redirect(route('settings'))->with(['error' => 'You can only import from Instagram once during the beta. Please report any issues!']);
         }
     	$job = $this->instagramRedirectOrNew();
     	return redirect($job->url());
@@ -160,7 +160,6 @@ trait Instagram
     {
         $profile = Auth::user()->profile;
 
-
         try {
         $import = ImportJob::whereProfileId($profile->id)
             ->where('uuid', $uuid)
@@ -173,8 +172,6 @@ trait Instagram
             \Log::info($e);
         }
 
-        return redirect(route('settings'))->with(['status' => [
-            'Import successful! It may take a few minutes to finish.'
-        ]]);
+        return redirect(route('settings'))->with(['status' => 'Import successful! It may take a few minutes to finish.']);
     }
 }

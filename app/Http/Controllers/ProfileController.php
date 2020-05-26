@@ -171,15 +171,11 @@ class ProfileController extends Controller
     {
         abort_if(!config('federation.activitypub.enabled'), 404);
         abort_if($user->domain, 404);
-        $key = 'profile:ap:' . $user->id;
-        $ttl = now()->addHours(6);
 
-        return Cache::remember($key, $ttl, function() use($user) {
-            $fractal = new Fractal\Manager();
-            $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
-            $res = $fractal->createData($resource)->toArray();
-            return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
-        });
+        $fractal = new Fractal\Manager();
+        $resource = new Fractal\Resource\Item($user, new ProfileTransformer);
+        $res = $fractal->createData($resource)->toArray();
+        return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
     }
 
     public function showAtomFeed(Request $request, $user)

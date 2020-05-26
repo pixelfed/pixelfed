@@ -11,7 +11,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
-use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\{
     ImportJob,
     ImportData,
@@ -56,11 +55,12 @@ class ImportInstagram implements ShouldQueue
 
         $job = ImportJob::findOrFail($this->import->id);
         $profile = Profile::findOrFail($job->profile_id);
+        $user = $profile->user;
         $json = $job->mediaJson();
-        $collection = $json['photos'];
+        $collection = array_reverse($json['photos']);
         $files = $job->files;
         $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $profile->id . (string) $profile->created_at);
+        $userHash = hash('sha1', $user->id . (string) $user->created_at);
         $fs = new Filesystem;
 
         foreach($collection as $import)
@@ -118,7 +118,6 @@ class ImportInstagram implements ShouldQueue
                 $media->order = 1;
                 $media->save();
                 ImageOptimize::dispatch($media);
-                NewStatusPipeline::dispatch($status);
             });
         }
 
