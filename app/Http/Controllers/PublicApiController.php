@@ -567,9 +567,8 @@ class PublicApiController extends Controller
           ->whereIn('type', $scope)
           ->where('id', $dir, $id)
           ->whereIn('visibility', $visibility)
-          ->latest()
           ->limit($limit)
-          ->orderByDesc('created_at')
+          ->orderByDesc('id')
           ->get();
 
         $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
