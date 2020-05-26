@@ -39,9 +39,9 @@
       <li class="nav-item">
         <hr>
       </li>
-      {{-- <li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
+      <li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
-      </li> --}}
+      </li>
       <li class="nav-item pl-3 {{request()->is('settings/data-export')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
       </li>

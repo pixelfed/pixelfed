@@ -19,7 +19,7 @@
     <ol class="lead mb-4">
       <li>Upload media.json file</li>      
       <li>Upload photos directory</li>      
-      <li>Confirm each post</li>      
+      {{-- <li>Confirm each post</li> --}}
       <li>Import Data</li>      
     </ol>
     <form method="post">
