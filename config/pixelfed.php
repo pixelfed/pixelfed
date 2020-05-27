@@ -239,7 +239,7 @@ return [
             'enabled' => env('IMPORT_INSTAGRAM', false),
             'limits' => [
                 'posts' => (int) env('IMPORT_INSTAGRAM_POST_LIMIT', 100),
-                'size' => (int) env('IMPORT_INSTAGRAM_SIZE_LIMIT', 250)
+                'size' => (int) env('IMPORT_INSTAGRAM_SIZE_LIMIT', 5000)
             ]
         ]
     ],

@@ -69,8 +69,9 @@ trait Instagram
 
     public function instagramStepOneStore(Request $request, $uuid)
     {
+        $max = 'max:' . config('pixelfed.import.instagram.limits.size');
     	$this->validate($request, [
-    		'media.*' => 'required|mimes:bin,jpeg,png,gif|max:500',
+    		'media.*' => 'required|mimes:bin,jpeg,png,gif|'.$max,
     		//'mediajson' => 'required|file|mimes:json'
     	]);
     	$media = $request->file('media');
