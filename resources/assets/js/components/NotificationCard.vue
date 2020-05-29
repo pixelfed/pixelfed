@@ -20,7 +20,16 @@
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your 
+								<span v-if="n.status.hasOwnProperty('media_attachments')">
+									<a class="font-weight-bold" v-bind:href="n.status.url" :id="'fvn-' + n.id">post</a>.
+									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
+										<img :src="notificationPreview(n)" width="100px" height="100px">
+									</b-popover>
+								</span>
+								<span v-else>
+									<a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+								</span>
 							</p>
 						</div>
 						<div v-else-if="n.type == 'comment'">
@@ -219,6 +228,13 @@
 
 			redirect(url) {
 				window.location.href = url;
+			},
+
+			notificationPreview(n) {
+				if(!n.status.hasOwnProperty('media_attachments') || !n.status.media_attachments.length) {
+					return '/storage/no-preview.png';
+				}
+				return n.status.media_attachments[0].preview_url;
 			}
 		}
 	}
