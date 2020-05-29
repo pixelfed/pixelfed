@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div v-if="stories.length != 0">
-			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'m-3']"></div>
+			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'mx-3 mt-3 mb-0 pb-0']"></div>
 		</div>
 	</div>
 </template>
@@ -79,17 +79,17 @@
 	#storyContainer .story {
 		margin-right: 2rem;
 		width: 100%;
-		max-width: 64px;
+		max-width: 60px;
 	}
 	.stories.carousel .story > .item-link > .item-preview {
-		height: 64px;
+		height: 60px;
 	}
 	#zuck-modal.with-effects {
 		width: 100%;
 	}
 	.stories.carousel .story > .item-link > .info .name {
-		font-weight: 600;
-		font-size: 12px;
+		font-weight: 500;
+		font-size: 11px;
 	}
 	.stories.carousel .story > .item-link > .info {
 	}
