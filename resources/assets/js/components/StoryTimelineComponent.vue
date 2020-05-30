@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="stories.length != 0">
+		<div v-if="show" class="card card-body p-0 border mt-4 mb-3 shadow-none">
 			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'mx-3 mt-3 mb-0 pb-0']"></div>
 		</div>
 	</div>
@@ -21,6 +21,7 @@
 		props: ['list'],
 		data() {
 			return {
+				show: false,
 				stories: {},
 			}
 		},
@@ -34,6 +35,10 @@
 				axios.get('/api/stories/v0/recent')
 				.then(res => {
 					let data = res.data;
+					if(!res.data.length) {
+						this.show = false;
+						return;
+					}
 					let stories = new Zuck('storyContainer', {
 						list: this.list == true ? true : false,
 						stories: data,
@@ -70,6 +75,7 @@
 						});
 					});
 				});
+				this.show = true;
 			}
 		}
 	}

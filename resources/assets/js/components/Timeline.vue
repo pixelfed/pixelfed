@@ -7,7 +7,7 @@
 			</p>
 		</div>
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
-			<div v-if="config.features.stories" class="card card-body p-0 border mt-4 mb-3 shadow-none">
+			<div style="margin-top:32px;">
 				<story-component v-if="config.features.stories"></story-component>
 			</div>
 			<div>
