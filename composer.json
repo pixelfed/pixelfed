@@ -13,7 +13,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",
-        "barryvdh/laravel-cors": "^2.0",
+        "fruitcake/laravel-cors": "^2.0",
         "beyondcode/laravel-self-diagnosis": "^1.0.2",
         "brick/math": "^0.8",
         "doctrine/dbal": "^2.7",
