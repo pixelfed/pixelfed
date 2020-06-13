@@ -63,6 +63,8 @@ class StatusTransformer extends Fractal\TransformerAbstract
             if(in_array($status->type, ['photo', 'video', 'photo:album', 'loop', 'photo:video:album'])) {
                 $media = $status->media()->orderBy('order')->get();
                 return $this->collection($media, new MediaTransformer());
+            } else {
+                return $this->collection([], new MediaTransformer());
             }
         });
     }
