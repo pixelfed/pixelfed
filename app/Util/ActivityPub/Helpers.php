@@ -131,6 +131,10 @@ class Helpers {
 
 	public static function validateUrl($url)
 	{
+		if(is_array($url)) {
+			$url = $url[0];
+		}
+		
 		$localhosts = [
 			'127.0.0.1', 'localhost', '::1'
 		];
@@ -432,6 +436,16 @@ class Helpers {
 			if($runJobs == true) {
 				// RemoteFollowImportRecent::dispatch($res, $profile);
 				CreateAvatar::dispatch($profile);
+			}
+		} else {
+			// Update info after 24 hours
+			if($profile->last_fetched_at == null || 
+			   $profile->last_fetched_at->lt(now()->subHours(24)) == true
+			) {
+				$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+				$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
+				$profile->last_fetched_at = now();
+				$profile->save();
 			}
 		}
 		return $profile;
