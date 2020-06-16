@@ -7,7 +7,7 @@
 			</p>
 		</div>
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
-			<div v-if="config.features.stories">
+			<div style="margin-top:32px;">
 				<story-component v-if="config.features.stories"></story-component>
 			</div>
 			<div>
@@ -1533,8 +1533,9 @@
 						}
 					}).then(res => {
 						let self = this;
+						let tids = this.feed.map(status => status.id);
 						let data = res.data.filter(d => {
-							return d.id > self.min_id
+							return d.id > self.min_id && tids.indexOf(d.id) == -1;
 						});
 						let ids = data.map(status => status.id);
 						let max = Math.max(...ids).toString();

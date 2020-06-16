@@ -210,35 +210,46 @@
 						</infinite-loading>
 					</div>
 					<div v-if="mode == 'bookmarks'">
-						<div v-if="bookmarks.length" class="row">
-							<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(s, index) in bookmarks">
-								<a class="card info-overlay card-md-border-0" :href="s.url">
-									<div class="square">
-										<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-										<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-										<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
-										<div class="square-content" v-bind:style="previewBackground(s)">
-										</div>
-										<div class="info-overlay-text">
-											<h5 class="text-white m-auto font-weight-bold">
-												<span>
-													<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
-													<span class="d-flex-inline">{{s.favourites_count}}</span>
-												</span>
-												<span>
-													<span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
-													<span class="d-flex-inline">{{s.reblogs_count}}</span>
-												</span>
-											</h5>
-										</div>
+						<div v-if="bookmarksLoading">
+							<div class="row">
+								<div class="col-12">
+									<div class="p-1 p-sm-2 p-md-3 d-flex justify-content-center align-items-center" style="height: 30vh;">
+										<img src="/img/pixelfed-icon-grey.svg" class="">
 									</div>
-								</a>
+								</div>
 							</div>
 						</div>
-						<div v-else class="col-12">
-							<div class="py-5 text-center text-muted">
-								<p><i class="fas fa-bookmark fa-2x"></i></p>
-								<p class="h2 font-weight-light pt-3">No saved bookmarks</p>
+						<div v-else>
+							<div v-if="bookmarks.length" class="row">
+								<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(s, index) in bookmarks">
+									<a class="card info-overlay card-md-border-0" :href="s.url">
+										<div class="square">
+											<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+											<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+											<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+											<div class="square-content" v-bind:style="previewBackground(s)">
+											</div>
+											<div class="info-overlay-text">
+												<h5 class="text-white m-auto font-weight-bold">
+													<span>
+														<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+														<span class="d-flex-inline">{{s.favourites_count}}</span>
+													</span>
+													<span>
+														<span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
+														<span class="d-flex-inline">{{s.reblogs_count}}</span>
+													</span>
+												</h5>
+											</div>
+										</div>
+									</a>
+								</div>
+							</div>
+							<div v-else class="col-12">
+								<div class="py-5 text-center text-muted">
+									<p><i class="fas fa-bookmark fa-2x"></i></p>
+									<p class="h2 font-weight-light pt-3">No saved bookmarks</p>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -641,6 +652,7 @@
 				followingModalSearch: null,
 				followingModalSearchCache: null,
 				followingModalTab: 'following',
+				bookmarksLoading: true,
 			}
 		},
 		beforeMount() {
@@ -789,7 +801,8 @@
 				if(this.mode == 'bookmarks' && this.bookmarks.length == 0) {
 					axios.get('/api/local/bookmarks')
 					.then(res => {
-						this.bookmarks = res.data
+						this.bookmarks = res.data;
+						this.bookmarksLoading = false;
 					});
 				}
 				if(this.mode == 'collections' && this.collections.length == 0) {

@@ -27,11 +27,13 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         if(config('pixelfed.oauth_enabled')) {
-            Passport::routes(null, ['middleware' => ['twofactor', \Barryvdh\Cors\HandleCors::class]]);
+            Passport::routes(null, ['middleware' => ['twofactor', \Fruitcake\Cors\HandleCors::class]]);
             Passport::tokensExpireIn(now()->addDays(15));
             Passport::refreshTokensExpireIn(now()->addDays(30));
             Passport::enableImplicitGrant();
-            
+            if(config('instance.oauth.pat.enabled')) {
+                Passport::personalAccessClientId(config('instance.oauth.pat.id'));
+            }
             Passport::setDefaultScope([
                 'read',
                 'write',

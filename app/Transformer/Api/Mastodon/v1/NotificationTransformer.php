@@ -37,10 +37,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			if($status) {
 				return $this->item($status, new StatusTransformer());
 			} else {
-				return null;
+				return $this->collection([], new StatusTransformer());
 			}
 		} else {
-			return null;
+			return $this->collection([], new StatusTransformer());
 		}
 	}
 

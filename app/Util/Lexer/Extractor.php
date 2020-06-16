@@ -452,6 +452,9 @@ class Extractor extends Regex
             $start_position = $at[1] > 0 ? StringUtils::strlen(substr($tweet, 0, $at[1])) : $at[1];
             $end_position = $start_position + StringUtils::strlen($at[0]) + StringUtils::strlen($username[0]);
             $screenname = trim($all[0]) == '@'.$username[0] ? $username[0] : trim($all[0]);
+            if(config('app.env') == 'production' && \App\Profile::whereUsername($screenname)->exists() == false) {
+                continue;
+            }
             $entity = [
                 'screen_name' => $screenname,
                 'list_slug'   => $list_slug[0],
