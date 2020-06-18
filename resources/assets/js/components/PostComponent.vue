@@ -253,6 +253,39 @@
 
         </div>
       </div>
+      <div v-if="showProfileMorePosts">
+        <div class="py-4">
+          <hr>
+        </div>
+        <p class="text-lighter px-3" style="font-weight: 600;font-size: 15px;">More posts from <a :href="'/'+statusUsername" class="text-dark">{{this.statusUsername}}</a></p>
+        <div class="profile-timeline mt-md-4">
+          <div class="row">
+            <div class="col-4 p-1 p-md-3" v-for="(s, index) in profileMorePosts" :key="'tlob:'+index">
+              <a class="card info-overlay card-md-border-0" :href="getStatusUrl(s)" v-once>
+                <div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
+                  <span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+                  <span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+                  <span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+                  <div class="square-content" v-bind:style="previewBackground(s)">
+                  </div>
+                  <div class="info-overlay-text">
+                    <h5 class="text-white m-auto font-weight-bold">
+                      <span>
+                        <span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+                        <span class="d-flex-inline">{{s.favourites_count}}</span>
+                      </span>
+                      <span>
+                        <span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
+                        <span class="d-flex-inline">{{s.reblogs_count}}</span>
+                      </span>
+                    </h5>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-if="layout == 'moment'" class="momentui">
@@ -676,7 +709,9 @@ export default {
             ctxEmbedShowLikes: false,
             ctxEmbedCompactMode: false,
             layout: this.profileLayout,
-            canEdit: false
+            canEdit: false,
+            showProfileMorePosts: false,
+            profileMorePosts: []
           }
     },
     watch: {
@@ -782,6 +817,7 @@ export default {
                   }
                 }
                 this.loaded = true;
+                this.fetchProfilePosts();
             }).catch(error => {
               swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
@@ -1270,7 +1306,50 @@ export default {
             reply.url :
             '/i/web/post/_/' + profile.id + '/' + reply.id; 
         }
-      }
+      },
+
+      fetchProfilePosts() {
+        let self = this;
+        let apiUrl = '/api/pixelfed/v1/accounts/' + this.statusProfileId + '/statuses';
+        axios.get(apiUrl, {
+          params: {
+            only_media: true,
+            min_id: 1,
+            limit: 9
+          }
+        })
+        .then(res => {
+          let data = res.data.filter(function(status) {
+            return status.media_attachments.length > 0 &&
+            status.id != self.statusId &&
+            status.sensitive == false
+          });
+          let ids = data.map(status => status.id);
+          if(data.length >= 3) {
+            self.showProfileMorePosts = true;
+          }
+          self.profileMorePosts = data.slice(0,6);
+        })
+      },
+
+      previewUrl(status) {
+        return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
+      },
+
+      previewBackground(status) {
+        let preview = this.previewUrl(status);
+        return 'background-image: url(' + preview + ');';
+      },
+
+      getStatusUrl(status) {
+        return status.url;
+
+        if(status.local == true) {
+          return status.url;
+        }
+
+        return '/i/web/post/_/' + status.account.id + '/' + status.id;
+      },
 
     },
 }
