@@ -25,7 +25,7 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
-        "@trevoreyre/autocomplete-vue": "^2.1.1",
+        "@trevoreyre/autocomplete-vue": "^2.2.0",
         "bootstrap-vue": "^2.14.0",
         "filesize": "^3.6.1",
         "howler": "^2.2.0",
