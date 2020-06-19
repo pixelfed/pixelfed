@@ -1525,11 +1525,29 @@ class ApiV1Controller extends Controller
             }
         }
 
-        // Return empty response since we don't handle threading like this
-        $res = [
-            'ancestors' => [],
-            'descendants' => []
-        ];
+        if($status->comments_disabled) {
+            $res = [
+                'ancestors' => [],
+                'descendants' => []
+            ];
+        } else {
+            $ancestors = $status->parent();
+            if($ancestors) {
+                $ares = new Fractal\Resource\Item($ancestors, new StatusTransformer());
+                $ancestors = [
+                    $this->fractal->createData($ares)->toArray()
+                ];
+            } else {
+                $ancestors = [];
+            }
+            $descendants = Status::whereInReplyToId($id)->latest()->limit(20)->get();
+            $dres = new Fractal\Resource\Collection($descendants, new StatusTransformer());
+            $descendants = $this->fractal->createData($dres)->toArray();
+            $res = [
+                'ancestors' => $ancestors,
+                'descendants' => $descendants
+            ];
+        }
 
         return response()->json($res);
     }
