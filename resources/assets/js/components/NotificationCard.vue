@@ -24,7 +24,7 @@
 								<span v-if="n.status.hasOwnProperty('media_attachments')">
 									<a class="font-weight-bold" v-bind:href="n.status.url" :id="'fvn-' + n.id">post</a>.
 									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
-										<img :src="notificationPreview(n)" width="100px" height="100px">
+										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
 									</b-popover>
 								</span>
 								<span v-else>
