@@ -1534,7 +1534,9 @@ class ApiV1Controller extends Controller
             $ancestors = $status->parent();
             if($ancestors) {
                 $ares = new Fractal\Resource\Item($ancestors, new StatusTransformer());
-                $ancestors = $this->fractal->createData($ares)->toArray();
+                $ancestors = [
+                    $this->fractal->createData($ares)->toArray()
+                ];
             } else {
                 $ancestors = [];
             }
