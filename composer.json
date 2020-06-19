@@ -46,7 +46,7 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^4.1",
-        "phpunit/phpunit": "^8.5"
+        "phpunit/phpunit": "^9.2"
     },
     "autoload": {
         "classmap": [
