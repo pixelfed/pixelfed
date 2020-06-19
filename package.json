@@ -27,7 +27,7 @@
     "dependencies": {
         "@trevoreyre/autocomplete-vue": "^2.1.1",
         "bootstrap-vue": "^2.14.0",
-        "filesize": "^3.6.1",
+        "filesize": "^6.1.0",
         "howler": "^2.2.0",
         "infinite-scroll": "^3.0.6",
         "laravel-echo": "^1.8.0",
