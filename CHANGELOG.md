@@ -9,6 +9,7 @@
 - Added New Post notification to Timeline ([a0e7c4d5](https://github.com/pixelfed/pixelfed/commit/a0e7c4d5))
 - Add Instagram Import ([e2a6bdd0](https://github.com/pixelfed/pixelfed/commit/e2a6bdd0))
 - Add notification preview to NotificationCard ([28445e27](https://github.com/pixelfed/pixelfed/commit/28445e27))
+- Add Grid Mode to Timelines ([c1853ca8](https://github.com/pixelfed/pixelfed/commit/c1853ca8))
 
 ### Updated
 - Updated PostComponent, fix remote urls ([42716ccc](https://github.com/pixelfed/pixelfed/commit/42716ccc))
