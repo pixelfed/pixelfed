@@ -8,7 +8,11 @@
 	</div>
 </noscript>
 
+@if(request()->has('l') && request()->input('l') == 'grid')
+<timeline scope="local" layout="grid"></timeline>
+@else
 <timeline scope="local" layout="feed"></timeline>
+@endif
 
 <div class="modal pr-0" tabindex="-1" role="dialog" id="composeModal">
 	<div class="modal-dialog" role="document">

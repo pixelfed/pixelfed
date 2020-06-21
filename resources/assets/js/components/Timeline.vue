@@ -6,8 +6,19 @@
 				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
 			</p>
 		</div>
+		<div class="col-12 pl-3 pl-md-0 pt-3 pl-0">
+			<div class="d-flex justify-content-between align-items-center">
+				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
+				<p class="mb-0">
+					<a href="#" :class="[layout=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i> &nbsp; Feed</a>
+					&nbsp; | &nbsp; 
+					<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
+				</p>
+			</div>
+			<hr>
+		</div>
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
-			<div style="margin-top:32px;">
+			<div style="margin-top:-8px;">
 				<story-component v-if="config.features.stories"></story-component>
 			</div>
 			<div>
@@ -330,6 +341,17 @@
 				</div>
 			</div>
 			<div v-else class="row">
+				<div class="col-12 pt-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
+						<p class="mb-0">
+							<a href="#" :class="[layout=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i> &nbsp; Feed</a>
+							&nbsp; | &nbsp; 
+							<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
+						</p>
+					</div>
+					<hr>
+				</div>
 				<div class="col-12 col-md-4 p-1 p-md-3 mb-3" v-for="(s, index) in feed" :key="`${index}-${s.id}`">
 					<div class="card info-overlay card-md-border-0 shadow-sm border border-light" :href="statusUrl(s)">
 						<div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
@@ -1557,7 +1579,16 @@
 				this.feed.unshift(...data);
 				this.morePostsAvailable = false;
 				this.mpData = null;
-			}
+			},
+
+			switchFeedLayout(toggle) {
+				this.loading = true;
+				this.layout = toggle;
+				let self = this;
+				setTimeout(function() {
+					self.loading = false;
+				}, 500);
+			},
 		},
 		beforeDestroy () {
 			clearInterval(this.mpInterval);
