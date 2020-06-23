@@ -13,7 +13,7 @@ return [
 	'currentLocale' => 'Obecny język',
 	'selectLocale'  => 'Wybierz jeden z dostępnych języków',
     'contact'       => 'Kontakt',
-    'contact-us'    => 'Skontaktuj się z naim',
+    'contact-us'    => 'Skontaktuj się z nami',
     'places'        => 'Miejsca',
     'profiles'      => 'Profile',
 
