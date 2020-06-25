@@ -46,7 +46,7 @@ class StoryController extends Controller
 		$story->mime = $photo->getMimeType();
 		$story->path = $path;
 		$story->local = true;
-		$story->size = $photo->getClientSize();
+		$story->size = $photo->getSize();
 		$story->expires_at = now()->addHours(24);
 		$story->save();
 
