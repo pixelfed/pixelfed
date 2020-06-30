@@ -353,7 +353,7 @@
 					<hr>
 				</div>
 				<div class="col-12 col-md-4 p-1 p-md-3 mb-3" v-for="(s, index) in feed" :key="`${index}-${s.id}`">
-					<div class="card info-overlay card-md-border-0 shadow-sm border border-light" :href="statusUrl(s)">
+					<a class="card info-overlay card-md-border-0 shadow-sm border border-light" :href="statusUrl(s)">
 						<div :class="[s.sensitive ? 'square' : 'square ' + s.media_attachments[0].filter_class]">
 							<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
 							<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
@@ -366,7 +366,7 @@
 								</p>
 							</div>
 						</div>
-					</div>
+					</a>
 					<div class="py-3 media align-items-center">
 						<a class="text-decoration-none" :href="s.account.url"><img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"></a>
 						<div class="media-body">
