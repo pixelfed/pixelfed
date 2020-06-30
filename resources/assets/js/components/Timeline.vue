@@ -379,7 +379,7 @@
 						</div>
 						<div class="ml-3">
 							<p class="mb-0">
-								<span class="font-weight-bold small">{{s.favourites_count == 1 ? '1 like' : s.favourites_count+' likes'}}</span>
+								<span v-if="statusOwner(s)" class="font-weight-bold small">{{s.favourites_count == 1 ? '1 like' : s.favourites_count+' likes'}}</span>
 								<span class="px-2"><i v-bind:class="[s.favourited ? 'fas fa-heart text-danger cursor-pointer' : 'far fa-heart like-btn text-lighter cursor-pointer']" v-on:click="likeStatus(s, $event)"></i></span>
 								<span class="mr-2 cursor-pointer"><i class="fas fa-ellipsis-v" @click="ctxMenu(s)"></i></span>
 							</p>
