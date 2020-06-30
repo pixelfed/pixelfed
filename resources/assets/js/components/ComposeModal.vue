@@ -49,9 +49,12 @@
 							<span class="font-weight-bold mb-0">{{pageTitle}}</span>
 						</a>
 						<span v-else-if="page == 2">
-							<button v-if="config.uploader.album_limit > media.length" class="btn btn-outline-primary btn-sm font-weight-bold" @click.prevent="addMedia" data-toggle="tooltip" data-placement="bottom" title="Upload another photo or video" ><i class="fas fa-plus"></i></button>
+							<button v-if="config.uploader.album_limit > media.length" class="btn btn-outline-primary btn-sm font-weight-bold" @click.prevent="addMedia" id="cm-add-media-btn"><i class="fas fa-plus"></i></button>
 							<!-- <button v-if="config.uploader.album_limit > media.length" class="btn btn-outline-primary btn-sm font-weight-bold" @click.prevent="page = 'cameraRoll'" data-toggle="tooltip" data-placement="bottom" title="Upload another photo or video" ><i class="fas fa-chevron-left"></i> Camera Roll</button> -->
 							<button v-else class="btn btn-outline-secondary btn-sm font-weight-bold" disabled><i class="fas fa-plus"></i></button>
+							<b-tooltip target="cm-add-media-btn" triggers="hover">
+								Upload another photo or video
+							</b-tooltip>
 						</span>
 						<span v-else-if="page == 3">
 							<a class="text-lighter text-decoration-none mr-3 d-flex align-items-center" href="#" @click.prevent="goBack()">
@@ -66,7 +69,10 @@
 						<span class="font-weight-bold mb-0">{{pageTitle}}</span>
 					</div>
 					<div v-if="page == 2">
-						<a v-if="media.length == 1" href="#" class="text-center text-dark" @click.prevent="showCropPhotoCard"><i class="fas fa-magic fa-lg"></i></a>
+						<a v-if="media.length == 1" href="#" class="text-center text-dark" @click.prevent="showCropPhotoCard" title="Crop & Resize" id="cm-crop-btn"><i class="fas fa-crop-alt fa-lg"></i></a>
+						<b-tooltip target="cm-crop-btn" triggers="hover">
+							Crop & Resize
+						</b-tooltip>
 					</div>
 					<div>
 						<!-- <a v-if="page > 1" class="font-weight-bold text-decoration-none" href="#" @click.prevent="page--">Back</a> -->
@@ -583,12 +589,6 @@ export default {
 
 	mounted() {
 		this.mediaWatcher();
-	},
-
-	updated() {
-		if(this.page == 2) {
-			$('[data-toggle="tooltip"]').tooltip();
-		}
 	},
 
 	methods: {
