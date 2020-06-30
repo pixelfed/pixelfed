@@ -368,9 +368,9 @@
 						</div>
 					</div>
 					<div class="py-3 media align-items-center">
-						<img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+						<a class="text-decoration-none" :href="s.account.url"><img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"></a>
 						<div class="media-body">
-							<p class="mb-0 font-weight-bold small">{{s.account.username}}</p>
+							<p class="mb-0 font-weight-bold small"><a class="text-dark" :href="s.account.url">{{s.account.username}}</a></p>
 							<p class="mb-0" style="line-height: 0.7;">
 								<a :href="statusUrl(s)" class="small text-lighter">
 									<timeago :datetime="s.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(s.created_at)" v-b-tooltip.hover.bottom></timeago>
