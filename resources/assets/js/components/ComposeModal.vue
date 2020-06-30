@@ -452,7 +452,7 @@
 				<!-- card-footers -->
 				<div v-if="page == 'cropPhoto'" class="card-footer bg-white d-flex justify-content-between">
 					<div>
-						<button type="button" class="btn btn-outline-secondary" @click="rotate"><i class="fas fa-undo"></i></button>
+						<button type="button" class="btn btn-outline-secondary" @click="rotate"><i class="fas fa-redo"></i></button>
 					</div>
 					<div>
 						<div class="d-inline-block button-group">
