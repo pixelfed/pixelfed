@@ -58,7 +58,6 @@ class RegisterController extends Controller
             $data['email'] = strtolower($data['email']);
         }
 
-        $this->validateUsername($data['username']);
         $this->validateEmail($data['email']);
 
         $usernameRules = [
@@ -86,6 +85,11 @@ class RegisterController extends Controller
                 $val = str_replace(['_', '.', '-'], '', $value);
                 if(!ctype_alnum($val)) {
                     return $fail('Username is invalid. Username must be alpha-numeric and may contain dashes (-), periods (.) and underscores (_).');
+                }
+
+                $restricted = RestrictedNames::get();
+                if (in_array($value, $restricted)) {
+                    return $fail('Username cannot be used.');
                 }
             },
         ];
@@ -121,15 +125,6 @@ class RegisterController extends Controller
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
-    }
-
-    public function validateUsername($username)
-    {
-        $restricted = RestrictedNames::get();
-
-        if (in_array($username, $restricted)) {
-            return abort(403);
-        }
     }
 
     public function validateEmail($email)
