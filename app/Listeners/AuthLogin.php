@@ -136,6 +136,6 @@ class AuthLogin
 
     protected function userLanguage($user)
     {
-        session()->put('locale', $user->language ?? 'en');
+        session()->put('locale', $user->language ?? config('app.locale'));
     }
 }
