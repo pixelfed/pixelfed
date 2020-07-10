@@ -1876,9 +1876,9 @@ class ApiV1Controller extends Controller
     /**
      * GET /api/v1/bookmarks
      *
+     * Returns collection of bookmarked statuses
      *
-     *
-     * @return StatusTransformer
+     * @return \App\Transformer\Api\StatusTransformer
      */
     public function bookmarks(Request $request)
     {
@@ -1912,11 +1912,10 @@ class ApiV1Controller extends Controller
                 ->pluck('status_id');
         }
 
-        $res = [];
-        foreach($bookmarks as $id) {
-            $res[] = \App\Services\StatusService::get($id);
-        }
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $statuses = Status::findOrFail($bookmarks);
+        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        return response()->json($res);
     }
 
     /**
