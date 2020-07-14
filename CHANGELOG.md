@@ -11,6 +11,7 @@
 - Add notification preview to NotificationCard ([28445e27](https://github.com/pixelfed/pixelfed/commit/28445e27))
 - Add Grid Mode to Timelines ([c1853ca8](https://github.com/pixelfed/pixelfed/commit/c1853ca8))
 - Add MediaPathService ([c54b29c5](https://github.com/pixelfed/pixelfed/commit/c54b29c5))
+- Add Media Tags ([711fc020](https://github.com/pixelfed/pixelfed/commit/711fc020))
 
 ### Updated
 - Updated PostComponent, fix remote urls ([42716ccc](https://github.com/pixelfed/pixelfed/commit/42716ccc))
