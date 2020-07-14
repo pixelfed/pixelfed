@@ -24,7 +24,7 @@ class StoryController extends Controller
 			'file' => function() {
 				return [
 					'required',
-					'mimes:image/jpeg,image/png',
+					'mimes:image/jpeg,image/png,video/mp4',
 					'max:' . config('pixelfed.max_photo_size'),
 				];
 			},
@@ -42,7 +42,7 @@ class StoryController extends Controller
 		$story = new Story();
 		$story->duration = 3;
 		$story->profile_id = $user->profile_id;
-		$story->type = 'photo';
+		$story->type = Str::endsWith($photo->getMimeType(), 'mp4') ? 'video' :'photo';
 		$story->mime = $photo->getMimeType();
 		$story->path = $path;
 		$story->local = true;
@@ -65,7 +65,8 @@ class StoryController extends Controller
 		$mimes = explode(',', config('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
-			'image/png'
+			'image/png',
+			'video/mp4'
 		]) == false) {
 			abort(400, 'Invalid media type');
 			return;
@@ -73,11 +74,13 @@ class StoryController extends Controller
 
 		$storagePath = "public/_esm.t2/{$monthHash}/{$sid}/{$rid}";
 		$path = $photo->store($storagePath);
-		$fpath = storage_path('app/' . $path);
-		$img = Intervention::make($fpath);
-		$img->orientate();
-		$img->save($fpath, config('pixelfed.image_quality'));
-		$img->destroy();
+		if(in_array($photo->getMimeType(), ['image/jpeg','image/png',])) {
+			$fpath = storage_path('app/' . $path);
+			$img = Intervention::make($fpath);
+			$img->orientate();
+			$img->save($fpath, config('pixelfed.image_quality'));
+			$img->destroy();
+		}
 		return $path;
 	}
 
@@ -164,7 +167,7 @@ class StoryController extends Controller
 		->map(function($s, $k) {
 			return [
 				'id' => (string) $s->id,
-				'type' => 'photo',
+				'type' => Str::endsWith($s->path, '.mp4') ? 'video' :'photo',
 				'length' => 3,
 				'src' => url(Storage::url($s->path)),
 				'preview' => null,
@@ -198,7 +201,7 @@ class StoryController extends Controller
 		
 		$res = [
 			'id' => (string) $story->id,
-			'type' => 'photo',
+			'type' => Str::endsWith($story->path, '.mp4') ? 'video' :'photo',
 			'length' => 3,
 			'src' => url(Storage::url($story->path)),
 			'preview' => null,
@@ -233,7 +236,7 @@ class StoryController extends Controller
 		->map(function($s, $k) {
 			return [
 				'id' => $s->id,
-				'type' => 'photo',
+				'type' => Str::endsWith($s->path, '.mp4') ? 'video' :'photo',
 				'length' => 3,
 				'src' => url(Storage::url($s->path)),
 				'preview' => null,
@@ -315,7 +318,7 @@ class StoryController extends Controller
 			->map(function($s, $k) {
 				return [
 					'id' => $s->id,
-					'type' => 'photo',
+					'type' => Str::endsWith($s->path, '.mp4') ? 'video' :'photo',
 					'length' => 3,
 					'src' => url(Storage::url($s->path)),
 					'preview' => null,
