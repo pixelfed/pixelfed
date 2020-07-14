@@ -14,7 +14,7 @@ class ActivityPubFetchService
 	public $url;
 	public $headers = [
 		'Accept'		=> 'application/activity+json, application/json',
-		'User-Agent'	=> 'PixelfedBot - https://pixelfed.org'
+		'User-Agent'	=> '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')'
 	];
 
 	public static function queue()
