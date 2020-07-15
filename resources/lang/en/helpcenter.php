@@ -21,6 +21,8 @@ return [
 	'blockingAccounts' => 'Blocking Accounts',
 	'safetyTips' => 'Safety Tips',
 	'reportSomething' => 'Report Something',
-	'dataPolicy' => 'Data Policy'
+	'dataPolicy' => 'Data Policy',
+
+	'taggingPeople' => 'Tagging People'
 
 ];
