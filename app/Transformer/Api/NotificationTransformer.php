@@ -14,7 +14,8 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		'account',
 		'status',
 		'relationship',
-		'modlog'
+		'modlog',
+		'tagged'
 	];
 
 	public function transform(Notification $notification)
@@ -55,7 +56,8 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'share' => 'share',
 			'like' => 'favourite',
 			'comment' => 'comment',
-			'admin.user.modlog.comment' => 'modlog'
+			'admin.user.modlog.comment' => 'modlog',
+			'tagged' => 'tagged'
 		];
 		return $verbs[$verb];
 	}
@@ -81,6 +83,24 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			} else {
 				return null;
 			}
+		} else {
+			return null;
+		}
+	}
+
+
+	public function includeTagged(Notification $notification)
+	{
+		$n = $notification;
+		if($n->item_id && $n->item_type == 'App\MediaTag') {
+			$ml = $n->item;
+			$res = $this->item($ml, function($ml) {
+				return [
+					'username' => $ml->status->profile->username,
+					'post_url' => $ml->status->url()
+				];
+			});
+			return $res;
 		} else {
 			return null;
 		}
