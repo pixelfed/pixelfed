@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand navbar-light navbar-laravel sticky-top">
+<nav class="navbar navbar-expand navbar-light navbar-laravel shadow-none border-bottom sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}" title="{{ config('app.name', 'Laravel') }} Logo">
             <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2">
