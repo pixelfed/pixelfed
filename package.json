@@ -15,7 +15,7 @@
         "bootstrap": "^4.5.0",
         "cross-env": "^5.2.1",
         "jquery": "^3.5.0",
-        "lodash": ">=4.17.13",
+        "lodash": ">=4.17.19",
         "popper.js": "^1.16.1",
         "resolve-url-loader": "^2.3.2",
         "sass": "^1.26.5",
