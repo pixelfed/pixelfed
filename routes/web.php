@@ -186,6 +186,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
             Route::post('compose/media/update/{id}', 'MediaController@composeUpdate')->middleware('throttle:maxComposeMediaUpdatesPerHour,60')->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
             Route::get('compose/location/search', 'ApiController@composeLocationSearch');
+            Route::get('compose/tag/search', 'MediaTagController@usernameLookup');
+
         });
         Route::group(['prefix' => 'admin'], function () {
             Route::post('moderate', 'Api\AdminApiController@moderate');
