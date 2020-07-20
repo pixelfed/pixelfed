@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Media\Filter;
 use Illuminate\Support\Str;
+use App\Services\HashidService;
 
 class StatusController extends Controller
 {
@@ -63,6 +64,16 @@ class StatusController extends Controller
 
         $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
         return view($template, compact('user', 'status'));
+    }
+
+    public function shortcodeRedirect(Request $request, $id)
+    {
+        if(strlen($id) < 5 || !Auth::check()) {
+            return redirect('/login?next='.urlencode('/' . $request->path()));
+        }
+        $id = HashidService::decode($id);
+        $status = Status::findOrFail($id);
+        return redirect($status->url());
     }
 
     public function showId(int $id)

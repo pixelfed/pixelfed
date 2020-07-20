@@ -10,6 +10,7 @@ use App\{
     Follower,
     Like,
     Media,
+    MediaTag,
     Notification,
     Profile,
     StatusHashtag,
@@ -30,6 +31,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use App\Services\MediaTagService;
 use App\Services\ModLogService;
 use App\Services\PublicTimelineService;
 
@@ -258,7 +260,8 @@ class InternalApiController extends Controller
             'cw' => 'nullable|boolean',
             'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
             'place' => 'nullable',
-            'comments_disabled' => 'nullable'
+            'comments_disabled' => 'nullable',
+            'tagged' => 'nullable'
         ]);
 
         if(config('costar.enabled') == true) {
@@ -282,6 +285,7 @@ class InternalApiController extends Controller
         $mimes = [];
         $place = $request->input('place');
         $cw = $request->input('cw');
+        $tagged = $request->input('tagged');
 
         foreach($medias as $k => $media) {
             if($k + 1 > config('pixelfed.max_album_length')) {
@@ -326,6 +330,21 @@ class InternalApiController extends Controller
         foreach($attachments as $media) {
             $media->status_id = $status->id;
             $media->save();
+        }
+
+        foreach($tagged as $tg) {
+            $mt = new MediaTag;
+            $mt->status_id = $status->id;
+            $mt->media_id = $status->media->first()->id;
+            $mt->profile_id = $tg['id'];
+            $mt->tagged_username = $tg['name'];
+            $mt->is_public = true; // (bool) $tg['privacy'] ?? 1;
+            $mt->metadata = json_encode([
+                '_v' => 1,
+            ]);
+            $mt->save();
+            MediaTagService::set($mt->status_id, $mt->profile_id);
+            MediaTagService::sendNotification($mt);
         }
 
         $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;

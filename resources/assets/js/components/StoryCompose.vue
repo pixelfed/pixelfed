@@ -1,7 +1,7 @@
 <template>
 <div class="container mt-2 mt-md-5">
 	<input type="file" id="pf-dz" name="media" class="d-none file-input" v-bind:accept="config.mimes">
-	<div class="row">
+	<div v-if="loaded" class="row">
 		<div class="col-12 col-md-6 offset-md-3">
 
 			<!-- LANDING -->
@@ -9,12 +9,19 @@
 				<div class="text-center flex-fill mt-5 pt-5">
 					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
 					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
+					<!-- <p v-if="loaded" class="font-weight-bold small text-uppercase text-muted">
+						<span>{{stories.length}} Active</span>
+						<span class="px-2">|</span>
+						<span>30K Views</span>
+					</p> -->
 				</div>
-				<div class="flex-fill">
+				<div class="flex-fill py-4">
 					<div class="card w-100 shadow-none">
 						<div class="list-group">
+							<!-- <a class="list-group-item text-center lead text-decoration-none text-dark" href="#">Camera</a> -->
 							<a class="list-group-item text-center lead text-decoration-none text-dark" href="#" @click.prevent="upload()">Add Photo</a>
-							<a v-if="stories.length" class="list-group-item text-center lead text-decoration-none text-dark" href="#" @click.prevent="edit()">Edit Story</a>
+							<a v-if="stories.length" class="list-group-item text-center lead text-decoration-none text-dark" href="#" @click.prevent="edit()">Edit</a>
+							<!-- <a class="list-group-item text-center lead text-decoration-none text-dark" href="#">Options</a> -->
 						</div>
 					</div>
 				</div>
@@ -150,10 +157,12 @@
 		props: ['profile-id'],
 		data() {
 			return {
+				loaded: false,
 				config: window.App.config,
 				mimes: [
 					'image/jpeg',
-					'image/png'
+					'image/png',
+					// 'video/mp4'
 				],
 				page: 'landing',
 				pages: [
@@ -181,7 +190,10 @@
 		mounted() {
 			this.mediaWatcher();
 			axios.get('/api/stories/v0/fetch/' + this.profileId)
-			.then(res => this.stories = res.data);
+			.then(res => {
+				this.stories = res.data;
+				this.loaded = true;
+			});
 		},
 
 		methods: {

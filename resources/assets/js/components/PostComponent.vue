@@ -80,7 +80,7 @@
 
           <div class="col-12 col-md-4 px-0 d-flex flex-column border-left border-md-left-0">
             <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
-              <div class="d-flex align-items-center status-username text-truncate" data-toggle="tooltip" data-placement="bottom" :title="statusUsername">
+              <div class="d-flex align-items-center status-username text-truncate">
                 <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
                   <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
                 </div>
@@ -90,65 +90,73 @@
                     <i class="fas fa-certificate text-danger fa-stack-1x"></i>
                     <i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
                   </span>
-                  <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
+                  <p class="mb-0" style="font-size: 10px;">
+                    <span v-if="loaded && status.taggedPeople.length" class="mb-0">
+                      <span class="font-weight-light cursor-pointer" style="color:#718096" title="Tagged People" data-toggle="tooltip" data-placement="bottom" @click="showTaggedPeopleModal()"><i class="fas fa-tag text-lighter"></i> <span class="font-weight-bold">{{status.taggedPeople.length}} Tagged People</span></span>
+                    </span>
+                    <span v-if="loaded && status.place != null && status.taggedPeople.length" class="px-2 font-weight-bold text-lighter">&#8226;</span>
+                    <span v-if="loaded && status.place != null" class="mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)"><i class="fas fa-map-marked-alt text-lighter"></i> <span class="font-weight-bold">{{status.place.name}}, {{status.place.country}}</span></span>
+                  </p>
                 </div>
               </div>
-                <div class="float-right">
-                  <div class="post-actions">
-                  <div v-if="user != false" class="dropdown">
-                    <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-                    <span class="fas fa-ellipsis-v text-muted"></span>
-                    </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
-                          <span v-if="!owner()">
-                            <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                            <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
-                            <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
-                          </span>
-                          <span v-if="ownerOrAdmin()">
-                            <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                            <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                            <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
-                          </span>
-                        </div>
-                    </div>
+              <div class="float-right">
+                <div class="post-actions">
+                <div v-if="user != false" class="dropdown">
+                  <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
+                  <span class="fas fa-ellipsis-v text-muted"></span>
+                  </button>
+                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
+                        <span v-if="!owner()">
+                          <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
+                          <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
+                          <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
+                        </span>
+                        <span v-if="ownerOrAdmin()">
+                          <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
+                          <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
+                          <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
+                        </span>
+                      </div>
                   </div>
                 </div>
+              </div>
             </div>
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
-              <div class="card-body status-comments pb-5">
+              <div class="card-body status-comments pb-5 pt-0">
                 <div class="status-comment">
-                  <div v-if="showCaption != true">
-                    <span class="py-3">
-                      <a class="text-dark font-weight-bold mr-1" :href="status.account.url" v-bind:title="status.account.username">{{truncate(status.account.username,15)}}</a>
-                      <span class="text-break">
-                        <span class="font-italic text-muted">This comment may contain sensitive material</span>
-                        <span class="text-primary cursor-pointer pl-1" @click="showCaption = true">Show</span>
+                  <div v-if="status.content.length" class="pt-3">
+                    <div v-if="showCaption != true">
+                      <span class="py-3">
+                        <a class="text-dark font-weight-bold mr-1" :href="status.account.url" v-bind:title="status.account.username">{{truncate(status.account.username,15)}}</a>
+                        <span class="text-break">
+                          <span class="font-italic text-muted">This comment may contain sensitive material</span>
+                          <span class="text-primary cursor-pointer pl-1" @click="showCaption = true">Show</span>
+                        </span>
                       </span>
-                    </span>
-                  </div>
-                  <div v-else>
-                    <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
-                      <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
-                      <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
-                    </p>
+                    </div>
+                    <div v-else>
+                      <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
+                        <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
+                        <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
+                      </p>
+                    </div>
+                    <hr>
                   </div>
 
                   <div v-if="showComments">
-                    <hr>
                     <div class="postCommentsLoader text-center py-2">
                       <div class="spinner-border" role="status">
                         <span class="sr-only">Loading...</span>
                       </div>
                     </div>
                     <div class="postCommentsContainer d-none">
-                      <p class="mb-1 text-center load-more-link d-none my-3">
+                      <p class="mb-1 text-center load-more-link d-none my-4">
                         <a href="#" class="text-dark" v-on:click="loadMore" title="Load more comments" data-toggle="tooltip" data-placement="bottom">
                           <svg class="bi bi-plus-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="font-size:2em;">  <path fill-rule="evenodd" d="M8 3.5a.5.5 0 01.5.5v4a.5.5 0 01-.5.5H4a.5.5 0 010-1h3.5V4a.5.5 0 01.5-.5z" clip-rule="evenodd"/>  <path fill-rule="evenodd" d="M7.5 8a.5.5 0 01.5-.5h4a.5.5 0 010 1H8.5V12a.5.5 0 01-1 0V8z" clip-rule="evenodd"/>  <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/></svg>
                         </a>
                       </p>
-                      <div class="comments">
+                      <div class="comments mt-3">
                         <div v-for="(reply, index) in results" class="pb-4 media" :key="'tl' + reply.id + '_' + index">
                           <img :src="reply.account.avatar" class="rounded-circle border mr-3" width="42px" height="42px">
                           <div class="media-body">
@@ -216,8 +224,9 @@
                   <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
                   <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
                   <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
-                  <h3 @click="lightbox(status.media_attachments[0])" class="fas fa-expand m-0 cursor-pointer"></h3>
-                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+                  <!-- <h3 @click="lightbox(status.media_attachments[0])" class="fas fa-expand m-0 cursor-pointer"></h3>
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3> -->
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 cursor-pointer' : 'far fa-bookmark m-0 cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
                 </div>
                 <div class="reaction-counts font-weight-bold mb-0">
                   <span style="cursor:pointer;" v-on:click="likesModal">
@@ -235,11 +244,11 @@
                 </div>
               </div>
             </div>
-           <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
+           <!-- <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
               <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
                 <li class="nav-item" v-on:click="emojiReaction" v-for="e in emoji">{{e}}</li>
               </ul>
-            </div>
+            </div> -->
             <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
               <div v-if="user.length == 0" class="comment-form-guest p-3">
                 <a href="/login">Login</a> to like or comment.
@@ -253,11 +262,11 @@
 
         </div>
       </div>
-      <div v-if="showProfileMorePosts">
-        <div class="py-4">
+      <div class="container" v-if="showProfileMorePosts">
+        <!-- <div class="py-4">
           <hr>
-        </div>
-        <p class="text-lighter px-3" style="font-weight: 600;font-size: 15px;">More posts from <a :href="'/'+statusUsername" class="text-dark">{{this.statusUsername}}</a></p>
+        </div> -->
+        <p class="text-lighter px-3 mt-5" style="font-weight: 600;font-size: 15px;">More posts from <a :href="'/'+statusUsername" class="text-dark">{{this.statusUsername}}</a></p>
         <div class="profile-timeline mt-md-4">
           <div class="row">
             <div class="col-4 p-1 p-md-3" v-for="(s, index) in profileMorePosts" :key="'tlob:'+index">
@@ -573,6 +582,30 @@
       <p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
     </div>
   </b-modal>
+  <b-modal ref="taggedModal"
+    id="tagged-modal"
+    hide-footer
+    centered
+    title="Tagged People"
+    body-class="list-group-flush py-3 px-0">
+    <div class="list-group">
+      <div class="list-group-item border-0 py-1" v-for="(user, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
+        <div class="media">
+          <a :href="'/'+user.username">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+          </a>
+          <div class="media-body">
+            <p class="pt-1" style="font-size: 14px">
+              <a :href="'/'+user.username" class="font-weight-bold text-dark">
+                {{user.username}}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p>
+  </b-modal>
 </div>
 </template>
 
@@ -760,7 +793,7 @@ export default {
 
     updated() {
       $('.carousel').carousel();
-      // $('[data-toggle="tooltip"]').tooltip();
+      $('[data-toggle="tooltip"]').tooltip();
       if(this.showReadMore == true) {
         window.pixelfed.readmore();
       }
@@ -1350,6 +1383,10 @@ export default {
 
         return '/i/web/post/_/' + status.account.id + '/' + status.id;
       },
+
+      showTaggedPeopleModal() {
+        this.$refs.taggedModal.show();
+      }
 
     },
 }

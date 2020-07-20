@@ -254,9 +254,9 @@
 								</div>
 							</div>
 						</div>
-						<!-- <div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
-						</div> -->
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people <span class="ml-2 badge badge-primary">NEW</span></p>
+						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
 							<p v-else class="px-4 mb-0 py-2">
@@ -269,9 +269,10 @@
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2">
-								<span class="text-lighter">Visibility:</span> {{visibilityTag}}
+								<span>Audience</span>
 								<span class="float-right">
-									<a v-if="profile.locked == false" href="#" @click.prevent="showVisibilityCard()" class="btn btn-outline-secondary btn-sm small mr-2" style="font-size:10px;padding:3px;text-transform: uppercase">Edit</a>
+									<a v-if="profile.locked == false" href="#" @click.prevent="showVisibilityCard()" class="btn btn-outline-secondary btn-sm small mr-3 mt-n1 disabled" style="font-size:10px;padding:3px;text-transform: uppercase" disabled>{{visibilityTag}}</a>
+									<a href="#" @click.prevent="showVisibilityCard()" class="text-decoration-none"><i class="fas fa-chevron-right fa-lg text-lighter"></i></a>
 								</span>
 							</p>
 						</div>
@@ -293,7 +294,42 @@
 					</div>
 
 					<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
-						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
+						<autocomplete 
+							v-show="taggedUsernames.length < 10"
+							:search="tagSearch"
+							placeholder="@pixelfed"
+							aria-label="Search usernames"
+							:get-result-value="getTagResultValue"
+							@submit="onTagSubmitLocation"
+							ref="autocomplete"
+						>
+						</autocomplete>
+						<p v-show="taggedUsernames.length < 10" class="font-weight-bold text-muted small">You can tag {{10 - taggedUsernames.length}} more {{taggedUsernames.length == 9 ? 'person' : 'people'}}!</p>
+						<p class="font-weight-bold text-center mt-3">Tagged People</p>
+						<div class="list-group">
+							<div v-for="(tag, index) in taggedUsernames" class="list-group-item d-flex justify-content-between">
+								<div class="media">
+									<img class="mr-2 rounded-circle border" :src="tag.avatar" width="24px" height="24px">
+									<div class="media-body">
+										<span class="font-weight-bold">{{tag.name}}</span>
+									</div>
+								</div>
+								<div class="custom-control custom-switch">
+									<input type="checkbox" class="custom-control-input disabled" :id="'cci-tagged-privacy-switch'+index" v-model="tag.privacy" disabled>
+									<label class="custom-control-label font-weight-bold text-lighter" :for="'cci-tagged-privacy-switch'+index">{{tag.privacy ? 'Public' : 'Private'}}</label>
+								<a href="#" @click.prevent="untagUsername(index)" class="ml-3"><i class="fas fa-times text-muted"></i></a></div>
+							</div>
+							<div v-if="taggedUsernames.length == 0" class="list-group-item p-3">
+								<p class="text-center mb-0 font-weight-bold text-lighter">Search usernames to tag.</p>
+							</div>
+						</div>
+						<p class="font-weight-bold text-center small text-muted pt-3 mb-0">When you tag someone, they are sent a notification.<br>For more information on tagging, <a href="#" class="text-primary" @click.prevent="showTagHelpCard()">click here</a>.</p>
+					</div>
+					<div v-if="page == 'tagPeopleHelp'" class="w-100 h-100 p-3">
+						<p class="mb-0 text-center py-3 px-2 lead">Tagging someone is like mentioning them, with the option to make it private between you.</p>
+						<p class="mb-3 py-3 px-2 font-weight-lighter">
+							You can choose to tag someone in public or private mode. Public mode will allow others to see who you tagged in the post and private mode tagged users will not be shown to others.
+						</p>
 					</div>
 
 					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
@@ -538,6 +574,7 @@ export default {
 			composeTextLength: 0,
 			nsfw: false,
 			filters: [],
+			currentFilter: false,
 			ids: [],
 			media: [],
 			carouselCursor: 0,
@@ -560,7 +597,6 @@ export default {
 				zoom: 0
 			},
 
-			taggedUsernames: false,
 			namedPages: [
 				'cropPhoto',
 				'tagPeople',
@@ -573,9 +609,12 @@ export default {
 				'mediaMetadata',
 				'addToStory',
 				'editMedia',
-				'cameraRoll'
+				'cameraRoll',
+				'tagPeopleHelp'
 			],
-			cameraRollMedia: []
+			cameraRollMedia: [],
+			taggedUsernames: [],
+			taggedPeopleSearch: null
 		}
 	},
 
@@ -673,6 +712,7 @@ export default {
 
 		toggleFilter(e, filter) {
 			this.media[this.carouselCursor].filter_class = filter;
+			this.currentFilter = filter;
 		},
 
 		deleteMedia() {
@@ -727,7 +767,8 @@ export default {
 						visibility: this.visibility,
 						cw: this.nsfw,
 						comments_disabled: this.commentsDisabled,
-						place: this.place
+						place: this.place,
+						tagged: this.taggedUsernames
 					};
 					axios.post('/api/local/status/compose', data)
 					.then(res => {
@@ -764,6 +805,10 @@ export default {
 				case 'cropPhoto':
 				case 'editMedia':
 					this.page = 2;
+				break;
+
+				case 'tagPeopleHelp':
+					this.showTagCard();
 				break;
 
 				default:
@@ -803,6 +848,15 @@ export default {
 				break;
 
 				case 2:
+					if(this.currentFilter) {
+						if(window.confirm('Are you sure you want to apply this filter?')) {
+							this.applyFilterToMedia();
+							this.page++;
+						}
+					} else {
+						this.page++;
+					}
+				break;
 				case 3:
 					this.page++;
 				break;
@@ -821,6 +875,11 @@ export default {
 		showTagCard() {
 			this.pageTitle = 'Tag People';
 			this.page = 'tagPeople';
+		},
+
+		showTagHelpCard() {
+			this.pageTitle = 'About Tag People';
+			this.page = 'tagPeopleHelp';
 		},
 
 		showLocationCard() {
@@ -909,7 +968,47 @@ export default {
 				this.cameraRollMedia = res.data;
 			});
 		},
+		applyFilterToMedia() {
+			// this is where the magic happens
 
+		},
+
+		tagSearch(input) {
+			if (input.length < 1) { return []; };
+			let self = this;
+			let results = [];
+			return axios.get('/api/local/compose/tag/search', {
+				params: {
+					q: input
+				}
+			}).then(res => {
+				//return res.data;
+				return res.data.filter(d => {
+					return self.taggedUsernames.filter(r => {
+						return r.id == d.id;
+					}).length == 0;
+				});
+			});
+		},
+
+		getTagResultValue(result) {
+			return '@' + result.name;
+		},
+
+		onTagSubmitLocation(result) {
+			if(this.taggedUsernames.filter(r => {
+				return r.id == result.id;
+			}).length) {
+				return;
+			}
+			this.taggedUsernames.push(result);
+			this.$refs.autocomplete.value = '';
+			return;
+		},
+
+		untagUsername(index) {
+			this.taggedUsernames.splice(index, 1);
+		}
 	}
 }
 </script>

@@ -47,6 +47,7 @@ use App\Jobs\VideoPipeline\{
 };
 use App\Services\{
     NotificationService,
+    MediaPathService,
     SearchApiV2Service
 };
 
@@ -646,6 +647,10 @@ class ApiV1Controller extends Controller
 
         $profile = Profile::findOrFail($id);
 
+        if($profile->user->is_admin == true) {
+            abort(400, 'You cannot block an admin');
+        }
+
         Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
         Follower::whereProfileId($pid)->whereFollowingId($profile->id)->delete();
         Notification::whereProfileId($pid)->whereActorId($profile->id)->delete();
@@ -1030,9 +1035,6 @@ class ApiV1Controller extends Controller
         $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
-        $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id . (string) $user->created_at);
-
         $photo = $request->file('file');
 
         $mimes = explode(',', config('pixelfed.media_types'));
@@ -1040,7 +1042,7 @@ class ApiV1Controller extends Controller
             abort(403, 'Invalid or unsupported mime type.');
         }
 
-        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $storagePath = MediaPathService::get($user, 2);
         $path = $photo->store($storagePath);
         $hash = \hash_file('sha256', $photo);
 
@@ -1916,7 +1918,7 @@ class ApiV1Controller extends Controller
         foreach($bookmarks as $id) {
             $res[] = \App\Services\StatusService::get($id);
         }
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        return $res;
     }
 
     /**

@@ -186,6 +186,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
             Route::post('compose/media/update/{id}', 'MediaController@composeUpdate')->middleware('throttle:maxComposeMediaUpdatesPerHour,60')->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
             Route::get('compose/location/search', 'ApiController@composeLocationSearch');
+            Route::get('compose/tag/search', 'MediaTagController@usernameLookup');
+
         });
         Route::group(['prefix' => 'admin'], function () {
             Route::post('moderate', 'Api\AdminApiController@moderate');
@@ -274,6 +276,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('job/{uuid}/3', 'ImportController@instagramStepThree');
             Route::post('job/{uuid}/3', 'ImportController@instagramStepThreeStore');
         });
+
+        Route::get('redirect', 'SiteController@redirectUrl');
     });
 
     Route::group(['prefix' => 'account'], function () {
@@ -416,7 +420,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('report-something', 'site.help.report-something')->name('help.report-something');
             Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
             Route::view('labs-deprecation', 'site.help.labs-deprecation')->name('help.labs-deprecation');
-
+            Route::view('tagging-people', 'site.help.tagging-people')->name('help.tagging-people');
         });
         Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
         Route::get('newsroom/archive', 'NewsroomController@archive');
@@ -439,6 +443,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     });
 
     Route::get('stories/{username}', 'ProfileController@stories');
+    Route::get('p/{id}', 'StatusController@shortcodeRedirect');
     Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');

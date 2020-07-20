@@ -42,6 +42,16 @@
 									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
 								</p>
 							</div>
+							<div v-else-if="n.type == 'modlog'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> updated a <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'tagged'">
+								<p class="my-0">
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> tagged you in a <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
+								</p>
+							</div>
 							<div class="align-items-center">
 								<span class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</span>
 							</div>
@@ -235,6 +245,9 @@ export default {
 				case 'favourite':
 				case 'comment':
 					return n.status.url;
+				break;
+				case 'tagged':
+					return n.tagged.post_url;
 				break;
 			}
 			return '/';

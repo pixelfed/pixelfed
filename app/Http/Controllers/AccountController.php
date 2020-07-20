@@ -244,7 +244,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id) {
+			if ($profile->id == $user->id || $profile->user->is_admin == true) {
 				return abort(403);
 			}
 			$class = get_class($profile);

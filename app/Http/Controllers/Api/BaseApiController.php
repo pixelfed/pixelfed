@@ -35,6 +35,7 @@ use App\Jobs\VideoPipeline\{
     VideoThumbnail
 };
 use App\Services\NotificationService;
+use App\Services\MediaPathService;
 
 class BaseApiController extends Controller
 {
@@ -235,9 +236,6 @@ class BaseApiController extends Controller
         $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
         $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
 
-        $monthHash = hash('sha1', date('Y').date('m'));
-        $userHash = hash('sha1', $user->id . (string) $user->created_at);
-
         $photo = $request->file('file');
 
         $mimes = explode(',', config('pixelfed.media_types'));
@@ -245,7 +243,7 @@ class BaseApiController extends Controller
             return;
         }
 
-        $storagePath = "public/m/{$monthHash}/{$userHash}";
+        $storagePath = MediaPathService::get($user, 2);
         $path = $photo->store($storagePath);
         $hash = \hash_file('sha256', $photo);
 
