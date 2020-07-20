@@ -33,7 +33,7 @@
 							</span>
 						</div>
 						<p class="pl-2 h4 font-weight-bold mb-1">{{profile.display_name}}</p>
-						<p class="pl-2 font-weight-bold mb-2 text-muted">{{profile.acct}}</p>
+						<p class="pl-2 font-weight-bold mb-2"><a class="text-muted" :href="profile.url" @click.prevent="urlRedirectHandler(profile.url)">{{profile.acct}}</a></p>
 						<p class="pl-2 text-muted small d-flex justify-content-between">
 							<span>
 								<span class="font-weight-bold text-dark">{{profile.statuses_count}}</span>
@@ -481,6 +481,18 @@
 				suffix = suffix ? ' ' + suffix : '';
 				return App.util.format.timeAgo(ts) + suffix;
 			},
+
+			urlRedirectHandler(url) {
+				let p = new URL(url);
+				let path = '';
+				if(p.hostname == window.location.hostname) {
+					path = url;
+				} else {
+					path = '/i/redirect?url=';
+					path += encodeURI(url);
+				}
+				window.location.href = path;
+			}
 		}
 	}
 </script>
