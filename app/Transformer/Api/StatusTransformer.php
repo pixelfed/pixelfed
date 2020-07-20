@@ -5,6 +5,8 @@ namespace App\Transformer\Api;
 use App\Status;
 use League\Fractal;
 use Cache;
+use App\Services\HashidService;
+use App\Services\MediaTagService;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
@@ -15,12 +17,15 @@ class StatusTransformer extends Fractal\TransformerAbstract
 
     public function transform(Status $status)
     {
+        $taggedPeople = MediaTagService::get($status->id);
+        
         return [
             'id'                        => (string) $status->id,
+            'shortcode'                 => HashidService::encode($status->id),
             'uri'                       => $status->url(),
             'url'                       => $status->url(),
-            'in_reply_to_id'            => $status->in_reply_to_id,
-            'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
+            'in_reply_to_id'            => (string) $status->in_reply_to_id,
+            'in_reply_to_account_id'    => (string) $status->in_reply_to_profile_id,
             'reblog'                    => null,
             'content'                   => $status->rendered ?? $status->caption,
             'content_text'              => $status->caption,
@@ -50,6 +55,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
             'parent'                    => [],
             'place'                     => $status->place,
             'local'                     => (bool) $status->local,
+            'taggedPeople'              => $taggedPeople
         ];
     }
 
