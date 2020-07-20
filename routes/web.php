@@ -276,6 +276,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('job/{uuid}/3', 'ImportController@instagramStepThree');
             Route::post('job/{uuid}/3', 'ImportController@instagramStepThreeStore');
         });
+
+        Route::get('redirect', 'SiteController@redirectUrl');
     });
 
     Route::group(['prefix' => 'account'], function () {
