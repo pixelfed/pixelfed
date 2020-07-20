@@ -91,13 +91,14 @@
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree && status" class="card-header d-inline-flex align-items-center bg-white">
-							<img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+							<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
 								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 							</div>
-							<div v-else>
+							<div v-else> -->
+							<div>
 								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
-							</div> -->
+							</div>
 							<div class="pl-2">
 								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
 								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
@@ -107,11 +108,17 @@
 									<i class="fas fa-certificate text-danger fa-stack-1x"></i>
 									<i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
 								</span>
-								<span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
+								<!-- <span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
 									<span class="px-1">•</span>
 									<span :class="'font-weight-bold cursor-pointer ' + [status.account.relationship.following == true ? 'text-muted' : 'text-primary']" @click="followAction(status)">{{status.account.relationship.following == true ? 'Following' : 'Follow'}}</span>
-								</span>
-								<a v-if="status.place" class="d-block small text-decoration-none" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" style="color:#718096">{{status.place.name}}, {{status.place.country}}</a>
+								</span> -->
+								<!-- <span v-if="status.account.id != profile.id">
+									<span class="px-1">•</span>
+									<span class="font-weight-bold cursor-pointer text-primary">Follow</span>
+								</span> -->
+								<div class="d-flex align-items-center">
+									<a v-if="status.place" class="small text-decoration-none" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" style="color:#718096" title="Location" data-toggle="tooltip"><i class="fas fa-map-marked-alt"></i> {{status.place.name}}, {{status.place.country}}</a>
+								</div>
 							</div>
 							<div class="text-right" style="flex-grow:1;">
 								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
@@ -151,8 +158,16 @@
 								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'fas fa-retweet pr-3 m-0 text-primary cursor-pointer' : 'fas fa-retweet pr-3 m-0 text-lighter share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
-								<span v-if="status.pf_type == 'photo'" class="float-right">
-									<h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3>
+								<span v-if="status.taggedPeople.length" class="float-right">
+									<!-- <h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3> -->
+									<span class="font-weight-light small" style="color:#718096">
+										<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>
+										<span v-for="(tag, index) in status.taggedPeople" class="mr-n2">
+											<a :href="'/'+tag.username">
+												<img :src="tag.avatar" width="20px" height="20px" class="border rounded-circle" data-toggle="tooltip" :title="'@'+tag.username">
+											</a>
+										</span>
+									</span>
 								</span>
 							</div>
 
