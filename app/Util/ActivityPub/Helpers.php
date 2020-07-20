@@ -24,6 +24,7 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 use App\Services\ActivityPubDeliveryService;
+use App\Services\MediaPathService;
 
 class Helpers {
 
@@ -355,9 +356,7 @@ class Helpers {
 		}
 		$attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
 		$user = $status->profile;
-		$monthHash = hash('sha1', date('Y').date('m'));
-		$userHash = hash('sha1', $user->id.(string) $user->created_at);
-		$storagePath = "public/m/{$monthHash}/{$userHash}";
+		$storagePath = MediaPathService::get($user, 2);
 		$allowed = explode(',', config('pixelfed.media_types'));
 
 		foreach($attachments as $media) {
