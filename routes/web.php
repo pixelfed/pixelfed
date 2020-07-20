@@ -441,6 +441,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     });
 
     Route::get('stories/{username}', 'ProfileController@stories');
+    Route::get('p/{id}', 'StatusController@shortcodeRedirect');
     Route::get('c/{collection}', 'CollectionController@show');
     Route::get('p/{username}/{id}/c', 'CommentController@showAll');
     Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
