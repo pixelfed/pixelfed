@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel shadow-none border-bottom sticky-top py-1">
     <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
-                <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager">
+                <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
                 <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config('app.name', 'pixelfed') }}</span>
             </a>
 
@@ -64,6 +64,10 @@
                                 <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                     <span class="fas fa-stream pr-2 text-lighter"></span>
                                     Local
+                                </a>
+                                <a class="dropdown-item font-weight-bold" href="/i/stories/new">
+                                    <span class="fas fa-history text-lighter pr-2"></span>
+                                    Stories
                                 </a>
                                 {{-- <a class="dropdown-item font-weight-bold" href="#">
                                     <span class="fas fa-circle-notch pr-2 text-lighter"></span>
