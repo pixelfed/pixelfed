@@ -4,21 +4,23 @@ FROM php:7.4-apache-buster
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # Install Composer
-ENV COMPOSER_VERSION 1.9.2
-ENV COMPOSER_HOME /var/www/.composer
+ENV COMPOSER_VERSION=1.10.9 \
+    COMPOSER_HOME=/var/www/.composer \
+    COMPOSER_MEMORY_LIMIT=-1 \
+    PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
+ARG DEBIAN_FRONTEND=noninteractive
+WORKDIR /var/www/
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
   && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
-  && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} && rm -rf /tmp/composer-setup.php
-
-# Update OS Packages
-RUN apt-get update
-
-# Install OS Packages
-RUN apt-get install -y --no-install-recommends apt-utils
-RUN apt-get install -y --no-install-recommends \
+  && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} && rm -rf /tmp/composer-setup.php \
+  && apt-get update \
+  && apt-get upgrade -y \
+#  && apt-get install -y --no-install-recommends apt-utils \
+  && apt-get install -y --no-install-recommends \
 ## Standard
-      locales locales-all \
+      locales \
+      locales-all \
       git \
       gosu \
       zip \
@@ -33,47 +35,45 @@ RUN apt-get install -y --no-install-recommends \
 ## Image Processing
       libjpeg62-turbo-dev \
       libpng-dev \
+      libmagickwand-dev \
 # Required for GD
       libxpm4 \
       libxpm-dev \
       libwebp6 \
       libwebp-dev \
 ## Video Processing
-      ffmpeg
-
-# Update Local data
-RUN sed -i '/en_US/s/^#//g' /etc/locale.gen && locale-gen && update-locale
-
+      ffmpeg \
+## Database
+#      libpq-dev \
+#      libsqlite3-dev \
+      mariadb-client \
+# Locales Update
+  && sed -i '/en_US/s/^#//g' /etc/locale.gen \
+  && locale-gen \
+  && update-locale \
 # Install PHP extensions
-RUN docker-php-source extract
-
+  && docker-php-source extract \
 #PHP Imagemagick extensions
-RUN apt-get install -y --no-install-recommends libmagickwand-dev
-RUN pecl install imagick
-RUN docker-php-ext-enable imagick
-
+  && pecl install imagick \
+  && docker-php-ext-enable imagick \
 # PHP GD extensions
-RUN docker-php-ext-configure gd \
+  && docker-php-ext-configure gd \
       --with-freetype \
       --with-jpeg \
       --with-webp \
-      --with-xpm
-RUN docker-php-ext-install -j$(nproc) gd
-
+      --with-xpm \
+  && docker-php-ext-install -j$(nproc) gd \
 #PHP Redis extensions
-RUN pecl install redis
-RUN docker-php-ext-enable redis
-
+  && pecl install redis \
+  && docker-php-ext-enable redis \
 #PHP Database extensions
-RUN apt-get install -y --no-install-recommends libpq-dev libsqlite3-dev
-RUN docker-php-ext-install pdo_mysql pdo_pgsql pdo_sqlite
-
+  && docker-php-ext-install pdo_mysql \
+#pdo_pgsql pdo_sqlite \
 #PHP extensions (dependencies)
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl
-
+  && docker-php-ext-configure intl \
+  && docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl \
 #APACHE Bootstrap
-RUN a2enmod rewrite remoteip \
+  && a2enmod rewrite remoteip \
  && {\
      echo RemoteIPHeader X-Real-IP ;\
      echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
@@ -81,26 +81,22 @@ RUN a2enmod rewrite remoteip \
      echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
      echo SetEnvIf X-Forwarded-Proto "https" HTTPS=on ;\
     } > /etc/apache2/conf-available/remoteip.conf \
- && a2enconf remoteip
-
+ && a2enconf remoteip \
 #Cleanup
-RUN docker-php-source delete
-RUN apt-get autoremove --purge -y
-RUN apt-get clean
-RUN rm -rf /var/cache/apt
-RUN rm -rf /var/lib/apt/lists/*
-
-ENV PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
+  && docker-php-source delete \
+  && apt-get autoremove --purge -y \
+  && apt-get clean \
+  && rm -rf /var/cache/apt \
+  && rm -rf /var/lib/apt/lists/
 
 COPY . /var/www/
-WORKDIR /var/www/
-
-RUN cp -r storage storage.skel
-RUN composer global require hirak/prestissimo --no-interaction --no-suggest --prefer-dist
-RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader
-RUN composer global remove hirak/prestissimo
-RUN rm -rf html && ln -s public html
-
+# for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
+RUN cp -r storage storage.skel \
+  && composer global require hirak/prestissimo --prefer-dist --no-interaction --no-ansi --no-suggest \
+  && composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader \
+  && composer update --prefer-dist --no-interaction --no-ansi \
+  && composer global remove hirak/prestissimo --no-interaction --no-ansi \
+  && rm -rf html && ln -s public html
 VOLUME /var/www/storage /var/www/bootstrap
 
 CMD ["/var/www/contrib/docker/start.apache.sh"]
