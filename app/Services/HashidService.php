@@ -21,7 +21,7 @@ class HashidService {
 			$shortcode = '';
 			while($id) {
 				$id = ($id - ($r = $id % $base)) / $base;
-				$shortcode = $cmap{$r} . $shortcode;
+				$shortcode = $cmap[$r] . $shortcode;
 			};
 			return $shortcode;
 		});
