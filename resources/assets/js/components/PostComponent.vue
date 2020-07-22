@@ -1120,7 +1120,7 @@ export default {
       },
 
       fetchComments() {
-          let url = '/api/v2/comments/'+this.statusUsername+'/status/'+this.statusId;
+          let url = '/api/v2/comments/'+this.statusProfileId+'/status/'+this.statusId;
           axios.get(url)
             .then(response => {
                 let self = this;
@@ -1306,7 +1306,7 @@ export default {
             reply.thread = true;
             return;
           }
-          let url = '/api/v2/comments/'+reply.account.username+'/status/'+reply.id;
+          let url = '/api/v2/comments/'+reply.account.id+'/status/'+reply.id;
           axios.get(url)
             .then(response => {
                 reply.replies = _.reverse(response.data.data);

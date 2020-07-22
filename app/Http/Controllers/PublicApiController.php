@@ -110,7 +110,7 @@ class PublicApiController extends Controller
         ]);
 
         $limit = $request->limit ?? 10;
-        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $profile = Profile::whereNull('status')->findOrFail($username);
         $status = Status::whereProfileId($profile->id)->whereCommentsDisabled(false)->findOrFail($postId);
         $this->scopeCheck($profile, $status);
 

@@ -6,10 +6,10 @@ chown -R www-data:www-data storage/ bootstrap/
 
 # Refresh the environment
 php artisan storage:link
-php artisan horizon:assets
+php artisan horizon:publish
 php artisan route:cache
 php artisan view:cache
 php artisan config:cache
 
 # Finally run Apache
-exec apache2-foreground
+apache2-foreground
