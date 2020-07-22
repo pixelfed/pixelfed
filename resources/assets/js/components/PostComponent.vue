@@ -24,7 +24,13 @@
                 <i class="fas fa-certificate text-danger fa-stack-1x"></i>
                 <i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
               </span>
-              <p v-if="loaded && status.place != null" class="small mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)">{{status.place.name}}, {{status.place.country}}</p>
+              <p class="mb-0" style="font-size: 10px;">
+                    <span v-if="loaded && status.taggedPeople.length" class="mb-0">
+                      <span class="font-weight-light cursor-pointer" style="color:#718096" title="Tagged People" data-toggle="tooltip" data-placement="bottom" @click="showTaggedPeopleModal()"><i class="fas fa-tag text-lighter"></i> <span class="font-weight-bold">{{status.taggedPeople.length}} Tagged People</span></span>
+                    </span>
+                    <span v-if="loaded && status.place != null && status.taggedPeople.length" class="px-2 font-weight-bold text-lighter">&#8226;</span>
+                    <span v-if="loaded && status.place != null" class="mb-0 cursor-pointer text-truncate" style="color:#718096" @click="redirect('/discover/places/' + status.place.id + '/' + status.place.slug)"><i class="fas fa-map-marked-alt text-lighter"></i> <span class="font-weight-bold">{{status.place.name}}, {{status.place.country}}</span></span>
+                  </p>
             </div>
           </div>
           <div v-if="user != false" class="float-right">
