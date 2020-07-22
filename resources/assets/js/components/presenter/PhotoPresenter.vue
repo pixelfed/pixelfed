@@ -6,13 +6,13 @@
 				<p class="font-weight-light">(click to show)</p>
 			</summary>
 			<div class="max-hide-overflow" :title="status.media_attachments[0].description">
-				<img :class="status.media_attachments[0].filter_class + ' card-img-top'" :src="status.media_attachments[0].url" loading="lazy" :alt="status.media_attachments[0].description" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
+				<img :class="status.media_attachments[0].filter_class + ' card-img-top'" :src="status.media_attachments[0].url" loading="lazy" :alt="altText(status)" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 			</div>
 		</details>
 	</div>
 	<div v-else>
 		<div :title="status.media_attachments[0].description">
-			<img :class="status.media_attachments[0].filter_class + ' card-img-top'" :src="status.media_attachments[0].url" loading="lazy" :alt="status.media_attachments[0].description" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
+			<img :class="status.media_attachments[0].filter_class + ' card-img-top'" :src="status.media_attachments[0].url" loading="lazy" :alt="altText(status)" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 		</div>
 	</div>
 </template>
@@ -26,6 +26,17 @@
 
 <script type="text/javascript">
 	export default {
-		props: ['status']
+		props: ['status'],
+
+		methods: {
+			altText(status) {
+				let desc = status.media_attachments[0].description;
+				if(desc) {
+					return desc;
+				}
+
+				return 'Photo was not tagged with any alt text.';
+			}
+		}
 	}
 </script>
