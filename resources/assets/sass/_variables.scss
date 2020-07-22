@@ -1,6 +1,6 @@
 
 // Body
-$body-bg: #f5f8fa;
+$body-bg: #f7fbfd78;
 
 // Typography
 $font-family-sans-serif:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -19,7 +19,8 @@ $custom-control-indicator-disabled-bg: #e9ecef;
 $custom-control-description-disabled-color: #868e96;
 $white: white;
 $theme-colors: (
-  'primary': #08d
+  'primary': #2c78bf,
+  'muted'  : #697179
 );
 
 $card-cap-bg: $white;

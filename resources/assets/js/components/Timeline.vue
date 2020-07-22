@@ -42,7 +42,7 @@
 									<div class="card-body text-center pt-3">
 										<p class="mb-0">
 											<a :href="'/'+rec.username">
-												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 											</a>
 										</p>
 										<div class="py-3">
@@ -97,7 +97,7 @@
 							</div>
 							<div v-else> -->
 							<div>
-								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 							</div>
 							<div class="pl-2">
 								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
@@ -117,12 +117,13 @@
 									<span class="font-weight-bold cursor-pointer text-primary">Follow</span>
 								</span> -->
 								<div class="d-flex align-items-center">
-									<a v-if="status.place" class="small text-decoration-none" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" style="color:#718096" title="Location" data-toggle="tooltip"><i class="fas fa-map-marked-alt"></i> {{status.place.name}}, {{status.place.country}}</a>
+									<a v-if="status.place" class="small text-decoration-none text-muted" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" title="Location" data-toggle="tooltip"><i class="fas fa-map-marked-alt"></i> {{status.place.name}}, {{status.place.country}}</a>
 								</div>
 							</div>
 							<div class="text-right" style="flex-grow:1;">
 								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
 									<span class="fas fa-ellipsis-h text-lighter"></span>
+									<span class="sr-only">Post Menu</span>
 								</button>
 							</div>
 						</div>
@@ -164,7 +165,7 @@
 										<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>
 										<span v-for="(tag, index) in status.taggedPeople" class="mr-n2">
 											<a :href="'/'+tag.username">
-												<img :src="tag.avatar" width="20px" height="20px" class="border rounded-circle" data-toggle="tooltip" :title="'@'+tag.username">
+												<img :src="tag.avatar" width="20px" height="20px" class="border rounded-circle" data-toggle="tooltip" :title="'@'+tag.username" alt="Avatar">
 											</a>
 										</span>
 									</span>
@@ -257,10 +258,10 @@
 								<a :href="!userStory ? profile.url : '/stories/' + profile.acct" class="mr-3">
 									<!-- <img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 									<div v-if="userStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
-										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 									</div>
 									<div v-else>
-										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 									</div>
 								</a>
 								<div class="media-body d-flex justify-content-between word-break" >
@@ -269,7 +270,10 @@
 										<p class="my-0 text-muted pb-0">{{profile.display_name || 'loading...'}}</p>
 									</div>
 									<div class="ml-2">
-										<a class="text-muted" href="/settings/home"><i class="fas fa-cog fa-lg"></i></a>
+										<a class="text-muted" href="/settings/home">
+											<i class="fas fa-cog fa-lg"></i>
+                                    		<span class="sr-only">User Settings</span>
+										</a>
 									</div>
 								</div>
 							</div>
@@ -313,7 +317,7 @@
 						<div class="card-body pt-0">
 							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
 								<a :href="'/'+rec.username">
-									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 								</a>
 								<div class="media-body">
 									<p class="mb-0 font-weight-bold small">
@@ -510,7 +514,7 @@
 	body-class="p-0"
 	>
 	<div v-if="lightboxMedia" :class="lightboxMedia.filter_class" class="w-100 h-100">
-		<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%">
+		<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%" alt="lightbox media">
 	</div>
  </b-modal>
 <b-modal ref="replyModal"
