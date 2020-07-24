@@ -21,6 +21,8 @@ return [
 	'blockingAccounts' => 'Blokowanie kont',
 	'safetyTips' => 'Wskazówki dot. bezpieczeństwa',
 	'reportSomething' => 'Zgłaszanie treści',
-	'dataPolicy' => 'Polityka przechowywania danych'
+	'dataPolicy' => 'Polityka przechowywania danych',
+
+    'taggingPeople' => 'Tagowanie ludzi'
 
 ];
