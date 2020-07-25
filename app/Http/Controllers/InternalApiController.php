@@ -332,6 +332,14 @@ class InternalApiController extends Controller
             $media->save();
         }
 
+        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+        $cw = $profile->cw == true ? true : $cw;
+        $status->is_nsfw = $cw;
+        $status->visibility = $visibility;
+        $status->scope = $visibility;
+        $status->type = $mediaType;
+        $status->save();
+
         foreach($tagged as $tg) {
             $mt = new MediaTag;
             $mt->status_id = $status->id;
@@ -346,14 +354,6 @@ class InternalApiController extends Controller
             MediaTagService::set($mt->status_id, $mt->profile_id);
             MediaTagService::sendNotification($mt);
         }
-
-        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
-        $cw = $profile->cw == true ? true : $cw;
-        $status->is_nsfw = $cw;
-        $status->visibility = $visibility;
-        $status->scope = $visibility;
-        $status->type = $mediaType;
-        $status->save();
 
         NewStatusPipeline::dispatch($status);
         Cache::forget('user:account:id:'.$profile->user_id);

@@ -16,11 +16,23 @@ class MediaTagService
 
 	public static function get($mediaId, $usernames = true)
 	{
+		return self::coldGet($mediaId, $usernames);
+	}
+
+	public static function coldGet($mediaId, $usernames = true)
+	{
 		$k = 'pf:services:media_tags:get:sid:' . $mediaId;
 		return Cache::remember($k, now()->addMinutes(60), function() use($mediaId, $usernames) {
 			$key = self::CACHE_KEY . $mediaId;
 			if(Redis::zCount($key, '-inf', '+inf') == 0) {
-				return [];
+				$tags = MediaTag::whereStatusId($mediaId)->get();
+				if($tags->count() == 0) {
+					return [];
+				}
+
+				foreach ($tags as $t) {
+					self::set($mediaId, $t->profile_id);
+				}
 			}
 			$res = Redis::zRange($key, 0, -1);
 			if(!$usernames) {
@@ -52,6 +64,7 @@ class MediaTagService
 		}
 
 		return [
+			'id' => (string) $id,
 			'username' => $profile->username,
 			'avatar' => $profile->avatarUrl()
 		];
@@ -75,4 +88,14 @@ class MediaTagService
 		return;
 	}
 
+	public static function untag($statusId, $profileId)
+	{
+		MediaTag::whereStatusId($statusId)
+			->whereProfileId($profileId)
+			->delete();
+		$key = 'pf:services:media_tags:get:sid:' . $statusId;
+		Redis::zRem(self::CACHE_KEY.$statusId, $profileId);
+		Cache::forget($key);
+		return true;
+	}
 }

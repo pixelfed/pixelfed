@@ -595,16 +595,17 @@
     title="Tagged People"
     body-class="list-group-flush py-3 px-0">
     <div class="list-group">
-      <div class="list-group-item border-0 py-1" v-for="(user, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
+      <div class="list-group-item border-0 py-1" v-for="(taguser, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
         <div class="media">
-          <a :href="'/'+user.username">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+          <a :href="'/'+taguser.username">
+            <img class="mr-3 rounded-circle box-shadow" :src="taguser.avatar" :alt="taguser.username + '’s avatar'" width="30px">
           </a>
           <div class="media-body">
-            <p class="pt-1" style="font-size: 14px">
-              <a :href="'/'+user.username" class="font-weight-bold text-dark">
-                {{user.username}}
+            <p class="pt-1 d-flex justify-content-between" style="font-size: 14px">
+              <a :href="'/'+taguser.username" class="font-weight-bold text-dark">
+                {{taguser.username}}
               </a>
+              <button v-if="taguser.id == user.id" class="btn btn-outline-primary btn-sm py-1 px-3" @click="untagMe()">Untag Me</button>
             </p>
           </div>
         </div>
@@ -1392,6 +1393,22 @@ export default {
 
       showTaggedPeopleModal() {
         this.$refs.taggedModal.show();
+      },
+
+      untagMe() {
+        this.$refs.taggedModal.hide();
+        let id = this.user.id;
+        axios.post('/api/local/compose/tag/untagme', {
+          status_id: this.statusId,
+          profile_id: id
+        }).then(res => {
+            this.status.taggedPeople = this.status.taggedPeople.filter(t => {
+                return t.id != id;
+            });
+            swal('Untagged', 'You have been untagged from this post.', 'success');
+        }).catch(err => {
+            swal('An Error Occurred', 'Please try again later.', 'error');  
+        });
       }
 
     },
