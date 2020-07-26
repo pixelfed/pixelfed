@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between pt-4 small">
-                <a class="text-lighter text-decoration-none" href="/{{Auth::user()->username}}">Logged in as: <span class="font-weight-bold text-muted">{{Auth::user()->username}}</span></a>
+                <span class="text-lighter text-decoration-none">Logged in as: <span class="font-weight-bold text-muted">{{Auth::user()->username}}</span></span>
                 <span>
                     <a class="text-decoration-none text-muted font-weight-bold" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
