@@ -31,6 +31,34 @@
               </form>
             </span>
             @endif
+            <span class="pl-4">
+              <i class="fas fa-cog fa-lg text-muted cursor-pointer" data-toggle="modal" data-target="#ctxProfileMenu"></i>
+              <div class="modal" tabindex="-1" role="dialog" id="ctxProfileMenu">
+                <div class="modal-dialog modal-dialog-centered modal-sm">
+                  <div class="modal-content">
+                    <div class="modal-body p-0">
+                      <div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="window.App.util.clipboard('{{$user->url()}}');$('#ctxProfileMenu').modal('hide')">
+                        Copy Link
+                      </div>
+                      @auth
+                      <div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="muteProfile()">
+                        Mute
+                      </div>
+                      <a class="list-group-item cursor-pointer text-center rounded text-dark text-decoration-none" href="i/report?type=user&id={{$user->id}}">
+                        Report User
+                      </a>
+                      <div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="blockProfile()">
+                        Block
+                      </div>
+                      @endauth
+                      <div class="list-group-item cursor-pointer text-center rounded text-muted" onclick="$('#ctxProfileMenu').modal('hide')">
+                        Close
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </span>
           </div>
           <div class="profile-stats pb-3 d-inline-flex lead">
             <div class="font-weight-light pr-5">
@@ -51,3 +79,29 @@
     </div>
   </div>
 </div>
+
+@push('scripts')
+<script type="text/javascript">
+  function muteProfile() {
+      axios.post('/i/mute', {
+        type: 'user',
+        item: '{{$user->id}}'
+      }).then(res => {
+        $('#ctxProfileMenu').modal('hide');
+        $('#ctxProfileMenu').hide();
+        swal('Muted Profile', 'You have successfully muted this profile.', 'success');
+      });
+  }
+  function blockProfile() {
+      axios.post('/i/block', {
+        type: 'user',
+        item: '{{$user->id}}'
+      }).then(res => {
+        $('#ctxProfileMenu').modal('hide');
+        $('#ctxProfileMenu').hide();
+        swal('Blocked Profile', 'You have successfully blocked this profile.', 'success');
+      });
+  }
+
+</script>
+@endpush
