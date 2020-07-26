@@ -700,10 +700,21 @@ export default {
 						self.page = 2;
 					}, 300);
 				}).catch(function(e) {
-					self.uploading = false;
-					io.value = null;
-					swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
-					self.page = 2;
+					switch(e.response.status) {
+						case 451:
+							self.uploading = false;
+							io.value = null;
+							swal('Banned Content', 'This content has been banned and cannot be uploaded.', 'error');
+							self.page = 2;
+						break;
+
+						default:
+							self.uploading = false;
+							io.value = null;
+							swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+							self.page = 2;
+						break;
+					}
 				});
 				io.value = null;
 				self.uploadProgress = 0;

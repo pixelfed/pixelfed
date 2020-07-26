@@ -434,6 +434,10 @@
 		dialog-class="follow-modal"
 		>
 		<div class="list-group">
+			<div v-if="followers.length == 0" class="list-group-item border-0">
+				<p class="text-center mb-0 font-weight-bold text-muted py-5">
+					<span class="text-dark">{{profileUsername}}</span> has no followers yet</p>
+			</div>
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
 				<div class="media mb-0">
 					<a :href="user.url">
@@ -452,7 +456,7 @@
 					<!-- <button class="btn btn-primary font-weight-bold btn-sm py-1">FOLLOW</button> -->
 				</div>
 			</div>
-			<div v-if="followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
+			<div v-if="followers.length && followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
 				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
 			</div>
 		</div>
