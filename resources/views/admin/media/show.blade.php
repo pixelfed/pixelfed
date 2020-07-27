@@ -8,7 +8,7 @@
 <hr>
 <div class="row">
 	<div class="col-12 col-md-8 offset-md-2">
-		<div class="card">
+		<div class="card shadow-none border">
 			<img class="card-img-top" src="{{$media->thumb()}}">
 			<ul class="list-group list-group-flush">
 				<li class="list-group-item d-flex justify-content-between">
@@ -26,6 +26,9 @@
 				</li>
 			</ul>
 		</div>
+		<p class="mt-3 small text-muted">
+			SHA256 Hash: <span class="text-monospace text-dark">{{$media->original_sha256}}</span>
+		</p>
 	</div>
 </div>
 @endsection

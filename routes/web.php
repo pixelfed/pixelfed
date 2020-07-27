@@ -278,6 +278,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         });
 
         Route::get('redirect', 'SiteController@redirectUrl');
+        Route::post('admin/media/block/add', 'MediaBlocklistController@add');
+        Route::post('admin/media/block/delete', 'MediaBlocklistController@delete');
     });
 
     Route::group(['prefix' => 'account'], function () {

@@ -10,32 +10,13 @@ class Nickname
             $url = str_replace('acct:', '', $url);
         }
 
-        if (!str_contains($url, '@') && filter_var($url, FILTER_VALIDATE_URL)) {
-            $parsed = parse_url($url);
-            $username = str_replace(['/', '\\', '@'], '', $parsed['path']);
-
-            return ['domain' => $parsed['host'], 'username' => $username];
+        if(starts_with($url, '@')) {
+            $url = substr($url, 1);
         }
+
         $parts = explode('@', $url);
-        $username = null;
-        $domain = null;
-
-        foreach ($parts as $part) {
-
-        // skip empty array slices
-            if (empty($part)) {
-                continue;
-            }
-
-            // if slice contains . assume its a domain
-            if (str_contains($part, '.')) {
-                $domain = filter_var($part, FILTER_VALIDATE_URL) ?
-                    parse_url($part, PHP_URL_HOST) :
-                    $part;
-            } else {
-                $username = $part;
-            }
-        }
+        $username = $parts[0];
+        $domain = $parts[1];
 
         return ['domain' => $domain, 'username' => $username];
     }

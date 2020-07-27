@@ -36,6 +36,7 @@ use App\Jobs\VideoPipeline\{
 };
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
+use App\Services\MediaBlocklistService;
 
 class BaseApiController extends Controller
 {
@@ -246,6 +247,8 @@ class BaseApiController extends Controller
         $storagePath = MediaPathService::get($user, 2);
         $path = $photo->store($storagePath);
         $hash = \hash_file('sha256', $photo);
+
+        abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
         $media = new Media();
         $media->status_id = null;
