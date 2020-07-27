@@ -18,8 +18,6 @@ class Nickname
         $username = $parts[0];
         $domain = $parts[1];
 
-        if(parse_url(filter_var('https://test.dev', FILTER_VALIDATE_URL), PHP_URL_HOST))
-
         return ['domain' => $domain, 'username' => $username];
     }
 }
