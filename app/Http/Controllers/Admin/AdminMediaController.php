@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use DB, Cache;
 use App\{
 	Media,
+	MediaBlocklist,
 	Profile,
 	Status
 };
@@ -21,8 +22,8 @@ trait AdminMediaController
 				'nullable',
 				'string',
 				'min:1',
-				'max:4',
-				Rule::in(['grid','list'])
+				'max:13',
+				Rule::in(['grid','list', 'banned', 'addbanned'])
 			],
 			'search' => 'nullable|string|min:1|max:20'
 		]);
@@ -34,9 +35,14 @@ trait AdminMediaController
 				->whereIn('profile_id', $profiles)
 				->orWhere('mime', $request->input('search'))
 				->paginate(12);
-		} else {
-			$media = Media::whereHas('status')->with('status')->orderby('id', 'desc')->paginate(12);
+			return view('admin.media.home', compact('media'));
 		}
+
+		if($request->input('layout') == 'banned') {
+			$media = MediaBlocklist::latest()->paginate(12);
+			return view('admin.media.home', compact('media'));
+		}
+		$media = Media::whereHas('status')->with('status')->orderby('id', 'desc')->paginate(12);
 		return view('admin.media.home', compact('media'));
 	}
 
