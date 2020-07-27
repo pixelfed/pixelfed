@@ -21,7 +21,7 @@ class TwoFactorAuth
             $enabled = (bool) $user->{'2fa_enabled'};
             if($enabled != false) {
                 $checkpoint = 'i/auth/checkpoint';
-                if($request->session()->has('2fa.session.active') !== true && !$request->is($checkpoint))
+                if($request->session()->has('2fa.session.active') !== true && !$request->is($checkpoint) && !$request->is('logout'))
                 {
                     return redirect('/i/auth/checkpoint');
                 } elseif($request->session()->has('2fa.attempts') && (int) $request->session()->get('2fa.attempts') > 3) {
