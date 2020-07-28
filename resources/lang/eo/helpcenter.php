@@ -23,4 +23,5 @@ return [
 	'reportSomething' => 'Informi',
 	'dataPolicy' => 'Datuma Politiko'
 
+    'taggingPeople' => 'Etikegi Personoj'
 ];
