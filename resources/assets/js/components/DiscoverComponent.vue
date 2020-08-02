@@ -7,10 +7,13 @@
 			<div class="d-block d-md-none px-0 border-top-0 mx-n3">
 				<input class="form-control rounded-0" placeholder="Search" v-model="searchTerm" v-on:keyup.enter="searchSubmit">
 			</div>
+			<div>
+				<p class="display-4 font-weight-bold pt-5 text-lighter"><i class="far fa-compass"></i> DISCOVER</p>
+			</div>
 			<section class="d-none d-md-flex mb-md-2 pt-5 discover-bar" style="width:auto; overflow: auto hidden;" v-if="categories.length > 0">
-				<a v-if="config.ab.loops == true" class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
+				<!--<a v-if="config.ab.loops == true" class="text-decoration-none bg-transparent border border-success rounded d-inline-flex align-items-center justify-content-center mr-3 card-disc" href="/discover/loops">
 					<p class="text-success lead font-weight-bold mb-0">Loops</p>
-				</a>
+				</a>-->
 				<a v-for="(category, index) in categories" :key="index+'_cat_'" class="bg-dark rounded d-inline-flex align-items-end justify-content-center mr-3 box-shadow card-disc text-decoration-none" :href="category.url" :style="'background: linear-gradient(rgba(0, 0, 0, 0.3),rgba(0, 0, 0, 0.3)),url('+category.thumb+');'">
 					<p class="text-white font-weight-bold" style="text-shadow: 3px 3px 16px #272634;">{{category.name}}</p>
 				</a>

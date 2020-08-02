@@ -21,6 +21,7 @@ return [
 	'blockingAccounts' => 'Bloki Kontoj',
 	'safetyTips' => 'Sekurecaj Konsiletoj',
 	'reportSomething' => 'Informi',
-	'dataPolicy' => 'Datuma Politiko'
+	'dataPolicy' => 'Datuma Politiko',
 
+    'taggingPeople' => 'Etikedi Personoj'
 ];

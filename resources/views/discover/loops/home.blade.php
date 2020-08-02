@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-success" style="height:1.2px;"></div>
+<div class="bg-primary">
+  <p class="text-center text-white mb-0 py-3 font-weight-bold">
+    <i class="fas fa-exclamation-triangle fa-lg mr-2"></i> This feature has been deprecated and will be removed in a future version.
+  </p>
+</div>
 <div class="profile-header">
   <div class="container pt-5">
     <div class="profile-details text-center">
