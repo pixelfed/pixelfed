@@ -27,7 +27,7 @@
 						<span class="sr-only">Loading...</span>
 					</div>
 				</div>
-				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
+				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`" class="pt-4">
 					<div v-if="index == 0 && showTips && !loading" class="mb-4 card-tips">
 						<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 					</div>
@@ -152,6 +152,7 @@
 							<div v-else class="w-100">
 								<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
 							</div>
+
 						</div>
 
 						<div class="card-body">
@@ -159,8 +160,8 @@
 								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'fas fa-retweet pr-3 m-0 text-primary cursor-pointer' : 'fas fa-retweet pr-3 m-0 text-lighter share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
+								<h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3>
 								<span v-if="status.taggedPeople.length" class="float-right">
-									<!-- <h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3> -->
 									<span class="font-weight-light small" style="color:#718096">
 										<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>
 										<span v-for="(tag, index) in status.taggedPeople" class="mr-n2">
@@ -250,7 +251,7 @@
 		</div>
 
 		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
-			<div class="position-sticky" style="top:83px;">
+			<div>
 				<div class="mb-4">
 					<div class="card shadow-none border">
 						<div class="card-body pb-2">
@@ -528,7 +529,7 @@
 	size="md"
 	body-class="p-2 rounded">
 	<div>
-		<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: nowrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+		<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
 		</textarea>
 
 		<div class="border-top border-bottom my-2">
@@ -1203,6 +1204,8 @@
 			},
 
 			lightbox(status) {
+				window.location.href = status.media_attachments[0].url;
+				return;
 				this.lightboxMedia = status.media_attachments[0];
 				this.$refs.lightboxModal.show();
 			},
