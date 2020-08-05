@@ -12,15 +12,17 @@ return [
 	'hashtags' => 'هشتگ‌ها',
 	'discover' => 'کشف‌کردن',
 	'directMessages' => 'پیام‌های شخصی',
-	'timelines' => 'جدول زمانی',
+	'timelines' => 'خط زمانی',
 	'embed'	=> 'توکار',
 
 	'communityGuidelines' => 'دستورالعمل‌های انجمن',
 	'whatIsTheFediverse' => 'نامتمرکز یعنی چی؟',
-	'controllingVisibility' => 'کنترل بینایی',
+	'controllingVisibility' => 'کنترل نمایش',
 	'blockingAccounts' => 'حساب‌های مسدودشده',
 	'safetyTips' => 'نکات امنیتی',
 	'reportSomething' => 'گزارش چیزی',
-	'dataPolicy' => 'خط مشی داده'
+	'dataPolicy' => 'خط مشی داده',
+	
+	'taggingPeople' => 'برچسب زدن افراد'
 
 ];
