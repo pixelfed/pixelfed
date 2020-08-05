@@ -815,6 +815,18 @@
 					}
 					// this.fetchStories();
 					this.rtw();
+					setTimeout(function() {
+						document.querySelectorAll('.caption .status-content a').forEach(function(i, e) { 
+							if(i.href.startsWith(window.location.origin)) {
+								return;
+							}
+							let tag = i.innerText;
+							if(tag.startsWith('#')) {
+								tag = tag.substr(1);
+							}
+							i.href = '/discover/tags/'+tag+'?src=rph'; 
+						});
+					}, 500);
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',

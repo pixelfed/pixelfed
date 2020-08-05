@@ -860,6 +860,18 @@ export default {
                 }
                 this.loaded = true;
                 this.fetchProfilePosts();
+                setTimeout(function() {
+                  document.querySelectorAll('.status-comment .comment-text a').forEach(function(i, e) { 
+                    if(i.href.startsWith(window.location.origin)) {
+                      return;
+                    }
+                    let tag = i.innerText;
+                    if(tag.startsWith('#')) {
+                      tag = tag.substr(1);
+                    }
+                    i.href = '/discover/tags/'+tag+'?src=rph'; 
+                  });
+                }, 500);
             }).catch(error => {
               swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
