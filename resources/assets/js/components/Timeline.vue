@@ -185,10 +185,10 @@
 								</p>
 							</div>
 							<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
-								<p class="mb-0 d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;" v-for="(reply, index) in replies">
+								<p class="mb-0 d-flex justify-content-between align-items-top read-more mt-2" style="overflow-y: hidden;" v-for="(reply, index) in replies">
 										<span>
 											<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)">{{reply.account.username}}</a>
-											<span v-html="reply.content"></span>
+											<span v-html="reply.content" style="word-break: break-all;" class="comment-body"></span>
 										</span>
 										<span class="mb-0" style="min-width:38px">
 											<span v-on:click="likeStatus(reply, $event)">
@@ -540,7 +540,7 @@
 		<div class="d-flex justify-content-between align-items-center">
 			<div>
 				<span class="pl-2 small text-muted font-weight-bold text-monospace">
-					{{replyText.length}}/600
+					<span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
 				</span>
 			</div>
 			<div class="d-flex align-items-center">
@@ -958,6 +958,18 @@
 						return res.sensitive == false;
 					});
 					this.replies = _.reverse(data);
+					setTimeout(function() {
+						document.querySelectorAll('.comments .comment-body a').forEach(function(i, e) { 
+							if(i.href.startsWith(window.location.origin)) {
+								return;
+							}
+							let tag = i.innerText;
+							if(tag.startsWith('#')) {
+								tag = tag.substr(1);
+							}
+							i.href = '/discover/tags/'+tag+'?src=rph'; 
+						});
+					}, 500);
 				}).catch(err => {
 				})
 			},
@@ -1019,6 +1031,12 @@
 				this.replySending = true;
 				let id = status.id;
 				let comment = this.replyText;
+				let limit = this.config.uploader.max_caption_length;
+				if(comment.length > limit) {
+					this.replySending = false;
+					swal('Comment Too Long', 'Please make sure your comment is '+limit+' characters or less.', 'error');
+					return;
+				}
 				axios.post('/i/comment', {
 					item: id,
 					comment: comment
