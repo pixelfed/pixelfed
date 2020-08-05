@@ -4,7 +4,7 @@
 		<div class="profile-header row my-5">
 			<div class="col-12 col-md-3">
 				<div class="profile-avatar">
-					<div class="bg-pixelfed mb-3 d-flex align-items-center justify-content-center display-4 font-weight-bold text-white" style="width: 172px; height: 172px; border-radius: 100%">#</div>
+					<div class="bg-primary mb-3 d-flex align-items-center justify-content-center display-4 font-weight-bold text-white" style="width: 172px; height: 172px; border-radius: 100%">#</div>
 				</div>
 			</div>
 			<div class="col-12 col-md-9 d-flex align-items-center">
@@ -12,14 +12,20 @@
 					<div class="username-bar pb-2">
 						<p class="tag-header mb-0">#{{hashtag}}</p>
 						<p class="lead"><span class="font-weight-bold">{{tags.length ? hashtagCount : '0'}}</span> posts</p>
-						<p v-if="authenticated && tags.length" class="pt-3">
-							<button v-if="!following" type="button" class="btn btn-primary font-weight-bold py-1 px-5" @click="followHashtag">
-								Follow
-							</button>
-							<button v-else type="button" class="btn btn-outline-secondary font-weight-bold py-1 px-5" @click="unfollowHashtag">
-								Unfollow
-							</button>
-						</p>
+						<div class="d-flex justify-content-between align-items-center">
+							<p v-if="authenticated && tags.length" class="pt-3 mr-4">
+								<button v-if="!following" type="button" class="btn btn-primary font-weight-bold py-1 px-5" @click="followHashtag">
+									Follow
+								</button>
+								<button v-else type="button" class="btn btn-outline-secondary font-weight-bold py-1 px-5" @click="unfollowHashtag">
+									Unfollow
+								</button>
+							</p>
+							<div class="custom-control custom-switch">
+								<input type="checkbox" class="custom-control-input" id="nsfwSwitch" v-model="forceNsfw">
+								<label class="custom-control-label font-weight-bold text-muted" for="nsfwSwitch">Show NSFW Content</label>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -30,7 +36,8 @@
 				<div v-for="(tag, index) in top" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
 					<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 						<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
-							<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+							<div v-if="tag.status.sensitive && forceNsfw == false" class="square-content" :style="'background-image: url(/storage/no-preview.png)'"></div>
+							<div v-else class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
 							<div class="info-overlay-text">
 								<h5 class="text-white m-auto font-weight-bold">
 									<span class="pr-4">
@@ -50,7 +57,8 @@
 				<div v-for="(tag, index) in tags" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
 					<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 						<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
-							<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+							<div v-if="tag.status.sensitive && forceNsfw == false" class="square-content" :style="'background-image: url(/storage/no-preview.png)'"></div>
+							<div v-else class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
 							<div class="info-overlay-text">
 								<h5 class="text-white m-auto font-weight-bold">
 									<span class="pr-4">
@@ -105,6 +113,7 @@
 				following: false,
 				tags: [],
 				top: [],
+				forceNsfw: false,
 			}
 		},
 		beforeMount() {
