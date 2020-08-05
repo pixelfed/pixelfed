@@ -144,7 +144,7 @@
                     <div v-else>
                       <p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
                         <a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
-                        <span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
+                        <span class="comment-text" style="word-break: break-all;" :id="status.id + '-status-readmore'" v-html="status.content"></span>
                       </p>
                     </div>
                     <hr>
@@ -179,7 +179,7 @@
                               <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                                 <span>
                                   <a class="text-dark font-weight-bold mr-1 text-break" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
-                                  <span class="text-break " v-html="reply.content"></span>
+                                  <span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
                                 </span>
                                 <span style="min-width:38px;">
                                    <span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
@@ -189,7 +189,7 @@
                               <p class="">
                                 <a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="permalinkUrl(reply)"></a>
                                 <span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-                                <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index)">Reply</span>
+                                <span class="text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
                               </p>
                               <div v-if="reply.reply_count > 0" class="cursor-pointer" v-on:click="toggleReplies(reply)">
                                  <span class="show-reply-bar"></span>
@@ -202,7 +202,7 @@
                                     <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                                       <span>
                                         <a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
-                                        <span class="text-break" v-html="s.content"></span>
+                                        <span class="text-break comment-body" style="word-break: break-all;" v-html="s.content"></span>
                                       </span>
                                       <span class="pl-2" style="min-width:38px">
                                         <span v-on:click="likeReply(s, $event)"><i v-bind:class="[s.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
@@ -226,13 +226,13 @@
                 </div>
               </div>
               <div class="card-body flex-grow-0 py-1">
-                <div class="reactions my-1">
-                  <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
-                  <h3 v-if="!status.comments_disabled" class="far fa-comment pr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
-                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'far fa-share-square pr-3 m-0 text-primary cursor-pointer' : 'far fa-share-square pr-3 m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
-                  <!-- <h3 @click="lightbox(status.media_attachments[0])" class="fas fa-expand m-0 cursor-pointer"></h3>
-                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3> -->
-                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 cursor-pointer' : 'far fa-bookmark m-0 cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+                <div v-if="loaded && user.hasOwnProperty('id')" class="reactions my-2 pb-1 d-flex justify-content-between">
+                  <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger mr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
+                  <h3 v-if="!status.comments_disabled" class="far fa-comment mr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
+                 <h3 @click="redirect(status.media_attachments[0].url)" class="fas fa-expand m-0 mr-3 cursor-pointer"></h3>
+                   <!-- <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 float-right cursor-pointer' : 'far fa-bookmark m-0 float-right cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3> -->
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 mr-3 cursor-pointer' : 'far fa-bookmark m-0 mr-3 cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
+                  <h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'fas fa-retweet m-0 text-primary cursor-pointer' : 'fas fa-retweet m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
                 </div>
                 <div class="reaction-counts font-weight-bold mb-0">
                   <span style="cursor:pointer;" v-on:click="likesModal">
@@ -726,6 +726,7 @@ export default {
             sharesPage: 1,
             lightboxMedia: false,
             replyText: '',
+            replyStatus: {},
             replySensitive: false,
             relationship: {},
             results: [],
@@ -740,6 +741,7 @@ export default {
             loading: null,
             replyingToId: this.statusId,
             replyToIndex: 0,
+            replySending: false,
             emoji: window.App.util.emoji,
             showReadMore: true,
             showCaption: true,
@@ -858,13 +860,29 @@ export default {
                 }
                 this.loaded = true;
                 this.fetchProfilePosts();
+                setTimeout(function() {
+                  document.querySelectorAll('.status-comment .comment-text a').forEach(function(i, e) { 
+                    if(i.href.startsWith(window.location.origin)) {
+                      return;
+                    }
+                    let tag = i.innerText;
+                    if(tag.startsWith('#')) {
+                      tag = tag.substr(1);
+                    }
+                    i.href = '/discover/tags/'+tag+'?src=rph'; 
+                  });
+                }, 500);
             }).catch(error => {
               swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
       },
 
       likesModal() {
-        if(this.status.favourites_count == 0 || $('body').hasClass('loggedIn') == false) {
+        if($('body').hasClass('loggedIn') == false) {
+          window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
+          return;
+        }
+        if(this.status.favourites_count == 0) {
           return;
         }
         this.$refs.likesModal.show();
@@ -1119,10 +1137,13 @@ export default {
         return e.substr(0, 10)+'...';
       },
 
-      replyFocus(e, index) {
+      replyFocus(e, index, prependUsername = false) {
           this.replyToIndex = index;
           this.replyingToId = e.id;
           this.reply_to_profile_id = e.account.id;
+          if(prependUsername == true) {
+            this.replyText = '@' + e.account.username + ' ';
+          }
           $('textarea[name="comment"]').focus();
       },
 
@@ -1140,6 +1161,18 @@ export default {
                 }
                 $('.postCommentsLoader').addClass('d-none');
                 $('.postCommentsContainer').removeClass('d-none');
+                setTimeout(function() {
+                  document.querySelectorAll('.comments .comment-body a').forEach(function(i, e) { 
+                      if(i.href.startsWith(window.location.origin)) {
+                        return;
+                      }
+                      let tag = i.innerText;
+                      if(tag.startsWith('#')) {
+                        tag = tag.substr(1);
+                      }
+                      i.href = '/discover/tags/'+tag+'?src=rph'; 
+                  });
+                }, 500);
             }).catch(error => {
               if(!error.response) {
                 $('.postCommentsLoader .lds-ring')
@@ -1190,6 +1223,7 @@ export default {
 
       likeReply(status, $event) {
         if($('body').hasClass('loggedIn') == false) {
+          swal('Login', 'Please login to perform this action.', 'info');
           return;
         }
 
@@ -1410,7 +1444,6 @@ export default {
             swal('An Error Occurred', 'Please try again later.', 'error');  
         });
       }
-
     },
 }
 </script>
