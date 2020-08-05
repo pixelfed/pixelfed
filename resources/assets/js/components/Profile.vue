@@ -499,7 +499,10 @@
 			<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
 				Settings
 			</div>
-			<div class="list-group-item cursor-pointer text-center rounded text-muted" @click="$refs.visitorContextMenu.hide()">
+			<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/users/' + profileUsername + '.atom')">
+				Atom Feed
+			</div>
+			<div class="list-group-item cursor-pointer text-center rounded text-muted font-weight-bold" @click="$refs.visitorContextMenu.hide()">
 				Close
 			</div>
 		</div>
