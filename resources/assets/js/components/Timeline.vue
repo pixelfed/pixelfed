@@ -14,6 +14,11 @@
 					&nbsp; | &nbsp; 
 					<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
 				</p>
+				<p class="mb-0 d-none d-md-block">
+					<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+						<i class="fas fa-camera pr-3 fa-lg pt-1"></i> New Post
+					</a>
+				</p>
 			</div>
 			<hr>
 		</div>
@@ -252,8 +257,15 @@
 
 		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
 			<div>
+
+				<!-- <div class="mb-4">
+					<a class="btn btn-block btn-primary btn-sm font-weight-bold mb-3 border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+						<i class="far fa-plus-square pr-3 fa-lg pt-1"></i> New Post
+					</a>
+				</div> -->
+
 				<div class="mb-4">
-					<div class="card shadow-none border">
+					<div v-show="!loading" class="card shadow-none border">
 						<div class="card-body pb-2">
 							<div class="media d-flex align-items-center">
 								<a :href="!userStory ? profile.url : '/stories/' + profile.acct" class="mr-3">
@@ -296,12 +308,6 @@
 							</div>
 						</div>
 					</div>
-				</div>
-
-				<div class="mb-4">
-					<a class="btn btn-light btn-block btn-sm font-weight-bold text-dark mb-3 border bg-white" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-						<i class="far fa-plus-square pr-3 fa-lg pt-1"></i> Compose Post
-					</a>
 				</div>
 
 				<div v-show="modes.notify == true && !loading" class="mb-4">
@@ -353,21 +359,26 @@
 			</div>
 		</div>
 	</div>
-	<div v-else class="row pt-2">
+	<div v-else class="row">
 		<div class="col-12">
-			<div v-if="loading" class="text-center">
+			<!-- <div v-if="loading" class="text-center">
 				<div class="spinner-border" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
-			</div>
-			<div v-else class="row">
-				<div class="col-12 pt-3">
+			</div> -->
+			<div class="row">
+				<div class="col-12 pl-3 pl-md-0 pt-3 pl-0">
 					<div class="d-flex justify-content-between align-items-center">
 						<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 						<p class="mb-0">
 							<a href="#" :class="[layout=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i> &nbsp; Feed</a>
 							&nbsp; | &nbsp; 
 							<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
+						</p>
+						<p class="mb-0 d-none d-md-block">
+							<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+								<i class="fas fa-camera pr-3 fa-lg pt-1"></i> New Post
+							</a>
 						</p>
 					</div>
 					<hr>

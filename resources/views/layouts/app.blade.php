@@ -65,7 +65,11 @@
                 <a class="nav-link {{request()->is('discover')?'text-dark':'text-lighter'}}" href="/discover"><i class="fas fa-search fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <div class="nav-link text-lighter cursor-pointer" onclick="App.util.compose.post()"><i class="fas fa-camera fa-lg"></i></div>
+                <div class="nav-link text-primary cursor-pointer" onclick="App.util.compose.post()">
+                    <span class="border border-primary rounded p-2 bg-primary">
+                        <i class="fas fa-camera fa-lg text-white"></i>
+                    </span>
+                </div>
               </li>
               <li class="nav-item">
                 <a class="nav-link {{request()->is('account/activity')?'text-dark':'text-lighter'}}" href="/account/activity"><i class="far fa-heart fa-lg"></i></a>
