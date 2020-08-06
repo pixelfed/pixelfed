@@ -52,7 +52,7 @@
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                 <div class="dropdown-item font-weight-bold cursor-pointer" onclick="App.util.compose.post()">
-                                    <span class="fas fa-plus-square pr-2 text-lighter"></span>
+                                    <span class="fas fa-camera pr-2 text-primary"></span>
                                     New Post
                                 </div>
                                 <div class="dropdown-divider"></div>
@@ -62,7 +62,7 @@
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                     <span class="fas fa-stream pr-2 text-lighter"></span>
-                                    Local
+                                    Public
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="/i/stories/new">
                                     <span class="fas fa-history text-lighter pr-2"></span>
