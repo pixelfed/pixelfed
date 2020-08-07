@@ -85,6 +85,7 @@ class RestrictedNames
 
 		// Static Assets
 		'assets',
+		'public',
 		'storage',
 
 		// Laravel Horizon
@@ -141,6 +142,8 @@ class RestrictedNames
 		'drives',
 		'driver',
 		'e',
+		'embed',
+		'embed.js',
 		'email',
 		'emails',
 		'error',
@@ -182,6 +185,7 @@ class RestrictedNames
 		'invites',
 		'import',
 		'imports',
+		'index.php',
 		'j',
 		'js',
 		'k',
@@ -280,6 +284,7 @@ class RestrictedNames
 		'whatsnew',
 		'whatnew',
 		'whats-news',
+		'web',
 		'ws',
 		'wss',
 		'www',
