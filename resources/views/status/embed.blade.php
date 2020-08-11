@@ -63,36 +63,32 @@
         </div>
         @endif
       @break
-      @case('album')
-        @if($status->is_nsfw)
-
-        @else
-          <div id="photo-carousel-wrapper-{{$status->id}}" class="carousel slide carousel-fade" data-ride="carousel">
-            <ol class="carousel-indicators">
-              @for($i = 0; $i < $status->media_count; $i++)
-              <li data-target="#photo-carousel-wrapper-{{$status->id}}" data-slide-to="{{$i}}" class="{{$i == 0 ? 'active' : ''}}"></li>
-              @endfor
-            </ol>
-            <div class="carousel-inner">
-              @foreach($status->media()->orderBy('order')->get() as $media)
-              <div class="carousel-item {{$loop->iteration == 1 ? 'active' : ''}}">
-                <figure class="{{$media->filter_class}}">
-                  <span class="float-right mr-3 badge badge-dark" style="position:fixed;top:8px;right:0;margin-bottom:-20px;">{{$loop->iteration}}/{{$loop->count}}</span>
-                  <img class="d-block w-100" src="{{$media->url()}}" alt="{{$status->caption}}">
-                </figure>
-              </div>
-              @endforeach
+      @case('photo:album')
+        <div id="photo-carousel-wrapper-{{$status->id}}" class="carousel slide carousel-fade mb-n3 " data-ride="carousel">
+          <ol class="carousel-indicators">
+            @for($i = 0; $i < $status->media_count; $i++)
+            <li data-target="#photo-carousel-wrapper-{{$status->id}}" data-slide-to="{{$i}}" class="{{$i == 0 ? 'active' : ''}}"></li>
+            @endfor
+          </ol>
+          <div class="carousel-inner">
+            @foreach($status->media()->orderBy('order')->get() as $media)
+            <div class="carousel-item {{$loop->iteration == 1 ? 'active' : ''}}">
+              <figure class="{{$media->filter_class}}">
+                <div class="float-right mr-3 badge badge-dark border border-secondary rounded-pill p-2" style="position:absolute;top:8px;right:0;margin-bottom:-20px;">{{$loop->iteration}}/{{$loop->count}}</div>
+                <img class="d-block w-100" src="{{$media->url()}}" alt="{{$status->caption}}">
+              </figure>
             </div>
-            <a class="carousel-control-prev" href="#photo-carousel-wrapper-{{$status->id}}" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#photo-carousel-wrapper-{{$status->id}}" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
+            @endforeach
           </div>
-        @endif
+          <a class="carousel-control-prev" href="#photo-carousel-wrapper-{{$status->id}}" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#photo-carousel-wrapper-{{$status->id}}" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
       @break
       @case('video')
         @if($status->is_nsfw)
@@ -174,5 +170,8 @@
   </div>
   <script type="text/javascript">window.addEventListener("message",e=>{const t=e.data||{};window.parent&&"setHeight"===t.type&&window.parent.postMessage({type:"setHeight",id:t.id,height:document.getElementsByTagName("html")[0].scrollHeight},"*")});</script>
   <script type="text/javascript">document.querySelectorAll('.caption-container a').forEach(function(i) {i.setAttribute('target', '_blank');});</script>
+    <script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/vendor.js') }}"></script>
+    <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>
