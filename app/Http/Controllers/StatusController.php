@@ -68,7 +68,8 @@ class StatusController extends Controller
 
     public function shortcodeRedirect(Request $request, $id)
     {
-        if(strlen($id) < 5 || !Auth::check()) {
+        abort_if(strlen($id) < 5, 404);
+        if(!Auth::check()) {
             return redirect('/login?next='.urlencode('/' . $request->path()));
         }
         $id = HashidService::decode($id);
@@ -99,7 +100,7 @@ class StatusController extends Controller
             ->whereNull('uri')
             ->whereScope('public')
             ->whereIsNsfw(false)
-            ->whereIn('type', ['photo', 'video'])
+            ->whereIn('type', ['photo', 'video','photo:album'])
             ->find($id);
         if(!$status) {
             $content = view('status.embed-removed');

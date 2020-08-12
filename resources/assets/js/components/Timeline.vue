@@ -162,7 +162,8 @@
 
 						<div class="card-body">
 							<div v-if="!modes.distractionFree" class="reactions my-1 pb-2">
-								<h3 v-bind:class="[status.favourited ? 'fas fa-heart text-danger pr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer']" title="Like" v-on:click="likeStatus(status, $event)"></h3>
+								<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
+								<h3 v-else class="far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 								<h3 v-if="status.visibility == 'public'" v-bind:class="[status.reblogged ? 'fas fa-retweet pr-3 m-0 text-primary cursor-pointer' : 'fas fa-retweet pr-3 m-0 text-lighter share-btn cursor-pointer']" title="Share" v-on:click="shareStatus(status, $event)"></h3>
 								<h3 class="fas fa-expand pr-3 m-0 cursor-pointer text-lighter" v-on:click="lightbox(status)"></h3>
@@ -196,7 +197,7 @@
 											<span v-html="reply.content" style="word-break: break-all;" class="comment-body"></span>
 										</span>
 										<span class="mb-0" style="min-width:38px">
-											<span v-on:click="likeStatus(reply, $event)">
+											<span v-on:click="likeStatus(reply, $event);">
 												<i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i>
 											</span>
 											<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> -->
@@ -411,7 +412,7 @@
 						<div class="ml-3">
 							<p class="mb-0">
 								<span v-if="statusOwner(s)" class="font-weight-bold small">{{s.favourites_count == 1 ? '1 like' : s.favourites_count+' likes'}}</span>
-								<span class="px-2"><i v-bind:class="[s.favourited ? 'fas fa-heart text-danger cursor-pointer' : 'far fa-heart like-btn text-lighter cursor-pointer']" v-on:click="likeStatus(s, $event)"></i></span>
+								<span class="px-2"><i v-bind:class="[s.favourited ? 'fas fa-heart text-danger cursor-pointer' : 'far fa-heart like-btn text-lighter cursor-pointer']" v-on:click="likeStatus(s, $event);"></i></span>
 								<span class="mr-2 cursor-pointer"><i class="fas fa-ellipsis-v" @click="ctxMenu(s)"></i></span>
 							</p>
 						</div>
@@ -922,7 +923,7 @@
 
 			},
 
-			likeStatus(status) {
+			likeStatus(status, event) {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
@@ -937,6 +938,12 @@
 					status.favourites_count = count;
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
+				window.navigator.vibrate(200);
+				if(status.favourited) {
+					setTimeout(function() {
+						event.target.classList.add('animate__animated', 'animate__bounce');
+					},100);
+				}
 			},
 
 			shareStatus(status, $event) {
