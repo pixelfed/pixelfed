@@ -859,7 +859,9 @@ export default {
                   }
                 }
                 this.loaded = true;
-                this.fetchProfilePosts();
+                setTimeout(function() {
+                  self.fetchProfilePosts();
+                }, 3000);
                 setTimeout(function() {
                   document.querySelectorAll('.status-comment .comment-text a').forEach(function(i, e) { 
                     if(i.href.startsWith(window.location.origin)) {
@@ -947,12 +949,16 @@ export default {
           } else {
             this.reactions.liked = true;
             let user = this.user;
-            this.likes.push(user);
+            this.likes.unshift(user);
+            setTimeout(function() {
+              event.target.classList.add('animate__animated', 'animate__bounce');
+            },100);
           }
         }).catch(err => {
           console.error(err);
           swal('Error', 'Something went wrong, please try again later.', 'error');
         });
+        window.navigator.vibrate(200);
       },
 
       shareStatus() {
@@ -1383,6 +1389,9 @@ export default {
       },
 
       fetchProfilePosts() {
+        if(!$('body').hasClass('loggedIn') && this.loaded) {
+          return;
+        }
         let self = this;
         let apiUrl = '/api/pixelfed/v1/accounts/' + this.statusProfileId + '/statuses';
         axios.get(apiUrl, {
@@ -1426,6 +1435,9 @@ export default {
       },
 
       showTaggedPeopleModal() {
+        if(!$('body').hasClass('loggedIn') && this.loaded) {
+          return;
+        }
         this.$refs.taggedModal.show();
       },
 

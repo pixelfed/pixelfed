@@ -11,9 +11,56 @@
 
 	<div v-if="!loading && !networkError" class="mt-5">
 		<div v-if="analysis == 'all'" class="row">
-			<div class="col-12 mb-5">
+			<div class="col-12 d-flex justify-content-between align-items-center">
 				<p class="h5 font-weight-bold text-dark">Showing results for <i>{{query}}</i></p>
+				<div v-if="placesSearchEnabled" title="Show Places" data-toggle="tooltip">
+					<span v-if="results.placesPagination.total > 0" class="badge badge-light mr-2 p-1 border" style="margin-top:-5px;">{{formatCount(results.placesPagination.total)}}</span>
+					<div class="d-inline custom-control custom-switch">
+						<input type="checkbox" class="custom-control-input" id="placesSwitch" v-model="showPlaces">
+						<label class="custom-control-label font-weight-bold text-sm text-lighter" for="placesSwitch"><i class="fas fa-map-marker-alt"></i></label>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 mb-5">
 				<hr>
+			</div>
+			<div v-if="placesSearchEnabled && showPlaces" class="col-12">
+				<div class="mb-4">
+					<p class="text-secondary small font-weight-bold">PLACES <span class="pl-1 text-lighter">({{results.placesPagination.total}})</span></p>
+				</div>
+				<div v-if="results.places.length" class="mb-5">
+					<a v-for="(hashtag, index) in results.places" class="mr-3 pr-4 d-inline-block text-decoration-none" :href="buildUrl('places', hashtag)">
+						<div class="pb-2">
+							<div class="media align-items-center py-2">
+								<div class="media-body text-truncate">
+									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
+										<i class="fas fa-map-marker-alt text-lighter mr-2"></i> {{hashtag.value}}
+									</p>
+								</div>
+							</div>
+						</div>
+					</a>
+					<p v-if="results.places.length == 20 || placesCursor > 0" class="text-center mt-3">
+						<a v-if="placesCursor == 1" href="#" class="btn btn-outline-secondary btn-sm font-weight-bold py-0 disabled" disabled>
+							<i class="fas fa-chevron-left mr-2"></i> Previous
+						</a>
+						<a v-else href="#" @click.prevent="placesPrevPage()" class="btn btn-outline-secondary btn-sm font-weight-bold py-0">
+							<i class="fas fa-chevron-left mr-2"></i> Previous
+						</a>
+
+						<span class="mx-4 small text-lighter">{{placesCursor}}/{{results.placesPagination.last_page}}</span>
+
+						<a v-if="placesCursor !== results.placesPagination.last_page" @click.prevent="placesNextPage()" href="#" class="btn btn-primary btn-sm font-weight-bold py-0">
+							Next <i class="fas fa-chevron-right ml-2"></i>
+						</a>
+						<a v-else href="#" class="btn btn-primary btn-sm font-weight-bold py-0 disabled" disabled>
+							Next <i class="fas fa-chevron-right ml-2"></i>
+						</a>
+					</p>
+				</div>
+				<div v-else>
+					<div class="border py-3 text-center font-weight-bold">No results found</div>
+				</div>			
 			</div>
 			<div class="col-md-3">
 				<div class="mb-4">
@@ -284,7 +331,8 @@ export default {
 			results: {
 				hashtags: [],
 				profiles: [],
-				statuses: []
+				statuses: [],
+				places: [],
 			},
 			filters: {
 				hashtags: true,
@@ -292,6 +340,10 @@ export default {
 				statuses: true
 			},
 			analysis: 'profile',
+			showPlaces: false,
+			placesCursor: 1,
+			placesCache: [],
+			placesSearchEnabled: false
 		}
 	},
 	beforeMount() {
@@ -299,6 +351,9 @@ export default {
 	},
 	mounted() {
 		$('.search-bar input').val(this.query);
+	},
+	updated() {
+		$('[data-toggle="tooltip"]').tooltip();
 	},
 	methods: {
 		bootSearch() {
@@ -388,7 +443,7 @@ export default {
 						params: {
 							'q': this.query,
 							'src': 'metro',
-							'v': 1,
+							'v': 2,
 							'scope': 'all'
 						}
 					}).then(res => {
@@ -396,6 +451,9 @@ export default {
 						this.results.hashtags = results.hashtags ? results.hashtags : [];
 						this.results.profiles = results.profiles ? results.profiles : [];
 						this.results.statuses = results.posts ? results.posts : [];
+						this.results.places   = results.places ? results.places : [];
+						this.placesCache = results.places;
+						this.results.placesPagination   = results.placesPagination ? results.placesPagination : [];
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
@@ -500,6 +558,50 @@ export default {
 					this.networkError = true;
 				break;
 			}
+		},
+
+		placesPrevPage() {
+			this.placesCursor--;
+			if(this.placesCursor == 1) {
+				this.results.places = this.placesCache.slice(0, 20);
+				return;
+			}
+			let plc = this.placesCursor * 20;
+			this.results.places = this.placesCache.slice(plc, 20);
+			return;
+		},
+
+		placesNextPage() {
+			this.placesCursor++;
+			let plc = this.placesCursor * 20;
+			if(this.placesCache.length > 20) {
+				this.results.places = this.placesCache.slice(this.placesCursor == 1 ? 0 : plc, 20);
+				return;
+			} 
+			axios.get('/api/search', {
+				params: {
+					'q': this.query,
+					'src': 'metro',
+					'v': 2,
+					'scope': 'all',
+					'page': this.placesCursor
+				}
+			}).then(res => {
+				let results = res.data;
+				this.results.places = results.places ? results.places : [];
+				this.placesCache.push(...results.places);
+				this.loading = false;
+			}).catch(err => {
+				this.loading = false;
+				console.log(err);
+				this.networkError = true;
+			});
+
+		},
+
+		formatCount(num) {
+			let count = window.App.util.format.count(num);
+			return count;
 		}
 	}
 
