@@ -49,11 +49,12 @@ use App\Services\{
     NotificationService,
     MediaPathService,
     SearchApiV2Service,
-    MediaBlocklistService
+    MediaBlocklistService,
+    StatusService
 };
 
 
-class ApiV1Controller extends Controller 
+class ApiV1Controller extends Controller
 {
 	protected $fractal;
 
@@ -1920,7 +1921,7 @@ class ApiV1Controller extends Controller
 
         $res = [];
         foreach($bookmarks as $id) {
-            $res[] = \App\Services\StatusService::get($id);
+            $res[] = json_decode(StatusService::get($id));
         }
         return $res;
     }
