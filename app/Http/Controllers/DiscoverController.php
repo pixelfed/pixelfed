@@ -16,6 +16,7 @@ use Auth, DB, Cache;
 use Illuminate\Http\Request;
 use App\Transformer\Api\AccountTransformer;
 use App\Transformer\Api\AccountWithStatusesTransformer;
+use App\Transformer\Api\StatusTransformer;
 use App\Transformer\Api\StatusStatelessTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -162,6 +163,76 @@ class DiscoverController extends Controller
           $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
           return $this->fractal->createData($resource)->toArray();
       });
+
+      return $res;
+    }
+
+    public function trendingApi(Request $request)
+    {
+      $this->validate($request, [
+        'range' => 'nullable|string|in:daily,monthly,alltime'
+      ]);
+
+      $range = $request->filled('range') ? 
+        $request->input('range') == 'alltime' ? '-1' : 
+        ($request->input('range') == 'daily' ? 1 : 31) : 1;
+
+      $key = ':api:discover:trending:v1:range:' . $range;
+      $ttl = now()->addHours(2);
+      $res = Cache::remember($key, $ttl, function() use($range) {
+        if($range == '-1') {
+          $res = Status::orderBy('likes_count','desc')
+          ->take(12)
+          ->get();
+        } else {
+          $res = Status::orderBy('likes_count','desc')
+          ->take(12)
+          ->where('created_at', '>', now()->subDays($range))
+          ->get();
+          }
+        $resource = new Fractal\Resource\Collection($res, new StatusStatelessTransformer());
+        return $this->fractal->createData($resource)->toArray();
+      });
+      return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+    }
+
+    public function trendingHashtags(Request $request)
+    {
+      $res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
+        ->groupBy('hashtag_id')
+        ->orderBy('total','desc')
+        ->where('created_at', '>', now()->subDays(4))
+        ->take(9)
+        ->get()
+        ->map(function($h) {
+          $hashtag = $h->hashtag;
+          return [
+            'id' => $hashtag->id,
+            'total' => $h->total,
+            'name' => '#'.$hashtag->name,
+            'url' => $hashtag->url('?src=dsh1')
+          ];
+        });
+      return $res;
+    }
+
+    public function trendingPlaces(Request $request)
+    {
+      $res = Status::select('place_id',DB::raw('count(place_id) as total'))
+        ->whereNotNull('place_id')
+        ->where('created_at','>',now()->subDays(14))
+        ->groupBy('place_id')
+        ->orderBy('total')
+        ->limit(4)
+        ->get()
+        ->map(function($s){
+          $p = $s->place;
+          return [
+            'name' => $p->name,
+            'country' => $p->country,
+            'url' => $p->url()
+          ];
+        });
 
       return $res;
     }

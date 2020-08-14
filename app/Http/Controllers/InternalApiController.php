@@ -95,7 +95,7 @@ class InternalApiController extends Controller
               ->with('media')
               ->inRandomOrder()
               ->latest()
-              ->take(37)
+              ->take(39)
               ->get();
 
         $res = [

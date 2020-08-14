@@ -152,6 +152,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::post('loops/watch', 'DiscoverController@loopWatch');
                 Route::get('discover/tag', 'DiscoverController@getHashtags');
                 Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
+                Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
+                Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');
+                Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
             });
         });
         Route::group(['prefix' => 'local'], function () {
