@@ -20,6 +20,7 @@ class EmailVerificationCheck
             config('pixelfed.enforce_email_verification') &&
             is_null($request->user()->email_verified_at) &&
             !$request->is(
+                'i/auth/*',
                 'i/verify-email', 
                 'log*', 
                 'i/confirm-email/*', 
