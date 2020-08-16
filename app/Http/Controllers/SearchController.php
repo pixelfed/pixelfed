@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\Hashtag;
+use App\Place;
 use App\Profile;
 use App\Status;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class SearchController extends Controller
         $this->validate($request, [
             'q' => 'required|string|min:3|max:120',
             'src' => 'required|string|in:metro',
-            'v' => 'required|integer|in:1',
+            'v' => 'required|integer|in:2',
             'scope' => 'required|in:all,hashtag,profile,remote,webfinger'
         ]);
 
@@ -47,6 +48,7 @@ class SearchController extends Controller
                 $this->getHashtags();
                 $this->getPosts();
                 $this->getProfiles();
+                // $this->getPlaces();
                 break;
 
             case 'hashtag':
@@ -63,6 +65,10 @@ class SearchController extends Controller
 
             case 'remote':
                 $this->remoteLookupSearch();
+                break;
+
+            case 'place':
+                $this->getPlaces();
                 break;
 
             default:
@@ -151,6 +157,41 @@ class SearchController extends Controller
             }
         });
         $this->tokens['hashtags'] = $tokens;
+    }
+
+    protected function getPlaces()
+    {
+        $tag = $this->term;
+        // $key = $this->cacheKey . 'places:' . $this->hash;
+        // $ttl = now()->addHours(12);
+        // $tokens = Cache::remember($key, $ttl, function() use($tag) {
+            $htag = Str::contains($tag, ',') == true ? explode(',', $tag) : [$tag];
+            $hashtags = Place::select('id', 'name', 'slug', 'country')
+                ->where('name', 'like', '%'.$htag[0].'%')
+                ->paginate(20);
+            $tags = [];
+            if($hashtags->count() > 0) {
+                $tags = $hashtags->map(function ($item, $key) {
+                    return [
+                        'count'     => null,
+                        'url'       => $item->url(),
+                        'type'      => 'place',
+                        'value'     => $item->name . ', ' . $item->country,
+                        'tokens'    => '',
+                        'name'      => null,
+                        'city'      => $item->name,
+                        'country'   => $item->country
+                    ];
+                });
+                // return $tags;
+            }
+        // });
+        $this->tokens['places'] = $tags;
+        $this->tokens['placesPagination'] = [
+            'total' => $hashtags->total(),
+            'current_page' => $hashtags->currentPage(),
+            'last_page' => $hashtags->lastPage()
+        ];
     }
 
     protected function getProfiles()
