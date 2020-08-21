@@ -343,7 +343,8 @@ export default {
 			showPlaces: false,
 			placesCursor: 1,
 			placesCache: [],
-			placesSearchEnabled: false
+			placesSearchEnabled: false,
+			searchVersion: 2
 		}
 	},
 	beforeMount() {
@@ -443,7 +444,7 @@ export default {
 						params: {
 							'q': this.query,
 							'src': 'metro',
-							'v': 2,
+							'v': this.searchVersion,
 							'scope': 'all'
 						}
 					}).then(res => {
@@ -457,7 +458,6 @@ export default {
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
-						console.log(err);
 						this.networkError = true;
 					});
 				break;
@@ -467,7 +467,7 @@ export default {
 						params: {
 							'q': this.query,
 							'src': 'metro',
-							'v': 1,
+							'v': this.searchVersion,
 							'scope': 'remote'
 						}
 					}).then(res => {
@@ -485,7 +485,6 @@ export default {
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
-						console.log(err);
 						this.networkError = true;
 					});
 				break;
@@ -495,7 +494,7 @@ export default {
 						params: {
 							'q': this.query.slice(1),
 							'src': 'metro',
-							'v': 1,
+							'v': this.searchVersion,
 							'scope': 'hashtag'
 						}
 					}).then(res => {
@@ -506,7 +505,6 @@ export default {
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
-						console.log(err);
 						this.networkError = true;
 					});
 				break;
@@ -516,7 +514,7 @@ export default {
 						params: {
 							'q': this.query,
 							'src': 'metro',
-							'v': 1,
+							'v': this.searchVersion,
 							'scope': 'profile'
 						}
 					}).then(res => {
@@ -527,7 +525,6 @@ export default {
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
-						console.log(err);
 						this.networkError = true;
 					});
 				break;
@@ -537,7 +534,7 @@ export default {
 						params: {
 							'q': this.query,
 							'src': 'metro',
-							'v': 1,
+							'v': this.searchVersion,
 							'scope': 'webfinger'
 						}
 					}).then(res => {
@@ -548,7 +545,6 @@ export default {
 						this.loading = false;
 					}).catch(err => {
 						this.loading = false;
-						console.log(err);
 						this.networkError = true;
 					});
 				break;
@@ -582,7 +578,7 @@ export default {
 				params: {
 					'q': this.query,
 					'src': 'metro',
-					'v': 2,
+					'v': this.searchVersion,
 					'scope': 'all',
 					'page': this.placesCursor
 				}
@@ -593,7 +589,6 @@ export default {
 				this.loading = false;
 			}).catch(err => {
 				this.loading = false;
-				console.log(err);
 				this.networkError = true;
 			});
 
