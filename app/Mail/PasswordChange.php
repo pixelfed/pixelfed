@@ -16,9 +16,9 @@ class PasswordChange extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -28,6 +28,8 @@ class PasswordChange extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.notification.password_change');
+        return $this->with([
+                'user' => $this->user
+            ])->markdown('emails.notification.password_change');
     }
 }
