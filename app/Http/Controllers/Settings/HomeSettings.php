@@ -12,7 +12,9 @@ use App\Util\Lexer\PrettyNumber;
 use Auth;
 use Cache;
 use DB;
+use Mail;
 use Purify;
+use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
 
 trait HomeSettings
@@ -127,6 +129,7 @@ trait HomeSettings
             $log->user_agent = $request->userAgent();
             $log->save();
 
+            Mail::to($request->user())->send(new PasswordChange($user));
             return redirect('/settings/home')->with('status', 'Password successfully updated!');
         } else {
             return redirect()->back()->with('error', 'There was an error with your request! Please try again.');
