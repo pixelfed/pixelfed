@@ -7,16 +7,17 @@
 			</p>
 		</div>
 		<div class="col-12 pl-3 pl-md-0 pt-3 pl-0">
-			<div class="d-flex justify-content-between align-items-center">
+			<div class="d-none d-md-flex justify-content-between align-items-center">
 				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 				<p class="mb-0">
-					<a href="#" :class="[layout=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i> &nbsp; Feed</a>
-					&nbsp; | &nbsp; 
-					<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
+					<span class="btn-group">
+						<a href="#" :class="[layout=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i></a>
+						<a href="#" :class="[layout!=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i></a>
+					</span>
 				</p>
 				<p class="mb-0 d-none d-md-block">
 					<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-						<i class="fas fa-camera pr-3 fa-lg pt-1"></i> New Post
+						<i class="fas fa-camera fa-lg pt-1"></i>
 					</a>
 				</p>
 			</div>
@@ -266,8 +267,8 @@
 				</div> -->
 
 				<div class="mb-4">
-					<div v-show="!loading" class="card shadow-none border">
-						<div class="card-body pb-2">
+					<div v-show="!loading" class="">
+						<div class="pb-2">
 							<div class="media d-flex align-items-center">
 								<a :href="!userStory ? profile.url : '/stories/' + profile.acct" class="mr-3">
 									<!-- <img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
@@ -292,7 +293,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="card-footer bg-transparent border-top mt-2 py-1">
+						<!-- <div class="card-footer bg-transparent border-top mt-2 py-1">
 							<div class="d-flex justify-content-between text-center">
 								<span class="cursor-pointer" @click="redirect(profile.url)">
 									<p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
@@ -307,7 +308,7 @@
 									<p class="mb-0 small text-muted">Following</p>
 								</span>
 							</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
@@ -372,13 +373,14 @@
 					<div class="d-flex justify-content-between align-items-center">
 						<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 						<p class="mb-0">
-							<a href="#" :class="[layout=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i> &nbsp; Feed</a>
-							&nbsp; | &nbsp; 
-							<a href="#" :class="[layout!=='feed'?'font-weight-bold text-dark text-decoration-none':'font-weight-light text-muted text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i> &nbsp; Grid</a>
+							<span class="btn-group">
+								<a href="#" :class="[layout=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i></a>
+								<a href="#" :class="[layout!=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i></a>
+							</span>
 						</p>
 						<p class="mb-0 d-none d-md-block">
 							<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-								<i class="fas fa-camera pr-3 fa-lg pt-1"></i> New Post
+								<i class="fas fa-camera fa-lg pt-1"></i>
 							</a>
 						</p>
 					</div>
