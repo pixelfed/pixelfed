@@ -55,6 +55,8 @@ return [
 	],
 
 	'oauth' => [
+		'token_expiration' => env('OAUTH_TOKEN_DAYS', 15),
+		'refresh_expiration' => env('OAUTH_REFRESH_DAYS', 30),
 		'pat' => [
 			'enabled' => env('OAUTH_PAT_ENABLED', false),
 			'id' 	  => env('OAUTH_PAT_ID'),
