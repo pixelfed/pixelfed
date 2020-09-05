@@ -791,7 +791,7 @@ export default {
       },
 
       fetchComments() {
-          let url = '/api/v2/comments/'+this.statusUsername+'/status/'+this.statusId;
+          let url = '/api/v2/comments/'+this.statusProfileId+'/status/'+this.statusId;
           axios.get(url)
             .then(response => {
                 let self = this;

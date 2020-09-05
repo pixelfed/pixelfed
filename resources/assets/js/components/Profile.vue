@@ -140,7 +140,7 @@
 										<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
 									</p>
 									<div v-if="profile.note" class="mb-0" v-html="profile.note"></div>
-									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank">{{profile.website}}</a></p>
+									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank">{{truncate(profile.website,24)}}</a></p>
 								</div>
 							</div>
 						</div>
@@ -1270,6 +1270,12 @@
 						self.followingModalSearch = null;
 					});
 				}
+			},
+
+			truncate(str, len) {
+				return _.truncate(str, {
+					length: len
+				});
 			}
 		}
 	}
