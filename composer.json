@@ -39,6 +39,7 @@
         "predis/predis": "^1.1",
         "spatie/laravel-backup": "^6.0.0",
         "spatie/laravel-image-optimizer": "^1.1",
+        "symfony/http-kernel": "5.1.5",
         "stevebauman/purify": "3.0.*"
     },
     "require-dev": {
