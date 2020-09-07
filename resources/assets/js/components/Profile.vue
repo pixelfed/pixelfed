@@ -140,7 +140,7 @@
 										<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
 									</p>
 									<div v-if="profile.note" class="mb-0" v-html="profile.note"></div>
-									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank">{{truncate(profile.website,24)}}</a></p>
+									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank" @click.prevent="remoteRedirect(profile.website)">{{truncate(profile.website,24)}}</a></p>
 								</div>
 							</div>
 						</div>
@@ -372,6 +372,7 @@
 		id="following-modal"
 		hide-footer
 		centered
+		scrollable
 		title="Following"
 		body-class="list-group-flush py-3 px-0"
 		dialog-class="follow-modal">
@@ -429,6 +430,7 @@
 		id="follower-modal"
 		hide-footer
 		centered
+		scrollable
 		title="Followers"
 		body-class="list-group-flush py-3 px-0"
 		dialog-class="follow-modal"
@@ -899,6 +901,11 @@
 
 			redirect(url) {
 				window.location.href = url;
+				return;
+			},
+
+			remoteRedirect(url) {
+				window.location.href = window.App.config.site.url + '/i/redirect?url=' + encodeURIComponent(url);
 				return;
 			},
 
