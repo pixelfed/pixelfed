@@ -40,6 +40,7 @@
               <span class="fas fa-ellipsis-v text-muted"></span>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item font-weight-bold" @click="copyPostUrl()">Copy Post Url</a>
                   <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
                   <div v-if="!owner()">
                     <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
@@ -112,6 +113,7 @@
                   <span class="fas fa-ellipsis-v text-muted"></span>
                   </button>
                       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item font-weight-bold" @click="copyPostUrl()">Copy Post Url</a>
                         <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
                         <span v-if="!owner()">
                           <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
@@ -1455,6 +1457,10 @@ export default {
         }).catch(err => {
             swal('An Error Occurred', 'Please try again later.', 'error');  
         });
+      },
+      copyPostUrl() {
+        navigator.clipboard.writeText(this.statusUrl);
+        return;
       }
     },
 }
