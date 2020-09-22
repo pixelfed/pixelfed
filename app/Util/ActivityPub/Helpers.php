@@ -452,7 +452,14 @@ class Helpers {
 
 	public static function profileFetch($url)
 	{
-		return self::profileFirstOrNew($url);
+        $profile = Cache::remember('profile:external:'.$url, now()->addMinutes(1), function() use ($url) {
+            return self::profileFirstOrNew($url) || false;
+        });
+        if($profile != false) {
+            return $profile;
+        } else {
+            return;
+        }
 	}
 
 	public static function sendSignedObject($profile, $url, $body)
