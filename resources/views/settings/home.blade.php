@@ -39,19 +39,19 @@
     <div class="form-group row">
       <label for="name" class="col-sm-3 col-form-label font-weight-bold">Name</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="{{Auth::user()->profile->name}}">
+        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="{{Auth::user()->profile->name}}" v-pre>
       </div>
     </div>
     <div class="form-group row">
       <label for="website" class="col-sm-3 col-form-label font-weight-bold">Website</label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}">
+        <input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}" v-pre>
       </div>
     </div>
     <div class="form-group row">
       <label for="bio" class="col-sm-3 col-form-label font-weight-bold">Bio</label>
       <div class="col-sm-9">
-        <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}">{{Auth::user()->profile->bio}}</textarea>
+        <textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}" v-pre>{{Auth::user()->profile->bio}}</textarea>
         <p class="form-text">
           <span class="bio-counter float-right small text-muted">0/{{config('pixelfed.max_bio_length')}}</span>
         </p>
