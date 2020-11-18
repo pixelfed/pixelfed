@@ -165,6 +165,8 @@ class Image
 
 			$quality = config('pixelfed.image_quality');
 			$img->save($newPath, $quality);
+			$media->width = $img->width();
+			$media->height = $img->height();
 			$img->destroy();
 			if (!$thumbnail) {
 				$media->orientation = $orientation;
@@ -177,6 +179,7 @@ class Image
 				$media->media_path = $converted['path'];
 				$media->mime = $img->mime;
 			}
+
 
 			$media->save();
 			Cache::forget('status:transformer:media:attachments:'.$media->status_id);

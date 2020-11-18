@@ -2,7 +2,7 @@
 
 @section('content')
 <div>
-  <direct-component></direct-component>
+  <direct-message account-id="{{$id}}"></direct-message>
 </div>
 @endsection
 

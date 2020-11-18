@@ -19,6 +19,7 @@ use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
+use App\Util\ActivityPub\Validator\Add as AddValidator;
 use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
 use App\Util\ActivityPub\Validator\Follow as FollowValidator;
 use App\Util\ActivityPub\Validator\Like as LikeValidator;
@@ -57,6 +58,12 @@ class Inbox
     {
         $verb = (string) $this->payload['type'];
         switch ($verb) {
+
+            case 'Add':
+                if(AddValidator::validate($this->payload) == false) { return; }
+                $this->handleAddActivity();
+                break;
+
             case 'Create':
                 $this->handleCreateActivity();
                 break;
@@ -121,6 +128,11 @@ class Inbox
         return Helpers::profileFetch($actorUrl);
     }
 
+    public function handleAddActivity()
+    {
+        // stories ;)
+    }
+
     public function handleCreateActivity()
     {
         $activity = $this->payload['object'];
@@ -157,6 +169,15 @@ class Inbox
         if(!$actor || $actor->domain == null) {
             return;
         }
+        $to = $activity['to'];
+        $cc = $activity['cc'];
+        if(count($to) == 1 && 
+           count($cc) == 0 && 
+           parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
+        ) {
+            $this->handleDirectMessage();
+            return;
+        }
 
         if($actor->followers()->count() == 0) {
             return;
@@ -167,6 +188,103 @@ class Inbox
             return;
         }
         Helpers::statusFetch($url);
+        return;
+    }
+
+    public function handleDirectMessage()
+    {
+        $activity = $this->payload['object'];
+        $actor = $this->actorFirstOrCreate($this->payload['actor']);
+        $profile = Profile::whereNull('domain')
+            ->whereUsername(array_last(explode('/', $activity['to'][0])))
+            ->firstOrFail();
+
+        if(in_array($actor->id, $profile->blockedIds()->toArray())) {
+            return;
+        }
+
+        $msg = $activity['content'];
+        $msgText = strip_tags($activity['content']);
+
+        if($profile->user->settings->public_dm == false || $profile->is_private) {
+            if($profile->follows($actor) == true) {
+                $hidden = false;
+            } else {
+                $hidden = true;
+            }
+        } else {
+            $hidden = false;
+        }
+
+        $status = new Status;
+        $status->profile_id = $actor->id;
+        $status->caption = $msgText;
+        $status->rendered = $msg;
+        $status->visibility = 'direct';
+        $status->scope = 'direct';
+        $status->in_reply_to_profile_id = $profile->id;
+        $status->save();
+
+        $dm = new DirectMessage;
+        $dm->to_id = $profile->id;
+        $dm->from_id = $actor->id;
+        $dm->status_id = $status->id;
+        $dm->is_hidden = $hidden;
+        $dm->type = $request->input('type');
+        $dm->save();
+
+        if(count($activity['attachment'])) {
+            $allowed = explode(',', config('pixelfed.media_types'));
+            foreach($activity['attachment'] as $a) {
+                $type = $a['mediaType'];
+                $url = $a['url'];
+                $valid = self::validateUrl($url);
+                if(in_array($type, $allowed) == false || $valid == false) {
+                    continue;
+                }
+
+                $media = new Media();
+                $media->remote_media = true;
+                $media->status_id = $status->id;
+                $media->profile_id = $status->profile_id;
+                $media->user_id = null;
+                $media->media_path = $url;
+                $media->remote_url = $url;
+                $media->mime = $type;
+                $media->save();
+            }
+        }
+
+        if(filter_var($msg, FILTER_VALIDATE_URL)) {
+            if(Helpers::validateUrl($msg)) {
+                $dm->type = 'link';
+                $dm->meta = [
+                    'domain' => parse_url($msg, PHP_URL_HOST),
+                    'local' => parse_url($msg, PHP_URL_HOST) == 
+                        parse_url(config('app.url'), PHP_URL_HOST)
+                ];
+                $dm->save();
+            }
+        }
+
+        $nf = UserFilter::whereUserId($profile->id)
+            ->whereFilterableId($actor->id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('dm.mute')
+            ->exists();
+
+        if($profile->domain == null && $hidden == false && !$nf) {
+            $notification = new Notification();
+            $notification->profile_id = $profile->id;
+            $notification->actor_id = $actor->id;
+            $notification->action = 'dm';
+            $notification->message = $dm->toText();
+            $notification->rendered = $dm->toHtml();
+            $notification->item_id = $dm->id;
+            $notification->item_type = "App\DirectMessage";
+            $notification->save();
+        }
+
         return;
     }
 
@@ -305,7 +423,20 @@ class Inbox
         }
         $actor = $this->payload['actor'];
         $obj = $this->payload['object'];
-        if(is_string($obj) == true) {
+        if(is_string($obj) == true && $actor == $obj && Helpers::validateUrl($obj)) {
+            $profile = Profile::whereRemoteUrl($obj)->first();
+            if(!$profile || $profile->private_key != null) {
+                return;
+            }
+            Notification::whereActorId($profile->id)->delete();
+            $profile->avatar()->delete();
+            $profile->followers()->delete();
+            $profile->following()->delete();
+            $profile->likes()->delete();
+            $profile->media()->delete();
+            $profile->hashtags()->delete();
+            $profile->statuses()->delete();
+            $profile->delete();
             return;
         }
         $type = $this->payload['object']['type'];
@@ -319,9 +450,7 @@ class Inbox
         $id = $this->payload['object']['id'];
         switch ($type) {
             case 'Person':
-                    // todo: fix race condition
-                    return; 
-                    $profile = Helpers::profileFetch($actor);
+                    $profile = Profile::whereRemoteUrl($actor)->first();
                     if(!$profile || $profile->private_key != null) {
                         return;
                     }
@@ -331,6 +460,7 @@ class Inbox
                     $profile->following()->delete();
                     $profile->likes()->delete();
                     $profile->media()->delete();
+                    $profile->hashtags()->delete();
                     $profile->statuses()->delete();
                     $profile->delete();
                 return;
