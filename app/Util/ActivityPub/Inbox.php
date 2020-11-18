@@ -233,7 +233,7 @@ class Inbox
         $dm->from_id = $actor->id;
         $dm->status_id = $status->id;
         $dm->is_hidden = $hidden;
-        $dm->type = $request->input('type');
+        $dm->type = 'text';
         $dm->save();
 
         if(count($activity['attachment'])) {
