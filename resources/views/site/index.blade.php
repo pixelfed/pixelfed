@@ -56,7 +56,7 @@
                 <div class="col-12 col-md-5 offset-md-1">
                     <div>
                         <div class="pt-md-3 d-flex justify-content-center align-items-center">
-                            <img src="/img/pixelfed-icon-color.svg" loading="lazy" width="50px" height="50px">
+                            <img src="/img/pixelfed-icon-color.svg" loading="lazy" width="50" height="50">
                             <span class="font-weight-bold h3 ml-2 pt-2">Pixelfed</span>
                         </div>
                         <div class="d-block d-md-none">
@@ -140,47 +140,47 @@
                         <div class="row mt-4 mb-1">
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/1.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/1.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/2.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/2.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/3.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/3.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/4.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/4.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/5.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/5.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/6.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/6.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/7.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/7.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/8.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/8.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                             <div class="col-4 mt-2 px-0">
                                 <div class="px-1 shadow-none">
-                                    <img src="/_landing/9.jpeg" class="img-fluid" loading="lazy" width="640px" height="640px">
+                                    <img src="/_landing/9.jpeg" class="img-fluid" loading="lazy" width="640" height="640">
                                 </div>
                             </div>
                         </div>

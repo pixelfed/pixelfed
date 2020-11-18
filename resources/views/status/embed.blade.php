@@ -37,7 +37,7 @@
   @php($item = $status)
   <div class="card status-card-embed card-md-rounded-0 border">
     <div class="card-header d-inline-flex align-items-center bg-white">
-      <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" target="_blank" style="border-radius: 32px;">
+      <img src="{{$item->profile->avatarUrl()}}" width="32" height="32" target="_blank" style="border-radius: 32px;">
       <a class="username font-weight-bold pl-2 text-dark" target="_blank" href="{{$item->profile->url()}}">
         {{$item->profile->username}}
       </a>
@@ -163,7 +163,7 @@
       </div>
       <div>
         <a class="small font-weight-bold text-muted pr-1" href="{{config('app.url')}}" target="_blank">{{config('pixelfed.domain.app')}}</a>
-        <img src="/img/pixelfed-icon-color.svg" width="26px">
+        <img src="/img/pixelfed-icon-color.svg" width="26">
       </div>
     </div>
   </div>

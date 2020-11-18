@@ -97,7 +97,7 @@
 					<a v-for="(profile, index) in results.profiles" class="mb-2 result-card" :href="buildUrl('profile', profile)">
 						<div class="pb-3">
 							<div class="media align-items-center py-2 pr-3">
-								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50px" height="50px">
+								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50" height="50">
 								<div class="media-body">
 									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
 										{{profile.value}}
@@ -124,7 +124,7 @@
 				</div>
 				<div v-if="results.statuses.length">
 					<a v-for="(status, index) in results.statuses" class="mr-2 result-card" :href="buildUrl('status', status)">
-						<img :src="status.thumb" width="90px" height="90px" class="mb-2">
+						<img :src="status.thumb" width="90" height="90" class="mb-2">
 					</a>
 				</div>
 				<div v-else>
@@ -181,7 +181,7 @@
 						</div>
 						<div class="card-body">
 							<div class="text-center mt-n5 mb-4">
-								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90px" height="90px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90" height="90" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 							</div>
 							<p class="text-center lead font-weight-bold mb-1">{{profile.value}}</p>
 							<p class="text-center text-muted small text-uppercase mb-4"><!-- 2 followers --></p>
@@ -208,7 +208,7 @@
 						</div>
 						<div class="card-body">
 							<div class="text-center mt-n5 mb-4">
-								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90px" height="90px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+								<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.entity.thumb" width="90" height="90" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 							</div>
 							<p class="text-center lead font-weight-bold mb-1">{{profile.value}}</p>
 							<p class="text-center text-muted small text-uppercase mb-4"><!-- 2 followers --></p>
@@ -231,7 +231,7 @@
 				<a v-for="(profile, index) in results.profiles" class="mb-2 result-card" :href="buildUrl('profile', profile)">
 					<div class="pb-3">
 						<div class="media align-items-center py-2 pr-3">
-							<img class="mr-3 rounded-circle border" :src="profile.entity.thumb" width="50px" height="50px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+							<img class="mr-3 rounded-circle border" :src="profile.entity.thumb" width="50" height="50" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 							<div class="media-body">
 								<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
 									{{profile.value}}
@@ -250,7 +250,7 @@
 			</div>
 			<div v-if="results.statuses.length" class="col-md-6 offset-3">
 				<a v-for="(status, index) in results.statuses" class="mr-2 result-card" :href="buildUrl('status', status)">
-					<img :src="status.thumb" width="90px" height="90px" class="mb-2" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+					<img :src="status.thumb" width="90" height="90" class="mb-2" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 				</a>
 			</div>
 		</div>
@@ -273,7 +273,7 @@
 							<div class="mt-n4 mb-2">
 								<div class="media">
 									
-									<img class="rounded-circle p-1 mr-2 border mt-n3 bg-white shadow" src="/storage/avatars/default.png" width="70px" height="70px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+									<img class="rounded-circle p-1 mr-2 border mt-n3 bg-white shadow" src="/storage/avatars/default.png" width="70" height="70" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 									<div class="media-body pt-3">
 										<p class="font-weight-bold mb-0">{{status.username}}</p>
 									</div>

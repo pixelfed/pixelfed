@@ -175,13 +175,13 @@
 								<ul class="nav media-drawer-filters text-center">
 									<li class="nav-item">
 										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+											<img :src="media[carouselCursor].url" width="100" height="60" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 										</div>
 										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
 									</li>
 									<li class="nav-item" v-for="(filter, index) in filters">
 										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+											<img :src="media[carouselCursor].url" width="100" height="60" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 										</div>
 										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 									</li>
@@ -212,13 +212,13 @@
 								<ul class="nav media-drawer-filters text-center">
 									<li class="nav-item">
 										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+											<img :src="media[carouselCursor].url" width="100" height="60" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 										</div>
 										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
 									</li>
 									<li class="nav-item" v-for="(filter, index) in filters">
 										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+											<img :src="media[carouselCursor].url" width="100" height="60" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 										</div>
 										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 									</li>
@@ -233,7 +233,7 @@
 					<div v-if="page == 3" class="w-100 h-100">
 						<div class="border-bottom mt-2">
 							<div class="media px-3">
-								<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
+								<img :src="media[0].url" width="42" height="42" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
 								<div class="media-body">
 									<div class="form-group">
 										<label class="font-weight-bold text-muted small d-none">Caption</label>
@@ -309,7 +309,7 @@
 						<div class="list-group">
 							<div v-for="(tag, index) in taggedUsernames" class="list-group-item d-flex justify-content-between">
 								<div class="media">
-									<img class="mr-2 rounded-circle border" :src="tag.avatar" width="24px" height="24px">
+									<img class="mr-2 rounded-circle border" :src="tag.avatar" width="24" height="24">
 									<div class="media-body">
 										<span class="font-weight-bold">{{tag.name}}</span>
 									</div>
@@ -416,7 +416,7 @@
 					<div v-if="page == 'altText'" class="w-100 h-100 p-3">
 						<div v-for="(m, index) in media">
 							<div class="media">
-								<img :src="m.preview_url" class="mr-3" width="50px" height="50px">
+								<img :src="m.preview_url" class="mr-3" width="50" height="50">
 								<div class="media-body">
 									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..."></textarea>
 									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/140</p>
@@ -434,7 +434,7 @@
 						<div class="list-group mb-3">
 							<div class="list-group-item cursor-pointer compose-action border" @click="goBack()">
 								<div class="media">
-								  <img src="" class="mr-3" alt="" width="50px" height="50px">
+								  <img src="" class="mr-3" alt="" width="50" height="50">
 								  <div class="media-body">
 								    <h5 class="mt-0">collection title</h5>
 								    <p class="mb-0 text-muted small">3 Photos - Created 2h ago</p>
@@ -462,7 +462,7 @@
 
 					<div v-if="page == 'editMedia'" class="w-100 h-100 p-3">
 						<div class="media">
-							<img :src="media[carouselCursor].preview_url" class="mr-3" width="50px" height="50px">
+							<img :src="media[carouselCursor].preview_url" class="mr-3" width="50" height="50">
 							<div class="media-body">
 								<div class="form-group">
 									<label class="font-weight-bold text-muted small">Media Description</label>

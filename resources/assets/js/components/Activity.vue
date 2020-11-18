@@ -15,7 +15,7 @@
 			<div class="row my-5">
 				<div class="col-12 col-md-8 offset-md-2">
 					<div v-if="notifications.length > 0" class="media mb-3 align-items-center px-3 border-bottom pb-3" v-for="(n, index) in notifications">
-						<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px">
+						<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32" height="32">
 						<div class="media-body font-weight-light">
 							<div v-if="n.type == 'favourite'">
 								<p class="my-0">
@@ -59,17 +59,17 @@
 						<div>
 							<div v-if="n.status && n.status && n.status.media_attachments && n.status.media_attachments.length">
 								<a :href="n.status.url">
-									<img :src="n.status.media_attachments[0].preview_url" width="32px" height="32px">
+									<img :src="n.status.media_attachments[0].preview_url" width="32" height="32">
 								</a>
 							</div>
 							<div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
 								<a :href="n.status.parent.url">
-									<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
+									<img :src="n.status.parent.media_attachments[0].preview_url" width="32" height="32">
 								</a>
 							</div>
 							<!-- <div v-else-if="n.status && n.status.parent && n.status.parent.media_attachments && n.status.parent.media_attachments.length">
 								<a :href="n.status.parent.url">
-									<img :src="n.status.parent.media_attachments[0].preview_url" width="32px" height="32px">
+									<img :src="n.status.parent.media_attachments[0].preview_url" width="32" height="32">
 								</a>
 							</div> -->
 

@@ -16,7 +16,7 @@
 					</div>
 				</div>
 				<div v-if="notifications.length > 0" class="media align-items-center px-3 py-2 border-bottom border-light" v-for="(n, index) in notifications">
-					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
+					<img class="mr-2 rounded-circle" style="border:1px solid #ccc" :src="n.account.avatar" alt="" width="32" height="32" onerror="this.onerror=null;this.src='/storage/avatars/default.png';">
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
@@ -24,7 +24,7 @@
 								<span v-if="n.status.hasOwnProperty('media_attachments')">
 									<a class="font-weight-bold" v-bind:href="n.status.url" :id="'fvn-' + n.id">post</a>.
 									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
-										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
+										<img :src="notificationPreview(n)" width="100" height="100" style="object-fit: cover;">
 									</b-popover>
 								</span>
 								<span v-else>

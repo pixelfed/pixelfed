@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-5">
             <div class="text-center">
-                <img src="/img/pixelfed-icon-color.svg" height="60px">
+                <img src="/img/pixelfed-icon-color.svg" height="60">
                 <p class="font-weight-light h3 py-4">Confirm password to continue</p>
             </div>
             <div class="card">

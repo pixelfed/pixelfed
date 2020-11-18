@@ -34,7 +34,7 @@
 	<div class="embed-card">
 		<div class="card  status-card-embed card-md-rounded-0 border card-body border shadow-none rounded-0 d-flex justify-content-center align-items-center">
 			<div class="text-center p-5">
-				<img src="/img/pixelfed-icon-color.svg" width="40px" height="40px">
+				<img src="/img/pixelfed-icon-color.svg" width="40" height="40">
 				<p class="h2 py-3 font-weight-bold">Pixelfed</p>
 				<p style="font-size:14px;font-weight: 500;" class="p-2">The link to this photo or video may be broken, or the post may have been removed.</p>
 				<p><a href="{{config('app.url')}}" class="font-weight-bold" target="_blank">Visit Pixelfed</a></p>

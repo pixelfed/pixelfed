@@ -36,10 +36,10 @@
 									<div class="row">
 										<div class="col-4">
 											<div v-if="hasStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
-												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle" :src="profile.avatar" width="77px" height="77px">
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle" :src="profile.avatar" width="77" height="77">
 											</div>
 											<div v-else>
-												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border" :src="profile.avatar" width="77px" height="77px">
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border" :src="profile.avatar" width="77" height="77">
 											</div>
 										</div>
 										<div class="col-8">
@@ -78,10 +78,10 @@
 								<!-- DESKTOP PROFILE PICTURE -->
 								<div class="d-none d-md-block pb-3">
 									<div v-if="hasStory" class="has-story-lg cursor-pointer shadow-sm" @click="storyRedirect()">
-										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150px" height="150px">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150" height="150">
 									</div>
 									<div v-else>
-										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150" height="150">
 									</div>
 									<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-3">
 										<button type="button" @click="showSponsorModal" class="btn btn-outline-secondary font-weight-bold py-0">
@@ -292,10 +292,10 @@
 							</div>
 							<div class="col-4 text-center">
 								<div class="d-block d-md-none">
-									<img class="rounded-circle box-shadow" :src="profile.avatar" width="110px" height="110px" style="margin-top:-60px; border: 5px solid #fff">
+									<img class="rounded-circle box-shadow" :src="profile.avatar" width="110" height="110" style="margin-top:-60px; border: 5px solid #fff">
 								</div>
 								<div class="d-none d-md-block">
-									<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px" style="margin-top:-90px; border: 5px solid #fff">
+									<img class="rounded-circle box-shadow" :src="profile.avatar" width="172" height="172" style="margin-top:-90px; border: 5px solid #fff">
 								</div>
 							</div>
 							<div class="col-4 text-right mt-2">
@@ -396,7 +396,7 @@
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in following" :key="'following_'+index">
 				<div class="media">
 					<a :href="user.url">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
+						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30" loading="lazy">
 					</a>
 					<div class="media-body text-truncate">
 						<p class="mb-0" style="font-size: 14px">
@@ -443,7 +443,7 @@
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
 				<div class="media mb-0">
 					<a :href="user.url">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy">
+						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30" height="30" loading="lazy">
 					</a>
 					<div class="media-body mb-0">
 						<p class="mb-0" style="font-size: 14px">

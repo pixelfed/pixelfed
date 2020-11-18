@@ -1,6 +1,6 @@
 <div class="card mb-4 status-card card-md-rounded-0" data-id="{{$item->id}}" data-comment-max-id="0" data-profile-username="{{$item->profile->username}}" data-profile-name="{{$item->profile->name}}" data-timestamp="{{$item->created_at}}">
   <div class="card-header d-inline-flex align-items-center bg-white">
-    <img src="{{$item->profile->avatarUrl()}}" width="32px" height="32px" style="border-radius: 32px;">
+    <img src="{{$item->profile->avatarUrl()}}" width="32" height="32" style="border-radius: 32px;">
     <a class="username font-weight-bold pl-2 text-dark" href="{{$item->profile->url()}}">
       {{$item->profile->username}}
     </a>

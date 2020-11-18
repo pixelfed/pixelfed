@@ -7,11 +7,11 @@
       <div class="card">
         <div class="card-body p-0 m-0 bg-light">
           <div class="d-flex p-0 m-0 align-items-center">
-            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            <img src="{{$status->parent()->thumb()}}" width="150" height="150" class="post-thumbnail">
             <div class="p-4 w-100">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-1" width="30px">
+                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-1" width="30">
                   <span class="h5 font-weight-bold" v-pre>{{$status->parent()->profile->username}}</span>
                 </div>
                 <div>
@@ -31,7 +31,7 @@
               <p class="py-5 mb-0 text-center">This comment may contain sensitive content. <span class="float-right font-weight-bold text-primary">Show</span></p>
             </summary>
             <div class="media py-5">
-              <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
+              <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60">
               <div class="media-body">
                 <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
                 <p class="mb-1" v-pre>{!! $status->rendered !!}</p>
@@ -45,7 +45,7 @@
           </details>
           @else
           <div class="media py-5">
-            <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
+            <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60">
             <div class="media-body">
               <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
               <p class="mb-1" v-pre>{!! $status->rendered !!}</p>

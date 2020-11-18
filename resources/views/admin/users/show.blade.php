@@ -49,7 +49,7 @@
 	<div class="col-12 col-md-4">
 		<div class="card shadow-none border">
 			<div class="card-body text-center">
-				<img src="{{$profile->avatarUrl()}}" class="box-shadow rounded-circle" width="128px" height="128px">
+				<img src="{{$profile->avatarUrl()}}" class="box-shadow rounded-circle" width="128" height="128">
 				<p class="mt-3 mb-0 lead">
 					<span class="font-weight-bold">{{$profile->name}}</span>
 				</p>

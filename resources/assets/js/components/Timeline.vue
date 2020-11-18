@@ -48,7 +48,7 @@
 									<div class="card-body text-center pt-3">
 										<p class="mb-0">
 											<a :href="'/'+rec.username">
-												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45" height="45" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 											</a>
 										</p>
 										<div class="py-3">
@@ -97,13 +97,13 @@
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 						<div v-if="!modes.distractionFree && status" class="card-header d-inline-flex align-items-center bg-white">
-							<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
+							<!-- <img v-bind:src="status.account.avatar" width="38" height="38" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
-								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32" height="32" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 							</div>
 							<div v-else> -->
 							<div>
-								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32" height="32" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 							</div>
 							<div class="pl-2">
 								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
@@ -173,7 +173,7 @@
 										<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>
 										<span v-for="(tag, index) in status.taggedPeople" class="mr-n2">
 											<a :href="'/'+tag.username">
-												<img :src="tag.avatar" width="20px" height="20px" class="border rounded-circle" data-toggle="tooltip" :title="'@'+tag.username" alt="Avatar">
+												<img :src="tag.avatar" width="20" height="20" class="border rounded-circle" data-toggle="tooltip" :title="'@'+tag.username" alt="Avatar">
 											</a>
 										</span>
 									</span>
@@ -271,12 +271,12 @@
 						<div class="pb-2">
 							<div class="media d-flex align-items-center">
 								<a :href="!userStory ? profile.url : '/stories/' + profile.acct" class="mr-3">
-									<!-- <img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
+									<!-- <img class="mr-3 rounded-circle box-shadow" :src="profile.avatar || '/storage/avatars/default.png'" alt="avatar" width="64" height="64" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 									<div v-if="userStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
-										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64" height="64" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 									</div>
 									<div v-else>
-										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64px" height="64px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+										<img class="rounded-circle box-shadow" :src="profile.avatar" width="64" height="64" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 									</div>
 								</a>
 								<div class="media-body d-flex justify-content-between word-break" >
@@ -326,7 +326,7 @@
 						<div class="card-body pt-0">
 							<div v-for="(rec, index) in suggestions" class="media align-items-center mt-3">
 								<a :href="'/'+rec.username">
-									<img :src="rec.avatar" width="32px" height="32px" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+									<img :src="rec.avatar" width="32" height="32" class="rounded-circle mr-3" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 								</a>
 								<div class="media-body">
 									<p class="mb-0 font-weight-bold small">
@@ -402,7 +402,7 @@
 						</div>
 					</a>
 					<div class="py-3 media align-items-center">
-						<a class="text-decoration-none" :href="s.account.url"><img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30px" height="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"></a>
+						<a class="text-decoration-none" :href="s.account.url"><img :src="s.account.avatar" class="mr-3 rounded-circle shadow-sm" :alt="s.account.username + ' \'s avatar'" width="30" height="30" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"></a>
 						<div class="media-body">
 							<p class="mb-0 font-weight-bold small"><a class="text-dark" :href="s.account.url">{{s.account.username}}</a></p>
 							<p class="mb-0" style="line-height: 0.7;">

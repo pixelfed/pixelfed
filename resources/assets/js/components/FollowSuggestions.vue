@@ -16,7 +16,7 @@
         </div>
         <div v-for="(user, index) in results">
           <div class="media " style="width:100%">
-            <img class="mr-3" :src="user.avatar" width="40px">
+            <img class="mr-3" :src="user.avatar" width="40">
             <div class="media-body" style="width:70%">
               <p class="my-0 font-weight-bold text-truncate" style="text-overflow: hidden">{{user.acct}} <span class="text-muted font-weight-normal">&commat;{{user.username}}</span></p>
               <a class="btn btn-outline-primary px-3 py-0" :href="user.url" style="border-radius:20px;">Follow</a>

@@ -36,7 +36,7 @@
 					<span class="text-danger" class="text-monospace">{{$user->id}}</span>
 				</th>
 				<td class="text-left">
-					<img src="/storage/avatars/default.png?v=3" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
+					<img src="/storage/avatars/default.png?v=3" width="28" class="rounded-circle mr-2" style="border:1px solid #ccc">
 					<span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
 						<span class="text-danger">{{$user->username}}</span>
 					</span>
@@ -53,7 +53,7 @@
 					<span class="text-monospace">{{$user->id}}</span>
 				</th>
 				<td class="text-left">
-					<img src="{{$user->profile->avatarUrl()}}" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
+					<img src="{{$user->profile->avatarUrl()}}" width="28" class="rounded-circle mr-2" style="border:1px solid #ccc">
 					<span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
 						<span>{{$user->username}}</span>
 						@if($user->is_admin)

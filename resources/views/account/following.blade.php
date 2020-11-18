@@ -41,7 +41,7 @@
         @case('like')
           <span class="notification-icon pr-3">
             <img src="{{optional($notification->actor, function($actor) {
-              return $actor->avatarUrl(); }) }}" width="32px" class="rounded-circle">
+              return $actor->avatarUrl(); }) }}" width="32" class="rounded-circle">
           </span>
           <span class="notification-text">
             <a class="font-weight-bold text-dark" href="{{$notification->actor->url()}}">{{$notification->actor->username}}</a>
@@ -54,14 +54,14 @@
           </span>
           <span class="float-right notification-action">
             @if($notification->item_id && $notification->item_type == 'App\Status')
-              <a href="{{$notification->status->url()}}"><img src="{{$notification->status->thumb()}}" width="32px" height="32px"></a>
+              <a href="{{$notification->status->url()}}"><img src="{{$notification->status->thumb()}}" width="32" height="32"></a>
             @endif
           </span>
         @break
 
         @case('follow')
           <span class="notification-icon pr-3">
-            <img src="{{$notification->actor->avatarUrl()}}" width="32px" class="rounded-circle">
+            <img src="{{$notification->actor->avatarUrl()}}" width="32" class="rounded-circle">
           </span>
           <span class="notification-text">
             <a class="font-weight-bold text-dark" href="{{$notification->actor->url()}}">{{$notification->actor->username}}</a>

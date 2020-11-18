@@ -7,7 +7,7 @@
 			<!-- LANDING -->
 			<div v-if="page == 'landing'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center flex-fill mt-5 pt-5">
-					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
+					<img src="/img/pixelfed-icon-grey.svg" width="60" height="60">
 					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
 					<!-- <p v-if="loaded" class="font-weight-bold small text-uppercase text-muted">
 						<span>{{stories.length}} Active</span>

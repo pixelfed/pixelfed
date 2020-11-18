@@ -11,7 +11,7 @@
 	<div class="container d-flex justify-content-center">
 		<div class="card mr-3" style="width:500px;margin-top:-30px;">
 			<div class="card-header d-inline-flex align-items-center bg-white">
-				<img src="/storage/avatars/default.png" width="32px" height="32px" style="border-radius: 32px; border: 1px solid #ccc">
+				<img src="/storage/avatars/default.png" width="32" height="32" style="border-radius: 32px; border: 1px solid #ccc">
 				<span class="username font-weight-bold pl-2 text-dark">
 					username
 				</span>

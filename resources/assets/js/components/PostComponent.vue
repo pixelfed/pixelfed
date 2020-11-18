@@ -16,7 +16,7 @@
         <div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
           <div class="d-flex">
             <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
-              <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
+              <img :src="statusAvatar" width="24" height="24" style="border-radius:12px;" class="cursor-pointer">
             </div>
             <div class="username">
               <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
@@ -89,7 +89,7 @@
             <div class="d-md-flex d-none align-items-center justify-content-between card-header py-3 bg-white">
               <div class="d-flex align-items-center status-username text-truncate">
                 <div class="status-avatar mr-2" @click="redirect(statusProfileUrl)">
-                  <img :src="statusAvatar" width="24px" height="24px" style="border-radius:12px;" class="cursor-pointer">
+                  <img :src="statusAvatar" width="24" height="24" style="border-radius:12px;" class="cursor-pointer">
                 </div>
                 <div class="username">
                   <span class="username-link font-weight-bold text-dark cursor-pointer" @click="redirect(statusProfileUrl)">{{ statusUsername }}</span>
@@ -166,7 +166,7 @@
                       </p>
                       <div class="comments mt-3">
                         <div v-for="(reply, index) in results" class="pb-4 media" :key="'tl' + reply.id + '_' + index">
-                          <img :src="reply.account.avatar" class="rounded-circle border mr-3" width="42px" height="42px">
+                          <img :src="reply.account.avatar" class="rounded-circle border mr-3" width="42" height="42">
                           <div class="media-body">
                             <div v-if="reply.sensitive == true">
                               <span class="py-3">
@@ -199,7 +199,7 @@
                               </div>
                               <div v-if="reply.thread == true" class="comment-thread">
                                 <div v-for="(s, sindex) in reply.replies" class="pb-3 media" :key="'cr' + s.id + '_' + index">
-                                  <img :src="s.account.avatar" class="rounded-circle border mr-3" width="25px" height="25px">
+                                  <img :src="s.account.avatar" class="rounded-circle border mr-3" width="25" height="25">
                                   <div class="media-body">
                                     <p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
                                       <span>
@@ -363,7 +363,7 @@
                     </span>
                   </p>
                 </div>
-                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px"></a>
+                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72" height="72"></a>
               </div>
               <div v-else class="media align-items-center mt-3">
                 <div class="media-body">
@@ -376,7 +376,7 @@
                     <a class="font-weight-bold small" href="#">Follow</a> -->
                   </p>
                 </div>
-                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72px" height="72px"></a>
+                <a :href="statusProfileUrl" :title="statusUsername"><img :src="statusAvatar" class="rounded-circle border mr-3" alt="avatar" width="72" height="72"></a>
               </div>
               <hr>
               <div>
@@ -431,7 +431,7 @@
               </div>
               <div class="comment mt-4" style="max-height: 500px; overflow-y: auto;">
                 <div v-for="(reply, index) in results" :key="'tl' + reply.id + '_' + index" class="media mb-3 mt-2">
-                  <a :href="reply.account.url" :title="reply.account.username"><img :src="reply.account.avatar" class="rounded-circle border mr-3" alt="avatar" width="32px" height="32px"></a>
+                  <a :href="reply.account.url" :title="reply.account.username"><img :src="reply.account.avatar" class="rounded-circle border mr-3" alt="avatar" width="32" height="32"></a>
                   <div class="media-body">
                     <div class="d-flex justify-content-between">
                       <span>
@@ -484,7 +484,7 @@
       <div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30">
           </a>
           <div class="media-body">
             <p class="mb-0" style="font-size: 14px">
@@ -517,7 +517,7 @@
       <div class="list-group-item border-0" v-for="(user, index) in shares" :key="'modal_shares_'+index">
         <div class="media">
           <a :href="user.url">
-            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30">
           </a>
           <div class="media-body">
             <div class="d-inline-block">
@@ -600,7 +600,7 @@
       <div class="list-group-item border-0 py-1" v-for="(taguser, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
         <div class="media">
           <a :href="'/'+taguser.username">
-            <img class="mr-3 rounded-circle box-shadow" :src="taguser.avatar" :alt="taguser.username + '’s avatar'" width="30px">
+            <img class="mr-3 rounded-circle box-shadow" :src="taguser.avatar" :alt="taguser.username + '’s avatar'" width="30">
           </a>
           <div class="media-body">
             <p class="pt-1 d-flex justify-content-between" style="font-size: 14px">
