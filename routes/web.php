@@ -97,6 +97,18 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 
+        Route::group(['prefix' => 'direct'], function () {
+            Route::get('browse', 'DirectMessageController@browse');
+            Route::post('create', 'DirectMessageController@create');
+            Route::get('thread', 'DirectMessageController@thread');
+            Route::post('mute', 'DirectMessageController@mute');
+            Route::post('unmute', 'DirectMessageController@unmute');
+            Route::delete('message', 'DirectMessageController@delete');
+            Route::post('media', 'DirectMessageController@mediaUpload');
+            Route::post('lookup', 'DirectMessageController@composeLookup');
+            Route::post('read', 'DirectMessageController@read');
+        });
+
         Route::group(['prefix' => 'v2'], function() {
             Route::get('config', 'ApiController@siteConfiguration');
             Route::get('discover', 'InternalApiController@discover');
@@ -287,6 +299,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
     Route::group(['prefix' => 'account'], function () {
         Route::redirect('/', '/');
+        Route::get('direct', 'AccountController@direct');
+        Route::get('direct/t/{id}', 'AccountController@directMessage');
         Route::get('activity', 'AccountController@notifications')->name('notifications');
         Route::get('follow-requests', 'AccountController@followRequests')->name('follow-requests');
         Route::post('follow-requests', 'AccountController@followRequestHandle');

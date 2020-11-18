@@ -156,7 +156,6 @@
 								<input v-model="composeUsername" type="text" class="form-control" placeholder="dansup">
 							</div> -->
 							<autocomplete 
-							v-show="true"
 							:search="composeSearch"
 							placeholder="@dansup"
 							aria-label="Search usernames"
@@ -186,7 +185,12 @@
 </style>
 
 <script type="text/javascript">
+import Autocomplete from '@trevoreyre/autocomplete-vue'
+import '@trevoreyre/autocomplete-vue/dist/style.css'
 export default {
+	components: { 
+		Autocomplete 
+	},
 	data() {
 		return {
 			config: window.App.config,
@@ -223,7 +227,7 @@ export default {
 	mounted() {
 		this.fetchProfile();
 		let self = this;
-		axios.get('/api/pixelfed/v1/direct/browse', {
+		axios.get('/api/direct/browse', {
 			params: {
 				a: 'inbox'
 			}
@@ -298,7 +302,7 @@ export default {
 				break;
 				case 'sent':
 				if(this.messages.sent.length == 0) {
-					axios.get('/api/pixelfed/v1/direct/browse', {
+					axios.get('/api/direct/browse', {
 						params: {
 							a: 'sent'
 						}
@@ -312,7 +316,7 @@ export default {
 				break;
 				case 'filtered':
 					if(this.messages.filtered.length == 0) {
-						axios.get('/api/pixelfed/v1/direct/browse', {
+						axios.get('/api/direct/browse', {
 							params: {
 								a: 'filtered'
 							}
@@ -344,7 +348,7 @@ export default {
 		getTagResultValue(result) {
 			return '@' + result.name;
 		},
-		
+
 		onTagSubmitLocation(result) {
 			//this.$refs.autocomplete.value = '';
 			window.location.href = '/account/direct/t/' + result.id;
@@ -354,7 +358,7 @@ export default {
 		messagePagination(tab, dir) {
 			if(tab == 'inbox') {
 				this.inboxPage = dir == 'prev' ? this.inboxPage - 1 : this.inboxPage + 1;
-				axios.get('/api/pixelfed/v1/direct/browse', {
+				axios.get('/api/direct/browse', {
 					params: {
 						a: 'inbox',
 						page: this.inboxPage
@@ -368,7 +372,7 @@ export default {
 			}
 			if(tab == 'sent') {
 				this.sentPage = dir == 'prev' ? this.sentPage - 1 : this.sentPage + 1;
-				axios.get('/api/pixelfed/v1/direct/browse', {
+				axios.get('/api/direct/browse', {
 					params: {
 						a: 'sent',
 						page: this.sentPage
@@ -382,7 +386,7 @@ export default {
 			}
 			if(tab == 'filtered') {
 				this.filteredPage = dir == 'prev' ? this.filteredPage - 1 : this.filteredPage + 1;
-				axios.get('/api/pixelfed/v1/direct/browse', {
+				axios.get('/api/direct/browse', {
 					params: {
 						a: 'filtered',
 						page: this.filteredPage

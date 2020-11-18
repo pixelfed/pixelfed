@@ -355,7 +355,7 @@
 		mounted() {
 			this.fetchProfile();
 			let self = this;
-			axios.get('/api/pixelfed/v1/direct/thread', {
+			axios.get('/api/direct/thread', {
 				params: {
 					pid: self.accountId
 				}
@@ -383,13 +383,13 @@
 		watch: {
 			mutedNotifications: function(v) {
 				if(v) {
-					axios.post('/api/pixelfed/v1/direct/mute', {
+					axios.post('/api/direct/mute', {
 						id: this.accountId
 					}).then(res => {
 
 					});
 				} else {
-					axios.post('/api/pixelfed/v1/direct/unmute', {
+					axios.post('/api/direct/unmute', {
 						id: this.accountId
 					}).then(res => {
 
@@ -414,7 +414,7 @@
 			sendMessage() {
 				let self = this;
 				let rt = this.replyText;
-				axios.post('/api/pixelfed/v1/direct/create', {
+				axios.post('/api/direct/create', {
 					'to_id': this.threads[this.threadIndex].id,
 					'message': rt,
 					'type': self.isEmoji(rt) && rt.length < 10 ? 'emoji' : 'text'
@@ -594,7 +594,7 @@
 				let self = this;
 				this.loadingMessages = true;
 
-				axios.get('/api/pixelfed/v1/direct/thread', {
+				axios.get('/api/direct/thread', {
 					params: {
 						pid: this.accountId,
 						max_id: this.min_id,
@@ -630,7 +630,7 @@
 			messagePoll() {
 				let self = this;
 				setInterval(function() {
-					axios.get('/api/pixelfed/v1/direct/thread', {
+					axios.get('/api/direct/thread', {
 						params: {
 							pid: self.accountId,
 							min_id: self.thread.messages[self.thread.messages.length - 1].id
