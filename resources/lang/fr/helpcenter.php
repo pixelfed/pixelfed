@@ -21,5 +21,6 @@ return [
     'safetyTips'               =>    'Conseils de sécurité',
     'reportSomething'          =>    'Signaler quelque chose',
     'dataPolicy'               =>    'Politique en matière de données',
+    
     'taggingPeople'            =>    'Mentionner des personnes'
 ];
