@@ -139,6 +139,19 @@ class Inbox
     public function handleCreateActivity()
     {
         $activity = $this->payload['object'];
+        $actor = $this->actorFirstOrCreate($this->payload['actor']);
+        if(!$actor || $actor->domain == null) {
+            return;
+        }
+        $to = $activity['to'];
+        $cc = $activity['cc'];
+        if(count($to) == 1 && 
+            count($cc) == 0 && 
+            parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
+        ) {
+            $this->handleDirectMessage();
+            return;
+        }
         if(!$this->verifyNoteAttachment()) {
             return;
         }
@@ -170,15 +183,6 @@ class Inbox
         $activity = $this->payload['object'];
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
         if(!$actor || $actor->domain == null) {
-            return;
-        }
-        $to = $activity['to'];
-        $cc = $activity['cc'];
-        if(count($to) == 1 && 
-           count($cc) == 0 && 
-           parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
-        ) {
-            $this->handleDirectMessage();
             return;
         }
 
