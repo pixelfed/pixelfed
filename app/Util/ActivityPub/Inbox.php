@@ -229,6 +229,7 @@ class Inbox
         $status->rendered = $msg;
         $status->visibility = 'direct';
         $status->scope = 'direct';
+        $status->url = $activity['id'];
         $status->in_reply_to_profile_id = $profile->id;
         $status->save();
 
@@ -245,7 +246,7 @@ class Inbox
             foreach($activity['attachment'] as $a) {
                 $type = $a['mediaType'];
                 $url = $a['url'];
-                $valid = self::validateUrl($url);
+                $valid = Helpers::validateUrl($url);
                 if(in_array($type, $allowed) == false || $valid == false) {
                     continue;
                 }
