@@ -5,13 +5,16 @@ namespace App\Util\ActivityPub;
 use Cache, DB, Log, Purify, Redis, Validator;
 use App\{
     Activity,
+    DirectMessage,
     Follower,
     FollowRequest,
     Like,
     Notification,
+    Media,
     Profile,
     Status,
     StatusHashtag,
+    UserFilter
 };
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
