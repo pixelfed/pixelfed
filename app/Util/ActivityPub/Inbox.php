@@ -18,6 +18,7 @@ use App\{
 };
 use Carbon\Carbon;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Support\Str;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 
