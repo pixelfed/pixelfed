@@ -508,6 +508,7 @@ class Inbox
                     if(!$status) {
                         return;
                     }
+                    $status->directMessage()->delete();
                     $status->media()->delete();
                     $status->likes()->delete();
                     $status->shares()->delete();
