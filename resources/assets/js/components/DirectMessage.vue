@@ -480,7 +480,7 @@
 				if(c) {
 					axios.delete('/api/direct/message', {
 						params: {
-							id: self.ctxContext.id
+							id: self.ctxContext.reportId
 						}
 					}).then(res => {
 						self.threads[self.threadIndex].messages.splice(self.ctxIndex,1);
@@ -543,8 +543,9 @@
 						self.uploadProgress = 100;
 						self.uploading = false;
 						let msg = {
-							id: Date.now(),
+							id: e.data.id,
 							type: e.data.type,
+							reportId: e.data.reportId,
 							isAuthor: true,
 							text: null,
 							media: e.data.url,

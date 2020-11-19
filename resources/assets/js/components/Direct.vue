@@ -6,7 +6,7 @@
 				<div class="card-header bg-white py-4">
 					<span class="h4 font-weight-bold mb-0">Direct Messages</span>
 					<span class="float-right">
-						<a class="btn btn-outline-primary font-weight-bold py-0" href="#" @click.prevent="goto('add')">New Message</a>
+						<a class="btn btn-outline-primary font-weight-bold py-0 rounded-pill" href="#" @click.prevent="goto('add')">New Message</a>
 					</span>
 				</div>
 				<div class="card-header bg-white">
@@ -155,17 +155,11 @@
 					<span><i class="fas fa-chevron-right text-white"></i></span>
 				</div>
 				<div class="card-body d-flex align-items-center justify-content-center" style="height: 60vh;">
-					<div class="">
-						<p class="form-group">
-							<label>To:</label>
-							<!-- <div class="input-group pt-0">
-								<div class="input-group-prepend">
-									<span class="input-group-text" id="basic-addon1">@</span>
-								</div>
-								<input v-model="composeUsername" type="text" class="form-control" placeholder="dansup">
-							</div> -->
-							<autocomplete 
+					<div>
+						<p class="mb-0 font-weight-bold">Select Recipient</p>
+						<autocomplete 
 							:search="composeSearch"
+							:disabled="composeLoading"
 							placeholder="@dansup"
 							aria-label="Search usernames"
 							:get-result-value="getTagResultValue"
@@ -173,15 +167,7 @@
 							ref="autocomplete"
 						>
 						</autocomplete>
-							<span class="help-text small text-muted">Select a username to send a message to.</span>
-						</p>
-						<hr>
-						<!-- <p>
-							<button type="button" class="btn btn-primary font-weight-bold btn-block" @click="composeUsernameSelect()" :disabled="!composeUsername.length">Next</button>
-						</p> -->
-						<ul class="text-muted">
-							<li>You cannot message remote accounts yet.</li>
-						</ul>
+						<div style="width:300px;"></div>
 					</div>
 				</div>
 			</div>
@@ -229,7 +215,10 @@ export default {
 				inbox: [],
 				sent: [],
 				filtered: []
-			}
+			},
+
+			newType: 'select',
+			composeLoading: false,
 		}
 	},
 
@@ -259,42 +248,15 @@ export default {
 				window._sharedData.curUser = res.data;
 			});
 		},
+
 		goto(l = 'browse') {
 			this.page = l;
-			let url = '/account/direct';
-			switch(l) {
-				case 'read':
-				url = '/account/direct/t/' + this.thread.id;
-				break;
-				case 'add':
-					url += '#/new';
-				break;
-			}
-			window.history.pushState({},'',url);
 		},
 
 		loadMessage(id) {
 			let url = '/account/direct/t/' + id;
 			window.location.href = url;
 			return;
-		},
-
-		composeUsernameSelect() {
-			if(this.profile.username == this.composeUsername) {
-				swal('Ooops!', 'You cannot send a direct message to yourself.', 'error');
-				this.composeUsername = '';
-				return;
-			}
-			axios.post('/api/direct/lookup', {
-				username: this.composeUsername
-			}).then(res => {
-				let url = '/account/direct/t/' + res.data.id;
-				window.location.href = url;
-			}).catch(err => {
-				let msg = 'The username you entered is incorrect. Please try again';
-				swal('Ooops!', msg, 'error');
-				this.composeUsername = '';
-			});
 		},
 
 		truncate(t) {
@@ -345,21 +307,21 @@ export default {
 			if (input.length < 1) { return []; };
 			let self = this;
 			let results = [];
-			return axios.get('/api/local/compose/tag/search', {
-				params: {
-					q: input
-				}
+			return axios.post('/api/direct/lookup', {
+				q: input
 			}).then(res => {
 				return res.data;
 			});
 		},
 
 		getTagResultValue(result) {
-			return '@' + result.name;
+			// return '@' + result.name;
+			return result.local ? '@' + result.name : result.name;
 		},
 
 		onTagSubmitLocation(result) {
 			//this.$refs.autocomplete.value = '';
+			this.composeLoading = true;
 			window.location.href = '/account/direct/t/' + result.id;
 			return;
 		},

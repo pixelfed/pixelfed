@@ -19,6 +19,7 @@ use App\Services\MediaBlocklistService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
+use App\Services\WebfingerService;
 
 class DirectMessageController extends Controller
 {
@@ -241,6 +242,7 @@ class DirectMessageController extends Controller
 		$res = [
 			'id' => (string) $dm->id,
 			'isAuthor' => $profile->id == $dm->from_id,
+			'reportId' => (string) $dm->status_id,
 			'hidden' => (bool) $dm->is_hidden,
 			'type'  => $dm->type,
 			'text' => $dm->status->caption,
@@ -262,9 +264,9 @@ class DirectMessageController extends Controller
 		$pid = $request->input('pid');
 		$max_id = $request->input('max_id');
 		$min_id = $request->input('min_id');
-		
+
 		$r = Profile::findOrFail($pid);
-		// $r = Profile::whereNull('domain')->findOrFail($pid);
+// $r = Profile::whereNull('domain')->findOrFail($pid);
 
 		if($min_id) {
 			$res = DirectMessage::select('*')
@@ -319,10 +321,10 @@ class DirectMessageController extends Controller
 			'avatar' => $r->avatarUrl(),
 			'url' => $r->url(),
 			'muted' => UserFilter::whereUserId($uid)
-				->whereFilterableId($r->id)
-				->whereFilterableType('App\Profile')
-				->whereFilterType('dm.mute')
-				->first() ? true : false,
+			->whereFilterableId($r->id)
+			->whereFilterableType('App\Profile')
+			->whereFilterType('dm.mute')
+			->first() ? true : false,
 			'isLocal' => (bool) !$r->domain,
 			'domain' => $r->domain,
 			'timeAgo' => $r->created_at->diffForHumans(null, true, true),
@@ -343,7 +345,8 @@ class DirectMessageController extends Controller
 		$pid = $request->user()->profile_id;
 
 		$dm = DirectMessage::whereFromId($pid)
-		->findOrFail($sid);
+		->whereStatusId($sid)
+		->firstOrFail();
 
 		$status = Status::whereProfileId($pid)
 		->findOrFail($dm->status_id);
@@ -452,6 +455,8 @@ class DirectMessageController extends Controller
 		}
 
 		return [
+			'id' => $dm->id,
+			'reportId' => (string) $dm->status_id,
 			'type' => $dm->type,
 			'url' => $media->url()
 		];
@@ -460,12 +465,50 @@ class DirectMessageController extends Controller
 	public function composeLookup(Request $request)
 	{
 		$this->validate($request, [
-			'username' => 'required'
+			'q' => 'required|string|min:1|max:50',
+			'remote' => 'nullable|boolean',
 		]);
-		$username = $request->input('username');
-		$profile = Profile::whereUsername($username)->firstOrFail();
 
-		return ['id' => (string)$profile->id];
+		$q = $request->input('q');
+		$r = $request->input('remote');
+
+		if($r && Helpers::validateUrl($q)) {
+			Helpers::profileFetch($q);
+		}
+
+		if(Str::of($q)->startsWith('@')) {
+			if(strlen($q) < 3) {
+				return [];
+			}
+			if(substr_count($q, '@') == 2) {
+				WebfingerService::lookup($q);
+			}
+			$q = mb_substr($q, 1);
+		}
+
+		$blocked = UserFilter::whereFilterableType('App\Profile')
+		->whereFilterType('block')
+		->whereFilterableId($request->user()->profile_id)
+		->pluck('user_id');
+
+		$blocked->push($request->user()->profile_id);
+
+		$results = Profile::select('id','domain','username')
+		->whereNotIn('id', $blocked)
+		->where('username','like','%'.$q.'%')
+		->limit(15)
+		->get()
+		->map(function($r) {
+			return [
+				'local' => (bool) !$r->domain,
+				'id' => (string) $r->id,
+				'name' => $r->username,
+				'privacy' => true,
+				'avatar' => $r->avatarUrl()
+			];
+		});
+
+		return $results;
 	}
 
 	public function read(Request $request)
@@ -509,7 +552,7 @@ class DirectMessageController extends Controller
 				'filter_type' => 'dm.mute'
 			]
 		);
-		
+
 		return [200];
 	}
 
@@ -529,6 +572,7 @@ class DirectMessageController extends Controller
 		->firstOrFail();
 
 		$f->delete();
+
 		return [200];
 	}
 
@@ -536,6 +580,7 @@ class DirectMessageController extends Controller
 	{
 		$profile = $dm->author;
 		$url = $dm->recipient->inbox_url;
+
 		$tags = [
 			[
 				'type' => 'Mention',
@@ -543,6 +588,7 @@ class DirectMessageController extends Controller
 				'name' => $dm->recipient->emailUrl(),
 			]
 		];
+		
 		$body = [
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
