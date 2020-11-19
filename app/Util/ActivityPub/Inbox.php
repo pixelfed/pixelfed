@@ -287,12 +287,12 @@ class Inbox
             }
         }
 
-        if(filter_var($msg, FILTER_VALIDATE_URL)) {
-            if(Helpers::validateUrl($msg)) {
+        if(filter_var($msgText, FILTER_VALIDATE_URL)) {
+            if(Helpers::validateUrl($msgText)) {
                 $dm->type = 'link';
                 $dm->meta = [
-                    'domain' => parse_url($msg, PHP_URL_HOST),
-                    'local' => parse_url($msg, PHP_URL_HOST) == 
+                    'domain' => parse_url($msgText, PHP_URL_HOST),
+                    'local' => parse_url($msgText, PHP_URL_HOST) == 
                         parse_url(config('app.url'), PHP_URL_HOST)
                 ];
                 $dm->save();
