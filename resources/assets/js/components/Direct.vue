@@ -32,8 +32,11 @@
 							<img class="mr-3 rounded-circle img-thumbnail" :src="thread.avatar" alt="Generic placeholder image" width="32px">
 							<div class="media-body">
 								<p class="mb-0">
-									<span class="font-weight-bold text-truncate" :title="[thread.isLocal ? '@' + thread.username : thread.username]" data-toggle="tooltip" data-placement="bottom">
+									<span class="font-weight-bold text-truncate">
 										{{thread.name}}
+									</span>
+									<span class="pl-1 text-muted small text-truncate" style="font-weight: 500;">
+										{{thread.isLocal ? '@' + thread.username : thread.username}}
 									</span>
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
@@ -65,8 +68,11 @@
 							<img class="mr-3 rounded-circle img-thumbnail" :src="thread.avatar" alt="Generic placeholder image" width="32px">
 							<div class="media-body">
 								<p class="mb-0">
-									<span class="font-weight-bold text-truncate" :title="[thread.isLocal ? '@' + thread.username : thread.username]" data-toggle="tooltip" data-placement="bottom">
+									<span class="font-weight-bold text-truncate">
 										{{thread.name}}
+									</span>
+									<span class="pl-1 text-muted small text-truncate" style="font-weight: 500;">
+										{{thread.isLocal ? '@' + thread.username : thread.username}}
 									</span>
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
@@ -98,8 +104,11 @@
 							<img class="mr-3 rounded-circle img-thumbnail" :src="thread.avatar" alt="Generic placeholder image" width="32px">
 							<div class="media-body">
 								<p class="mb-0">
-									<span class="font-weight-bold text-truncate" :title="[thread.isLocal ? '@' + thread.username : thread.username]" data-toggle="tooltip" data-placement="bottom">
+									<span class="font-weight-bold text-truncate">
 										{{thread.name}}
+									</span>
+									<span class="pl-1 text-muted small text-truncate" style="font-weight: 500;">
+										{{thread.isLocal ? '@' + thread.username : thread.username}}
 									</span>
 								</p>
 								<p class="text-muted mb-0" style="font-size:13px;font-weight: 500;">
