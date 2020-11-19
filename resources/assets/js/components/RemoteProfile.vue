@@ -25,7 +25,12 @@
 									<button v-if="relationship && relationship.following == false" class="btn btn-outline-light py-0 px-3 mt-n1" style="font-size:13px; font-weight: 500;" @click="followProfile();">Follow</button>
 									<button v-if="relationship && relationship.following == true" class="btn btn-outline-light py-0 px-3 mt-n1" style="font-size:13px; font-weight: 500;" @click="unfollowProfile();">Unfollow</button>
 								</span>
-								<span class="ml-3">
+								<span class="mx-2">
+									<a :href="'/account/direct/t/' + profile.id" class="btn btn-outline-light btn-sm mt-n1" style="padding-top:2px;padding-bottom:1px;">
+										<i class="far fa-comment-dots cursor-pointer" style="font-size:13px;"></i>
+									</a>
+								</span>
+								<span>
 									<button class="btn btn-outline-light btn-sm mt-n1" @click="showCtxMenu()" style="padding-top:2px;padding-bottom:1px;">
 										<i class="fas fa-cog cursor-pointer" style="font-size:13px;"></i>
 									</button>
@@ -114,8 +119,7 @@
 					<div v-if="feed.length == 0" class="col-12 mb-2">
 						<div class="d-flex justify-content-center align-items-center bg-white border rounded" style="height:60vh;">
 							<div class="text-center">
-								<p class="mb-0 lead">No posts found.</p>
-								<p class="">We haven't seen any posts from this account.</p>
+								<p class="lead">We haven't seen any posts from this account.</p>
 							</div>
 						</div>
 					</div>

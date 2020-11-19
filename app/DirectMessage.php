@@ -14,7 +14,7 @@ class DirectMessage extends Model
 
     public function url()
     {
-    	return url('/i/message/' . $this->to_id . '/' . $this->id);
+    	return config('app.url') . '/account/direct/m/' . $this->status_id;
     }
 
     public function author()
@@ -22,8 +22,29 @@ class DirectMessage extends Model
     	return $this->hasOne(Profile::class, 'id', 'from_id');
     }
 
+    public function recipient()
+    {
+        return $this->hasOne(Profile::class, 'id', 'to_id');
+    }
+
     public function me()
     {
     	return Auth::user()->profile->id === $this->from_id;
+    }
+
+    public function toText()
+    {
+        $actorName = $this->author->username;
+
+        return "{$actorName} sent a direct message.";
+    }
+
+    public function toHtml()
+    {
+        $actorName = $this->author->username;
+        $actorUrl = $this->author->url();
+        $url = $this->url();
+
+        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> sent a <a href='{$url}' class='dm-link'>direct message</a>.";
     }
 }

@@ -24,7 +24,7 @@
 			<div class="col-12 mb-5">
 				<hr>
 			</div>
-			<div v-if="placesSearchEnabled && showPlaces" class="col-12">
+			<div v-if="placesSearchEnabled && showPlaces" class="col-12 mb-4">
 				<div class="mb-4">
 					<p class="text-secondary small font-weight-bold">PLACES <span class="pl-1 text-lighter">({{results.placesPagination.total}})</span></p>
 				</div>

@@ -100,22 +100,22 @@
         </div>
       </a>
     </div>
-    {{-- <div class="col-12 col-md-6 mb-3">
+    <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.dm')}}" class="text-decoration-none">
         <div class="card">
           <div class="card-body">
             <p class="py-1 text-center">
-              <i class="far fa-envelope text-lighter fa-2x"></i>
+              <i class="far fa-comment-dots text-lighter fa-2x"></i>
             </p>
             <p class="text-center text-muted font-weight-bold h4 mb-0">{{__('helpcenter.directMessages')}}</p>
             <div class="text-center pt-3">
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
-              <p class="small text-dark font-weight-bold mb-0">&nbsp;</p>
+              <p class="small text-dark font-weight-bold mb-0">How do I use Pixelfed Direct?</p>
+              <p class="small text-dark font-weight-bold mb-0">How do I unsend a message?</p>
             </div>
           </div>
         </div>
       </a>
-    </div> --}}
+    </div>
     {{-- <div class="col-12 col-md-6 mb-3">
       <a href="{{route('help.stories')}}" class="text-decoration-none">
         <div class="card">

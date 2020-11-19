@@ -34,7 +34,8 @@ class FederationController extends Controller
     public function nodeinfoWellKnown()
     {
         abort_if(!config('federation.nodeinfo.enabled'), 404);
-        return response()->json(Nodeinfo::wellKnown());
+        return response()->json(Nodeinfo::wellKnown())
+            ->header('Access-Control-Allow-Origin','*');
     }
 
     public function nodeinfo()
@@ -62,7 +63,8 @@ class FederationController extends Controller
         }
         $webfinger = (new Webfinger($profile))->generate();
 
-        return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT)
+            ->header('Access-Control-Allow-Origin','*');
     }
 
     public function hostMeta(Request $request)

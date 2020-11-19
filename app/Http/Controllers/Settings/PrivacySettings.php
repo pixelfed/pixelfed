@@ -34,6 +34,7 @@ trait PrivacySettings
         $fields = [
           'is_private',
           'crawlable',
+          'public_dm',
           'show_profile_follower_count',
           'show_profile_following_count',
         ];
@@ -55,6 +56,12 @@ trait PrivacySettings
                     $settings->{$field} = false;
                 } else {
                     $settings->{$field} = true;
+                }
+             } elseif ($field == 'public_dm') {
+                if ($form == 'on') {
+                    $settings->{$field} = true;
+                } else {
+                    $settings->{$field} = false;
                 }
             } else {
                 if ($form == 'on') {

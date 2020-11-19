@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.9...dev)
 ### Added
+- Direct Messages ([d63569c](https://github.com/pixelfed/pixelfed/commit/d63569c))
 - ActivityPubFetchService for signed GET requests ([8763bfc5](https://github.com/pixelfed/pixelfed/commit/8763bfc5))
 - Custom content warnings for remote posts ([6afc61a4](https://github.com/pixelfed/pixelfed/commit/6afc61a4))
 - Thai translations ([74cd536](https://github.com/pixelfed/pixelfed/commit/74cd536))
@@ -15,7 +16,7 @@
 - Add MediaTagService ([524c6d45](https://github.com/pixelfed/pixelfed/commit/524c6d45))
 - Add MediaBlocklist feature ([ba1f7e7e](https://github.com/pixelfed/pixelfed/commit/ba1f7e7e))
 - New Discover Layout, add trending hashtags, places and posts ([c251d41b](https://github.com/pixelfed/pixelfed/commit/c251d41b))
-- Add password change email notification. ([de1cca4f](https://github.com/pixelfed/pixelfed/commit/de1cca4f))
+- Add Password change email notification ([de1cca4f](https://github.com/pixelfed/pixelfed/commit/de1cca4f))
 
 ### Updated
 - Updated PostComponent, fix remote urls ([42716ccc](https://github.com/pixelfed/pixelfed/commit/42716ccc))

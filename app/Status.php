@@ -407,4 +407,9 @@ class Status extends Model
         return $this->belongsTo(Place::class);
     }
 
+    public function directMessage()
+    {
+        return $this->hasOne(DirectMessage::class);
+    }
+
 }

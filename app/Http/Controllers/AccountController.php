@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use PragmaRX\Google2FA\Google2FA;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\{
+	DirectMessage,
 	EmailVerification,
 	Follower,
 	FollowRequest,
@@ -114,19 +115,17 @@ class AccountController extends Controller
 		}
 	}
 
-	public function messages()
-	{
-		return view('account.messages');
-	}
-
 	public function direct()
 	{
 		return view('account.direct');
 	}
 
-	public function showMessage(Request $request, $id)
+	public function directMessage(Request $request, $id)
 	{
-		return view('account.message');
+		$profile = Profile::where('id', '!=', $request->user()->profile_id)
+			// ->whereNull('domain')
+			->findOrFail($id);
+		return view('account.directmessage', compact('id'));
 	}
 
 	public function mute(Request $request)

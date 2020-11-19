@@ -50,6 +50,7 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 	public function replaceTypeVerb($verb)
 	{
 		$verbs = [
+			'dm'	=> 'direct',
 			'follow' => 'follow',
 			'mention' => 'mention',
 			'reblog' => 'share',

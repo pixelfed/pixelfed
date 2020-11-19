@@ -40,13 +40,13 @@
       </label>
       <p class="text-muted small help-text">When this option is enabled, your profile and posts are used for discover recommendations. Only public profiles and posts are used.</p>
     </div> --}}
-    {{--<div class="form-check pb-3">
-      <input class="form-check-input" type="checkbox" value="" id="dm">
-      <label class="form-check-label font-weight-bold" for="dm">
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" id="public_dm" {{$settings->public_dm ? 'checked=""':''}} name="public_dm">
+      <label class="form-check-label font-weight-bold" for="public_dm">
         {{__('Receive Direct Messages from anyone')}}
       </label>
-      <p class="text-muted small help-text">If selected, you will be able to receive messages from any user even if you do not follow them.</p>
-    </div>--}}
+      <p class="text-muted small help-text">If selected, you will be able to receive messages and notifications from any user even if you do not follow them.</p>
+    </div>
     {{-- <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" value="" id="srs" checked="">
       <label class="form-check-label font-weight-bold" for="srs">
