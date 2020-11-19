@@ -307,6 +307,7 @@ class DirectMessageController extends Controller
 				'media' => $s->status->firstMedia() ? $s->status->firstMedia()->url() : null,
 				'timeAgo' => $s->created_at->diffForHumans(null,null,true),
 				'seen' => $s->read_at != null,
+				'reportId' => (string) $s->status_id,
 				'meta' => json_decode($s->meta,true)
 			];
 		});
@@ -589,7 +590,7 @@ class DirectMessageController extends Controller
 	{
 		$profile = $dm->author;
 		$url = $dm->recipient->inbox_url;
-		
+
 		$body = [
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',

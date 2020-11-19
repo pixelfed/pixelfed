@@ -378,6 +378,14 @@
 					objDiv.scrollTop = objDiv.scrollHeight;
 				}, 300);
 			});
+
+			let options = localStorage.getItem('px_dm_options');
+			if(options) {
+				options = JSON.parse(options);
+				this.hideAvatars = options.hideAvatars;
+				this.hideTimestamps = options.hideTimestamps;
+				this.largerText = options.largerText;
+			}
 		},
 
 		watch: {
@@ -396,6 +404,21 @@
 					});
 				}
 				this.mutedNotifications = v;
+			},
+
+			hideAvatars: function(v) {
+				this.hideAvatars = v;
+				this.updateOptions();
+			},
+
+			hideTimestamps: function(v) {
+				this.hideTimestamps = v;
+				this.updateOptions();
+			},
+
+			largerText: function(v) {
+				this.largerText = v;
+				this.updateOptions();
 			},
 		},
 
@@ -470,7 +493,7 @@
 
 			reportMessage() {
 				this.closeCtxMenu();
-				let url = '/i/report?type=post&id=' + this.ctxContext.id;
+				let url = '/i/report?type=post&id=' + this.ctxContext.reportId;
 				window.location.href = url;
 				return;
 			},
@@ -642,6 +665,16 @@
 
 			showOptions() {
 				this.page = 'options';
+			},
+
+			updateOptions() {
+				let options = {
+					v: 1,
+					hideAvatars: this.hideAvatars,
+					hideTimestamps: this.hideTimestamps,
+					largerText: this.largerText
+				}
+				window.localStorage.setItem('px_dm_options', JSON.stringify(options));
 			}
 		}
 	}
