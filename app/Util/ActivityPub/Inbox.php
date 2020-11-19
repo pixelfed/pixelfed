@@ -213,6 +213,11 @@ class Inbox
         $msg = $activity['content'];
         $msgText = strip_tags($activity['content']);
 
+        if(Str::startsWith($msgText, '@' . $profile->username)) {
+            $len = strlen('@' . $profile->username);
+            $msgText = substr($msgText, $len + 1);
+        }
+
         if($profile->user->settings->public_dm == false || $profile->is_private) {
             if($profile->follows($actor) == true) {
                 $hidden = false;
@@ -242,7 +247,10 @@ class Inbox
         $dm->save();
 
         if(count($activity['attachment'])) {
+            $photos = 0;
+            $videos = 0;
             $allowed = explode(',', config('pixelfed.media_types'));
+            $activity['attachment'] = array_slice($activity['attachment'], 0, config('pixelfed.max_album_length'));
             foreach($activity['attachment'] as $a) {
                 $type = $a['mediaType'];
                 $url = $a['url'];
@@ -260,6 +268,21 @@ class Inbox
                 $media->remote_url = $url;
                 $media->mime = $type;
                 $media->save();
+                if(explode('/', $type)[0] == 'image') {
+                    $photos = $photos + 1;
+                }
+                if(explode('/', $type)[0] == 'video') {
+                    $videos = $videos + 1;
+                }
+            }
+
+            if($photos && $videos == 0) {
+                $dm->type = $photos == 1 ? 'photo' : 'photos';
+                $dm->save();
+            }
+            if($videos && $photos == 0) {
+                $dm->type = $videos == 1 ? 'video' : 'videos';
+                $dm->save();
             }
         }
 
