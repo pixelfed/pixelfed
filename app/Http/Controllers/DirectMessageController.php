@@ -465,7 +465,7 @@ class DirectMessageController extends Controller
 	public function composeLookup(Request $request)
 	{
 		$this->validate($request, [
-			'q' => 'required|string|min:1|max:50',
+			'q' => 'required|string|min:2|max:50',
 			'remote' => 'nullable|boolean',
 		]);
 
@@ -496,7 +496,8 @@ class DirectMessageController extends Controller
 		$results = Profile::select('id','domain','username')
 		->whereNotIn('id', $blocked)
 		->where('username','like','%'.$q.'%')
-		->limit(15)
+		->orderBy('domain')
+		->limit(8)
 		->get()
 		->map(function($r) {
 			return [
@@ -588,7 +589,7 @@ class DirectMessageController extends Controller
 				'name' => $dm->recipient->emailUrl(),
 			]
 		];
-		
+
 		$body = [
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
