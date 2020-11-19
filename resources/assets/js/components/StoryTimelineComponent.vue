@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-if="show" class="card card-body p-0 border mt-4 mb-3 shadow-none">
+		<div v-if="show" class="card card-body p-0 border mt-md-4 mb-md-3 shadow-none">
 			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'mx-3 mt-3 mb-0 pb-0']"></div>
 		</div>
 	</div>

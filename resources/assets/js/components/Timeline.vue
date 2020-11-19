@@ -6,7 +6,7 @@
 				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
 			</p>
 		</div>
-		<div class="col-12 pl-3 pl-md-0 pt-3 pl-0">
+		<div class="d-none d-md-block col-12 pl-3 pl-md-0 pt-3 pl-0">
 			<div class="d-none d-md-flex justify-content-between align-items-center">
 				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 				<p class="mb-0">
@@ -24,7 +24,7 @@
 			<hr>
 		</div>
 		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
-			<div style="margin-top:-8px;">
+			<div style="margin-top:-2px;">
 				<story-component v-if="config.features.stories"></story-component>
 			</div>
 			<div>
@@ -33,7 +33,7 @@
 						<span class="sr-only">Loading...</span>
 					</div>
 				</div>
-				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`" class="pt-4">
+				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
 					<div v-if="index == 0 && showTips && !loading" class="mb-4 card-tips">
 						<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 					</div>
@@ -257,7 +257,7 @@
 			</div>
 		</div>
 
-		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-3 order-1 order-md-2 d-none d-md-block">
+		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-4 order-1 order-md-2 d-none d-md-block">
 			<div>
 
 				<!-- <div class="mb-4">

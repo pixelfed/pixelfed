@@ -84,6 +84,7 @@
 									{{convo.text}}
 								</p>
 								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold ml-2 d-flex align-items-center justify-content-start" data-timestamp="timestamp"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}</p>
+								<p v-else>&nbsp;</p>
 							</div>
 						</div>
 						<div v-else class="media d-inline-flex float-right mb-0">
@@ -131,6 +132,7 @@
 								</p>
 								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold text-right mr-2"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}
 								</p>
+								<p v-else>&nbsp;</p>
 							</div>
 							<img v-if="!hideAvatars" class="ml-3 mt-2 rounded-circle img-thumbnail" :src="profile.avatar" alt="avatar" width="32px">
 						</div>
