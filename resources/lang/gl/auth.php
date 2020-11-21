@@ -14,6 +14,6 @@ return [
     */
 
     'failed'   => 'As credenciais non constan nos nosos rexistros.',
-    'throttle' => 'Demasiados intentos de conexión. Por favor, inténteo de novo en :seconds seconds.',
+    'throttle' => 'Demasiados intentos de conexión. Por favor, inténtao de novo en :seconds segundos.',
 
 ];
