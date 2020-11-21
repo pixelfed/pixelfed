@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Os contrasinais deben ser ao menos de seis caracteres e concordar na confirmación.',
-    'reset'    => 'Restableceuse o seu contrasinal!',
-    'sent'     => 'Acabamos de enviarlle unha ligazón para restablecer o contrasinal!',
-    'token'    => 'Este testemuño de restablecemento de contrasinal non é válido.',
-    'user'     => 'Non atopamos unha usuaria con ese enderezo de correo.',
+    'password' => 'Os contrasinais deben ter seis caracteres como mínimo e concordar na confirmación.',
+    'reset'    => 'Restableceuse o teu contrasinal!',
+    'sent'     => 'Se o email está na base de datos, recibirás unha ligazón para restablecer o contrasinal dentro duns minutos. Comproba o cartafol de spam se non recibes o email.',
+    'token'    => 'O testemuño de restablecemento do contrasinal non é válido.',
+    'user'     => 'Se o email está na base de datos, recibirás unha ligazón para restablecer o contrasinal dentro duns minutos. Comproba o cartafol de spam se non recibes o email.',
 
 ];
