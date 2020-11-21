@@ -2,20 +2,25 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use Carbon\Carbon;
-use ImageOptimizer;
-use App\{Media, Status};
+use App\Media;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ImageOptimize implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    
+
     protected $media;
+
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -35,8 +40,8 @@ class ImageOptimize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        $path = storage_path('app/'. $media->media_path);
-        if(!is_file($path)) {
+        $path = storage_path('app/'.$media->media_path);
+        if (!is_file($path)) {
             return;
         }
 

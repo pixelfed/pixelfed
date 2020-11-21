@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Nämä kirjautumistiedot eivät vastaa tallennettuja',
+    'failed'   => 'Nämä kirjautumistiedot eivät vastaa tallennettuja',
     'throttle' => 'Liian monta kirjautumisyritystä. Yrityä uudelleen :seconds sekuntin kuluttua.',
 
 ];

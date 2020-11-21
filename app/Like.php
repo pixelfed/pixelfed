@@ -15,28 +15,32 @@ class Like extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+    protected $fillable = ['profile_id', 'status_id'];
 
     public function actor()
     {
-      return $this->belongsTo(Profile::class, 'profile_id', 'id');
+        return $this->belongsTo(Profile::class, 'profile_id', 'id');
     }
 
     public function status()
     {
-      return $this->belongsTo(Status::class);
+        return $this->belongsTo(Status::class);
     }
 
-    public function toText()
+    public function toText($type = 'post')
     {
-      $actorName = $this->actor->username;
-      return "{$actorName} " . __('notification.likedPhoto');
+        $actorName = $this->actor->username;
+        $msg = $type == 'post' ? __('notification.likedPhoto') : __('notification.likedComment');
+
+        return "{$actorName} ".$msg;
     }
 
-    public function toHtml()
+    public function toHtml($type = 'post')
     {
-      $actorName = $this->actor->username;
-      $actorUrl = $this->actor->url();
-      return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> " .
-          __('notification.likedPhoto');
+        $actorName = $this->actor->username;
+        $actorUrl = $this->actor->url();
+        $msg = $type == 'post' ? __('notification.likedPhoto') : __('notification.likedComment');
+
+        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".$msg;
     }
 }

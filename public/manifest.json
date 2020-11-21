@@ -1,0 +1,20 @@
+{
+  "name": "Pixelfed",
+  "short_name": "Pixelfed",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f8fa",
+  "description": "Federated Image Sharing",
+  "icons": [
+    {
+      "src": "img/favicon.png",
+      "type": "image/png",
+      "sizes": "153x152"
+    },
+    {
+      "src": "img/pixelfed-icon-color.svg",
+      "type": "image/svg",
+      "sizes": "50x50"
+    }
+  ]
+}

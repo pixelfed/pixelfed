@@ -1,4 +1,4 @@
-@extends('admin.partial.template')
+@extends('admin.partial.template-full')
 
 @section('section')
   <div class="title">

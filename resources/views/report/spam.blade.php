@@ -13,21 +13,30 @@
           <p class="lead">Please select one of the following options.</p>
         </div>
         <div class="row">
-          <div class="col-12 col-md-8 offset-md-2 my-3">
+          @switch(request()->query('type'))
+
+          @case('comment')
+          <div class="col-12 col-md-8 offset-md-2 mb-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold" href="{{route('report.spam.comment')}}">
               This comment contains spam
             </a></p>
           </div>
-          <div class="col-12 col-md-8 offset-md-2 my-3">
+          @break
+          @case('post')
+          <div class="col-12 col-md-8 offset-md-2 mb-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold" href="{{route('report.spam.post')}}">
               This post contains spam
             </a></p>
           </div>
-          <div class="col-12 col-md-8 offset-md-2 my-3">
+          @break
+          @case('user')
+          <div class="col-12 col-md-8 offset-md-2 mb-3">
             <p><a class="btn btn-light btn-block p-4 font-weight-bold" href="{{route('report.spam.profile')}}">
               This users profile contains spam
             </a></p>
           </div>
+          @break
+          @endswitch
           <div class="col-12 col-md-8 offset-md-2 my-3">
             <p><a class="font-weight-bold" href="#">
               Learn more

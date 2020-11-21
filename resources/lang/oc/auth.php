@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Aqueles identificants correspondon pas a nòstres enregistraments.',
+    'failed'   => 'Aqueles identificants correspondon pas a nòstres enregistraments.',
     'throttle' => 'Tròp d’ensages de connexion. Tornatz ensajar dins :seconds segondas.',
 
 ];

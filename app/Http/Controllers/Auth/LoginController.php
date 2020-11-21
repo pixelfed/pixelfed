@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\AccountLog;
 use App\Http\Controllers\Controller;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -25,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -40,20 +42,43 @@ class LoginController extends Controller
     /**
      * Validate the user login request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return void
      */
     public function validateLogin($request)
     {
         $rules = [
-            $this->username() => 'required|string',
-            'password' => 'required|string',
+            $this->username() => 'required|email',
+            'password'        => 'required|string|min:6',
         ];
 
-        if(config('pixelfed.recaptcha')) {
-            $rules['g-recaptcha-response'] = 'required|recaptcha';
+        $this->validate($request, $rules);
+    }
+
+    /**
+     * The user has been authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param mixed                    $user
+     *
+     * @return mixed
+     */
+    protected function authenticated($request, $user)
+    {
+        if($user->status == 'deleted') {
+            return;
         }
 
-        $this->validate($request, $rules);
+        $log = new AccountLog();
+        $log->user_id = $user->id;
+        $log->item_id = $user->id;
+        $log->item_type = 'App\User';
+        $log->action = 'auth.login';
+        $log->message = 'Account Login';
+        $log->link = null;
+        $log->ip_address = $request->ip();
+        $log->user_agent = $request->userAgent();
+        $log->save();
     }
 }

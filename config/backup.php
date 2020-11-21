@@ -117,9 +117,9 @@ return [
      */
     'monitorBackups' => [
         [
-            'name' => config('app.name'),
-            'disks' => ['local'],
-            'newestBackupsShouldNotBeOlderThanDays' => 1,
+            'name'                                   => config('app.name'),
+            'disks'                                  => ['local'],
+            'newestBackupsShouldNotBeOlderThanDays'  => 1,
             'storageUsedMayNotBeHigherThanMegabytes' => 5000,
         ],
 

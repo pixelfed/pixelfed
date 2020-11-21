@@ -1,10 +1,10 @@
 <?php
 
-use Spatie\ImageOptimizer\Optimizers\Svgo;
-use Spatie\ImageOptimizer\Optimizers\Optipng;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
-use Spatie\ImageOptimizer\Optimizers\Pngquant;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+use Spatie\ImageOptimizer\Optimizers\Optipng;
+use Spatie\ImageOptimizer\Optimizers\Pngquant;
+use Spatie\ImageOptimizer\Optimizers\Svgo;
 
 return [
     /*
@@ -43,11 +43,11 @@ return [
     /*
      * The maximum time in seconds each optimizer is allowed to run separately.
      */
-    'timeout' => 60,
+    'timeout' => 59,
 
     /*
      * If set to `true` all output of the optimizer binaries will be appended to the default log.
      * You can also set this to a class that implements `Psr\Log\LoggerInterface`.
      */
-    'log_optimizer_activity' => true,
+    'log_optimizer_activity' => false,
 ];

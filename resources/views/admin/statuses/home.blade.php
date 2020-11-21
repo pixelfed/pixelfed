@@ -1,4 +1,4 @@
-@extends('admin.partial.template')
+@extends('admin.partial.template-full')
 
 @section('section')
   <div class="title">
@@ -8,20 +8,20 @@
   <hr>
 
   <table class="table">
-    <thead class="thead-dark">
+    <thead class="bg-light">
       <tr>
-        <th scope="col">#</th>
-        <th scope="col">Username</th>
-        <th scope="col">Likes</th>
-        <th scope="col">Storage</th>
-        <th scope="col">Created</th>
+        <th scope="col" class="border-0 text-dark">#</th>
+        <th scope="col" class="border-0 text-dark">Username</th>
+        <th scope="col" class="border-0 text-dark">Likes</th>
+        <th scope="col" class="border-0 text-dark">Storage</th>
+        <th scope="col" class="border-0 text-dark">Created</th>
       </tr>
     </thead>
     <tbody>
       @foreach($statuses as $status)
       <tr>
         <th scope="row">
-          <a href="/statuses/show/{{$status->id}}">
+          <a href="{{$status->url()}}">
             {{$status->id}}
           </a>
         </th>

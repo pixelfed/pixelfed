@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Passw&ouml;rter müssen mindestens 6 Zeichen sein und die Best&auml;tigung muss &uuml;bereinstimmen.',
-    'reset' => 'Dein Passwort wurde zur&uuml;ckgesetzt!',
-    'sent' => 'Wir haben die eine Password-R&uuml;cksetzungs-E-Mail gesendet!',
-    'token' => 'Dieser Passwort-R&uuml;cksetzungs-Code ist nicht g&uuml;ltig.',
-    'user' => "Wir konnten keinen Nutzer mit dieser E-Mail-Adresse finden.",
+    'password' => 'Passwörter müssen mindestens 6 Zeichen lang sein und mit der Bestätigung übereinstimmen.',
+    'reset'    => 'Dein Passwort wurde zurückgesetzt!',
+    'sent'     => 'Wenn deine E-Mail-Adresse in unserer Datenbank existiert, wirst du in ein paar Minuten einen Link zum Zurücksetzen deines Passworts zugesendet bekommen. Bitte prüfe deinen Spam-Ordner, wenn du diese E-Mail nicht bekommst.',
+    'token'    => 'Dieser Code zum Passwort zurücksetzen ist ungültig.',
+    'user'     => 'Wenn deine E-Mail-Adresse in unserer Datenbank existiert, wirst du in ein paar Minuten einen Link zum Zurücksetzen deines Passworts zugesendet bekommen. Bitte prüfe deinen Spam-Ordner, wenn du diese E-Mail nicht bekommst.',
 
 ];

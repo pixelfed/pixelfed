@@ -1,0 +1,79 @@
+
+// Fonts
+@import "fonts";
+@import "lib/fontawesome";
+
+// Variables
+@import "dark";
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+@import "custom";
+
+.text-dark {
+    color: #ADAFAE !important;
+}
+
+.border-left {
+    background: #ADAFAE !important;
+}
+
+.btn-outline-light {
+	border-color: #E2E8F0 !important;
+	color: #E2E8F0 !important;
+}
+
+.bg-white,
+.postPresenterContainer,
+.postComponent .card-body.flex-grow-0.py-1,
+.postComponent .reactions,
+.postComponent .status-comments,
+.navbar-laravel {
+	background: #2D3748 !important;
+}
+
+.postComponent .border-left {
+	border-left: 0 !important;
+}
+
+.postComponent .card-header {
+	border-radius: 0;
+}
+
+input,
+textarea {
+	color: #E2E8F0 !important;
+	background: #4A5568 !important;
+}
+
+.far, .fas,
+.navbar-laravel .navbar-brand span,
+.navbar-laravel .nav-link .d-md-block,
+.navbar-laravel .nav-link.dropdown-toggle .far,
+.navbar-laravel .nav-link.dropdown-toggle::after {
+	color: #ADAFAE !important;
+}
+
+.form-control.search-form-input {
+	color: #E2E8F0 !important;
+	background: #4A5568 !important;
+}
+
+.btn-outline-primary {
+	border-color: #4A5568 !important;
+}
+
+@import "components/filters";
+
+@import "components/typeahead";
+
+@import "components/notifications";
+
+@import '~bootstrap-vue/dist/bootstrap-vue.css';
+
+@import "moment";
+
+.border {
+    border: 1px solid #4A5568 !important;
+}

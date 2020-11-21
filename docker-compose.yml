@@ -1,61 +1,87 @@
 ---
 version: '3'
+
+# In order to set configuration, please use a .env file in
+# your compose project directory (the same directory as your
+# docker-compose.yml), and set database options, application
+# name, key, and other settings there.
+# A list of available settings is available in .env.example
+#
+# The services should scale properly across a swarm cluster
+# if the volumes are properly shared between cluster members.
+
 services:
-  nginx:
-    image: nginx:alpine
-    networks:
-      - internal
-      - external
-    ports:
-      - 3000:80
-    volumes:
-      - "php-storage:/var/www/html"
-      - ./contrib/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
 
-  php:
-    build: .
+## App and Worker
+  app:
+    # Comment to use dockerhub image
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
     image: pixelfed
-    volumes:
-      - "php-storage:/var/www/html"
-    networks:
-      - internal
-    environment:
-      - DB_HOST=mysql
-      - DB_DATABASE=pixelfed
-      - DB_USERNAME=${DB_USERNAME:-pixelfed}
-      - DB_PASSWORD=${DB_PASSWORD:-pixelfed}
-      - REDIS_HOST=redis
-      - APP_KEY=${APP_KEY}
+    restart: unless-stopped
     env_file:
-      - ./.env
+      - ./.env.docker
+    volumes:
+      - "app-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
+      - "./.env.docker:/var/www/.env"
+    networks:
+      - external
+      - internal
+    ports:
+    - "8080:80"
+    depends_on:
+      - db
+      - redis
 
-  mysql:
-    image: mysql:5.7
+  worker:
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
+    image: pixelfed
+    restart: unless-stopped
+    env_file:
+      - ./.env.docker
+    volumes:
+      - "app-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
+    networks:
+      - external
+      - internal
+    command: gosu www-data php artisan horizon
+    depends_on:
+      - db
+      - redis
+
+## DB and Cache
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
     networks:
       - internal
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=pixelfed
-      - MYSQL_USER=${DB_USERNAME:-pixelfed}
-      - MYSQL_PASSWORD=${DB_PASSWORD:-pixelfed}
-      - MYSQL_RANDOM_ROOT_PASSWORD="true"
-    env_file:
-      - ./.env
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
     volumes:
-      - "mysql-data:/var/lib/mysql"
+      - "db-data:/var/lib/mysql"
 
   redis:
-    image: redis:alpine
+    image: redis:5-alpine
+    restart: unless-stopped
     volumes:
       - "redis-data:/data"
     networks:
       - internal
 
 volumes:
+  db-data:
   redis-data:
-  mysql-data:
-  php-storage:
+  app-storage:
+  app-bootstrap:
 
 networks:
   internal:

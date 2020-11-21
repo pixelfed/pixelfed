@@ -3,26 +3,17 @@
 @section('content')
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-7 mb-3">
-            <div class="card">
-                <div class="card-body text-center">
-                    <p class="h4 font-weight-bold pt-5">A Photo Sharing Experience For Everyone</p>
-                    <div class="p-5 mb-5">
-                        <img src="/img/Macbook__ipad__iphone.svg" width="100%">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-5">
+        <div class="col-lg-5">
             <div class="card">
                 <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Register a new account') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}" class="px-5">
+                    <form method="POST" action="{{ route('register') }}" class="px-md-3">
                         @csrf
 
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label class="small font-weight-bold text-lighter">Name</label>
                                 <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
 
                                 @if ($errors->has('name'))
@@ -35,6 +26,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label class="small font-weight-bold text-lighter">Username</label>
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
 
                                 @if ($errors->has('username'))
@@ -47,6 +39,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label class="small font-weight-bold text-lighter">Email</label>
                                 <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
 
                                 @if ($errors->has('email'))
@@ -59,6 +52,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label class="small font-weight-bold text-lighter">Password</label>
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
 
                                 @if ($errors->has('password'))
@@ -71,15 +65,23 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <label class="small font-weight-bold text-lighter">Confirm Password</label>
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
                             </div>
                         </div>
 
-                        @if(config('pixelfed.recaptcha'))
-                        <div class="row my-3">
-                            {!! Recaptcha::render() !!}
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                  <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
+                                  <label class="form-check-label" for="ageCheck">
+                                    I am at least 16 years old
+                                  </label>
+                                </div>
+                            </div>
                         </div>
-                        @endif
+
+                        <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
                         
                         <div class="form-group row">
                             <div class="col-md-12">
@@ -88,7 +90,6 @@
                                 </button>
                             </div>
                         </div>
-                        <p class="mb-0 font-weight-bold text-muted">By signing up, you agree to our <a href="#">Terms</a>, <a href="#">Data Policy</a> and <a href="#">Cookies Policy</a>.</p>
                     </form>
                 </div>
             </div>

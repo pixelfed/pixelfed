@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'あなたのタイムラインには何もありません。'
+  'emptyPersonalTimeline' => 'あなたのタイムラインには何もありません。',
 
 ];

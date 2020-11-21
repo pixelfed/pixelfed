@@ -1,0 +1,13 @@
+// Landing Page bundle
+
+@import "fonts";
+@import "lib/fontawesome";
+@import 'variables';
+@import '~bootstrap/scss/bootstrap';
+@import 'custom';
+
+.container.slim {
+	width: auto;
+	max-width: 680px;
+	padding: 0 15px;
+}

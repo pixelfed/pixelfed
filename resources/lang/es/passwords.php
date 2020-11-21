@@ -14,9 +14,9 @@ return [
     */
 
     'password' => 'La contraseña debe tener al menos seis caracteres y coincidir con la de confirmación.',
-    'reset' => '¡Tu contraseña se ha cambiado!',
-    'sent' => 'Te hemos enviado a tu correo un enlace para cambiar tu contraseña.',
-    'token' => 'El "token" para canbiar la contraseña no es válido.',
-    'user' => "No hemos podido encontrar a ningún usuario con esa contraseña.",
+    'reset'    => '¡Tu contraseña se ha cambiado!',
+    'sent'     => 'Te hemos enviado a tu correo un enlace para cambiar tu contraseña.',
+    'token'    => 'El "token" para canbiar la contraseña no es válido.',
+    'user'     => 'No hemos podido encontrar a ningún usuario con esa contraseña.',
 
 ];

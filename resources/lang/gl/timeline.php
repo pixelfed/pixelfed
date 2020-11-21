@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'A súa liña temporal está baldeira.'
+  'emptyPersonalTimeline' => 'A súa liña temporal está baldeira.',
 
 ];

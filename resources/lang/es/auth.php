@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Los datos introducidos no son válidos.',
+    'failed'   => 'Los datos introducidos no son válidos.',
     'throttle' => 'Demasiados intentos de iniciar sesión. Por favor, inténtalo de nuevo en :seconds segundos.',
 
 ];

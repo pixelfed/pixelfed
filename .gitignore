@@ -13,3 +13,10 @@ npm-debug.log
 yarn-error.log
 .env
 .DS_Store
+.bash_profile
+.bash_history
+.bashrc
+.gitconfig
+.git-credentials
+/.composer/
+/nginx.conf

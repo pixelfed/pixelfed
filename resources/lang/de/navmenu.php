@@ -2,12 +2,19 @@
 
 return [
 
-    'viewMyProfile' => 'Mein Profil anschauen',
-    'myTimeline' => 'Meine Timeline',
-    'publicTimeline' => '&Ouml;ffentliche Timeline',
-    'remoteFollow' => 'Aus der Ferne folgen',
-    'settings' => 'Einstellungen',
-    'admin' => 'Administration',
-    'logout' => 'Abmelden',
+    'search'         => 'Suche',
+    'home'           => 'Heim',
+    'local'          => 'Lokal',
+    'network'        => 'Netzwerk',
+    'discover'       => 'Entdecken',
+    'viewMyProfile'  => 'Mein Profil anschauen',
+    'myProfile'      => 'Mein Profil',
+    'myTimeline'     => 'Meine Timeline',
+    'publicTimeline' => 'Öffentliche Timeline',
+    'remoteFollow'   => 'Aus der Ferne folgen',
+    'settings'       => 'Einstellungen',
+    'admin'          => 'Administration',
+    'logout'         => 'Abmelden',
+    'directMessages' => 'Privatnachrichten',
 
 ];

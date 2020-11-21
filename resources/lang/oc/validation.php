@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 return [
 
@@ -51,10 +51,10 @@ return [
     'ipv6'                 => ':attribute deu èsser una adreça IPv6 valida.',
     'json'                 => ':attribute deu èsser una cadena JSON valida.',
     'max'                  => [
-        'numeric' => 'The :attribute deu pas èsser superior a :max.',
-        'file'    => 'The :attribute deu pas èsser superior a :max kiloctets.',
-        'string'  => 'The :attribute deu èsser superior a :max caractèrs.',
-        'array'   => 'The :attribute deu pas conténer mai de :max elements',
+        'numeric' => ':attribute deu pas èsser superior a :max.',
+        'file'    => ':attribute deu pas èsser superior a :max kiloctets.',
+        'string'  => ':attribute deu èsser superior a :max caractèrs.',
+        'array'   => ':attribute deu pas conténer mai de :max elements.',
     ],
     'mimes'                => ':attribute deu èsser un fichièr del tipe : :values.',
     'mimetypes'            => ':attribute deu èsser un fichièr del tipe : :values.',

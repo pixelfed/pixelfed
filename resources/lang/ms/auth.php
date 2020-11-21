@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Butiran ini tidak sepadan dengan rekod kami ',
+    'failed'   => 'Butiran ini tidak sepadan dengan rekod kami ',
     'throttle' => 'Terlalu banyak cubaan log masuk. Cuba lagi dalam :seconds saat.',
 
 ];

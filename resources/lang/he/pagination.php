@@ -12,8 +12,8 @@ return [
     | you want to customize your views to better match your application.
     |
     */
-    
-    'previous' => '&laquo; הקודם',
-    'next' => 'הבא &raquo;',
+
+    'previous' => '« הקודם',
+    'next'     => 'הבא »',
 
 ];

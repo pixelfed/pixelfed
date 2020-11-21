@@ -1,4 +1,5 @@
 <?php
+
 return [
-  'emptyPersonalTimeline' => 'Votre chronologie est vide.'
+    'emptyPersonalTimeline'    =>    'Votre chronologie est vide.',
 ];

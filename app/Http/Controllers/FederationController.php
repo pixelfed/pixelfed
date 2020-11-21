@@ -2,137 +2,156 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-use App\Profile;
-use League\Fractal;
-use Illuminate\Http\Request;
-use App\Util\Lexer\Nickname;
-use App\Util\Webfinger\Webfinger;
-use App\Transformer\ActivityPub\{
-  ProfileOutbox, 
-  ProfileTransformer
+use App\Jobs\InboxPipeline\{
+    InboxWorker,
+    InboxValidator
 };
 use App\Jobs\RemoteFollowPipeline\RemoteFollowPipeline;
+use App\{
+    AccountLog,
+    Like,
+    Profile,
+    Status,
+    User
+};
+use App\Util\Lexer\Nickname;
+use App\Util\Webfinger\Webfinger;
+use Auth;
+use Cache;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use League\Fractal;
+use App\Util\Site\Nodeinfo;
+use App\Util\ActivityPub\{
+    Helpers,
+    HttpSignature,
+    Outbox
+};
+use Zttp\Zttp;
 
 class FederationController extends Controller
 {
-    public function authCheck()
-    {
-      if(!Auth::check()) { 
-        abort(403); 
-      }
-      return;
-    }
-
-    public function remoteFollow()
-    {
-      $this->authCheck();
-      return view('federation.remotefollow');
-    }
-
-    public function remoteFollowStore(Request $request)
-    {
-      $this->authCheck();
-      $this->validate($request, [
-        'url' => 'required|string'
-      ]);
-
-      if(config('pixelfed.remote_follow_enabled') !== true) {
-        abort(403);
-      }
-
-      $follower = Auth::user()->profile;
-      $url = $request->input('url');
-
-      RemoteFollowPipeline::dispatch($follower, $url);
-
-      return redirect()->back();
-    }
-
     public function nodeinfoWellKnown()
     {
-      $res = [
-        'links' => [
-          [
-            'href' => config('pixelfed.nodeinfo.url'),
-            'rel'  => 'http://nodeinfo.diaspora.software/ns/schema/2.0'
-          ]
-        ]
-      ];
-      return response()->json($res);
+        abort_if(!config('federation.nodeinfo.enabled'), 404);
+        return response()->json(Nodeinfo::wellKnown())
+            ->header('Access-Control-Allow-Origin','*');
     }
 
     public function nodeinfo()
     {
-      $res =  [
-        'metadata' => [
-          'nodeName' => config('app.name'),
-          'software' => [
-            'homepage' => 'https://pixelfed.org',
-            'github' => 'https://github.com/pixelfed',
-            'follow' => 'https://mastodon.social/@pixelfed'
-          ],
-          /*
-          TODO: Custom Features for Trending
-          'customFeatures' => [
-            'trending' => [
-              'description' => 'Trending API for federated discovery',
-              'api' => [
-                'url' => null,
-                'docs' => null
-              ],
-            ],
-          ],
-          */
-        ],
-        'openRegistrations' => config('pixelfed.open_registration'),
-        'protocols' => [
-          'activitypub'
-        ],
-        'services' => [
-          'inbound' => [],
-          'outbound' => []
-        ],
-        'software' => [
-          'name' => 'pixelfed',
-          'version' => config('pixelfed.version')
-        ],
-        'usage' => [
-          'localPosts' => \App\Status::whereLocal(true)->count(),
-          'users' => [
-            'total' => \App\User::count()
-          ]
-        ],
-        'version' => '2.0'
-      ];
-
-      return response()->json($res);
+        abort_if(!config('federation.nodeinfo.enabled'), 404);
+        return response()->json(Nodeinfo::get())
+            ->header('Access-Control-Allow-Origin','*');
     }
-
 
     public function webfinger(Request $request)
     {
-      $this->validate($request, ['resource'=>'required']);
-      $resource = $request->input('resource');
-      $parsed = Nickname::normalizeProfileUrl($resource);
-      $username = $parsed['username'];
-      $user = Profile::whereUsername($username)->firstOrFail();
-      $webfinger = (new Webfinger($user))->generate();
-      return response()->json($webfinger);
+        abort_if(!config('federation.webfinger.enabled'), 400);
+
+        abort_if(!$request->filled('resource'), 400);
+
+        $resource = $request->input('resource');
+        $parsed = Nickname::normalizeProfileUrl($resource);
+        if($parsed['domain'] !== config('pixelfed.domain.app')) {
+            abort(400);
+        }
+        $username = $parsed['username'];
+        $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
+        if($profile->status != null) {
+            return ProfileController::accountCheck($profile);
+        }
+        $webfinger = (new Webfinger($profile))->generate();
+
+        return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT)
+            ->header('Access-Control-Allow-Origin','*');
+    }
+
+    public function hostMeta(Request $request)
+    {
+        abort_if(!config('federation.webfinger.enabled'), 404);
+
+        $path = route('well-known.webfinger');
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0"><Link rel="lrdd" type="application/xrd+xml" template="'.$path.'?resource={uri}"/></XRD>';
+
+        return response($xml)->header('Content-Type', 'application/xrd+xml');
     }
 
     public function userOutbox(Request $request, $username)
     {
-      if(config('pixelfed.activitypub_enabled') == false) {
-        abort(403);
-      }
-      
-      $user = Profile::whereNull('remote_url')->whereUsername($username)->firstOrFail();
-      $timeline = $user->statuses()->orderBy('created_at','desc')->paginate(10);
-      $fractal = new Fractal\Manager();
-      $resource = new Fractal\Resource\Item($user, new ProfileOutbox);
-      $res = $fractal->createData($resource)->toArray();
-      return response()->json($res['data']);
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config('federation.activitypub.outbox'), 404);
+
+        $profile = Profile::whereNull('domain')
+            ->whereNull('status')
+            ->whereIsPrivate(false)
+            ->whereUsername($username)
+            ->firstOrFail();
+
+        $key = 'ap:outbox:latest_10:pid:' . $profile->id;
+        $ttl = now()->addMinutes(15);
+        $res = Cache::remember($key, $ttl, function() use($profile) {
+            return Outbox::get($profile);
+        });
+
+        return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
     }
 
+    public function userInbox(Request $request, $username)
+    {
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config('federation.activitypub.inbox'), 404);
+
+        $headers = $request->headers->all();
+        $payload = $request->getContent();
+        dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
+        return;
+    }
+
+    public function userFollowing(Request $request, $username)
+    {
+        abort_if(!config('federation.activitypub.enabled'), 404);
+
+        $profile = Profile::whereNull('remote_url')
+            ->whereUsername($username)
+            ->whereIsPrivate(false)
+            ->firstOrFail();
+            
+        if($profile->status != null) {
+            abort(404);
+        }
+
+        $obj = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id'       => $request->getUri(),
+            'type'     => 'OrderedCollectionPage',
+            'totalItems' => 0,
+            'orderedItems' => []
+        ];
+        return response()->json($obj); 
+    }
+
+    public function userFollowers(Request $request, $username)
+    {
+        abort_if(!config('federation.activitypub.enabled'), 404);
+
+        $profile = Profile::whereNull('remote_url')
+            ->whereUsername($username)
+            ->whereIsPrivate(false)
+            ->firstOrFail();
+
+        if($profile->status != null) {
+            abort(404);
+        }
+
+        $obj = [
+            '@context' => 'https://www.w3.org/ns/activitystreams',
+            'id'       => $request->getUri(),
+            'type'     => 'OrderedCollectionPage',
+            'totalItems' => 0,
+            'orderedItems' => []
+        ];
+
+        return response()->json($obj); 
+    }
 }

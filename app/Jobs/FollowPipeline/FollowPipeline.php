@@ -2,14 +2,15 @@
 
 namespace App\Jobs\FollowPipeline;
 
-use Cache, Log, Redis;
-use App\{Like, Notification};
+use App\Notification;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Jobs\FollowPipeline\FollowDiscover;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Illuminate\Support\Facades\Redis;
 
 class FollowPipeline implements ShouldQueue
 {
@@ -17,6 +18,13 @@ class FollowPipeline implements ShouldQueue
 
     protected $follower;
 
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+    
     /**
      * Create a new job instance.
      *
@@ -38,9 +46,12 @@ class FollowPipeline implements ShouldQueue
         $actor = $follower->actor;
         $target = $follower->target;
 
-        try {
+        if($target->domain || !$target->private_key) {
+            return;
+        }
 
-            $notification = new Notification;
+        try {
+            $notification = new Notification();
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'follow';
@@ -50,13 +61,10 @@ class FollowPipeline implements ShouldQueue
             $notification->item_type = "App\Profile";
             $notification->save();
 
-            Cache::forever('notification.' . $notification->id, $notification);
-            
             $redis = Redis::connection();
 
-            $nkey = config('cache.prefix').':user.' . $target->id . '.notifications';
+            $nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
             $redis->lpush($nkey, $notification->id);
-
         } catch (Exception $e) {
             Log::error($e);
         }

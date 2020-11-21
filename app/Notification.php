@@ -15,25 +15,26 @@ class Notification extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
-    
+
+    protected $fillable = ['*'];
+
     public function actor()
     {
-      return $this->belongsTo(Profile::class, 'actor_id', 'id');
+        return $this->belongsTo(Profile::class, 'actor_id', 'id');
     }
 
     public function profile()
     {
-      return $this->belongsTo(Profile::class, 'profile_id', 'id');
+        return $this->belongsTo(Profile::class, 'profile_id', 'id');
     }
 
     public function item()
     {
-      return $this->morphTo();
+        return $this->morphTo();
     }
 
     public function status()
     {
-      return $this->belongsTo(Status::class, 'item_id', 'id');
+        return $this->belongsTo(Status::class, 'item_id', 'id');
     }
-
 }

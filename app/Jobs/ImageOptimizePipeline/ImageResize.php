@@ -2,15 +2,13 @@
 
 namespace App\Jobs\ImageOptimizePipeline;
 
-use Carbon\Carbon;
-use ImageOptimizer;
-use App\{Media, Status};
+use App\Media;
 use App\Util\Media\Image;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ImageResize implements ShouldQueue
 {
@@ -18,6 +16,13 @@ class ImageResize implements ShouldQueue
 
     protected $media;
 
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
+    
     /**
      * Create a new job instance.
      *
@@ -36,16 +41,18 @@ class ImageResize implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        $path = storage_path('app/'. $media->media_path);
-        if(!is_file($path)) {
+        if(!$media) {
+            return;
+        }
+        $path = storage_path('app/'.$media->media_path);
+        if (!is_file($path)) {
             return;
         }
 
         try {
-            $img = new Image;
+            $img = new Image();
             $img->resizeImage($media);
         } catch (Exception $e) {
-            
         }
 
         ImageThumbnail::dispatch($media);

@@ -2,21 +2,31 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use Cache, Redis;
-use App\{Media, Status};
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
+use App\Status;
+use Cache;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Redis;
 
 class NewStatusPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $status;
+    
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
+    public $timeout = 5;
+    public $tries = 1;
+    
     /**
      * Create a new job instance.
      *
@@ -34,14 +44,6 @@ class NewStatusPipeline implements ShouldQueue
      */
     public function handle()
     {
-        $status = $this->status;
-
-        StatusEntityLexer::dispatch($status);
-        //StatusActivityPubDeliver::dispatch($status);
-
-        Cache::forever('post.' . $status->id, $status);
-        
-        $redis = Redis::connection();
-        $redis->lpush(config('cache.prefix').':user.' . $status->profile_id . '.posts', $status->id);
+        StatusEntityLexer::dispatch($this->status);
     }
 }

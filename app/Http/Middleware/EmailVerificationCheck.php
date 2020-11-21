@@ -2,27 +2,35 @@
 
 namespace App\Http\Middleware;
 
-use Auth, Closure;
+use Closure;
 
 class EmailVerificationCheck
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     *
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        if($request->user() && 
+        if ($request->user() &&
             config('pixelfed.enforce_email_verification') &&
-            is_null($request->user()->email_verified_at) && 
-            !$request->is('i/verify-email') && !$request->is('login') && 
-            !$request->is('i/confirm-email/*')
+            is_null($request->user()->email_verified_at) &&
+            !$request->is(
+                'i/auth/*',
+                'i/verify-email', 
+                'log*', 
+                'i/confirm-email/*', 
+                'settings/home',
+                'settings/email'
+            )
         ) {
             return redirect('/i/verify-email');
-        } 
+        }
+
         return $next($request);
     }
 }

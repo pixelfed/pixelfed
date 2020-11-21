@@ -29,7 +29,7 @@ return [
     */
 
     'bcrypt' => [
-        'rounds' => 10,
+        'rounds' => env('BCRYPT_COST', 10),
     ],
 
     /*
@@ -44,9 +44,9 @@ return [
     */
 
     'argon' => [
-        'memory' => 1024,
-        'threads' => 2,
-        'time' => 2,
+        'memory'  => env('ARGON_MEM', 1024),
+        'threads' => env('ARGON_THREADS', 2),
+        'time'    => env('ARGON_TIME', 2),
     ],
 
 ];

@@ -4,6 +4,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Horizon Domain
+    |--------------------------------------------------------------------------
+    |
+    | This is the subdomain where Horizon will be accessible from. If this
+    | setting is null, Horizon will reside under the same domain as the
+    | application. Otherwise, this value will serve as the subdomain.
+    |
+    */
+
+    'domain' => null,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Horizon Path
+    |--------------------------------------------------------------------------
+    |
+    | This is the URI path where Horizon will be accessible from. Feel free
+    | to change this path to anything you like. Note that the URI will not
+    | affect the paths of its internal API that aren't exposed to users.
+    |
+    */
+
+    'path' => 'horizon',
+
+    /*
+    |--------------------------------------------------------------------------
     | Horizon Redis Connection
     |--------------------------------------------------------------------------
     |
@@ -30,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Horizon Route Middleware
+    |--------------------------------------------------------------------------
+    |
+    | These middleware will get attached onto each Horizon route, giving you
+    | the chance to add your own middleware to this list or change any of
+    | the existing middleware. Or, you can simply stick with this list.
+    |
+    */
+
+    'middleware' => ['web'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Queue Wait Time Thresholds
     |--------------------------------------------------------------------------
     |
@@ -40,7 +79,9 @@ return [
     */
 
     'waits' => [
-        'redis:default' => 60,
+        'redis:feed' => 30,
+        'redis:default' => 30,
+        'redis:high' => 30,
     ],
 
     /*
@@ -61,6 +102,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Fast Termination
+    |--------------------------------------------------------------------------
+    |
+    | When this option is enabled, Horizon's "terminate" command will not
+    | wait on all of the workers to terminate unless the --wait option
+    | is provided. Fast termination can shorten deployment delay by
+    | allowing a new instance of Horizon to start while the last
+    | instance will continue to terminate each of its workers.
+    |
+    */
+
+    'fast_termination' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Memory Limit (MB)
+    |--------------------------------------------------------------------------
+    |
+    | This value describes the maximum amount of memory the Horizon worker
+    | may consume before it is terminated and restarted. You should set
+    | this value according to the resources available to your server.
+    |
+    */
+
+    'memory_limit' => 64,
+
+    /*
+    |--------------------------------------------------------------------------
     | Queue Worker Configuration
     |--------------------------------------------------------------------------
     |
@@ -74,21 +143,23 @@ return [
         'production' => [
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
-                'balance' => 'simple',
-                'processes' => 10,
-                'tries' => 3,
+                'queue'      => ['high', 'default', 'feed'],
+                'balance'    => 'auto',
+                'processes'  => 20,
+                'tries'      => 3,
             ],
         ],
 
         'local' => [
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
-                'balance' => 'simple',
-                'processes' => 10,
-                'tries' => 3,
+                'queue'      => ['high', 'default', 'feed'],
+                'balance'    => 'auto',
+                'processes'  => 20,
+                'tries'      => 3,
             ],
         ],
     ],
+
+    'darkmode' => env('HORIZON_DARKMODE', false),
 ];

@@ -2,17 +2,21 @@
 
 namespace App\Jobs\RemoteFollowPipeline;
 
-use Zttp\Zttp;
-use Log, Storage;
+use App\Jobs\ImageOptimizePipeline\ImageThumbnail;
+use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Media;
+use App\Status;
 use Carbon\Carbon;
-use Illuminate\Http\File;
-use App\{Media, Profile, Status};
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use App\Jobs\StatusPipeline\NewStatusPipeline;
+use Illuminate\Http\File;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Log;
+use Storage;
+use Zttp\Zttp;
+use App\Util\ActivityPub\Helpers;
 
 class RemoteFollowImportRecent implements ShouldQueue
 {
@@ -41,7 +45,7 @@ class RemoteFollowImportRecent implements ShouldQueue
             'image/jpg',
             'image/jpeg',
             'image/png',
-            'image/gif'
+            'image/gif',
         ];
     }
 
@@ -52,16 +56,17 @@ class RemoteFollowImportRecent implements ShouldQueue
      */
     public function handle()
     {
-        $outbox = $this->fetchOutbox();
+        // $outbox = $this->fetchOutbox();
     }
 
     public function fetchOutbox($url = false)
     {
-        Log::info(json_encode($url));
         $url = ($url == false) ? $this->actor['outbox'] : $url;
-
+        if(Helpers::validateUrl($url) == false) {
+            return;
+        }
         $response = Zttp::withHeaders([
-            'User-Agent' => 'PixelFedBot v0.1 - https://pixelfed.org'
+            'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($url);
 
         $this->outbox = $response->json();
@@ -72,13 +77,14 @@ class RemoteFollowImportRecent implements ShouldQueue
     {
         $types = ['OrderedCollection', 'OrderedCollectionPage'];
 
-        if(isset($outbox['totalItems']) && $outbox['totalItems'] < 1) {
+        if (isset($outbox['totalItems']) && $outbox['totalItems'] < 1) {
             // Skip remote fetch, not enough posts
             Log::info('not enough items');
+
             return;
         }
 
-        if(isset($outbox['type']) && in_array($outbox['type'], $types)) {
+        if (isset($outbox['type']) && in_array($outbox['type'], $types)) {
             Log::info('handle ordered collection');
             $this->handleOrderedCollection();
         }
@@ -88,19 +94,20 @@ class RemoteFollowImportRecent implements ShouldQueue
     {
         $outbox = $this->outbox;
 
-        if(!isset($outbox['next']) && !isset($outbox['first']['next']) && $this->cursor !== 1) {
+        if (!isset($outbox['next']) && !isset($outbox['first']['next']) && $this->cursor !== 1) {
             $this->cursor = 40;
             $outbox['next'] = false;
         }
 
-        if($outbox['type'] == 'OrderedCollectionPage') {
+        if ($outbox['type'] == 'OrderedCollectionPage') {
             $this->nextUrl = $outbox['next'];
         }
 
-        if(isset($outbox['first']) && !is_array($outbox['first'])) {
+        if (isset($outbox['first']) && !is_array($outbox['first'])) {
             // Mastodon detected
             Log::info('Mastodon detected...');
             $this->nextUrl = $outbox['first'];
+
             return $this->fetchOutbox($this->nextUrl);
         } else {
             // Pleroma detected.
@@ -109,33 +116,31 @@ class RemoteFollowImportRecent implements ShouldQueue
             $orderedItems = isset($outbox['orderedItems']) ? $outbox['orderedItems'] : $outbox['first']['orderedItems'];
         }
 
-
-        foreach($orderedItems as $item) {
+        foreach ($orderedItems as $item) {
             Log::info('Parsing items...');
             $parsed = $this->parseObject($item);
-            if($parsed !== 0) {
+            if ($parsed !== 0) {
                 Log::info('Found media!');
                 $this->importActivity($item);
             }
         }
 
-        if($this->cursor < 40 && $this->mediaCount < 9) {
+        if ($this->cursor < 40 && $this->mediaCount < 9) {
             $this->cursor++;
             $this->mediaCount++;
             $this->fetchOutbox($this->nextUrl);
         }
-
     }
 
     public function parseObject($parsed)
     {
-        if($parsed['type'] !== 'Create') {
+        if ($parsed['type'] !== 'Create') {
             return 0;
         }
 
         $activity = $parsed['object'];
 
-        if(isset($activity['attachment']) && !empty($activity['attachment'])) {
+        if (isset($activity['attachment']) && !empty($activity['attachment'])) {
             return $this->detectSupportedMedia($activity['attachment']);
         }
     }
@@ -145,7 +150,7 @@ class RemoteFollowImportRecent implements ShouldQueue
         $supported = $this->supported;
         $count = 0;
 
-        foreach($attachments as $media) {
+        foreach ($attachments as $media) {
             $mime = $media['mediaType'];
             $count = in_array($mime, $supported) ? ($count + 1) : $count;
         }
@@ -160,11 +165,11 @@ class RemoteFollowImportRecent implements ShouldQueue
         $attachments = $activity['object']['attachment'];
         $caption = str_limit($activity['object']['content'], 125);
 
-        if(Status::whereUrl($activity['id'])->count() !== 0) {
+        if (Status::whereUrl($activity['id'])->count() !== 0) {
             return true;
         }
 
-        $status = new Status;
+        $status = new Status();
         $status->profile_id = $profile->id;
         $status->url = $activity['id'];
         $status->local = false;
@@ -173,54 +178,64 @@ class RemoteFollowImportRecent implements ShouldQueue
 
         $count = 0;
 
-        foreach($attachments as $media) {
-            Log::info($media['mediaType'] . ' - ' . $media['url']);
+        foreach ($attachments as $media) {
+            Log::info($media['mediaType'].' - '.$media['url']);
             $url = $media['url'];
             $mime = $media['mediaType'];
-            if(!in_array($mime, $supported)) {
-                Log::info('Invalid media, skipping. ' . $mime);
+            if (!in_array($mime, $supported)) {
+                Log::info('Invalid media, skipping. '.$mime);
                 continue;
             }
+            if (Helpers::validateUrl($url) == false) {
+                Log::info('Skipping invalid attachment URL: ' . $url);
+                continue;
+            }
+            
             $count++;
 
-            if($count === 1) {
+            if ($count === 1) {
                 $status->save();
             }
             $this->importMedia($url, $mime, $status);
         }
-        Log::info(count($attachments) . ' media found...');
+        Log::info(count($attachments).' media found...');
 
-        if($count !== 0) {
+        if ($count !== 0) {
             NewStatusPipeline::dispatch($status, $status->media->first());
         }
     }
 
     public function importMedia($url, $mime, $status)
     {
-      $user = $this->profile;
-      $monthHash = hash('sha1', date('Y') . date('m'));
-      $userHash = hash('sha1', $user->id . (string) $user->created_at);
-      $storagePath = "public/m/{$monthHash}/{$userHash}";
-      try {
-          $info = pathinfo($url);
-          $img = file_get_contents($url);
-          $file = '/tmp/' . str_random(12) . $info['basename'];
-          file_put_contents($file, $img);
-          $path = Storage::putFile($storagePath, new File($file), 'public');
-          
-          $media = new Media;
-          $media->status_id = $status->id;
-          $media->profile_id = $status->profile_id;
-          $media->user_id = null;
-          $media->media_path = $path;
-          $media->size = 0;
-          $media->mime = $mime;
-          $media->save();
+        $user = $this->profile;
+        $monthHash = hash('sha1', date('Y').date('m'));
+        $userHash = hash('sha1', $user->id.(string) $user->created_at);
+        $storagePath = "public/m/{$monthHash}/{$userHash}";
 
-          return true;
-      } catch (Exception $e) {
-          return false;
-      }
+        try {
+            $info = pathinfo($url);
+            $url = str_replace(' ', '%20', $url);
+            $img = file_get_contents($url);
+            $file = '/tmp/'.str_random(64);
+            file_put_contents($file, $img);
+            $path = Storage::putFile($storagePath, new File($file), 'public');
+
+            $media = new Media();
+            $media->status_id = $status->id;
+            $media->profile_id = $status->profile_id;
+            $media->user_id = null;
+            $media->media_path = $path;
+            $media->size = 0;
+            $media->mime = $mime;
+            $media->save();
+
+            ImageThumbnail::dispatch($media);
+            
+            @unlink($file);
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
-
 }

@@ -2,10 +2,10 @@
 
 @section('content')
 
-<div class="container mt-4 mb-5 pb-5">
-  <div class="col-12 col-md-8 offset-md-2">
+<div class="container px-0 mt-0 mt-md-4 mb-md-5 pb-md-5">
+  <div class="col-12 px-0 col-md-8 offset-md-2">
     <div class="card">
-      <div class="card-header lead font-weight-bold">
+      <div class="card-header lead font-weight-bold bg-white">
         Report Comment Spam
       </div>
       <div class="card-body">

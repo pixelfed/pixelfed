@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateStatusesTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateStatusesTable extends Migration
     {
         Schema::create('statuses', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('uri')->nullable();          
+            $table->string('uri')->nullable();
             $table->string('caption')->nullable();
             $table->text('rendered')->nullable();
             $table->bigInteger('profile_id')->unsigned()->nullable();
