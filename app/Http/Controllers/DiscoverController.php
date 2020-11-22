@@ -181,11 +181,13 @@ class DiscoverController extends Controller
       $ttl = now()->addHours(2);
       $res = Cache::remember($key, $ttl, function() use($range) {
         if($range == '-1') {
-          $res = Status::orderBy('likes_count','desc')
+          $res = Status::whereVisibility('public')
+          ->orderBy('likes_count','desc')
           ->take(12)
           ->get();
         } else {
-          $res = Status::orderBy('likes_count','desc')
+          $res = Status::whereVisibility('public')
+          ->orderBy('likes_count','desc')
           ->take(12)
           ->where('created_at', '>', now()->subDays($range))
           ->get();
