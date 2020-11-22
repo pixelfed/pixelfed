@@ -28,8 +28,8 @@ class AuthServiceProvider extends ServiceProvider
 
         if(config('pixelfed.oauth_enabled')) {
             Passport::routes(null, ['middleware' => ['twofactor', \Fruitcake\Cors\HandleCors::class]]);
-            Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration')));
-            Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration')));
+            Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 15)));
+            Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 30)));
             Passport::enableImplicitGrant();
             if(config('instance.oauth.pat.enabled')) {
                 Passport::personalAccessClientId(config('instance.oauth.pat.id'));
