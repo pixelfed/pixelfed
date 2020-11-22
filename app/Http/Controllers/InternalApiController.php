@@ -80,18 +80,25 @@ class InternalApiController extends Controller
         });
         $following = array_merge($following, $filters);
 
+        $sql = config('database.default') !== 'pgsql';
+
         $posts = Status::select(
                 'id', 
                 'caption', 
+                'is_nsfw',
                 'profile_id',
-                'type'
+                'type',
+                'uri',
+                'created_at'
               )
               ->whereNull('uri')
               ->whereIn('type', ['photo','photo:album', 'video'])
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
-              ->whereDate('created_at', '>', now()->subMonths(3))
+              ->when($sql, function($q, $s) {
+                return $q->where('created_at', '>', now()->subMonths(3));
+              })
               ->with('media')
               ->inRandomOrder()
               ->latest()
