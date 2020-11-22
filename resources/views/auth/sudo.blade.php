@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <div class="custom-control custom-checkbox">
                               <input type="checkbox" class="custom-control-input" id="trusted-device" name="trustDevice">
-                              <label class="custom-control-label text-muted" for="trusted-device">Don't ask me again, trust this device</label>
+                              <label class="custom-control-label text-muted" for="trusted-device">Trust this device and don't ask again</label>
                             </div>
                         </div>  
 
