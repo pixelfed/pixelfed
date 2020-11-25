@@ -9,7 +9,7 @@ class DirectMessage extends Model
 {
     public function status()
     {
-    	return $this->hasOne(Status::class, 'id', 'status_id');
+    	return $this->belongsTo(Status::class, 'status_id', 'id');
     }
 
     public function url()
@@ -19,12 +19,12 @@ class DirectMessage extends Model
 
     public function author()
     {
-    	return $this->hasOne(Profile::class, 'id', 'from_id');
+    	return $this->belongsTo(Profile::class, 'from_id', 'id');
     }
 
     public function recipient()
     {
-        return $this->hasOne(Profile::class, 'id', 'to_id');
+        return $this->belongsTo(Profile::class, 'to_id', 'id');
     }
 
     public function me()
@@ -45,6 +45,6 @@ class DirectMessage extends Model
         $actorUrl = $this->author->url();
         $url = $this->url();
 
-        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> sent a <a href='{$url}' class='dm-link'>direct message</a>.";
+        return "{$actorName} sent a direct message.";
     }
 }
