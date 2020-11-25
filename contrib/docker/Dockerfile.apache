@@ -4,7 +4,7 @@ FROM php:7.4-apache-buster
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # Install Composer
-ENV COMPOSER_VERSION=1.10.9 \
+ENV COMPOSER_VERSION=1.10.11 \
     COMPOSER_HOME=/var/www/.composer \
     COMPOSER_MEMORY_LIMIT=-1 \
     PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"

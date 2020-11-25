@@ -12,7 +12,7 @@ class EmailService {
 
 		$parts = explode('@', $email);
 
-		return in_array(last($parts), self::bannedDomains());
+		return in_array(strtolower(last($parts)), array_map('strtolower', self::bannedDomains()));
 	}
 
 	public static function bannedDomains()

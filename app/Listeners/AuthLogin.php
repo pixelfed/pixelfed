@@ -42,6 +42,13 @@ class AuthLogin
     protected function userProfile($user)
     {
         if (empty($user->profile)) {
+            if($user->created_at->lt(now()->subDays(1)) && empty($user->status)) {
+                $p = Profile::withTrashed()->whereUserId($user->id)->first();
+                if($p) {
+                    $p->restore();
+                    return;
+                }
+            }
             DB::transaction(function() use($user) {
                 $profile = Profile::firstOrCreate(['user_id' => $user->id]);
                 if($profile->wasRecentlyCreated == true) {
