@@ -42,7 +42,7 @@ class AuthLogin
     protected function userProfile($user)
     {
         if (empty($user->profile)) {
-            if($user->created_at->lt(now()->subDays(1))) {
+            if($user->created_at->lt(now()->subDays(1)) && empty($user->status)) {
                 $p = Profile::withTrashed()->whereUserId($user->id)->first();
                 if($p) {
                     $p->restore();
