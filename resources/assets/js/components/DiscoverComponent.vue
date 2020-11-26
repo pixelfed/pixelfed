@@ -81,7 +81,7 @@
 					</div>
 				</div>
 			</section>
-			<section class="pt-5 mb-5 section-explore">
+			<section v-if="posts.length" class="pt-5 mb-5 section-explore">
 				<div class="profile-timeline pt-3">
 					<div class="row p-0 mt-5">
 						<!-- <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
@@ -284,10 +284,10 @@
 				})
 				.then(res => {
 					if(this.trendingRange == 'daily') {
-						this.trendingDaily = res.data;
+						this.trendingDaily = res.data.filter(t => t.sensitive == false);
 					}
 					if(this.trendingRange == 'monthly') {
-						this.trendingMonthly = res.data;
+						this.trendingMonthly = res.data.filter(t => t.sensitive == false);
 					}
 					this.trending = res.data;
 				});
