@@ -57,7 +57,7 @@ class FixUsernames extends Command
                 if($user->is_admin || $user->status == 'deleted') {
                     continue;
                 }
-                if(in_array($user->username, $restricted)) {
+                if(in_array(strtolower($user->username), array_map('strtolower', $restricted))) {
                     $affected->push($user);
                 }
                 $val = str_replace(['-', '_', '.'], '', $user->username);
