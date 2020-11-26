@@ -323,7 +323,7 @@ class Inbox
     public function handleFollowActivity()
     {
         $actor = $this->actorFirstOrCreate($this->payload['actor']);
-        $target = $this->profile;
+        $target = $this->actorFirstOrCreate($this->payload['object']);
         if(!$actor || $actor->domain == null || $target->domain !== null) {
             return;
         }
@@ -470,55 +470,56 @@ class Inbox
             $profile->statuses()->delete();
             $profile->delete();
             return;
-        }
-        $type = $this->payload['object']['type'];
-        $typeCheck = in_array($type, ['Person', 'Tombstone']);
-        if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
-            return;
-        }
-        if(parse_url($obj['id'], PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
-            return;
-        }
-        $id = $this->payload['object']['id'];
-        switch ($type) {
-            case 'Person':
-                    $profile = Profile::whereRemoteUrl($actor)->first();
-                    if(!$profile || $profile->private_key != null) {
-                        return;
-                    }
-                    Notification::whereActorId($profile->id)->delete();
-                    $profile->avatar()->delete();
-                    $profile->followers()->delete();
-                    $profile->following()->delete();
-                    $profile->likes()->delete();
-                    $profile->media()->delete();
-                    $profile->hashtags()->delete();
-                    $profile->statuses()->delete();
-                    $profile->delete();
+        } else {
+            $type = $this->payload['object']['type'];
+            $typeCheck = in_array($type, ['Person', 'Tombstone']);
+            if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
                 return;
-                break;
-
-            case 'Tombstone':
-                    $profile = Helpers::profileFetch($actor);
-                    $status = Status::whereProfileId($profile->id)
-                        ->whereUri($id)
-                        ->orWhere('url', $id)
-                        ->orWhere('object_url', $id)
-                        ->first();
-                    if(!$status) {
-                        return;
-                    }
-                    $status->directMessage()->delete();
-                    $status->media()->delete();
-                    $status->likes()->delete();
-                    $status->shares()->delete();
-                    $status->delete();
+            }
+            if(parse_url($obj['id'], PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
+                return;
+            }
+            $id = $this->payload['object']['id'];
+            switch ($type) {
+                case 'Person':
+                        $profile = Profile::whereRemoteUrl($actor)->first();
+                        if(!$profile || $profile->private_key != null) {
+                            return;
+                        }
+                        Notification::whereActorId($profile->id)->delete();
+                        $profile->avatar()->delete();
+                        $profile->followers()->delete();
+                        $profile->following()->delete();
+                        $profile->likes()->delete();
+                        $profile->media()->delete();
+                        $profile->hashtags()->delete();
+                        $profile->statuses()->delete();
+                        $profile->delete();
                     return;
-                break;
-            
-            default:
-                return;
-                break;
+                    break;
+
+                case 'Tombstone':
+                        $profile = Helpers::profileFetch($actor);
+                        $status = Status::whereProfileId($profile->id)
+                            ->whereUri($id)
+                            ->orWhere('url', $id)
+                            ->orWhere('object_url', $id)
+                            ->first();
+                        if(!$status) {
+                            return;
+                        }
+                        $status->directMessage()->delete();
+                        $status->media()->delete();
+                        $status->likes()->delete();
+                        $status->shares()->delete();
+                        $status->delete();
+                        return;
+                    break;
+                
+                default:
+                    return;
+                    break;
+            }
         }
     }
 

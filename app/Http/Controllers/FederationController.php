@@ -108,6 +108,17 @@ class FederationController extends Controller
         return;
     }
 
+    public function sharedInbox(Request $request)
+    {
+        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config('federation.activitypub.sharedInbox'), 404);
+
+        $headers = $request->headers->all();
+        $payload = $request->getContent();
+        dispatch(new InboxWorker($headers, $payload))->onQueue('high');
+        return;
+    }
+
     public function userFollowing(Request $request, $username)
     {
         abort_if(!config('federation.activitypub.enabled'), 404);

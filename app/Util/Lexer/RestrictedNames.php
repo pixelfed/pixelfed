@@ -177,6 +177,7 @@ class RestrictedNames
 		'help-center_',
 		'help_center-',
 		'i',
+		'inbox',
 		'img',
 		'imgs',
 		'image',

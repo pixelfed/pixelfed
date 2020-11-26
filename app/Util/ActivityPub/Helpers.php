@@ -135,41 +135,49 @@ class Helpers {
 		if(is_array($url)) {
 			$url = $url[0];
 		}
-		
-		$localhosts = [
-			'127.0.0.1', 'localhost', '::1'
-		];
 
-		if(mb_substr($url, 0, 8) !== 'https://') {
-			return false;
-		}
+		$hash = hash('sha256', $url);
+		$key = "helpers:url:valid:sha256-{$hash}";
+		$ttl = now()->addMinutes(5);
 
-		$valid = filter_var($url, FILTER_VALIDATE_URL);
+		$valid = Cache::remember($key, $ttl, function() use($url) {
+			$localhosts = [
+				'127.0.0.1', 'localhost', '::1'
+			];
 
-		if(!$valid) {
-			return false;
-		}
-
-		$host = parse_url($valid, PHP_URL_HOST);
-
-		if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
-			return false;
-		}
-
-		if(config('costar.enabled') == true) {
-			if(
-				(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) || 
-				(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
-			) {
+			if(mb_substr($url, 0, 8) !== 'https://') {
 				return false;
 			}
-		}
 
-		if(in_array($host, $localhosts)) {
-			return false;
-		}
+			$valid = filter_var($url, FILTER_VALIDATE_URL);
 
-		return $valid;
+			if(!$valid) {
+				return false;
+			}
+
+			$host = parse_url($valid, PHP_URL_HOST);
+
+			if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
+				return false;
+			}
+
+			if(config('costar.enabled') == true) {
+				if(
+					(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) || 
+					(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
+				) {
+					return false;
+				}
+			}
+
+			if(in_array($host, $localhosts)) {
+				return false;
+			}
+
+			return true;
+		});
+
+		return (bool) $valid;
 	}
 
 	public static function validateLocalUrl($url)
@@ -194,19 +202,25 @@ class Helpers {
 		];
 	}
 
-	public static function fetchFromUrl($url)
+	public static function fetchFromUrl($url = false)
 	{
-		$url = self::validateUrl($url);
-		if($url == false) {
+		if(self::validateUrl($url) == false) {
 			return;
 		}
-		$res = Zttp::withHeaders(self::zttpUserAgent())->get($url);
-		$res = json_decode($res->body(), true, 8);
-		if(json_last_error() == JSON_ERROR_NONE) {
-			return $res;
-		} else {
-			return false;
-		}
+
+		$hash = hash('sha256', $url);
+		$key = "helpers:url:fetcher:sha256-{$hash}";
+		$ttl = now()->addMinutes(5);
+
+		return Cache::remember($key, $ttl, function() use($url) {
+			$res = Zttp::withoutVerifying()->withHeaders(self::zttpUserAgent())->get($url);
+			$res = json_decode($res->body(), true, 8);
+			if(json_last_error() == JSON_ERROR_NONE) {
+				return $res;
+			} else {
+				return false;
+			}
+		});
 	}
 
 	public static function fetchProfileFromUrl($url)
@@ -444,6 +458,7 @@ class Helpers {
 				$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
 				$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 				$profile->last_fetched_at = now();
+				$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 				$profile->save();
 			}
 		}
