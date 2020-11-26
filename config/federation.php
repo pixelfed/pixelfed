@@ -15,7 +15,7 @@ return [
 		'enabled' => env('ACTIVITY_PUB', false),
 		'outbox' => env('AP_OUTBOX', true),
 		'inbox' => env('AP_INBOX', true),
-		'sharedInbox' => env('AP_SHAREDINBOX', false),
+		'sharedInbox' => env('AP_SHAREDINBOX', true),
 
 		'remoteFollow' => env('AP_REMOTE_FOLLOW', false),
 
