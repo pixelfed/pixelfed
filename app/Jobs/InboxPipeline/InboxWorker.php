@@ -3,12 +3,17 @@
 namespace App\Jobs\InboxPipeline;
 
 use App\Profile;
-use App\Util\ActivityPub\Inbox;
+use App\Util\ActivityPub\{
+    Helpers,
+    HttpSignature,
+    Inbox
+};
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Zttp\Zttp;
 
 class InboxWorker implements ShouldQueue
 {
