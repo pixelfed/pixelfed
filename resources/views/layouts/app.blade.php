@@ -67,7 +67,7 @@
               <li class="nav-item">
                 <div class="nav-link text-primary cursor-pointer" onclick="App.util.compose.post()">
                     <span class="border border-primary rounded p-2 bg-primary">
-                        <i class="fas fa-camera fa-lg text-white"></i>
+                        <i class="fas fa-camera fa-lg text-white" style="color:#fff !important;"></i>
                     </span>
                 </div>
               </li>
