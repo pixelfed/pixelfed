@@ -23,7 +23,14 @@
     <link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
     <link rel="canonical" href="{{request()->url()}}">
+        @if(request()->cookie('dark-mode')) 
+    
+    <link href="{{ mix('css/appdark.css') }}" rel="stylesheet" data-stylesheet="dark">
+    @else
+    
     <link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
+    @endif
+    
     @stack('styles')
 
     <script type="text/javascript">window._sharedData = {curUser: {}, version: 0}; window.App = {config: {!!App\Util\Site\Config::json()!!}};</script>
