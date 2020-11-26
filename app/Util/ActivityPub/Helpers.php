@@ -174,10 +174,10 @@ class Helpers {
 				return false;
 			}
 
-			return true;
+			return $url;
 		});
 
-		return (bool) $valid;
+		return $valid;
 	}
 
 	public static function validateLocalUrl($url)
