@@ -177,16 +177,20 @@ class DiscoverController extends Controller
         $request->input('range') == 'alltime' ? '-1' : 
         ($request->input('range') == 'daily' ? 1 : 31) : 1;
 
-      $key = ':api:discover:trending:v1:range:' . $range;
+      $key = ':api:discover:trending:v2:range:' . $range;
       $ttl = now()->addHours(2);
       $res = Cache::remember($key, $ttl, function() use($range) {
         if($range == '-1') {
           $res = Status::whereVisibility('public')
+          ->whereType('photo')
+          ->whereIsNsfw(false)
           ->orderBy('likes_count','desc')
           ->take(12)
           ->get();
         } else {
           $res = Status::whereVisibility('public')
+          ->whereType('photo')
+          ->whereIsNsfw(false)
           ->orderBy('likes_count','desc')
           ->take(12)
           ->where('created_at', '>', now()->subDays($range))

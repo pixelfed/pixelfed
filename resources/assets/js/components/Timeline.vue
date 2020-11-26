@@ -16,8 +16,8 @@
 					</span>
 				</p>
 				<p class="mb-0 d-none d-md-block">
-					<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-						<i class="fas fa-camera fa-lg pt-1"></i>
+					<a class="btn btn-block btn-primary btn-sm font-weight-bold" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+					 New Post
 					</a>
 				</p>
 			</div>
@@ -379,8 +379,8 @@
 							</span>
 						</p>
 						<p class="mb-0 d-none d-md-block">
-							<a class="btn btn-block btn-primary btn-sm font-weight-bold border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-								<i class="fas fa-camera fa-lg pt-1"></i>
+							<a class="btn btn-block btn-primary btn-sm font-weight-bold" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+								New Post
 							</a>
 						</p>
 					</div>
