@@ -19,18 +19,66 @@
     background: #ADAFAE !important;
 }
 
+.border-top {
+	border-top: 1px solid #282828 !important;
+}
+
+.border-bottom {
+	border-bottom: 1px solid #282828 !important;
+}
+
 .btn-outline-light {
 	border-color: #E2E8F0 !important;
 	color: #E2E8F0 !important;
 }
 
+.modal-content,
+.card,
+.dropdown-menu,
 .bg-white,
+.list-group-item,
+.autocomplete-result-list,
 .postPresenterContainer,
 .postComponent .card-body.flex-grow-0.py-1,
 .postComponent .reactions,
 .postComponent .status-comments,
 .navbar-laravel {
-	background: #2D3748 !important;
+	background: #000 !important;
+}
+
+.autocomplete-result-list {
+	z-index: 99999;
+}
+
+.pill-to {
+	background: #282828 !important;
+}
+
+.dropdown-item:hover, 
+.tt-suggestion:hover, 
+.dropdown-item:focus, 
+.tt-suggestion:focus,
+.chat-msg:hover,
+.result-card .media:hover {
+	background: #181818 !important;
+}
+
+.notification-card .contents {
+	scrollbar-color: dark;
+}
+
+body, html {
+	scrollbar-color: dark;
+}
+
+.modal-content,
+.form-control,
+.img-thumbnail {
+	border: 1px solid #282828 !important;
+}
+
+.navbar.border-bottom {
+	border-color: #282828 !important; 
 }
 
 .postComponent .border-left {
@@ -44,7 +92,7 @@
 input,
 textarea {
 	color: #E2E8F0 !important;
-	background: #4A5568 !important;
+	background: #000 !important;
 }
 
 .far, .fas,
@@ -55,13 +103,40 @@ textarea {
 	color: #ADAFAE !important;
 }
 
-.form-control.search-form-input {
-	color: #E2E8F0 !important;
-	background: #4A5568 !important;
-}
-
 .btn-outline-primary {
 	border-color: #4A5568 !important;
+}
+
+.postComponent .status-comments {
+	border-top: 1px solid #282828 !important;
+	border-bottom: 1px solid #282828 !important;
+}
+
+.messages-page .card-header {
+	border-bottom: 1px solid #282828;
+}
+
+hr {
+	border-color: #282828 !important;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+::-webkit-scrollbar-track {
+  background: #202020;
+  border-left: 1px solid #2c2c2c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3e3e3e;
+  border: solid 3px #202020;
+  border-radius: 7px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: white;
 }
 
 @import "components/filters";
@@ -74,6 +149,8 @@ textarea {
 
 @import "moment";
 
+@import '~animate.css/animate.min.css';
+
 .border {
-    border: 1px solid #4A5568 !important;
+	border-color: #282828 !important;
 }
