@@ -40,4 +40,9 @@ class Place extends Model
 	{
 		return $this->url();
 	}
+
+	public function getName()
+	{
+		return $this->name . ', ' . $this->country;
+	}
 }
