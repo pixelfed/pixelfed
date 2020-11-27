@@ -90,7 +90,7 @@ class RegisterController extends Controller
                 }
 
                 $restricted = RestrictedNames::get();
-                if (in_array($value, $restricted)) {
+                if (in_array(strtolower($value), array_map('strtolower', $restricted))) {
                     return $fail('Username cannot be used.');
                 }
             },
