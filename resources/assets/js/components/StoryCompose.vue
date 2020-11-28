@@ -7,7 +7,7 @@
 			<!-- LANDING -->
 			<div v-if="page == 'landing'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center flex-fill mt-5 pt-5">
-					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
+					<img src="/img/pixelfed-icon-grey.svg" width="60" height="60">
 					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
 					<!-- <p v-if="loaded" class="font-weight-bold small text-uppercase text-muted">
 						<span>{{stories.length}} Active</span>
@@ -43,7 +43,7 @@
 						<button class="btn btn-outline-lighter btn-sm py-0 px-md-3"><i class="pr-2 fas fa-chevron-left fa-sm"></i> Delete</button>
 					</div>
 					<div class="d-flex align-items-center">
-						<img class="d-inline-block mr-2" src="/img/pixelfed-icon-grey.svg" width="30px" height="30px">
+						<img class="d-inline-block mr-2" src="/img/pixelfed-icon-grey.svg" width="30" height="30">
 						<span class="font-weight-bold lead text-lighter">Stories</span>
 					</div>
 					<div>
@@ -94,7 +94,7 @@
 
 			<div v-if="page == 'edit'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
 				<div class="text-center flex-fill mt-5 pt-5">
-					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
+					<img src="/img/pixelfed-icon-grey.svg" width="60" height="60">
 					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
 				</div>
 				<div class="flex-fill py-5">
@@ -103,7 +103,7 @@
 							<div v-for="(story, index) in stories" class="list-group-item text-center text-dark" href="#">
 								<div class="media align-items-center">
 									<div class="mr-3 cursor-pointer" @click="showLightbox(story)">
-										<img :src="story.src" class="img-fluid" width="70px" height="70px">
+										<img :src="story.src" class="img-fluid" width="70" height="70">
 										<p class="small text-muted text-center mb-0">(expand)</p>
 									</div>
 									<div class="media-body">

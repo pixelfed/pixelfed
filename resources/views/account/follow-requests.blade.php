@@ -18,7 +18,7 @@
       @foreach($followers as $follow)
       <li class="list-group-item notification border-0">
           <span class="notification-icon pr-3">
-            <img src="{{$follow->follower->avatarUrl()}}" width="32px" class="rounded-circle">
+            <img src="{{$follow->follower->avatarUrl()}}" width="32" class="rounded-circle">
           </span>
           <span class="notification-text">
             <a class="font-weight-bold text-dark" href="{{$follow->follower->url()}}">{{$follow->follower->username}}</a> {{__('wants to follow you')}}

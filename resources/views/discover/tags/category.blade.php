@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-12 col-md-3">
         <div class="profile-avatar">
-          <img class="rounded-circle card" src="{{$tag->thumb()}}" width="172px" height="172px">
+          <img class="rounded-circle card" src="{{$tag->thumb()}}" width="172" height="172">
         </div>
       </div>
       <div class="col-12 col-md-9 d-flex align-items-center">

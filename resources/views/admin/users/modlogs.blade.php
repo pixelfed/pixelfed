@@ -82,7 +82,7 @@
 						@if($log->message != null)
 						<div class="d-flex justify-content-between">
 							<div class="mr-3">
-								<img src="{{$log->admin->profile->avatarUrl()}}" width="40px" height="40px" class="border p-1 rounded-circle">
+								<img src="{{$log->admin->profile->avatarUrl()}}" width="40" height="40" class="border p-1 rounded-circle">
 							</div>
 							<div style="flex-grow: 1;">
 								@if($log->user_id != Auth::id())
@@ -118,7 +118,7 @@
 						@else
 						<div class="d-flex justify-content-between align-items-center">
 							<div class="mr-3">
-								<img src="{{$log->admin->profile->avatarUrl()}}" width="40px" height="40px" class="border p-1 rounded-circle">
+								<img src="{{$log->admin->profile->avatarUrl()}}" width="40" height="40" class="border p-1 rounded-circle">
 							</div>
 							<div style="flex-grow: 1;">
 								<p class="small text-muted font-weight-bold mb-0">{{$log->created_at->diffForHumans()}}</p>

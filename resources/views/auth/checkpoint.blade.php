@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-lg-5">
             <div class="text-center">
-                <img src="/img/pixelfed-icon-color.svg" height="60px">
+                <img src="/img/pixelfed-icon-color.svg" height="60">
                 <p class="font-weight-light h3 py-4">Verify Two Factor Code</p>
             </div>
             <div class="alert alert-info small">

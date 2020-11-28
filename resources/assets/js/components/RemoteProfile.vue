@@ -19,7 +19,7 @@
 					</div>
 					<div class="card-body pb-0">
 						<div class="mt-n5 mb-3">
-							<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.avatar" width="90px" height="90px;">
+							<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.avatar" width="90" height="90">
 							<span class="float-right mt-n1">
 								<span>
 									<button v-if="relationship && relationship.following == false" class="btn btn-outline-light py-0 px-3 mt-n1" style="font-size:13px; font-weight: 500;" @click="followProfile();">Follow</button>
@@ -63,7 +63,7 @@
 					<div class="col-12 mb-2" v-for="(status, index) in feed" :key="'remprop' + index">
 						<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border cursor-pointer">
 								<div class="card-header d-inline-flex align-items-center bg-white">
-									<img v-bind:src="profile.avatar" width="38px" height="38px" style="border-radius: 38px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+									<img v-bind:src="profile.avatar" width="38" height="38" style="border-radius: 38px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 									<div class="pl-2">
 										<span class="username font-weight-bold text-dark">{{profile.username}}
 										</span>

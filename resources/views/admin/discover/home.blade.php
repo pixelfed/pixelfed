@@ -16,7 +16,7 @@
 			<div>
 				<a class="font-weight-lighter small mr-3" href="/i/admin/media/show/{{$category->id}}">{{$category->id}}</a>
 				<a href="{{$category->url()}}">
-					<img class="" src="{{$category->thumb()}}" width="60px" height="60px">
+					<img class="" src="{{$category->thumb()}}" width="60" height="60">
 				</a>
 			</div>
 			<div>

@@ -30,7 +30,7 @@
 		<div class="card shadow-none border">
 			<div class="card-header bg-white">
 				<div class="media">
-					<img src="{{$message->user->profile->avatarUrl()}}" class="mr-3 rounded-circle" width="40px" height="40px">
+					<img src="{{$message->user->profile->avatarUrl()}}" class="mr-3 rounded-circle" width="40" height="40">
 					<div class="media-body">
 						<h5 class="my-0">&commat;{{$message->user->username}}</h5>
 						<span class="text-muted">{{$message->user->email}}</span>

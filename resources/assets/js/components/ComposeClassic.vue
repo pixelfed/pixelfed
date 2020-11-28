@@ -4,7 +4,7 @@
 	<div class="timeline">
 		<div class="card status-card card-md-rounded-0">
 			<div class="card-header d-inline-flex align-items-center bg-white">
-				<img v-bind:src="profile.avatar" width="32px" height="32px" style="border-radius: 32px;" class="box-shadow">
+				<img v-bind:src="profile.avatar" width="32" height="32" style="border-radius: 32px;" class="box-shadow">
 				<a class="username font-weight-bold pl-2 text-dark" v-bind:href="profile.url">
 					{{profile.username}}
 				</a>
@@ -65,13 +65,13 @@
 						<ul class="nav media-drawer-filters text-center">
 							<li class="nav-item">
 								<div class="p-1 pt-3">
-									<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
+									<img :src="media[carouselCursor].url" width="100" height="60" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 								</div>
 								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
 							</li>
 							<li class="nav-item" v-for="(filter, index) in filters">
 								<div class="p-1 pt-3">
-									<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+									<img :src="media[carouselCursor].url" width="100" height="60" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 								</div>
 								<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 							</li>

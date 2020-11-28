@@ -19,7 +19,7 @@
     @foreach($users as $user)
     <li class="list-group-item">
       <div class="d-flex justify-content-between align-items-center font-weight-bold">
-        <span><a href="{{$user->url()}}" class="text-decoration-none text-dark"><img class="rounded-circle mr-3" src="{{$user->avatarUrl()}}" width="32px">{{$user->username}}</a></span>
+        <span><a href="{{$user->url()}}" class="text-decoration-none text-dark"><img class="rounded-circle mr-3" src="{{$user->avatarUrl()}}" width="32">{{$user->username}}</a></span>
         <span class="btn-group">
           <form method="post">
             @csrf

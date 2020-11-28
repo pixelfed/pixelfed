@@ -19,7 +19,7 @@
 								</div>
 								<div class="col-md-4 text-center">
 									@foreach($circle->members()->orderByDesc('created_at')->take(8)->get() as $member)
-										<a href="{{$member->url()}}"><img src="{{$member->avatarUrl()}}" class="box-shadow rounded-circle ml-n3" width="40px" style="border:3px solid #fff;"></a>
+										<a href="{{$member->url()}}"><img src="{{$member->avatarUrl()}}" class="box-shadow rounded-circle ml-n3" width="40" style="border:3px solid #fff;"></a>
 									@endforeach
 								</div>
 								<div class="col-md-4 text-right">

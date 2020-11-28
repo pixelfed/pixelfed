@@ -7,7 +7,7 @@
 				<div class="col-12 col-md-6 p-1" v-for="(profile, index) in profiles">
 					<div class="card card-body border shadow-none py-2">
 						<div class="media">
-							<a :href="profile.url"><img :src="profile.avatar" class="rounded-circle border mr-3" alt="..." width="40px" height="40px"></a>
+							<a :href="profile.url"><img :src="profile.avatar" class="rounded-circle border mr-3" alt="..." width="40" height="40"></a>
 							<div class="media-body">
 								<p class="mt-0 mb-0 font-weight-bold">
 									<a :href="profile.url" class="text-dark">{{profile.username}}</a>
@@ -23,7 +23,7 @@
 								<p class="mb-1">
 									<span v-for="(post, i) in profile.posts" class="shadow-sm" :key="'profile_posts_'+i">
 										<a :href="post.url" class="text-decoration-none mr-1">
-											<img :src="thumbUrl(post)" width="62.3px" height="62.3px" class="border rounded">
+											<img :src="thumbUrl(post)" width="62.3" height="62.3" class="border rounded">
 										</a>
 									</span>
 								</p>
