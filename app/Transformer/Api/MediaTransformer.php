@@ -22,7 +22,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'is_nsfw'       => $media->is_nsfw,
             'orientation'   => $media->orientation,
             'filter_name'   => $media->filter_name,
-            'filter_class'  => $media->filter_class,
+            'filter_class'  => $media->version == 1 ? $media->filter_class : null,
             'mime'          => $media->mime,
         ];
     }

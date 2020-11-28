@@ -41,6 +41,9 @@ class MediaController extends Controller
 			->whereNull('status_id')
 			->findOrFail($id);
 
+		$media->version = 2;
+		$media->save();
+
 		$fragments = explode('/', $media->media_path);
 		$name = last($fragments);
 		array_pop($fragments);
