@@ -1,6 +1,8 @@
 <template>
 <div>
 	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" v-bind:accept="config.uploader.media_types">
+	<canvas class="d-none" id="pr_canvas"></canvas>
+	<img class="d-none" id="pr_img">
 	<div class="timeline">
 		<div v-if="uploading">
 			<div class="card status-card card-md-rounded-0 w-100 h-100 bg-light py-3" style="border-bottom: 1px solid #f1f1f1">
@@ -983,8 +985,39 @@ export default {
 				this.cameraRollMedia = res.data;
 			});
 		},
+
 		applyFilterToMedia() {
 			// this is where the magic happens
+
+			let medias = this.media;
+			let media = null;
+			const canvas = document.getElementById('pr_canvas');
+			const ctx = canvas.getContext('2d');
+			let image = document.getElementById('pr_img');
+			let blob = null;
+			let data = null;
+
+			for (var i = medias.length - 1; i >= 0; i--) {
+				media = medias[i];
+				if(media.filter_class) {
+					image.src = media.url;
+					image.addEventListener('load', e => {
+						canvas.width = image.width;
+						canvas.height = image.height;
+						ctx.filter = App.util.filterCss[media.filter_class];
+						ctx.drawImage(image, 0, 0, image.width, image.height);
+						ctx.save();
+						canvas.toBlob(function(blob) {
+							data = new FormData();
+							data.append('file', blob);
+							axios.post('/api/local/compose/media/update/'+media.id, data).then(res => {
+							}).catch(err => {
+							});
+						}, media.mime, 0.9);
+					});
+					ctx.clearRect(0, 0, image.width, image.height);
+				}
+			}
 
 		},
 
