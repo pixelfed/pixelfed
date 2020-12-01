@@ -245,7 +245,7 @@
                   </span>
                 </div>
                 <div class="timestamp pt-2 d-flex align-items-bottom justify-content-between">
-                  <a v-bind:href="statusUrl" class="small text-muted">
+                  <a v-bind:href="statusUrl" class="small text-muted" :title="status.created_at">
                     {{timestampFormat()}}
                   </a>
                   <span class="small text-muted text-capitalize cursor-pointer" v-on:click="visibilityModal">{{status.visibility}}</span>
@@ -831,7 +831,7 @@ export default {
 
       timestampFormat() {
           let ts = new Date(this.status.created_at);
-          return ts.toDateString() + ' ' + ts.toLocaleTimeString();
+          return ts.toDateString();
       },
 
       fetchData() {
