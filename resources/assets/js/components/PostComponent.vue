@@ -1149,8 +1149,10 @@ export default {
           this.replyToIndex = index;
           this.replyingToId = e.id;
           this.reply_to_profile_id = e.account.id;
+          let username = e.account.local ? '@' + e.account.username + ' '
+            : '@' + e.account.acct + ' ';
           if(prependUsername == true) {
-            this.replyText = '@' + e.account.username + ' ';
+            this.replyText = username;
           }
           $('textarea[name="comment"]').focus();
       },
