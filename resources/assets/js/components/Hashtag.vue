@@ -123,6 +123,12 @@
 		},
 		methods: {
 			getResults() {
+				if(this.authenticated) {
+					axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+						window._sharedData.curUser = res.data;
+						window.App.util.navatar();
+					});
+				}
 				axios.get('/api/v2/discover/tag', {
 					params: {
 						hashtag: this.hashtag,

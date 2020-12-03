@@ -841,6 +841,7 @@ export default {
                 self.status = response.data.status;
                 self.user = response.data.user;
                 window._sharedData.curUser = self.user;
+                window.App.util.navatar();
                 self.media = self.status.media_attachments;
                 self.reactions = response.data.reactions;
                 self.likes = response.data.likes;

@@ -220,6 +220,8 @@
 			fetchProfile() {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
 				});
 				axios.get('/api/pixelfed/v1/accounts/' + this.profileId)
 				.then(res => {

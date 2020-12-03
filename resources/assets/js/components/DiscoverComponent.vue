@@ -252,6 +252,10 @@
 					this.posts = res.data.posts;
 					this.loaded = true;
 				});
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
+				});
 			},
 
 			fetchCategories() {

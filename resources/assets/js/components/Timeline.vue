@@ -781,6 +781,7 @@
 						this.modes.mod = true;
 					}
 					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
 					this.hasStory();
 					// this.expRec();
 				}).catch(err => {

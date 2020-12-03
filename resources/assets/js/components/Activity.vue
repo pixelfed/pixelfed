@@ -130,6 +130,10 @@ export default {
 
 	methods: {
 		fetchNotifications() {
+			axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
+			});
 			axios.get('/api/pixelfed/v1/notifications', {
 				params: {
 					pg: true
