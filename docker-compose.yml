@@ -1,5 +1,5 @@
 ---
-version: '3'
+version: "3"
 
 # In order to set configuration, please use a .env file in
 # your compose project directory (the same directory as your
@@ -30,7 +30,7 @@ services:
       - external
       - internal
     ports:
-    - "8080:80"
+      - "80:80"
     depends_on:
       - db
       - redis
@@ -63,9 +63,11 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_DATABASE=pixelfed
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_USER=pixelfed
+      - MYSQL_PASSWORD=pixelfed
+      - MYSQL_ROOT_PASSWORD=<example>
+    ports:
+      - "23306:3306"
     volumes:
       - "db-data:/var/lib/mysql"
 

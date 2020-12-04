@@ -3,6 +3,28 @@ FROM php:7.4-apache-buster
 # Use the default production configuration
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
+ENV COMPOSER_VERSION=1.10.11 \
+    COMPOSER_HOME=/var/www/.composer \
+    PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}" \
+    APP_ENV=production \
+    APP_DEBUG=false \
+    LOG_CHANNEL=stderr \
+    DB_CONNECTION=pgsql \
+    DB_PORT=5432 \
+    DB_HOST=db \
+    BROADCAST_DRIVER=log \
+    QUEUE_DRIVER=redis \
+    HORIZON_PREFIX=horizon-pixelfed \
+    REDIS_HOST=redis \
+    SESSION_SECURE_COOKIE=true \
+    API_BASE="/api/1/" \
+    API_SEARCH="/api/search" \
+    OPEN_REGISTRATION=true \
+    ENFORCE_EMAIL_VERIFICATION=true \
+    REMOTE_FOLLOW=false \
+    ACTIVITY_PUB=false
+
+
 # Install Composer
 ENV COMPOSER_VERSION=1.10.11 \
     COMPOSER_HOME=/var/www/.composer \
@@ -36,6 +58,7 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
       libjpeg62-turbo-dev \
       libpng-dev \
       libmagickwand-dev \
+      imagemagick \
 # Required for GD
       libxpm4 \
       libxpm-dev \
@@ -92,6 +115,7 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 COPY . /var/www/
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN cp -r storage storage.skel \
+  && chmod -R 777 /var/www/bootstrap/cache \
   && composer global require hirak/prestissimo --prefer-dist --no-interaction --no-ansi --no-suggest \
   && composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader \
   && composer update --prefer-dist --no-interaction --no-ansi \
