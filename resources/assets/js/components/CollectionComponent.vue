@@ -191,6 +191,8 @@ export default {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.currentUser = res.data;
 					this.owner = this.currentUser.id == this.profileId;
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
 				});
 			}
 		},

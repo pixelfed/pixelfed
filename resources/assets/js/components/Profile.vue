@@ -705,6 +705,8 @@
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data;
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
 					if(res.data.id == this.profileId || this.relationship.following == true) {
 						axios.get('/api/stories/v0/exists/' + this.profileId)
 						.then(res => {

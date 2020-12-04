@@ -526,6 +526,10 @@ export default {
             }).catch(error => {
               swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
             });
+            axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+              window._sharedData.curUser = res.data;
+              window.App.util.navatar();
+            });
       },
 
       likesModal() {

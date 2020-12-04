@@ -200,6 +200,14 @@ window.App.util = {
 
 	clipboard: (function(data) {
 		return navigator.clipboard.writeText(data);
+	}),
+
+	navatar: (function() {
+		$('#navbarDropdown .far').addClass('d-none');
+			$('#navbarDropdown img').attr('src',window._sharedData.curUser.avatar)
+			.removeClass('d-none')
+			.addClass('rounded-circle border shadow')
+			.attr('width', 34).attr('height', 34);
 	})
 
 };
