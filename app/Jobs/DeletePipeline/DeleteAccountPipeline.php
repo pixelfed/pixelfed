@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use DB;
 use Illuminate\Support\Str;
 use App\{
+	AccountInterstitial,
 	AccountLog,
 	Activity,
 	Avatar,
@@ -69,6 +70,10 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 
 		DB::transaction(function() use ($user) {
+			AccountInterstitial::whereUserId($user->id)->delete();
+		});
+
+		DB::transaction(function() use ($user) {
 			if($user->profile) {
 				$avatar = $user->profile->avatar;
 				$avatar->forceDelete();
@@ -79,6 +84,7 @@ class DeleteAccountPipeline implements ShouldQueue
 			Bookmark::whereProfileId($user->profile_id)->forceDelete();
 			EmailVerification::whereUserId($user->id)->forceDelete();
 			StatusHashtag::whereProfileId($id)->delete();
+			DirectMessage::whereFromId($user->profile_id)->delete();
 			FollowRequest::whereFollowingId($id)
 				->orWhere('follower_id', $id)
 				->forceDelete();
