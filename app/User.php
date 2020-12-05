@@ -88,4 +88,9 @@ class User extends Authenticatable
         return $this->hasMany(AccountLog::class);
     }
 
+    public function interstitials()
+    {
+        return $this->hasMany(AccountInterstitial::class);
+    }
+
 }
