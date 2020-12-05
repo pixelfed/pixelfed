@@ -182,6 +182,10 @@ class Image
 
 
 			$media->save();
+
+			if($thumbnail) {
+				$this->generateBlurhash($media);
+			}
 			Cache::forget('status:transformer:media:attachments:'.$media->status_id);
 			Cache::forget('status:thumb:'.$media->status_id);
 		} catch (Exception $e) {
@@ -197,5 +201,14 @@ class Image
 		$basePath = "{$name}.{$ext}";
 
 		return ['path' => $basePath, 'png' => $png];
+	}
+
+	protected function generateBlurhash($media)
+	{
+		$blurhash = Blurhash::generate($media);
+		if($blurhash) {
+			$media->blurhash = $blurhash;
+			$media->save();
+		}
 	}
 }
