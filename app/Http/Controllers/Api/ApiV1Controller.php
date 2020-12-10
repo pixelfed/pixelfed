@@ -1761,6 +1761,7 @@ class ApiV1Controller extends Controller
 
         NewStatusPipeline::dispatch($status);
         Cache::forget('user:account:id:'.$user->id);
+        Cache::forget('_api:statuses:recent_9:'.$user->profile_id);
         Cache::forget('profile:status_count:'.$user->profile_id);
         Cache::forget($user->storageUsedKey());
 
@@ -1783,10 +1784,15 @@ class ApiV1Controller extends Controller
         $status = Status::whereProfileId($request->user()->profile->id)
         ->findOrFail($id);
 
+        $resource = new Fractal\Resource\Item($status, new StatusTransformer());
+        
         Cache::forget('profile:status_count:'.$status->profile_id);
         StatusDelete::dispatch($status);
 
-        return response()->json(['Status successfully deleted.']);
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['text'] = $res['content'];
+        unset($res['content']);
+        return response()->json($res);
     }
 
     /**

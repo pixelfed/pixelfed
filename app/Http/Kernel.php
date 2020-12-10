@@ -66,6 +66,7 @@ class Kernel extends HttpKernel
         'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'twofactor'     => \App\Http\Middleware\TwoFactorAuth::class,
         'validemail'    => \App\Http\Middleware\EmailVerificationCheck::class,
+        'interstitial'  => \App\Http\Middleware\AccountInterstitial::class,
         // 'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
     ];
 }

@@ -20,7 +20,8 @@ use League\Fractal;
 use App\Transformer\Api\{
     AccountTransformer,
     RelationshipTransformer,
-    StatusTransformer
+    StatusTransformer,
+    StatusStatelessTransformer
 };
 use App\Services\{
     AccountService,
@@ -86,6 +87,24 @@ class PublicApiController extends Controller
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
         $this->scopeCheck($profile, $status);
+        if(!Auth::check()) {
+            $res = Cache::remember('wapi:v1:status:stateless_byid:' . $status->id, now()->addMinutes(30), function() use($status) {
+                $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+                $res = [
+                    'status' => $this->fractal->createData($item)->toArray(),
+                    'user' => [],
+                    'likes' => [],
+                    'shares' => [],
+                    'reactions' => [
+                        'liked' => false,
+                        'shared' => false,
+                        'bookmarked' => false,
+                    ],
+                ];
+                return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            });
+            return $res;
+        }
         $item = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = [
         	'status' => $this->fractal->createData($item)->toArray(),
@@ -419,7 +438,6 @@ class PublicApiController extends Controller
 
     }
 
-
     public function networkTimelineApi(Request $request)
     {
         return response()->json([]);
@@ -543,6 +561,50 @@ class PublicApiController extends Controller
             }
         }
 
+        $tag = in_array('private', $visibility) ? 'private' : 'public';
+        if($min_id == 1 && $limit == 9 && $tag == 'public') {
+            $limit = 9;
+            $scope = ['photo', 'photo:album', 'video', 'video:album'];
+            $key = '_api:statuses:recent_9:'.$profile->id;
+            $res = Cache::remember($key, now()->addHours(24), function() use($profile, $scope, $visibility, $limit) {
+                $dir = '>';
+                $id = 1;
+                $timeline = Status::select(
+                    'id', 
+                    'uri',
+                    'caption',
+                    'rendered',
+                    'profile_id', 
+                    'type',
+                    'in_reply_to_id',
+                    'reblog_of_id',
+                    'is_nsfw',
+                    'likes_count',
+                    'reblogs_count',
+                    'scope',
+                    'visibility',
+                    'local',
+                    'place_id',
+                    'comments_disabled',
+                    'cw_summary',
+                    'created_at',
+                    'updated_at'
+                  )->whereProfileId($profile->id)
+                  ->whereIn('type', $scope)
+                  ->where('id', $dir, $id)
+                  ->whereIn('visibility', $visibility)
+                  ->limit($limit)
+                  ->orderByDesc('id')
+                  ->get();
+
+                $resource = new Fractal\Resource\Collection($timeline, new StatusStatelessTransformer());
+                $res = $this->fractal->createData($resource)->toArray();
+
+                return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            });
+            return $res;
+        }
+
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $timeline = Status::select(
@@ -560,6 +622,8 @@ class PublicApiController extends Controller
             'scope',
             'visibility',
             'local',
+            'place_id',
+            'comments_disabled',
             'cw_summary',
             'created_at',
             'updated_at'

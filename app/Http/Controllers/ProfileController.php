@@ -66,7 +66,9 @@ class ProfileController extends Controller
                     'list' => $settings->show_profile_followers
                 ]
             ];
-            return view('profile.show', compact('profile', 'settings'));
+            $ui = $request->has('ui') && $request->input('ui') == 'memory' ? 'profile.memory' : 'profile.show';
+
+            return view($ui, compact('profile', 'settings'));
         } else {
             $key = 'profile:settings:' . $user->id;
             $ttl = now()->addHours(6);
@@ -103,7 +105,8 @@ class ProfileController extends Controller
                     'list' => $settings->show_profile_followers
                 ]
             ];
-            return view('profile.show', compact('profile', 'settings'));
+            $ui = $request->has('ui') && $request->input('ui') == 'memory' ? 'profile.memory' : 'profile.show';
+            return view($ui, compact('profile', 'settings'));
         }
     }
 

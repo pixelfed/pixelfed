@@ -635,15 +635,23 @@ export default {
 	methods: {
 		fetchProfile() {
 			let self = this;
-			axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
-				self.profile = res.data;
-				window.pixelfed.currentUser = res.data;
-				if(res.data.locked == true) {
-					self.visibility = 'private';
-					self.visibilityTag = 'Followers Only';
+			if(window._sharedData.curUser) {
+				self.profile = window._sharedData.curUser;
+				if(self.profile.locked == true) {
+						self.visibility = 'private';
+						self.visibilityTag = 'Followers Only';
 				}
-			}).catch(err => {
-			});
+			} else {
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+					self.profile = res.data;
+					window.pixelfed.currentUser = res.data;
+					if(res.data.locked == true) {
+						self.visibility = 'private';
+						self.visibilityTag = 'Followers Only';
+					}
+				}).catch(err => {
+				});
+			}
 		},
 
 		addMedia(event) {
