@@ -116,6 +116,10 @@
 - Updated media pipeline, add blurhash support. ([473e0495](https://github.com/pixelfed/pixelfed/commit/473e0495))
 - Updated DeleteAccountPipeline, add AccountInterstitial and DirectMessage purging. ([b3078f27](https://github.com/pixelfed/pixelfed/commit/b3078f27))
 - Updated ComposeModal.vue component, reuse sharedData. ([e28d022f](https://github.com/pixelfed/pixelfed/commit/e28d022f))
+- Updated ApiController, return status object after deletion. ([0718711d](https://github.com/pixelfed/pixelfed/commit/0718711d))
+- Updated InternalApiController, add interstitial logic. ([20681bcf](https://github.com/pixelfed/pixelfed/commit/20681bcf))
+- Updated PublicApiController, improve stateless object caching. ([342e7a50](https://github.com/pixelfed/pixelfed/commit/342e7a50))
+- Updated StatusController, add interstitial logic. ([003caf7e](https://github.com/pixelfed/pixelfed/commit/003caf7e))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
