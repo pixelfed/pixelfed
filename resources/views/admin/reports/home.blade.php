@@ -15,6 +15,15 @@
     </a>
   </span>
 </div>
+@php($ai = App\AccountInterstitial::whereNotNull('appeal_requested_at')->whereNull('appeal_handled_at')->count())
+@if($ai)
+<div class="mb-4">
+  <a class="btn btn-outline-primary px-5 py-3" href="/i/admin/reports/appeals">
+    <p class="font-weight-bold h4 mb-0">{{$ai}}</p>
+    Appeal {{$ai == 1 ? 'Request' : 'Requests'}}
+  </a>
+</div>
+@endif
   @if($reports->count())
   <div class="card shadow-none border">
     <div class="list-group list-group-flush">
