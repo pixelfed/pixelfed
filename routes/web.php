@@ -8,6 +8,9 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('reports/show/{id}', 'AdminController@showReport');
     Route::post('reports/show/{id}', 'AdminController@updateReport');
     Route::post('reports/bulk', 'AdminController@bulkUpdateReport');
+    Route::get('reports/appeals', 'AdminController@appeals');
+    Route::get('reports/appeal/{id}', 'AdminController@showAppeal');
+    Route::post('reports/appeal/{id}', 'AdminController@updateAppeal');
     Route::redirect('statuses', '/statuses/list');
     Route::get('statuses/list', 'AdminController@statuses')->name('admin.statuses');
     Route::get('statuses/show/{id}', 'AdminController@showStatus');
@@ -73,7 +76,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::post('newsroom/create', 'AdminController@newsroomStore');
 });
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization','interstitial'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::post('/', 'StatusController@store');
 
@@ -125,6 +128,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::get('discover/tag', 'DiscoverController@getHashtags');
             Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
         });
+        
         Route::group(['prefix' => 'pixelfed'], function() {
             Route::group(['prefix' => 'v1'], function() {
                 Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
@@ -169,6 +173,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
             });
         });
+
         Route::group(['prefix' => 'local'], function () {
             // Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
             // Route::get('accounts/relationships', 'PublicApiController@relationships');
@@ -295,6 +300,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::get('redirect', 'SiteController@redirectUrl');
         Route::post('admin/media/block/add', 'MediaBlocklistController@add');
         Route::post('admin/media/block/delete', 'MediaBlocklistController@delete');
+
+        Route::get('warning', 'AccountInterstitialController@get');
+        Route::post('warning', 'AccountInterstitialController@read');
     });
 
     Route::group(['prefix' => 'account'], function () {
