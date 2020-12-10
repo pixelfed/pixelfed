@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\{
+    AccountInterstitial,
     DirectMessage,
     DiscoverCategory,
     Hashtag,
@@ -213,6 +214,35 @@ class InternalApiController extends Controller
                     ])
                     ->accessLevel('admin')
                     ->save();
+
+
+                if($status->uri == null) {
+                    $media = $status->media;
+                    $ai = new AccountInterstitial;
+                    $ai->user_id = $status->profile->user_id;
+                    $ai->type = 'post.cw';
+                    $ai->view = 'account.moderation.post.cw';
+                    $ai->item_type = 'App\Status';
+                    $ai->item_id = $status->id;
+                    $ai->has_media = (bool) $media->count();
+                    $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
+                    $ai->meta = json_encode([
+                        'caption' => $status->caption,
+                        'created_at' => $status->created_at,
+                        'type' => $status->type,
+                        'url' => $status->url(),
+                        'is_nsfw' => $status->is_nsfw,
+                        'scope' => $status->scope,
+                        'reblog' => $status->reblog_of_id,
+                        'likes_count' => $status->likes_count,
+                        'reblogs_count' => $status->reblogs_count,
+                    ]);
+                    $ai->save();
+
+                    $u = $status->profile->user;
+                    $u->has_interstitial = true;
+                    $u->save();
+                }
             break;
 
             case 'remcw':
@@ -231,6 +261,14 @@ class InternalApiController extends Controller
                     ])
                     ->accessLevel('admin')
                     ->save();
+                if($status->uri == null) {
+                    $ai = AccountInterstitial::whereUserId($status->profile->user_id)
+                        ->whereType('post.cw')
+                        ->whereItemId($status->id)
+                        ->whereItemType('App\Status')
+                        ->first();
+                    $ai->delete();
+                }
             break;
 
             case 'unlist':
@@ -250,6 +288,34 @@ class InternalApiController extends Controller
                     ])
                     ->accessLevel('admin')
                     ->save();
+
+                if($status->uri == null) {
+                    $media = $status->media;
+                    $ai = new AccountInterstitial;
+                    $ai->user_id = $status->profile->user_id;
+                    $ai->type = 'post.unlist';
+                    $ai->view = 'account.moderation.post.unlist';
+                    $ai->item_type = 'App\Status';
+                    $ai->item_id = $status->id;
+                    $ai->has_media = (bool) $media->count();
+                    $ai->blurhash = $media->count() ? $media->first()->blurhash : null;
+                    $ai->meta = json_encode([
+                        'caption' => $status->caption,
+                        'created_at' => $status->created_at,
+                        'type' => $status->type,
+                        'url' => $status->url(),
+                        'is_nsfw' => $status->is_nsfw,
+                        'scope' => $status->scope,
+                        'reblog' => $status->reblog_of_id,
+                        'likes_count' => $status->likes_count,
+                        'reblogs_count' => $status->reblogs_count,
+                    ]);
+                    $ai->save();
+
+                    $u = $status->profile->user;
+                    $u->has_interstitial = true;
+                    $u->save();
+                }
             break;
         }
         return ['msg' => 200];
@@ -364,6 +430,7 @@ class InternalApiController extends Controller
 
         NewStatusPipeline::dispatch($status);
         Cache::forget('user:account:id:'.$profile->user_id);
+        Cache::forget('_api:statuses:recent_9:'.$profile->id);
         Cache::forget('profile:status_count:'.$profile->id);
         Cache::forget($user->storageUsedKey());
         return $status->url();
