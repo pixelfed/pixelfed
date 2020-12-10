@@ -4,27 +4,62 @@
 
 <div class="container reply-container">
   <div class="col-12 col-md-8 offset-md-2 mt-4">
-      <div class="card">
-        <div class="card-body p-0 m-0 bg-light">
+      <div class="card shadow-none border">
+        @if($status->parent()->parent())
+        <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
-            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            @if($status->parent()->parent()->media()->count())
+            <img src="{{$status->parent()->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            @endif
             <div class="p-4 w-100">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-1" width="30px">
-                  <span class="h5 font-weight-bold" v-pre>{{$status->parent()->profile->username}}</span>
-                </div>
-                <div>
-                  <a class="" href="{{$status->parent()->url()}}"><i class="far fa-share-square"></i></a>
-                </div>
-              </div>
               <div class="">
-                <p class="mb-0 w-100" v-pre>{{ str_limit($status->parent()->caption, 125) }}</p>
+                <div class="media">
+                  <img src="{{$status->parent()->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <div class="media-body">
+                    <span class="font-weight-bold" v-pre>{{$status->parent()->parent()->profile->username}}</span>
+                    <div class="">
+                      <p class="w-100 text-break" v-pre>{!!$status->parent()->parent()->rendered!!}</p>
+                    </div>
+                    <div class="mb-0 small">
+                      <a href="{{$status->parent()->parent()->url()}}" class="text-muted">
+                        {{$status->parent()->parent()->created_at->diffForHumans()}}
+                      </a>
+                    </div>
+                  </div>
+                  <a class="float-right" href="{{$status->parent()->parent()->url()}}"><i class="far fa-share-square"></i></a>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="card-body">
+        @endif
+        <div class="card-body p-0 m-0 bg-light border-bottom">
+          <div class="d-flex p-0 m-0 align-items-center">
+            @if($status->parent()->media()->count())
+            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            @endif
+            <div class="p-4 w-100">
+              <div class="">
+                <div class="media">
+                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <div class="media-body">
+                    <span class="font-weight-bold" v-pre>{{$status->parent()->profile->username}}</span>
+                    <div class="">
+                      <p class="w-100 text-break" v-pre>{!!$status->parent()->rendered!!}</p>
+                    </div>
+                    <div class="mb-0 small">
+                      <a href="{{$status->parent()->url()}}" class="text-muted">
+                        {{$status->parent()->created_at->diffForHumans()}}
+                      </a>
+                    </div>
+                  </div>
+                  <a class="float-right" href="{{$status->parent()->url()}}"><i class="far fa-share-square"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body border-bottom">
           @if($status->is_nsfw)
           <details class="cw">
             <summary class="px-3 px-md-5">
@@ -34,8 +69,8 @@
               <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
               <div class="media-body">
                 <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
-                <p class="mb-1" v-pre>{!! $status->rendered !!}</p>
-                <div class="mb-0">
+                <p class="" v-pre>{!! $status->rendered !!}</p>
+                <div class="mb-0 small">
                   <a href="{{$status->url()}}" class="text-muted">
                     {{$status->created_at->diffForHumans()}}
                   </a>
@@ -48,8 +83,8 @@
             <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
             <div class="media-body">
               <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
-              <p class="mb-1" v-pre>{!! $status->rendered !!}</p>
-              <div class="mb-0">
+              <p class="" v-pre>{!! $status->rendered !!}</p>
+              <div class="mb-0 small">
                 <a href="{{$status->url()}}" class="text-muted">
                   {{$status->created_at->diffForHumans()}}
                 </a>
@@ -66,6 +101,34 @@
           </div>
           @endif
         </div>
+        @if($status->comments->count())
+        <div class="card-body p-0 m-0 bg-light border-bottom">
+          <div class="d-flex p-0 m-0 align-items-center">
+            @if($status->comments()->first()->media()->count())
+            <img src="{{$status->comments()->first()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            @endif
+            <div class="p-4 w-100">
+              <div class="">
+                <div class="media">
+                  <img src="{{$status->comments()->first()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <div class="media-body">
+                    <span class="font-weight-bold" v-pre>{{$status->comments()->first()->profile->username}}</span>
+                    <div class="">
+                      <p class="w-100 text-break" v-pre>{!!$status->comments()->first()->rendered!!}</p>
+                    </div>
+                    <div class="mb-0 small">
+                      <a href="{{$status->comments()->first()->url()}}" class="text-muted">
+                        {{$status->comments()->first()->created_at->diffForHumans()}}
+                      </a>
+                    </div>
+                  </div>
+                  <a class="float-right" href="{{$status->comments()->first()->url()}}"><i class="far fa-share-square"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endif
       </div>
   </div>
 </div>
@@ -108,7 +171,6 @@
 @endpush
 
 @push('scripts')
-<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
 <script type="text/javascript">
   $(document).ready(function() {
     $('.reactions').hide();
