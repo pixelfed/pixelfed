@@ -161,6 +161,7 @@ export default {
 
 	data() {
 		return {
+			config: window.App.config,
 			loaded: false,
 			posts: [],
 			ids: [],
@@ -243,7 +244,7 @@ export default {
 		},
 
 		pushId() {
-			let max = 18;
+			let max = this.config.uploader.max_collection_length;
 			let addingPostToCollection = true;
 			let self = this;
 			if(this.posts.length >= max) {
