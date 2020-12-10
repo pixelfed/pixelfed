@@ -8,8 +8,8 @@
     "/css/appdark.css": "/css/appdark.css?id=995ec87dd4aff426cd1c",
     "/css/landing.css": "/css/landing.css?id=3092e86721fa8b922c06",
     "/css/quill.css": "/css/quill.css?id=e3741782d15a3031f785",
-    "/js/collectioncompose.js": "/js/collectioncompose.js?id=72e8fa48c00604a44eb9",
-    "/js/collections.js": "/js/collections.js?id=915db7c1d080d61edcc9",
+    "/js/collectioncompose.js": "/js/collectioncompose.js?id=c6a07cb79dd7d6c7b8a0",
+    "/js/collections.js": "/js/collections.js?id=6f64a9032085ebac28b3",
     "/js/components.js": "/js/components.js?id=88296701f1382d285031",
     "/js/compose.js": "/js/compose.js?id=e74fdb55681c6d21f4d5",
     "/js/compose-classic.js": "/js/compose-classic.js?id=283f19c895f4118a2a8b",
@@ -29,5 +29,5 @@
     "/js/status.js": "/js/status.js?id=70f5597c1069d7ead4bb",
     "/js/story-compose.js": "/js/story-compose.js?id=13f9606a3c4ce7acf17b",
     "/js/theme-monokai.js": "/js/theme-monokai.js?id=8842103833ba4861bcfa",
-    "/js/timeline.js": "/js/timeline.js?id=8b144724e85e8bef50bf"
+    "/js/timeline.js": "/js/timeline.js?id=44dae7cd501b4b9adce2"
 }

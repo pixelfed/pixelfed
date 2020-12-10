@@ -239,6 +239,7 @@ return [
         ]
     ],
 
+    'max_collection_length' => (int) env('PF_MAX_COLLECTION_LENGTH', 18),
 
     'media_types' => env('MEDIA_TYPES', 'image/jpeg,image/png,image/gif'),
 

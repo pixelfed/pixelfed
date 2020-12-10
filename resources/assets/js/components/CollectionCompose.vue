@@ -113,6 +113,7 @@ export default {
 	props: ['collection-id', 'profile-id'],
 	data() {
 		return {
+			config: window.App.config,
 			loaded: false,
 			limit: 8,
 			step: 1,
@@ -175,7 +176,7 @@ export default {
 		},
 
 		addId() {
-			let max = 18;
+			let max = this.config.uploader.max_collection_length;
 			if(this.posts.length >= max) {
 				swal('Error', 'You can only add ' + max + ' posts per collection', 'error');
 				return;

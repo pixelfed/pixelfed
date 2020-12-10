@@ -121,8 +121,9 @@ class CollectionController extends Controller
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
 
-        if($count >= 50) {
-            abort(400, 'You can only add 50 posts per collection');
+        $max = config('pixelfed.max_collection_length');
+        if($count >= $max) {
+            abort(400, 'You can only add '.$max.' posts per collection');
         }
 
         $status = Status::whereScope('public')
@@ -165,7 +166,7 @@ class CollectionController extends Controller
         if($collection->visibility !== 'public') {
             abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
         }
-        $posts = $collection->posts()->orderBy('order', 'asc')->paginate(18);
+        $posts = $collection->posts()->orderBy('order', 'asc')->get();
 
         $fractal = new Fractal\Manager();
         $fractal->setSerializer(new ArraySerializer());

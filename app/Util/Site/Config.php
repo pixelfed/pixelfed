@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Config {
 
 	public static function get() {
-		return Cache::remember('api:site:configuration', now()->addMinutes(30), function() {
+		return Cache::remember('api:site:configuration:_v0', now()->addHours(30), function() {
 			return [
 				'open_registration' => config('pixelfed.open_registration'),
 				'uploader' => [
@@ -16,6 +16,8 @@ class Config {
 					'max_caption_length' => config('pixelfed.max_caption_length'),
 					'album_limit' => config('pixelfed.max_album_length'),
 					'image_quality' => config('pixelfed.image_quality'),
+
+					'max_collection_length' => config('pixelfed.max_collection_length', 18),
 
 					'optimize_image' => config('pixelfed.optimize_image'),
 					'optimize_video' => config('pixelfed.optimize_video'),

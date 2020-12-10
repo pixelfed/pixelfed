@@ -345,7 +345,7 @@
 				<footer>
 					<div class="container pb-5">
 						<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-							<a href="/site/about" class="text-dark pr-2">About Us</a>
+							<a href="/site/about" class="text-dark pr-2">About</a>
 							<a href="/site/help" class="text-dark pr-2">Help</a>
 							<a href="/site/language" class="text-dark pr-2">Language</a>
 							<a href="/discover/profiles" class="text-dark pr-2">Profiles</a>
