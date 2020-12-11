@@ -20,12 +20,14 @@ class AccountInterstitialController extends Controller
             ->interstitials()
             ->whereNull('read_at')
             ->first();
+
         if(!$interstitial) {
             $user = $request->user();
             $user->has_interstitial = false;
             $user->save();
             return redirect('/');
         }
+
         $meta = json_decode($interstitial->meta);
         $view = $interstitial->view;
     	return view($view, compact('interstitial', 'meta'));
@@ -35,7 +37,7 @@ class AccountInterstitialController extends Controller
     {
         $this->validate($request, [
             'id' => 'required',
-            'type' => 'required|in:post.cw,post.removed,post.unlist',
+            'type' => 'required|in:post.cw,post.removed,post.unlist,post.autospam',
             'action' => 'required|in:appeal,confirm',
             'appeal_message' => 'nullable|max:500'
         ]);
