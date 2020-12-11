@@ -468,6 +468,10 @@ class ApiV1Controller extends Controller
         Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
         Cache::forget('user:account:id:'.$user->id);
+        Cache::forget('profile:follower_count:'.$target->id);
+        Cache::forget('profile:follower_count:'.$user->profile_id);
+        Cache::forget('profile:following_count:'.$target->id);
+        Cache::forget('profile:following_count:'.$user->profile_id);
 
         $resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
         $res = $this->fractal->createData($resource)->toArray();

@@ -127,6 +127,7 @@
 - Updated reply/comment view, improve layout and include child reply. ([2eca670e](https://github.com/pixelfed/pixelfed/commit/2eca670e))
 - Updated Collections, add custom limit. ([048642be](https://github.com/pixelfed/pixelfed/commit/048642be))
 - Updated AccountInterstitialController, add autospam type. ([c67f0c57](https://github.com/pixelfed/pixelfed/commit/c67f0c57))
+- Updated Profile model, improve counter caching. ([4a14e970](https://github.com/pixelfed/pixelfed/commit/4a14e970))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added

@@ -115,6 +115,10 @@ class FollowerController extends Controller
         Cache::forget('px:profile:followers-v1.3:'.$target->id);
         Cache::forget('px:profile:following-v1.3:'.$user->id);
         Cache::forget('px:profile:following-v1.3:'.$target->id);
+        Cache::forget('profile:follower_count:'.$target->id);
+        Cache::forget('profile:follower_count:'.$user->id);
+        Cache::forget('profile:following_count:'.$target->id);
+        Cache::forget('profile:following_count:'.$user->id);
 
         return $target->url();
     }

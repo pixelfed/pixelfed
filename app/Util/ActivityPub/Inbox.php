@@ -145,7 +145,7 @@ class Inbox
             return;
         }
         $to = $activity['to'];
-        $cc = $activity['cc'];
+        $cc = isset($activity['cc']) ? $activity['cc'] : [];
         if(count($to) == 1 && 
             count($cc) == 0 && 
             parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
@@ -342,6 +342,12 @@ class Inbox
                 'follower_id' => $actor->id,
                 'following_id' => $target->id
             ]);
+
+            Cache::forget('profile:follower_count:'.$target->id);
+            Cache::forget('profile:follower_count:'.$actor->id);
+            Cache::forget('profile:following_count:'.$target->id);
+            Cache::forget('profile:following_count:'.$actor->id);
+
         } else {
             $follower = new Follower;
             $follower->profile_id = $actor->id;
@@ -365,6 +371,10 @@ class Inbox
                 ]
             ];
             Helpers::sendSignedObject($target, $actor->inbox_url, $accept);
+            Cache::forget('profile:follower_count:'.$target->id);
+            Cache::forget('profile:follower_count:'.$actor->id);
+            Cache::forget('profile:following_count:'.$target->id);
+            Cache::forget('profile:following_count:'.$actor->id);
         }
     }
 
