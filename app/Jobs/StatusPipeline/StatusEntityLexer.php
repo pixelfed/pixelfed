@@ -11,6 +11,7 @@ use App\StatusHashtag;
 use App\Services\PublicTimelineService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
+use App\Util\Sentiment\Bouncer;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -138,6 +139,10 @@ class StatusEntityLexer implements ShouldQueue
     public function deliver()
     {
         $status = $this->status;
+
+        if(config('pixelfed.bouncer.enabled')) {
+            Bouncer::get($status);
+        }
 
         if($status->uri == null && $status->scope == 'public') {
             PublicTimelineService::add($status->id);

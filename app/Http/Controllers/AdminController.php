@@ -104,6 +104,56 @@ class AdminController extends Controller
 		return view('admin.reports.show_appeal', compact('appeal', 'meta'));
 	}
 
+	public function spam(Request $request)
+	{
+		$appeals = AccountInterstitial::whereType('post.autospam')
+			->whereNull('appeal_handled_at')
+			->latest()
+			->paginate(6);
+		return view('admin.reports.spam', compact('appeals'));
+	}
+
+	public function showSpam(Request $request, $id)
+	{
+		$appeal = AccountInterstitial::whereType('post.autospam')
+			->whereNull('appeal_handled_at')
+			->findOrFail($id);
+		$meta = json_decode($appeal->meta);
+		return view('admin.reports.show_spam', compact('appeal', 'meta'));
+	}
+
+	public function updateSpam(Request $request, $id)
+	{
+		$this->validate($request, [
+			'action' => 'required|in:dismiss,approve'
+		]);
+
+		$action = $request->input('action');
+		$appeal = AccountInterstitial::whereType('post.autospam')
+			->whereNull('appeal_handled_at')
+			->findOrFail($id);
+
+		$meta = json_decode($appeal->meta);
+
+		if($action == 'dismiss') {
+			$appeal->appeal_handled_at = now();
+			$appeal->save();
+
+			return redirect('/i/admin/reports/autospam');
+		}
+
+		$status = $appeal->status;
+		$status->is_nsfw = $meta->is_nsfw;
+		$status->scope = 'public';
+		$status->visibility = 'public';
+		$status->save();
+			
+		$appeal->appeal_handled_at = now();
+		$appeal->save();
+
+		return redirect('/i/admin/reports/autospam');
+	}
+
 	public function updateAppeal(Request $request, $id)
 	{
 		$this->validate($request, [
