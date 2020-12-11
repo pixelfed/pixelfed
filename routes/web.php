@@ -8,6 +8,9 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
     Route::get('reports/show/{id}', 'AdminController@showReport');
     Route::post('reports/show/{id}', 'AdminController@updateReport');
     Route::post('reports/bulk', 'AdminController@bulkUpdateReport');
+    Route::get('reports/autospam/{id}', 'AdminController@showSpam');
+    Route::post('reports/autospam/{id}', 'AdminController@updateSpam');
+    Route::get('reports/autospam', 'AdminController@spam');
     Route::get('reports/appeals', 'AdminController@appeals');
     Route::get('reports/appeal/{id}', 'AdminController@showAppeal');
     Route::post('reports/appeal/{id}', 'AdminController@updateAppeal');
