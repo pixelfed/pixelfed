@@ -376,6 +376,9 @@ class AccountController extends Controller
 			break;
 		}
 
+		Cache::forget('profile:follower_count:'.$pid);
+		Cache::forget('profile:following_count:'.$pid);
+
 		return response()->json(['msg' => 'success'], 200);
 	}
 
