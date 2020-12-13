@@ -52,7 +52,7 @@
 
                         @if(config('captcha.enabled'))
                         <div class="d-flex justify-content-center mb-3">
-                            {!! app('captcha')->display() !!}
+                            {!! Captcha::display() !!}
                         </div>
                         @endif
 
