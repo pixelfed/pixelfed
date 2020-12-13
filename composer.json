@@ -15,6 +15,7 @@
         "ext-openssl": "*",
         "beyondcode/laravel-self-diagnosis": "^1.0.2",
         "brick/math": "^0.8",
+        "buzz/laravel-h-captcha": "1.0.2",
         "doctrine/dbal": "^2.7",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
@@ -39,8 +40,8 @@
         "predis/predis": "^1.1",
         "spatie/laravel-backup": "^6.0.0",
         "spatie/laravel-image-optimizer": "^1.1",
-        "symfony/http-kernel": "5.1.5",
-        "stevebauman/purify": "3.0.*"
+        "stevebauman/purify": "3.0.*",
+        "symfony/http-kernel": "5.1.5"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

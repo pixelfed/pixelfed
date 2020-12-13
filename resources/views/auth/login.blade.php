@@ -4,8 +4,8 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-5">
-            <div class="card">
-                <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Login') }}</div>
+            <div class="">
+                <div class="card-header bg-transparent p-3 text-center font-weight-bold">{{ __('Login') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}" class="px-5">
@@ -49,6 +49,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if(config('captcha.enabled'))
+                        <div class="d-flex justify-content-center mb-3">
+                            {!! app('captcha')->display() !!}
+                        </div>
+                        @endif
 
                         <div class="form-group row mb-0">
                             <div class="col-md-12">

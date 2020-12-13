@@ -118,6 +118,10 @@ class RegisterController extends Controller
             'password' => 'required|string|min:'.config('pixelfed.min_password_length').'|confirmed',
         ];
 
+        if(config('captcha.enabled')) {
+            $rules['h-captcha-response'] = 'required|captcha';
+        }
+
         return Validator::make($data, $rules);
     }
 
