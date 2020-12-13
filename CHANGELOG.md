@@ -131,6 +131,7 @@
 - Updated Profile model, improve counter caching. ([4a14e970](https://github.com/pixelfed/pixelfed/commit/4a14e970))
 - Updated ComposeModal, fix filter bug on safari. ([8e3e7586](https://github.com/pixelfed/pixelfed/commit/8e3e7586))
 - Updated StatusStatelessController, remove unused attributes. ([d0d46807](https://github.com/pixelfed/pixelfed/commit/d0d46807))
+- Updated Profile, fix follower counter bug. ([d06bec9c](https://github.com/pixelfed/pixelfed/commit/d06bec9c))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
