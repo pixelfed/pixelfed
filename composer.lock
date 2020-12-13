@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fa0012197581d98d4c04d1b83448d34",
+    "content-hash": "d1c65fe7e4f498b01260f09a3eb04015",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -318,6 +318,74 @@
                 }
             ],
             "time": "2020-08-18T23:41:20+00:00"
+        },
+        {
+            "name": "buzz/laravel-h-captcha",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thinhbuzz/laravel-h-captcha.git",
+                "reference": "41a063bea0e204ae5b8afbafce981d4675dd8af7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thinhbuzz/laravel-h-captcha/zipball/41a063bea0e204ae5b8afbafce981d4675dd8af7",
+                "reference": "41a063bea0e204ae5b8afbafce981d4675dd8af7",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "6.*|7.*",
+                "illuminate/support": "5.*|6.*|7.*|8.*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Buzz\\LaravelHCaptcha\\CaptchaServiceProvider"
+                    ],
+                    "aliases": {
+                        "Captcha": "Buzz\\LaravelHCaptcha\\CaptchaFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Buzz\\LaravelHCaptcha\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "ThinhBuzz",
+                    "email": "mr.thinhbuzz@gmail.com",
+                    "homepage": "https://www.facebook.com/thinh.buzz"
+                }
+            ],
+            "description": "hCaptcha for Laravel 5, Laravel 6, Laravel 7 and Laravel 8",
+            "homepage": "https://github.com/thinhbuzz/laravel-h-captcha",
+            "keywords": [
+                "captcha",
+                "h captcha",
+                "h-captcha",
+                "hcaptcha",
+                "laravel",
+                "laravel 5",
+                "laravel 6",
+                "laravel 7",
+                "laravel 8",
+                "laravel5",
+                "laravel6",
+                "laravel7"
+            ],
+            "support": {
+                "issues": "https://github.com/thinhbuzz/laravel-h-captcha/issues",
+                "source": "https://github.com/thinhbuzz/laravel-h-captcha/tree/v1.0.2"
+            },
+            "time": "2020-09-14T15:04:45+00:00"
         },
         {
             "name": "cakephp/chronos",
@@ -10132,5 +10200,5 @@
         "ext-openssl": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

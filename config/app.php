@@ -213,6 +213,7 @@ return [
         'PrettyNumber' => App\Util\Lexer\PrettyNumber::class,
         'Purify'       => Stevebauman\Purify\Facades\Purify::class,
         'FFMpeg'       => Pbmedia\LaravelFFMpeg\FFMpegFacade::class,
+        'Captcha'      => Buzz\LaravelHCaptcha\CaptchaFacade::class,
     ],
 
 ];

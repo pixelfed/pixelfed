@@ -53,6 +53,10 @@ class LoginController extends Controller
             'password'        => 'required|string|min:6',
         ];
 
+        if(config('captcha.enabled')) {
+            $rules['h-captcha-response'] = 'required|captcha';
+        }
+        
         $this->validate($request, $rules);
     }
 

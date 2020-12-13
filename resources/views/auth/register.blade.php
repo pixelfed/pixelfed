@@ -81,6 +81,12 @@
                             </div>
                         </div>
 
+                        @if(config('captcha.enabled'))
+                        <div class="d-flex justify-content-center my-3">
+                            {!! Captcha::display() !!}
+                        </div>
+                        @endif
+
                         <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
                         
                         <div class="form-group row">

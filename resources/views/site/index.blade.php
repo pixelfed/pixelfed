@@ -108,7 +108,11 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        @if(config('captcha.enabled'))
+                                        <div class="d-flex justify-content-center mb-3">
+                                            {!! Captcha::display() !!}
+                                        </div>
+                                        @endif
                                         <div class="form-group row mb-0">
                                             <div class="col-md-12">
                                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold text-uppercase">
