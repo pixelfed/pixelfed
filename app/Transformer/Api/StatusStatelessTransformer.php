@@ -12,9 +12,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
     protected $defaultIncludes = [
         'account',
-        'mentions',
         'media_attachments',
-        'tags',
     ];
 
     public function transform(Status $status)
@@ -30,23 +28,23 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
             'in_reply_to_account_id'    => $status->in_reply_to_profile_id,
             'reblog'                    => null,
             'content'                   => $status->rendered ?? $status->caption,
+            'content_text'              => $status->caption,
             'created_at'                => $status->created_at->format('c'),
             'emojis'                    => [],
-            'reblogs_count'             => $status->shares()->count(),
-            'favourites_count'          => $status->likes()->count(),
+            'reblogs_count'             => $status->reblogs_count ?? 0,
+            'favourites_count'          => $status->likes_count ?? 0,
             'reblogged'                 => null,
             'favourited'                => null,
             'muted'                     => null,
             'sensitive'                 => (bool) $status->is_nsfw,
-            'spoiler_text'              => $status->cw_summary,
-            'visibility'                => $status->visibility,
+            'spoiler_text'              => $status->cw_summary ?? '',
+            'visibility'                => $status->visibility ?? $status->scope,
             'application'               => [
                 'name'      => 'web',
                 'website'   => null
              ],
             'language'                  => null,
             'pinned'                    => null,
-
             'mentions'                  => [],
             'tags'                      => [],
             'pf_type'                   => $status->type ?? $status->setType(),
@@ -68,27 +66,13 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
         return $this->item($account, new AccountTransformer());
     }
 
-    public function includeMentions(Status $status)
-    {
-        $mentions = $status->mentions;
-
-        return $this->collection($mentions, new MentionTransformer());
-    }
-
     public function includeMediaAttachments(Status $status)
     {
         return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addMinutes(3), function() use($status) {
-            if(in_array($status->type, ['photo', 'video', 'photo:album', 'loop'])) {
+            if(in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
                 $media = $status->media()->orderBy('order')->get();
                 return $this->collection($media, new MediaTransformer());
             }
         });
-    }
-
-    public function includeTags(Status $status)
-    {
-        $tags = $status->hashtags;
-
-        return $this->collection($tags, new HashtagTransformer());
     }
 }

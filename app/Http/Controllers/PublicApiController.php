@@ -635,7 +635,7 @@ class PublicApiController extends Controller
           ->orderByDesc('id')
           ->get();
 
-        $resource = new Fractal\Resource\Collection($timeline, new StatusTransformer());
+        $resource = new Fractal\Resource\Collection($timeline, new StatusStatelessTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
