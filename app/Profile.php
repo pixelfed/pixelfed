@@ -65,13 +65,11 @@ class Profile extends Model
     public function followingCount($short = false)
     {
         $count = Cache::remember('profile:following_count:'.$this->id, now()->addMonths(1), function() {
-            $count = $this->following_count;
-            if($count) {
-                return $count;
-            }
             $count = $this->following()->count();
-            $this->following_count = $count;
-            $this->save();
+            if($this->following_count != $count) {
+                $this->following_count = $count;
+                $this->save();
+            }
             return $count;
         });
 
@@ -81,13 +79,11 @@ class Profile extends Model
     public function followerCount($short = false)
     {
         $count = Cache::remember('profile:follower_count:'.$this->id, now()->addMonths(1), function() {
-            $count = $this->followers_count;
-            if($count) {
-                return $count;
-            }
             $count = $this->followers()->count();
-            $this->followers_count = $count;
-            $this->save();
+            if($this->followers_count != $count) {
+                $this->followers_count = $count;
+                $this->save();
+            }
             return $count;
         });
         return $short ? PrettyNumber::convert($count) : $count;
