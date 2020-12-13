@@ -22,6 +22,7 @@ use Auth, Horizon, URL;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
         URL::forceScheme('https');
         Schema::defaultStringLength(191);
 
+        Paginator::useBootstrap();
+
         Avatar::observe(AvatarObserver::class);
         Notification::observe(NotificationObserver::class);
         ModLog::observe(ModLogObserver::class);
@@ -47,17 +50,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('prettyNumber', function ($expression) {
-            $num = $expression;
-            $abbrevs = [12 => 'T', 9 => 'B', 6 => 'M', 3 => 'K', 0 => ''];
-            foreach ($abbrevs as $exponent => $abbrev) {
-                if ($expression >= pow(10, $exponent)) {
-                    $display_num = $expression / pow(10, $exponent);
-                    $num = number_format($display_num, 0).$abbrev;
-
-                    return "<?php echo '$num'; ?>";
-                }
-            }
-
+            $num = \App\Util\Lexer\PrettyNumber::convert($expression);
             return "<?php echo $num; ?>";
         });
 
