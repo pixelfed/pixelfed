@@ -996,6 +996,11 @@ export default {
 
 		applyFilterToMedia() {
 			// this is where the magic happens
+			var ua = navigator.userAgent.toLowerCase();
+			if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
+			 	// swal('Oops!', 'Your browser does not support the filter feature. Please use Chrome or Firefox if you want to apply a filter.', 'error');
+			 	return;
+			}
 
 			let medias = this.media;
 			let media = null;
@@ -1021,8 +1026,8 @@ export default {
 							axios.post('/api/local/compose/media/update/'+media.id, data).then(res => {
 							}).catch(err => {
 							});
-						}, media.mime, 0.9);
-					});
+						});
+					}, media.mime, 0.9);
 					ctx.clearRect(0, 0, image.width, image.height);
 				}
 			}

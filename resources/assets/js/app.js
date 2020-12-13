@@ -1,3 +1,4 @@
+require('./polyfill');
 window._ = require('lodash');
 window.Popper = require('popper.js').default;
 window.pixelfed = window.pixelfed || {};
