@@ -134,6 +134,7 @@
 - Updated Profile, fix follower counter bug. ([d06bec9c](https://github.com/pixelfed/pixelfed/commit/d06bec9c))
 - Updated NotificationTransformer, add missing types. ([3a428366](https://github.com/pixelfed/pixelfed/commit/3a428366))
 - Updated StatusService, fix json bug. ([1ea2db74](https://github.com/pixelfed/pixelfed/commit/1ea2db74))
+- Updated NotificationTransformer, handle tagged deletes. ([881fa865](https://github.com/pixelfed/pixelfed/commit/881fa865))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added

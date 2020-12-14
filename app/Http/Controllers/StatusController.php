@@ -74,7 +74,10 @@ class StatusController extends Controller
             return redirect('/login?next='.urlencode('/' . $request->path()));
         }
         $id = HashidService::decode($id);
-        $status = Status::findOrFail($id);
+        $status = Status::find($id);
+        if(!$status) {
+            return redirect('/404');
+        }
         return redirect($status->url());
     }
 
