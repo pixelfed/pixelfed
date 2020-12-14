@@ -35,24 +35,10 @@
           </div>
           <div v-if="user != false" class="float-right">
             <div class="post-actions">
-            <div class="dropdown">
-              <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-              <span class="fas fa-ellipsis-v text-muted"></span>
+            <div>
+              <button class="btn btn-link text-dark no-caret" title="Post options" @click="ctxMenu()">
+                <span class="fas fa-ellipsis-v text-muted"></span>
               </button>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item font-weight-bold" @click="copyPostUrl()">Copy Post Url</a>
-                  <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
-                  <div v-if="!owner()">
-                    <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                    <a class="dropdown-item font-weight-bold" v-on:click="muteProfile()">Mute Profile</a>
-                    <a class="dropdown-item font-weight-bold" v-on:click="blockProfile()">Block Profile</a>
-                  </div>
-                  <div v-if="ownerOrAdmin()">
-                    <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                    <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                    <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost(status)">Delete</a>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -108,30 +94,16 @@
               </div>
               <div class="float-right">
                 <div class="post-actions">
-                <div v-if="user != false" class="dropdown">
-                  <button class="btn btn-link text-dark no-caret dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Post options">
-                  <span class="fas fa-ellipsis-v text-muted"></span>
-                  </button>
-                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item font-weight-bold" @click="copyPostUrl()">Copy Post Url</a>
-                        <a class="dropdown-item font-weight-bold" @click="showEmbedPostModal()">Embed</a>
-                        <span v-if="!owner()">
-                          <a class="dropdown-item font-weight-bold" :href="reportUrl()">Report</a>
-                          <a class="dropdown-item font-weight-bold" v-on:click="muteProfile">Mute Profile</a>
-                          <a class="dropdown-item font-weight-bold" v-on:click="blockProfile">Block Profile</a>
-                        </span>
-                        <span v-if="ownerOrAdmin()">
-                          <a class="dropdown-item font-weight-bold" href="#" v-on:click.prevent="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</a>
-                          <a v-if="canEdit" class="dropdown-item font-weight-bold" :href="editUrl()">Edit</a>
-                          <a class="dropdown-item font-weight-bold text-danger" v-on:click="deletePost">Delete</a>
-                        </span>
-                      </div>
+                  <div v-if="user != false">
+                    <button class="btn btn-link text-dark no-caret" title="Post options" @click="ctxMenu()">
+                      <span class="fas fa-ellipsis-v text-muted"></span>
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
-              <div class="card-body status-comments pb-5 pt-0">
+              <div class="card-body status-comments pt-0">
                 <div class="status-comment">
                   <div v-if="status.content.length" class="pt-3">
                     <div v-if="showCaption != true">
@@ -227,7 +199,12 @@
 
                 </div>
               </div>
-              <div class="card-body flex-grow-0 py-1">
+              <div v-if="reactionBarLoading" class="card-body flex-grow-0 py-4 text-center">
+                <div class="spinner-border" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+              <div v-else class="card-body flex-grow-0 py-1">
                 <div v-if="loaded && user.hasOwnProperty('id')" class="reactions my-2 pb-1 d-flex justify-content-between">
                   <h3 v-bind:class="[reactions.liked ? 'fas fa-heart text-danger mr-3 m-0 cursor-pointer' : 'far fa-heart pr-3 m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus"></h3>
                   <h3 v-if="!status.comments_disabled" class="far fa-comment mr-3 m-0 cursor-pointer" title="Comment" v-on:click="replyFocus(status)"></h3>
@@ -252,18 +229,13 @@
                 </div>
               </div>
             </div>
-           <!-- <div v-if="showComments && user.length !== 0" class="card-footer bg-white px-2 py-0">
-              <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-                <li class="nav-item" v-on:click="emojiReaction" v-for="e in emoji">{{e}}</li>
-              </ul>
-            </div> -->
             <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
               <div v-if="user.length == 0" class="comment-form-guest p-3">
                 <a href="/login">Login</a> to like or comment.
               </div>
               <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
-                <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
-                <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="postReply" :disabled="replyText.length == 0" />
+                <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" @click="replyFocus(status)"></textarea>
+                <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" disabled/>
               </form>
             </div>
           </div>
@@ -271,9 +243,6 @@
         </div>
       </div>
       <div class="container" v-if="showProfileMorePosts">
-        <!-- <div class="py-4">
-          <hr>
-        </div> -->
         <p class="text-lighter px-3 mt-5" style="font-weight: 600;font-size: 15px;">More posts from <a :href="'/'+statusUsername" class="text-dark">{{this.statusUsername}}</a></p>
         <div class="profile-timeline mt-md-4">
           <div class="row">
@@ -474,6 +443,7 @@
       </div>
     </div>
   </div>
+
   <b-modal ref="likesModal"
     id="l-modal"
     hide-footer
@@ -512,9 +482,9 @@
     hide-footer
     centered
     title="Shares"
-    body-class="list-group-flush p-0">
+    body-class="list-group-flush py-3 px-0">
     <div class="list-group">
-      <div class="list-group-item border-0" v-for="(user, index) in shares" :key="'modal_shares_'+index">
+      <div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
         <div class="media">
           <a :href="user.url">
             <img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
@@ -614,6 +584,88 @@
       </div>
     </div>
     <p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p>
+  </b-modal>
+  <b-modal ref="ctxModal"
+    id="ctx-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="sm"
+    body-class="list-group-flush p-0 rounded">
+    <div class="list-group text-center">
+      <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+      <div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
+      <div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
+      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+      <div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
+      <a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Edit</a>
+      <div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">ModTools</div>
+      <div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="blockProfile()">Block</div>
+      <div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="unblockProfile()">Unblock</div>
+      <a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger text-decoration-none" :href="reportUrl()">Report</a>
+      <div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+    </div>
+  </b-modal>
+  <b-modal ref="ctxModModal"
+    id="ctx-mod-modal"
+    hide-header
+    hide-footer
+    centered
+    rounded
+    size="sm"
+    body-class="list-group-flush p-0 rounded">
+    <div class="list-group text-center">
+      <div class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
+
+      <div class="list-group-item rounded cursor-pointer" @click="moderatePost('unlist')">Unlist from Timelines</div>
+      <div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost('remcw')">Remove Content Warning</div>
+      <div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost('addcw')">Add Content Warning</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
+    </div>
+  </b-modal>
+  <b-modal ref="replyModal"
+    id="ctx-reply-modal"
+    hide-footer
+    centered
+    rounded
+    :title-html="replyingToUsername ? 'Reply to <span class=text-dark>' + replyingToUsername + '</span>' : ''"
+    title-tag="p"
+    title-class="font-weight-bold text-muted"
+    size="md"
+    body-class="p-2 rounded">
+    <div>
+      <textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+      </textarea>
+
+      <div class="border-top border-bottom my-2">
+        <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+          <li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="pl-2 small text-muted font-weight-bold text-monospace">
+            <span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
+          </span>
+        </div>
+        <div class="d-flex align-items-center">
+          <div class="custom-control custom-switch mr-3">
+            <input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replySensitive">
+            <label :class="[replySensitive ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
+          </div>
+          <!-- <select class="custom-select custom-select-sm my-0 mr-2">
+            <option value="public" selected="">Public</option>
+            <option value="unlisted">Unlisted</option>
+            <option value="followers">Followers Only</option>
+          </select> -->
+          <button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="postReply()" :disabled="replyText.length == 0">
+          {{replySending == true ? 'POSTING' : 'POST'}}
+        </button>
+        </div>
+      </div>
+    </div>
   </b-modal>
 </div>
 </template>
@@ -742,6 +794,7 @@ export default {
             loaded: false,
             loading: null,
             replyingToId: this.statusId,
+            replyingToUsername: this.statusUsername,
             replyToIndex: 0,
             replySending: false,
             emoji: window.App.util.emoji,
@@ -753,9 +806,10 @@ export default {
             ctxEmbedShowLikes: false,
             ctxEmbedCompactMode: false,
             layout: this.profileLayout,
-            canEdit: false,
             showProfileMorePosts: false,
-            profileMorePosts: []
+            profileMorePosts: [],
+            replySending: false,
+            reactionBarLoading: true,
           }
     },
     watch: {
@@ -811,16 +865,6 @@ export default {
     },
 
     methods: {
-      showMuteBlock() {
-        let sid = this.status.account.id;
-        let uid = this.user.id;
-        if(sid == uid) {
-          $('.post-actions .menu-author').removeClass('d-none');
-        } else {
-          $('.post-actions .menu-user').removeClass('d-none');
-        }
-      },
-
       reportUrl() {
         return '/i/report?type=post&id=' + this.status.id;
       },
@@ -839,33 +883,20 @@ export default {
           axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId)
             .then(response => {
                 self.status = response.data.status;
-                self.user = response.data.user;
-                window._sharedData.curUser = self.user;
-                window.App.util.navatar();
                 self.media = self.status.media_attachments;
-                self.reactions = response.data.reactions;
-                self.likes = response.data.likes;
-                self.shares = response.data.shares;
                 self.likesPage = 2;
                 self.sharesPage = 2;
-                this.showMuteBlock();
                 self.showCaption = !response.data.status.sensitive;
                 if(self.status.comments_disabled == false) {
                   self.showComments = true;
                   this.fetchComments();
-                }
-                if(this.ownerOrAdmin()) {
-                  let od = new Date(this.status.created_at).getTime() + (1 * 24 * 60 * 60 * 1000);
-                  let now = new Date().getTime();
-                  if(od > now) {
-                    this.canEdit = true;
-                  }
                 }
                 this.loaded = true;
                 setTimeout(function() {
                   self.fetchProfilePosts();
                 }, 3000);
                 setTimeout(function() {
+                  self.fetchState();
                   document.querySelectorAll('.status-comment .comment-text a').forEach(function(i, e) { 
                     if(i.href.startsWith(window.location.origin)) {
                       return;
@@ -882,6 +913,20 @@ export default {
             });
       },
 
+      fetchState() {
+        let self = this;
+        axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId+'/state')
+        .then(res => {
+          self.user = res.data.user;
+          window._sharedData.curUser = self.user;
+          window.App.util.navatar();
+          self.likes = res.data.likes;
+          self.shares = res.data.shares;
+          self.reactions = res.data.reactions;
+          self.reactionBarLoading = false;
+        });
+      },
+
       likesModal() {
         if($('body').hasClass('loggedIn') == false) {
           window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
@@ -890,14 +935,31 @@ export default {
         if(this.status.favourites_count == 0) {
           return;
         }
-        this.$refs.likesModal.show();
+        if(this.likes.length) {
+          this.$refs.likesModal.show();
+          return;
+        }
+        axios.get('/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId)
+        .then(res => {
+          this.likes = res.data.data;
+          this.$refs.likesModal.show();
+        });
       },
 
       sharesModal() {
         if(this.status.reblogs_count == 0 || $('body').hasClass('loggedIn') == false) {
+          window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
           return;
         }
-        this.$refs.sharesModal.show();
+        if(this.shares.length) {
+          this.$refs.sharesModal.show();
+          return;
+        }
+        axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId)
+        .then(res => {
+          this.shares = res.data.data;
+          this.$refs.sharesModal.show();
+        });
       },
 
       infiniteLikesHandler($state) {
@@ -1010,21 +1072,6 @@ export default {
         });
       },
 
-      muteProfile() {
-        if($('body').hasClass('loggedIn') == false) {
-          return;
-        }
-
-        axios.post('/i/mute', {
-          type: 'user',
-          item: this.status.account.id
-        }).then(res => {
-          swal('Success', 'You have successfully muted ' + this.status.account.acct, 'success');
-        }).catch(err => {
-          swal('Error', 'Something went wrong. Please try again later.', 'error');
-        });
-      },
-
       blockProfile() {
         if($('body').hasClass('loggedIn') == false) {
           return;
@@ -1034,7 +1081,26 @@ export default {
           type: 'user',
           item: this.status.account.id
         }).then(res => {
+          this.$refs.ctxModal.hide();
+          this.relationship.blocking = true;
           swal('Success', 'You have successfully blocked ' + this.status.account.acct, 'success');
+        }).catch(err => {
+          swal('Error', 'Something went wrong. Please try again later.', 'error');
+        });
+      },
+
+      unblockProfile() {
+        if($('body').hasClass('loggedIn') == false) {
+          return;
+        }
+
+        axios.post('/i/unblock', {
+          type: 'user',
+          item: this.status.account.id
+        }).then(res => {
+          this.relationship.blocking = false;
+          this.$refs.ctxModal.hide();
+          swal('Success', 'You have successfully unblocked ' + this.status.account.acct, 'success');
         }).catch(err => {
           swal('Error', 'Something went wrong. Please try again later.', 'error');
         });
@@ -1082,6 +1148,7 @@ export default {
 
       postReply() {
         let self = this;
+        this.replySending = true;
         if(this.replyText.length == 0 ||
           this.replyText.trim() == '@'+this.status.account.acct) {
           self.replyText = null;
@@ -1106,7 +1173,7 @@ export default {
               self.results.unshift(entity);
             }
             let elem = $('.status-comments')[0];
-            elem.scrollTop = elem.clientHeight;
+            elem.scrollTop = elem.clientHeight * 2;
           } else {
             if(self.replyToIndex >= 0) {
               let el = self.results[self.replyToIndex];
@@ -1114,6 +1181,8 @@ export default {
               el.reply_count = el.reply_count + 1;
             }
           }
+          self.$refs.replyModal.hide();
+          self.replySending = false;
         });
       },
 
@@ -1147,15 +1216,25 @@ export default {
       },
 
       replyFocus(e, index, prependUsername = false) {
+          if($('body').hasClass('loggedIn') == false) {
+            this.redirect('/login?next=' + encodeURIComponent(window.location.pathname));
+            return;
+          }
+          
+          if(this.status.comments_disabled) {
+            return;
+          }
+
           this.replyToIndex = index;
           this.replyingToId = e.id;
+          this.replyingToUsername = e.account.username;
           this.reply_to_profile_id = e.account.id;
           let username = e.account.local ? '@' + e.account.username + ' '
             : '@' + e.account.acct + ' ';
           if(prependUsername == true) {
             this.replyText = username;
           }
-          $('textarea[name="comment"]').focus();
+          this.$refs.replyModal.show();
       },
 
       fetchComments() {
@@ -1289,7 +1368,9 @@ export default {
             item: self.status.id,
             disableComments: false
           }).then(function(res) {
-              window.location.href = self.status.url;
+              self.status.comments_disabled = false;
+              self.$refs.ctxModal.hide();
+              window.location.reload();
           }).catch(function(err) {
             return;
           });
@@ -1299,8 +1380,9 @@ export default {
             item: self.status.id,
             disableComments: true
           }).then(function(res) {
-            self.status.comments_disabled = false;
+            self.status.comments_disabled = true;
             self.showComments = false;
+            self.$refs.ctxModal.hide();
           }).catch(function(err) {
             return;
           });
@@ -1374,6 +1456,7 @@ export default {
       showEmbedPostModal() {
         let mode = this.ctxEmbedCompactMode ? 'compact' : 'full';
         this.ctxEmbedPayload = window.App.util.embed.post(this.status.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
+        this.$refs.ctxModal.hide();
         this.$refs.embedModal.show();
       },
 
@@ -1461,10 +1544,166 @@ export default {
             swal('An Error Occurred', 'Please try again later.', 'error');  
         });
       },
+
       copyPostUrl() {
         navigator.clipboard.writeText(this.statusUrl);
         return;
-      }
+      },
+
+      moderatePost(action, $event) {
+        let status = this.status;
+        let username = status.account.username;
+        let msg = '';
+        let self = this;
+        switch(action) {
+          case 'addcw':
+            msg = 'Are you sure you want to add a content warning to this post?';
+            swal({
+              title: 'Confirm',
+              text: msg,
+              icon: 'warning',
+              buttons: true,
+              dangerMode: true
+            }).then(res =>  {
+              if(res) {
+                axios.post('/api/v2/moderator/action', {
+                  action: action,
+                  item_id: status.id,
+                  item_type: 'status'
+                }).then(res => {
+                  swal('Success', 'Successfully added content warning', 'success');
+                  status.sensitive = true;
+                  self.ctxModMenuClose();
+                }).catch(err => {
+                  swal(
+                    'Error',
+                    'Something went wrong, please try again later.',
+                    'error'
+                  );
+                  self.ctxModMenuClose();
+                });
+              }
+            });
+          break;
+
+          case 'remcw':
+            msg = 'Are you sure you want to remove the content warning on this post?';
+            swal({
+              title: 'Confirm',
+              text: msg,
+              icon: 'warning',
+              buttons: true,
+              dangerMode: true
+            }).then(res =>  {
+              if(res) {
+                axios.post('/api/v2/moderator/action', {
+                  action: action,
+                  item_id: status.id,
+                  item_type: 'status'
+                }).then(res => {
+                  swal('Success', 'Successfully added content warning', 'success');
+                  status.sensitive = false;
+                  self.ctxModMenuClose();
+                }).catch(err => {
+                  swal(
+                    'Error',
+                    'Something went wrong, please try again later.',
+                    'error'
+                  );
+                  self.ctxModMenuClose();
+                });
+              }
+            });
+          break;
+
+          case 'unlist':
+            msg = 'Are you sure you want to unlist this post?';
+            swal({
+              title: 'Confirm',
+              text: msg,
+              icon: 'warning',
+              buttons: true,
+              dangerMode: true
+            }).then(res =>  {
+              if(res) {
+                axios.post('/api/v2/moderator/action', {
+                  action: action,
+                  item_id: status.id,
+                  item_type: 'status'
+                }).then(res => {
+                  // this.feed = this.feed.filter(f => {
+                  //   return f.id != status.id;
+                  // });
+                  swal('Success', 'Successfully unlisted post', 'success');
+                  self.ctxModMenuClose();
+                }).catch(err => {
+                  self.ctxModMenuClose();
+                  swal(
+                    'Error',
+                    'Something went wrong, please try again later.',
+                    'error'
+                  );
+                });
+              }
+            });
+          break;
+        }
+      },
+
+      ctxMenu() {
+        this.$refs.ctxModal.show();
+        return;
+      },
+
+      closeCtxMenu(truncate) {
+        this.$refs.ctxModal.hide();
+      },
+
+      ctxModMenu() {
+        this.$refs.ctxModal.hide();
+        this.$refs.ctxModModal.show();
+      },
+
+      ctxModMenuClose() {
+        this.$refs.ctxModal.hide();
+        this.$refs.ctxModModal.hide();
+      },
+
+      ctxMenuCopyLink() {
+        let status = this.status;
+        navigator.clipboard.writeText(status.url);
+        this.closeCtxMenu();
+        return;
+      },
+
+      ctxMenuFollow() {
+        let id = this.status.account.id;
+        axios.post('/i/follow', {
+          item: id
+        }).then(res => {
+          let username = this.status.account.acct;
+          this.relationship.following = true;
+          this.$refs.ctxModal.hide();
+          setTimeout(function() {
+            swal('Follow successful!', 'You are now following ' + username, 'success');
+          }, 500);
+        });
+      },
+
+      ctxMenuUnfollow() {
+        let id = this.status.account.id;
+        axios.post('/i/follow', {
+          item: id
+        }).then(res => {
+          let username = this.status.account.acct;
+          this.relationship.following = false;
+          this.$refs.ctxModal.hide();
+          setTimeout(function() {
+            swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
+          }, 500);
+        });
+      },
+    
     },
 }
 </script>

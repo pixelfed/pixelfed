@@ -438,11 +438,11 @@
 	size="sm"
 	body-class="list-group-flush p-0 rounded">
 	<div class="list-group text-center">
-		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report inappropriate</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuReportPost()">Report</div>
 		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
 		<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
 		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Go to post</div>
-		<div v-if="ctxMenuStatus && ctxMenuStatus.local == true" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
+		<div v-if="ctxMenuStatus && ctxMenuStatus.local == true && !ctxMenuStatus.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
 		<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div> -->
 		<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
 		<div v-if="profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
@@ -558,6 +558,10 @@
 				</span>
 			</div>
 			<div class="d-flex align-items-center">
+				<div class="custom-control custom-switch mr-3">
+					<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replyNsfw">
+					<label :class="[replyNsfw ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
+				</div>
 				<!-- <select class="custom-select custom-select-sm my-0 mr-2">
 					<option value="public" selected="">Public</option>
 					<option value="unlisted">Unlisted</option>
@@ -675,6 +679,7 @@
 				showReadMore: true,
 				replyStatus: {},
 				replyText: '',
+				replyNsfw: false,
 				emoji: window.App.util.emoji,
 				showHashtagPosts: false,
 				hashtagPosts: [],
@@ -697,6 +702,7 @@
 				mpPoller: null
 			}
 		},
+
 		watch: {
 			ctxEmbedShowCaption: function (n,o) {
 				if(n == true) {
@@ -721,6 +727,7 @@
 				this.ctxEmbedPayload = window.App.util.embed.post(this.ctxMenuStatus.url, this.ctxEmbedShowCaption, this.ctxEmbedShowLikes, mode);
 			}
 		},
+
 		beforeMount() {
 			this.fetchProfile();
 			this.fetchTimelineApi();
@@ -1072,7 +1079,8 @@
 				}
 				axios.post('/i/comment', {
 					item: id,
-					comment: comment
+					comment: comment,
+					sensitive: this.replyNsfw
 				}).then(res => {
 					this.replyText = '';
 					this.replies.unshift(res.data.entity);
@@ -1663,6 +1671,7 @@
 				}, 500);
 			},
 		},
+
 		beforeDestroy () {
 			clearInterval(this.mpInterval);
 		},
