@@ -92,32 +92,47 @@ class PublicApiController extends Controller
                 $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
                 $res = [
                     'status' => $this->fractal->createData($item)->toArray(),
-                    'user' => [],
-                    'likes' => [],
-                    'shares' => [],
-                    'reactions' => [
-                        'liked' => false,
-                        'shared' => false,
-                        'bookmarked' => false,
-                    ],
                 ];
-                return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                return $res;
             });
-            return $res;
+            return response()->json($res);
         }
-        $item = new Fractal\Resource\Item($status, new StatusTransformer());
+        $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
         $res = [
         	'status' => $this->fractal->createData($item)->toArray(),
-        	'user' => $this->getUserData($request->user()),
-            'likes' => $this->getLikes($status),
-            'shares' => $this->getShares($status),
+        ];
+        return response()->json($res);
+    }
+
+    public function statusState(Request $request, $username, int $postid)
+    {
+        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
+        $status = Status::whereProfileId($profile->id)->findOrFail($postid);
+        $this->scopeCheck($profile, $status);
+        if(!Auth::check()) {
+            $res = [
+                'user' => [],
+                'likes' => [],
+                'shares' => [],
+                'reactions' => [
+                    'liked' => false,
+                    'shared' => false,
+                    'bookmarked' => false,
+                ],
+            ];
+            return response()->json($res);
+        }
+        $res = [
+            'user' => $this->getUserData($request->user()),
+            'likes' => [],
+            'shares' => [],
             'reactions' => [
-                'liked' => $status->liked(),
-                'shared' => $status->shared(),
-                'bookmarked' => $status->bookmarked(),
+                'liked' => (bool) $status->liked(),
+                'shared' => (bool) $status->shared(),
+                'bookmarked' => (bool) $status->bookmarked(),
             ],
         ];
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+        return response()->json($res);
     }
 
     public function statusComments(Request $request, $username, int $postId)
