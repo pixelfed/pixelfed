@@ -115,8 +115,6 @@ class StatusDelete implements ShouldQueue
                     $tag->delete();
                 });
 
-            MediaTag::whereStatusId($status->id)
-                ->get();
             $status->forceDelete();
         });
 
