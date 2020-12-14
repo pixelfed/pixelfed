@@ -41,10 +41,7 @@ trait LabsSettings {
 		}
 
 		if($request->has('profile_layout')) {
-			if($profile->profile_layout != 'moment') {
-				$profile->profile_layout = 'moment';
-				$changes = true;
-			} 
+			
 		} else {
 			$profile->profile_layout = null;
 			$changes = true;

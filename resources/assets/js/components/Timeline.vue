@@ -23,7 +23,7 @@
 			</div>
 			<hr>
 		</div>
-		<div :class="[modes.distractionFree ? 'col-md-8 col-lg-8 offset-md-2 px-0 mb-sm-3 timeline order-2 order-md-1':'col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1']">
+		<div class="col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1">
 			<div style="margin-top:-2px;">
 				<story-component v-if="config.features.stories"></story-component>
 			</div>
@@ -96,7 +96,7 @@
 					</div>
 
 					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
-						<div v-if="!modes.distractionFree && status" class="card-header d-inline-flex align-items-center bg-white">
+						<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
 							<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
 								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
@@ -162,7 +162,7 @@
 						</div>
 
 						<div class="card-body">
-							<div v-if="!modes.distractionFree" class="reactions my-1 pb-2">
+							<div class="reactions my-1 pb-2">
 								<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
 								<h3 v-else class="far fa-heart pr-3 m-0 like-btn text-lighter cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
 								<h3 v-if="!status.comments_disabled" class="far fa-comment text-lighter pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
@@ -180,7 +180,7 @@
 								</span>
 							</div>
 
-							<div class="likes font-weight-bold" v-if="expLc(status) == true && !modes.distractionFree">
+							<div class="likes font-weight-bold" v-if="expLc(status) == true">
 								<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
 							</div>
 							<div class="caption">
@@ -212,9 +212,6 @@
 								<p class="small text-uppercase mb-0">
 									<a :href="statusUrl(status)" class="text-muted">
 										<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
-									</a>
-									<a v-if="modes.distractionFree" class="float-right" :href="status.url">
-										<i class="fas fa-ellipsis-h fa-lg text-muted"></i>
 									</a>
 								</p>
 							</div>
@@ -257,7 +254,7 @@
 			</div>
 		</div>
 
-		<div v-if="!modes.distractionFree" class="col-md-4 col-lg-4 my-4 order-1 order-md-2 d-none d-md-block">
+		<div class="col-md-4 col-lg-4 my-4 order-1 order-md-2 d-none d-md-block">
 			<div>
 
 				<!-- <div class="mb-4">
@@ -753,12 +750,6 @@
 				this.showReadMore = false;
 			} else {
 				this.showReadMore = true;
-			}
-
-			if(localStorage.getItem('pf_metro_ui.exp.df') == 'true') {
-				this.modes.distractionFree = true;
-			} else {
-				this.modes.distractionFree = false;
 			}
 
 			if(localStorage.getItem('metro-tips') == 'false') {
