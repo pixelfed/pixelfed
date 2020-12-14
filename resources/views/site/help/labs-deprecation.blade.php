@@ -12,7 +12,7 @@
   <p>June 14 2021</p>
   <hr>
   <h4 class="font-weight-bold">What features will be deprecated?</h4>
-  <p>All features except Dark Mode</p>
+  <p>All experiments except Dark Mode</p>
   <hr>
   <h4 class="font-weight-bold">Why is Labs being deprecated?</h4>
   <p>Labs was started in early 2019 to test experimental designs and features. Now the project is more mature, we are outgrowing some of these experiments.</p>
