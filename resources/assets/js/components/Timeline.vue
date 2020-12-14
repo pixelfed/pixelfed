@@ -6,7 +6,7 @@
 				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
 			</p>
 		</div>
-		<div class="d-none d-md-block col-12 pl-3 pl-md-0 pt-3 pl-0">
+		<div class="d-none col-12 pl-3 pl-md-0 pt-3 pl-0">
 			<div class="d-none d-md-flex justify-content-between align-items-center">
 				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 				<p class="mb-0">
@@ -34,7 +34,7 @@
 					</div>
 				</div>
 				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
-					<div v-if="index == 0 && showTips && !loading" class="mb-4 card-tips">
+					<div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
 						<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 					</div>
 					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
@@ -95,7 +95,7 @@
 						</div>
 					</div>
 
-					<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+					<div :class="index == 0 ? 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border'">
 						<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
 							<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">

@@ -4,6 +4,7 @@ namespace App\Jobs\StatusPipeline;
 
 use DB;
 use App\{
+    AccountInterstitial,
     MediaTag,
     Notification,
     Report,
@@ -113,7 +114,11 @@ class StatusDelete implements ShouldQueue
                         ->where('item_id', $tag->id)
                         ->forceDelete();
                     $tag->delete();
-                });
+            });
+
+            AccountInterstitial::where('item_type', 'App\Status')
+                ->where('item_id', $status->id)
+                ->delete();
 
             $status->forceDelete();
         });

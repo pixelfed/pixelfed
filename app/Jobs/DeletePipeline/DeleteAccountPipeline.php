@@ -24,8 +24,11 @@ use App\{
 	FollowRequest,
 	Hashtag,
 	HashtagFollow,
+	ImportData,
+	ImportJob,
 	Like,
 	Media,
+	MediaTag,
 	Mention,
 	Notification,
 	OauthClient,
@@ -81,10 +84,29 @@ class DeleteAccountPipeline implements ShouldQueue
 
 			$id = $user->profile_id;
 
-			Bookmark::whereProfileId($user->profile_id)->forceDelete();
+			ImportData::whereProfileId($id)
+				->cursor()
+				->each(function($data) {
+					$path = storage_path('app/'.$data->path);
+					if(is_file($path)) {
+						unlink($path);
+					}
+					$data->delete();
+			});
+			ImportJob::whereProfileId($id)
+				->cursor()
+				->each(function($data) {
+					$path = storage_path('app/'.$data->media_json);
+					if(is_file($path)) {
+						unlink($path);
+					}
+					$data->delete();
+			});
+			MediaTag::whereProfileId($id)->delete();
+			Bookmark::whereProfileId($id)->forceDelete();
 			EmailVerification::whereUserId($user->id)->forceDelete();
 			StatusHashtag::whereProfileId($id)->delete();
-			DirectMessage::whereFromId($user->profile_id)->delete();
+			DirectMessage::whereFromId($id)->delete();
 			FollowRequest::whereFollowingId($id)
 				->orWhere('follower_id', $id)
 				->forceDelete();
@@ -143,7 +165,14 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 
 		DB::transaction(function() use ($user) {
-			Status::whereProfileId($user->profile_id)->forceDelete();
+			Status::whereProfileId($user->profile_id)
+				->cursor()
+				->each(function($status) {
+					AccountInterstitial::where('item_type', 'App\Status')
+						->where('item_id', $status->id)
+						->delete();
+					$status->forceDelete();
+				});
 			Report::whereUserId($user->id)->forceDelete();
 			$this->deleteProfile($user);
 		});
