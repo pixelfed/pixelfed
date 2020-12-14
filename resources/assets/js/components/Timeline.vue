@@ -6,7 +6,7 @@
 				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
 			</p>
 		</div>
-		<div class="d-none d-md-block col-12 pl-3 pl-md-0 pt-3 pl-0">
+		<div class="d-none col-12 pl-3 pl-md-0 pt-3 pl-0">
 			<div class="d-none d-md-flex justify-content-between align-items-center">
 				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
 				<p class="mb-0">
