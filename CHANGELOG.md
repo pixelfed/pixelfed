@@ -137,6 +137,8 @@
 - Updated NotificationTransformer, handle tagged deletes. ([881fa865](https://github.com/pixelfed/pixelfed/commit/881fa865))
 - Updated horizon config, add new default values. ([90c8a721](https://github.com/pixelfed/pixelfed/commit/90c8a721))
 - Updated ComposeModal, add maxlength attribute to alt text input. Fixes ([#2490](https://github.com/pixelfed/pixelfed/issues/2490)). ([526b5531](https://github.com/pixelfed/pixelfed/commit/526b5531))
+- Updated PublicApiController, add state endpoint. ([9fc5a80c](https://github.com/pixelfed/pixelfed/commit/9fc5a80c))
+- Updated PostComponent, add reply modal. ([a10d851f](https://github.com/pixelfed/pixelfed/commit/a10d851f))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
