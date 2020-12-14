@@ -327,6 +327,7 @@
 						</div>
 						<p class="font-weight-bold text-center small text-muted pt-3 mb-0">When you tag someone, they are sent a notification.<br>For more information on tagging, <a href="#" class="text-primary" @click.prevent="showTagHelpCard()">click here</a>.</p>
 					</div>
+
 					<div v-if="page == 'tagPeopleHelp'" class="w-100 h-100 p-3">
 						<p class="mb-0 text-center py-3 px-2 lead">Tagging someone is like mentioning them, with the option to make it private between you.</p>
 						<p class="mb-3 py-3 px-2 font-weight-lighter">
@@ -420,7 +421,7 @@
 							<div class="media">
 								<img :src="m.preview_url" class="mr-3" width="50px" height="50px">
 								<div class="media-body">
-									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..."></textarea>
+									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..." maxlength="140"></textarea>
 									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/140</p>
 								</div>
 							</div>
@@ -468,7 +469,7 @@
 							<div class="media-body">
 								<div class="form-group">
 									<label class="font-weight-bold text-muted small">Media Description</label>
-									<textarea class="form-control" v-model="media[carouselCursor].alt" placeholder="Add a media description here..."></textarea>
+									<textarea class="form-control" v-model="media[carouselCursor].alt" placeholder="Add a media description here..." maxlength="140"></textarea>
 									<p class="help-text small text-muted mb-0 d-flex justify-content-between">
 										<span>Describe your photo for people with visual impairments.</span>
 										<span>{{media[carouselCursor].alt ? media[carouselCursor].alt.length : 0}}/140</span>
