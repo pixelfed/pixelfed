@@ -37,4 +37,10 @@ class Notification extends Model
     {
         return $this->belongsTo(Status::class, 'item_id', 'id');
     }
+
+    public function tag()
+    {
+        return $this->hasOne(MediaTag::class, 'item_id', 'id');
+    }
+
 }

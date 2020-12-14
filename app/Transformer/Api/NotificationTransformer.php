@@ -6,6 +6,7 @@ use App\{
 	Notification,
 	Status
 };
+use App\Services\HashidService;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
@@ -97,8 +98,8 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			$ml = $n->item;
 			$res = $this->item($ml, function($ml) {
 				return [
-					'username' => $ml->status->profile->username,
-					'post_url' => $ml->status->url()
+					'username' => $ml->tagged_username,
+					'post_url' => '/p/'.HashidService::encode($ml->status_id)
 				];
 			});
 			return $res;

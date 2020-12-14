@@ -4,6 +4,7 @@ namespace App\Jobs\StatusPipeline;
 
 use DB;
 use App\{
+    MediaTag,
     Notification,
     Report,
     Status,
@@ -104,6 +105,18 @@ class StatusDelete implements ShouldQueue
             Report::whereObjectType('App\Status')
                 ->whereObjectId($status->id)
                 ->delete();
+
+            MediaTag::where('status_id', $status->id)
+                ->cursor()
+                ->each(function($tag) {
+                    Notification::where('item_type', 'App\MediaTag')
+                        ->where('item_id', $tag->id)
+                        ->forceDelete();
+                    $tag->delete();
+                });
+
+            MediaTag::whereStatusId($status->id)
+                ->get();
             $status->forceDelete();
         });
 
