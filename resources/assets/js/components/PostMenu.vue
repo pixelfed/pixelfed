@@ -57,35 +57,8 @@
 								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
 								<a class="list-group-item text-dark text-decoration-none" href="#" @click.prevent="hidePost(status)">Hide</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" :href="reportUrl(status)">Report</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" @click.prevent="muteProfile(status)" href="#">Mute Profile</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-dark text-decoration-none" @click.prevent="blockProfile(status)" href="#">Block Profile</a>
-								<span v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true">
-									<a class="list-group-item text-danger text-decoration-none" @click.prevent="deletePost">Delete</a>
-								</span>
-								<span v-if="activeSession == true && profile.is_admin == true">
-									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'autocw')" href="#">
-										<p class="mb-0">Enforce CW</p>
-										<p class="mb-0  small text-muted">Adds a CW to every post <br> made by this account.</p>
-									</a>
-									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'noautolink')" href="#">
-										<p class="mb-0">No Autolinking</p>
-										<p class="mb-0 small text-muted">Do not transform mentions, <br> hashtags or urls into HTML.</p>
-									</a>
-									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'unlisted')" href="#">
-										<p class="mb-0">Unlisted Posts</p>
-										<p class="mb-0 small text-muted">Removes account from <br> public/network timelines.</p>
-									</a>
-									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'disable')" href="#">
-										<p class="mb-0">Disable Account</p>
-										<p class="mb-0 small text-muted">Temporarily disable account <br> until next time user log in.</p>
-									</a>
-									<a class="list-group-item text-dark text-decoration-none" v-on:click="moderatePost(status, 'suspend')" href="#">
-										<p class="mb-0">Suspend Account</p>
-										<p class="mb-0 small text-muted">This prevents any new interactions, <br> without deleting existing data.</p>
-									</a>
-
-								</span>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-danger font-weight-bold text-decoration-none" :href="reportUrl(status)">Report</a>
+								<div v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true" class="list-group-item text-danger font-weight-bold cursor-pointer" @click.prevent="deletePost">Delete</div>
 							</div>
 						</div>
 					</div>
