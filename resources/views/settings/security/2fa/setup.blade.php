@@ -45,7 +45,7 @@
 	  		<div class="card-body text-center">
 	  			<div class="pb-3">
 	  				<p class="font-weight-bold">QR Code</p>
-	  				<img src="{{$qrcode}}" class="img-fluid" width="200px">
+	  				<img src="data:image/png;base64,{{$qrcode}}" class="img-fluid" width="200px">
 	  			</div>
 	  			<div>
 	  				<p class="font-weight-bold">OTP Secret</p>
