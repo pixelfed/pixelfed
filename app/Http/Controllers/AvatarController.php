@@ -120,7 +120,12 @@ class AvatarController extends Controller
 
         $avatar = $profile->avatar;
 
-        if($avatar->media_path == 'public/avatars/default.png' || $avatar->thumb_path == 'public/avatars/default.png') {
+        if( $avatar->media_path == 'public/avatars/default.png' || 
+            $avatar->thumb_path == 'public/avatars/default.png' ||
+            $avatar->media_path == 'public/avatars/default.jpg' || 
+            $avatar->thumb_path == 'public/avatars/default.jpg' ||
+
+        ) {
             return;
         }
 
@@ -132,8 +137,8 @@ class AvatarController extends Controller
             @unlink(storage_path('app/' . $avatar->thumb_path));
         }
 
-        $avatar->media_path = 'public/avatars/default.png';
-        $avatar->thumb_path = 'public/avatars/default.png';
+        $avatar->media_path = 'public/avatars/default.jpg';
+        $avatar->thumb_path = 'public/avatars/default.jpg';
         $avatar->change_count = $avatar->change_count + 1;
         $avatar->save();
 
