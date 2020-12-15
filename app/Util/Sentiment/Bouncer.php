@@ -18,7 +18,7 @@ class Bouncer {
 		$recentKey = 'pf:bouncer:recent_by_pid:' . $status->profile_id;
 		$recentTtl = now()->addMinutes(5);
 		$recent = Cache::remember($recentKey, $recentTtl, function() use($status) {
-			return $status->profile->created_at->gt(now()->subWeek()) || $status->profile->statuses()->count() == 0;
+			return $status->profile->created_at->gt(now()->subMonths(3)) || $status->profile->statuses()->count() == 0;
 		});
 
 		if(!$recent) {
