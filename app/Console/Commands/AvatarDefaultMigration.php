@@ -53,7 +53,11 @@ class AvatarDefaultMigration extends Command
 
         Avatar::whereChangeCount(0)->chunk(50, function($avatars) use ($bar) {
             foreach($avatars as $avatar) {
-                if($avatar->media_path == 'public/avatars/default.png' || $avatar->thumb_path == 'public/avatars/default.png') {
+                if( $avatar->media_path == 'public/avatars/default.png' || 
+                    $avatar->thumb_path == 'public/avatars/default.png' ||
+                    $avatar->media_path == 'public/avatars/default.jpg' || 
+                    $avatar->thumb_path == 'public/avatars/default.jpg'
+                ) {
                     continue;
                 }
 
@@ -72,8 +76,8 @@ class AvatarDefaultMigration extends Command
                         @unlink(storage_path('app/' . $avatar->thumb_path));
                     }
 
-                    $avatar->media_path = 'public/avatars/default.png';
-                    $avatar->thumb_path = 'public/avatars/default.png';
+                    $avatar->media_path = 'public/avatars/default.jpg';
+                    $avatar->thumb_path = 'public/avatars/default.jpg';
                     $avatar->change_count = $avatar->change_count + 1;
                     $avatar->save();
 

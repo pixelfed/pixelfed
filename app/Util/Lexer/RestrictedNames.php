@@ -103,6 +103,8 @@ class RestrictedNames
 		'api',
 		'audio',
 		'auth',
+		'avatar',
+		'avatars',
 		'b',
 		'bartender',
 		'broadcast',

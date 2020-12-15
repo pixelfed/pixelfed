@@ -41,7 +41,7 @@ class CreateAvatar implements ShouldQueue
     public function handle()
     {
         $profile = $this->profile;
-        $path = 'public/avatars/default.png';
+        $path = 'public/avatars/default.jpg';
         $avatar = new Avatar();
         $avatar->profile_id = $profile->id;
         $avatar->media_path = $path;
