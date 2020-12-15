@@ -121,10 +121,7 @@ class AvatarController extends Controller
         $avatar = $profile->avatar;
 
         if( $avatar->media_path == 'public/avatars/default.png' || 
-            $avatar->thumb_path == 'public/avatars/default.png' ||
-            $avatar->media_path == 'public/avatars/default.jpg' || 
-            $avatar->thumb_path == 'public/avatars/default.jpg' ||
-
+            $avatar->thumb_path == 'public/avatars/default.png' 
         ) {
             return;
         }
