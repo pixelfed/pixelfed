@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\ActivityPub;
 
 use App\Util\ActivityPub\Helpers;
 use Tests\TestCase;
