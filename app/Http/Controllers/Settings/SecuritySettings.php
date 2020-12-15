@@ -15,6 +15,10 @@ use DB;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PragmaRX\Google2FA\Google2FA;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 
 trait SecuritySettings
 {
@@ -43,14 +47,22 @@ trait SecuritySettings
 			return redirect(route('account.security'));
 		}
 		$backups = $this->generateBackupCodes();
-		$google2fa = new Google2FA();
+		//$google2fa = new Google2FA();
+		$google2fa = app(Google2FA::class);
 		$key = $google2fa->generateSecretKey(32);
-		$qrcode = $google2fa->getQRCodeInline(
+		$qrcode = $google2fa->getQRCodeUrl(
 		    config('pixelfed.domain.app'),
 		    $user->email,
 		    $key,
 		    500
 		);
+		$writer = new Writer(
+			new ImageRenderer(
+				new RendererStyle(400),
+				new ImagickImageBackEnd()
+			)
+		);
+		$qrcode = base64_encode($writer->writeString($qrcode));
 		$user->{'2fa_secret'} = $key;
 		$user->{'2fa_backup_codes'} = json_encode($backups);
 		$user->save();
