@@ -903,9 +903,12 @@ export default {
                     }
                     let tag = i.innerText;
                     if(tag.startsWith('#')) {
-                      tag = tag.substr(1);
+                      tag = '/discover/tags/'+tag.substr(1);
                     }
-                    i.href = '/discover/tags/'+tag+'?src=rph'; 
+                    if(tag.startsWith('@')) {
+                      tag = '/'+tag;
+                    }
+                    i.href = tag+'?src=rph'; 
                   });
                 }, 500);
             }).catch(error => {
