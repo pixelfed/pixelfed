@@ -143,6 +143,7 @@
 - Updated 2FA setup, fix qrcode handler. ([cd2661fc](https://github.com/pixelfed/pixelfed/commit/cd2661fc))
 - Updated avatars, use jpeg default. ([f6528c84](https://github.com/pixelfed/pixelfed/commit/f6528c84))
 - Updated antispam bouncer, change recent from 1 week to 3 months. ([7d818197](https://github.com/pixelfed/pixelfed/commit/7d818197))
+- Updated Post components, fix remote post and profile urls. ([cfcf17f3](https://github.com/pixelfed/pixelfed/commit/cfcf17f3))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
