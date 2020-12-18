@@ -21,6 +21,7 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Str;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
+use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
 use App\Util\ActivityPub\Validator\Add as AddValidator;
@@ -470,15 +471,7 @@ class Inbox
             if(!$profile || $profile->private_key != null) {
                 return;
             }
-            Notification::whereActorId($profile->id)->delete();
-            $profile->avatar()->delete();
-            $profile->followers()->delete();
-            $profile->following()->delete();
-            $profile->likes()->delete();
-            $profile->media()->delete();
-            $profile->hashtags()->delete();
-            $profile->statuses()->delete();
-            $profile->delete();
+            DeleteRemoteProfilePipeline::dispatchNow($profile);
             return;
         } else {
             $type = $this->payload['object']['type'];
@@ -496,16 +489,8 @@ class Inbox
                         if(!$profile || $profile->private_key != null) {
                             return;
                         }
-                        Notification::whereActorId($profile->id)->delete();
-                        $profile->avatar()->delete();
-                        $profile->followers()->delete();
-                        $profile->following()->delete();
-                        $profile->likes()->delete();
-                        $profile->media()->delete();
-                        $profile->hashtags()->delete();
-                        $profile->statuses()->delete();
-                        $profile->delete();
-                    return;
+                        DeleteRemoteProfilePipeline::dispatchNow($profile);
+                        return;
                     break;
 
                 case 'Tombstone':
