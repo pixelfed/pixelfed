@@ -41,7 +41,7 @@ class AdminStatsService
 		return Cache::remember('admin:dashboard:home:data:v0:24hr', now()->addHours(24), function() use ($day) {
 			return [
 				'failedjobs' => PrettyNumber::convert(FailedJob::where('failed_at', '>=', \Carbon\Carbon::now()->subDay())->count()),
-				'statuses' => PrettyNumber::convert(Status::whereNull('in_reply_to_id')->whereNull('reblog_of_id')->count()),
+				'statuses' => PrettyNumber::convert(Status::count()),
 				'profiles' => PrettyNumber::convert(Profile::count()),
 				'users' => PrettyNumber::convert(User::count()),
 				'instances' => PrettyNumber::convert(Instance::count()),
