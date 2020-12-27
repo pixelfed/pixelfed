@@ -10,6 +10,7 @@ use App\AccountInterstitial;
 use App\Media;
 use App\Profile;
 use App\Status;
+use App\StatusView;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
@@ -57,6 +58,14 @@ class StatusController extends Controller
             if(Auth::user()->profile_id !== $status->profile_id) {
                 abort(404);
             }
+        }
+
+        if($request->user() && $request->user()->profile_id != $status->profile_id) {
+            StatusView::firstOrCreate([
+                'status_id' => $status->id,
+                'status_profile_id' => $status->profile_id,
+                'profile_id' => $request->user()->profile_id
+            ]);
         }
 
         if ($request->wantsJson() && config('federation.activitypub.enabled')) {
