@@ -91,21 +91,7 @@ class Profile extends Model
 
     public function statusCount()
     {
-        return Cache::remember('profile:status_count:'.$this->id, now()->addMonths(1), function() {
-            $count = $this->status_count;
-            if($count) {
-                return $count;
-            }
-            $count = $this->statuses()
-                ->getQuery()
-                ->whereHas('media')
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id')
-                ->count();
-            $this->status_count = $count;
-            $this->save();
-            return $count;
-        });
+        return $this->status_count;
     }
 
     public function following()

@@ -210,6 +210,7 @@ class StatusController extends Controller
         }
 
         Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+        Cache::forget('profile:status_count:' . $status->profile_id);
         if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
             Cache::forget('profile:status_count:'.$status->profile_id);
             StatusDelete::dispatch($status);

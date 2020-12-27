@@ -56,6 +56,17 @@ class StatusDelete implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
+        $profile = $this->status->profile;
+
+        $count = $profile->statuses()
+        ->getQuery()
+        ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+        ->whereNull('in_reply_to_id')
+        ->whereNull('reblog_of_id')
+        ->count();
+
+        $profile->status_count = ($count - 1);
+        $profile->save();
 
         if(config('federation.activitypub.enabled') == true) {
             $this->fanoutDelete($status);
