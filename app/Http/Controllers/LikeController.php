@@ -43,6 +43,15 @@ class LikeController extends Controller
             if($like->wasRecentlyCreated == true) {
                 $count++;
                 $status->likes_count = $count;
+                $like->status_profile_id = $status->profile_id;
+                $like->is_comment = in_array($status->type, [
+                    'photo',
+                    'photo:album',
+                    'video',
+                    'video:album',
+                    'photo:video:album'
+                    ]) == false;
+                $like->save();
                 $status->save();
                 LikePipeline::dispatch($like);
             }
