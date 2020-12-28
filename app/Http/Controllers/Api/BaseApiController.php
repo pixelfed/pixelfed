@@ -154,7 +154,7 @@ class BaseApiController extends Controller
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
         } else {
-            $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
+            $statuses = $statuses->whereScope('public')->orderBy('id', 'desc')->paginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
