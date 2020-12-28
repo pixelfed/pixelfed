@@ -833,14 +833,14 @@
 							if(i.href.startsWith(window.location.origin)) {
 								return;
 							}
-                                                        let tag = i.innerText;
-                                                        if(tag.startsWith('#')) {
-                                                          tag = '/discover/tags/'+tag.substr(1);
-                                                        }
-                                                        if(tag.startsWith('@')) {
-                                                          tag = '/'+tag;
-                                                        }
-                                                        i.href = tag+'?src=rph'; 
+							let tag = i.innerText;
+							if(tag.startsWith('#')) {
+								tag = '/discover/tags/'+tag.substr(1);
+							}
+							if(tag.startsWith('@')) {
+								tag = '/'+tag;
+							}
+							i.href = tag+'?src=rph'; 
 						});
 					}, 500);
 				}).catch(err => {
