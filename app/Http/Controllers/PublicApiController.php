@@ -304,7 +304,7 @@ class PublicApiController extends Controller
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
-                      ->whereVisibility('public')
+                      ->whereScope('public')
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -332,7 +332,7 @@ class PublicApiController extends Controller
                       ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
-                      ->whereVisibility('public')
+                      ->whereScope('public')
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }

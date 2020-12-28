@@ -133,6 +133,7 @@ class BaseApiController extends Controller
         $statuses = $account->statuses()->getQuery(); 
         if($only_media == true) {
             $statuses = $statuses
+                ->whereIn('scope', ['public','unlisted'])
                 ->whereHas('media')
                 ->whereNull('in_reply_to_id')
                 ->whereNull('reblog_of_id');
@@ -153,7 +154,7 @@ class BaseApiController extends Controller
                 ->orderBy('id', 'DESC')
                 ->paginate($limit);
         } else {
-            $statuses = $statuses->whereVisibility('public')->orderBy('id', 'desc')->paginate($limit);
+            $statuses = $statuses->whereScope('public')->orderBy('id', 'desc')->paginate($limit);
         }
         $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();

@@ -26,7 +26,7 @@ class Outbox {
 
         $timeline = $profile
                     ->statuses()
-                    ->whereVisibility('public')
+                    ->whereScope('public')
                     ->orderBy('created_at', 'desc')
                     ->take(10)
                     ->get();
