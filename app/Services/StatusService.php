@@ -17,12 +17,12 @@ class StatusService {
 
 	public static function get($id)
 	{
-		return json_decode(Redis::get(self::CACHE_KEY . $id) ?? self::coldGet($id));
+		return json_decode(Redis::get(self::CACHE_KEY . $id) ?? self::coldGet($id), true);
 	}
 
 	public static function coldGet($id)
 	{
-		$status = Status::findOrFail($id);
+		$status = Status::whereScope('public')->findOrFail($id);
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
 		$resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());

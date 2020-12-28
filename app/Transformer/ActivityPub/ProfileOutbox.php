@@ -27,7 +27,7 @@ class ProfileOutbox extends Fractal\TransformerAbstract
         $statuses = $profile
           ->statuses()
           ->with('media')
-          ->whereVisibility('public')
+          ->whereScope('public')
           ->orderBy('created_at', 'desc')
           ->paginate(10);
 

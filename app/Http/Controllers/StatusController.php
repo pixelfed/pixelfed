@@ -10,6 +10,7 @@ use App\AccountInterstitial;
 use App\Media;
 use App\Profile;
 use App\Status;
+use App\StatusView;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
@@ -32,7 +33,7 @@ class StatusController extends Controller
 
         $status = Status::whereProfileId($user->id)
                 ->whereNull('reblog_of_id')
-                ->whereNotIn('visibility',['draft','direct'])
+                ->whereIn('scope', ['public','unlisted'])
                 ->findOrFail($id);
 
         if($status->uri || $status->url) {
@@ -57,6 +58,14 @@ class StatusController extends Controller
             if(Auth::user()->profile_id !== $status->profile_id) {
                 abort(404);
             }
+        }
+
+        if($request->user() && $request->user()->profile_id != $status->profile_id) {
+            StatusView::firstOrCreate([
+                'status_id' => $status->id,
+                'status_profile_id' => $status->profile_id,
+                'profile_id' => $request->user()->profile_id
+            ]);
         }
 
         if ($request->wantsJson() && config('federation.activitypub.enabled')) {
@@ -200,6 +209,8 @@ class StatusController extends Controller
             $u->save();
         }
 
+        Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+        Cache::forget('profile:status_count:' . $status->profile_id);
         if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
             Cache::forget('profile:status_count:'.$status->profile_id);
             StatusDelete::dispatch($status);

@@ -181,14 +181,14 @@ class DiscoverController extends Controller
       $ttl = now()->addHours(2);
       $res = Cache::remember($key, $ttl, function() use($range) {
         if($range == '-1') {
-          $res = Status::whereVisibility('public')
+          $res = Status::whereScope('public')
           ->whereType('photo')
           ->whereIsNsfw(false)
           ->orderBy('likes_count','desc')
           ->take(12)
           ->get();
         } else {
-          $res = Status::whereVisibility('public')
+          $res = Status::whereScope('public')
           ->whereType('photo')
           ->whereIsNsfw(false)
           ->orderBy('likes_count','desc')

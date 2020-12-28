@@ -1516,7 +1516,6 @@ export default {
       },
 
       getStatusUrl(status) {
-        return status.url;
 
         if(status.local == true) {
           return status.url;
