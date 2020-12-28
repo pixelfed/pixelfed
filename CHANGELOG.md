@@ -148,6 +148,7 @@
 - Update migrations, fix broken oauth change. ([4a885c88](https://github.com/pixelfed/pixelfed/commit/4a885c88))
 - Update LikeController, store status_profile_id and is_comment attributes. ([799a4cba](https://github.com/pixelfed/pixelfed/commit/799a4cba))
 - Updated Profile, fix status count. ([6dcd472b](https://github.com/pixelfed/pixelfed/commit/6dcd472b))
+- Updated StatusService, cast response to array. ([0fbde91e](https://github.com/pixelfed/pixelfed/commit/0fbde91e))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
