@@ -133,6 +133,7 @@ class BaseApiController extends Controller
         $statuses = $account->statuses()->getQuery(); 
         if($only_media == true) {
             $statuses = $statuses
+                ->whereIn('scope', ['public','unlisted'])
                 ->whereHas('media')
                 ->whereNull('in_reply_to_id')
                 ->whereNull('reblog_of_id');
