@@ -1446,7 +1446,7 @@ class ApiV1Controller extends Controller
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
-                      ->whereVisibility('public')
+                      ->whereScope('public')
                       ->latest()
                       ->limit($limit)
                       ->get();
@@ -1473,7 +1473,7 @@ class ApiV1Controller extends Controller
                       )->whereNull('uri')
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
-                      ->whereVisibility('public')
+                      ->whereScope('public')
                       ->latest()
                       ->simplePaginate($limit);
         }
