@@ -151,6 +151,7 @@
 - Updated StatusService, cast response to array. ([0fbde91e](https://github.com/pixelfed/pixelfed/commit/0fbde91e))
 - Updated status model, use scope over deprecated visibility attribute. ([f70826e1](https://github.com/pixelfed/pixelfed/commit/f70826e1))
 - Updated Follower model, increase hourly limit from 30 to 150. ([b9b84e6f](https://github.com/pixelfed/pixelfed/commit/b9b84e6f))
+- Updated StatusController, fix scope bug. ([7dc3739c](https://github.com/pixelfed/pixelfed/commit/7dc3739c))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
