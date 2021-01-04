@@ -33,7 +33,7 @@ class StatusController extends Controller
 
         $status = Status::whereProfileId($user->id)
                 ->whereNull('reblog_of_id')
-                ->whereIn('scope', ['public','unlisted'])
+                ->whereIn('scope', ['public','unlisted', 'private'])
                 ->findOrFail($id);
 
         if($status->uri || $status->url) {
