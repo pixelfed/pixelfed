@@ -23,7 +23,7 @@ class InboxWorker implements ShouldQueue
     protected $profile;
     protected $payload;
 
-    public $timeout = 5;
+    public $timeout = 60;
     public $tries = 1;
 
     /**
