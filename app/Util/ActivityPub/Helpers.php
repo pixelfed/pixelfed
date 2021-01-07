@@ -403,69 +403,78 @@ class Helpers {
 	public static function profileFirstOrNew($url, $runJobs = false)
 	{
 		$url = self::validateUrl($url);
-		if($url == false) {
-			abort(400, 'Invalid url');
-		}
-		$host = parse_url($url, PHP_URL_HOST);
-		$local = config('pixelfed.domain.app') == $host ? true : false;
-
-		if($local == true) {
-			$id = last(explode('/', $url));
-			return Profile::whereNull('status')
-				->whereNull('domain')
-				->whereUsername($id)
-				->firstOrFail();
-		}
-		$res = self::fetchProfileFromUrl($url);
-		if(isset($res['id']) == false) {
+		if($url == false || strlen($url) > 190) {
 			return;
 		}
-		$domain = parse_url($res['id'], PHP_URL_HOST);
-		if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
-			return;
-		}
-		$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
-		if(empty($username)) {
-			return;
-		}
-		$remoteUsername = $username;
-		$webfinger = "@{$username}@{$domain}";
+		$hash = base64_encode($url);
+		$key = 'ap:profile:by_url:' . $hash;
+		$ttl = now()->addMinutes(5);
+		$profile = Cache::remember($key, $ttl, function() use($url, $runJobs) {
+			$host = parse_url($url, PHP_URL_HOST);
+			$local = config('pixelfed.domain.app') == $host ? true : false;
 
-		abort_if(!self::validateUrl($res['inbox']), 400);
-		abort_if(!self::validateUrl($res['id']), 400);
-
-		$profile = Profile::whereRemoteUrl($res['id'])->first();
-		if(!$profile) {
-			$profile = new Profile();
-			$profile->domain = strtolower($domain);
-			$profile->username = strtolower(Purify::clean($webfinger));
-			$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-			$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-			$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-			$profile->inbox_url = strtolower($res['inbox']);
-			$profile->outbox_url = strtolower($res['outbox']);
-			$profile->remote_url = strtolower($res['id']);
-			$profile->public_key = $res['publicKey']['publicKeyPem'];
-			$profile->key_id = $res['publicKey']['id'];
-			$profile->webfinger = strtolower(Purify::clean($webfinger));
-			$profile->last_fetched_at = now();
-			$profile->save();
-			if($runJobs == true) {
-				// RemoteFollowImportRecent::dispatch($res, $profile);
-				CreateAvatar::dispatch($profile);
+			if($local == true) {
+				$id = last(explode('/', $url));
+				return Profile::whereNull('status')
+					->whereNull('domain')
+					->whereUsername($id)
+					->firstOrFail();
 			}
-		} else {
-			// Update info after 24 hours
-			if($profile->last_fetched_at == null || 
-			   $profile->last_fetched_at->lt(now()->subHours(24)) == true
-			) {
-				$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-				$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-				$profile->last_fetched_at = now();
-				$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-				$profile->save();
+			$res = self::fetchProfileFromUrl($url);
+			if(isset($res['id']) == false) {
+				return;
 			}
-		}
+			$domain = parse_url($res['id'], PHP_URL_HOST);
+			if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
+				return;
+			}
+			$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
+			if(empty($username)) {
+				return;
+			}
+			$remoteUsername = $username;
+			$webfinger = "@{$username}@{$domain}";
+
+			abort_if(!self::validateUrl($res['inbox']), 400);
+			abort_if(!self::validateUrl($res['id']), 400);
+
+			$profile = Profile::whereRemoteUrl($res['id'])->first();
+			if(!$profile) {
+				$profile = DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
+					$profile = new Profile();
+					$profile->domain = strtolower($domain);
+					$profile->username = strtolower(Purify::clean($webfinger));
+					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
+					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
+					$profile->inbox_url = strtolower($res['inbox']);
+					$profile->outbox_url = strtolower($res['outbox']);
+					$profile->remote_url = strtolower($res['id']);
+					$profile->public_key = $res['publicKey']['publicKeyPem'];
+					$profile->key_id = $res['publicKey']['id'];
+					$profile->webfinger = strtolower(Purify::clean($webfinger));
+					$profile->last_fetched_at = now();
+					$profile->save();
+					if($runJobs == true) {
+						// RemoteFollowImportRecent::dispatch($res, $profile);
+						CreateAvatar::dispatch($profile);
+					}
+					return $profile;
+				});
+			} else {
+				// Update info after 24 hours
+				if($profile->last_fetched_at == null || 
+				   $profile->last_fetched_at->lt(now()->subHours(24)) == true
+				) {
+					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
+					$profile->last_fetched_at = now();
+					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
+					$profile->save();
+				}
+			}
+			return $profile;
+		});
 		return $profile;
 	}
 
