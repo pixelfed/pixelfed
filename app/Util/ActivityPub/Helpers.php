@@ -308,13 +308,13 @@ class Helpers {
 				} 
 			}
 
-			if(!self::validateUrl($res['id']) ||
+			if(!self::validateUrl($activity['id']) ||
 			   !self::validateUrl($activity['object']['attributedTo'])
 			) {
 				return;
 			}
 
-			$idDomain = parse_url($res['id'], PHP_URL_HOST);
+			$idDomain = parse_url($activity['id'], PHP_URL_HOST);
 			$urlDomain = parse_url($url, PHP_URL_HOST);
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
 
@@ -339,7 +339,7 @@ class Helpers {
 				$status->profile_id = $profile->id;
 				$status->url = isset($res['url']) ? $res['url'] : $url;
 				$status->uri = isset($res['url']) ? $res['url'] : $url;
-				$status->object_url = isset($res['id']) ? $res['id'] : $url;
+				$status->object_url = isset($activity['id']) ? $activity['id'] : $url;
 				$status->caption = strip_tags($res['content']);
 				$status->rendered = Purify::clean($res['content']);
 				$status->created_at = Carbon::parse($ts);
