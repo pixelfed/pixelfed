@@ -25,6 +25,7 @@ use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\MediaPathService;
+use App\Services\MediaStorageService;
 
 class Helpers {
 
@@ -240,9 +241,12 @@ class Helpers {
 
 		if($local) {
 			$id = (int) last(explode('/', $url));
-			return Status::findOrFail($id);
+			return Status::whereNotIn('scope', ['draft','archived'])->findOrFail($id);
 		} else {
-			$cached = Status::whereUri($url)->orWhere('object_url', $url)->first();
+			$cached = Status::whereNotIn('scope', ['draft','archived'])
+				->whereUri($url)
+				->orWhere('object_url', $url)
+				->first();
 			if($cached) {
 				return $cached;
 			}
@@ -325,7 +329,7 @@ class Helpers {
 			$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
 			if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) && $replyTo == true) {
 				$reply_to = self::statusFirstOrFetch($activity['object']['inReplyTo'], false);
-				$reply_to = $reply_to->id;
+				$reply_to = optional($reply_to)->id;
 			} else {
 				$reply_to = null;
 			}
