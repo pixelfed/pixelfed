@@ -23,7 +23,7 @@ class InboxValidator implements ShouldQueue
     protected $headers;
     protected $payload;
 
-    public $timeout = 5;
+    public $timeout = 60;
     public $tries = 1;
 
     /**
