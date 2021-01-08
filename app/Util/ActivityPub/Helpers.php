@@ -247,10 +247,13 @@ class Helpers {
 				->whereUri($url)
 				->orWhere('object_url', $url)
 				->first();
+
 			if($cached) {
 				return $cached;
 			}
+
 			$res = self::fetchFromUrl($url);
+			
 			if(!$res || empty($res)) {
 				return;
 			}
@@ -308,13 +311,15 @@ class Helpers {
 				} 
 			}
 
-			if(!self::validateUrl($activity['id']) ||
+			$id = isset($res['id']) ? $res['id'] : $url;
+
+			if(!self::validateUrl($id) ||
 			   !self::validateUrl($activity['object']['attributedTo'])
 			) {
 				return;
 			}
 
-			$idDomain = parse_url($activity['id'], PHP_URL_HOST);
+			$idDomain = parse_url($id, PHP_URL_HOST);
 			$urlDomain = parse_url($url, PHP_URL_HOST);
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
 
@@ -334,12 +339,12 @@ class Helpers {
 				$reply_to = null;
 			}
 			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
-			$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope) {
+			$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
 				$status = new Status;
 				$status->profile_id = $profile->id;
 				$status->url = isset($res['url']) ? $res['url'] : $url;
 				$status->uri = isset($res['url']) ? $res['url'] : $url;
-				$status->object_url = isset($activity['id']) ? $activity['id'] : $url;
+				$status->object_url = $id;
 				$status->caption = strip_tags($res['content']);
 				$status->rendered = Purify::clean($res['content']);
 				$status->created_at = Carbon::parse($ts);
