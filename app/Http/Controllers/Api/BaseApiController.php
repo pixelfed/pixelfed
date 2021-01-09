@@ -322,6 +322,13 @@ class BaseApiController extends Controller
             Auth::logout();
             return redirect('/login');
         }
+        $key = 'user:last_active_at:id:'.$user->id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($user) {
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
         $resource = new Fractal\Resource\Item($user->profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
