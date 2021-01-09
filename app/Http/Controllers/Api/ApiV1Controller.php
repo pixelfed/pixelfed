@@ -18,6 +18,7 @@ use App\{
     Notification,
     Profile,
     Status,
+    User,
     UserFilter,
 };
 use League\Fractal;
@@ -112,20 +113,24 @@ class ApiV1Controller extends Controller
     {
         abort_if(!$request->user(), 403);
         $id = $request->user()->id;
-
-        //$res = Cache::remember('mastoapi:user:account:id:'.$id, now()->addHours(6), function() use($id) {
-            $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
-            $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-            $res['source'] = [
-                'privacy' => $profile->is_private ? 'private' : 'public',
-                'sensitive' => $profile->cw ? true : false,
-                'language' => null,
-                'note' => '',
-                'fields' => []
-            ];
-        //     return $res;
-        // });
+        $key = 'user:last_active_at:id:'.$id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($id) {
+            $user = User::findOrFail($id);
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
+        $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
+        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+        $res = $this->fractal->createData($resource)->toArray();
+        $res['source'] = [
+            'privacy' => $profile->is_private ? 'private' : 'public',
+            'sensitive' => $profile->cw ? true : false,
+            'language' => null,
+            'note' => '',
+            'fields' => []
+        ];
 
         return response()->json($res);
     }
