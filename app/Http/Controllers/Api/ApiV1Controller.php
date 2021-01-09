@@ -1320,6 +1320,15 @@ class ApiV1Controller extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
+        $user = $request->user();
+        
+        $key = 'user:last_active_at:id:'.$user->id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($user) {
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
 
         $pid = $request->user()->profile_id;
 
@@ -1424,6 +1433,15 @@ class ApiV1Controller extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
+        $user = $request->user();
+        
+        $key = 'user:last_active_at:id:'.$user->id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($user) {
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -1452,6 +1470,7 @@ class ApiV1Controller extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereScope('public')
+                      ->where('created_at', '>', now()->subDays(14))
                       ->latest()
                       ->limit($limit)
                       ->get();
@@ -1479,6 +1498,7 @@ class ApiV1Controller extends Controller
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereScope('public')
+                      ->where('created_at', '>', now()->subDays(14))
                       ->latest()
                       ->simplePaginate($limit);
         }
