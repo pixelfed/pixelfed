@@ -310,11 +310,11 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
-                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      ->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subDays(14))
+                      ->where('created_at', '>', now()->subMonths(3))
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -338,12 +338,12 @@ class PublicApiController extends Controller
                         'likes_count',
                         'reblogs_count',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subDays(14))
+                      ->where('created_at', '>', now()->subMonths(3))
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
@@ -429,7 +429,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
@@ -458,7 +458,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
