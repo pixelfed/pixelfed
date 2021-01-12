@@ -272,8 +272,17 @@ class PublicApiController extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
+        $user = $request->user();
 
-        $filtered = UserFilter::whereUserId(Auth::user()->profile_id)
+        $key = 'user:last_active_at:id:'.$user->id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($user) {
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
+
+        $filtered = UserFilter::whereUserId($user->profile_id)
                   ->whereFilterableType('App\Profile')
                   ->whereIn('filter_type', ['mute', 'block'])
                   ->pluck('filterable_id')->toArray();
@@ -301,10 +310,11 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )->where('id', $dir, $id)
-                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      ->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
                       ->whereScope('public')
+                      ->where('created_at', '>', now()->subMonths(3))
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -328,11 +338,12 @@ class PublicApiController extends Controller
                         'likes_count',
                         'reblogs_count',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereScope('public')
+                      ->where('created_at', '>', now()->subMonths(3))
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
@@ -360,6 +371,15 @@ class PublicApiController extends Controller
         $min = $request->input('min_id');
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
+        $user = $request->user();
+        
+        $key = 'user:last_active_at:id:'.$user->id;
+        $ttl = now()->addMinutes(5);
+        Cache::remember($key, $ttl, function() use($user) {
+            $user->last_active_at = now();
+            $user->save();
+            return;
+        });
 
         // TODO: Use redis for timelines
         // $timeline = Timeline::build()->local();
@@ -409,7 +429,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
@@ -438,7 +458,7 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
