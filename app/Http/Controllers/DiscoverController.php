@@ -192,6 +192,7 @@ class DiscoverController extends Controller
             'created_at'
           )
           ->where('id', '>', $min_id)
+          ->whereNull('uri')
           ->whereScope('public')
           ->whereIn('type', [
             'photo', 
