@@ -22,6 +22,8 @@ use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Services\StatusHashtagService;
+use App\Services\SnowflakeService;
+use App\Services\StatusService;
 
 class DiscoverController extends Controller
 {
@@ -173,33 +175,40 @@ class DiscoverController extends Controller
         'range' => 'nullable|string|in:daily,monthly'
       ]);
 
-      $range = $request->filled('range') ? 
-        $request->input('range') == 'alltime' ? '-1' : 
-        ($request->input('range') == 'daily' ? 1 : 31) : 1;
+      $range = $request->input('range') == 'monthly' ? 31 : 1;
 
-      $key = ':api:discover:trending:v2.1:range:' . $range;
-      $ttl = now()->addHours(2);
-      $res = Cache::remember($key, $ttl, function() use($range) {
-        if($range == '-1') {
-          $res = Status::whereScope('public')
-          ->whereIn('type', ['photo', 'photo:album', 'video'])
+      $key = ':api:discover:trending:v2.8:range:' . $range;
+      $ttl = now()->addMinutes(15);
+
+      $ids = Cache::remember($key, $ttl, function() use($range) {
+        $days = $range == 1 ? 2 : 31;
+        $min_id = SnowflakeService::byDate(now()->subDays($days));
+        return Status::select(
+            'id', 
+            'scope', 
+            'type', 
+            'is_nsfw', 
+            'likes_count', 
+            'created_at'
+          )
+          ->where('id', '>', $min_id)
+          ->whereScope('public')
+          ->whereIn('type', [
+            'photo', 
+            'photo:album', 
+            'video'
+          ])
           ->whereIsNsfw(false)
           ->orderBy('likes_count','desc')
-          ->take(12)
-          ->get();
-        } else {
-          $res = Status::whereScope('public')
-          ->whereIn('type', ['photo', 'photo:album', 'video'])
-          ->whereIsNsfw(false)
-          ->orderBy('likes_count','desc')
-          ->take(12)
-          ->where('created_at', '>', now()->subDays($range))
-          ->get();
-          }
-        $resource = new Fractal\Resource\Collection($res, new StatusStatelessTransformer());
-        return $this->fractal->createData($resource)->toArray();
+          ->take(15)
+          ->pluck('id');
       });
-      return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+
+      $res = $ids->map(function($s) {
+        return StatusService::get($s);
+      });
+
+      return response()->json($res);
     }
 
     public function trendingHashtags(Request $request)
