@@ -155,6 +155,7 @@
 - Updated AP helpers, fixed federation bug. ([a52564f3](https://github.com/pixelfed/pixelfed/commit/a52564f3))
 - Updated Helpers, cache profiles. ([1f672ecf](https://github.com/pixelfed/pixelfed/commit/1f672ecf))
 - Updated DiscoverController, improve trending api performance. ([d8d3331f](https://github.com/pixelfed/pixelfed/commit/d8d3331f))
+- Update InboxWorker, fix race condition in account deletes. ([4a4d8f00](https://github.com/pixelfed/pixelfed/commit/4a4d8f00))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
