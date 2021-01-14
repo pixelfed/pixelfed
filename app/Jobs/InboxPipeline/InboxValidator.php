@@ -2,6 +2,7 @@
 
 namespace App\Jobs\InboxPipeline;
 
+use Cache;
 use App\Profile;
 use App\Util\ActivityPub\{
     Helpers,
