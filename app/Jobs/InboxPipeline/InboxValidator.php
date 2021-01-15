@@ -80,7 +80,8 @@ class InboxValidator implements ShouldQueue
                 $headers,
                 $payload,
                 $actor,
-                $hash
+                $hash,
+                $profile
             ) {
                 $key = 'ap:inbox:actor-delete-exists:' . $hash;
                 $actorDelete = Cache::remember($key, now()->addMinutes(15), function() use($actor) {
@@ -89,7 +90,7 @@ class InboxValidator implements ShouldQueue
                         ->exists();
                 });
                 if($actorDelete) {
-                    if($this->verifySignature($headers, $payload) == true) {
+                    if($this->verifySignature($headers, $profile, $payload) == true) {
                         Cache::set($key, false);
                         $profile = Profile::whereNotNull('domain')
                             ->whereNull('status')
