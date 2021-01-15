@@ -1435,13 +1435,15 @@ class ApiV1Controller extends Controller
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
         
-        $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(5);
-        Cache::remember($key, $ttl, function() use($user) {
-            $user->last_active_at = now();
-            $user->save();
-            return;
-        });
+        if($user) {
+            $key = 'user:last_active_at:id:'.$user->id;
+            $ttl = now()->addMinutes(5);
+            Cache::remember($key, $ttl, function() use($user) {
+                $user->last_active_at = now();
+                $user->save();
+                return;
+            });
+        }
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
