@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Config {
 
 	public static function get() {
-		return Cache::remember('api:site:configuration:_v0', now()->addHours(30), function() {
+		return Cache::remember('api:site:configuration:_v0.1', now()->addHours(30), function() {
 			return [
 				'open_registration' => config('pixelfed.open_registration'),
 				'uploader' => [
@@ -34,7 +34,8 @@ class Config {
 				'ab' => [
 					'lc' => config('exp.lc'),
 					'rec' => config('exp.rec'),
-					'loops' => config('exp.loops')
+					'loops' => config('exp.loops'),
+					'top' => config('exp.top')
 				],
 
 				'site' => [
