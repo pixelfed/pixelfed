@@ -3,7 +3,7 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.9...dev)
 ### Added
 - Direct Messages ([d63569c](https://github.com/pixelfed/pixelfed/commit/d63569c))
-- ActivityPubFetchService for signed GET requests ([8763bfc5](https://github.com/pixelfed/pixelfed/commit/8763bfc5))
+- ActivityPubFetchService for signed GET requests ([8763bfc5](https://github.com/pixelfed/pixelfed/commit/8763bfc5)) ([3ee1215a](https://github.com/pixelfed/pixelfed/commit/3ee1215a))
 - Custom content warnings for remote posts ([6afc61a4](https://github.com/pixelfed/pixelfed/commit/6afc61a4))
 - Thai translations ([74cd536](https://github.com/pixelfed/pixelfed/commit/74cd536))
 - Added Bookmarks to v1 api ([99cb48c5](https://github.com/pixelfed/pixelfed/commit/99cb48c5))
