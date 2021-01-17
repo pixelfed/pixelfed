@@ -43,7 +43,7 @@ class HttpSignature {
       $digest = self::_digest($body);
     }
     $headers = self::_headersToSign($url, $body ? $digest : false);
-    $headers = array_merge($headers, $addlHeaders);
+    $headers = array_unique(array_merge($headers, $addlHeaders));
     $stringToSign = self::_headersToSigningString($headers);
     $signedHeaders = implode(' ', array_map('strtolower', array_keys($headers)));
     $key = openssl_pkey_get_private($privateKey);
@@ -53,7 +53,7 @@ class HttpSignature {
     unset($headers['(request-target)']);
     $headers['Signature'] = $signatureHeader;
 
-    return self::_headersToCurlArray($headers);
+    return $headers;
   }
 
   public static function parseSignatureHeader($signature) {

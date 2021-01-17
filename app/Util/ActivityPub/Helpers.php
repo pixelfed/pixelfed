@@ -23,6 +23,7 @@ use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
+use App\Services\ActivityPubFetchService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
@@ -214,8 +215,8 @@ class Helpers {
 		$ttl = now()->addMinutes(5);
 
 		return Cache::remember($key, $ttl, function() use($url) {
-			$res = Zttp::withoutVerifying()->withHeaders(self::zttpUserAgent())->get($url);
-			$res = json_decode($res->body(), true, 8);
+			$res = ActivityPubFetchService::get($url);
+			$res = json_decode($res, true, 8);
 			if(json_last_error() == JSON_ERROR_NONE) {
 				return $res;
 			} else {
