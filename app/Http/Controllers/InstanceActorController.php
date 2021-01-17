@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\InstanceActor;
+use Cache;
+
+class InstanceActorController extends Controller
+{
+	public function profile()
+	{
+		$res = Cache::rememberForever(InstanceActor::PROFILE_KEY, function() {
+			$res = (new InstanceActor())->first()->getActor();
+			return json_encode($res);
+		});
+		return response($res)->header('Content-Type', 'application/json');
+	}
+
+	public function inbox()
+	{
+		return;
+	}
+
+	public function outbox()
+	{
+		$res = [
+			'@context' => 'https://www.w3.org/ns/activitystreams',
+			'id' => config('app.url') . '/i/actor/outbox',
+			'type' => 'OrderedCollection',
+			'totalItems' => 0,
+			'first' => config('app.url') . '/i/actor/outbox?page=true',
+			'last' =>  config('app.url') . '/i/actor/outbox?min_id=0page=true'
+		];
+		return response()->json($res);
+	}
+}

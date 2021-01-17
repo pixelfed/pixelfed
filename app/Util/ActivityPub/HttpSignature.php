@@ -2,7 +2,8 @@
 
 namespace App\Util\ActivityPub;
 
-use Log;
+use Cache, Log;
+use App\Models\InstanceActor;
 use App\Profile;
 use \DateTime;
 
@@ -26,6 +27,29 @@ class HttpSignature {
     openssl_sign($stringToSign, $signature, $key, OPENSSL_ALGO_SHA256);
     $signature = base64_encode($signature);
     $signatureHeader = 'keyId="'.$user->keyId().'",headers="'.$signedHeaders.'",algorithm="rsa-sha256",signature="'.$signature.'"';
+    unset($headers['(request-target)']);
+    $headers['Signature'] = $signatureHeader;
+
+    return self::_headersToCurlArray($headers);
+  }
+
+  public static function instanceActorSign($url, $body = false, $addlHeaders = [])
+  {
+    $keyId = config('app.url') . '/i/actor#main-key';
+    $privateKey = Cache::rememberForever(InstanceActor::PKI_PRIVATE, function() {
+      return InstanceActor::first()->private_key;
+    });
+    if($body) {
+      $digest = self::_digest($body);
+    }
+    $headers = self::_headersToSign($url, $body ? $digest : false);
+    $headers = array_merge($headers, $addlHeaders);
+    $stringToSign = self::_headersToSigningString($headers);
+    $signedHeaders = implode(' ', array_map('strtolower', array_keys($headers)));
+    $key = openssl_pkey_get_private($privateKey);
+    openssl_sign($stringToSign, $signature, $key, OPENSSL_ALGO_SHA256);
+    $signature = base64_encode($signature);
+    $signatureHeader = 'keyId="'.$keyId.'",headers="'.$signedHeaders.'",algorithm="rsa-sha256",signature="'.$signature.'"';
     unset($headers['(request-target)']);
     $headers['Signature'] = $signatureHeader;
 
