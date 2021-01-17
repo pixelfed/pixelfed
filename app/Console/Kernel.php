@@ -25,13 +25,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('media:optimize')
-                 ->hourly();
-        $schedule->command('media:gc')
-                 ->hourly();
+        $schedule->command('media:optimize')->hourly();
+        $schedule->command('media:gc')->hourly();
         $schedule->command('horizon:snapshot')->everyFiveMinutes();
         $schedule->command('story:gc')->everyFiveMinutes();
-        $schedule->command('fix:sdprofile')->everyFiveMinutes();
         $schedule->command('gc:failedjobs')->dailyAt(3);
         $schedule->command('gc:passwordreset')->dailyAt('09:41');
     }
