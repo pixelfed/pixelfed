@@ -2,10 +2,13 @@
 
 use Illuminate\Http\Request;
 
-$middleware = ['auth:api','twofactor','validemail','localization', 'throttle:60,1'];
+$middleware = ['auth:api','twofactor','validemail','throttle:60,1','interstitial'];
 
 Route::post('/f/inbox', 'FederationController@sharedInbox');
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
+Route::get('i/actor', 'InstanceActorController@profile');
+Route::post('i/actor/inbox', 'InstanceActorController@inbox');
+Route::get('i/actor/outbox', 'InstanceActorController@outbox');
 
 Route::group(['prefix' => 'api'], function() use($middleware) {
 
