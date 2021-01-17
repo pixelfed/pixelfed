@@ -14,7 +14,7 @@ class StoryItemTransformer extends Fractal\TransformerAbstract
         return [
             'id'                        => (string) $item->id,
             'type'                      => $item->type,
-            'length'                    => 5,
+            'length'                    => 10,
             'src'                       => $item->url(),
             'preview'                   => null,
             'link'                      => null,
