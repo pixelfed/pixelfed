@@ -45,7 +45,14 @@
          </div>
           <div class="col-12 col-md-8 px-0 mx-0">
               <div class="postPresenterContainer d-none d-flex justify-content-center align-items-center" style="background: #000;">
-                <div v-if="status.pf_type === 'photo'" class="w-100">
+                <div v-if="status.pf_type === 'text'" class="w-100">
+                  <div class="w-100 card-img-top border-bottom rounded-0" style="background-image: url(/storage/textimg/bg_1.jpg);background-size: cover;width: 100%;height: 540px;">
+                    <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+                      <p class="text-center text-break h3 px-5 font-weight-bold" v-html="status.content"></p>
+                    </div>
+                  </div>
+                </div>
+                <div v-else-if="status.pf_type === 'photo'" class="w-100">
                   <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
                 </div>
 
@@ -104,7 +111,7 @@
             </div>
             <div class="d-flex flex-md-column flex-column-reverse h-100" style="overflow-y: auto;">
               <div class="card-body status-comments pt-0">
-                <div class="status-comment">
+                <div v-if="status.pf_type != 'text'" class="status-comment">
                   <div v-if="status.content.length" class="pt-3">
                     <div v-if="showCaption != true">
                       <span class="py-3">
@@ -839,11 +846,12 @@ export default {
     beforeMount() {
       let u = new URLSearchParams(window.location.search);
       let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
+      if(this.statusTemplate == 'text') {
+        this.layout = 'metro';
+        return;
+      }
       if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
         this.layout = 'metro';
-      }
-      if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
-        this.layout = 'moment';
       }
     },
 
