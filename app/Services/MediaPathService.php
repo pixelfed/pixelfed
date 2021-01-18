@@ -48,4 +48,30 @@ class MediaPathService {
 		return $path;
 	}
 
+	public static function story($account, $version = 1)
+	{
+		$mh = hash('sha256', date('Y').'-.-'.date('m'));
+		$monthHash = date('Y').date('m').substr($mh, 0, 6).substr($mh, 58, 6);
+		$random = '03'.Str::random(random_int(6,9)).'_'.Str::random(random_int(6,17));
+
+		if($account instanceOf User) {
+			switch ($version) {
+				case 1:
+					$userHash = $account->profile_id;
+					$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
+					break;
+				
+				default:
+					$userHash = $account->profile_id;
+					$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
+					break;
+			}
+		} 
+		if($account instanceOf Profile) {
+			$userHash = $account->id;
+			$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
+		}
+		return $path;
+	}
+
 }
