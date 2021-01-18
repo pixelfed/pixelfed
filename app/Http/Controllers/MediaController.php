@@ -22,6 +22,6 @@ class MediaController extends Controller
 
 	public function composeUpdate(Request $request, $id)
 	{
-		abort(404);
+        abort(400, 'Endpoint deprecated');
 	}	
 }
