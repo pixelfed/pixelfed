@@ -408,4 +408,25 @@ class StatusController extends Controller
 
         return response()->json([200]);
     }
+
+    public function storeView(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'status_id' => 'required|integer|exists:statuses,id',
+            'profile_id' => 'required|integer|exists:profiles,id'
+        ]);
+
+        $sid = (int) $request->input('status_id');
+        $pid = (int) $request->input('profile_id');
+
+        StatusView::firstOrCreate([
+                'status_id' => $sid,
+                'status_profile_id' => $pid,
+                'profile_id' => $request->user()->profile_id
+        ]);
+
+        return response()->json(1);
+    }
 }
