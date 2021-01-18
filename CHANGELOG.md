@@ -24,6 +24,7 @@
 - Add autospam feature ([b892bcf0](https://github.com/pixelfed/pixelfed/commit/b892bcf0))
 - Add hCaptcha ([082c1ccb](https://github.com/pixelfed/pixelfed/commit/082c1ccb))
 - Add StatusView model to store views for discover algorithm ([7a68ee94](https://github.com/pixelfed/pixelfed/commit/7a68ee94))
+- Add Year in Review feature (mysql only) ([f32072a3](https://github.com/pixelfed/pixelfed/commit/f32072a3))
 
 ### Updated
 - Updated PostComponent, fix remote urls ([42716ccc](https://github.com/pixelfed/pixelfed/commit/42716ccc))
@@ -155,7 +156,8 @@
 - Updated AP helpers, fixed federation bug. ([a52564f3](https://github.com/pixelfed/pixelfed/commit/a52564f3))
 - Updated Helpers, cache profiles. ([1f672ecf](https://github.com/pixelfed/pixelfed/commit/1f672ecf))
 - Updated DiscoverController, improve trending api performance. ([d8d3331f](https://github.com/pixelfed/pixelfed/commit/d8d3331f))
-- Update InboxWorker, fix race condition in account deletes. ([4a4d8f00](https://github.com/pixelfed/pixelfed/commit/4a4d8f00))
+- Updated InboxWorker, fix race condition in account deletes. ([4a4d8f00](https://github.com/pixelfed/pixelfed/commit/4a4d8f00))
+- Updated StoryItemTransformer, increase story duration from 5 seconds to 10 seconds. ([5b0b14fc](https://github.com/pixelfed/pixelfed/commit/5b0b14fc))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
