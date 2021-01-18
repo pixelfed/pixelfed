@@ -4,7 +4,7 @@
 
 <div class="container px-0 mt-0 mt-md-4 mb-md-5 pb-md-5">
   <div class="col-12 px-0">
-    <div class="card mt-md-5 px-0 mx-md-3">
+    <div class="card mt-md-5 px-0 mx-md-3 shadow-none border">
       <div class="card-header font-weight-bold text-muted bg-white py-4">
         <a href="{{route('site.help')}}" class="text-muted">{{__('helpcenter.helpcenter')}}</a>
         <span class="px-2 font-weight-light">&mdash;</span>
