@@ -11,6 +11,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use ImageOptimizer;
 use Illuminate\Http\File;
+use App\Services\MediaPathService;
+use App\Services\MediaStorageService;
 
 class ImageUpdate implements ShouldQueue
 {
@@ -60,7 +62,9 @@ class ImageUpdate implements ShouldQueue
 
         if (in_array($media->mime, $this->protectedMimes) == true) {
             ImageOptimizer::optimize($thumb);
-            ImageOptimizer::optimize($path);
+            if(!$media->skip_optimize) {
+                ImageOptimizer::optimize($path);
+            }
         }
 
         if (!is_file($path) || !is_file($thumb)) {
@@ -73,19 +77,6 @@ class ImageUpdate implements ShouldQueue
         $media->size = $total;
         $media->save();
 
-        if(config('pixelfed.cloud_storage') == true) {
-            $p = explode('/', $media->media_path);
-            $monthHash = $p[2];
-            $userHash = $p[3];
-            $storagePath = "public/m/{$monthHash}/{$userHash}";
-            $file = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($path), 'public');
-            $url = Storage::disk(config('filesystems.cloud'))->url($file);
-            $thumbFile = Storage::disk(config('filesystems.cloud'))->putFile($storagePath, new File($thumb), 'public');
-            $thumbUrl = Storage::disk(config('filesystems.cloud'))->url($thumbFile);
-            $media->thumbnail_url = $thumbUrl;
-            $media->cdn_url = $url;
-            $media->optimized_url = $url;
-            $media->save();
-        }
+        MediaStorageService::store($media);
     }
 }
