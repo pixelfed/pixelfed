@@ -98,10 +98,27 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('discover/loops', 'DiscoverController@showLoops');
     Route::get('discover/profiles', 'DiscoverController@profilesDirectory')->name('discover.profiles');
     
-    
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
+
+        Route::group(['prefix' => 'compose'], function() {
+            Route::group(['prefix' => 'v0'], function() {
+                Route::post('/media/upload', 'ComposeController@mediaUpload');
+                Route::post('/media/update', 'ComposeController@mediaUpdate')
+                    ->middleware('throttle:maxComposeMediaUpdatesPerHour,60')
+                    ->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')
+                    ->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
+                Route::delete('/media/delete', 'ComposeController@mediaDelete');
+                Route::get('/search/tag', 'ComposeController@searchTag');
+                Route::get('/search/location', 'ComposeController@searchLocation');
+
+                Route::post('/publish', 'ComposeController@store')
+                    ->middleware('throttle:maxPostsPerHour,60')
+                    ->middleware('throttle:maxPostsPerDay,1440');
+                Route::post('/publish/text', 'ComposeController@storeText');
+            });
+        });
 
         Route::group(['prefix' => 'direct'], function () {
             Route::get('browse', 'DirectMessageController@browse');
@@ -176,25 +193,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
                 Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');
                 Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
+                Route::get('seasonal/yir', 'SeasonalController@getData');
+                Route::post('seasonal/yir', 'SeasonalController@store');
             });
         });
 
         Route::group(['prefix' => 'local'], function () {
-            // Route::get('accounts/verify_credentials', 'ApiController@verifyCredentials');
-            // Route::get('accounts/relationships', 'PublicApiController@relationships');
-            // Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
-            // Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
-            // Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
-            // Route::get('accounts/{id}', 'PublicApiController@account');
-            // Route::post('avatar/update', 'ApiController@avatarUpdate');
-            // Route::get('likes', 'ApiController@hydrateLikes');
-            // Route::post('media', 'ApiController@uploadMedia');
-            // Route::delete('media', 'ApiController@deleteMedia');
-            // Route::get('notifications', 'ApiController@notifications');
-            // Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
-            // Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
-
-            Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
+            // Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
             Route::get('exp/rec', 'ApiController@userRecommendations');
             Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');
             Route::get('discover/tag/list', 'HashtagFollowController@getTags');
@@ -209,9 +214,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::post('collection/{id}/publish', 'CollectionController@publish')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
             Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
 
-            Route::post('compose/media/update/{id}', 'MediaController@composeUpdate')->middleware('throttle:maxComposeMediaUpdatesPerHour,60')->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
             Route::get('compose/location/search', 'ApiController@composeLocationSearch');
-            Route::get('compose/tag/search', 'MediaTagController@usernameLookup');
             Route::post('compose/tag/untagme', 'MediaTagController@untagProfile');
         });
         Route::group(['prefix' => 'admin'], function () {
@@ -440,6 +443,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
             Route::view('stories', 'site.help.stories')->name('help.stories');
             Route::view('embed', 'site.help.embed')->name('help.embed');
             Route::view('hashtags', 'site.help.hashtags')->name('help.hashtags');
+            Route::view('instance-actor', 'site.help.instance-actor')->name('help.instance-actor');
             Route::view('discover', 'site.help.discover')->name('help.discover');
             Route::view('direct-messages', 'site.help.dm')->name('help.dm');
             Route::view('timelines', 'site.help.timelines')->name('help.timelines');
