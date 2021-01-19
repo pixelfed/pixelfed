@@ -1087,8 +1087,8 @@ class ApiV1Controller extends Controller
 
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $this->fractal->createData($resource)->toArray();
-        $res['preview_url'] = url('/storage/no-preview.png');
-        $res['url'] = url('/storage/no-preview.png');
+        $res['preview_url'] = $media->url(). '?cb=1&_v=' . time();
+        $res['url'] = $media->url(). '?cb=1&_v=' . time();
         return response()->json($res);
     }
 
