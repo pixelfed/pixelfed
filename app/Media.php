@@ -29,10 +29,6 @@ class Media extends Model
 
     public function url()
     {
-        if($this->mime === 'video/mp4') {
-            return url(Storage::url($this->thumbnail_path ?? 'public/no-preview.png'));
-        }
-
         if($this->cdn_url) {
             return $this->cdn_url;
         }
@@ -46,10 +42,6 @@ class Media extends Model
 
     public function thumbnailUrl()
     {
-        if($this->mime === 'video/mp4') {
-            return url(Storage::url($this->thumbnail_path ?? 'public/no-preview.png'));
-        }
-
         if($this->thumbnail_url) {
             return $this->thumbnail_url;
         }
