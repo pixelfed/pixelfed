@@ -9,7 +9,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
 {
     public function transform(Media $media)
     {
-        return [
+        $res = [
             'id'            => (string) $media->id,
             'type'          => lcfirst($media->activityVerb()),
             'url'           => $media->url(),
@@ -17,7 +17,25 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'preview_url'   => $media->thumbnailUrl(),
             'text_url'      => null,
             'meta'          => null,
-            'description'   => $media->caption
+            'description'   => $media->caption,
+            'blurhash'      => $media->blurhash
         ];
+
+        if($media->width && $media->height) {
+            $res['meta'] = [
+                'focus' => [
+                    'x' => 0,
+                    'y' => 0
+                ],
+                'original' => [
+                    'width' => $media->width,
+                    'height' => $media->height,
+                    'size' => "{$media->width}x{$media->height}",
+                    'aspect' => $media->width / $media->height
+                ]
+            ];
+        }
+
+        return $res;
     }
 }
