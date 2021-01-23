@@ -7,7 +7,6 @@
           <a href="{{route('site.contact')}}" class="text-primary p-2">{{__('site.contact-us')}}</a>
           @endif
           <a href="{{route('site.help')}}" class="text-primary p-2">{{__('site.help')}}</a>
-          <a href="{{route('site.terms')}}" class="text-primary p-2">{{__('site.terms')}}</a>
           <a href="{{route('site.privacy')}}" class="text-primary p-2">{{__('site.privacy')}}</a>
           <a href="{{route('discover.places')}}" class="text-primary p-2">{{__('site.places')}}</a>
           <a href="{{route('site.language')}}" class="text-primary p-2">{{__('site.language')}}</a>
