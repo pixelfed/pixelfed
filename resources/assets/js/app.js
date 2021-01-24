@@ -96,6 +96,24 @@ window.App.util = {
 				return interval + "m";
 			}
 			return Math.floor(seconds) + "s";
+		}),
+		rewriteLinks: (function(i) {
+
+			let tag = i.innerText;
+
+			if(i.href.startsWith(window.location.origin)) {
+				return i.href;
+			}
+
+			if(tag.startsWith('#') == true) {
+				tag = '/discover/tags/' + tag.substr(1) +'?src=rph';
+			} else if(tag.startsWith('@') == true) {
+				tag = '/' + i.innerText + '?src=rpp';
+			} else {
+				tag = '/i/redirect?url=' + encodeURIComponent(tag);
+			}
+
+			return tag; 
 		})
 	}, 
 	filters: [

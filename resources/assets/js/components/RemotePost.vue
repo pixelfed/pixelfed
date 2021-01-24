@@ -627,15 +627,8 @@ export default {
                 }, 3000);
                 setTimeout(function() {
                   self.fetchState();
-                  document.querySelectorAll('.status-comment .comment-text a').forEach(function(i, e) { 
-                    if(i.href.startsWith(window.location.origin)) {
-                      return;
-                    }
-                    let tag = i.innerText;
-                    if(tag.startsWith('#')) {
-                      tag = tag.substr(1);
-                    }
-                    i.href = '/discover/tags/'+tag+'?src=rph'; 
+                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+                    i.href = App.util.format.rewriteLinks(i);
                   });
                 }, 500);
             }).catch(error => {
@@ -977,15 +970,8 @@ export default {
                 $('.postCommentsLoader').addClass('d-none');
                 $('.postCommentsContainer').removeClass('d-none');
                 setTimeout(function() {
-                  document.querySelectorAll('.comments .comment-body a').forEach(function(i, e) { 
-                      if(i.href.startsWith(window.location.origin)) {
-                        return;
-                      }
-                      let tag = i.innerText;
-                      if(tag.startsWith('#')) {
-                        tag = tag.substr(1);
-                      }
-                      i.href = '/discover/tags/'+tag+'?src=rph'; 
+                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+                    i.href = App.util.format.rewriteLinks(i);
                   });
                 }, 500);
             }).catch(error => {

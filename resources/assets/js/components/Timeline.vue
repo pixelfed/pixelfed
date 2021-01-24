@@ -839,15 +839,8 @@ body-class="p-2 rounded">
 					// this.fetchStories();
 					this.rtw();
 					setTimeout(function() {
-						document.querySelectorAll('.caption .status-content a').forEach(function(i, e) { 
-							if(i.href.startsWith(window.location.origin)) {
-								return;
-							}
-							let tag = i.innerText;
-							if(tag.startsWith('#')) {
-								tag = tag.substr(1);
-							}
-							i.href = '/discover/tags/'+tag+'?src=rph'; 
+						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
 				}).catch(err => {
@@ -1004,15 +997,8 @@ body-class="p-2 rounded">
 					});
 					this.replies = _.reverse(data);
 					setTimeout(function() {
-						document.querySelectorAll('.comments .comment-body a').forEach(function(i, e) { 
-							if(i.href.startsWith(window.location.origin)) {
-								return;
-							}
-							let tag = i.innerText;
-							if(tag.startsWith('#')) {
-								tag = tag.substr(1);
-							}
-							i.href = '/discover/tags/'+tag+'?src=rph'; 
+						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
 				}).catch(err => {
