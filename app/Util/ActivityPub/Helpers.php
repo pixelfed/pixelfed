@@ -27,6 +27,7 @@ use App\Services\ActivityPubFetchService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
 
 class Helpers {
 
@@ -400,6 +401,7 @@ class Helpers {
 			$media->remote_url = $url;
 			$media->mime = $type;
 			$media->save();
+			MediaStoragePipeline::dispatch($media);
 		}
 		
 		$status->viewType();
