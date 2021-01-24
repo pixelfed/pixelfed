@@ -1,119 +1,120 @@
 <template>
-<div class="container" style="">
-	<div v-if="layout === 'feed'" class="row">
-		<div v-if="morePostsAvailable == true" class="col-12 mt-5 pt-3 mb-3 fixed-top">
-			<p class="text-center">
-				<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
-			</p>
-		</div>
-		<div class="d-none col-12 pl-3 pl-md-0 pt-3 pl-0">
-			<div class="d-none d-md-flex justify-content-between align-items-center">
-				<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
-				<p class="mb-0">
-					<span class="btn-group">
-						<a href="#" :class="[layout=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i></a>
-						<a href="#" :class="[layout!=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i></a>
-					</span>
-				</p>
-				<p class="mb-0 d-none d-md-block">
-					<a class="btn btn-block btn-primary btn-sm font-weight-bold" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-					 New Post
-					</a>
+	<div class="container" style="">
+		<div v-if="layout === 'feed'" class="row">
+			<div v-if="morePostsAvailable == true" class="col-12 mt-5 pt-3 mb-3 fixed-top">
+				<p class="text-center">
+					<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
 				</p>
 			</div>
-			<hr>
-		</div>
-		<div class="col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1">
-			<div style="margin-top:-2px;">
-				<story-component v-if="config.features.stories"></story-component>
-			</div>
-			<div>
-				<div v-if="loading" class="text-center" style="padding-top:10px;">
-					<div class="spinner-border" role="status">
-						<span class="sr-only">Loading...</span>
-					</div>
+			<div class="d-none col-12 pl-3 pl-md-0 pt-3 pl-0">
+				<div class="d-none d-md-flex justify-content-between align-items-center">
+					<p class="lead text-muted mb-0"><i :class="[scope == 'home' ? 'fas fa-home':'fas fa-stream']"></i> &nbsp; {{scope == 'local' ? 'Public' : 'Home'}} Timeline</p>
+					<p class="mb-0">
+						<span class="btn-group">
+							<a href="#" :class="[layout=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('feed')"><i class="fas fa-list"></i></a>
+							<a href="#" :class="[layout!=='feed'?'btn btn-sm btn-outline-primary font-weight-bold text-decoration-none':'btn btn-sm btn-outline-lighter font-weight-light text-decoration-none']" @click.prevent="switchFeedLayout('grid')"><i class="fas fa-th"></i></a>
+						</span>
+					</p>
+					<p class="mb-0 d-none d-md-block">
+						<a class="btn btn-block btn-primary btn-sm font-weight-bold" href="/i/compose" data-toggle="modal" data-target="#composeModal">
+							New Post
+						</a>
+					</p>
 				</div>
-				<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
-					<div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
-						<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
-					</div>
-					<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
-						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-							<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
-							<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
+				<hr>
+			</div>
+			<div class="col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1">
+				<div style="margin-top:-2px;">
+					<story-component v-if="config.features.stories"></story-component>
+				</div>
+				<div>
+					<div v-if="loading" class="text-center" style="padding-top:10px;">
+						<div class="spinner-border" role="status">
+							<span class="sr-only">Loading...</span>
 						</div>
-						<div class="card-body row mx-0">
-							<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
-								<div class="card">
-									<div class="card-body text-center pt-3">
-										<p class="mb-0">
-											<a :href="'/'+rec.username">
-												<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
-											</a>
-										</p>
-										<div class="py-3">
-											<p class="font-weight-bold text-dark cursor-pointer mb-0">
-												<a :href="'/'+rec.username" class="text-decoration-none text-dark">
-													{{rec.username}}
+					</div>
+					<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
+						<div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
+							<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
+						</div>
+
+						<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+							<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+								<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
+								<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
+							</div>
+							<div class="card-body row mx-0">
+								<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
+									<div class="card">
+										<div class="card-body text-center pt-3">
+											<p class="mb-0">
+												<a :href="'/'+rec.username">
+													<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
 												</a>
 											</p>
-											<p class="small text-muted mb-0">{{rec.message}}</p>
+											<div class="py-3">
+												<p class="font-weight-bold text-dark cursor-pointer mb-0">
+													<a :href="'/'+rec.username" class="text-decoration-none text-dark">
+														{{rec.username}}
+													</a>
+												</p>
+												<p class="small text-muted mb-0">{{rec.message}}</p>
+											</div>
+											<p class="mb-0">
+												<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+											</p>
 										</div>
-										<p class="mb-0">
-											<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
-										</p>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
 
-					<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
-						<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-							<span></span>
-							<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
-							<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
-						</div>
-						<div class="card-body row mx-0">
-							<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
-								<a class="card info-overlay card-md-border-0" :href="tag.status.url">
-									<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
-										<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
-										<div class="info-overlay-text">
-											<h5 class="text-white m-auto font-weight-bold">
-												<span class="pr-4">
-													<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
-												</span>
-												<span>
-													<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
-												</span>
-											</h5>
+						<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+							<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+								<span></span>
+								<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
+								<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
+							</div>
+							<div class="card-body row mx-0">
+								<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+									<a class="card info-overlay card-md-border-0" :href="tag.status.url">
+										<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
+											<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+											<div class="info-overlay-text">
+												<h5 class="text-white m-auto font-weight-bold">
+													<span class="pr-4">
+														<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
+													</span>
+													<span>
+														<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
+													</span>
+												</h5>
+											</div>
 										</div>
-									</div>
-								</a>
+									</a>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<div :class="index == 0 ? 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border'">
-						<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
-							<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
+						<div :class="index == 0 ? 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border'">
+							<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
+								<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 							<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
 								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
 							</div>
 							<div v-else> -->
-							<div>
-								<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
-							</div>
-							<div class="pl-2">
-								<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
-								<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
-									Loading...
-								</a>
-								<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
-									<i class="fas fa-certificate text-danger fa-stack-1x"></i>
-									<i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
-								</span>
+								<div>
+									<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+								</div>
+								<div class="pl-2">
+									<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
+										<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
+											Loading...
+										</a>
+										<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+											<i class="fas fa-certificate text-danger fa-stack-1x"></i>
+											<i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+										</span>
 								<!-- <span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
 									<span class="px-1">•</span>
 									<span :class="'font-weight-bold cursor-pointer ' + [status.account.relationship.following == true ? 'text-muted' : 'text-primary']" @click="followAction(status)">{{status.account.relationship.following == true ? 'Following' : 'Follow'}}</span>
@@ -135,7 +136,16 @@
 						</div>
 
 						<div class="postPresenterContainer" style="background: #000;">
-							<div v-if="status.pf_type === 'photo'" class="w-100">
+
+							<div v-if="config.ab.top && status.pf_type === 'text'" class="w-100">
+								<div class="w-100 card-img-top border-bottom rounded-0" style="background-image: url(/storage/textimg/bg_1.jpg);background-size: cover;width: 100%;height: 540px;">
+										<div class="w-100 h-100 d-flex justify-content-center align-items-center">
+											<p class="text-center text-break h3 px-5 font-weight-bold" v-html="status.content"></p>
+										</div>
+									</div>
+							</div>
+
+							<div v-else-if="status.pf_type === 'photo'" class="w-100">
 								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
 							</div>
 
@@ -183,7 +193,7 @@
 							<div class="likes font-weight-bold" v-if="expLc(status) == true">
 								<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
 							</div>
-							<div class="caption">
+							<div v-if="status.pf_type != 'text'" class="caption">
 								<p class="mb-2 read-more" style="overflow: hidden;">
 									<span class="username font-weight-bold">
 										<bdi><a class="text-dark" :href="profileUrl(status)">{{status.account.username}}</a></bdi>
@@ -193,19 +203,19 @@
 							</div>
 							<div class="comments" v-if="status.id == replyId && !status.comments_disabled">
 								<p class="mb-0 d-flex justify-content-between align-items-top read-more mt-2" style="overflow-y: hidden;" v-for="(reply, index) in replies">
-										<span>
-											<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)">{{reply.account.username}}</a>
-											<span v-html="reply.content" style="word-break: break-all;" class="comment-body"></span>
+									<span>
+										<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)">{{reply.account.username}}</a>
+										<span v-html="reply.content" style="word-break: break-all;" class="comment-body"></span>
+									</span>
+									<span class="mb-0" style="min-width:38px">
+										<span v-on:click="likeStatus(reply, $event);">
+											<i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i>
 										</span>
-										<span class="mb-0" style="min-width:38px">
-											<span v-on:click="likeStatus(reply, $event);">
-												<i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i>
-											</span>
-											<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> -->
-											<span class="text-lighter pl-2 cursor-pointer" @click="ctxMenu(reply)">
-												<span class="fas fa-ellipsis-v text-lighter"></span>
-											</span>
+										<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> -->
+										<span class="text-lighter pl-2 cursor-pointer" @click="ctxMenu(reply)">
+											<span class="fas fa-ellipsis-v text-lighter"></span>
 										</span>
+									</span>
 								</p>
 							</div>
 							<div class="timestamp mt-2">
@@ -235,8 +245,8 @@
 					<div class="card shadow-none">
 						<div class="card-body">
 							<infinite-loading @infinite="infiniteTimeline" :distance="800">
-							<div slot="no-more" class="font-weight-bold">No more posts to load</div>
-							<div slot="no-results" class="font-weight-bold">No more posts to load</div>
+								<div slot="no-more" class="font-weight-bold">No more posts to load</div>
+								<div slot="no-results" class="font-weight-bold">No more posts to load</div>
 							</infinite-loading>
 						</div>
 					</div>
@@ -284,7 +294,7 @@
 									<div class="ml-2">
 										<a class="text-muted" href="/settings/home">
 											<i class="fas fa-cog fa-lg"></i>
-                                    		<span class="sr-only">User Settings</span>
+											<span class="sr-only">User Settings</span>
 										</a>
 									</div>
 								</div>
@@ -419,14 +429,14 @@
 				</div>
 			</div>
 			<div v-if="!loading && feed.length">
-					<infinite-loading @infinite="infiniteTimeline" :distance="800">
+				<infinite-loading @infinite="infiniteTimeline" :distance="800">
 					<div slot="no-more" class="font-weight-bold">No more posts to load</div>
 					<div slot="no-results" class="font-weight-bold">No more posts to load</div>
-					</infinite-loading>
+				</infinite-loading>
 			</div>
 		</div>
 	</div>
-<b-modal ref="ctxModal"
+	<b-modal ref="ctxModal"
 	id="ctx-modal"
 	hide-header
 	hide-footer
@@ -448,125 +458,125 @@
 	</div>
 </b-modal>
 <b-modal ref="ctxModModal"
-	id="ctx-mod-modal"
-	hide-header
-	hide-footer
-	centered
-	rounded
-	size="sm"
-	body-class="list-group-flush p-0 rounded">
-	<div class="list-group text-center">
-		<div class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'unlist')">Unlist from Timelines</div>
-		<div v-if="ctxMenuStatus.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'remcw')">Remove Content Warning</div>
-		<div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'addcw')">Add Content Warning</div>
-		<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
-	</div>
+id="ctx-mod-modal"
+hide-header
+hide-footer
+centered
+rounded
+size="sm"
+body-class="list-group-flush p-0 rounded">
+<div class="list-group text-center">
+	<div class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'unlist')">Unlist from Timelines</div>
+	<div v-if="ctxMenuStatus.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'remcw')">Remove Content Warning</div>
+	<div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost(ctxMenuStatus, 'addcw')">Add Content Warning</div>
+	<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
+</div>
 </b-modal>
 <b-modal ref="ctxShareModal"
-	id="ctx-share-modal"
-	title="Share"
-	hide-footer
-	centered
-	rounded
-	size="sm"
-	body-class="list-group-flush p-0 rounded text-center">
-		<div class="list-group-item rounded cursor-pointer border-top-0">Email</div>
-		<div class="list-group-item rounded cursor-pointer">Facebook</div>
-		<div class="list-group-item rounded cursor-pointer">Mastodon</div>
-		<div class="list-group-item rounded cursor-pointer">Pinterest</div>
-		<div class="list-group-item rounded cursor-pointer">Pixelfed</div>
-		<div class="list-group-item rounded cursor-pointer">Twitter</div>
-		<div class="list-group-item rounded cursor-pointer">VK</div>
-		<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxShareMenu()">Cancel</div>
+id="ctx-share-modal"
+title="Share"
+hide-footer
+centered
+rounded
+size="sm"
+body-class="list-group-flush p-0 rounded text-center">
+<div class="list-group-item rounded cursor-pointer border-top-0">Email</div>
+<div class="list-group-item rounded cursor-pointer">Facebook</div>
+<div class="list-group-item rounded cursor-pointer">Mastodon</div>
+<div class="list-group-item rounded cursor-pointer">Pinterest</div>
+<div class="list-group-item rounded cursor-pointer">Pixelfed</div>
+<div class="list-group-item rounded cursor-pointer">Twitter</div>
+<div class="list-group-item rounded cursor-pointer">VK</div>
+<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxShareMenu()">Cancel</div>
 </b-modal>
 <b-modal ref="ctxEmbedModal"
-	id="ctx-embed-modal"
-	hide-header
-	hide-footer
-	centered
-	rounded
-	size="md"
-	body-class="p-2 rounded">
-	<div>
-		<div class="form-group">
-			<textarea class="form-control disabled text-monospace" rows="8" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
-		</div>
-		<div class="form-group pl-2 d-flex justify-content-center">
-			<div class="form-check mr-3">
-				<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
-				<label class="form-check-label font-weight-light">
-					Show Caption
-				</label>
-			</div>
-			<div class="form-check mr-3">
-				<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
-				<label class="form-check-label font-weight-light">
-					Show Likes
-				</label>
-			</div>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
-				<label class="form-check-label font-weight-light">
-					Compact Mode
-				</label>
-			</div>
-		</div>
-		<hr>
-		<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+id="ctx-embed-modal"
+hide-header
+hide-footer
+centered
+rounded
+size="md"
+body-class="p-2 rounded">
+<div>
+	<div class="form-group">
+		<textarea class="form-control disabled text-monospace" rows="8" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
 	</div>
+	<div class="form-group pl-2 d-flex justify-content-center">
+		<div class="form-check mr-3">
+			<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
+			<label class="form-check-label font-weight-light">
+				Show Caption
+			</label>
+		</div>
+		<div class="form-check mr-3">
+			<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
+			<label class="form-check-label font-weight-light">
+				Show Likes
+			</label>
+		</div>
+		<div class="form-check">
+			<input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
+			<label class="form-check-label font-weight-light">
+				Compact Mode
+			</label>
+		</div>
+	</div>
+	<hr>
+	<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+	<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+</div>
 </b-modal>
 <b-modal
-	id="lightbox"
-	ref="lightboxModal"
-	hide-header
-	hide-footer
-	centered
-	size="lg"
-	body-class="p-0"
-	>
-	<div v-if="lightboxMedia" :class="lightboxMedia.filter_class" class="w-100 h-100">
-		<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%" alt="lightbox media">
-	</div>
- </b-modal>
+id="lightbox"
+ref="lightboxModal"
+hide-header
+hide-footer
+centered
+size="lg"
+body-class="p-0"
+>
+<div v-if="lightboxMedia" :class="lightboxMedia.filter_class" class="w-100 h-100">
+	<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%" alt="lightbox media">
+</div>
+</b-modal>
 <b-modal ref="replyModal"
-	id="ctx-reply-modal"
-	hide-footer
-	centered
-	rounded
-	:title-html="replyStatus.account ? 'Reply to <span class=text-dark>' + replyStatus.account.username + '</span>' : ''"
-	title-tag="p"
-	title-class="font-weight-bold text-muted"
-	size="md"
-	body-class="p-2 rounded">
-	<div>
-		<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
-		</textarea>
+id="ctx-reply-modal"
+hide-footer
+centered
+rounded
+:title-html="replyStatus.account ? 'Reply to <span class=text-dark>' + replyStatus.account.username + '</span>' : ''"
+title-tag="p"
+title-class="font-weight-bold text-muted"
+size="md"
+body-class="p-2 rounded">
+<div>
+	<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+	</textarea>
 
-		<div class="border-top border-bottom my-2">
-			<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-				<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
-			</ul>
+	<div class="border-top border-bottom my-2">
+		<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+			<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+		</ul>
+	</div>
+	<div class="d-flex justify-content-between align-items-center">
+		<div>
+			<span class="pl-2 small text-muted font-weight-bold text-monospace">
+				<span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
+			</span>
 		</div>
-		<div class="d-flex justify-content-between align-items-center">
-			<div>
-				<span class="pl-2 small text-muted font-weight-bold text-monospace">
-					<span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
-				</span>
+		<div class="d-flex align-items-center">
+			<div class="custom-control custom-switch mr-3">
+				<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replyNsfw">
+				<label :class="[replyNsfw ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
 			</div>
-			<div class="d-flex align-items-center">
-				<div class="custom-control custom-switch mr-3">
-					<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replyNsfw">
-					<label :class="[replyNsfw ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
-				</div>
 				<!-- <select class="custom-select custom-select-sm my-0 mr-2">
 					<option value="public" selected="">Public</option>
 					<option value="unlisted">Unlisted</option>
 					<option value="followers">Followers Only</option>
 				</select> -->
 				<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0">
-				{{replySending == true ? 'POSTING' : 'POST'}}
-			</button>
+					{{replySending == true ? 'POSTING' : 'POST'}}
+				</button>
 			</div>
 		</div>
 	</div>
@@ -575,72 +585,72 @@
 </template>
 
 <style type="text/css" scoped>
-	.postPresenterContainer {
-		display: flex;
-		align-items: center;
-		background: #fff;
-	}
-	.word-break {
-		word-break: break-all;
-	}
-	.small .custom-control-label {
-		padding-top: 3px;
-	}
-	.reply-btn {
-		position: absolute;
-		bottom: 12px;
-		right: 20px;
-		width: 60px;
-		text-align: center;
-		border-radius: 0 3px 3px 0;
-	}
-	.emoji-reactions .nav-item {
-		font-size: 1.2rem;
-		padding: 9px;
-		cursor: pointer;
-	}
-	.emoji-reactions::-webkit-scrollbar {
-		width: 0px;
-		height: 0px;
-		background: transparent;
-	}
-	.reply-btn[disabled] {
-		opacity: .3;
-		color: #3897f0;
-	}
-	.has-story {
-		width: 64px;
-		height: 64px;
-		border-radius: 50%;
-		padding: 2px;
-		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
-	}
-	.has-story img {
-		width: 60px;
-		height: 60px;
-		border-radius: 50%;
-		padding: 3px;
-		background: #fff;
-	}
-	.has-story.has-story-sm {
-		width: 32px;
-		height: 32px;
-		border-radius: 50%;
-		padding: 2px;
-		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
-	}
-	.has-story.has-story-sm img {
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		padding: 3px;
-		background: #fff;
-	}
-	#ctx-reply-modal .form-control:focus {
-		border: none;
-		outline: 0;
-		box-shadow: none;
-	}
+.postPresenterContainer {
+	display: flex;
+	align-items: center;
+	background: #fff;
+}
+.word-break {
+	word-break: break-all;
+}
+.small .custom-control-label {
+	padding-top: 3px;
+}
+.reply-btn {
+	position: absolute;
+	bottom: 12px;
+	right: 20px;
+	width: 60px;
+	text-align: center;
+	border-radius: 0 3px 3px 0;
+}
+.emoji-reactions .nav-item {
+	font-size: 1.2rem;
+	padding: 9px;
+	cursor: pointer;
+}
+.emoji-reactions::-webkit-scrollbar {
+	width: 0px;
+	height: 0px;
+	background: transparent;
+}
+.reply-btn[disabled] {
+	opacity: .3;
+	color: #3897f0;
+}
+.has-story {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	padding: 2px;
+	background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+}
+.has-story img {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	padding: 3px;
+	background: #fff;
+}
+.has-story.has-story-sm {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	padding: 2px;
+	background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+}
+.has-story.has-story-sm img {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	padding: 3px;
+	background: #fff;
+}
+#ctx-reply-modal .form-control:focus {
+	border: none;
+	outline: 0;
+	box-shadow: none;
+}
 </style>
 
 <script type="text/javascript">
@@ -787,7 +797,7 @@
 						'Oops, something went wrong',
 						'Please reload the page.',
 						'error'
-					);
+						);
 				});
 			},
 
@@ -845,7 +855,7 @@
 						'Oops, something went wrong',
 						'Please reload the page.',
 						'error'
-					);
+						);
 				});
 			},
 
@@ -885,6 +895,10 @@
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
 								self.ids.push(d.id);
+								axios.post('/api/status/view', {
+									'status_id': d.id,
+									'profile_id': d.account.id
+								});
 							} 
 						});
 						this.min_id = Math.max(...this.ids).toString();
@@ -1086,95 +1100,95 @@
 				let self = this;
 				switch(action) {
 					case 'addcw':
-						msg = 'Are you sure you want to add a content warning to this post?';
-						swal({
-							title: 'Confirm',
-							text: msg,
-							icon: 'warning',
-							buttons: true,
-							dangerMode: true
-						}).then(res =>  {
-							if(res) {
-								axios.post('/api/v2/moderator/action', {
-									action: action,
-									item_id: status.id,
-									item_type: 'status'
-								}).then(res => {
-									swal('Success', 'Successfully added content warning', 'success');
-									status.sensitive = true;
-									self.ctxModMenuClose();
-								}).catch(err => {
-									swal(
-										'Error',
-										'Something went wrong, please try again later.',
-										'error'
+					msg = 'Are you sure you want to add a content warning to this post?';
+					swal({
+						title: 'Confirm',
+						text: msg,
+						icon: 'warning',
+						buttons: true,
+						dangerMode: true
+					}).then(res =>  {
+						if(res) {
+							axios.post('/api/v2/moderator/action', {
+								action: action,
+								item_id: status.id,
+								item_type: 'status'
+							}).then(res => {
+								swal('Success', 'Successfully added content warning', 'success');
+								status.sensitive = true;
+								self.ctxModMenuClose();
+							}).catch(err => {
+								swal(
+									'Error',
+									'Something went wrong, please try again later.',
+									'error'
 									);
-									self.ctxModMenuClose();
-								});
-							}
-						});
+								self.ctxModMenuClose();
+							});
+						}
+					});
 					break;
 
 					case 'remcw':
-						msg = 'Are you sure you want to remove the content warning on this post?';
-						swal({
-							title: 'Confirm',
-							text: msg,
-							icon: 'warning',
-							buttons: true,
-							dangerMode: true
-						}).then(res =>  {
-							if(res) {
-								axios.post('/api/v2/moderator/action', {
-									action: action,
-									item_id: status.id,
-									item_type: 'status'
-								}).then(res => {
-									swal('Success', 'Successfully added content warning', 'success');
-									status.sensitive = false;
-									self.ctxModMenuClose();
-								}).catch(err => {
-									swal(
-										'Error',
-										'Something went wrong, please try again later.',
-										'error'
+					msg = 'Are you sure you want to remove the content warning on this post?';
+					swal({
+						title: 'Confirm',
+						text: msg,
+						icon: 'warning',
+						buttons: true,
+						dangerMode: true
+					}).then(res =>  {
+						if(res) {
+							axios.post('/api/v2/moderator/action', {
+								action: action,
+								item_id: status.id,
+								item_type: 'status'
+							}).then(res => {
+								swal('Success', 'Successfully added content warning', 'success');
+								status.sensitive = false;
+								self.ctxModMenuClose();
+							}).catch(err => {
+								swal(
+									'Error',
+									'Something went wrong, please try again later.',
+									'error'
 									);
-									self.ctxModMenuClose();
-								});
-							}
-						});
+								self.ctxModMenuClose();
+							});
+						}
+					});
 					break;
 
 					case 'unlist':
-						msg = 'Are you sure you want to unlist this post?';
-						swal({
-							title: 'Confirm',
-							text: msg,
-							icon: 'warning',
-							buttons: true,
-							dangerMode: true
-						}).then(res =>  {
-							if(res) {
-								axios.post('/api/v2/moderator/action', {
-									action: action,
-									item_id: status.id,
-									item_type: 'status'
-								}).then(res => {
-									this.feed = this.feed.filter(f => {
-										return f.id != status.id;
-									});
-									swal('Success', 'Successfully unlisted post', 'success');
-									self.ctxModMenuClose();
-								}).catch(err => {
-									self.ctxModMenuClose();
-									swal(
-										'Error',
-										'Something went wrong, please try again later.',
-										'error'
-									);
+					msg = 'Are you sure you want to unlist this post?';
+					swal({
+						title: 'Confirm',
+						text: msg,
+						icon: 'warning',
+						buttons: true,
+						dangerMode: true
+					}).then(res =>  {
+						if(res) {
+							axios.post('/api/v2/moderator/action', {
+								action: action,
+								item_id: status.id,
+								item_type: 'status'
+							}).then(res => {
+								this.feed = this.feed.filter(f => {
+									return f.id != status.id;
 								});
-							}
-						});
+								swal('Success', 'Successfully unlisted post', 'success');
+								self.ctxModMenuClose();
+							}).catch(err => {
+								self.ctxModMenuClose();
+								swal(
+									'Error',
+									'Something went wrong, please try again later.',
+									'error'
+									);
+							});
+						}
+					});
 					break;
 				}
 			},
@@ -1193,7 +1207,7 @@
 					this.following = res.data;
 					this.followingCursor++;
 				});
-        		if(res.data.length < 10) {
+				if(res.data.length < 10) {
 					this.followingMore = false;
 				}
 				this.$refs.followingModal.show();
@@ -1213,7 +1227,7 @@
 					this.followers = res.data;
 					this.followerCursor++;
 				})
-        		if(res.data.length < 10) {
+				if(res.data.length < 10) {
 					this.followerMore = false;
 				}
 				this.$refs.followerModal.show();
@@ -1230,7 +1244,7 @@
 						this.following.push(...res.data);
 						this.followingCursor++;
 					}
-          			if(res.data.length < 10) {
+					if(res.data.length < 10) {
 						this.followingMore = false;
 					}
 				});
@@ -1247,7 +1261,7 @@
 						this.followers.push(...res.data);
 						this.followerCursor++;
 					}
-          			if(res.data.length < 10) {
+					if(res.data.length < 10) {
 						this.followerMore = false;
 					}
 				});
@@ -1290,7 +1304,7 @@
 				}
 
 				axios.post('/i/follow', {
-						item: id
+					item: id
 				}).then(res => {
 					this.suggestions.splice(index, 1);
 				}).catch(err => {
@@ -1304,7 +1318,7 @@
 				let id = status.account.id;
 
 				axios.post('/i/follow', {
-						item: id
+					item: id
 				}).then(res => {
 					this.feed.forEach(s => {
 						if(s.account.id == id) {
@@ -1557,19 +1571,19 @@
 
 				switch(fmt) {
 					case '@':
-						return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
+					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
 					break;
 
 					case 'from':
-						return usr + '<span class="text-lighter font-weight-bold"> <span class="font-weight-normal">from</span> ' + dom + '</span>';
+					return usr + '<span class="text-lighter font-weight-bold"> <span class="font-weight-normal">from</span> ' + dom + '</span>';
 					break;
 
 					case 'custom':
-						return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
+					return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
 					break;
 
 					default: 
-						return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
+					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
 					break;
 				}
 			},
