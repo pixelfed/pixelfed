@@ -168,7 +168,13 @@
 - Updated mobile apis, add blurhash. ([cf40526e](https://github.com/pixelfed/pixelfed/commit/cf40526e))
 - Updated Image media util, store dimensions of media not thumbnail. ([40bd64aa](https://github.com/pixelfed/pixelfed/commit/40bd64aa))
 - Updated MediaTransformers, include meta attribute with focus and dimensions. ([f8cbe1e4](https://github.com/pixelfed/pixelfed/commit/f8cbe1e4))
-
+- Updated storage, add remote media cache directory. ([0eabbfdd](https://github.com/pixelfed/pixelfed/commit/0eabbfdd))
+- Updated backup config, prevents gateway timeouts for large databases using mysql. ([9cd4bd74](https://github.com/pixelfed/pixelfed/commit/9cd4bd74))
+- Updated MediaPipeline, handle cloud object storage. ([be6d12fc](https://github.com/pixelfed/pixelfed/commit/be6d12fc))
+- Updated AP Helpers, use MediaStoragePipeline. ([01a1ffd6](https://github.com/pixelfed/pixelfed/commit/01a1ffd6))
+- Updated RemoteProfile component, change thumbnail url. ([c1118956](https://github.com/pixelfed/pixelfed/commit/c1118956))
+- Updated blade views. ([9683e846](https://github.com/pixelfed/pixelfed/commit/9683e846))
+- Updated cache config, use phpredis by default. ([ed6877df](https://github.com/pixelfed/pixelfed/commit/ed6877df))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
