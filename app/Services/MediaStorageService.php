@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Media;
 use App\Profile;
 use App\User;
+use GuzzleHttp\Client;
 
 class MediaStorageService {
 
@@ -21,6 +22,17 @@ class MediaStorageService {
 		}
 
 		return;
+	}
+
+	public static function head($url)
+	{
+		$c = new Client();
+		$r = $c->request('HEAD', $url);
+		$h = $r->getHeaders();
+		return [
+			'length' => $h['Content-Length'][0],
+			'mime' => $h['Content-Type'][0]
+		];
 	}
 
 	protected function cloudStore($media)
@@ -51,6 +63,7 @@ class MediaStorageService {
 		$media->thumbnail_url = $thumbUrl;
 		$media->cdn_url = $url;
 		$media->optimized_url = $url;
+		$media->replicated_at = now();
 		$media->save();
 		if($media->status_id) {
 			Cache::forget('status:transformer:media:attachments:' . $media->status_id);
@@ -59,6 +72,53 @@ class MediaStorageService {
 
 	protected function remoteToCloud($media)
 	{
-		// todo
+		$url = $media->remote_url;
+
+		if(!Helpers::validateUrl($url)) {
+			return;
+		}
+
+		$head = $this->head($media->remote_url);
+		$mimes = [
+			'image/jpeg',
+			'image/png',
+			'video/mp4'
+		];
+
+		$mime = $head['mime'];
+		$max_size = (int) config('pixelfed.max_photo_size') * 1000;
+		$media->size = $head['length'];
+		$media->remote_media = true;
+		$media->save();
+
+		if(!in_array($mime, $mimes)) {
+			return;
+		}
+
+		if($head['length'] == $max_size) {
+			return;
+		}
+
+		$ext = $mime == 'image/jpeg' ? '.jpg' : ($mime == 'image/png' ? '.png' : 'mp4');
+
+		$base = MediaPathService::get($media->profile);
+		$path = Str::random(40) . $ext;
+		$tmpBase = storage_path('app/remcache/');
+		$tmpPath = $media->profile_id . '-' . $path;
+		$tmpName = $tmpBase . $tmpPath;
+		$data = file_get_contents($url, false, null, 0, $head['length']);
+		file_put_contents($tmpName, $data);
+		$hash = hash_file('sha256', $tmpName);
+
+		$disk = Storage::disk(config('filesystems.cloud'));
+		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
+		$permalink = $disk->url($file);
+		$media->cdn_url = $permalink;
+		$media->original_sha256 = $hash;
+		$media->replicated_at = now();
+		$media->save();
+
+		unlink($tmpName);
+
 	}
 }

@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use ImageOptimizer;
 use Illuminate\Http\File;
 use App\Services\MediaPathService;
-use App\Services\MediaStorageService;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
 
 class ImageUpdate implements ShouldQueue
 {
@@ -77,6 +77,7 @@ class ImageUpdate implements ShouldQueue
         $media->size = $total;
         $media->save();
 
-        MediaStorageService::store($media);
+        MediaStoragePipeline::dispatch($media);
+
     }
 }

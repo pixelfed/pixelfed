@@ -33,7 +33,7 @@ class Media extends Model
             return $this->cdn_url;
         }
 
-        if(!empty($this->remote_media) && $this->remote_url) {
+        if($this->remote_media && $this->remote_url) {
             return $this->remote_url;
         }
 
@@ -46,10 +46,8 @@ class Media extends Model
             return $this->thumbnail_url;
         }
 
-        if($this->remote_url || $this->thumbnail_path) {
-            return url(Storage::url(
-                $this->remote_url ?? 
-                $this->thumbnail_path));
+        if(!$this->remote_media && $this->thumbnail_path) {
+            return url(Storage::url($this->thumbnail_path));
         }
 
         return url(Storage::url('public/no-preview.png'));
