@@ -175,6 +175,8 @@
 - Updated RemoteProfile component, change thumbnail url. ([c1118956](https://github.com/pixelfed/pixelfed/commit/c1118956))
 - Updated blade views. ([9683e846](https://github.com/pixelfed/pixelfed/commit/9683e846))
 - Updated cache config, use phpredis by default. ([ed6877df](https://github.com/pixelfed/pixelfed/commit/ed6877df))
+- Updated components, fix url rewriter. Closes #2538. ([e8cc66dc](https://github.com/pixelfed/pixelfed/commit/e8cc66dc))
+- Updated UserCreate command, closes #2581. ([b2b8c9f9](https://github.com/pixelfed/pixelfed/commit/b2b8c9f9))
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
