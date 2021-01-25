@@ -183,7 +183,6 @@ class BaseApiController extends Controller
             $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
             $opath = $avatar->media_path;
             $avatar->media_path = "$public/$name";
-            $avatar->thumb_path = null;
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = null;
             $avatar->save();

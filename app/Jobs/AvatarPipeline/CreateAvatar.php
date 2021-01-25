@@ -45,7 +45,6 @@ class CreateAvatar implements ShouldQueue
         $avatar = new Avatar();
         $avatar->profile_id = $profile->id;
         $avatar->media_path = $path;
-        $avatar->thumb_path = $path;
         $avatar->change_count = 0;
         $avatar->last_processed_at = \Carbon\Carbon::now();
         $avatar->save();
