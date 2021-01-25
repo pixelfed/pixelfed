@@ -401,7 +401,10 @@ class Helpers {
 			$media->remote_url = $url;
 			$media->mime = $type;
 			$media->save();
-			MediaStoragePipeline::dispatch($media);
+
+			if(config('pixelfed.cloud_storage') == true) {
+				MediaStoragePipeline::dispatch($media);
+			}
 		}
 		
 		$status->viewType();
