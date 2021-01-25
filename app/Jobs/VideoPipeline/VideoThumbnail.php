@@ -12,6 +12,7 @@ use Cache;
 use FFMpeg;
 use Storage;
 use App\Media;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
 
 class VideoThumbnail implements ShouldQueue
 {
@@ -65,5 +66,7 @@ class VideoThumbnail implements ShouldQueue
         if($media->status_id) {
             Cache::forget('status:transformer:media:attachments:' . $media->status_id);
         }
+
+        MediaStoragePipeline::dispatch($media);
     }
 }
