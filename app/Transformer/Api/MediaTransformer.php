@@ -12,9 +12,9 @@ class MediaTransformer extends Fractal\TransformerAbstract
         $res = [
             'id'            => (string) $media->id,
             'type'          => $media->activityVerb(),
-            'url'           => $media->url() . '?cb=1&_v=' . time(),
+            'url'           => $media->url(),
             'remote_url'    => null,
-            'preview_url'   => $media->thumbnailUrl() . '?cb=1&_v=' . time(),
+            'preview_url'   => $media->thumbnailUrl(),
             'text_url'      => null,
             'meta'          => null,
             'description'   => $media->caption,
