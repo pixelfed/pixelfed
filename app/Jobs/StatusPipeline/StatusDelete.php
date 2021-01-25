@@ -105,7 +105,7 @@ class StatusDelete implements ShouldQueue
                         ->exists($media->thumbnail_path)
                     ) {
                         Storage::disk(config('filesystems.cloud'))
-                        ->delete($media->media_path);
+                        ->delete($media->thumbnail_path);
                     }
                 }
                 $media->delete();
