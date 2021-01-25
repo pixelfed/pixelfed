@@ -99,7 +99,23 @@ class MediaStorageService {
 			return;
 		}
 
-		$ext = $mime == 'image/jpeg' ? '.jpg' : ($mime == 'image/png' ? '.png' : 'mp4');
+		switch ($mime) {
+			case 'image/png':
+				$ext = '.png';
+				break;
+
+			case 'image/gif':
+				$ext = '.gif';
+				break;
+
+			case 'image/jpeg':
+				$ext = '.jpg';
+				break;
+
+			case 'video/mp4':
+				$ext = '.mp4';
+				break;
+		}
 
 		$base = MediaPathService::get($media->profile);
 		$path = Str::random(40) . $ext;
@@ -118,7 +134,10 @@ class MediaStorageService {
 		$media->replicated_at = now();
 		$media->save();
 
+		if($media->status_id) {
+			Cache::forget('status:transformer:media:attachments:' . $media->status_id);
+		}
+		
 		unlink($tmpName);
-
 	}
 }
