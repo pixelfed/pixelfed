@@ -114,6 +114,7 @@ class ComposeController extends Controller
 		$media->mime = $photo->getMimeType();
 		$media->filter_class = $filterClass;
 		$media->filter_name = $filterName;
+		$media->version = 3;
 		$media->save();
 
 		// $url = URL::temporarySignedRoute(
@@ -166,7 +167,6 @@ class ComposeController extends Controller
 		->whereNull('status_id')
 		->findOrFail($id);
 
-		$media->version = 2;
 		$media->save();
 
 		$fragments = explode('/', $media->media_path);
