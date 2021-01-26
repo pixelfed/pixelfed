@@ -87,6 +87,14 @@ class RestrictedNames
 		'assets',
 		'public',
 		'storage',
+		'htaccess',
+		'.htaccess',
+		'favicon.ico',
+		'embed.js',
+		'index.php',
+		'manifest.json',
+		'mix-manifest.json',
+		'robots.txt',
 
 		// Laravel Horizon
 		'horizon',
@@ -147,7 +155,6 @@ class RestrictedNames
 		'driver',
 		'e',
 		'embed',
-		'embed.js',
 		'email',
 		'emails',
 		'error',
@@ -191,7 +198,6 @@ class RestrictedNames
 		'invites',
 		'import',
 		'imports',
-		'index.php',
 		'j',
 		'js',
 		'k',
@@ -329,6 +335,7 @@ class RestrictedNames
 		$reserved = self::$reserved;
 
 		$res = array_merge($additional, $reserved, $banned);
+		$res = array_unique($res);
 		sort($res);
 		
 		return $res;
