@@ -12,6 +12,8 @@ use App\Media;
 use App\Profile;
 use App\User;
 use GuzzleHttp\Client;
+use App\Http\Controllers\AvatarController;
+use GuzzleHttp\Exception\RequestException;
 
 class MediaStorageService {
 
@@ -24,10 +26,19 @@ class MediaStorageService {
 		return;
 	}
 
+	public static function avatar($avatar)
+	{
+		return (new self())->fetchAvatar($avatar);
+	}
+
 	public static function head($url)
 	{
 		$c = new Client();
-		$r = $c->request('HEAD', $url);
+		try {
+			$r = $c->request('HEAD', $url);
+		} catch (RequestException $e) {
+			return false;
+		}
 		$h = $r->getHeaders();
 		return [
 			'length' => $h['Content-Length'][0],
@@ -79,6 +90,11 @@ class MediaStorageService {
 		}
 
 		$head = $this->head($media->remote_url);
+		
+		if(!$head) {
+			return;
+		}
+		
 		$mimes = [
 			'image/jpeg',
 			'image/png',
@@ -95,7 +111,7 @@ class MediaStorageService {
 			return;
 		}
 
-		if($head['length'] == $max_size) {
+		if($head['length'] >= $max_size) {
 			return;
 		}
 
@@ -129,6 +145,8 @@ class MediaStorageService {
 		$disk = Storage::disk(config('filesystems.cloud'));
 		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
 		$permalink = $disk->url($file);
+
+		$media->media_path = $base . $path;
 		$media->cdn_url = $permalink;
 		$media->original_sha256 = $hash;
 		$media->replicated_at = now();
@@ -137,7 +155,76 @@ class MediaStorageService {
 		if($media->status_id) {
 			Cache::forget('status:transformer:media:attachments:' . $media->status_id);
 		}
-		
+
+		unlink($tmpName);
+	}
+
+	protected function fetchAvatar($avatar)
+	{
+		$url = $avatar->remote_url;
+
+		if($url == null || Helpers::validateUrl($url) == false) {
+			return;
+		}
+
+		$head = $this->head($url);
+
+		if($head == false) {
+			return;
+		}
+
+		$mimes = [
+			'image/jpeg',
+			'image/png',
+		];
+
+		$mime = $head['mime'];
+		$max_size = (int) config('pixelfed.max_avatar_size') * 1000;
+
+		if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
+			return;
+		}
+
+		// handle pleroma edge case
+		if(Str::endsWith($mime, '; charset=utf-8')) {
+			$mime = str_replace('; charset=utf-8', '', $mime);
+		}
+
+		if(!in_array($mime, $mimes)) {
+			return;
+		}
+
+		if($head['length'] >= $max_size) {
+			return;
+		}
+
+		if($avatar->size && $head['length'] == $avatar->size) {
+			return;
+		}
+
+		$base = 'cache/avatars/' . $avatar->profile_id;
+		$ext = $head['mime'] == 'image/jpeg' ? 'jpg' : 'png';
+		$path = Str::random(20) . '_avatar.' . $ext;
+		$tmpBase = storage_path('app/remcache/');
+		$tmpPath = 'avatar_' . $avatar->profile_id . '-' . $path;
+		$tmpName = $tmpBase . $tmpPath;
+		$data = file_get_contents($url, false, null, 0, $head['length']);
+		file_put_contents($tmpName, $data);
+
+		$disk = Storage::disk(config('filesystems.cloud'));
+		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
+		$permalink = $disk->url($file);
+
+		$avatar->media_path = $base . $path;
+		$avatar->is_remote = true;
+		$avatar->cdn_url = $permalink;
+		$avatar->size = $head['length'];
+		$avatar->change_count = $avatar->change_count + 1;
+		$avatar->last_fetched_at = now();
+		$avatar->save();
+
+		Cache::forget('avatar:' . $avatar->profile_id);
+
 		unlink($tmpName);
 	}
 }
