@@ -28,6 +28,7 @@ use App\Services\ActivityPubDeliveryService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 
 class Helpers {
 
@@ -387,12 +388,14 @@ class Helpers {
 		foreach($attachments as $media) {
 			$type = $media['mediaType'];
 			$url = $media['url'];
+			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
 			$valid = self::validateUrl($url);
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
 
 			$media = new Media();
+			$media->blurhash = $blurhash;
 			$media->remote_media = true;
 			$media->status_id = $status->id;
 			$media->profile_id = $status->profile_id;
@@ -400,6 +403,7 @@ class Helpers {
 			$media->media_path = $url;
 			$media->remote_url = $url;
 			$media->mime = $type;
+			$media->version = 3;
 			$media->save();
 
 			if(config('pixelfed.cloud_storage') == true) {
@@ -431,6 +435,7 @@ class Helpers {
 					->whereUsername($id)
 					->firstOrFail();
 			}
+
 			$res = self::fetchProfileFromUrl($url);
 			if(isset($res['id']) == false) {
 				return;
@@ -466,10 +471,7 @@ class Helpers {
 					$profile->webfinger = strtolower(Purify::clean($webfinger));
 					$profile->last_fetched_at = now();
 					$profile->save();
-					if($runJobs == true) {
-						// RemoteFollowImportRecent::dispatch($res, $profile);
-						CreateAvatar::dispatch($profile);
-					}
+					RemoteAvatarFetch::dispatch($profile);
 					return $profile;
 				});
 			} else {
@@ -483,6 +485,7 @@ class Helpers {
 					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 					$profile->save();
 				}
+				RemoteAvatarFetch::dispatch($profile);
 			}
 			return $profile;
 		});
