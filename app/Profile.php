@@ -151,6 +151,15 @@ class Profile extends Model
     {
         $url = Cache::remember('avatar:'.$this->id, now()->addYears(1), function () {
             $avatar = $this->avatar;
+
+            if($avatar->cdn_url) {
+                return $avatar->cdn_url ?? url('/storage/avatars/default.jpg');
+            }
+
+            if($avatar->is_remote) {
+                return $avatar->cdn_url ?? url('/storage/avatars/default.jpg');
+            }
+            
             $path = $avatar->media_path;
             $path = "{$path}?v={$avatar->change_count}";
 
