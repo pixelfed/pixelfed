@@ -11,6 +11,10 @@ class ActivityPubFetchService
 {
 	public static function get($url)
 	{
+		if(!Helpers::validateUrl($url)) {
+			return 0;
+		}
+
 		$headers = HttpSignature::instanceActorSign($url, false, [
 			'Accept'		=> 'application/activity+json, application/json',
 			'User-Agent'	=> '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')'
