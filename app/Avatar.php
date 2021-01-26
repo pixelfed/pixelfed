@@ -14,8 +14,20 @@ class Avatar extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    protected $dates = [
+        'deleted_at',
+        'last_fetched_at',
+        'last_processed_at'
+    ];
+    
     protected $fillable = ['profile_id'];
+
+    protected $visible = [
+        'id',
+        'profile_id',
+        'media_path',
+        'size',
+    ];
 
     public function profile()
     {
