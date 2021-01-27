@@ -310,6 +310,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
         Route::get('warning', 'AccountInterstitialController@get');
         Route::post('warning', 'AccountInterstitialController@read');
+        Route::get('my2020', 'SeasonalController@yearInReview');
     });
 
     Route::group(['prefix' => 'account'], function () {
