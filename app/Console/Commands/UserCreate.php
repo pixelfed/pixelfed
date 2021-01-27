@@ -39,35 +39,35 @@ class UserCreate extends Command
     public function handle()
     {
         $this->info('Creating a new user...');
-        @empty ($name)
+        if(empty($name)) {
             $name = $this->ask('Name');
-        @endempty
-        @empty ($username)
+        }
+        if(empty($username)) {
             $username = $this->ask('Username');
-        @endempty
+        }
         if(User::whereUsername($username)->exists()) {
             $this->error('Username already in use, please try again...');
             exit;
         }
-        @empty ($email)
+        if (empty($email)) {
             $email = $this->ask('Email');
             $confirm_email = $this->confirm('Manually verify email address?');
-        @endempty
+        }
         if(User::whereEmail($email)->exists()) {
             $this->error('Email already in use, please try again...');
             exit;
         }
-        @empty ($password)
+        if(empty($password)) {
             $password = $this->secret('Password');
             $confirm = $this->secret('Confirm Password');
             if($password !== $confirm) {
                 $this->error('Password mismatch, please try again...');
                 exit;
             }
-        @endempty
-        @empty ($is_admin)
-        $is_admin = $this->confirm('Make this user an admin?');
-        @endempty
+        }
+        if(empty($is_admin)) {
+            $is_admin = $this->confirm('Make this user an admin?');
+        }
         {
             $user = new User;
             $user->username = $username;
