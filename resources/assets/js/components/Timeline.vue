@@ -919,6 +919,11 @@ body-class="p-2 rounded">
 					return;
 				}
 
+				if(this.status && this.status.id == status.id) {
+					this.$refs.replyModal.show();
+					return;
+				}
+
 				this.status = status;
 				this.replies = {};
 				this.replyStatus = {};
