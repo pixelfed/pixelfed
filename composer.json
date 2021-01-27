@@ -44,6 +44,7 @@
         "symfony/http-kernel": "5.1.5"
     },
     "require-dev": {
+        "brianium/paratest": "^6.1",
         "facade/ignition": "^2.3.6",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
