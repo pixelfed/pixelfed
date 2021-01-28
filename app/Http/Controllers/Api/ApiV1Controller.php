@@ -53,7 +53,6 @@ use App\Services\{
     MediaBlocklistService
 };
 
-
 class ApiV1Controller extends Controller 
 {
 	protected $fractal;
@@ -98,6 +97,7 @@ class ApiV1Controller extends Controller
         	'client_secret' => $client->secret,
         	'vapid_key' => null
         ];
+        
         return response()->json($res, 200, [
             'Access-Control-Allow-Origin' => '*'
         ]);
@@ -113,14 +113,18 @@ class ApiV1Controller extends Controller
     {
         abort_if(!$request->user(), 403);
         $id = $request->user()->id;
-        $key = 'user:last_active_at:id:'.$id;
-        $ttl = now()->addMinutes(5);
-        Cache::remember($key, $ttl, function() use($id) {
-            $user = User::findOrFail($id);
-            $user->last_active_at = now();
-            $user->save();
-            return;
-        });
+
+        if($request->user()->last_active_at) {
+            $key = 'user:last_active_at:id:'.$id;
+            $ttl = now()->addMinutes(5);
+            Cache::remember($key, $ttl, function() use($id) {
+                $user = User::findOrFail($id);
+                $user->last_active_at = now();
+                $user->save();
+                return;
+            });
+        }
+
         $profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
         $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -1031,6 +1035,11 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+
+        if($user->last_active_at == null) {
+            return [];
+        }
+
         $profile = $user->profile;
 
         if(config('pixelfed.enforce_account_limit') == true) {
@@ -1322,13 +1331,15 @@ class ApiV1Controller extends Controller
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
         
-        $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(5);
-        Cache::remember($key, $ttl, function() use($user) {
-            $user->last_active_at = now();
-            $user->save();
-            return;
-        });
+        if($user->last_active_at) {
+            $key = 'user:last_active_at:id:'.$user->id;
+            $ttl = now()->addMinutes(5);
+            Cache::remember($key, $ttl, function() use($user) {
+                $user->last_active_at = now();
+                $user->save();
+                return;
+            });
+        }
 
         $pid = $request->user()->profile_id;
 
@@ -1739,6 +1750,10 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
         $user = $request->user();
 
+        if($user->last_active_at == null) {
+            return [];
+        }
+
         if($in_reply_to_id) {
             $parent = Status::findOrFail($in_reply_to_id);
 
@@ -1752,6 +1767,13 @@ class ApiV1Controller extends Controller
             $status->in_reply_to_profile_id = $parent->profile_id;
             $status->save();
         } else if($ids) {
+            if(Media::whereUserId($user->id)
+                ->whereNull('status_id')
+                ->find($ids)
+                ->count() == 0
+            ) {
+                abort(400, 'Invalid media_ids');
+            }
             $status = new Status;
             $status->caption = strip_tags($request->input('status'));
             $status->profile_id = $user->profile_id;
@@ -1765,7 +1787,7 @@ class ApiV1Controller extends Controller
                 if($k + 1 > config('pixelfed.max_album_length')) {
                     continue;
                 }
-                $m = Media::findOrFail($v);
+                $m = Media::whereUserId($user->id)->whereNull('status_id')->findOrFail($v);
                 if($m->profile_id !== $user->profile_id || $m->status_id) {
                     abort(403, 'Invalid media id');
                 }
@@ -1776,7 +1798,7 @@ class ApiV1Controller extends Controller
 
             if(empty($mimes)) {
                 $status->delete();
-                abort(500, 'Invalid media ids');
+                abort(400, 'Invalid media ids');
             }
 
             $status->scope = $request->input('visibility', 'public');
@@ -1786,8 +1808,7 @@ class ApiV1Controller extends Controller
         }
 
         if(!$status) {
-            $oops = 'An error occured. RefId: '.time().'-'.$user->profile_id.':'.Str::random(5).':'.Str::random(10);
-            abort(500, $oops);
+            abort(500, 'An error occured.');
         }
 
         NewStatusPipeline::dispatch($status);
