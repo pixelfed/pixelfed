@@ -58,7 +58,6 @@ class AvatarOptimize implements ShouldQueue
             $img->save($file, $quality);
 
             $avatar = Avatar::whereProfileId($this->profile->id)->firstOrFail();
-            $avatar->thumb_path = $avatar->media_path;
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = Carbon::now();
             $avatar->save();

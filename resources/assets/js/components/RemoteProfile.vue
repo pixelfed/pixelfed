@@ -253,7 +253,7 @@
 									shares: status.reblogs_count,
 									comments: status.reply_count
 								},
-								thumb: status.media_attachments[0].preview_url,
+								thumb: status.media_attachments[0].url,
 								media: status.media_attachments,
 								timestamp: status.created_at,
 								type: status.pf_type,

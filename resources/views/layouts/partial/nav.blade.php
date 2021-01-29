@@ -39,10 +39,10 @@
                             </a>
                         </li>
                         <li class="nav-item px-md-2 d-none d-md-block">
-                            <a class="nav-link font-weight-bold text-dark" href="/?a=co" title="Compose" data-toggle="tooltip" data-placement="bottom">
+                            <div class="nav-link font-weight-bold text-dark cursor-pointer" title="Compose" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
                                 <i class="far fa-plus-square fa-lg"></i>
                                 <span class="sr-only">Compose</span>
-                            </a>
+                            </div>
                         </li>
                         <li class="nav-item px-md-2">
                             <a class="nav-link font-weight-bold text-dark" href="/account/direct" title="Direct" data-toggle="tooltip" data-placement="bottom">
@@ -52,7 +52,7 @@
                         </li>
                         <li class="nav-item px-md-2 d-none d-md-block">
                             <a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
-                                <i class="far fa-bell fa-lg"></i>
+                                <i class="far fa-bell fa-lg" style="vertical-align: middle;"></i>
                                 <span class="sr-only">Notifications</span>
                             </a>
                         </li>
@@ -64,10 +64,6 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="d-block d-md-none dropdown-item font-weight-bold" href="/">
-                                    <span class="fas fa-home pr-2 text-lighter"></span>
-                                    Home
-                                </a>
                                 <a class="dropdown-item font-weight-bold" href="{{route('discover')}}">
                                     <span class="far fa-compass pr-2 text-lighter"></span>
                                     {{__('navmenu.discover')}}

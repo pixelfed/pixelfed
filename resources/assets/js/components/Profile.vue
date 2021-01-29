@@ -1,5 +1,12 @@
 <template>
 <div class="w-100 h-100">
+	<div v-if="owner && layout == 'moment'">
+		<div class="bg-primary shadow">
+			<p class="text-center text-white mb-0 py-3 font-weight-bold border-bottom border-info">
+				<i class="fas fa-exclamation-triangle fa-lg mr-2"></i> The Moment UI layout has been deprecated and will be removed in a future release.
+			</p>
+		</div>
+	</div>
 	<div v-if="isMobile" class="bg-white p-3 border-bottom">
 		<div class="d-flex justify-content-between align-items-center">
 			<div @click="goBack" class="cursor-pointer">
@@ -679,10 +686,7 @@
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
 				this.layout = 'metro';
 			}
-			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
-				Vue.use(VueMasonry);
-				this.layout = 'moment';
-			}
+			
 			if(this.layout == 'metro' && u.has('t')) {
 				if(this.modes.indexOf(u.get('t')) != -1) {
 					if(u.get('t') == 'bookmarks') {

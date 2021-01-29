@@ -183,7 +183,6 @@ class BaseApiController extends Controller
             $avatar = Avatar::whereProfileId($profile->id)->firstOrFail();
             $opath = $avatar->media_path;
             $avatar->media_path = "$public/$name";
-            $avatar->thumb_path = null;
             $avatar->change_count = ++$avatar->change_count;
             $avatar->last_processed_at = null;
             $avatar->save();
@@ -201,117 +200,17 @@ class BaseApiController extends Controller
 
     public function showTempMedia(Request $request, $profileId, $mediaId, $timestamp)
     {
-        abort_if(!$request->user(), 403);
-        abort_if(!$request->hasValidSignature(), 404); 
-        abort_if(Auth::user()->profile_id != $profileId, 404); 
-        $media = Media::whereProfileId(Auth::user()->profile_id)->findOrFail($mediaId);
-        $path = storage_path('app/'.$media->media_path);
-        return response()->file($path);
+        abort(400, 'Endpoint deprecated');
     }
 
     public function uploadMedia(Request $request)
     {
-        abort_if(!$request->user(), 403);
-        $this->validate($request, [
-              'file.*'      => function() {
-                return [
-                    'required',
-                    'mimes:' . config('pixelfed.media_types'),
-                    'max:' . config('pixelfed.max_photo_size'),
-                ];
-              },
-              'filter_name' => 'nullable|string|max:24',
-              'filter_class' => 'nullable|alpha_dash|max:24'
-        ]);
-
-        $user = Auth::user();
-        $profile = $user->profile;
-
-        if(config('pixelfed.enforce_account_limit') == true) {
-            $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
-                return Media::whereUserId($user->id)->sum('size') / 1000;
-            }); 
-            $limit = (int) config('pixelfed.max_account_size');
-            if ($size >= $limit) {
-               abort(403, 'Account size limit reached.');
-            }
-        }
-
-        $filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
-        $filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
-
-        $photo = $request->file('file');
-
-        $mimes = explode(',', config('pixelfed.media_types'));
-        if(in_array($photo->getMimeType(), $mimes) == false) {
-            return;
-        }
-
-        $storagePath = MediaPathService::get($user, 2);
-        $path = $photo->store($storagePath);
-        $hash = \hash_file('sha256', $photo);
-
-        abort_if(MediaBlocklistService::exists($hash) == true, 451);
-
-        $media = new Media();
-        $media->status_id = null;
-        $media->profile_id = $profile->id;
-        $media->user_id = $user->id;
-        $media->media_path = $path;
-        $media->original_sha256 = $hash;
-        $media->size = $photo->getSize();
-        $media->mime = $photo->getMimeType();
-        $media->filter_class = $filterClass;
-        $media->filter_name = $filterName;
-        $media->save();
-
-        $url = URL::temporarySignedRoute(
-            'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id, 'timestamp' => time()]
-        );
-
-        switch ($media->mime) {
-            case 'image/jpeg':
-            case 'image/png':
-                ImageOptimize::dispatch($media);
-                break;
-
-            case 'video/mp4':
-                VideoThumbnail::dispatch($media);
-                $preview_url = '/storage/no-preview.png';
-                $url = '/storage/no-preview.png';
-                break;
-            
-            default:
-                break;
-        }
-
-        $resource = new Fractal\Resource\Item($media, new MediaTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-        $res['preview_url'] = $url;
-        $res['url'] = $url;
-        return response()->json($res);
+        abort(400, 'Endpoint deprecated');
     }
 
     public function deleteMedia(Request $request)
     {
-        abort_if(!$request->user(), 403);
-        $this->validate($request, [
-            'id' => 'required|integer|min:1|exists:media,id'
-        ]);
-
-        $media = Media::whereNull('status_id')
-            ->whereUserId(Auth::id())
-            ->findOrFail($request->input('id'));
-
-        Storage::delete($media->media_path);
-        Storage::delete($media->thumbnail_path);
-
-        $media->forceDelete();
-
-        return response()->json([
-            'msg' => 'Successfully deleted',
-            'code' => 200
-        ]);
+        abort(400, 'Endpoint deprecated');
     }
 
     public function verifyCredentials(Request $request)

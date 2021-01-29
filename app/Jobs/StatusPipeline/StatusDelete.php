@@ -2,7 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use DB;
+use DB, Storage;
 use App\{
     AccountInterstitial,
     MediaTag,
@@ -17,6 +17,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use League\Fractal;
+use Illuminate\Support\Str;
 use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\DeleteNote;
 use App\Util\ActivityPub\Helpers;
@@ -88,6 +89,24 @@ class StatusDelete implements ShouldQueue
                 }
                 if (is_file($photo)) {
                     unlink($photo);
+                }
+                if( config('pixelfed.cloud_storage') == true) {
+                    if( Str::of($media->media_path)
+                        ->startsWith('public/') && 
+                        Storage::disk(config('filesystems.cloud'))
+                        ->exists($media->media_path)
+                    ) {
+                        Storage::disk(config('filesystems.cloud'))
+                        ->delete($media->media_path);
+                    }
+                    if( Str::of($media->thumbnail_path)
+                        ->startsWith('public/') && 
+                        Storage::disk(config('filesystems.cloud'))
+                        ->exists($media->thumbnail_path)
+                    ) {
+                        Storage::disk(config('filesystems.cloud'))
+                        ->delete($media->thumbnail_path);
+                    }
                 }
                 $media->delete();
             } catch (Exception $e) {

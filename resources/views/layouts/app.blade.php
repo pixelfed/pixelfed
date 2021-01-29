@@ -56,26 +56,24 @@
     @stack('scripts')
     <div class="d-block d-sm-none mt-5"></div>
     <div class="d-block d-sm-none fixed-bottom">
-        <div class="card card-body rounded-0 py-2 d-flex align-items-middle box-shadow" style="border-top:1px solid #F1F5F8">
-            <ul class="nav nav-pills nav-fill">
+        <div class="card card-body rounded-0 py-2 box-shadow" style="border-top:1px solid #F1F5F8">
+            <ul class="nav nav-pills nav-fill d-flex align-items-middle">
               <li class="nav-item">
-                <a class="nav-link {{request()->is('/')?'text-dark':'text-lighter'}}" href="/"><i class="fas fa-home fa-lg"></i></a>
+                <a class="nav-link text-dark" href="/"><i class="fas fa-home fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is('discover')?'text-dark':'text-lighter'}}" href="/discover"><i class="fas fa-search fa-lg"></i></a>
+                <a class="nav-link text-dark" href="/discover"><i class="fas fa-search fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <div class="nav-link text-primary cursor-pointer" onclick="App.util.compose.post()">
-                    <span class="border border-primary rounded p-2 bg-primary">
-                        <i class="fas fa-camera fa-lg text-white" style="color:#fff !important;"></i>
-                    </span>
+                <div class="nav-link cursor-pointer text-dark" onclick="App.util.compose.post()">
+                    <i class="far fa-plus-square fa-2x"></i>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{request()->is('account/activity')?'text-dark':'text-lighter'}}" href="/account/activity"><i class="far fa-heart fa-lg"></i></a>
+                <a class="nav-link text-dark" href="/account/activity"><i class="far fa-bell fa-lg"></i></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-lighter" href="/i/me"><i class="far fa-user fa-lg"></i></a>
+                <a class="nav-link text-dark" href="/i/me"><i class="far fa-user fa-lg"></i></a>
               </li>
             </ul>
         </div>

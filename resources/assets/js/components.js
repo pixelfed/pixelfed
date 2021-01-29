@@ -4,7 +4,10 @@ import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
 import VueCarousel from 'vue-carousel';
-
+import VueBlurHash from 'vue-blurhash'
+import 'vue-blurhash/dist/vue-blurhash.css'
+  
+Vue.use(VueBlurHash);
 Vue.use(VueCarousel);
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);

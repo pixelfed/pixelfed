@@ -144,11 +144,11 @@ class DiscoverController extends Controller
 
     public function profilesDirectoryApi(Request $request)
     {
+      return ['error' => 'Temporarily unavailable.'];
+
       $this->validate($request, [
         'page' => 'integer|max:10'
       ]);
-
-      return ['error' => 'Temporarily unavailable.'];
 
       $page = $request->input('page') ?? 1;
       $key = 'discover:profiles:page:' . $page;
@@ -214,6 +214,8 @@ class DiscoverController extends Controller
 
     public function trendingHashtags(Request $request)
     {
+      return [];
+      
       $res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
         ->groupBy('hashtag_id')
         ->orderBy('total','desc')
@@ -234,6 +236,8 @@ class DiscoverController extends Controller
 
     public function trendingPlaces(Request $request)
     {
+      return [];
+
       $res = Status::select('place_id',DB::raw('count(place_id) as total'))
         ->whereNotNull('place_id')
         ->where('created_at','>',now()->subDays(14))
@@ -250,6 +254,6 @@ class DiscoverController extends Controller
           ];
         });
 
-      return $res;
+      return [];
     }
 }

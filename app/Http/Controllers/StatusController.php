@@ -282,7 +282,7 @@ class StatusController extends Controller
         $resource = new Fractal\Resource\Item($status, new Note());
         $res = $fractal->createData($resource)->toArray();
 
-        return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT);
+        return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
     public function edit(Request $request, $username, $id)
@@ -407,5 +407,26 @@ class StatusController extends Controller
         $status->save();
 
         return response()->json([200]);
+    }
+
+    public function storeView(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'status_id' => 'required|integer|exists:statuses,id',
+            'profile_id' => 'required|integer|exists:profiles,id'
+        ]);
+
+        $sid = (int) $request->input('status_id');
+        $pid = (int) $request->input('profile_id');
+
+        StatusView::firstOrCreate([
+                'status_id' => $sid,
+                'status_profile_id' => $pid,
+                'profile_id' => $request->user()->profile_id
+        ]);
+
+        return response()->json(1);
     }
 }

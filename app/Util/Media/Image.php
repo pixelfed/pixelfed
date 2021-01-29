@@ -4,7 +4,7 @@ namespace App\Util\Media;
 
 use App\Media;
 use Image as Intervention;
-use Cache, Storage;
+use Cache, Log, Storage;
 
 class Image
 {
@@ -165,30 +165,32 @@ class Image
 
 			$quality = config('pixelfed.image_quality');
 			$img->save($newPath, $quality);
-			$media->width = $img->width();
-			$media->height = $img->height();
-			$img->destroy();
-			if (!$thumbnail) {
-				$media->orientation = $orientation;
-			}
 
 			if ($thumbnail == true) {
 				$media->thumbnail_path = $converted['path'];
 				$media->thumbnail_url = url(Storage::url($converted['path']));
 			} else {
+				$media->width = $img->width();
+				$media->height = $img->height();
+				$media->orientation = $orientation;
 				$media->media_path = $converted['path'];
 				$media->mime = $img->mime;
 			}
 
-
+			$img->destroy();
 			$media->save();
 
 			if($thumbnail) {
 				$this->generateBlurhash($media);
 			}
+
 			Cache::forget('status:transformer:media:attachments:'.$media->status_id);
 			Cache::forget('status:thumb:'.$media->status_id);
+
 		} catch (Exception $e) {
+			$media->processed_at = now();
+			$media->save();
+			Log::info('MediaResizeException: Could not process media id: ' . $media->id);
 		}
 	}
 

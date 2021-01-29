@@ -37,6 +37,13 @@ return [
                 'followLinks' => false,
             ],
 
+            'mysql' => [
+                 'dump' => [
+                      'useSingleTransaction' => true,
+                      'useQuick' => true,
+                  ],
+            ],
+
             /*
              * The names of the connections to the databases that should be backed up
              * MySQL, PostgreSQL, SQLite and Mongo databases are supported.
@@ -49,7 +56,7 @@ return [
         /*
          * The database dump can be gzipped to decrease diskspace usage.
          */
-        'gzip_database_dump' => false,
+        'gzip_database_dump' => true,
 
         'destination' => [
 
@@ -62,7 +69,7 @@ return [
              * The disk names on which the backups will be stored.
              */
             'disks' => [
-                'local',
+                'local'
             ],
         ],
     ],

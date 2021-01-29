@@ -9,6 +9,7 @@ use App\Util\Lexer\PrettyNumber;
 use App\{Follower, Page, Profile, Status, User, UserFilter};
 use App\Util\Localization\Localization;
 use App\Services\FollowerService;
+use App\Util\ActivityPub\Helpers;
 
 class SiteController extends Controller
 {
@@ -108,10 +109,12 @@ class SiteController extends Controller
 
     public function redirectUrl(Request $request)
     {
+        abort_if(!$request->user(), 404);
         $this->validate($request, [
             'url' => 'required|url'
         ]);
         $url = request()->input('url');
+        abort_if(Helpers::validateUrl($url) == false, 404);
         return view('site.redirect', compact('url'));
     }
 

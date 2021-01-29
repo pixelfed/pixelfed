@@ -33,7 +33,7 @@
 						<div class="pb-2">
 							<div class="media align-items-center py-2">
 								<div class="media-body text-truncate">
-									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
+									<p class="mb-0 text-break text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
 										<i class="fas fa-map-marker-alt text-lighter mr-2"></i> {{hashtag.value}}
 									</p>
 								</div>
@@ -74,7 +74,7 @@
 								<i class="fas fa-hashtag text-muted"></i>
 								</span>
 								<div class="media-body text-truncate">
-									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
+									<p class="mb-0 text-break text-dark font-weight-bold" data-toggle="tooltip" :title="hashtag.value">
 										#{{hashtag.value}}
 									</p>
 									<p v-if="hashtag.count > 2" class="mb-0 small font-weight-bold text-muted text-uppercase">
@@ -99,7 +99,7 @@
 							<div class="media align-items-center py-2 pr-3">
 								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50px" height="50px">
 								<div class="media-body">
-									<p class="mb-0 text-truncate text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
+									<p class="mb-0 text-break text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
 										{{profile.value}}
 									</p>
 									<p class="mb-0 small font-weight-bold text-muted text-uppercase">

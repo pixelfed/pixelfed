@@ -23,9 +23,12 @@ use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
+use App\Services\ActivityPubFetchService;
 use App\Services\ActivityPubDeliveryService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
+use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 
 class Helpers {
 
@@ -214,8 +217,8 @@ class Helpers {
 		$ttl = now()->addMinutes(5);
 
 		return Cache::remember($key, $ttl, function() use($url) {
-			$res = Zttp::withoutVerifying()->withHeaders(self::zttpUserAgent())->get($url);
-			$res = json_decode($res->body(), true, 8);
+			$res = ActivityPubFetchService::get($url);
+			$res = json_decode($res, true, 8);
 			if(json_last_error() == JSON_ERROR_NONE) {
 				return $res;
 			} else {
@@ -242,129 +245,132 @@ class Helpers {
 		if($local) {
 			$id = (int) last(explode('/', $url));
 			return Status::whereNotIn('scope', ['draft','archived'])->findOrFail($id);
+		}
+
+		$cached = Status::whereNotIn('scope', ['draft','archived'])
+			->whereUri($url)
+			->orWhere('object_url', $url)
+			->first();
+
+		if($cached) {
+			return $cached;
+		}
+
+		$res = self::fetchFromUrl($url);
+		
+		if(!$res || empty($res)) {
+			return;
+		}
+
+		if(isset($res['object'])) {
+			$activity = $res;
 		} else {
-			$cached = Status::whereNotIn('scope', ['draft','archived'])
-				->whereUri($url)
-				->orWhere('object_url', $url)
-				->first();
+			$activity = ['object' => $res];
+		}
 
-			if($cached) {
-				return $cached;
+		$scope = 'private';
+		
+		$cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
+
+		if(isset($res['to']) == true) {
+			if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
+				$scope = 'public';
 			}
-
-			$res = self::fetchFromUrl($url);
-			
-			if(!$res || empty($res)) {
-				return;
+			if(is_string($res['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['to']) {
+				$scope = 'public';
 			}
+		}
 
-			if(isset($res['object'])) {
-				$activity = $res;
-			} else {
-				$activity = ['object' => $res];
+		if(isset($res['cc']) == true) {
+			if(is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
+				$scope = 'unlisted';
 			}
-
-			$scope = 'private';
-			
-			$cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
-
-			if(isset($res['to']) == true) {
-				if(is_array($res['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['to'])) {
-					$scope = 'public';
-				}
-				if(is_string($res['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['to']) {
-					$scope = 'public';
-				}
+			if(is_string($res['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['cc']) {
+				$scope = 'unlisted';
 			}
+		}
 
-			if(isset($res['cc']) == true) {
-				if(is_array($res['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $res['cc'])) {
-					$scope = 'unlisted';
-				}
-				if(is_string($res['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $res['cc']) {
-					$scope = 'unlisted';
-				}
-			}
-
-			if(config('costar.enabled') == true) {
-				$blockedKeywords = config('costar.keyword.block');
-				if($blockedKeywords !== null) {
-					$keywords = config('costar.keyword.block');
-					foreach($keywords as $kw) {
-						if(Str::contains($res['content'], $kw) == true) {
-							abort(400, 'Invalid object');
-						}
+		if(config('costar.enabled') == true) {
+			$blockedKeywords = config('costar.keyword.block');
+			if($blockedKeywords !== null) {
+				$keywords = config('costar.keyword.block');
+				foreach($keywords as $kw) {
+					if(Str::contains($res['content'], $kw) == true) {
+						return;
 					}
 				}
-
-				$unlisted = config('costar.domain.unlisted');
-				if(in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
-					$unlisted = true;
-					$scope = 'unlisted';
-				} else {
-					$unlisted = false;
-				}
-
-				$cwDomains = config('costar.domain.cw');
-				if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
-					$cw = true;
-				} 
 			}
 
-			$id = isset($res['id']) ? $res['id'] : $url;
-
-			if(!self::validateUrl($id) ||
-			   !self::validateUrl($activity['object']['attributedTo'])
-			) {
-				return;
-			}
-
-			$idDomain = parse_url($id, PHP_URL_HOST);
-			$urlDomain = parse_url($url, PHP_URL_HOST);
-			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
-
-			if(
-				$idDomain !== $urlDomain || 
-				$actorDomain !== $urlDomain || 
-				$idDomain !== $actorDomain
-			) {
-				return;
-			}
-
-			$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
-			if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) && $replyTo == true) {
-				$reply_to = self::statusFirstOrFetch($activity['object']['inReplyTo'], false);
-				$reply_to = optional($reply_to)->id;
+			$unlisted = config('costar.domain.unlisted');
+			if(in_array(parse_url($url, PHP_URL_HOST), $unlisted) == true) {
+				$unlisted = true;
+				$scope = 'unlisted';
 			} else {
-				$reply_to = null;
+				$unlisted = false;
 			}
-			$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
-			$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
-				$status = new Status;
-				$status->profile_id = $profile->id;
-				$status->url = isset($res['url']) ? $res['url'] : $url;
-				$status->uri = isset($res['url']) ? $res['url'] : $url;
-				$status->object_url = $id;
-				$status->caption = strip_tags($res['content']);
-				$status->rendered = Purify::clean($res['content']);
-				$status->created_at = Carbon::parse($ts);
-				$status->in_reply_to_id = $reply_to;
-				$status->local = false;
-				$status->is_nsfw = $cw;
-				$status->scope = $scope;
-				$status->visibility = $scope;
-				$status->cw_summary = $cw == true && isset($res['summary']) ?
-					Purify::clean(strip_tags($res['summary'])) : null;
-				$status->save();
-				if($reply_to == null) {
-					self::importNoteAttachment($res, $status);
-				}
-				return $status;
-			});
 
-
-			return $status;
+			$cwDomains = config('costar.domain.cw');
+			if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
+				$cw = true;
+			} 
 		}
+
+		$id = isset($res['id']) ? $res['id'] : $url;
+		$idDomain = parse_url($id, PHP_URL_HOST);
+		$urlDomain = parse_url($url, PHP_URL_HOST);
+
+		if(!self::validateUrl($id)) {
+			return;
+		}
+
+		if(isset($activity['object']['attributedTo'])) {
+			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
+			if(!self::validateUrl($activity['object']['attributedTo']) ||
+				$idDomain !== $actorDomain)
+			{
+				return;
+			}
+		}
+
+		if(
+			$idDomain !== $urlDomain || 
+			$actorDomain !== $urlDomain
+		) {
+			return;
+		}
+
+		$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
+		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) && $replyTo == true) {
+			$reply_to = self::statusFirstOrFetch($activity['object']['inReplyTo'], false);
+			$reply_to = optional($reply_to)->id;
+		} else {
+			$reply_to = null;
+		}
+		$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
+		$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
+			$status = new Status;
+			$status->profile_id = $profile->id;
+			$status->url = isset($res['url']) ? $res['url'] : $url;
+			$status->uri = isset($res['url']) ? $res['url'] : $url;
+			$status->object_url = $id;
+			$status->caption = strip_tags($res['content']);
+			$status->rendered = Purify::clean($res['content']);
+			$status->created_at = Carbon::parse($ts);
+			$status->in_reply_to_id = $reply_to;
+			$status->local = false;
+			$status->is_nsfw = $cw;
+			$status->scope = $scope;
+			$status->visibility = $scope;
+			$status->cw_summary = $cw == true && isset($res['summary']) ?
+				Purify::clean(strip_tags($res['summary'])) : null;
+			$status->save();
+			if($reply_to == null) {
+				self::importNoteAttachment($res, $status);
+			}
+			return $status;
+		});
+
+		return $status;
 	}
 
 	public static function statusFetch($url)
@@ -385,12 +391,14 @@ class Helpers {
 		foreach($attachments as $media) {
 			$type = $media['mediaType'];
 			$url = $media['url'];
+			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
 			$valid = self::validateUrl($url);
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
 
 			$media = new Media();
+			$media->blurhash = $blurhash;
 			$media->remote_media = true;
 			$media->status_id = $status->id;
 			$media->profile_id = $status->profile_id;
@@ -398,7 +406,12 @@ class Helpers {
 			$media->media_path = $url;
 			$media->remote_url = $url;
 			$media->mime = $type;
+			$media->version = 3;
 			$media->save();
+
+			if(config('pixelfed.cloud_storage') == true) {
+				MediaStoragePipeline::dispatch($media);
+			}
 		}
 		
 		$status->viewType();
@@ -425,6 +438,7 @@ class Helpers {
 					->whereUsername($id)
 					->firstOrFail();
 			}
+
 			$res = self::fetchProfileFromUrl($url);
 			if(isset($res['id']) == false) {
 				return;
@@ -460,10 +474,7 @@ class Helpers {
 					$profile->webfinger = strtolower(Purify::clean($webfinger));
 					$profile->last_fetched_at = now();
 					$profile->save();
-					if($runJobs == true) {
-						// RemoteFollowImportRecent::dispatch($res, $profile);
-						CreateAvatar::dispatch($profile);
-					}
+					RemoteAvatarFetch::dispatch($profile);
 					return $profile;
 				});
 			} else {
@@ -477,6 +488,7 @@ class Helpers {
 					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 					$profile->save();
 				}
+				RemoteAvatarFetch::dispatch($profile);
 			}
 			return $profile;
 		});

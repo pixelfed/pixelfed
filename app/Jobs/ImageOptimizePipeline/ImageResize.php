@@ -45,7 +45,7 @@ class ImageResize implements ShouldQueue
             return;
         }
         $path = storage_path('app/'.$media->media_path);
-        if (!is_file($path)) {
+        if (!is_file($path) || $media->skip_optimize) {
             return;
         }
 

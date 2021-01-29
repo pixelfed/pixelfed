@@ -2,12 +2,28 @@
 
 @section('content')
 
-<div class="alert alert-info text-center rounded-0">
 <div class="container">
-<span class="font-weight-bold">ComposeUI v3 is deprecated</span>
-<br>
-Please use the <a href="#" onclick="event.preventDefault();window.App.util.compose.post()" class="font-weight-bold">new UI</a> to compose a post.
+	<div class="row">
+		<div class="col-12 col-md-6 offset-md-3 mt-md-3 px-0">
+			<compose-modal></compose-modal>
+		</div>
+	</div>
 </div>
-</div>
-
 @endsection
+
+@push('styles')
+<style type="text/css">
+	.card {
+		box-shadow: none;
+		border: 1px solid #ddd;
+	}
+	.card .card-header .fas.fa-times {
+		color: #fff;
+	}
+</style>
+@endpush
+
+@push('scripts')
+<script type="text/javascript" src="{{ mix('js/compose.js') }}"></script>
+<script type="text/javascript">window.App.boot()</script>
+@endpush

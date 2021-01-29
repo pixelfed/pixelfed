@@ -12,7 +12,7 @@ class UserCreate extends Command
      *
      * @var string
      */
-    protected $signature = 'user:create';
+    protected $signature = 'user:create {--name=} {--username=} {--email=} {--password=} {--is_admin=0} {--confirm_email=0}';
 
     /**
      * The console command description.
@@ -39,6 +39,26 @@ class UserCreate extends Command
     public function handle()
     {
         $this->info('Creating a new user...');
+
+        $o = $this->options();
+
+        if( $o['name'] &&
+            $o['username'] &&
+            $o['email'] &&
+            $o['password']
+        ) {
+            $user = new User;
+            $user->username = $o['username'];
+            $user->name = $o['name'];
+            $user->email = $o['email'];
+            $user->password = bcrypt($o['password']);
+            $user->is_admin = (bool) $o['is_admin'];
+            $user->email_verified_at = (bool) $o['confirm_email'] ? now() : null;
+            $user->save();
+
+            $this->info('Successfully created user!');
+            return;
+        }
 
         $name = $this->ask('Name');
 
