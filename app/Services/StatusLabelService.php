@@ -12,7 +12,7 @@ class StatusLabelService
 
 	public static function get(Status $status)
 	{
-		if(config('instance.label.covid') == false || !$status) {
+		if(config('instance.label.covid.enabled') == false || !$status) {
 			return [
 				'covid' => false
 			];
