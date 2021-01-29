@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Config {
 
 	public static function get() {
-		return Cache::remember('api:site:configuration:_v0.1', now()->addHours(30), function() {
+		return Cache::remember('api:site:configuration:_v0.2', now()->addHours(30), function() {
 			return [
 				'open_registration' => config('pixelfed.open_registration'),
 				'uploader' => [
@@ -62,6 +62,13 @@ class Config {
 						'instagram' => config('pixelfed.import.instagram.enabled'),
 						'mastodon' => false,
 						'pixelfed' => false
+					],
+					'label' => [
+						'covid' => [
+							'enabled' => config('instance.label.covid.enabled'),
+							'org' => config('instance.label.covid.org'),
+							'url' => config('instance.label.covid.url'),
+						]
 					]
 				]
 			];
