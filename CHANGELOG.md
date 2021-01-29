@@ -14,7 +14,6 @@
 - Added New Post notification to Timeline ([a0e7c4d5](https://github.com/pixelfed/pixelfed/commit/a0e7c4d5))
 - Add Instagram Import ([e2a6bdd0](https://github.com/pixelfed/pixelfed/commit/e2a6bdd0))
 - Add notification preview to NotificationCard ([28445e27](https://github.com/pixelfed/pixelfed/commit/28445e27))
-- Add Grid Mode to Timelines ([c1853ca8](https://github.com/pixelfed/pixelfed/commit/c1853ca8))
 - Add MediaPathService ([c54b29c5](https://github.com/pixelfed/pixelfed/commit/c54b29c5))
 - Add Media Tags ([711fc020](https://github.com/pixelfed/pixelfed/commit/711fc020))
 - Add MediaTagService ([524c6d45](https://github.com/pixelfed/pixelfed/commit/524c6d45))
