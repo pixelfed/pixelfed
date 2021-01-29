@@ -171,7 +171,7 @@
 
 						</div>
 
-						<div v-if="config.features.label.covid.enabled && status.label && status.label.covid == true" class="card-body border-bottom py-2 cursor-pointer pr-2" @click="labelRedirect()">
+						<div v-if="config.features.label.covid.enabled && status.label && status.label.covid == true" class="card-body border-top border-bottom py-2 cursor-pointer pr-2" @click="labelRedirect()">
 							<p class="font-weight-bold d-flex justify-content-between align-items-center mb-0">
 								<span>
 									<i class="fas fa-info-circle mr-2"></i>
