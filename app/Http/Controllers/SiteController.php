@@ -109,6 +109,7 @@ class SiteController extends Controller
 
     public function redirectUrl(Request $request)
     {
+        abort_if(!$request->user(), 404);
         $this->validate($request, [
             'url' => 'required|url'
         ]);
