@@ -101,6 +101,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::group(['prefix' => 'api'], function () {
         Route::get('search', 'SearchController@searchAPI');
         Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
+        Route::post('status/view', 'StatusController@storeView');
 
         Route::group(['prefix' => 'compose'], function() {
             Route::group(['prefix' => 'v0'], function() {
