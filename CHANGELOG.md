@@ -1,6 +1,10 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.9...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.10...dev)
+### Added
+
+
+## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
 ### Added
 - Direct Messages ([d63569c](https://github.com/pixelfed/pixelfed/commit/d63569c))
 - ActivityPubFetchService for signed GET requests ([8763bfc5](https://github.com/pixelfed/pixelfed/commit/8763bfc5)) ([3ee1215a](https://github.com/pixelfed/pixelfed/commit/3ee1215a))
@@ -193,6 +197,7 @@
 - Updated Timeline, prevent nextTick() when reloading same comment modal. Fixes #2584. ([cc84125b](https://github.com/pixelfed/pixelfed/commit/cc84125b))
 - Updated site config, add labels to config. ([abe9cb3d](https://github.com/pixelfed/pixelfed/commit/abe9cb3d))
 - Update StatusLabelService, change config key. ([4abfe76a](https://github.com/pixelfed/pixelfed/commit/4abfe76a))
+
 
 ## [v0.10.9 (2020-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.10.8...v0.10.9)
 ### Added
