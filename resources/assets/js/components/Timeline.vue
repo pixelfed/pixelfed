@@ -171,6 +171,18 @@
 
 						</div>
 
+						<div v-if="config.features.label.covid.enabled && status.label && status.label.covid == true" class="card-body border-bottom py-2 cursor-pointer pr-2" @click="labelRedirect()">
+							<p class="font-weight-bold d-flex justify-content-between align-items-center mb-0">
+								<span>
+									<i class="fas fa-info-circle mr-2"></i>
+									For information about COVID-19, {{config.features.label.covid.org}}
+								</span>
+								<span>
+									<i class="fas fa-chevron-right text-lighter"></i>
+								</span>
+							</p>
+						</div>
+
 						<div class="card-body">
 							<div class="reactions my-1 pb-2">
 								<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
@@ -741,14 +753,14 @@ body-class="p-2 rounded">
 		},
 
 		mounted() {
-			if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches || $('link[data-stylesheet="dark"]').length != 0) {
+			// todo: release after dark mode updates
+			/* if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches || $('link[data-stylesheet="dark"]').length != 0) {
 				this.modes.dark = true;
 
-				// todo: release after dark mode updates
-				/* let el = document.querySelector('link[data-stylesheet="light"]');
+				let el = document.querySelector('link[data-stylesheet="light"]');
 				el.setAttribute('href', '/css/appdark.css?id=' + Date.now());
-				el.setAttribute('data-stylesheet', 'dark'); */
-			}
+				el.setAttribute('data-stylesheet', 'dark'); 
+			}*/
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
 				this.showSuggestions = false;
@@ -1666,6 +1678,11 @@ body-class="p-2 rounded">
 					self.loading = false;
 				}, 500);
 			},
+
+			labelRedirect(type) {
+				let url = '/i/redirect?url=' + encodeURI(this.config.features.label.covid.url);
+				window.location.href = url;
+			}
 		},
 
 		beforeDestroy () {

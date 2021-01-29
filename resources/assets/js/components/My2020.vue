@@ -165,6 +165,12 @@ export default {
 				return;
 			}
 
+			if(this.page == 7 && this.stats.popular.places == null) {
+				this.page = 9;
+				window.history.pushState({}, {}, '/i/my2020?v=20&ned=0&sl=9');
+				return;
+			}
+
 			if(this.page == 8) {
 				axios.post('/api/pixelfed/v2/seasonal/yir', {
 					'profile_id' : this.user.profile_id
@@ -176,6 +182,11 @@ export default {
 
 		prevPage() {
 			if(this.page == 1) {
+				return;
+			}
+			if(this.page == 9 && this.stats.popular.places == null) {
+				this.page = 7;
+				window.history.pushState({}, {}, '/i/my2020?v=20&ned=0&sl=7');
 				return;
 			}
 			--this.page;
