@@ -50,6 +50,7 @@ use App\Services\{
     NotificationService,
     MediaPathService,
     SearchApiV2Service,
+    StatusService,
     MediaBlocklistService
 };
 
@@ -855,6 +856,8 @@ class ApiV1Controller extends Controller
             $status->likes_count = $status->likes()->count();
             $status->save();
         }
+
+        StatusService::del($status->id);
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
@@ -1766,6 +1769,7 @@ class ApiV1Controller extends Controller
             $status->in_reply_to_id = $parent->id;
             $status->in_reply_to_profile_id = $parent->profile_id;
             $status->save();
+            StatusService::del($parent->id);
         } else if($ids) {
             if(Media::whereUserId($user->id)
                 ->whereNull('status_id')
@@ -1883,6 +1887,7 @@ class ApiV1Controller extends Controller
             SharePipeline::dispatch($share);
         }
 
+        StatusService::del($status->id);
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
@@ -1916,6 +1921,7 @@ class ApiV1Controller extends Controller
         $status->reblogs_count = $status->shares()->count();
         $status->save();
 
+        StatusService::del($status->id);
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res);
