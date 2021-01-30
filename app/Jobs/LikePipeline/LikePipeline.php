@@ -14,6 +14,7 @@ use App\Util\ActivityPub\Helpers;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\Like as LikeTransformer;
+use App\Services\StatusService;
 
 class LikePipeline implements ShouldQueue
 {
@@ -57,6 +58,8 @@ class LikePipeline implements ShouldQueue
             // Ignore notifications to deleted statuses
             return;
         }
+
+        StatusService::del($status->id);
 
         if($status->url && $actor->domain == null) {
             return $this->remoteLikeDeliver();
