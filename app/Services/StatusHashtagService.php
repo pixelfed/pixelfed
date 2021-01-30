@@ -51,12 +51,12 @@ class StatusHashtagService {
 
 	public static function set($key, $val)
 	{
-		return Redis::zadd(self::CACHE_KEY . $key, $val, $val);
+		return 1;
 	}
 
 	public static function del($key)
 	{
-		return Redis::zrem(self::CACHE_KEY . $key, $key);
+		return 1;
 	}
 
 	public static function count($id)
