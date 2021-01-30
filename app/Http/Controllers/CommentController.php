@@ -18,6 +18,7 @@ use League\Fractal;
 use App\Transformer\Api\StatusTransformer;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\StatusService;
 
 class CommentController extends Controller
 {
@@ -78,6 +79,7 @@ class CommentController extends Controller
             return $reply;
         });
 
+        StatusService::del($status->id);
         NewStatusPipeline::dispatch($reply, false);
         CommentPipeline::dispatch($status, $reply);
 
