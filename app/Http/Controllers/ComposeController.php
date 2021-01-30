@@ -39,6 +39,7 @@ use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
 use App\Services\MediaTagService;
+use App\Services\ServiceService;
 use Illuminate\Support\Str;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
@@ -117,10 +118,9 @@ class ComposeController extends Controller
 		$media->version = 3;
 		$media->save();
 
-		// $url = URL::temporarySignedRoute(
-		// 	'temp-media', now()->addHours(1), ['profileId' => $profile->id, 'mediaId' => $media->id, 'timestamp' => time()]
-		// );
-
+		$preview_url = $media->url() . '?v=' . time();
+		$url = $media->url() . '?v=' . time();
+		
 		switch ($media->mime) {
 			case 'image/jpeg':
 			case 'image/png':
@@ -139,8 +139,8 @@ class ComposeController extends Controller
 
 		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		$res['preview_url'] = $media->url() . '?v=' . time();
-		$res['url'] = $media->url() . '?v=' . time();
+		$res['preview_url'] = $preview_url;
+		$res['url'] = $url;
 		return response()->json($res);
 	}
 
