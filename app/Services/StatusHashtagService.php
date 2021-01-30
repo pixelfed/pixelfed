@@ -16,6 +16,10 @@ class StatusHashtagService {
 
 	public static function get($id, $page = 1, $stop = 9)
 	{
+		if($page > 20) {
+			return [];
+		}
+
 		return StatusHashtag::whereHashtagId($id)
 			->whereStatusVisibility('public')
 			->whereHas('media')
@@ -66,16 +70,6 @@ class StatusHashtagService {
 
 	public static function getStatus($statusId, $hashtagId)
 	{
-		return Cache::remember('pf:services:status-hashtag:post:'.$statusId.':hashtag:'.$hashtagId, now()->addMonths(3), function() use($statusId, $hashtagId) {
-			$statusHashtag = StatusHashtag::with('profile', 'status', 'hashtag')
-				->whereStatusVisibility('public')
-				->whereStatusId($statusId)
-				->whereHashtagId($hashtagId)
-				->first();
-			$fractal = new Fractal\Manager();
-			$fractal->setSerializer(new ArraySerializer());
-			$resource = new Fractal\Resource\Item($statusHashtag, new StatusHashtagTransformer());
-			return $fractal->createData($resource)->toArray();
-		});
+		return ['status' => StatusService::get($statusId)];
 	}
 }
