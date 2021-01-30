@@ -3,6 +3,9 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.10...dev)
 ### Added
 
+### Updated
+- Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
+
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
 ### Added
