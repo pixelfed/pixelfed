@@ -41,6 +41,7 @@
         "sweetalert": "^2.1.2",
         "tributejs": "^4.1.3",
         "twitter-text": "^2.0.5",
+        "vue-blurhash": "^0.1.4",
         "vue-carousel": "^0.18.0",
         "vue-content-loader": "^0.2.3",
         "vue-cropperjs": "^4.1.0",
