@@ -25,6 +25,7 @@ use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\StatusService;
 
 class StatusDelete implements ShouldQueue
 {
@@ -59,6 +60,7 @@ class StatusDelete implements ShouldQueue
         $status = $this->status;
         $profile = $this->status->profile;
 
+        StatusService::del($status->id);
         $count = $profile->statuses()
         ->getQuery()
         ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
