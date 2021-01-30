@@ -22,6 +22,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
         $taggedPeople = MediaTagService::get($status->id);
         
         return [
+            '_v'                        => 1,
             'id'                        => (string) $status->id,
             'shortcode'                 => HashidService::encode($status->id),
             'uri'                       => $status->url(),
