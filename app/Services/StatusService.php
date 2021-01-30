@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Status;
 //use App\Transformer\Api\v3\StatusTransformer;
@@ -15,34 +16,27 @@ class StatusService {
 
 	const CACHE_KEY = 'pf:services:status:';
 
+	public static function key($id)
+	{
+		return self::CACHE_KEY . $id;
+	}
+
 	public static function get($id)
 	{
-		return json_decode(Redis::get(self::CACHE_KEY . $id) ?? self::coldGet($id), true);
+		return Cache::remember(self::key($id), now()->addDays(7), function() use($id) {
+			$status = Status::whereScope('public')->find($id);
+			if(!$status) {
+				return null;
+			}
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+			return $fractal->createData($resource)->toArray();
+		});
 	}
 
-	public static function coldGet($id)
+	public static function del($id)
 	{
-		$status = Status::whereScope('public')->findOrFail($id);
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
-		$res = $fractal->createData($resource)->toJson();
-		self::set($id, $res);
-		return $res;
-	}
-
-	public static function set($key, $val)
-	{
-		return Redis::set(self::CACHE_KEY . $key, $val);
-	}
-
-	public static function del($key)
-	{
-		return Redis::del(self::CACHE_KEY . $key);
-	}
-
-	public static function rem($key)
-	{
-		return self::del($key);
+		return Cache::forget(self::key($id));
 	}
 }
