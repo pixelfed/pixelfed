@@ -51,6 +51,10 @@ class RemoteAvatarFetch implements ShouldQueue
 	{
 		$profile = $this->profile;
 
+		if(config('pixelfed.cloud_storage') !== true) {
+			return 1;
+		}
+
 		if($profile->domain == null || $profile->private_key) {
 			return 1;
 		}
