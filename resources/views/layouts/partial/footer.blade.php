@@ -1,17 +1,19 @@
 @if(config('instance.restricted.enabled') == false)
   <footer>
     <div class="container py-5">
-        <p class="d-flex flex-wrap justify-content-center mb-0 text-uppercase font-weight-bold small text-justify">
-          <a href="{{route('site.about')}}" class="text-primary p-2">{{__('site.about')}}</a>
-          @if(config('instance.contact.enabled') || config('instance.email'))
-          <a href="{{route('site.contact')}}" class="text-primary p-2">{{__('site.contact-us')}}</a>
-          @endif
-          <a href="{{route('site.help')}}" class="text-primary p-2">{{__('site.help')}}</a>
-          <a href="{{route('site.terms')}}" class="text-primary p-2">{{__('site.terms')}}</a>
-          <a href="{{route('site.privacy')}}" class="text-primary p-2">{{__('site.privacy')}}</a>
-          <a href="{{route('discover.places')}}" class="text-primary p-2">{{__('site.places')}}</a>
-          <a href="{{route('site.language')}}" class="text-primary p-2">{{__('site.language')}}</a>
-          <a href="https://pixelfed.org" class="text-muted p-2 ml-md-auto" rel="noopener" title="version {{config('pixelfed.version')}}" data-toggle="tooltip">Powered by Pixelfed</a>
+        <p class="text-center text-uppercase font-weight-bold small text-justify">
+          <a href="{{route('site.about')}}" class="text-dark p-2">{{__('site.about')}}</a>
+          <a href="{{route('site.help')}}" class="text-dark p-2">{{__('site.help')}}</a>
+          <a href="{{route('site.terms')}}" class="text-dark p-2">{{__('site.terms')}}</a>
+          <a href="{{route('site.privacy')}}" class="text-dark p-2">{{__('site.privacy')}}</a>
+          <a href="{{route('site.language')}}" class="text-dark p-2">{{__('site.language')}}</a>
+        </p>
+        <p class="text-center text-muted small mb-0">
+          <span class="text-muted">© {{date('Y')}} {{config('pixelfed.domain.app')}}</span>
+          <span class="mx-2">·</span>
+          <a href="https://pixelfed.org" class="text-muted font-weight-bold" rel="noopener">Powered by Pixelfed</a>
+          <span class="mx-2">·</span>
+          <span class="text-muted">v{{config('pixelfed.version')}}</span>
         </p>
     </div>
   </footer>
