@@ -219,20 +219,21 @@ class SeasonalController extends Controller
 	{
 		abort_if(now()->gt('2021-03-01 00:00:00'), 404);
 		abort_if(config('database.default') != 'mysql', 404);
-		$this->validate($request, [
-			'profile_id' => 'required',
-			'type' => 'required|string|in:view,hide'
-		]);
 
 		$user = $request->user();
 
-		$log = new AccountLog();
-		$log->user_id = $user->id;
-		$log->item_type = 'App\User';
-		$log->item_id = $user->id;
-		$log->action = $request->input('type') == 'view' ? 'seasonal.my2020.view' : 'seasonal.my2020.hide';
-		$log->ip_address = $request->ip();
-		$log->user_agent = $request->user_agent();
-		$log->save();
+		$log = AccountLog::firstOrCreate([
+			[
+				'item_type' => 'App\User',
+				'item_id' => $user->id,
+				'user_id' => $user->id,
+				'action' => 'seasonal.my2020.view'
+			],
+			[
+				'ip_address' => $request->ip(),
+				'user_agent' => $request->userAgent()
+			]
+		]);
+		return response()->json(200);
 	}
 }
