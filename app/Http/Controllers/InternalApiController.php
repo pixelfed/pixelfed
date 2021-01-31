@@ -35,6 +35,8 @@ use Illuminate\Support\Str;
 use App\Services\MediaTagService;
 use App\Services\ModLogService;
 use App\Services\PublicTimelineService;
+use App\Services\SnowflakeService;
+use App\Services\StatusService;
 
 class InternalApiController extends Controller
 {
@@ -82,37 +84,27 @@ class InternalApiController extends Controller
         $following = array_merge($following, $filters);
 
         $sql = config('database.default') !== 'pgsql';
-
+        $min_id = SnowflakeService::byDate(now()->subMonths(3));
         $posts = Status::select(
                 'id', 
-                'caption', 
                 'is_nsfw',
                 'profile_id',
                 'type',
                 'uri',
-                'created_at'
               )
               ->whereNull('uri')
               ->whereIn('type', ['photo','photo:album', 'video'])
               ->whereIsNsfw(false)
               ->whereVisibility('public')
               ->whereNotIn('profile_id', $following)
-              ->when($sql, function($q, $s) {
-                return $q->where('created_at', '>', now()->subMonths(3));
-              })
-              ->with('media')
+              ->where('id', '>', $min_id)
               ->inRandomOrder()
-              ->latest()
               ->take(39)
-              ->get();
+              ->pluck('id');
 
         $res = [
             'posts' => $posts->map(function($post) {
-                return [
-                    'type' => $post->type,
-                    'url' => $post->url(),
-                    'thumb' => $post->thumb(),
-                ];
+                return StatusService::get($post);
             })
         ];
         return response()->json($res);
@@ -323,117 +315,7 @@ class InternalApiController extends Controller
 
     public function composePost(Request $request)
     {
-        $this->validate($request, [
-            'caption' => 'nullable|string|max:'.config('pixelfed.max_caption_length', 500),
-            'media.*'   => 'required',
-            'media.*.id' => 'required|integer|min:1',
-            'media.*.filter_class' => 'nullable|alpha_dash|max:30',
-            'media.*.license' => 'nullable|string|max:140',
-            'media.*.alt' => 'nullable|string|max:140',
-            'cw' => 'nullable|boolean',
-            'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
-            'place' => 'nullable',
-            'comments_disabled' => 'nullable',
-            'tagged' => 'nullable'
-        ]);
-
-        if(config('costar.enabled') == true) {
-            $blockedKeywords = config('costar.keyword.block');
-            if($blockedKeywords !== null && $request->caption) {
-                $keywords = config('costar.keyword.block');
-                foreach($keywords as $kw) {
-                    if(Str::contains($request->caption, $kw) == true) {
-                        abort(400, 'Invalid object');
-                    }
-                }
-            }
-        }
-
-        $user = Auth::user();
-        $profile = $user->profile;
-        $visibility = $request->input('visibility');
-        $medias = $request->input('media');
-        $attachments = [];
-        $status = new Status;
-        $mimes = [];
-        $place = $request->input('place');
-        $cw = $request->input('cw');
-        $tagged = $request->input('tagged');
-
-        foreach($medias as $k => $media) {
-            if($k + 1 > config('pixelfed.max_album_length')) {
-                continue;
-            }
-            $m = Media::findOrFail($media['id']);
-            if($m->profile_id !== $profile->id || $m->status_id) {
-                abort(403, 'Invalid media id');
-            }
-            $m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
-            $m->license = $media['license'];
-            $m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
-            $m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-            if($cw == true || $profile->cw == true) {
-                $m->is_nsfw = $cw;
-                $status->is_nsfw = $cw;
-            }
-            $m->save();
-            $attachments[] = $m;
-            array_push($mimes, $m->mime);
-        }
-
-        $mediaType = StatusController::mimeTypeCheck($mimes);
-
-        if(in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
-            abort(400, __('exception.compose.invalid.album'));
-        }
-
-        if($place && is_array($place)) {
-            $status->place_id = $place['id'];
-        }
-        
-        if($request->filled('comments_disabled')) {
-            $status->comments_disabled = (bool) $request->input('comments_disabled');
-        }
-
-        $status->caption = strip_tags($request->caption);
-        $status->scope = 'draft';
-        $status->profile_id = $profile->id;
-        $status->save();
-
-        foreach($attachments as $media) {
-            $media->status_id = $status->id;
-            $media->save();
-        }
-
-        $visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
-        $cw = $profile->cw == true ? true : $cw;
-        $status->is_nsfw = $cw;
-        $status->visibility = $visibility;
-        $status->scope = $visibility;
-        $status->type = $mediaType;
-        $status->save();
-
-        foreach($tagged as $tg) {
-            $mt = new MediaTag;
-            $mt->status_id = $status->id;
-            $mt->media_id = $status->media->first()->id;
-            $mt->profile_id = $tg['id'];
-            $mt->tagged_username = $tg['name'];
-            $mt->is_public = true; // (bool) $tg['privacy'] ?? 1;
-            $mt->metadata = json_encode([
-                '_v' => 1,
-            ]);
-            $mt->save();
-            MediaTagService::set($mt->status_id, $mt->profile_id);
-            MediaTagService::sendNotification($mt);
-        }
-
-        NewStatusPipeline::dispatch($status);
-        Cache::forget('user:account:id:'.$profile->user_id);
-        Cache::forget('_api:statuses:recent_9:'.$profile->id);
-        Cache::forget('profile:status_count:'.$profile->id);
-        Cache::forget($user->storageUsedKey());
-        return $status->url();
+        abort(400, 'Endpoint deprecated');
     }
 
     public function bookmarks(Request $request)
