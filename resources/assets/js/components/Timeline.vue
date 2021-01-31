@@ -79,14 +79,35 @@
 								<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
 									<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 										<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
-											<div class="square-content" :style="'background-image: url('+tag.status.thumb+')'"></div>
+											<div v-if="tag.status.sensitive" class="square-content">
+												<div class="info-overlay-text-label">
+													<h5 class="text-white m-auto font-weight-bold">
+														<span>
+															<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+														</span>
+													</h5>
+												</div>
+												<blur-hash-canvas
+													width="32"
+													height="32"
+													:hash="tag.status.media_attachments[0].blurhash"
+													/>
+											</div>
+											<div v-else class="square-content">
+												<blur-hash-image
+													width="32"
+													height="32"
+													:hash="tag.status.media_attachments[0].blurhash"
+													:src="tag.status.media_attachments[0].preview_url"
+													/>
+											</div>
 											<div class="info-overlay-text">
 												<h5 class="text-white m-auto font-weight-bold">
 													<span class="pr-4">
-														<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
+														<span class="far fa-heart fa-lg pr-1"></span> {{formatCount(tag.status.favourites_count)}}
 													</span>
 													<span>
-														<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
+														<span class="far fa-comment fa-lg pr-1"></span> {{formatCount(tag.status.reply_count)}}
 													</span>
 												</h5>
 											</div>
