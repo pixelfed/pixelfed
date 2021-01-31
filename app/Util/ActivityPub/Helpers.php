@@ -258,7 +258,7 @@ class Helpers {
 
 		$res = self::fetchFromUrl($url);
 		
-		if(!$res || empty($res)) {
+		if(!$res || empty($res) || isset($res['error']) ) {
 			return;
 		}
 
