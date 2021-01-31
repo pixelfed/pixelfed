@@ -9,6 +9,7 @@ use App\User;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
+use App\Services\StatusService;
 
 class LikeController extends Controller
 {
@@ -58,6 +59,7 @@ class LikeController extends Controller
         }
 
         Cache::forget('status:'.$status->id.':likedby:userid:'.$user->id);
+        StatusService::del($status->id);
 
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Like saved', 'count' => $count];

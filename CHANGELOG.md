@@ -6,7 +6,19 @@
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
 - Updated RemotAvatarFetch, only dispatch jobs if cloud storage is enabled. ([4f40f6f5](https://github.com/pixelfed/pixelfed/commit/4f40f6f5))
-
+- Updated StatusService, add ttl of 7 days. ([6e44ae0b](https://github.com/pixelfed/pixelfed/commit/6e44ae0b))
+- Updated StatusHashtagService, use StatusService for statuses. ([0355b567](https://github.com/pixelfed/pixelfed/commit/0355b567))
+- Updated StatusHashtagService, remove deprecated methods. ([aa4c718d](https://github.com/pixelfed/pixelfed/commit/aa4c718d))
+- Updated ApiV1Controller, add StatusService del calls to update likes_count, reblogs_count and reply_count. ([05b9445c](https://github.com/pixelfed/pixelfed/commit/05b9445c))
+- Updated Like, Status and Comment controllers to add StatusService del() method to update counts. ([eab4370c](https://github.com/pixelfed/pixelfed/commit/eab4370c))
+- Updated ComposeController, use placeholder image for video media. Fixes #2595. ([789ed4b4](https://github.com/pixelfed/pixelfed/commit/789ed4b4))
+- Updated DiscoverController, change api schema. ([2eea0409](https://github.com/pixelfed/pixelfed/commit/2eea0409))
+- Updated StatusDelete pipeline, call StatusService::del() to remove status from cache. ([3f772ff8](https://github.com/pixelfed/pixelfed/commit/3f772ff8))
+- Updated StatusHashtagTransformer, add blurhash attribute. ([899bbeba](https://github.com/pixelfed/pixelfed/commit/899bbeba))
+- Updated status square previews, add blurhash and improved content warnings. ([39e389dd](https://github.com/pixelfed/pixelfed/commit/39e389dd))
+- Updated Blurhash util, add default hash for invalid media. ([38a37c15](https://github.com/pixelfed/pixelfed/commit/38a37c15))
+- Updated VideoThumbnail job, generate blurhash for videos. ([896452c7](https://github.com/pixelfed/pixelfed/commit/896452c7))
+- Updated MediaTransformers, add default blurhash attribute. ([3f14a4c4](https://github.com/pixelfed/pixelfed/commit/3f14a4c4))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
 ### Added

@@ -20,6 +20,7 @@ class StatusHashtagTransformer extends Fractal\TransformerAbstract
 				'url' 			=> $status->url(),
 				'thumb' 		=> $status->thumb(true),
 				'filter' 		=> $status->firstMedia()->filter_class,
+				'blurhash'		=> $status->firstMedia()->blurhash,
 				'sensitive' 	=> (bool) $status->is_nsfw,
 				'like_count' 	=> $status->likes_count,
 				'share_count' 	=> $status->reblogs_count,

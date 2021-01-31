@@ -18,7 +18,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'text_url'      => null,
             'meta'          => null,
             'description'   => $media->caption,
-            'blurhash'      => $media->blurhash
+            'blurhash'      => $media->blurhash ?? 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay'
         ];
 
         if($media->width && $media->height) {

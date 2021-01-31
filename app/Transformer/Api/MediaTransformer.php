@@ -24,7 +24,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
             'filter_name'   => $media->filter_name,
             'filter_class'  => $media->version == 1 ? $media->filter_class : null,
             'mime'          => $media->mime,
-            'blurhash'      => $media->blurhash
+            'blurhash'      => $media->blurhash ?? 'U4Rfzst8?bt7ogayj[j[~pfQ9Goe%Mj[WBay'
         ];
 
         if($media->width && $media->height) {

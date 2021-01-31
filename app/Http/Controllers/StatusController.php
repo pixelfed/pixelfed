@@ -20,6 +20,7 @@ use League\Fractal;
 use App\Util\Media\Filter;
 use Illuminate\Support\Str;
 use App\Services\HashidService;
+use App\Services\StatusService;
 
 class StatusController extends Controller
 {
@@ -211,6 +212,7 @@ class StatusController extends Controller
 
         Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
         Cache::forget('profile:status_count:' . $status->profile_id);
+        StatusService::del($status->id);
         if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
             Cache::forget('profile:status_count:'.$status->profile_id);
             StatusDelete::dispatch($status);
@@ -266,7 +268,8 @@ class StatusController extends Controller
         }
  
         Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);
-
+        StatusService::del($status->id);
+        
         if ($request->ajax()) {
             $response = ['code' => 200, 'msg' => 'Share saved', 'count' => $count];
         } else {

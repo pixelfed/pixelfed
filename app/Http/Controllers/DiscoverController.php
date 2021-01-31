@@ -129,10 +129,16 @@ class DiscoverController extends Controller
       $tag = $request->input('hashtag');
 
       $hashtag = Hashtag::whereName($tag)->firstOrFail();
-      $res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
       if($page == 1) {
-        $res['follows'] = HashtagFollow::whereUserId(Auth::id())->whereHashtagId($hashtag->id)->exists();
+        $res['follows'] = HashtagFollow::whereUserId(Auth::id())
+          ->whereHashtagId($hashtag->id)
+          ->exists();
       }
+      $res['hashtag'] = [
+        'name' => $hashtag->name,
+        'url' => $hashtag->url()
+      ];
+      $res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
       return $res;
     }
 
