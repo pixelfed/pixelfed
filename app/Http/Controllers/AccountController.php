@@ -22,6 +22,10 @@ use App\{
 	User,
 	UserFilter
 };
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 
 class AccountController extends Controller
 {
@@ -487,4 +491,66 @@ class AccountController extends Controller
 	public function accountRestored(Request $request)
 	{
 	}
+
+	public function accountMutes(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit' => 'nullable|integer|min:1|max:40'
+        ]);
+
+        $user = $request->user();
+        $limit = $request->input('limit') ?? 40;
+
+        $mutes = UserFilter::whereUserId($user->profile_id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('mute')
+            ->simplePaginate($limit)
+            ->pluck('filterable_id');
+
+        $accounts = Profile::find($mutes);
+		$fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Collection($accounts, new AccountTransformer());
+        $res = $fractal->createData($resource)->toArray();
+        $url = $request->url();
+        $page = $request->input('page', 1);
+        $next = $page < 40 ? $page + 1 : 40;
+        $prev = $page > 1 ? $page - 1 : 1;
+        $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+        return response()->json($res, 200, ['Link' => $links]);
+    }
+
+    public function accountBlocks(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request, [
+            'limit'     => 'nullable|integer|min:1|max:40',
+            'page'      => 'nullable|integer|min:1|max:10'
+        ]);
+
+        $user = $request->user();
+        $limit = $request->input('limit') ?? 40;
+
+        $blocked = UserFilter::select('filterable_id','filterable_type','filter_type','user_id')
+            ->whereUserId($user->profile_id)
+            ->whereFilterableType('App\Profile')
+            ->whereFilterType('block')
+            ->simplePaginate($limit)
+            ->pluck('filterable_id');
+
+        $profiles = Profile::findOrFail($blocked);
+        $fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
+        $res = $fractal->createData($resource)->toArray();
+        $url = $request->url();
+        $page = $request->input('page', 1);
+        $next = $page < 40 ? $page + 1 : 40;
+        $prev = $page > 1 ? $page - 1 : 1;
+        $links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+        return response()->json($res, 200, ['Link' => $links]);
+    }
 }
