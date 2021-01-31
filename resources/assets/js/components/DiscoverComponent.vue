@@ -39,13 +39,46 @@
 						</div>
 					</div>
 					<div class="row p-0" style="display: flex;">
-						<div v-for="(post, index) in trending.slice(0, 12)" class="col-4 p-1 p-sm-2 p-md-3 pt-0">
-							<a class="card info-overlay card-md-border-0" :href="post.url">
+						<div v-for="(s, index) in trending.slice(0, 12)" class="col-4 p-1 p-sm-2 p-md-3 pt-0">
+							<a class="card info-overlay card-md-border-0" :href="s.url">
 								<div class="square">
-									<span v-if="post.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-									<span v-if="post.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-									<span v-if="post.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
-									<div class="square-content" v-bind:style="{ 'background-image': 'url(' + post.media_attachments[0].preview_url + ')' }">
+									<div v-if="s.sensitive" class="square-content">
+										<div class="info-overlay-text-label">
+											<h5 class="text-white m-auto font-weight-bold">
+												<span>
+													<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+												</span>
+											</h5>
+										</div>
+										<blur-hash-canvas
+											width="32"
+											height="32"
+											:hash="s.media_attachments[0].blurhash"
+											/>
+									</div>
+									<div v-else class="square-content">
+										
+										<blur-hash-image
+											width="32"
+											height="32"
+											:hash="s.media_attachments[0].blurhash"
+											:src="s.media_attachments[0].preview_url"
+											/>
+									</div>
+									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+									<div class="info-overlay-text">
+										<h5 class="text-white m-auto font-weight-bold">
+											<span>
+												<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+												<span class="d-flex-inline">{{formatCount(s.favourites_count)}}</span>
+											</span>
+											<span>
+												<span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
+												<span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
+											</span>
+										</h5>
 									</div>
 								</div>
 							</a>
@@ -126,13 +159,46 @@
 						</div>
 					</div>
 					<div class="row p-0" style="display: flex;">
-						<div v-for="(post, index) in posts" class="col-4 p-1 p-sm-2 p-md-3 pt-0">
-							<a class="card info-overlay card-md-border-0" :href="post.url">
+						<div v-for="(s, index) in posts" class="col-4 p-1 p-sm-2 p-md-3 pt-0">
+							<a class="card info-overlay card-md-border-0" :href="s.url">
 								<div class="square">
-									<span v-if="post.type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-									<span v-if="post.type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-									<span v-if="post.type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
-									<div class="square-content" v-bind:style="{ 'background-image': 'url(' + post.thumb + ')' }">
+									<div v-if="s.sensitive" class="square-content">
+										<div class="info-overlay-text-label">
+											<h5 class="text-white m-auto font-weight-bold">
+												<span>
+													<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+												</span>
+											</h5>
+										</div>
+										<blur-hash-canvas
+											width="32"
+											height="32"
+											:hash="s.media_attachments[0].blurhash"
+											/>
+									</div>
+									<div v-else class="square-content">
+										
+										<blur-hash-image
+											width="32"
+											height="32"
+											:hash="s.media_attachments[0].blurhash"
+											:src="s.media_attachments[0].preview_url"
+											/>
+									</div>
+									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+									<div class="info-overlay-text">
+										<h5 class="text-white m-auto font-weight-bold">
+											<span>
+												<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
+												<span class="d-flex-inline">{{formatCount(s.favourites_count)}}</span>
+											</span>
+											<span>
+												<span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
+												<span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
+											</span>
+										</h5>
 									</div>
 								</div>
 							</a>
@@ -314,6 +380,10 @@
 				.then(res => {
 					this.places = res.data;
 				});
+			},
+
+			formatCount(s) {
+				return App.util.format.count(s);
 			}
 		}
 	}
