@@ -172,6 +172,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::get('newsroom/timeline', 'NewsroomController@timelineApi');
                 Route::post('newsroom/markasread', 'NewsroomController@markAsRead');
                 Route::get('favourites', 'Api\BaseApiController@accountLikes');
+                Route::get('mutes', 'AccountController@accountMutes');
+                Route::get('blocks', 'AccountController@accountBlocks');
             });
 
             Route::group(['prefix' => 'v2'], function() {
