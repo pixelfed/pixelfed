@@ -195,12 +195,10 @@
 				if(this.trendingRange == 'daily' && this.trendingDaily.length) {
 					this.trending = this.trendingDaily;
 					this.trendingLoading = false;
-					return;
 				}
 				if(this.trendingRange == 'monthly' && this.trendingMonthly.length) {
 					this.trending = this.trendingMonthly;
 					this.trendingLoading = false;
-					return;
 				}
 				axios.get('/api/pixelfed/v2/discover/posts/trending', {
 					params: {
