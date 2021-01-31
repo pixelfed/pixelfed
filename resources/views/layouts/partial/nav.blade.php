@@ -18,16 +18,16 @@
                     
                 <ul class="navbar-nav ml-auto">
                     <li>
-                        <a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">
+                        <a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
                             {{ __('Login') }}
                         </a>
                     </li>
                 @if(config('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
-                        <li>
-                            <a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">
-                                {{ __('Register') }}
-                            </a>
-                        </li>
+                    <li>
+                        <a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
+                            {{ __('Register') }}
+                        </a>
+                    </li>
                 @endif
             @else
                 <div class="ml-auto">
