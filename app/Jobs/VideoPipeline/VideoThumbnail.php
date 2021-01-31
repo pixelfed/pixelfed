@@ -13,6 +13,7 @@ use FFMpeg;
 use Storage;
 use App\Media;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
+use App\Util\Media\Blurhash;
 
 class VideoThumbnail implements ShouldQueue
 {
@@ -58,6 +59,12 @@ class VideoThumbnail implements ShouldQueue
 
             $media->thumbnail_path = $save;
             $media->save();
+
+            $blurhash = Blurhash::generate($media);
+            if($blurhash) {
+                $media->blurhash = $blurhash;
+                $media->save();
+            }
 
         } catch (Exception $e) {
             
