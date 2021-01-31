@@ -18,16 +18,16 @@
                     
                 <ul class="navbar-nav ml-auto">
                     <li>
-                        <a class="nav-link font-weight-bold text-primary" href="{{ route('login') }}" title="Login">
+                        <a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
                             {{ __('Login') }}
                         </a>
                     </li>
                 @if(config('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
-                        <li>
-                            <a class="nav-link font-weight-bold" href="{{ route('register') }}" title="Register">
-                                {{ __('Register') }}
-                            </a>
-                        </li>
+                    <li>
+                        <a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
+                            {{ __('Register') }}
+                        </a>
+                    </li>
                 @endif
             @else
                 <div class="ml-auto">
@@ -52,7 +52,7 @@
                         </li>
                         <li class="nav-item px-md-2 d-none d-md-block">
                             <a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
-                                <i class="far fa-bell fa-lg" style="vertical-align: middle;"></i>
+                                <i class="far fa-bell fa-lg"></i>
                                 <span class="sr-only">Notifications</span>
                             </a>
                         </li>

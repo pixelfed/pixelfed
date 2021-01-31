@@ -21,6 +21,9 @@
 - Updated MediaTransformers, add default blurhash attribute. ([3f14a4c4](https://github.com/pixelfed/pixelfed/commit/3f14a4c4))
 - Updated Timeline.vue, fix hashtag status previews. ([7768e844](https://github.com/pixelfed/pixelfed/commit/7768e844))
 - Updated AP helpers, fix statusFetch 404s. ([3419379a](https://github.com/pixelfed/pixelfed/commit/3419379a))
+- Updated InternalApiController, update discoverPosts method to improve performance. ([9862a855](https://github.com/pixelfed/pixelfed/commit/9862a855))
+- Updated DiscoverComponent, add blurhash and like/comment counts. ([a8ebdd2e](https://github.com/pixelfed/pixelfed/commit/a8ebdd2e))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
 ### Added
