@@ -326,16 +326,15 @@ class Helpers {
 		if(isset($activity['object']['attributedTo'])) {
 			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
 			if(!self::validateUrl($activity['object']['attributedTo']) ||
-				$idDomain !== $actorDomain)
+				$idDomain !== $actorDomain ||
+				$actorDomain !== $urlDomain
+			)
 			{
 				return;
 			}
 		}
 
-		if(
-			$idDomain !== $urlDomain || 
-			$actorDomain !== $urlDomain
-		) {
+		if($idDomain !== $urlDomain) {
 			return;
 		}
 
