@@ -54,63 +54,21 @@ class DiscoverController extends Controller
 
     public function showCategory(Request $request, $slug)
     {
-      abort_if(!Auth::check(), 403);
-
-      $tag = DiscoverCategory::whereActive(true)
-        ->whereSlug($slug)
-        ->firstOrFail();
-
-      $posts = Cache::remember('discover:category-'.$tag->id.':posts', now()->addMinutes(15), function() use ($tag) {
-          $tagids = $tag->hashtags->pluck('id')->toArray();
-          $sids = StatusHashtag::whereIn('hashtag_id', $tagids)->orderByDesc('status_id')->take(500)->pluck('status_id')->toArray();
-          $posts = Status::whereScope('public')->whereIn('id', $sids)->whereNull('uri')->whereType('photo')->whereNull('in_reply_to_id')->whereNull('reblog_of_id')->orderByDesc('created_at')->take(39)->get();
-          return $posts;
-      });
-      $tag->posts_count = Cache::remember('discover:category-'.$tag->id.':posts_count', now()->addMinutes(30), function() use ($tag) {
-        return $tag->posts()->whereScope('public')->count();
-      });
-      return view('discover.tags.category', compact('tag', 'posts'));
+      abort(404);
     }
 
     public function showLoops(Request $request)
     {
-      if(config('exp.loops') != true) {
-        return redirect('/');
-      }
-      return view('discover.loops.home');
+        abort(404);
     }
 
     public function loopsApi(Request $request)
     {
-        abort_if(!config('exp.loops'), 403);
-        
-        // todo proper pagination, maybe LoopService
-        $res = Cache::remember('discover:loops:recent', now()->addHours(6), function() {
-          $loops = Status::whereType('video')
-                  ->whereNull('uri')
-                  ->whereScope('public')
-                  ->latest()
-                  ->take(18)
-                  ->get();
-
-          $resource = new Fractal\Resource\Collection($loops, new StatusStatelessTransformer());
-          return $this->fractal->createData($resource)->toArray();
-        });
-        return $res;
+        abort(404);
     }
 
     public function loopWatch(Request $request)
     {
-        abort_if(!Auth::check(), 403);
-        abort_if(!config('exp.loops'), 403);
-
-        $this->validate($request, [
-            'id' => 'integer|min:1'
-        ]);
-        $id = $request->input('id');
-
-        // todo log loops
-
         return response()->json(200);
     }
 
@@ -144,35 +102,13 @@ class DiscoverController extends Controller
 
     public function profilesDirectory(Request $request)
     {
-      return redirect('/')->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
-      return view('discover.profiles.home');
+      return redirect('/')
+        ->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
     }
 
     public function profilesDirectoryApi(Request $request)
     {
       return ['error' => 'Temporarily unavailable.'];
-
-      $this->validate($request, [
-        'page' => 'integer|max:10'
-      ]);
-
-      $page = $request->input('page') ?? 1;
-      $key = 'discover:profiles:page:' . $page;
-      $ttl = now()->addHours(12);
-
-      $res = Cache::remember($key, $ttl, function() {
-          $profiles = Profile::whereNull('domain')
-                ->whereNull('status')
-                ->whereIsPrivate(false)
-                ->has('statuses')
-                ->whereIsSuggestable(true)
-                // ->inRandomOrder()
-                ->simplePaginate(8);
-          $resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
-          return $this->fractal->createData($resource)->toArray();
-      });
-
-      return $res;
     }
 
     public function trendingApi(Request $request)
@@ -221,45 +157,10 @@ class DiscoverController extends Controller
     public function trendingHashtags(Request $request)
     {
       return [];
-      
-      $res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
-        ->groupBy('hashtag_id')
-        ->orderBy('total','desc')
-        ->where('created_at', '>', now()->subDays(4))
-        ->take(9)
-        ->get()
-        ->map(function($h) {
-          $hashtag = $h->hashtag;
-          return [
-            'id' => $hashtag->id,
-            'total' => $h->total,
-            'name' => '#'.$hashtag->name,
-            'url' => $hashtag->url('?src=dsh1')
-          ];
-        });
-      return $res;
     }
 
     public function trendingPlaces(Request $request)
     {
-      return [];
-
-      $res = Status::select('place_id',DB::raw('count(place_id) as total'))
-        ->whereNotNull('place_id')
-        ->where('created_at','>',now()->subDays(14))
-        ->groupBy('place_id')
-        ->orderBy('total')
-        ->limit(4)
-        ->get()
-        ->map(function($s){
-          $p = $s->place;
-          return [
-            'name' => $p->name,
-            'country' => $p->country,
-            'url' => $p->url()
-          ];
-        });
-
       return [];
     }
 }
