@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Avatar;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Services\AccountService;
 
 class AvatarObserver
 {
@@ -27,7 +28,7 @@ class AvatarObserver
      */
     public function updated(Avatar $avatar)
     {
-        //
+        AccountService::del($avatar->profile_id);
     }
 
     /**
@@ -64,6 +65,7 @@ class AvatarObserver
                 $disk->delete($avatar->media_path);
             }
         }
+        AccountService::del($avatar->profile_id);
     }
 
     /**
