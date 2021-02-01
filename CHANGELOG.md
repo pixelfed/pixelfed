@@ -25,6 +25,7 @@
 - Updated DiscoverComponent, add blurhash and like/comment counts. ([a8ebdd2e](https://github.com/pixelfed/pixelfed/commit/a8ebdd2e))
 - Updated DiscoverComponent, add spinner loaders and remove deprecated sections. ([34869247](https://github.com/pixelfed/pixelfed/commit/34869247))
 - Updated AccountController, add mutes and blocks endpoint to pixelfed api. ([1fb7e2b2](https://github.com/pixelfed/pixelfed/commit/1fb7e2b2))
+- Updated AccountService, cache object and observe changes. ([b299da93](https://github.com/pixelfed/pixelfed/commit/b299da93))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
