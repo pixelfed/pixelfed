@@ -63,7 +63,7 @@ class FederationController extends Controller
         }
         $webfinger = (new Webfinger($profile))->generate();
 
-        return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT)
+        return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
             ->header('Access-Control-Allow-Origin','*');
     }
 
