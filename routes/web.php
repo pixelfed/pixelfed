@@ -118,6 +118,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                     ->middleware('throttle:maxPostsPerHour,60')
                     ->middleware('throttle:maxPostsPerDay,1440');
                 Route::post('/publish/text', 'ComposeController@storeText');
+                Route::get('/media/processing', 'ComposeController@mediaProcessingCheck');
             });
         });
 
