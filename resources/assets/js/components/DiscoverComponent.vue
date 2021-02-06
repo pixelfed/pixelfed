@@ -4,7 +4,7 @@
 			<img src="/img/pixelfed-icon-grey.svg">
 		</div>
 		<div v-else>
-			<div class="d-block d-md-none border-top-0 pt-3">
+			<div v-if="authenticated" class="d-block d-md-none border-top-0 pt-3">
 				<input class="form-control rounded-pill shadow-sm" placeholder="Search" v-model="searchTerm" v-on:keyup.enter="searchSubmit">
 			</div>
 
@@ -79,7 +79,7 @@
 				</div>
 			</section>
 
-			<section class="pt-5 mb-5 section-explore">
+			<section v-if="authenticated" class="pt-5 mb-5 section-explore">
 				<div class="profile-timeline pt-3">
 					<div class="row p-0 mt-5">
 						<div class="col-12 mb-3 d-flex justify-content-between align-items-center">
@@ -151,6 +151,7 @@
 	export default {
 		data() {
 			return {
+				authenticated: false,
 				loaded: false,
 				config: window.App.config,
 				posts: {},
@@ -163,14 +164,21 @@
 				recommendedLoading: true
 			}
 		},
+
+		beforeMount() {
+			this.authenticated = $('body').hasClass('loggedIn');
+		},
+
 		mounted() {
 			this.loaded = true;
 			this.loadTrending();
-			this.fetchData();
-			axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
-				window._sharedData.curUser = res.data;
-				window.App.util.navatar();
-			});
+			if($('body').hasClass('loggedIn') == true) {
+				this.fetchData();
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+					window._sharedData.curUser = res.data;
+					window.App.util.navatar();
+				});
+			}
 		},
 
 		methods: {
@@ -180,7 +188,7 @@
 				}
 				axios.get('/api/pixelfed/v2/discover/posts')
 				.then((res) => {
-					this.posts = res.data.posts;
+					this.posts = res.data.posts.filter(r => r != null);
 					this.recommendedLoading = false;
 				});
 			},
@@ -206,13 +214,16 @@
 					}
 				})
 				.then(res => {
+					let data = res.data.filter(r => {
+						return r !== null;
+					});
 					if(this.trendingRange == 'daily') {
-						this.trendingDaily = res.data.filter(t => t.sensitive == false);
+						this.trendingDaily = data.filter(t => t.sensitive == false);
 					}
 					if(this.trendingRange == 'monthly') {
-						this.trendingMonthly = res.data.filter(t => t.sensitive == false);
+						this.trendingMonthly = data.filter(t => t.sensitive == false);
 					}
-					this.trending = res.data;
+					this.trending = data;
 					this.trendingLoading = false;
 				});
 			},
