@@ -14,6 +14,7 @@ use App\User;
 use GuzzleHttp\Client;
 use App\Http\Controllers\AvatarController;
 use GuzzleHttp\Exception\RequestException;
+use App\Jobs\MediaPipeline\MediaDeletePipeline;
 
 class MediaStorageService {
 
@@ -226,5 +227,13 @@ class MediaStorageService {
 		Cache::forget('avatar:' . $avatar->profile_id);
 
 		unlink($tmpName);
+	}
+
+	public static function delete(Media $media, $confirm = false)
+	{
+		if(!$confirm) {
+			return;
+		}
+		MediaDeletePipeline::dispatch($media);
 	}
 }
