@@ -10,6 +10,7 @@ return [
 	],
 
 	'discover' => [
+		'public' => env('INSTANCE_DISCOVER_PUBLIC', false),
 		'loops' => [
 			'enabled' => env('EXP_LOOPS', false),
 		],
