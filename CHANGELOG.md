@@ -31,6 +31,11 @@
 - Updated ComposeController, use MediaStorageService for media deletes. ([ab5469ff](https://github.com/pixelfed/pixelfed/commit/ab5469ff))
 - Updated StatusDeletePipeline, use MediaStorageService for media deletes. ([9fd90e17](https://github.com/pixelfed/pixelfed/commit/9fd90e17))
 - Updated Discover, allow public discover access. ([1404ac6e](https://github.com/pixelfed/pixelfed/commit/1404ac6e))
+- Updated pixelfed config, add media_fast_process setting. ([6bee5072](https://github.com/pixelfed/pixelfed/commit/6bee5072))
+- Updated ComposeController, add mediaProcessingCheck method. ([33b625f5](https://github.com/pixelfed/pixelfed/commit/33b625f5))
+- Updated ComposeModal, add processing step disabled by default. ([e6e76e80](https://github.com/pixelfed/pixelfed/commit/e6e76e80))
+- Updated DiscoverComponent, allow unathenicated if enabled. ([a1059a6e](https://github.com/pixelfed/pixelfed/commit/a1059a6e))
+- Updated components, improve content warnings. ([a9e98965](https://github.com/pixelfed/pixelfed/commit/a9e98965))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

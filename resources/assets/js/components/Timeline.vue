@@ -167,7 +167,7 @@
 							</div>
 
 							<div v-else-if="status.pf_type === 'photo'" class="w-100">
-								<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+								<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
 							</div>
 
 							<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -227,7 +227,7 @@
 								<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
 							</div>
 							<div v-if="status.pf_type != 'text'" class="caption">
-								<p class="mb-2 read-more" style="overflow: hidden;">
+								<p v-if="!status.sensitive" class="mb-2 read-more" style="overflow: hidden;">
 									<span class="username font-weight-bold">
 										<bdi><a class="text-dark" :href="profileUrl(status)">{{status.account.username}}</a></bdi>
 									</span>

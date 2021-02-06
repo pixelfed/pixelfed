@@ -263,5 +263,19 @@ return [
 
     'bouncer' => [
         'enabled' => env('PF_BOUNCER_ENABLED', false),
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Media Fast Process
+    |--------------------------------------------------------------------------
+    |
+    | Don't require photos & video to finish optimization & 
+    | upload to S3 if enabled before posting. If disabled
+    | users will have to wait until processed before posting,
+    | sacrificing the user experience to ensure media is federated
+    | using S3 urls (if enabled). Default: off
+    |
+    */ 
+    'media_fast_process' => env('PF_MEDIA_FAST_PROCESS', true),
 ];

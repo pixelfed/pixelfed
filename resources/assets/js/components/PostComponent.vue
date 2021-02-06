@@ -53,7 +53,7 @@
                   </div>
                 </div>
                 <div v-else-if="status.pf_type === 'photo'" class="w-100">
-                  <photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+                  <photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
                 </div>
 
                 <div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -113,12 +113,12 @@
               <div class="card-body status-comments pt-0">
                 <div v-if="status.pf_type != 'text'" class="status-comment">
                   <div v-if="status.content.length" class="pt-3">
-                    <div v-if="showCaption != true">
+                    <div v-if="status.sensitive">
                       <span class="py-3">
                         <a class="text-dark font-weight-bold mr-1" :href="status.account.url" v-bind:title="status.account.username">{{truncate(status.account.username,15)}}</a>
                         <span class="text-break">
                           <span class="font-italic text-muted">This comment may contain sensitive material</span>
-                          <span class="text-primary cursor-pointer pl-1" @click="showCaption = true">Show</span>
+                          <span class="text-primary cursor-pointer pl-1" @click="status.sensitive = false">Show</span>
                         </span>
                       </span>
                     </div>
