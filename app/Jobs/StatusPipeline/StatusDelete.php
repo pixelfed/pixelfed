@@ -26,6 +26,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
 use App\Services\StatusService;
+use App\Services\MediaStorageService;
 
 class StatusDelete implements ShouldQueue
 {
@@ -82,38 +83,9 @@ class StatusDelete implements ShouldQueue
     public function unlinkRemoveMedia($status)
     {
         foreach ($status->media as $media) {
-            $thumbnail = storage_path("app/{$media->thumbnail_path}");
-            $photo = storage_path("app/{$media->media_path}");
-
-            try {
-                if (is_file($thumbnail)) {
-                    unlink($thumbnail);
-                }
-                if (is_file($photo)) {
-                    unlink($photo);
-                }
-                if( config('pixelfed.cloud_storage') == true) {
-                    if( Str::of($media->media_path)
-                        ->startsWith('public/') && 
-                        Storage::disk(config('filesystems.cloud'))
-                        ->exists($media->media_path)
-                    ) {
-                        Storage::disk(config('filesystems.cloud'))
-                        ->delete($media->media_path);
-                    }
-                    if( Str::of($media->thumbnail_path)
-                        ->startsWith('public/') && 
-                        Storage::disk(config('filesystems.cloud'))
-                        ->exists($media->thumbnail_path)
-                    ) {
-                        Storage::disk(config('filesystems.cloud'))
-                        ->delete($media->thumbnail_path);
-                    }
-                }
-                $media->delete();
-            } catch (Exception $e) {
-            }
+            MediaStorageService::delete($media, true);
         }
+
         if($status->in_reply_to_id) {
             DB::transaction(function() use($status) {
                 $parent = Status::findOrFail($status->in_reply_to_id);
