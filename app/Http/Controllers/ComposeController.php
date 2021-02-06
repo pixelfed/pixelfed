@@ -38,6 +38,7 @@ use App\Jobs\VideoPipeline\{
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
+use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\ServiceService;
 use Illuminate\Support\Str;
@@ -193,8 +194,7 @@ class ComposeController extends Controller
 		->whereUserId(Auth::id())
 		->findOrFail($request->input('id'));
 
-		Storage::delete($media->media_path);
-		Storage::delete($media->thumbnail_path);
+		MediaStorageService::delete($media, true);
 
 		$media->forceDelete();
 
@@ -388,6 +388,7 @@ class ComposeController extends Controller
 		}
 
 		$status->caption = strip_tags($request->caption);
+		$status->rendered = Autolink::create()->autolink($status->caption);
 		$status->scope = 'draft';
 		$status->profile_id = $profile->id;
 		$status->save();

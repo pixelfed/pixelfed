@@ -18,6 +18,12 @@ class Bouncer {
 		$exemptionKey = 'pf:bouncer_v0:exemption_by_pid:' . $status->profile_id;
 		$exemptionTtl = now()->addDays(12);
 
+		if( $status->in_reply_to_id != null && 
+			$status->in_reply_to_profile_id == $status->profile_id
+		) {
+			return;
+		}
+
 		$exemption = Cache::remember($exemptionKey, $exemptionTtl, function() use($status) {
 			$uid = $status->profile->user_id;
 			$ids = AccountInterstitial::whereUserId($uid)

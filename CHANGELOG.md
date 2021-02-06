@@ -27,6 +27,10 @@
 - Updated AccountController, add mutes and blocks endpoint to pixelfed api. ([1fb7e2b2](https://github.com/pixelfed/pixelfed/commit/1fb7e2b2))
 - Updated AccountService, cache object and observe changes. ([b299da93](https://github.com/pixelfed/pixelfed/commit/b299da93))
 - Updated webfinger util, fail on invalid webfinger url. Fixes ([#2613](https://github.com/pixelfed/pixelfed/issues/2613)) ([2d11317c](https://github.com/pixelfed/pixelfed/commit/2d11317c))
+- Updated MediaStorageService, dispatch deletes to MediaDeletePipeline. ([37dbb3de](https://github.com/pixelfed/pixelfed/commit/37dbb3de))
+- Updated ComposeController, use MediaStorageService for media deletes. ([ab5469ff](https://github.com/pixelfed/pixelfed/commit/ab5469ff))
+- Updated StatusDeletePipeline, use MediaStorageService for media deletes. ([9fd90e17](https://github.com/pixelfed/pixelfed/commit/9fd90e17))
+- Updated Discover, allow public discover access. ([1404ac6e](https://github.com/pixelfed/pixelfed/commit/1404ac6e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
