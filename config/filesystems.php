@@ -81,6 +81,19 @@ return [
             'url' => str_replace(env('DO_SPACES_REGION'),env('DO_SPACES_BUCKET').'.'.env('DO_SPACES_REGION'),str_replace("digitaloceanspaces","cdn.digitaloceanspaces",env('DO_SPACES_ENDPOINT'))),
         ],
 
+        'backup' => [
+            'driver' => env('PF_BACKUP_DRIVER', 'local'),
+            'visibility' => 'private',
+            'root' => env('PF_BACKUP_DRIVER', 'local') == 'local' ?
+                storage_path('app/backups/') :
+                env('PF_BACKUP_ROOT','/'),
+            'key' => env('PF_BACKUP_KEY'),
+            'secret' => env('PF_BACKUP_SECRET'),
+            'endpoint' => env('PF_BACKUP_ENDPOINT'),
+            'region' => env('PF_BACKUP_REGION'),
+            'bucket' => env('PF_BACKUP_BUCKET'),
+        ],
+
     ],
 
 ];
