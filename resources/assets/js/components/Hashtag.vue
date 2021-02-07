@@ -168,7 +168,7 @@
 				}).then(res => {
 					let data = res.data;
 					let tags = data.tags.filter(n => {
-						if(!n || n.length == 0) {
+						if(!n || n.length == 0 || n.status == null) {
 							return false;
 						}
 						return true;
@@ -195,7 +195,7 @@
 					let data = res.data;
 					if(data.tags.length) {
 						let tags = data.tags.filter(n => {
-							if(!n || n.length == 0) {
+							if(!n || n.length == 0 || n.status == null) {
 								return false;
 							}
 							return true;

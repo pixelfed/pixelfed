@@ -1,4 +1,5 @@
 *
+!backups/
 !public/
 !remcache/
 !cities.json
