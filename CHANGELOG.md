@@ -37,6 +37,9 @@
 - Updated DiscoverComponent, allow unathenicated if enabled. ([a1059a6e](https://github.com/pixelfed/pixelfed/commit/a1059a6e))
 - Updated components, improve content warnings. ([a9e98965](https://github.com/pixelfed/pixelfed/commit/a9e98965))
 - Updated ComposeModal, prevent tagging empty users. Fixes #2633. ([ceae664c](https://github.com/pixelfed/pixelfed/commit/ceae664c))
+- Updated ComposeModal, show filter warning for unsupported browsers. ([12ce7602](https://github.com/pixelfed/pixelfed/commit/12ce7602))
+- Updated Hashtag component, fix null infinite loading bug. Fixes #2637. ([55136518](https://github.com/pixelfed/pixelfed/commit/55136518))
+- Updated filesystems config, add backup driver to store backups on other filesystems. ([ae90eef9](https://github.com/pixelfed/pixelfed/commit/ae90eef9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
