@@ -36,6 +36,7 @@
 - Updated ComposeModal, add processing step disabled by default. ([e6e76e80](https://github.com/pixelfed/pixelfed/commit/e6e76e80))
 - Updated DiscoverComponent, allow unathenicated if enabled. ([a1059a6e](https://github.com/pixelfed/pixelfed/commit/a1059a6e))
 - Updated components, improve content warnings. ([a9e98965](https://github.com/pixelfed/pixelfed/commit/a9e98965))
+- Updated ComposeModal, prevent tagging empty users. Fixes #2633. ([ceae664c](https://github.com/pixelfed/pixelfed/commit/ceae664c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

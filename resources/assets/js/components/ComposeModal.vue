@@ -1177,7 +1177,9 @@ export default {
 					q: input
 				}
 			}).then(res => {
-				//return res.data;
+				if(!res.data.length) {
+					return;
+				}
 				return res.data.filter(d => {
 					return self.taggedUsernames.filter(r => {
 						return r.id == d.id;
