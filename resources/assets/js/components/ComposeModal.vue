@@ -59,13 +59,11 @@
 							</b-tooltip>
 						</span>
 						<span v-else-if="page == 3">
-							<span v-if="media[0].mime != 'video/mp4'">
-								<a class="text-lighter text-decoration-none mr-3 d-flex align-items-center" href="#" @click.prevent="goBack()">
-									<i class="fas fa-long-arrow-alt-left fa-lg mr-2"></i>
-									<span class="btn btn-outline-secondary btn-sm px-2 py-0 disabled" disabled="">{{media.length}}</span>
-								</a>
-								<span class="font-weight-bold mb-0">{{pageTitle}}</span>
-							</span>
+							<a class="text-lighter text-decoration-none mr-3 d-flex align-items-center" href="#" @click.prevent="goBack()">
+								<i class="fas fa-long-arrow-alt-left fa-lg mr-2"></i>
+								<span class="btn btn-outline-secondary btn-sm px-2 py-0 disabled" disabled="">{{media.length}}</span>
+							</a>
+							<span class="font-weight-bold mb-0">{{pageTitle}}</span>
 						</span>
 						<span v-else>
 							<a class="text-lighter text-decoration-none mr-3" href="#" @click.prevent="goBack()"><i class="fas fa-long-arrow-alt-left fa-lg"></i></a>
@@ -563,34 +561,6 @@
 						</p>
 					</div>
 
-					<div v-if="page == 'processingVideo'" class="w-100 h-100 px-3 d-flex justify-content-center align-items-center" style="height: 50vh !important;">
-						<div v-if="isProcessingMedia" class="text-center">
-							<div class="spinner-border text-primary" role="status">
-								<span class="sr-only">Loading...</span>
-							</div>
-							<p class="text-center font-weight-bold mb-1 mt-2">
-								Processing Media
-							</p>
-							<p class="text-center text-muted small mb-0">
-								This may take a few seconds.
-							</p>
-						</div>
-					</div>
-
-					<div v-if="page == 'processingPhoto'" class="w-100 h-100 px-3 d-flex justify-content-center align-items-center" style="height: 50vh !important;">
-						<div v-if="isProcessingMedia" class="text-center">
-							<div class="spinner-border text-primary" role="status">
-								<span class="sr-only">Loading...</span>
-							</div>
-							<p class="text-center font-weight-bold mb-1 mt-2">
-								Processing Media
-							</p>
-							<p class="text-center text-muted small mb-0">
-								This may take a few seconds.
-							</p>
-						</div>
-					</div>
-
 				</div>
 
 				<!-- card-footers -->
@@ -715,17 +685,12 @@ export default {
 				'editMedia',
 				'cameraRoll',
 				'tagPeopleHelp',
-				'textOptions',
-				'processingVideo',
-				'processingPhoto'
+				'textOptions'
 			],
 			cameraRollMedia: [],
 			taggedUsernames: [],
 			taggedPeopleSearch: null,
-			textMode: false,
-			isProcessingMedia: false,
-			processPhotoInterval: undefined,
-			processVideoInterval: undefined
+			textMode: false
 		}
 	},
 
@@ -825,14 +790,9 @@ export default {
 					self.ids.push(e.data.id);
 					self.media.push(e.data);
 					self.uploading = false;
-
-					if(e.data.mime == 'video/mp4') {
-						self.processVideo(e.data);
-						return;
-					} else {
-						self.processPhoto(e.data);
-						return;
-					}
+					setTimeout(function() {
+						self.page = 2;
+					}, 300);
 				}).catch(function(e) {
 					switch(e.response.status) {
 						case 451:
@@ -1205,6 +1165,7 @@ export default {
 					ctx.clearRect(0, 0, image.width, image.height);
 				}
 			}
+
 		},
 
 		tagSearch(input) {
@@ -1247,58 +1208,7 @@ export default {
 		showTextOptions() {
 			this.page = 'textOptions';
 			this.pageTitle = 'Text Post Options';
-		},
-
-		processPhoto(media) {
-			this.page = 'processingPhoto';
-			this.pageTitle = '';
-			this.processPhotoCheck(media);
-		},
-
-		processPhotoCheck(media) {
-			this.isProcessingMedia = true;
-			this.processMediaCheck(media);
-			this.processPhotoInterval = setInterval(() => {
-				this.processMediaCheck(media);
-			}, 2500);
-		},
-
-		processVideo(media) {
-			this.page = 'processingVideo';
-			this.pageTitle = '';
-			this.processVideoCheck(media);
-		},
-
-		processVideoCheck(media) {
-			this.isProcessingMedia = true;
-			this.processMediaCheck(media, 'video');
-			this.processVideoInterval = setInterval(() => {
-				this.processMediaCheck(media, 'video');
-			}, 2500);
-		},
-
-		processMediaCheck(media, type = 'photo') {
-			return axios.get('/api/compose/v0/media/processing', {
-				params: {
-					id: media.id
-				}
-			}).then(res => {
-				let data = res.data;
-				if(data.finished === true) {
-					this.isProcessingMedia = false;
-					this.page = 3;
-					if(type == 'photo') {
-						clearInterval(this.processPhotoInterval);
-					} else if (type == 'video') {
-						clearInterval(this.processVideoInterval);
-					} else {
-					}
-					return;
-				}
-			});
 		}
-
-
 	}
 }
 </script>
