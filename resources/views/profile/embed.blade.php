@@ -54,12 +54,8 @@
           <p class="mb-0 text-muted text-uppercase small font-weight-bold">Posts</p>
         </div>
         <div class="text-center">
-          <p class="mb-0 font-weight-bold prettyCount">{{$profile->followers()->count()}}</p>
+          <p class="mb-0 font-weight-bold prettyCount">{{$profile->followerCount(true)}}</p>
           <p class="mb-0 text-muted text-uppercase small font-weight-bold">Followers</p>
-        </div>
-        <div class="text-center">
-          <p class="mb-0 font-weight-bold prettyCount">{{$profile->following()->count()}}</p>
-          <p class="mb-0 text-muted text-uppercase small font-weight-bold">Following</p>
         </div>
         <div class="text-center">
           <p class="mb-0"><a href="/i/intent/follow?user={{$profile->username}}" class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" target="_blank">Follow</a></p>

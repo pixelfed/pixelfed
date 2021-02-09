@@ -65,6 +65,9 @@ class Profile extends Model
     public function followingCount($short = false)
     {
         $count = Cache::remember('profile:following_count:'.$this->id, now()->addMonths(1), function() {
+            if($this->domain == null && $this->user->settings->show_profile_following_count == false) {
+                return 0;
+            }
             $count = $this->following()->count();
             if($this->following_count != $count) {
                 $this->following_count = $count;
@@ -79,6 +82,9 @@ class Profile extends Model
     public function followerCount($short = false)
     {
         $count = Cache::remember('profile:follower_count:'.$this->id, now()->addMonths(1), function() {
+            if($this->domain == null && $this->user->settings->show_profile_follower_count == false) {
+                return 0;
+            }
             $count = $this->followers()->count();
             if($this->followers_count != $count) {
                 $this->followers_count = $count;
