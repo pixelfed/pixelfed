@@ -427,6 +427,7 @@ class ComposeController extends Controller
 		Cache::forget('profile:status_count:'.$profile->id);
 		Cache::forget('status:transformer:media:attachments:'.$status->id);
 		Cache::forget($user->storageUsedKey());
+		Cache::forget('profile:embed:' . $status->profile_id);
 
 		return $status->url();
 	}
