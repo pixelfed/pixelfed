@@ -40,6 +40,7 @@
 - Updated ComposeModal, show filter warning for unsupported browsers. ([12ce7602](https://github.com/pixelfed/pixelfed/commit/12ce7602))
 - Updated Hashtag component, fix null infinite loading bug. Fixes #2637. ([55136518](https://github.com/pixelfed/pixelfed/commit/55136518))
 - Updated filesystems config, add backup driver to store backups on other filesystems. ([ae90eef9](https://github.com/pixelfed/pixelfed/commit/ae90eef9))
+- Updated Embeds. Fix Profile + Status embeds, remove following count and improve cache invalidation and hidden follower counts. ([5ac9d0e8](https://github.com/pixelfed/pixelfed/commit/5ac9d0e8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
