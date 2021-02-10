@@ -13,7 +13,7 @@ class RegenerateThumbnails extends Command
      *
      * @var string
      */
-    protected $signature = 'regenerate:thumbnails';
+    protected $signature = 'fix:thumbnails';
 
     /**
      * The console command description.
