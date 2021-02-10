@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use App\Media;
 use DB;
 
-class RegenerateThumbnails extends Command
+class FixRegenerateThumbnails extends Command
 {
     /**
      * The name and signature of the console command.
