@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\EmailVerification;
 
-class PasswordResetGC extends Command
+class GCPasswordReset extends Command
 {
     /**
      * The name and signature of the console command.
