@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\FailedJob;
 
-class FailedJobGC extends Command
+class GCFailedJob extends Command
 {
     /**
      * The name and signature of the console command.
