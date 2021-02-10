@@ -38,6 +38,7 @@ use App\Jobs\VideoPipeline\{
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
+use App\Services\MediaStorageService;
 use App\Services\MediaTagService;
 use App\Services\ServiceService;
 use Illuminate\Support\Str;
@@ -193,8 +194,7 @@ class ComposeController extends Controller
 		->whereUserId(Auth::id())
 		->findOrFail($request->input('id'));
 
-		Storage::delete($media->media_path);
-		Storage::delete($media->thumbnail_path);
+		MediaStorageService::delete($media, true);
 
 		$media->forceDelete();
 
@@ -388,6 +388,7 @@ class ComposeController extends Controller
 		}
 
 		$status->caption = strip_tags($request->caption);
+		$status->rendered = Autolink::create()->autolink($status->caption);
 		$status->scope = 'draft';
 		$status->profile_id = $profile->id;
 		$status->save();
@@ -426,6 +427,7 @@ class ComposeController extends Controller
 		Cache::forget('profile:status_count:'.$profile->id);
 		Cache::forget('status:transformer:media:attachments:'.$status->id);
 		Cache::forget($user->storageUsedKey());
+		Cache::forget('profile:embed:' . $status->profile_id);
 
 		return $status->url();
 	}
@@ -511,5 +513,40 @@ class ComposeController extends Controller
 		Cache::forget('profile:status_count:'.$profile->id);
 
 		return $status->url();
+	}
+
+	public function mediaProcessingCheck(Request $request)
+	{
+		$this->validate($request, [
+			'id' => 'required|integer|min:1'
+		]);
+
+		$media = Media::whereUserId($request->user()->id)
+			->whereNull('status_id')
+			->findOrFail($request->input('id'));
+
+		if(config('pixelfed.media_fast_process')) {
+			return [
+				'finished' => true
+			];
+		}
+
+		$finished = false;
+
+		switch ($media->mime) {
+			case 'image/jpeg':
+			case 'image/png':
+			case 'video/mp4':
+				$finished = config('pixelfed.cloud_storage') ? (bool) $media->cdn_url : (bool) $media->processed_at;
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+
+		return [
+			'finished' => $finished
+		];
 	}
 }

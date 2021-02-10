@@ -1131,7 +1131,7 @@ export default {
 			// this is where the magic happens
 			var ua = navigator.userAgent.toLowerCase();
 			if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
-			 	// swal('Oops!', 'Your browser does not support the filter feature. Please use Chrome or Firefox if you want to apply a filter.', 'error');
+			 	swal('Oops!', 'Your browser does not support the filter feature.', 'error');
 			 	return;
 			}
 
@@ -1177,7 +1177,9 @@ export default {
 					q: input
 				}
 			}).then(res => {
-				//return res.data;
+				if(!res.data.length) {
+					return;
+				}
 				return res.data.filter(d => {
 					return self.taggedUsernames.filter(r => {
 						return r.id == d.id;

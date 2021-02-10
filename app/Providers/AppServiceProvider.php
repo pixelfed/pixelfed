@@ -6,6 +6,7 @@ use App\Observers\{
     AvatarObserver,
     NotificationObserver,
     ModLogObserver,
+    ProfileObserver,
     StatusHashtagObserver,
     UserObserver,
     UserFilterObserver,
@@ -14,6 +15,7 @@ use App\{
     Avatar,
     Notification,
     ModLog,
+    Profile,
     StatusHashtag,
     User,
     UserFilter
@@ -41,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         Avatar::observe(AvatarObserver::class);
         Notification::observe(NotificationObserver::class);
         ModLog::observe(ModLogObserver::class);
+        Profile::observe(ProfileObserver::class);
         StatusHashtag::observe(StatusHashtagObserver::class);
         User::observe(UserObserver::class);
         UserFilter::observe(UserFilterObserver::class);

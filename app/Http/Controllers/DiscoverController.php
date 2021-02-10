@@ -37,7 +37,7 @@ class DiscoverController extends Controller
 
     public function home(Request $request)
     {
-        abort_if(!Auth::check(), 403);
+        abort_if(!Auth::check() && config('instance.discover.public') == false, 403);
         return view('discover.home');
     }
 
@@ -113,6 +113,8 @@ class DiscoverController extends Controller
 
     public function trendingApi(Request $request)
     {
+      abort_if(config('instance.discover.public') == false && !Auth::check(), 403);
+
       $this->validate($request, [
         'range' => 'nullable|string|in:daily,monthly'
       ]);

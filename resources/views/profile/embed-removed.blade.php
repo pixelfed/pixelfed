@@ -18,7 +18,13 @@
 	<link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
 	<link href="{{ mix('css/app.css') }}" rel="stylesheet">
 	<style type="text/css">
-		body.embed-card {
+		.embed-card {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100vw;
+			height: 100vh;
+			min-height: 573px;
 			background: #fff !important;
 			margin: 0;
 			padding-bottom: 0;
@@ -31,8 +37,8 @@
 	</style>
 </head>
 <body class="bg-white">
-	<div class="embed-card">
-		<div class="card  status-card-embed card-md-rounded-0 border card-body border shadow-none rounded-0 d-flex justify-content-center align-items-center">
+	<div class="embed-card border">
+		<div class="card status-card-embed card-md-rounded-0 card-body shadow-none rounded-0">
 			<div class="text-center p-5">
 				<img src="/img/pixelfed-icon-color.svg" width="40px" height="40px">
 				<p class="h2 py-3 font-weight-bold">Pixelfed</p>

@@ -1,5 +1,5 @@
 <template>
-	<div v-if="status.sensitive == true">
+	<div v-if="status.sensitive == true" class="content-label-wrapper">
 		<div class="text-light content-label">
 			<p class="text-center">
 				<i class="far fa-eye-slash fa-2x"></i>
@@ -8,17 +8,16 @@
 				Sensitive Content
 			</p>
 			<p class="text-center py-2">
-				This photo contains sensitive content which <br/>
-				some people may find offsensive or disturbing.
+				{{ status.spoiler_text ? status.spoiler_text : 'This post may contain sensitive content.'}}
 			</p>
 			<p class="mb-0">
-				<button @click="status.sensitive = false" class="btn btn-outline-light btn-block btn-sm font-weight-bold">See Photo</button>
+				<button @click="toggleContentWarning()" class="btn btn-outline-light btn-block btn-sm font-weight-bold">See Post</button>
 			</p>
 		</div>
 		<blur-hash-image
 			width="32"
 			height="32"
-			punch="1"
+			:punch="1"
 			:hash="status.media_attachments[0].blurhash"
 			:alt="altText(status)"/>
 	</div>
@@ -37,10 +36,18 @@
   .content-label {
   	margin: 0;
   	position: absolute;
-  	top:45%;
+  	top:50%;
   	left:50%;
-  	z-index: 999;
+  	z-index: 2;
   	transform: translate(-50%, -50%);
+  	display: flex;
+  	flex-direction: column;
+  	align-items: center;
+  	justify-content: center;
+  	width: 100%;
+  	height: 100%;
+  	z-index: 2;
+  	background: rgba(0, 0, 0, 0.2)
   }
 </style>
 
@@ -56,6 +63,10 @@
 				}
 
 				return 'Photo was not tagged with any alt text.';
+			},
+
+			toggleContentWarning(status) {
+				this.$emit('togglecw');
 			}
 		}
 	}

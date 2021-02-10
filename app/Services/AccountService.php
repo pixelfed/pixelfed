@@ -14,16 +14,25 @@ class AccountService {
 
 	public static function get($id)
 	{
-		// $key = self::CACHE_KEY . ':' . $id;
-		// $ttl = now()->addSeconds(10);
-		// return Cache::remember($key, $ttl, function() use($id) {
-		// });
-		
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$profile = Profile::whereNull('status')->findOrFail($id);
-		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-		return $fractal->createData($resource)->toArray();
+		if($id > PHP_INT_MAX || $id < 1) {
+			return [];
+		}
+
+		$key = self::CACHE_KEY . $id;
+		$ttl = now()->addMinutes(15);
+
+		return Cache::remember($key, $ttl, function() use($id) {
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$profile = Profile::whereNull('status')->findOrFail($id);
+			$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+			return $fractal->createData($resource)->toArray();
+		});	
+	}
+
+	public static function del($id)
+	{
+		return Cache::forget(self::CACHE_KEY . $id);
 	}
 
 }
