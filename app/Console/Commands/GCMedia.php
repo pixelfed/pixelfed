@@ -6,14 +6,14 @@ use Illuminate\Console\Command;
 use App\{Media, Status};
 use Carbon\Carbon;
 
-class MediaGarbageCollector extends Command
+class GCMedia extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'media:gc';
+    protected $signature = 'gc:media';
 
     /**
      * The console command description.
