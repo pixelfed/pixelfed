@@ -14,7 +14,7 @@ class StatusDedupe extends Command
      *
      * @var string
      */
-    protected $signature = 'status:dedup';
+    protected $signature = 'fix:dedup';
 
     /**
      * The console command description.
