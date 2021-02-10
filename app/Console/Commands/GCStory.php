@@ -12,7 +12,7 @@ use App\{
     StoryView
 };
 
-class StoryGC extends Command
+class GCStory extends Command
 {
     /**
      * The name and signature of the console command.
