@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use App\Util\Media\Filter;
 use App\Media;
 
-class MediaFix extends Command
+class FixMedia extends Command
 {
     /**
      * The name and signature of the console command.
