@@ -7,7 +7,7 @@ use App\Avatar;
 use Cache, DB;
 use Illuminate\Support\Str;
 
-class AvatarDefaultMigration extends Command
+class FixAvatars extends Command
 {
     /**
      * The name and signature of the console command.
