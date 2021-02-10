@@ -7,14 +7,14 @@ use Illuminate\Console\Command;
 use App\Media;
 use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline; 
 
-class VideoThumbnail extends Command
+class FixVideoThumbnail extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'video:thumbnail';
+    protected $signature = 'fix:thumbvideo';
 
     /**
      * The console command description.
