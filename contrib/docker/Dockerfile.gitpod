@@ -1,0 +1,32 @@
+FROM gitpod/workspace-mysql
+
+RUN sudo apt-get update \
+  && sudo apt-get upgrade -y \
+  && sudo apt-get install -y --no-install-recommends \
+## Standard
+      locales \
+      locales-all \
+      git \
+      gosu \
+      zip \
+      unzip \
+      libzip-dev \
+      libcurl4-openssl-dev \
+## Image Optimization
+      optipng \
+      pngquant \
+      jpegoptim \
+      gifsicle \
+## Image Processing
+      #libjpeg62-turbo-dev \
+      libpng-dev \
+      libmagickwand-dev \
+# Required for GD
+      libxpm4 \
+      libxpm-dev \
+      libwebp6 \
+      libwebp-dev \
+## Video Processing
+      ffmpeg
+
+RUN sudo apt-get install -yq redis-server
