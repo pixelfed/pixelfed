@@ -7,7 +7,7 @@ use App\Status;
 use DB;
 use App\Jobs\StatusPipeline\StatusDelete;
 
-class StatusDedupe extends Command
+class FixStatusDedupe extends Command
 {
     /**
      * The name and signature of the console command.
