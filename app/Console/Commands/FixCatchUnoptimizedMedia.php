@@ -7,7 +7,7 @@ use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Media;
 use Illuminate\Console\Command;
 
-class CatchUnoptimizedMedia extends Command
+class FixCatchUnoptimizedMedia extends Command
 {
     /**
      * The name and signature of the console command.
