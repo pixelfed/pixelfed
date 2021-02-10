@@ -19,14 +19,14 @@ class StoryGC extends Command
      *
      * @var string
      */
-    protected $signature = 'story:gc';
+    protected $signature = 'gc:story';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Clear expired Stories';
+    protected $description = 'Delete expired Stories';
 
     /**
      * Create a new command instance.
