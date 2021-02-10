@@ -13,7 +13,7 @@ class MediaFix extends Command
      *
      * @var string
      */
-    protected $signature = 'media:fix';
+    protected $signature = 'fix:media';
 
     /**
      * The console command description.
