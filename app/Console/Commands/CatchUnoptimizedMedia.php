@@ -14,7 +14,7 @@ class CatchUnoptimizedMedia extends Command
      *
      * @var string
      */
-    protected $signature = 'media:optimize';
+    protected $signature = 'fix:optimize';
 
     /**
      * The console command description.
