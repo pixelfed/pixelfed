@@ -1,6 +1,6 @@
 <template>
 <div>
-	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" v-bind:accept="config.uploader.media_types">
+	<input type="file" id="pf-dz" name="media" class="w-100 h-100 d-none file-input" v-bind:accept="config.uploader.media_types" multiple>
 	<canvas class="d-none" id="pr_canvas"></canvas>
 	<img class="d-none" id="pr_img">
 	<div class="timeline">
