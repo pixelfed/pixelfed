@@ -161,6 +161,9 @@ class InboxWorker implements ShouldQueue
             return;
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
+        if(!$pkey) {
+            return 0;
+        }
         $inboxPath = "/f/inbox";
         list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
         if($verified == 1) { 
