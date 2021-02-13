@@ -53,8 +53,8 @@ class FederationController extends Controller
 
         $resource = $request->input('resource');
         $parsed = Nickname::normalizeProfileUrl($resource);
-        if($parsed['domain'] !== config('pixelfed.domain.app')) {
-            abort(400);
+        if(empty($parsed) || $parsed['domain'] !== config('pixelfed.domain.app')) {
+            abort(404);
         }
         $username = $parsed['username'];
         $profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();

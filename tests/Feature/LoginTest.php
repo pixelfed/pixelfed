@@ -9,12 +9,11 @@ use App\User;
 
 class LoginTest extends TestCase
 {
+	/** @test */
+	public function view_login_page()
+	{
+		$response = $this->get('login');
 
-    /** @test */
-    public function view_login_page()
-    {
-        $response = $this->get('login');
-
-        $response->assertSee('Forgot Password');
-    }
+		$response->assertSee('Forgot Password');
+	}
 }

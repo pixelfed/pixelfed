@@ -9,12 +9,13 @@ use App\Util\Lexer\RestrictedNames;
 
 class RestrictedNameTest extends TestCase
 {
-    /** @test */
-    public function restrictedUsername()
-    {
-        $this->assertContains('p', RestrictedNames::get());
-        $this->assertContains('admin', RestrictedNames::get());
-        $this->assertNotContains('dansup', RestrictedNames::get());
-        $this->assertNotContains('lain', RestrictedNames::get());
-    }
+	/** @test */
+	public function restrictedUsername()
+	{
+		$names = RestrictedNames::get();
+		$this->assertContains('p', $names);
+		$this->assertContains('admin', $names);
+		$this->assertNotContains('dansup', $names);
+		$this->assertNotContains('earth', $names);
+	}
 }
