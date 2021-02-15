@@ -144,15 +144,16 @@ class Status extends Model
 
     public function liked() : bool
     {
-        if(Auth::check() == false) {
+        if(!Auth::check()) {
             return false;
         }
-        $user = Auth::user();
-        $id = $this->id;
-        return Cache::remember('status:'.$this->id.':likedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
-            $profile = $user->profile;
-            return Like::whereProfileId($profile->id)->whereStatusId($id)->count();
-        });
+
+        $pid = Auth::user()->profile_id;
+
+        return Like::select('status_id', 'profile_id')
+            ->whereStatusId($this->id)
+            ->whereProfileId($pid)
+            ->exists();
     }
 
     public function likedBy()
@@ -189,15 +190,15 @@ class Status extends Model
 
     public function shared() : bool
     {
-        if(Auth::check() == false) {
+        if(!Auth::check()) {
             return false;
         }
-        $user = Auth::user();
-        $id = $this->id;
-        return Cache::remember('status:'.$this->id.':sharedby:userid:'.$user->id, now()->addHours(30), function() use($user, $id) {
-            $profile = $user->profile;
-            return self::whereProfileId($profile->id)->whereReblogOfId($id)->count();
-        });
+        $pid = Auth::user()->profile_id;
+
+        return $this->select('profile_id', 'reblog_of_id')
+            ->whereProfileId($pid)
+            ->whereReblogOfId($this->id)
+            ->exists();
     }
 
     public function sharedBy()
