@@ -23,7 +23,7 @@ class ReportController extends Controller
         $this->validate($request, [
           'type'    => 'required|alpha_dash',
           'id'      => 'required|integer|min:1',
-      ]);
+        ]);
 
         return view('report.form');
     }
@@ -98,7 +98,19 @@ class ReportController extends Controller
         $object_type = $request->input('type');
         $msg = $request->input('msg');
         $object = null;
-        $types = ['spam', 'sensitive', 'abusive'];
+        $types = [
+            // original 3
+            'spam', 
+            'sensitive', 
+            'abusive',
+
+            // new
+            'underage',
+            'copyright',
+            'impersonation',
+            'scam',
+            'terrorism'
+        ];
 
         if (!in_array($reportType, $types)) {
             return redirect('/timeline')->with('error', 'Invalid report type');
@@ -134,7 +146,7 @@ class ReportController extends Controller
         $report->object_type = $object_type;
         $report->reported_profile_id = $object->profile_id;
         $report->type = $request->input('report');
-        $report->message = $request->input('msg');
+        $report->message = e($request->input('msg'));
         $report->save();
 
         return redirect('/timeline')->with('status', 'Report successfully sent!');
