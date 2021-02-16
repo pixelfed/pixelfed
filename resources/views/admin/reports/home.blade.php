@@ -18,15 +18,17 @@
 	@php($ai = App\AccountInterstitial::whereNotNull('appeal_requested_at')->whereNull('appeal_handled_at')->count())
 	@php($spam = App\AccountInterstitial::whereType('post.autospam')->whereNull('appeal_handled_at')->count())
 	@if($ai || $spam)
-	<div class="mb-4">
-		<a class="btn btn-outline-primary px-5 py-3 mr-3" href="/i/admin/reports/appeals">
-			<p class="font-weight-bold h4 mb-0">{{$ai}}</p>
-			Appeal {{$ai == 1 ? 'Request' : 'Requests'}}
-		</a>
-		<a class="btn btn-outline-primary px-5 py-3" href="/i/admin/reports/autospam">
-			<p class="font-weight-bold h4 mb-0">{{$spam}}</p>
-			Flagged {{$ai == 1 ? 'Post' : 'Posts'}}
-		</a>
+	<div class="col-12 col-md-8 offset-md-2">
+		<div class="mb-4">
+			<a class="btn btn-outline-primary px-5 py-3 mr-3" href="/i/admin/reports/appeals">
+				<p class="font-weight-bold h4 mb-0">{{$ai}}</p>
+				Appeal {{$ai == 1 ? 'Request' : 'Requests'}}
+			</a>
+			<a class="btn btn-outline-primary px-5 py-3" href="/i/admin/reports/autospam">
+				<p class="font-weight-bold h4 mb-0">{{$spam}}</p>
+				Flagged {{$ai == 1 ? 'Post' : 'Posts'}}
+			</a>
+		</div>
 	</div>
 	@endif
 	@if($reports->count())
