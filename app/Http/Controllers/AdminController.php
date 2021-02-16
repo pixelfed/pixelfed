@@ -66,17 +66,14 @@ class AdminController extends Controller
 
 	public function reports(Request $request)
 	{
-		$this->validate($request, [
-			'filter' => 'nullable|string|in:all,open,closed'
-		]);
-		$filter = $request->input('filter');
+		$filter = $request->input('filter') == 'closed' ? 'closed' : 'open';
 		$reports = Report::orderBy('created_at','desc')
 		->when($filter, function($q, $filter) {
 			return $filter == 'open' ? 
 			$q->whereNull('admin_seen') :
 			$q->whereNotNull('admin_seen');
 		})
-		->paginate(4);
+		->paginate(6);
 		return view('admin.reports.home', compact('reports'));
 	}
 

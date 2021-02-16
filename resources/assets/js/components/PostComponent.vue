@@ -601,17 +601,17 @@
     size="sm"
     body-class="list-group-flush p-0 rounded">
     <div class="list-group text-center">
-      <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-      <div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div>
+      <!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+      <div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
       <div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
       <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
       <div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
       <a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Edit</a>
-      <div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">ModTools</div>
-      <div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="blockProfile()">Block</div>
-      <div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="unblockProfile()">Unblock</div>
-      <a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer font-weight-bold text-danger text-decoration-none" :href="reportUrl()">Report</a>
-      <div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
+      <div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">Moderation Tools</div>
+      <div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Block</div>
+      <div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Unblock</div>
+      <a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Report</a>
+      <div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
       <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
     </div>
   </b-modal>

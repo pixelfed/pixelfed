@@ -44,6 +44,7 @@
 - Updated FederationController, return 404 for invalid webfinger addresses. Fixes ([#2647](https://github.com/pixelfed/pixelfed/issues/2647)). ([deb6f115](https://github.com/pixelfed/pixelfed/commit/deb6f115))
 - Updated InboxPipeline, fail earlier for invalid public keys. Fixes ([#2648](https://github.com/pixelfed/pixelfed/issues/2648)). ([d1c5e9b8](https://github.com/pixelfed/pixelfed/commit/d1c5e9b8))
 - Updated Status model, refactor liked and shared methods to fix cache invalidation bug. ([f05c3b66](https://github.com/pixelfed/pixelfed/commit/f05c3b66))
+- Updated Timeline component, add inline reports modal. ([e64b4bd3](https://github.com/pixelfed/pixelfed/commit/e64b4bd3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

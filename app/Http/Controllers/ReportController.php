@@ -23,7 +23,7 @@ class ReportController extends Controller
         $this->validate($request, [
           'type'    => 'required|alpha_dash',
           'id'      => 'required|integer|min:1',
-      ]);
+        ]);
 
         return view('report.form');
     }
@@ -86,11 +86,11 @@ class ReportController extends Controller
     public function formStore(Request $request)
     {
         $this->validate($request, [
-          'report'  => 'required|alpha_dash',
-          'type'    => 'required|alpha_dash',
-          'id'      => 'required|integer|min:1',
-          'msg'     => 'nullable|string|max:150',
-      ]);
+            'report'  => 'required|alpha_dash',
+            'type'    => 'required|alpha_dash',
+            'id'      => 'required|integer|min:1',
+            'msg'     => 'nullable|string|max:150',
+        ]);
 
         $profile = Auth::user()->profile;
         $reportType = $request->input('report');
@@ -98,10 +98,26 @@ class ReportController extends Controller
         $object_type = $request->input('type');
         $msg = $request->input('msg');
         $object = null;
-        $types = ['spam', 'sensitive', 'abusive'];
+        $types = [
+            // original 3
+            'spam', 
+            'sensitive', 
+            'abusive',
+
+            // new
+            'underage',
+            'copyright',
+            'impersonation',
+            'scam',
+            'terrorism'
+        ];
 
         if (!in_array($reportType, $types)) {
-            return redirect('/timeline')->with('error', 'Invalid report type');
+            if($request->wantsJson()) {
+                return abort(400, 'Invalid report type');
+            } else {
+                return redirect('/timeline')->with('error', 'Invalid report type');
+            }
         }
 
         switch ($object_type) {
@@ -115,16 +131,28 @@ class ReportController extends Controller
           break;
 
         default:
-          return redirect('/timeline')->with('error', 'Invalid report type');
+            if($request->wantsJson()) {
+                return abort(400, 'Invalid report type');
+            } else {
+                return redirect('/timeline')->with('error', 'Invalid report type');
+            }
           break;
       }
 
         if ($exists !== 0) {
-            return redirect('/timeline')->with('error', 'You have already reported this!');
+            if($request->wantsJson()) {
+                return response()->json(200);
+            } else {
+                return redirect('/timeline')->with('error', 'You have already reported this!');
+            }
         }
 
         if ($object->profile_id == $profile->id) {
-            return redirect('/timeline')->with('error', 'You cannot report your own content!');
+            if($request->wantsJson()) {
+                return response()->json(200);
+            } else {
+                return redirect('/timeline')->with('error', 'You cannot report your own content!');
+            }
         }
 
         $report = new Report();
@@ -134,9 +162,13 @@ class ReportController extends Controller
         $report->object_type = $object_type;
         $report->reported_profile_id = $object->profile_id;
         $report->type = $request->input('report');
-        $report->message = $request->input('msg');
+        $report->message = e($request->input('msg'));
         $report->save();
 
-        return redirect('/timeline')->with('status', 'Report successfully sent!');
+        if($request->wantsJson()) {
+            return response()->json(200);
+        } else {
+            return redirect('/timeline')->with('status', 'Report successfully sent!');
+        }
     }
 }
