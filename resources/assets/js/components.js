@@ -27,8 +27,8 @@ pixelfed.readmore = () => {
       el.readmore({
         collapsedHeight: 45,
         heightMargin: 48,
-        moreLink: '<a href="#" class="d-block small text-muted text-center">Read more ...</a>',
-        lessLink: '<a href="#" class="d-block small text-muted text-center">Hide</a>',
+        moreLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show more</a>',
+        lessLink: '<a href="#" class="d-block small font-weight-bold text-dark text-center">Show less</a>',
       });
   });
 };
