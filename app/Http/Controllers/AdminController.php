@@ -67,7 +67,10 @@ class AdminController extends Controller
 	public function reports(Request $request)
 	{
 		$filter = $request->input('filter') == 'closed' ? 'closed' : 'open';
-		$reports = Report::orderBy('created_at','desc')
+		$reports = Report::whereHas('status')
+		->whereHas('reportedUser')
+		->whereHas('reporter')
+		->orderBy('created_at','desc')
 		->when($filter, function($q, $filter) {
 			return $filter == 'open' ? 
 			$q->whereNull('admin_seen') :
