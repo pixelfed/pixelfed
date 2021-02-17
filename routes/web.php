@@ -244,13 +244,13 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::group(['prefix' => 'i'], function () {
         Route::redirect('/', '/');
         Route::get('compose', 'StatusController@compose')->name('compose');
-        Route::post('comment', 'CommentController@store')->middleware('throttle:maxCommentsPerHour,60')->middleware('throttle:maxCommentsPerDay,1440');
+        Route::post('comment', 'CommentController@store')->middleware('throttle:maxCommentsPerDay,1440');
         Route::post('delete', 'StatusController@delete');
         Route::post('mute', 'AccountController@mute');
         Route::post('unmute', 'AccountController@unmute');
         Route::post('block', 'AccountController@block');
         Route::post('unblock', 'AccountController@unblock');
-        Route::post('like', 'LikeController@store')->middleware('throttle:maxLikesPerHour,60')->middleware('throttle:maxLikesPerDay,1440');
+        Route::post('like', 'LikeController@store')->middleware('throttle:maxLikesPerDay,1440');
         Route::post('share', 'StatusController@storeShare')->middleware('throttle:maxSharesPerHour,60')->middleware('throttle:maxSharesPerDay,1440');
         Route::post('follow', 'FollowerController@store');
         Route::post('bookmark', 'BookmarkController@store');
