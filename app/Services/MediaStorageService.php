@@ -40,7 +40,18 @@ class MediaStorageService {
 		} catch (RequestException $e) {
 			return false;
 		}
+
 		$h = $r->getHeaders();
+
+		if (isset($h['Content-Length'], $h['Content-Type']) == false || 
+			empty($h['Content-Length']) ||
+			empty($h['Content-Type']) || 
+			$h['Content-Length'] < 10 ||
+			$h['Content-Length'] > (config('pixelfed.max_photo_size') * 1000)
+		) {
+			return false;
+		}
+
 		return [
 			'length' => $h['Content-Length'][0],
 			'mime' => $h['Content-Type'][0]
