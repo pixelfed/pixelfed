@@ -34,7 +34,7 @@
 - Updated pixelfed config, add media_fast_process setting. ([6bee5072](https://github.com/pixelfed/pixelfed/commit/6bee5072))
 - Updated ComposeController, add mediaProcessingCheck method. ([33b625f5](https://github.com/pixelfed/pixelfed/commit/33b625f5))
 - Updated ComposeModal, add processing step disabled by default. ([e6e76e80](https://github.com/pixelfed/pixelfed/commit/e6e76e80))
-- Updated DiscoverComponent, allow unathenicated if enabled. ([a1059a6e](https://github.com/pixelfed/pixelfed/commit/a1059a6e))
+- Updated DiscoverComponent, allow unauthenticated if enabled. ([a1059a6e](https://github.com/pixelfed/pixelfed/commit/a1059a6e))
 - Updated components, improve content warnings. ([a9e98965](https://github.com/pixelfed/pixelfed/commit/a9e98965))
 - Updated ComposeModal, prevent tagging empty users. Fixes #2633. ([ceae664c](https://github.com/pixelfed/pixelfed/commit/ceae664c))
 - Updated ComposeModal, show filter warning for unsupported browsers. ([12ce7602](https://github.com/pixelfed/pixelfed/commit/12ce7602))
@@ -46,6 +46,7 @@
 - Updated Status model, refactor liked and shared methods to fix cache invalidation bug. ([f05c3b66](https://github.com/pixelfed/pixelfed/commit/f05c3b66))
 - Updated Timeline component, add inline reports modal. ([e64b4bd3](https://github.com/pixelfed/pixelfed/commit/e64b4bd3))
 - Updated federation pipeline, add locks. ([ddc76887](https://github.com/pixelfed/pixelfed/commit/ddc76887))
+- Updated MediaStorageService, improve head checks to fix failed jobs. ([1769cdfd](https://github.com/pixelfed/pixelfed/commit/1769cdfd))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
