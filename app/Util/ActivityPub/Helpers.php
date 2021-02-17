@@ -346,27 +346,41 @@ class Helpers {
 			$reply_to = null;
 		}
 		$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
-		$status = DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
-			$status = new Status;
-			$status->profile_id = $profile->id;
-			$status->url = isset($res['url']) ? $res['url'] : $url;
-			$status->uri = isset($res['url']) ? $res['url'] : $url;
-			$status->object_url = $id;
-			$status->caption = strip_tags($res['content']);
-			$status->rendered = Purify::clean($res['content']);
-			$status->created_at = Carbon::parse($ts);
-			$status->in_reply_to_id = $reply_to;
-			$status->local = false;
-			$status->is_nsfw = $cw;
-			$status->scope = $scope;
-			$status->visibility = $scope;
-			$status->cw_summary = $cw == true && isset($res['summary']) ?
-				Purify::clean(strip_tags($res['summary'])) : null;
-			$status->save();
-			if($reply_to == null) {
-				self::importNoteAttachment($res, $status);
-			}
-			return $status;
+
+		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
+		$status = Cache::lock($statusLockKey)
+			->get(function () use(
+				$profile, 
+				$res, 
+				$url, 
+				$ts, 
+				$reply_to, 
+				$cw, 
+				$scope, 
+				$id
+		) {
+			return DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
+				$status = new Status;
+				$status->profile_id = $profile->id;
+				$status->url = isset($res['url']) ? $res['url'] : $url;
+				$status->uri = isset($res['url']) ? $res['url'] : $url;
+				$status->object_url = $id;
+				$status->caption = strip_tags($res['content']);
+				$status->rendered = Purify::clean($res['content']);
+				$status->created_at = Carbon::parse($ts);
+				$status->in_reply_to_id = $reply_to;
+				$status->local = false;
+				$status->is_nsfw = $cw;
+				$status->scope = $scope;
+				$status->visibility = $scope;
+				$status->cw_summary = $cw == true && isset($res['summary']) ?
+					Purify::clean(strip_tags($res['summary'])) : null;
+				$status->save();
+				if($reply_to == null) {
+					self::importNoteAttachment($res, $status);
+				}
+				return $status;
+			});
 		});
 
 		return $status;
@@ -458,25 +472,28 @@ class Helpers {
 
 			$profile = Profile::whereRemoteUrl($res['id'])->first();
 			if(!$profile) {
-				$profile = DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
-					$profile = new Profile();
-					$profile->domain = strtolower($domain);
-					$profile->username = strtolower(Purify::clean($webfinger));
-					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-					$profile->inbox_url = strtolower($res['inbox']);
-					$profile->outbox_url = strtolower($res['outbox']);
-					$profile->remote_url = strtolower($res['id']);
-					$profile->public_key = $res['publicKey']['publicKeyPem'];
-					$profile->key_id = $res['publicKey']['id'];
-					$profile->webfinger = strtolower(Purify::clean($webfinger));
-					$profile->last_fetched_at = now();
-					$profile->save();
-					if(config('pixelfed.cloud_storage') == true) {
-						RemoteAvatarFetch::dispatch($profile);
-					}
-					return $profile;
+				$profileLockKey = 'helpers:profile-lock:' . hash('sha256', $res['id']);
+				$profile = Cache::lock($profileLockKey)->get(function () use($domain, $webfinger, $res, $runJobs) {
+					return DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
+						$profile = new Profile();
+						$profile->domain = strtolower($domain);
+						$profile->username = strtolower(Purify::clean($webfinger));
+						$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+						$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
+						$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
+						$profile->inbox_url = strtolower($res['inbox']);
+						$profile->outbox_url = strtolower($res['outbox']);
+						$profile->remote_url = strtolower($res['id']);
+						$profile->public_key = $res['publicKey']['publicKeyPem'];
+						$profile->key_id = $res['publicKey']['id'];
+						$profile->webfinger = strtolower(Purify::clean($webfinger));
+						$profile->last_fetched_at = now();
+						$profile->save();
+						if(config('pixelfed.cloud_storage') == true) {
+							RemoteAvatarFetch::dispatch($profile);
+						}
+						return $profile;
+					});
 				});
 			} else {
 				// Update info after 24 hours

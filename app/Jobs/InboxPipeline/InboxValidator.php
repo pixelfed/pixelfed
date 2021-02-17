@@ -53,6 +53,15 @@ class InboxValidator implements ShouldQueue
 
         $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
+        if(isset($payload['id'])) {
+            $lockKey = hash('sha256', $payload['id']);
+            if(Cache::get($lockKey) !== null) {
+                // Job processed already
+                return 1;
+            }
+            Cache::put($lockKey, 1, 300);
+        }
+
         if(!isset($headers['signature']) || !isset($headers['date'])) {
             return;
         }
