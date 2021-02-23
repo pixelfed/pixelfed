@@ -19,9 +19,9 @@ trait AdminUserController
 		$search = $request->has('a') && $request->query('a') == 'search' ? $request->query('q') : null;
 		$col = $request->query('col') ?? 'id';
 		$dir = $request->query('dir') ?? 'desc';
-		$offset = $request->has('page') ? $request->input('page') : 1;
+		$offset = $request->has('page') ? $request->input('page') : 0;
 		$pagination = [
-			'prev' => $offset && $offset > 1 ? $offset - 1 : null,
+			'prev' => $offset > 0 ? $offset - 1 : null,
 			'next' => $offset + 1,
 			'query' => $search ? '&a=search&q=' . $search : null
 		];
@@ -30,7 +30,7 @@ trait AdminUserController
 			->when($search, function($q, $search) {
 				return $q->where('username', 'like', "%{$search}%");
 			})
-			->when($offset > 1, function($q, $offset) {
+			->when($offset, function($q, $offset) {
 				return $q->offset(($offset * 10));
 			})
 			->limit(10)

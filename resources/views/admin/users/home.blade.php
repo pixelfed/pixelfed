@@ -85,7 +85,7 @@
 </div>
 <div class="d-flex justify-content-center mt-5 small">
 	<ul class="pagination">
-		@if($pagination['prev'])
+		@if($pagination['prev'] !== null || $pagination['prev'] == 1)
 		<li class="page-item"><a class="page-link pagination__prev" href="?page={{$pagination['prev']}}{{$pagination['query']}}" rel="prev">« Previous</a></li>
 		@else
 		<li class="page-item disabled"><span class="page-link" >« Previous</span></li>
