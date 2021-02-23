@@ -1,16 +1,19 @@
 @extends('admin.partial.template-full')
 
-@section('header')
-<div class="bg-primary">
-	<div class="container">
-		<div class="my-5">test</div>
-	</div>
-</div>
-@endsection
-
 @section('section')
-<div class="title">
+<div class="title d-flex justify-content-between align-items-center">
 	<h3 class="font-weight-bold">Users</h3>
+	<form method="get">
+		<input type="hidden" name="a" value="search">
+		<div class="input-group">
+			<input class="form-control" name="q" placeholder="Search usernames" value="{{request()->input('q')}}">
+			<div class="input-group-append">
+				<button type="submit" class="btn btn-primary">
+					<i class="fas fa-search"></i>
+				</button>
+			</div>
+		</div>
+	</form>
 </div>
 <hr>
 <div class="table-responsive">
@@ -36,7 +39,6 @@
 					<span class="text-danger" class="text-monospace">{{$user->id}}</span>
 				</th>
 				<td class="text-left">
-					<img src="/storage/avatars/default.png?v=3" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
 					<span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
 						<span class="text-danger">{{$user->username}}</span>
 					</span>
@@ -53,7 +55,6 @@
 					<span class="text-monospace">{{$user->id}}</span>
 				</th>
 				<td class="text-left">
-					<img src="{{$user->profile->avatarUrl()}}" width="28px" class="rounded-circle mr-2" style="border:1px solid #ccc">
 					<span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
 						<span>{{$user->username}}</span>
 						@if($user->is_admin)
@@ -63,7 +64,7 @@
 				</td>
 				<td>
 					<span class="action-row font-weight-lighter">
-						<a href="{{$user->url()}}" class="pr-2 text-muted small font-weight-bold" title="View Profile" data-toggle="tooltip" data-placement="bottom">
+						<a href="/{{$user->username}}" class="pr-2 text-muted small font-weight-bold" title="View Profile" data-toggle="tooltip" data-placement="bottom">
 							Profile
 						</a>
 
@@ -71,8 +72,8 @@
 							Review
 						</a>
 
-						<a href="/i/admin/users/modlogs/{{$user->id}}" class="pr-2 text-muted small font-weight-bold" title="Moderation Logs" data-toggle="tooltip" data-placement="bottom">
-							Mod Logs
+						<a href="/i/admin/users/modtools/{{$user->id}}" class="pr-2 text-muted small font-weight-bold" title="Moderation Logs" data-toggle="tooltip" data-placement="bottom">
+							Mod Tools
 						</a>
 					</span>
 				</td>
@@ -83,7 +84,14 @@
 	</table>
 </div>
 <div class="d-flex justify-content-center mt-5 small">
-	{{$users->links()}}
+	<ul class="pagination">
+		@if($pagination['prev'])
+		<li class="page-item"><a class="page-link pagination__prev" href="?page={{$pagination['prev']}}{{$pagination['query']}}" rel="prev">« Previous</a></li>
+		@else
+		<li class="page-item disabled"><span class="page-link" >« Previous</span></li>
+		@endif
+		<li class="page-item"><a class="page-link pagination__next" href="?page={{$pagination['next']}}{{$pagination['query']}}" rel="next">Next »</a></li>
+	</ul>
 </div>
 @endsection
 

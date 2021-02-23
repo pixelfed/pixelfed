@@ -16,14 +16,27 @@ trait AdminUserController
 {
 	public function users(Request $request)
 	{
+		$search = $request->has('a') && $request->query('a') == 'search' ? $request->query('q') : null;
 		$col = $request->query('col') ?? 'id';
 		$dir = $request->query('dir') ?? 'desc';
-		$users = User::select('id', 'username', 'status')
-			->withCount('statuses')
+		$offset = $request->has('page') ? $request->input('page') : 1;
+		$pagination = [
+			'prev' => $offset && $offset > 1 ? $offset - 1 : null,
+			'next' => $offset + 1,
+			'query' => $search ? '&a=search&q=' . $search : null
+		];
+		$users = User::select('id', 'username', 'status', 'profile_id')
 			->orderBy($col, $dir)
-			->simplePaginate(10);
+			->when($search, function($q, $search) {
+				return $q->where('username', 'like', "%{$search}%");
+			})
+			->when($offset > 1, function($q, $offset) {
+				return $q->offset(($offset * 10));
+			})
+			->limit(10)
+			->get();
 
-		return view('admin.users.home', compact('users'));
+		return view('admin.users.home', compact('users', 'pagination'));
 	}
 
 	public function userShow(Request $request, $id)
