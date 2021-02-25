@@ -48,6 +48,7 @@
 - Updated federation pipeline, add locks. ([ddc76887](https://github.com/pixelfed/pixelfed/commit/ddc76887))
 - Updated MediaStorageService, improve head checks to fix failed jobs. ([1769cdfd](https://github.com/pixelfed/pixelfed/commit/1769cdfd))
 - Updated user admin, remove expensive db query and add search. ([8feeadbf](https://github.com/pixelfed/pixelfed/commit/8feeadbf))
+- Updated Compose apis, prevent private accounts from posting public or unlisted scopes. ([f53bfa6f](https://github.com/pixelfed/pixelfed/commit/f53bfa6f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
