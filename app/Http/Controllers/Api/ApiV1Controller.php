@@ -1753,6 +1753,12 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
         $user = $request->user();
 
+        $visibility = $profile->is_private ? 'private' : (
+            $profile->unlisted == true && 
+            $request->input('visibility', 'public') == 'public' ? 
+            'unlisted' : 
+            $request->input('visibility', 'public'));
+
         if($user->last_active_at == null) {
             return [];
         }
@@ -1762,8 +1768,8 @@ class ApiV1Controller extends Controller
 
             $status = new Status;
             $status->caption = strip_tags($request->input('status'));
-            $status->scope = $request->input('visibility', 'public');
-            $status->visibility = $request->input('visibility', 'public');
+            $status->scope = $visibility;
+            $status->visibility = $visibility;
             $status->profile_id = $user->profile_id;
             $status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
             $status->in_reply_to_id = $parent->id;
@@ -1805,8 +1811,8 @@ class ApiV1Controller extends Controller
                 abort(400, 'Invalid media ids');
             }
 
-            $status->scope = $request->input('visibility', 'public');
-            $status->visibility = $request->input('visibility', 'public');
+            $status->scope = $visibility;
+            $status->visibility = $visibility;
             $status->type = StatusController::mimeTypeCheck($mimes);
             $status->save();
         }

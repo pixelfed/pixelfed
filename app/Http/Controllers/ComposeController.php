@@ -96,9 +96,8 @@ class ComposeController extends Controller
 		$photo = $request->file('file');
 
 		$mimes = explode(',', config('pixelfed.media_types'));
-		if(in_array($photo->getMimeType(), $mimes) == false) {
-			return;
-		}
+
+		abort_if(in_array($photo->getMimeType(), $mimes) == false, 400, 'Invalid media format');
 
 		$storagePath = MediaPathService::get($user, 2);
 		$path = $photo->store($storagePath);
@@ -399,6 +398,7 @@ class ComposeController extends Controller
 		}
 
 		$visibility = $profile->unlisted == true && $visibility == 'public' ? 'unlisted' : $visibility;
+		$visibility = $profile->is_private ? 'private' : $visibility;
 		$cw = $profile->cw == true ? true : $cw;
 		$status->is_nsfw = $cw;
 		$status->visibility = $visibility;
