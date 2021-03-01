@@ -7,6 +7,7 @@ use Auth, Cache, Storage, URL;
 use Carbon\Carbon;
 use App\{
 	Avatar,
+	Hashtag,
 	Like,
 	Media,
 	MediaTag,
@@ -302,6 +303,72 @@ class ComposeController extends Controller
 			});
 		});
 		return $places;
+	}
+
+	public function searchMentionAutocomplete(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'q' => 'required|string|min:2|max:50'
+		]);
+
+		$q = $request->input('q');
+
+		if(Str::of($q)->startsWith('@')) {
+			if(strlen($q) < 3) {
+				return [];
+			}
+		}
+
+		$blocked = UserFilter::whereFilterableType('App\Profile')
+			->whereFilterType('block')
+			->whereFilterableId($request->user()->profile_id)
+			->pluck('user_id');
+
+		$blocked->push($request->user()->profile_id);
+
+		$results = Profile::select('id','domain','username')
+			->whereNotIn('id', $blocked)
+			->where('username','like','%'.$q.'%')
+			->groupBy('domain')
+			->limit(15)
+			->get()
+			->map(function($profile) {
+				$username = $profile->domain ? substr($profile->username, 1) : $profile->username;
+                return [
+                    'key' => '@' . str_limit($username, 30),
+                    'value' => $username,
+                ];
+		});
+
+		return $results;
+	}
+
+	public function searchHashtagAutocomplete(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'q' => 'required|string|min:2|max:50'
+		]);
+
+		$q = $request->input('q');
+
+		$results = Hashtag::select('slug')
+			->where('slug', 'like', '%'.$q.'%')
+			->whereIsNsfw(false)
+			->whereIsBanned(false)
+			->limit(5)
+			->get()
+			->map(function($tag) {
+				return [
+					'key' => '#' . $tag->slug,
+					'value' => $tag->slug
+				];
+		});
+
+		return $results;
 	}
 
 	public function store(Request $request)
