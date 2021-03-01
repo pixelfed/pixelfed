@@ -312,6 +312,10 @@ class InternalApiController extends Controller
                 }
             break;
         }
+
+        Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+        Cache::forget('profile:embed:' . $status->profile_id);
+
         return ['msg' => 200];
     }
 
