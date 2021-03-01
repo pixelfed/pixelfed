@@ -479,9 +479,26 @@
 
 					<div v-if="page == 'visibility'" class="w-100 h-100">
 						<div class="list-group list-group-flush">
-							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'public'?'text-primary':'']" @click="toggleVisibility('public')">Public</div>
-							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'unlisted'?'text-primary':'']" @click="toggleVisibility('unlisted')">Unlisted</div>
-							<div :class="'list-group-item lead cursor-pointer ' + [visibility == 'private'?'text-primary':'']" @click="toggleVisibility('private')">Followers Only</div>
+							<div
+								v-if="!profile.locked"
+								class="list-group-item lead cursor-pointer" 
+								:class="{ 'text-primary': visibility == 'public' }" 
+								@click="toggleVisibility('public')">
+								Public
+							</div>
+							<div
+								v-if="!profile.locked"
+								class="list-group-item lead cursor-pointer" 
+								:class="{ 'text-primary': visibility == 'unlisted' }" 
+								@click="toggleVisibility('unlisted')">
+								Unlisted
+							</div>
+							<div 
+								class="list-group-item lead cursor-pointer" 
+								:class="{ 'text-primary': visibility == 'private' }"  
+								@click="toggleVisibility('private')">
+								Followers Only
+							</div>
 						</div>
 					</div>
 
@@ -641,7 +658,7 @@ export default {
 		return {
 			config: window.App.config,
 			pageLoading: false,
-			profile: {},
+			profile: window._sharedData.curUser,
 			composeText: '',
 			composeTextLength: 0,
 			nsfw: false,
@@ -708,20 +725,19 @@ export default {
 
 	methods: {
 		fetchProfile() {
-			let self = this;
-			if(window._sharedData.curUser) {
-				self.profile = window._sharedData.curUser;
-				if(self.profile.locked == true) {
-						self.visibility = 'private';
-						self.visibilityTag = 'Followers Only';
+			if(window._sharedData.curUser.id) {
+				this.profile = window._sharedData.curUser;
+				if(this.profile.locked == true) {
+					this.visibility = 'private';
+					this.visibilityTag = 'Followers Only';
 				}
 			} else {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
-					self.profile = res.data;
-					window.pixelfed.currentUser = res.data;
-					if(res.data.locked == true) {
-						self.visibility = 'private';
-						self.visibilityTag = 'Followers Only';
+					window._sharedData.currentUser = res.data;
+					this.profile = res.data;
+					if(this.profile.locked == true) {
+						this.visibility = 'private';
+						this.visibilityTag = 'Followers Only';
 					}
 				}).catch(err => {
 				});

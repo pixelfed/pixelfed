@@ -49,6 +49,13 @@
 - Updated MediaStorageService, improve head checks to fix failed jobs. ([1769cdfd](https://github.com/pixelfed/pixelfed/commit/1769cdfd))
 - Updated user admin, remove expensive db query and add search. ([8feeadbf](https://github.com/pixelfed/pixelfed/commit/8feeadbf))
 - Updated Compose apis, prevent private accounts from posting public or unlisted scopes. ([f53bfa6f](https://github.com/pixelfed/pixelfed/commit/f53bfa6f))
+- Updated font icons, use font-display:swap. ([77d4353a](https://github.com/pixelfed/pixelfed/commit/77d4353a))
+- Updated ComposeModal, limit visibility scope for private accounts. ([001d4105](https://github.com/pixelfed/pixelfed/commit/001d4105))
+- Updated ComposeController, add autocomplete apis for hashtags and mentions. ([f0e48a09](https://github.com/pixelfed/pixelfed/commit/f0e48a09))
+- Updated StatusController, invalidate profile embed cache on status delete. ([9c8a87c3](https://github.com/pixelfed/pixelfed/commit/9c8a87c3))
+- Updated moderation api, invalidate profile embed. ([b2501bfc](https://github.com/pixelfed/pixelfed/commit/b2501bfc))
+- Updated Nodeinfo util, use last_active_at for monthly active user count. ([d200c12c](https://github.com/pixelfed/pixelfed/commit/d200c12c))
+- Updated PhotoPresenter, add width and height to images. ([3f8202e2](https://github.com/pixelfed/pixelfed/commit/3f8202e2))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

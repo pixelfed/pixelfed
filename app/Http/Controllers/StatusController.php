@@ -74,6 +74,12 @@ class StatusController extends Controller
         }
 
         $template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+        // $template = $status->type === 'video' &&
+        //     $request->has('video_beta') && 
+        //     $request->video_beta == 1 &&
+        //     $request->user() ?
+        //     'status.show_video' : 'status.show';
+
         return view($template, compact('user', 'status'));
     }
 
@@ -212,6 +218,7 @@ class StatusController extends Controller
 
         Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
         Cache::forget('profile:status_count:' . $status->profile_id);
+        Cache::forget('profile:embed:' . $status->profile_id);
         StatusService::del($status->id);
         if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
             Cache::forget('profile:status_count:'.$status->profile_id);

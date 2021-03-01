@@ -132,13 +132,15 @@ class InternalApiController extends Controller
 
     public function statusReplies(Request $request, int $id)
     {
+        $this->validate($request, [
+            'limit' => 'nullable|int|min:1|max:6'
+        ]);
         $parent = Status::whereScope('public')->findOrFail($id);
-
+        $limit = $request->input('limit') ?? 3;
         $children = Status::whereInReplyToId($parent->id)
             ->orderBy('created_at', 'desc')
-            ->take(3)
+            ->take($limit)
             ->get();
-
         $resource = new Fractal\Resource\Collection($children, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();
 
@@ -310,6 +312,10 @@ class InternalApiController extends Controller
                 }
             break;
         }
+
+        Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+        Cache::forget('profile:embed:' . $status->profile_id);
+
         return ['msg' => 200];
     }
 

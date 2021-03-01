@@ -113,6 +113,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
                 Route::delete('/media/delete', 'ComposeController@mediaDelete');
                 Route::get('/search/tag', 'ComposeController@searchTag');
                 Route::get('/search/location', 'ComposeController@searchLocation');
+                Route::get('/search/mention', 'ComposeController@searchMentionAutocomplete');
+                Route::get('/search/hashtag', 'ComposeController@searchHashtagAutocomplete');
 
                 Route::post('/publish', 'ComposeController@store')
                     ->middleware('throttle:maxPostsPerHour,60')

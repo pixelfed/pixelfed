@@ -23,7 +23,13 @@
 	</div>
 	<div v-else>
 		<div :title="status.media_attachments[0].description">
-			<img :class="status.media_attachments[0].filter_class + ' card-img-top'" :src="status.media_attachments[0].url" loading="lazy" :alt="altText(status)" onerror="this.onerror=null;this.src='/storage/no-preview.png'">
+			<img class="card-img-top" 
+				:src="status.media_attachments[0].url" 
+				loading="lazy" 
+				:alt="altText(status)"
+				:width="width()"
+				:height="height()"
+				onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 		</div>
 	</div>
 </template>
@@ -67,6 +73,24 @@
 
 			toggleContentWarning(status) {
 				this.$emit('togglecw');
+			},
+
+			width() {
+				if( !this.status.media_attachments[0].meta || 
+					!this.status.media_attachments[0].meta.original ||
+					!this.status.media_attachments[0].meta.original.width ) {
+					return;
+				}
+				return this.status.media_attachments[0].meta.original.width;
+			},
+
+			height() {
+				if( !this.status.media_attachments[0].meta || 
+					!this.status.media_attachments[0].meta.original ||
+					!this.status.media_attachments[0].meta.original.height ) {
+					return;
+				}
+				return this.status.media_attachments[0].meta.original.height;
 			}
 		}
 	}
