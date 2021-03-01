@@ -166,7 +166,7 @@ class PublicApiController extends Controller
                 ->whereNull('reblog_of_id')
                 ->whereIn('scope', $scope)
                 ->whereNotIn('profile_id', $filtered)
-                ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                ->select('id', 'caption', 'local', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '>=', $request->min_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -176,7 +176,7 @@ class PublicApiController extends Controller
                 ->whereNull('reblog_of_id')
                 ->whereIn('scope', $scope)
                 ->whereNotIn('profile_id', $filtered)
-                ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+                ->select('id', 'caption', 'local', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
                 ->where('id', '<=', $request->max_id)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -186,7 +186,7 @@ class PublicApiController extends Controller
             ->whereNull('reblog_of_id')
             ->whereIn('scope', $scope)
             ->whereNotIn('profile_id', $filtered)
-            ->select('id', 'caption', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
+            ->select('id', 'caption', 'local', 'is_nsfw', 'rendered', 'profile_id', 'in_reply_to_id', 'type', 'reply_count', 'created_at')
             ->orderBy('id', 'desc')
             ->paginate($limit);
         }
