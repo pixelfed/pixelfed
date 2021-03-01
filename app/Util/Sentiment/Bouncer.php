@@ -15,6 +15,10 @@ class Bouncer {
 			return;
 		}
 
+		if($status->profile->user->is_admin == true) {
+			return;
+		}
+
 		$exemptionKey = 'pf:bouncer_v0:exemption_by_pid:' . $status->profile_id;
 		$exemptionTtl = now()->addDays(12);
 
@@ -50,6 +54,14 @@ class Bouncer {
 			return;
 		}
 
+		if( $status->profile->created_at->gt(now()->subMonths(6)) &&
+			$status->profile->status_count < 2 &&
+			$status->profile->bio &&
+			$status->profile->website
+		) {
+			return (new self)->handle($status);
+		}
+
 		$recentKey = 'pf:bouncer_v0:recent_by_pid:' . $status->profile_id;
 		$recentTtl = now()->addHours(28);
 
@@ -83,10 +95,6 @@ class Bouncer {
 			'.net', 
 			'.org'
 		])) {
-			return;
-		}
-
-		if($status->profile->user->is_admin == true) {
 			return;
 		}
 
