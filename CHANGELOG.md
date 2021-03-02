@@ -2,6 +2,7 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.10...dev)
 ### Added
+- Autocomplete Support (hashtags + mentions) ([de514f7d](https://github.com/pixelfed/pixelfed/commit/de514f7d))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
