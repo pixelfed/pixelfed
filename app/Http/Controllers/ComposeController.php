@@ -81,6 +81,16 @@ class ComposeController extends Controller
 		$user = Auth::user();
 		$profile = $user->profile;
 
+		$limitKey = 'compose:rate-limit:media-upload:' . $user->id;
+		$limitTtl = now()->addMinutes(15);
+		$limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+			$dailyLimit = Media::whereUserId($user->id)->where('created_at', '>', now()->subDays(1))->count();
+
+			return $dailyLimit >= 250;
+		});
+
+		abort_if($limitReached == true, 429);
+
 		if(config('pixelfed.enforce_account_limit') == true) {
 			$size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
 				return Media::whereUserId($user->id)->sum('size') / 1000;
@@ -138,6 +148,7 @@ class ComposeController extends Controller
 			break;
 		}
 
+		Cache::forget($limitKey);
 		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 		$res['preview_url'] = $preview_url;
@@ -160,6 +171,16 @@ class ComposeController extends Controller
 
 		$user = Auth::user();
 
+		$limitKey = 'compose:rate-limit:media-updates:' . $user->id;
+		$limitTtl = now()->addMinutes(15);
+		$limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+			$dailyLimit = Media::whereUserId($user->id)->where('created_at', '>', now()->subDays(1))->count();
+
+			return $dailyLimit >= 500;
+		});
+
+		abort_if($limitReached == true, 429);
+
 		$photo = $request->file('file');
 		$id = $request->input('id');
 
@@ -179,6 +200,7 @@ class ComposeController extends Controller
 			'url' => $media->url() . '?v=' . time()
 		];
 		ImageOptimize::dispatch($media);
+		Cache::forget($limitKey);
 		return $res;
 	}
 
@@ -402,6 +424,21 @@ class ComposeController extends Controller
 
 		$user = Auth::user();
 		$profile = $user->profile;
+
+		$limitKey = 'compose:rate-limit:store:' . $user->id;
+		$limitTtl = now()->addMinutes(15);
+		$limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+			$dailyLimit = Status::whereProfileId($user->profile_id)
+				->whereNull('in_reply_to_id')
+				->whereNull('reblog_of_id')
+				->where('created_at', '>', now()->subDays(1))
+				->count();
+
+			return $dailyLimit >= 100;
+		});
+
+		abort_if($limitReached == true, 429);
+
 		$visibility = $request->input('visibility');
 		$medias = $request->input('media');
 		$attachments = [];
@@ -495,6 +532,7 @@ class ComposeController extends Controller
 		Cache::forget('status:transformer:media:attachments:'.$status->id);
 		Cache::forget($user->storageUsedKey());
 		Cache::forget('profile:embed:' . $status->profile_id);
+		Cache::forget($limitKey);
 
 		return $status->url();
 	}

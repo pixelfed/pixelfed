@@ -818,6 +818,13 @@ export default {
 							self.page = 2;
 						break;
 
+						case 429:
+							self.uploading = false;
+							io.value = null;
+							swal('Limit Reached', 'You can upload up to 250 photos or videos per day and you\'ve reached that limit. Please try again later.', 'error');
+							self.page = 2;
+						break;
+
 						default:
 							self.uploading = false;
 							io.value = null;

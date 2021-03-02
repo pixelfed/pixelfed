@@ -1043,6 +1043,15 @@ class ApiV1Controller extends Controller
             return [];
         }
 
+        $limitKey = 'compose:rate-limit:media-upload:' . $user->id;
+        $limitTtl = now()->addMinutes(15);
+        $limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+            $dailyLimit = Media::whereUserId($user->id)->where('created_at', '>', now()->subDays(1))->count();
+
+            return $dailyLimit >= 250;
+        });
+        abort_if($limitReached == true, 429);
+
         $profile = $user->profile;
 
         if(config('pixelfed.enforce_account_limit') == true) {
@@ -1097,6 +1106,7 @@ class ApiV1Controller extends Controller
                 break;
         }
 
+        Cache::forget($limitKey);
         $resource = new Fractal\Resource\Item($media, new MediaTransformer());
         $res = $this->fractal->createData($resource)->toArray();
         $res['preview_url'] = $media->url(). '?cb=1&_v=' . time();
@@ -1753,6 +1763,20 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
         $user = $request->user();
 
+        $limitKey = 'compose:rate-limit:store:' . $user->id;
+        $limitTtl = now()->addMinutes(15);
+        $limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+            $dailyLimit = Status::whereProfileId($user->profile_id)
+                ->whereNull('in_reply_to_id')
+                ->whereNull('reblog_of_id')
+                ->where('created_at', '>', now()->subDays(1))
+                ->count();
+
+            return $dailyLimit >= 100;
+        });
+
+        abort_if($limitReached == true, 429);
+
         $visibility = $profile->is_private ? 'private' : (
             $profile->unlisted == true && 
             $request->input('visibility', 'public') == 'public' ? 
@@ -1826,6 +1850,8 @@ class ApiV1Controller extends Controller
         Cache::forget('_api:statuses:recent_9:'.$user->profile_id);
         Cache::forget('profile:status_count:'.$user->profile_id);
         Cache::forget($user->storageUsedKey());
+        Cache::forget('profile:embed:' . $status->profile_id);
+        Cache::forget($limitKey);
 
         $resource = new Fractal\Resource\Item($status, new StatusTransformer());
         $res = $this->fractal->createData($resource)->toArray();

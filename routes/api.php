@@ -68,7 +68,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('statuses/{id}/unbookmark', 'Api\ApiV1Controller@unbookmarkStatus')->middleware($middleware);
 		Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware($middleware);
 		Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware($middleware);
-		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware)->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
+		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware);
 
 
 		Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
