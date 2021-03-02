@@ -595,3 +595,53 @@ details summary::-webkit-details-marker {
     height: 100%;
   }
 }
+
+.tribute-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: auto;
+    max-height: 300px;
+    min-width: 120px;
+    max-width: 500px;
+    overflow: auto;
+    display: block;
+    z-index: 999999;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(#000, 0.13);
+    
+    ul {
+        margin: 0;
+        margin-top: 2px;
+        padding: 0;
+        list-style: none;
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid rgba(#000, 0.13);
+        background-clip: padding-box;
+        overflow: hidden;
+    }
+
+    li {
+        color: #000;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-size: 14px;
+        overflow-x: hidden !important;
+        
+        &.highlight,
+        &:hover {
+            background: #2c78bf;
+            color: #fff;
+        }
+        
+        &.no-match {
+            cursor: default;
+        }
+    }
+
+    .menu-highlighted {
+        font-weight: bold;
+    }
+}

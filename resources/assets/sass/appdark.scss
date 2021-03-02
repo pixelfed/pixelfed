@@ -154,3 +154,56 @@ hr {
 .border {
 	border-color: #282828 !important;
 }
+
+.tribute-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: auto;
+    max-height: 300px;
+    min-width: 120px;
+    max-width: 500px;
+    overflow: auto;
+    display: block;
+    z-index: 999999;
+    border-radius: 4px;
+    border: 1px solid #282828;
+
+    ul {
+      margin: 0;
+      margin-top: 2px;
+      padding: 0;
+      list-style: none;
+      background: #181818;
+      border-radius: 4px;
+      border: 1px solid #282828;
+      background-clip: padding-box;
+      overflow: hidden;
+    }
+
+    li {
+        color: #ADAFAE;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-size: 14px;
+        overflow-x: hidden !important;
+        
+        span {
+          font-weight: bold;
+        }
+
+        &.highlight,
+        &:hover {
+            background: #11304c;
+            color: #fff;
+        }
+
+        &.no-match {
+            cursor: default;
+        }
+    }
+
+    .menu-highlighted {
+        font-weight: bold;
+    }
+}

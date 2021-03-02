@@ -295,7 +295,9 @@
 								<div class="media-body">
 									<div class="form-group">
 										<label class="font-weight-bold text-muted small d-none">Caption</label>
-										<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Write a caption..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+										<vue-tribute :options="tributeSettings">
+											<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Write a caption..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+										</vue-tribute>
 										<p class="help-text small text-right text-muted mb-0">{{composeTextLength}}/{{config.uploader.max_caption_length}}</p>
 									</div>
 								</div>
@@ -647,11 +649,14 @@ import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 import Autocomplete from '@trevoreyre/autocomplete-vue'
 import '@trevoreyre/autocomplete-vue/dist/style.css'
+import VueTribute from 'vue-tribute'
 
 export default {
+
 	components: { 
 		VueCropper,
-		Autocomplete 
+		Autocomplete,
+		VueTribute
 	},
 
 	data() {
@@ -707,7 +712,39 @@ export default {
 			cameraRollMedia: [],
 			taggedUsernames: [],
 			taggedPeopleSearch: null,
-			textMode: false
+			textMode: false,
+			tributeSettings: {
+				collection: [
+					{
+						trigger: '@',
+						menuShowMinLength: 2,
+						values: (function (text, cb) {
+							let url = '/api/compose/v0/search/mention';
+							axios.get(url, { params: { q: text }})
+							.then(res => {
+								cb(res.data);
+							})
+							.catch(err => {
+								console.log(err);
+							})
+						})
+					},
+					{
+						trigger: '#',
+						menuShowMinLength: 2,
+						values: (function (text, cb) {
+							let url = '/api/compose/v0/search/hashtag';
+							axios.get(url, { params: { q: text }})
+							.then(res => {
+								cb(res.data);
+							})
+							.catch(err => {
+								console.log(err);
+							})
+						})
+					}
+				]
+			}
 		}
 	},
 
