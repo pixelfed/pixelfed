@@ -106,19 +106,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
         Route::group(['prefix' => 'compose'], function() {
             Route::group(['prefix' => 'v0'], function() {
                 Route::post('/media/upload', 'ComposeController@mediaUpload');
-                Route::post('/media/update', 'ComposeController@mediaUpdate')
-                    ->middleware('throttle:maxComposeMediaUpdatesPerHour,60')
-                    ->middleware('throttle:maxComposeMediaUpdatesPerDay,1440')
-                    ->middleware('throttle:maxComposeMediaUpdatesPerMonth,43800');
+                Route::post('/media/update', 'ComposeController@mediaUpdate');
                 Route::delete('/media/delete', 'ComposeController@mediaDelete');
                 Route::get('/search/tag', 'ComposeController@searchTag');
                 Route::get('/search/location', 'ComposeController@searchLocation');
                 Route::get('/search/mention', 'ComposeController@searchMentionAutocomplete');
                 Route::get('/search/hashtag', 'ComposeController@searchHashtagAutocomplete');
 
-                Route::post('/publish', 'ComposeController@store')
-                    ->middleware('throttle:maxPostsPerHour,60')
-                    ->middleware('throttle:maxPostsPerDay,1440');
+                Route::post('/publish', 'ComposeController@store');
                 Route::post('/publish/text', 'ComposeController@storeText');
                 Route::get('/media/processing', 'ComposeController@mediaProcessingCheck');
             });
