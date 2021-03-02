@@ -643,8 +643,10 @@
     size="md"
     body-class="p-2 rounded">
     <div>
-      <textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
-      </textarea>
+      <vue-tribute :options="tributeSettings">
+        <textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+        </textarea>
+      </vue-tribute>
 
       <div class="border-top border-bottom my-2">
         <ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
@@ -757,10 +759,12 @@
 </style>
 
 <script>
+import VueTribute from 'vue-tribute'
 
 pixelfed.postComponent = {};
 
 export default {
+
     props: [
       'status-id',
       'status-username',
@@ -771,6 +775,11 @@ export default {
       'status-profile-id',
       'profile-layout'
     ],
+
+    components: { 
+        VueTribute
+    },
+
     data() {
         return {
             config: window.App.config,
@@ -817,6 +826,38 @@ export default {
             profileMorePosts: [],
             replySending: false,
             reactionBarLoading: true,
+            tributeSettings: {
+              collection: [
+                {
+                  trigger: '@',
+                  menuShowMinLength: 2,
+                  values: (function (text, cb) {
+                    let url = '/api/compose/v0/search/mention';
+                    axios.get(url, { params: { q: text }})
+                    .then(res => {
+                      cb(res.data);
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    })
+                  })
+                },
+                {
+                  trigger: '#',
+                  menuShowMinLength: 2,
+                  values: (function (text, cb) {
+                    let url = '/api/compose/v0/search/hashtag';
+                    axios.get(url, { params: { q: text }})
+                    .then(res => {
+                      cb(res.data);
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    })
+                  })
+                }
+              ]
+            }
           }
     },
     watch: {
