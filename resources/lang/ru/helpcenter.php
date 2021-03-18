@@ -9,7 +9,7 @@ return [
 	'sharingMedia' => 'Поделиться',
 	'profile' => 'Профиль',
 	'stories' => 'Истории',
-	'hashtags' => 'Хэштэти',
+	'hashtags' => 'Хэштэги',
 	'discover' => 'Discover',
 	'directMessages' => 'Личные сообщения',
 	'timelines' => 'Ленты',
