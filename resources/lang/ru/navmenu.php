@@ -3,11 +3,11 @@
 return [
 
 	'search'			=> 'Поиск',
-	'home'				=> 'Home',
-	'local'				=> 'локальная',
-	'network'			=> 'Сеть',
+	'home'				=> 'Главная',
+	'local'				=> 'Локальная',
+	'network'			=> 'Глобальная',
 	'discover'			=> 'Discover',
-	'viewMyProfile'		=> 'Локальная лента',
+	'viewMyProfile'		=> 'Мой профиль',
 	'myTimeline'		=> 'Моя лента',
 	'publicTimeline'	=> 'Глобальная лента',
 	'remoteFollow'		=> 'Remote Follow',
