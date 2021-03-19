@@ -24,8 +24,8 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
       git \
       gosu \
       zip \
-      unzip \ 
-      libzip-dev \ 
+      unzip \
+      libzip-dev \
       libcurl4-openssl-dev \
 ## Image Optimization
       optipng \
@@ -44,7 +44,7 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 ## Video Processing
       ffmpeg \
 ## Database
-#      libpq-dev \
+      libpq-dev \
 #      libsqlite3-dev \
       mariadb-client \
 # Locales Update
@@ -68,6 +68,7 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && docker-php-ext-enable redis \
 #PHP Database extensions
   && docker-php-ext-install pdo_mysql \
+  pdo_pgsql \
 #pdo_pgsql pdo_sqlite \
 #PHP extensions (dependencies)
   && docker-php-ext-configure intl \
