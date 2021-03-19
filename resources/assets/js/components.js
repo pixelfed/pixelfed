@@ -14,7 +14,10 @@ Vue.use(InfiniteLoading);
 Vue.use(Loading);
 Vue.use(VueTimeago, {
   name: 'Timeago',
-  locale: 'pt'
+  locale: 'pt',
+  locales: {
+    'pt': require('date-fns/locale/pt')
+  }
 });
 
 pixelfed.readmore = () => {
