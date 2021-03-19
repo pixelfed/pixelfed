@@ -6,7 +6,7 @@ import VueTimeago from 'vue-timeago';
 import VueCarousel from 'vue-carousel';
 import VueBlurHash from 'vue-blurhash'
 import 'vue-blurhash/dist/vue-blurhash.css'
-  
+
 Vue.use(VueBlurHash);
 Vue.use(VueCarousel);
 Vue.use(BootstrapVue);
@@ -14,7 +14,7 @@ Vue.use(InfiniteLoading);
 Vue.use(Loading);
 Vue.use(VueTimeago, {
   name: 'Timeago',
-  locale: 'en'
+  locale: 'pt'
 });
 
 pixelfed.readmore = () => {
