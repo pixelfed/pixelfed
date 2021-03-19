@@ -1,0 +1,27 @@
+image:
+  file: contrib/docker/Dockerfile.gitpod
+ports:
+  - port: 3306
+    visibility: private
+    onOpen: ignore
+  - port: 6379
+    visibility: private
+    onOpen: ignore
+  - port: 8001
+    visibility: public
+    onOpen: open-browser
+tasks:
+  - init: |
+      cp .env.gitpod .env
+      sed -i "s|APP_URL=|APP_URL=${GITPOD_WORKSPACE_URL}|g" .env
+      sed -i "s|APP_URL=https://|APP_URL=https://8001-|g" .env
+      composer install --no-ansi --no-interaction --optimize-autoloader
+      php artisan key:generate
+      php artisan storage:link
+      php artisan route:clear
+      php artisan view:clear
+      php artisan config:clear
+      mysql -u root -e "create database pixelfed"
+      php artisan migrate --force
+    command: |
+      apachectl start && redis-server --daemonize yes
