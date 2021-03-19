@@ -3,6 +3,7 @@
   "short_name": "Pixelfed",
   "start_url": ".",
   "display": "standalone",
+  "theme_color": "#6a1ae8",
   "background_color": "#f5f8fa",
   "description": "Federated Image Sharing",
   "icons": [

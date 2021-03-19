@@ -1,0 +1,19 @@
+// App name
+html body.loggedIn nav.navbar.navbar-expand.navbar-light.navbar-laravel.shadow-none.border-bottom.sticky-top.py-1 div.container a.navbar-brand.d-flex.align-items-center span.font-weight-bold.mb-0.d-none.d-sm-block {
+    color: map-get($theme-colors, 'primary');
+}
+html body nav.navbar.navbar-expand.navbar-light.navbar-laravel.shadow-none.border-bottom.sticky-top div.container a.navbar-brand.d-flex.align-items-center span.font-weight-bold.mb-0 {
+    color: map-get($theme-colors, 'primary');
+}
+// NSFW
+html body.loggedIn.modal-open main#content div#composeModal.modal.pr-0.show div.modal-dialog div.modal-content div div.timeline div div.card.status-card.card-md-rounded-0.w-100.h-100 div.card-body.p-0.border-top div.w-100.h-100 div.border-bottom.d-flex.justify-content-between.px-4.mb-0.py-2 {
+    display: none !important;
+}
+// Stories
+html body.loggedIn nav.navbar.navbar-expand.navbar-light.navbar-laravel.shadow-none.border-bottom.sticky-top.py-1 div.container div.collapse.navbar-collapse div.ml-auto ul.navbar-nav.align-items-center li.nav-item.dropdown.ml-2.show div.dropdown-menu.dropdown-menu-right.show a.dropdown-item:nth-child(3) {
+    display: none !important;
+}
+// Right sidebar footer
+html body.loggedIn main#content div.container div.row div.col-md-4.col-lg-4.my-4.order-1.order-md-2.d-none.d-md-block div footer {
+    display: none;
+}

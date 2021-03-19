@@ -19,7 +19,7 @@ if (token) {
 window.App = window.App || {};
 
 window.App.redirect = function() {
-	document.querySelectorAll('a').forEach(function(i,k) { 
+	document.querySelectorAll('a').forEach(function(i,k) {
 		let a = i.getAttribute('href');
 		if(a && a.length > 5 && a.startsWith('https://')) {
 			let url = new URL(a);
@@ -61,12 +61,12 @@ window.App.util = {
 			console.log('Unsupported method.');
 		}),
 	},
-	time: (function() { 
-		return new Date; 
+	time: (function() {
+		return new Date;
 	}),
 	version: 1,
 	format: {
-		count: (function(count = 0, locale = 'en-GB', notation = 'compact') {
+		count: (function(count = 0, locale = 'pt-BR', notation = 'compact') {
 			if(count < 1) {
 				return 0;
 			}
@@ -113,50 +113,50 @@ window.App.util = {
 				tag = '/i/redirect?url=' + encodeURIComponent(tag);
 			}
 
-			return tag; 
+			return tag;
 		})
-	}, 
+	},
 	filters: [
-			['1977','filter-1977'], 
-			['Aden','filter-aden'], 
-			['Amaro','filter-amaro'], 
-			['Ashby','filter-ashby'], 
-			['Brannan','filter-brannan'], 
-			['Brooklyn','filter-brooklyn'], 
-			['Charmes','filter-charmes'], 
-			['Clarendon','filter-clarendon'], 
-			['Crema','filter-crema'], 
-			['Dogpatch','filter-dogpatch'], 
-			['Earlybird','filter-earlybird'], 
-			['Gingham','filter-gingham'], 
-			['Ginza','filter-ginza'], 
-			['Hefe','filter-hefe'], 
-			['Helena','filter-helena'], 
-			['Hudson','filter-hudson'], 
-			['Inkwell','filter-inkwell'], 
-			['Kelvin','filter-kelvin'], 
-			['Kuno','filter-juno'], 
-			['Lark','filter-lark'], 
-			['Lo-Fi','filter-lofi'], 
-			['Ludwig','filter-ludwig'], 
-			['Maven','filter-maven'], 
-			['Mayfair','filter-mayfair'], 
-			['Moon','filter-moon'], 
-			['Nashville','filter-nashville'], 
-			['Perpetua','filter-perpetua'], 
-			['Poprocket','filter-poprocket'], 
-			['Reyes','filter-reyes'], 
-			['Rise','filter-rise'], 
-			['Sierra','filter-sierra'], 
-			['Skyline','filter-skyline'], 
-			['Slumber','filter-slumber'], 
-			['Stinson','filter-stinson'], 
-			['Sutro','filter-sutro'], 
-			['Toaster','filter-toaster'], 
-			['Valencia','filter-valencia'], 
-			['Vesper','filter-vesper'], 
-			['Walden','filter-walden'], 
-			['Willow','filter-willow'], 
+			['1977','filter-1977'],
+			['Aden','filter-aden'],
+			['Amaro','filter-amaro'],
+			['Ashby','filter-ashby'],
+			['Brannan','filter-brannan'],
+			['Brooklyn','filter-brooklyn'],
+			['Charmes','filter-charmes'],
+			['Clarendon','filter-clarendon'],
+			['Crema','filter-crema'],
+			['Dogpatch','filter-dogpatch'],
+			['Earlybird','filter-earlybird'],
+			['Gingham','filter-gingham'],
+			['Ginza','filter-ginza'],
+			['Hefe','filter-hefe'],
+			['Helena','filter-helena'],
+			['Hudson','filter-hudson'],
+			['Inkwell','filter-inkwell'],
+			['Kelvin','filter-kelvin'],
+			['Kuno','filter-juno'],
+			['Lark','filter-lark'],
+			['Lo-Fi','filter-lofi'],
+			['Ludwig','filter-ludwig'],
+			['Maven','filter-maven'],
+			['Mayfair','filter-mayfair'],
+			['Moon','filter-moon'],
+			['Nashville','filter-nashville'],
+			['Perpetua','filter-perpetua'],
+			['Poprocket','filter-poprocket'],
+			['Reyes','filter-reyes'],
+			['Rise','filter-rise'],
+			['Sierra','filter-sierra'],
+			['Skyline','filter-skyline'],
+			['Slumber','filter-slumber'],
+			['Stinson','filter-stinson'],
+			['Sutro','filter-sutro'],
+			['Toaster','filter-toaster'],
+			['Valencia','filter-valencia'],
+			['Vesper','filter-vesper'],
+			['Walden','filter-walden'],
+			['Willow','filter-willow'],
 			['X-Pro II','filter-xpro-ii']
 	],
 	filterCss: {

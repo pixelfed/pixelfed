@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
-    
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,7 +57,7 @@
                     <div>
                         <div class="pt-md-3 d-flex justify-content-center align-items-center">
                             <img src="/img/pixelfed-icon-color.svg" loading="lazy" width="50px" height="50px">
-                            <span class="font-weight-bold h3 ml-2 pt-2">Pixelfed</span>
+                            <span class="font-weight-bold h3 ml-2 pt-2" style="color: #6a1ae8;">Contrariamente</span>
                         </div>
                         <div class="d-block d-md-none">
                             <p class="font-weight-bold mb-0 text-center">Photo Sharing. For Everyone</p>
@@ -65,7 +65,7 @@
                         <div class="card my-4 shadow-none border">
                             <div class="card-body px-lg-5">
                                 <div class="text-center">
-                                    <p class="small text-uppercase font-weight-bold text-muted">Account Login</p>
+                                    <p class="small text-uppercase font-weight-bold text-muted">{{ __('Account Login') }}</p>
                                 </div>
                                 <div>
                                     <form class="px-1" method="POST" action="{{ route('login') }}" id="login_form">
@@ -100,7 +100,7 @@
                                             <div class="col-md-12">
                                                 <div class="checkbox">
                                                     <label>
-                                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
+                                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                                                         <span class="font-weight-bold small ml-1 text-muted">
                                                             {{ __('Remember Me') }}
                                                         </span>
@@ -128,10 +128,10 @@
                         <div class="card shadow-none border card-body">
                             <p class="text-center mb-0 font-weight-bold small">
                                 @if(config('pixelfed.open_registration'))
-                                <a href="/register">Register</a>
+                                <a href="/register">{{ __('Register') }}</a>
                                 <span class="px-1">·</span>
                                 @endif
-                                <a href="/password/reset">Password Reset</a>
+                                <a href="/password/reset">{{ __('Password Reset') }}</a>
                             </p>
                         </div>
                     </div>
@@ -262,7 +262,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="col-12 col-md-5 offset-md-1">
                     <div class="mb-5">

@@ -131,12 +131,12 @@
 							<div v-if="media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addMedia" class="card-body">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #6a1ae8">
 											<i class="fas fa-bolt text-white fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span>
 											</p>
 											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
 										</div>
@@ -147,9 +147,9 @@
 							<div v-if="config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addText" class="card-body">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #6a1ae8">
 											<i class="far fa-edit text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
 												<span class="h5 mt-0 font-weight-bold text-primary">New Text Post</span>
@@ -168,10 +168,10 @@
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="fas fa-history text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
@@ -185,12 +185,12 @@
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
 								<div class="card-body">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #6a1ae8">
 											<i class="fas fa-images text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
@@ -201,7 +201,7 @@
 								</div>
 							</a>
 
-							
+
 							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>
 							</p>
@@ -253,7 +253,7 @@
 										<div class="nav-link" style="display:block;width:300px;height:300px;" @click="carouselCursor = i">
 											<!-- <img :class="'d-block img-fluid w-100 ' + [m.filter_class?m.filter_class:'']" :src="m.url" :alt="m.description" :title="m.description"> -->
 											<span :class="[m.filter_class?m.filter_class:'']">
-												
+
 												<span :class="'rounded border ' +  [i == carouselCursor ? ' border-primary shadow':'']" :style="'display:block;padding:5px;width:100%;height:100%;background-image: url(' + m.url + ');background-size:cover;border-width:3px !important;'"></span>
 											</span>
 										</div>
@@ -354,7 +354,7 @@
 					</div>
 
 					<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
-						<autocomplete 
+						<autocomplete
 							v-show="taggedUsernames.length < 10"
 							:search="tagSearch"
 							placeholder="@pixelfed"
@@ -395,7 +395,7 @@
 
 					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
 						<p class="mb-0">Add Location</p>
-						<autocomplete 
+						<autocomplete
 							:search="locationSearch"
 							placeholder="Search locations ..."
 							aria-label="Search locations ..."
@@ -483,21 +483,21 @@
 						<div class="list-group list-group-flush">
 							<div
 								v-if="!profile.locked"
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'public' }" 
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'public' }"
 								@click="toggleVisibility('public')">
 								Public
 							</div>
 							<div
 								v-if="!profile.locked"
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'unlisted' }" 
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'unlisted' }"
 								@click="toggleVisibility('unlisted')">
 								Unlisted
 							</div>
-							<div 
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'private' }"  
+							<div
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'private' }"
 								@click="toggleVisibility('private')">
 								Followers Only
 							</div>
@@ -653,7 +653,7 @@ import VueTribute from 'vue-tribute'
 
 export default {
 
-	components: { 
+	components: {
 		VueCropper,
 		Autocomplete,
 		VueTribute
@@ -885,7 +885,7 @@ export default {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
-			
+
 			axios.delete('/api/compose/v0/media/delete', {
 				params: {
 					id: id
@@ -1007,7 +1007,7 @@ export default {
 
 		goBack() {
 			this.pageTitle = '';
-			
+
 			switch(this.page) {
 				case 'addText':
 					this.page = 1;
@@ -1027,8 +1027,8 @@ export default {
 				break;
 
 				default:
-					this.namedPages.indexOf(this.page) != -1 ? 
-					this.page = (this.textMode ? 'addText' : 3) : 
+					this.namedPages.indexOf(this.page) != -1 ?
+					this.page = (this.textMode ? 'addText' : 3) :
 					(this.textMode ? 'addText' : this.page--);
 				break;
 			}
@@ -1044,7 +1044,7 @@ export default {
 				case 'cropPhoto':
 					this.pageLoading = true;
 					let self = this;
-					this.$refs.cropper.getCroppedCanvas({  
+					this.$refs.cropper.getCroppedCanvas({
 							maxWidth: 4096,
 							maxHeight: 4096,
 							fillColor: '#fff',

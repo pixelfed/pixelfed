@@ -13,7 +13,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Name</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('Name') }}</label>
                                 <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
 
                                 @if ($errors->has('name'))
@@ -26,7 +26,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Username</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('Username') }}</label>
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
 
                                 @if ($errors->has('username'))
@@ -39,7 +39,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Email</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('Email') }}</label>
                                 <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
 
                                 @if ($errors->has('email'))
@@ -52,7 +52,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Password</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('Password') }}</label>
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
 
                                 @if ($errors->has('password'))
@@ -65,7 +65,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Confirm Password</label>
+                                <label class="small font-weight-bold text-lighter">{{ __('Confirm Password') }}</label>
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                                 <div class="form-check">
                                   <input class="form-check-input" name="agecheck" type="checkbox" value="true" id="ageCheck" required>
                                   <label class="form-check-label" for="ageCheck">
-                                    I am at least 16 years old
+                                  {{ __('I am at least 16 years old') }}
                                   </label>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                         @endif
 
                         <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
-                        
+
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
