@@ -1762,6 +1762,7 @@ class ApiV1Controller extends Controller
         $ids = $request->input('media_ids');
         $in_reply_to_id = $request->input('in_reply_to_id');
         $user = $request->user();
+        $profile = $user->profile;
 
         $limitKey = 'compose:rate-limit:store:' . $user->id;
         $limitTtl = now()->addMinutes(15);
