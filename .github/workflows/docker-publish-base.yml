@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
       - 'contrib/docker/Dockerfile.base'
+
 jobs:
   build:
     runs-on: ubuntu-latest

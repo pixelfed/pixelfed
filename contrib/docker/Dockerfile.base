@@ -90,3 +90,4 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && rm -rf /var/cache/apt \
   && rm -rf /var/lib/apt/lists/
 
+RUN composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader
