@@ -3,6 +3,8 @@ name: Docker Publish (build/push)
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - 'contrib/docker/Dockerfile.base'
 
 jobs:
   build:
