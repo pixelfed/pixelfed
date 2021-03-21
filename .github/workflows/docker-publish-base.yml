@@ -3,20 +3,14 @@ name: Docker Publish (build/push)
 on:
   push:
     branches: [ master ]
-
+    paths:
+      - 'contrib/docker/Dockerfile.base'
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - run: npm install
-    - run: npm run prod
 
     - name: Docker login
       uses: docker/login-action@v1.5.0
@@ -26,7 +20,7 @@ jobs:
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
     - name: Docker build
-      run: docker build . --file contrib/docker/Dockerfile --tag ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}
+      run: docker build . --file contrib/docker/Dockerfile --tag ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}-base
 
     - name: Docker push
-      run: docker push ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}
+      run: docker push ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}-base
