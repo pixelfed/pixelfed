@@ -1,4 +1,4 @@
-name: Docker Publish (build/push)
+name: Docker Publish Base (build/push)
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 
     - name: Docker build
-      run: docker build . --file contrib/docker/Dockerfile --tag ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}-base
+      run: docker build . --file contrib/docker/Dockerfile.base --tag ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}-base
 
     - name: Docker push
       run: docker push ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.APP_NAME }}-base
