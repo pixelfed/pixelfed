@@ -1,5 +1,7 @@
 FROM gitpod/workspace-mysql
 
+ENV APACHE_LOG_DIR=/workspace/pixelfed/storage/logs
+
 RUN sudo apt-get update \
   && sudo apt-get upgrade -y \
   && sudo apt-get install -y --no-install-recommends \
@@ -29,4 +31,4 @@ RUN sudo apt-get update \
 ## Video Processing
       ffmpeg
 
-RUN mkdir /var/log/apache2 & sudo apt-get install -yq redis-server
+RUN sudo apt-get install -yq redis-server
