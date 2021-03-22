@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths-ignore:
       - 'contrib/docker/Dockerfile.base'
+      - '*.gitpod*'
 
 jobs:
   build:
