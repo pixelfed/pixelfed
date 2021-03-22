@@ -29,4 +29,4 @@ RUN sudo apt-get update \
 ## Video Processing
       ffmpeg
 
-RUN sudo apt-get install -yq redis-server
+RUN mkdir /var/log/apache2 & sudo apt-get install -yq redis-server
