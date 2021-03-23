@@ -8,7 +8,7 @@
 			<div class="card status-card card-md-rounded-0 w-100 h-100 bg-light py-3" style="border-bottom: 1px solid #f1f1f1">
 				<div class="p-5 mt-2">
 					<b-progress :value="uploadProgress" :max="100" striped :animated="true"></b-progress>
-					<p class="text-center mb-0 font-weight-bold">Uploading ... ({{uploadProgress}}%)</p>
+					<p class="text-center mb-0 font-weight-bold">Enviando ... ({{uploadProgress}}%)</p>
 				</div>
 			</div>
 		</div>
@@ -36,7 +36,7 @@
 					<div v-else class="w-100 h-100 d-flex justify-content-center align-items-center">
 						<span class="w-100 h-100">
 							<button type="button" class="btn btn-primary">Upload</button>
-							<button type="button" class="btn btn-primary" @click="fetchCameraRollDrafts()">Load Camera Roll</button>
+							<button type="button" class="btn btn-primary" @click="fetchCameraRollDrafts()">Carregar fotos</button>
 						</span>
 					</div>
 				</div>
@@ -55,7 +55,7 @@
 							<!-- <button v-if="config.uploader.album_limit > media.length" class="btn btn-outline-primary btn-sm font-weight-bold" @click.prevent="page = 'cameraRoll'" data-toggle="tooltip" data-placement="bottom" title="Upload another photo or video" ><i class="fas fa-chevron-left"></i> Camera Roll</button> -->
 							<button v-else class="btn btn-outline-secondary btn-sm font-weight-bold" disabled><i class="fas fa-plus"></i></button>
 							<b-tooltip target="cm-add-media-btn" triggers="hover">
-								Upload another photo or video
+								Enviar outra foto ou vídeo
 							</b-tooltip>
 						</span>
 						<span v-else-if="page == 3">
@@ -73,18 +73,18 @@
 					<div v-if="page == 2">
 						<a v-if="media.length == 1" href="#" class="text-center text-dark" @click.prevent="showCropPhotoCard" title="Crop & Resize" id="cm-crop-btn"><i class="fas fa-crop-alt fa-lg"></i></a>
 						<b-tooltip target="cm-crop-btn" triggers="hover">
-							Crop & Resize
+							Cortar & Redimensionar
 						</b-tooltip>
 					</div>
 					<div>
 						<!-- <a v-if="page > 1" class="font-weight-bold text-decoration-none" href="#" @click.prevent="page--">Back</a> -->
 						<span v-if="pageLoading">
 							<div class="spinner-border spinner-border-sm" role="status">
-								<span class="sr-only">Loading...</span>
+								<span class="sr-only">Carregando...</span>
 							</div>
 						</span>
 						<span v-else>
-							<a v-if="!pageLoading && (page > 1 && page <= 2) || (page == 1 && ids.length != 0) || page == 'cropPhoto'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
+							<a v-if="!pageLoading && (page > 1 && page <= 2) || (page == 1 && ids.length != 0) || page == 'cropPhoto'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Próximo</a>
 							<a v-if="!pageLoading && page == 3" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
 							<a v-if="!pageLoading && page == 'addText'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="composeTextPost()">Post</a>
 						</span>
@@ -113,9 +113,9 @@
 											<a class="btn btn-outline-lighter rounded-pill mx-3" href="#" @click.prevent="showTagCard()">
 												<i class="fas fa-user-plus px-3"></i>
 											</a> -->
-											<a class="btn rounded-pill mx-3 d-inline-flex align-items-center" href="#" :class="[nsfw ? 'btn-danger' : 'btn-outline-lighter']" style="height: 37px;" @click.prevent="nsfw = !nsfw" title="Mark as sensitive/not safe for work">
+											<!-- <a class="btn rounded-pill mx-3 d-inline-flex align-items-center" href="#" :class="[nsfw ? 'btn-danger' : 'btn-outline-lighter']" style="height: 37px;" @click.prevent="nsfw = !nsfw" title="Mark as sensitive/not safe for work">
 												<i class="far fa-flag px-3"></i> <span class="text-muted small font-weight-bold"></span>
-											</a>
+											</a> -->
 											<a class="btn btn-outline-lighter rounded-pill d-inline-flex align-items-center" href="#" style="height: 37px;" @click.prevent="showVisibilityCard()">
 												<i class="fas fa-eye mr-2"></i> <span class="text-muted small font-weight-bold">{{visibilityTag}}</span>
 											</a>
@@ -138,7 +138,7 @@
 											<p class="mb-0">
 												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span>
 											</p>
-											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
+											<p class="mb-0 text-muted">Compartilhe até {{config.uploader.album_limit}} fotos ou vídeos</p>
 										</div>
 									</div>
 								</div>
@@ -152,12 +152,12 @@
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Text Post</span>
+												<span class="h5 mt-0 font-weight-bold text-primary">Novo post de texto</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">Share a text only post</p>
+											<p class="mb-0 text-muted">Compartilhar post de texto</p>
 										</div>
 									</div>
 								</div>
@@ -195,7 +195,7 @@
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">New collection of posts</p>
+											<p class="mb-0 text-muted">Nova coleção de posts</p>
 										</div>
 									</div>
 								</div>
@@ -203,7 +203,7 @@
 
 
 							<p class="py-3">
-								<a class="font-weight-bold" href="/site/help">Help</a>
+								<a class="font-weight-bold" href="/site/help">Ajuda</a>
 							</p>
 						</div>
 					</div>
@@ -235,7 +235,7 @@
 										<div class="p-1 pt-3">
 											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 										</div>
-										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">Sem filtro</a>
 									</li>
 									<li class="nav-item" v-for="(filter, index) in filters">
 										<div class="p-1 pt-3">
@@ -272,7 +272,7 @@
 										<div class="p-1 pt-3">
 											<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 										</div>
-										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+										<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">Sem filtro</a>
 									</li>
 									<li class="nav-item" v-for="(filter, index) in filters">
 										<div class="p-1 pt-3">
@@ -303,7 +303,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="border-bottom d-flex justify-content-between px-4 mb-0 py-2 ">
+						<!-- <div class="border-bottom d-flex justify-content-between px-4 mb-0 py-2 ">
 							<div>
 								<div class="text-dark ">Contains NSFW Media</div>
 							</div>
@@ -313,17 +313,17 @@
 									<label class="custom-control-label" for="asnsfw"></label>
 								</div>
 							</div>
+						</div> -->
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Marcar alguém <span class="ml-2 badge badge-primary">NEW</span></p>
 						</div>
 						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people <span class="ml-2 badge badge-primary">NEW</span></p>
-						</div>
-						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Adicionar localização</p>
 							<p v-else class="px-4 mb-0 py-2">
-								<span class="text-lighter">Location:</span> {{place.name}}, {{place.country}}
+								<span class="text-lighter">Localização:</span> {{place.name}}, {{place.country}}
 								<span class="float-right">
-									<a href="#" @click.prevent="showLocationCard()" class="btn btn-outline-secondary btn-sm small mr-2" style="font-size:10px;padding:3px;text-transform: uppercase">Edit</a>
-									<a href="#" @click.prevent="place = false" class="btn btn-outline-secondary btn-sm small" style="font-size:10px;padding:3px;text-transform: uppercase">Remove</a>
+									<a href="#" @click.prevent="showLocationCard()" class="btn btn-outline-secondary btn-sm small mr-2" style="font-size:10px;padding:3px;text-transform: uppercase">Editar</a>
+									<a href="#" @click.prevent="place = false" class="btn btn-outline-secondary btn-sm small" style="font-size:10px;padding:3px;text-transform: uppercase">Remover</a>
 								</span>
 							</p>
 						</div>
@@ -349,7 +349,7 @@
 						</div> -->
 
 						<div style="min-height: 200px;">
-							<p class="px-4 mb-0 py-2 small font-weight-bold text-muted cursor-pointer" @click="showAdvancedSettingsCard()">Advanced settings</p>
+							<p class="px-4 mb-0 py-2 small font-weight-bold text-muted cursor-pointer" @click="showAdvancedSettingsCard()">Avançado</p>
 						</div>
 					</div>
 
@@ -364,7 +364,7 @@
 							ref="autocomplete"
 						>
 						</autocomplete>
-						<p v-show="taggedUsernames.length < 10" class="font-weight-bold text-muted small">You can tag {{10 - taggedUsernames.length}} more {{taggedUsernames.length == 9 ? 'person' : 'people'}}!</p>
+						<p v-show="taggedUsernames.length < 10" class="font-weight-bold text-muted small">Você pode marcar até {{10 - taggedUsernames.length}} more {{taggedUsernames.length == 9 ? 'pessoa' : 'pessoas'}}!</p>
 						<p class="font-weight-bold text-center mt-3">Tagged People</p>
 						<div class="list-group">
 							<div v-for="(tag, index) in taggedUsernames" class="list-group-item d-flex justify-content-between">
@@ -376,29 +376,29 @@
 								</div>
 								<div class="custom-control custom-switch">
 									<input type="checkbox" class="custom-control-input disabled" :id="'cci-tagged-privacy-switch'+index" v-model="tag.privacy" disabled>
-									<label class="custom-control-label font-weight-bold text-lighter" :for="'cci-tagged-privacy-switch'+index">{{tag.privacy ? 'Public' : 'Private'}}</label>
+									<label class="custom-control-label font-weight-bold text-lighter" :for="'cci-tagged-privacy-switch'+index">{{tag.privacy ? 'Público' : 'Privado'}}</label>
 								<a href="#" @click.prevent="untagUsername(index)" class="ml-3"><i class="fas fa-times text-muted"></i></a></div>
 							</div>
 							<div v-if="taggedUsernames.length == 0" class="list-group-item p-3">
-								<p class="text-center mb-0 font-weight-bold text-lighter">Search usernames to tag.</p>
+								<p class="text-center mb-0 font-weight-bold text-lighter">Procurar pessoas ou tags.</p>
 							</div>
 						</div>
-						<p class="font-weight-bold text-center small text-muted pt-3 mb-0">When you tag someone, they are sent a notification.<br>For more information on tagging, <a href="#" class="text-primary" @click.prevent="showTagHelpCard()">click here</a>.</p>
+						<p class="font-weight-bold text-center small text-muted pt-3 mb-0">Quando você marcar alguém, a pessoa marcada irá receber uma notificação.<br>Para mais informações, <a href="#" class="text-primary" @click.prevent="showTagHelpCard()">clique aqui</a>.</p>
 					</div>
 
 					<div v-if="page == 'tagPeopleHelp'" class="w-100 h-100 p-3">
-						<p class="mb-0 text-center py-3 px-2 lead">Tagging someone is like mentioning them, with the option to make it private between you.</p>
+						<p class="mb-0 text-center py-3 px-2 lead">Ao marcar alguém você tem a opção de manter isso apenas entre vocês.</p>
 						<p class="mb-3 py-3 px-2 font-weight-lighter">
-							You can choose to tag someone in public or private mode. Public mode will allow others to see who you tagged in the post and private mode tagged users will not be shown to others.
+                            Você poderá selecionar o modo Público ou Privado. No modo Público essa referência será exibida para todos que visualizarem este post. No modo privado apenas você e a pessoa marcada podem ver.
 						</p>
 					</div>
 
 					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
-						<p class="mb-0">Add Location</p>
+						<p class="mb-0">Adicionar localização</p>
 						<autocomplete
 							:search="locationSearch"
-							placeholder="Search locations ..."
-							aria-label="Search locations ..."
+							placeholder="Procurar locais ..."
+							aria-label="Procurar locais ..."
 							:get-result-value="getResultValue"
 							@submit="onSubmitLocation"
 						>
@@ -422,8 +422,8 @@
 							</div> -->
 							<div class="list-group-item d-flex justify-content-between">
 								<div>
-									<div class="text-dark ">Turn off commenting</div>
-									<p class="text-muted small mb-0">Disables comments for this post, you can change this later.</p>
+									<div class="text-dark ">Desabilitar comentários</div>
+									<p class="text-muted small mb-0">Desabilitar os comentários neste post. Você poderá alterar essa opção posteriormente.</p>
 								</div>
 								<div>
 									<div class="custom-control custom-switch" style="z-index: 9999;">
@@ -432,7 +432,7 @@
 									</div>
 								</div>
 							</div>
-							<a href="#" class="list-group-item" @click.prevent="showMediaDescriptionsCard()">
+							<!-- <a href="#" class="list-group-item" @click.prevent="showMediaDescriptionsCard()">
 								<div class="d-flex justify-content-between align-items-center">
 									<div>
 										<div class="text-dark">Media Descriptions</div>
@@ -442,7 +442,7 @@
 										<i class="fas fa-chevron-right fa-lg text-lighter"></i>
 									</div>
 								</div>
-							</a>
+							</a> -->
 							<!-- <a href="#" class="list-group-item" @click.prevent="showAddToCollectionsCard()">
 								<div class="d-flex justify-content-between align-items-center">
 									<div>

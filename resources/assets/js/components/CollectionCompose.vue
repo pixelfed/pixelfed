@@ -3,7 +3,7 @@
 	<div v-if="loaded" class="row">
 		<div class="col-12 col-md-6 offset-md-3 pt-5">
 			<div class="text-center pb-4">
-				<h1>Create Collection</h1>
+				<h1>Criar álbum</h1>
 			</div>
 		</div>
 		<div class="col-12 col-md-4 pt-3">
@@ -12,32 +12,32 @@
 					<div>
 						<form>
 							<div class="form-group">
-								<label for="title" class="font-weight-bold text-muted">Title</label>
-								<input type="text" class="form-control" id="title" placeholder="Collection Title" v-model="collection.title">
+								<label for="title" class="font-weight-bold text-muted">Título</label>
+								<input type="text" class="form-control" id="title" placeholder="Título do álbum" v-model="collection.title">
 							</div>
 							<div class="form-group">
-								<label for="description" class="font-weight-bold text-muted">Description</label>
-								<textarea class="form-control" id="description" placeholder="Example description here" v-model="collection.description" rows="3">
+								<label for="description" class="font-weight-bold text-muted">Descrição</label>
+								<textarea class="form-control" id="description" placeholder="Descrição do álbum" v-model="collection.description" rows="3">
 								</textarea>
 							</div>
 							<div class="form-group">
-								<label for="visibility" class="font-weight-bold text-muted">Visibility</label>
+								<label for="visibility" class="font-weight-bold text-muted">Visibilidade</label>
 								<select class="custom-select" v-model="collection.visibility">
-									<option value="public">Public</option>
-									<option value="private">Followers Only</option>
+									<option value="public">Público</option>
+									<option value="private">Somente seguidores</option>
 								</select>
 							</div>
 						</form>
 						<hr>
 						<p>
-							<button v-if="posts.length > 0" type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publish</button>
-							<button v-else type="button" class="btn btn-primary font-weight-bold btn-block disabled" disabled>Publish</button>
+							<button v-if="posts.length > 0" type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publicar</button>
+							<button v-else type="button" class="btn btn-primary font-weight-bold btn-block disabled" disabled>Publicar</button>
 						</p>
 						<p>
-							<button type="button" class="btn btn-outline-primary font-weight-bold btn-block" @click="save">Save</button>
+							<button type="button" class="btn btn-outline-primary font-weight-bold btn-block" @click="save">Salvar</button>
 						</p>
 						<p class="mb-0">
-							<button type="button" class="btn btn-outline-secondary font-weight-bold btn-block" @click="deleteCollection">Delete</button>
+							<button type="button" class="btn btn-outline-secondary font-weight-bold btn-block" @click="deleteCollection">Apagar</button>
 						</p>
 					</div>
 				</div>
@@ -47,10 +47,10 @@
 			<div>
 				<ul class="nav nav-tabs">
 					<li class="nav-item">
-						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Add Posts</a>
+						<a :class="[tab == 'add' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'add'">Adicionar posts</a>
 					</li>
 					<li class="nav-item">
-						<a :class="[tab == 'all' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'all'">Preview</a>
+						<a :class="[tab == 'all' ? 'nav-link font-weight-bold bg-white active' : 'nav-link font-weight-bold text-muted']" href="#" @click.prevent="tab = 'all'">Visualizar</a>
 					</li>
 				</ul>
 			</div>
@@ -83,12 +83,12 @@
 					</div>
 					<div v-if="tab == 'add'">
 						<div class="form-group">
-							<label for="title" class="font-weight-bold text-muted">Add Post by URL</label>
+							<label for="title" class="font-weight-bold text-muted">Adicionar post pela URL</label>
 							<input type="text" class="form-control" placeholder="https://pixelfed.dev/p/admin/1" v-model="id">
-							<p class="help-text small text-muted">Only local, public posts can be added</p>
+							<p class="help-text small text-muted">Somente posts públicos podem ser adicionados</p>
 						</div>
 						<div class="form-group pt-4">
-							<label for="title" class="font-weight-bold text-muted">Add Recent Post</label>
+							<label for="title" class="font-weight-bold text-muted">Adicionar post recente</label>
 							<div>
 								<div v-for="(s, index) in recentPosts" :class="[selectedPost == s.id ? 'box-shadow border border-warning d-inline-block m-1':'d-inline-block m-1']" @click="selectPost(s)">
 									<div class="cursor-pointer" :style="'width: 175px; height: 175px; ' + previewBackground(s)"></div>
@@ -96,10 +96,10 @@
 							</div>
 						</div>
 						<hr>
-						<button type="button" class="btn btn-primary font-weight-bold btn-block" @click="addId">Add Post</button>
+						<button type="button" class="btn btn-primary font-weight-bold btn-block" @click="addId">Adicionar post</button>
 					</div>
 					<div v-if="tab == 'order'">
-						
+
 					</div>
 				</div>
 			</div>
@@ -234,7 +234,7 @@ export default {
 			axios.post('/api/local/collection/' + this.collectionId + '/publish', {
 				title: this.collection.title,
 				description: this.collection.description,
-				visibility: this.collection.visibility	
+				visibility: this.collection.visibility
 			})
 			.then(res => {
 				window.location.href = res.data;
@@ -250,12 +250,12 @@ export default {
 				visibility: this.collection.visibility
 			})
 			.then(res => {
-				swal('Saved!', 'You have successfully saved this collection.', 'success');
+				swal('Pront!', 'Seu álbum está salvo.', 'success');
 			});
 		},
 
 		deleteCollection() {
-			let confirm = window.confirm('Are you sure you want to delete this collection?');
+			let confirm = window.confirm('Tem certeza que deseja apagar esta álbum?');
 			if(!confirm) {
 				return;
 			}

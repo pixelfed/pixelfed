@@ -5,19 +5,19 @@
 				<span v-bind:class="[size =='lg' ? 'fas fa-ellipsis-v fa-lg text-muted' : 'fas fa-ellipsis-v fa-sm text-lighter']"></span>
 			</button>
 			<div class="dropdown-menu dropdown-menu-right">
-				<a class="dropdown-item font-weight-bold text-decoration-none" :href="status.url">Go to post</a>
+				<a class="dropdown-item font-weight-bold text-decoration-none" :href="status.url">Ir para o post</a>
 				<!-- <a class="dropdown-item font-weight-bold text-decoration-none" href="#">Share</a>
 				<a class="dropdown-item font-weight-bold text-decoration-none" href="#">Embed</a> -->
 				<span v-if="activeSession == true && statusOwner(status) == false">
 					<a class="dropdown-item font-weight-bold" :href="reportUrl(status)">Report</a>
 				</span>
 				<span v-if="activeSession == true && statusOwner(status) == true">
-					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="muteProfile(status)">Mute Profile</a>
-					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="blockProfile(status)">Block Profile</a>
+					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="muteProfile(status)">Silenciar perfil</a>
+					<a class="dropdown-item font-weight-bold text-decoration-none" @click.prevent="blockProfile(status)">Bloquear perfil</a>
 				</span>
 				<span v-if="activeSession == true && profile.is_admin == true">
 					<div class="dropdown-divider"></div>
-					<a class="dropdown-item font-weight-bold text-danger text-decoration-none" v-on:click="deletePost(status)">Delete</a>
+					<a class="dropdown-item font-weight-bold text-danger text-decoration-none" v-on:click="deletePost(status)">Apagar</a>
 					<div class="dropdown-divider"></div>
 					<h6 class="dropdown-header">Mod Tools</h6>
 					<a class="dropdown-item font-weight-bold text-decoration-none" v-on:click="moderatePost(status, 'autocw')">
@@ -53,12 +53,12 @@
 					<div class="modal-content">
 						<div class="modal-body text-center">
 							<div class="list-group text-dark">
-								<a class="list-group-item text-dark text-decoration-none" :href="status.url">Go to post</a>
+								<a class="list-group-item text-dark text-decoration-none" :href="status.url">Ir para o post</a>
 								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
-								<a class="list-group-item text-dark text-decoration-none" href="#" @click.prevent="hidePost(status)">Hide</a>
-								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-danger font-weight-bold text-decoration-none" :href="reportUrl(status)">Report</a>
-								<div v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true" class="list-group-item text-danger font-weight-bold cursor-pointer" @click.prevent="deletePost">Delete</div>
+								<a class="list-group-item text-dark text-decoration-none" href="#" @click.prevent="hidePost(status)">Ocultar</a>
+								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-danger font-weight-bold text-decoration-none" :href="reportUrl(status)">Reportar</a>
+								<div v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true" class="list-group-item text-danger font-weight-bold cursor-pointer" @click.prevent="deletePost">Apagar</div>
 							</div>
 						</div>
 					</div>
@@ -180,7 +180,7 @@
 					type: 'user',
 					item: status.account.id
 				}).then(res => {
-					swal('Success', 'You have successfully muted ' + status.account.acct, 'success');
+					swal('Success', 'Você silenciou ' + status.account.acct, 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
@@ -195,7 +195,7 @@
 					type: 'user',
 					item: status.account.id
 				}).then(res => {
-					swal('Success', 'You have successfully blocked ' + status.account.acct, 'success');
+					swal('Success', 'Você bloqueou ' + status.account.acct, 'success');
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});

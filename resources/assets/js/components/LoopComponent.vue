@@ -20,7 +20,7 @@
 						</div>
 						<div class="card-body">
 							<p class="username font-weight-bolder lead d-flex justify-content-between">
-								<a :href="loop.account.url" :title="loop.account.acct">{{truncate(loop.account.acct)}}</a> 
+								<a :href="loop.account.url" :title="loop.account.acct">{{truncate(loop.account.acct)}}</a>
 								<a :href="loop.url">{{timestamp(loop)}}</a></p>
 							<p class="small text-muted text-truncate" v-html="getTitle(loop)"></p>
 							<div class="small text-muted d-flex justify-content-between mb-0">
@@ -81,7 +81,7 @@ export default {
 				this.loops = res.data;
 				this.loading = false;
 			})
-	}, 
+	},
 
 	methods: {
 		videoSrc(loop) {

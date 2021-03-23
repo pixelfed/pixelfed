@@ -15,16 +15,16 @@
 						<div class="d-flex justify-content-between align-items-center">
 							<p v-if="authenticated && tags.length" class="pt-3 mr-4">
 								<button v-if="!following" type="button" class="btn btn-primary font-weight-bold py-1 px-5" @click="followHashtag">
-									Follow
+									Seguir
 								</button>
 								<button v-else type="button" class="btn btn-outline-secondary font-weight-bold py-1 px-5" @click="unfollowHashtag">
-									Unfollow
+									Deixar de seguir
 								</button>
 							</p>
-							<div class="custom-control custom-switch">
+							<!-- <div class="custom-control custom-switch">
 								<input type="checkbox" class="custom-control-input" id="nsfwSwitch" v-model="forceNsfw">
 								<label class="custom-control-label font-weight-bold text-muted" for="nsfwSwitch">Show NSFW Content</label>
-							</div>
+							</div> -->
 						</div>
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 					</a>
 				</div>
 			</div>
-			<p class="font-weight-bold text-muted mb-0">Most Recent</p>
+			<p class="font-weight-bold text-muted mb-0">Recentes</p>
 			<div class="row">
 				<div v-for="(tag, index) in tags" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
 					<a class="card info-overlay card-md-border-0" :href="tag.status.url">
@@ -112,12 +112,12 @@
 			</div>
 		</div>
 		<div v-else>
-			<p class="text-center lead font-weight-bold">No public posts found.</p>
+			<p class="text-center lead font-weight-bold">Nenhum post encontrado.</p>
 		</div>
 	</div>
 	<div v-else class="container text-center">
 		<div class="mt-5 spinner-border" role="status">
-			<span class="sr-only">Loading...</span>
+			<span class="sr-only">Carregando...</span>
 		</div>
 	</div>
 </div>
@@ -227,7 +227,7 @@
 				}).then(res => {
 					this.following = false;
 				});
-			},	
+			},
 
 		}
 	}

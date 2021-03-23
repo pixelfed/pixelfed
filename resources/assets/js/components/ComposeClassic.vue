@@ -14,10 +14,10 @@
 							<span class="fas fa-ellipsis-v fa-lg text-muted"></span>
 						</button>
 						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-							<div class="dropdown-item small font-weight-bold" v-on:click="createCollection">Create Collection</div>
+							<div class="dropdown-item small font-weight-bold" v-on:click="createCollection">Criar álbum</div>
 							<div class="dropdown-divider"></div>
-							<div class="dropdown-item small font-weight-bold" v-on:click="about">About</div>
-							<div class="dropdown-item small font-weight-bold" v-on:click="closeModal">Close</div>
+							<div class="dropdown-item small font-weight-bold" v-on:click="about">Sobre</div>
+							<div class="dropdown-item small font-weight-bold" v-on:click="closeModal">Fechar</div>
 						</div>
 					</div>
 				</div>
@@ -28,24 +28,24 @@
 					<div class="w-100 h-100 bg-light py-5" style="border-bottom: 1px solid #f1f1f1">
 						<div class="p-5">
 							<b-progress :value="uploadProgress" :max="100" striped :animated="true"></b-progress>
-							<p class="text-center mb-0 font-weight-bold">Uploading ... ({{uploadProgress}}%)</p>
+							<p class="text-center mb-0 font-weight-bold">Enviando ... ({{uploadProgress}}%)</p>
 						</div>
 					</div>
 				</div>
 				<div v-else>
 					<div v-if="ids.length > 0 && ids.length != config.uploader.album_limit" class="card-header py-2 bg-primary m-2 rounded cursor-pointer" v-on:click="addMedia($event)">
-						<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Add Photo</p>
+						<p class="text-center mb-0 font-weight-bold text-white"><i class="fas fa-plus mr-1"></i> Adicionar foto</p>
 					</div>
 					<div v-if="ids.length == 0" class="w-100 h-100 bg-light py-5 cursor-pointer" style="border-bottom: 1px solid #f1f1f1" v-on:click="addMedia($event)">
 						<div class="p-5">
 							<p class="text-center font-weight-bold">{{composeMessage()}}</p>
-							<p class="text-muted mb-0 small text-center">Accepted Formats: <b>{{acceptedFormats()}}</b></p>
-							<p class="text-muted mb-0 small text-center">Max File Size: <b>{{maxSize()}}</b></p>
-							<p class="text-muted mb-0 small text-center">Albums can contain up to <b>{{config.uploader.album_limit}}</b> photos or videos</p>
+							<p class="text-muted mb-0 small text-center">Formatos: <b>{{acceptedFormats()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Tamanho máximo: <b>{{maxSize()}}</b></p>
+							<p class="text-muted mb-0 small text-center">Álbums podem ter até <b>{{config.uploader.album_limit}}</b> fotos ou vídeos</p>
 						</div>
 					</div>
 					<div v-if="ids.length > 0">
-						
+
 						<b-carousel id="p-carousel"
 							style="text-shadow: 1px 1px 2px #333;"
 							controls
@@ -67,7 +67,7 @@
 								<div class="p-1 pt-3">
 									<img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, null)" class="cursor-pointer">
 								</div>
-								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">No Filter</a>
+								<a :class="[media[carouselCursor].filter_class == null ? 'nav-link text-white active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, null)">Sem filtro</a>
 							</li>
 							<li class="nav-item" v-for="(filter, index) in filters">
 								<div class="p-1 pt-3">
@@ -81,11 +81,11 @@
 				<div v-if="ids.length > 0 && ['Image', 'Video'].indexOf(media[carouselCursor].type) != -1" class="bg-lighter p-2 row">
 					<div v-if="media[carouselCursor].type == 'Image'" class="col-12">
 						<div class="form-group">
-							<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Optional image description">
+							<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Opcional: descrição da foto">
 						</div>
 
 						<div class="form-group">
-							<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="Optional media license">
+							<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="Opcional: licença de uso da imagem">
 						</div>
 					</div>
 					<!-- <div class="col-6 pt-2">
@@ -93,7 +93,7 @@
 						<button class="btn btn-outline-secondary btn-sm"><i class="fas fa-tools"></i></button>
 					</div> -->
 					<div class="col-12 text-right pt-2">
-						<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()">Delete Media</button>
+						<button class="btn btn-outline-danger btn-sm font-weight-bold mr-1" v-on:click="deleteMedia()">Apagar</button>
 					</div>
 				</div>
 			</div>
@@ -107,7 +107,7 @@
 			<div class="card-footer">
 				<div class="d-flex justify-content-between align-items-center">
 					<div>
-						<div class="custom-control custom-switch d-inline mr-3">
+						<div class="custom-control custom-switch d-inline mr-3" style="visibility: hidden">
 							<input type="checkbox" class="custom-control-input" id="nsfwToggle" v-model="nsfw">
 							<label class="custom-control-label small font-weight-bold text-muted pt-1" for="nsfwToggle">NSFW</label>
 						</div>
@@ -120,55 +120,55 @@
 									<div class="row">
 										<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 											<i class="fas fa-globe"></i>
-										</div> 
+										</div>
 										<div class="col-12 col-sm-10 pl-2">
-											<p class="font-weight-bold mb-0">Public</p>
-											<p class="small mb-0">Anyone can see</p>
-										</div> 
+											<p class="font-weight-bold mb-0">Público</p>
+											<p class="small mb-0">Todos podem ver</p>
+										</div>
 									</div>
 								</a>
 								<a :class="[visibility=='private'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Followers Only" v-on:click.prevent="visibility = 'private'">
 									<div class="row">
 										<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 											<i class="fas fa-lock"></i>
-										</div> 
+										</div>
 										<div class="col-12 col-sm-10 pl-2">
-											<p class="font-weight-bold mb-0">Followers Only</p>
-											<p class="small mb-0">Only followers can see</p>
-										</div> 
+											<p class="font-weight-bold mb-0">Somente seguidores</p>
+											<p class="small mb-0">Somente quem te segue pode ver</p>
+										</div>
 									</div>
 								</a>
 								<a :class="[visibility=='unlisted'?'dropdown-item active':'dropdown-item']" href="#" data-id="private" data-title="Unlisted" v-on:click.prevent="visibility = 'unlisted'">
 									<div class="row">
 										<div class="d-none d-block-sm col-sm-2 px-0 text-center">
 											<i class="fas fa-lock"></i>
-										</div> 
+										</div>
 										<div class="col-12 col-sm-10 pl-2">
-											<p class="font-weight-bold mb-0">Unlisted</p>
-											<p class="small mb-0">Not listed on public timelines</p>
-										</div> 
+											<p class="font-weight-bold mb-0">Invisível</p>
+											<p class="small mb-0">Somente você pode ver</p>
+										</div>
 									</div>
 								</a>
 								<!-- <a class="dropdown-item" href="#" data-id="circle" data-title="Circle">
 									<div class="row">
 										<div class="col-12 col-sm-2 px-0 text-center">
 											<i class="far fa-circle"></i>
-										</div> 
+										</div>
 										<div class="col-12 col-sm-10 pl-2">
 											<p class="font-weight-bold mb-0">Circle</p>
 											<p class="small mb-0">Select a circle</p>
-										</div> 
+										</div>
 									</div>
 								</a>
 								<a class="dropdown-item" href="#" data-id="direct" data-title="Direct Message">
 									<div class="row">
 										<div class="col-12 col-sm-2 px-0 text-center">
 											<i class="fas fa-envelope"></i>
-										</div> 
+										</div>
 										<div class="col-12 col-sm-10 pl-2">
 											<p class="font-weight-bold mb-0">Direct Message</p>
 											<p class="small mb-0">Recipients only</p>
-										</div> 
+										</div>
 									</div>
 								</a> -->
 							</div>
@@ -191,7 +191,7 @@
 								<a :class="[composeState == 'delete' ?'dropdown-item font-weight-bold active':'dropdown-item font-weight-bold ']" href="#" v-on:click.prevent="composeState = 'delete'">Delete</a> - ->
 							</div>
 						</div> -->
-						<button class="btn btn-primary btn-sm font-weight-bold px-3" v-on:click="compose()">Publish</button>
+						<button class="btn btn-primary btn-sm font-weight-bold px-3" v-on:click="compose()">Publicar</button>
 					</div>
 				</div>
 			</div>
@@ -249,46 +249,46 @@ export default {
 	mounted() {
 		this.mediaWatcher();
 		this.filters = [
-			['1977','filter-1977'], 
-			['Aden','filter-aden'], 
-			['Amaro','filter-amaro'], 
-			['Ashby','filter-ashby'], 
-			['Brannan','filter-brannan'], 
-			['Brooklyn','filter-brooklyn'], 
-			['Charmes','filter-charmes'], 
-			['Clarendon','filter-clarendon'], 
-			['Crema','filter-crema'], 
-			['Dogpatch','filter-dogpatch'], 
-			['Earlybird','filter-earlybird'], 
-			['Gingham','filter-gingham'], 
-			['Ginza','filter-ginza'], 
-			['Hefe','filter-hefe'], 
-			['Helena','filter-helena'], 
-			['Hudson','filter-hudson'], 
-			['Inkwell','filter-inkwell'], 
-			['Kelvin','filter-kelvin'], 
-			['Kuno','filter-juno'], 
-			['Lark','filter-lark'], 
-			['Lo-Fi','filter-lofi'], 
-			['Ludwig','filter-ludwig'], 
-			['Maven','filter-maven'], 
-			['Mayfair','filter-mayfair'], 
-			['Moon','filter-moon'], 
-			['Nashville','filter-nashville'], 
-			['Perpetua','filter-perpetua'], 
-			['Poprocket','filter-poprocket'], 
-			['Reyes','filter-reyes'], 
-			['Rise','filter-rise'], 
-			['Sierra','filter-sierra'], 
-			['Skyline','filter-skyline'], 
-			['Slumber','filter-slumber'], 
-			['Stinson','filter-stinson'], 
-			['Sutro','filter-sutro'], 
-			['Toaster','filter-toaster'], 
-			['Valencia','filter-valencia'], 
-			['Vesper','filter-vesper'], 
-			['Walden','filter-walden'], 
-			['Willow','filter-willow'], 
+			['1977','filter-1977'],
+			['Aden','filter-aden'],
+			['Amaro','filter-amaro'],
+			['Ashby','filter-ashby'],
+			['Brannan','filter-brannan'],
+			['Brooklyn','filter-brooklyn'],
+			['Charmes','filter-charmes'],
+			['Clarendon','filter-clarendon'],
+			['Crema','filter-crema'],
+			['Dogpatch','filter-dogpatch'],
+			['Earlybird','filter-earlybird'],
+			['Gingham','filter-gingham'],
+			['Ginza','filter-ginza'],
+			['Hefe','filter-hefe'],
+			['Helena','filter-helena'],
+			['Hudson','filter-hudson'],
+			['Inkwell','filter-inkwell'],
+			['Kelvin','filter-kelvin'],
+			['Kuno','filter-juno'],
+			['Lark','filter-lark'],
+			['Lo-Fi','filter-lofi'],
+			['Ludwig','filter-ludwig'],
+			['Maven','filter-maven'],
+			['Mayfair','filter-mayfair'],
+			['Moon','filter-moon'],
+			['Nashville','filter-nashville'],
+			['Perpetua','filter-perpetua'],
+			['Poprocket','filter-poprocket'],
+			['Reyes','filter-reyes'],
+			['Rise','filter-rise'],
+			['Sierra','filter-sierra'],
+			['Skyline','filter-skyline'],
+			['Slumber','filter-slumber'],
+			['Stinson','filter-stinson'],
+			['Sutro','filter-sutro'],
+			['Toaster','filter-toaster'],
+			['Valencia','filter-valencia'],
+			['Vesper','filter-vesper'],
+			['Walden','filter-walden'],
+			['Willow','filter-willow'],
 			['X-Pro II','filter-xpro-ii']
 		];
 	},
@@ -320,14 +320,14 @@ export default {
 				Array.prototype.forEach.call(io.files, function(io, i) {
 					self.uploading = true;
 					if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
-						swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
+						swal('Error', 'Você só pode enviar ' + self.config.uploader.album_limit + ' fotos por álbum', 'error');
 						return;
 					}
 					let type = io.type;
 					let acceptedMimes = self.config.uploader.media_types.split(',');
 					let validated = $.inArray(type, acceptedMimes);
 					if(validated == -1) {
-						swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+self.config.uploader.media_types+' only.', 'error');
+						swal('Invalid File Type', 'Tipo de arquivo inválido. Somente os tipos '+self.config.uploader.media_types+' são permitidos.', 'error');
 						return;
 					}
 
@@ -352,7 +352,7 @@ export default {
 					}).catch(function(e) {
 						self.uploading = false;
 						io.value = null;
-						swal('Oops, something went wrong!', 'An unexpected error occurred.', 'error');
+						swal('Oops!', 'Não foi possível completar sua solicitação.', 'error');
 					});
 					io.value = null;
 					self.uploadProgress = 0;
@@ -369,7 +369,7 @@ export default {
 		},
 
 		deleteMedia() {
-			if(window.confirm('Are you sure you want to delete this media?') == false) {
+			if(window.confirm('Confirma a exclusão deste arquivo?') == false) {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
@@ -387,13 +387,13 @@ export default {
 				this.ids.splice(this.carouselCursor, 1);
 				this.media.splice(this.carouselCursor, 1);
 			}).catch(err => {
-				swal('Whoops!', 'An error occured when attempting to delete this, please try again', 'error');
+				swal('Oops!', 'Não foi possível completar sua solicitação.', 'error');
 			});
 		},
 
 		mediaAltText() {
 			return;
-			// deprecate 
+			// deprecate
 			swal({
 				text: 'Add a media description',
 				content: "input"
@@ -436,7 +436,7 @@ export default {
 			switch(state) {
 				case 'publish' :
 					if(this.media.length == 0) {
-						swal('Whoops!', 'You need to add media before you can save this!', 'warning');
+						swal('Oops!', 'Você precisar adicionar alguma foto antes de salvar!', 'warning');
 						return;
 					}
 					if(this.composeText == 'Add optional caption...') {
@@ -478,8 +478,8 @@ export default {
 				<p class="small font-weight-bold">Please visit the <a href="/site/kb/sharing-media">Sharing Media</a> page for more info.</p>
 			`;
 			swal({
-				title: 'Compose UI v3', 
-				content: text, 
+				title: 'Compose UI v3',
+				content: text,
 				icon: 'info'
 			});
 		},
@@ -494,7 +494,7 @@ export default {
 			let composeType = this.composeType;
 			let video = config.uploader.media_types.includes('video/mp4');
 
-			return video ? 
+			return video ?
 			'Click here to add photos or videos' :
 			'Click here to add photos';
 		},

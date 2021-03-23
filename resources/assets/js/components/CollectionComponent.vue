@@ -8,7 +8,7 @@
 			<picture class="d-flex align-items-center justify-content-center">
 				<div class="dims"></div>
 				<div style="z-index:500;position: absolute;" class="text-white">
-					<p class="display-4 text-center pt-3">{{title || 'Untitled Collection'}}</p>
+					<p class="display-4 text-center pt-3">{{title || 'Álbum'}}</p>
 					<p class="lead text-center mb-3">{{description}}</p>
 					<p class="text-center">
 						{{posts.length}} photos · by <a :href="'/' + profileUsername" class="font-weight-bold text-white">{{profileUsername}}</a>
@@ -16,23 +16,23 @@
 					<p v-if="owner == true" class="pt-3 text-center">
 						<span>
 							<button class="btn btn-outline-light btn-sm" @click.prevent="addToCollection" onclick="this.blur();">
-								<span v-if="loadingPostList == false">Add Photo</span>
+								<span v-if="loadingPostList == false">Adicionar foto</span>
 								<span v-else class="px-4">
 									<div class="spinner-border spinner-border-sm" role="status">
-									  <span class="sr-only">Loading...</span>
+									  <span class="sr-only">Carregando...</span>
 									</div>
 								</span>
 							</button>
-							 &nbsp; &nbsp; 
-							<button class="btn btn-outline-light btn-sm" @click.prevent="editCollection" onclick="this.blur();">Edit</button>
-							 &nbsp; &nbsp; 
-							<button class="btn btn-outline-light btn-sm" @click.prevent="deleteCollection">Delete</button>
+							 &nbsp; &nbsp;
+							<button class="btn btn-outline-light btn-sm" @click.prevent="editCollection" onclick="this.blur();">Editar</button>
+							 &nbsp; &nbsp;
+							<button class="btn btn-outline-light btn-sm" @click.prevent="deleteCollection">Remover</button>
 						</span>
 					</p>
 				</div>
 				<img :src="previewUrl(posts[0])"
 					 alt=""
-					 style="width:100%; height: 600px; object-fit: cover;" 
+					 style="width:100%; height: 600px; object-fit: cover;"
 				>
 			</picture>
 		</div>
@@ -49,32 +49,32 @@
 			</masonry>
 		</div>
 	</div>
-	<b-modal ref="editModal" id="edit-modal" hide-footer centered title="Edit Collection" body-class="">
+	<b-modal ref="editModal" id="edit-modal" hide-footer centered title="Editar álbum" body-class="">
 		<form>
 			<div class="form-group">
-				<label for="title" class="font-weight-bold text-muted">Title</label>
-				<input type="text" class="form-control" id="title" placeholder="Untitled Collection" v-model="title">
+				<label for="title" class="font-weight-bold text-muted">Título</label>
+				<input type="text" class="form-control" id="title" placeholder="Meu album" v-model="title">
 			</div>
 			<div class="form-group">
-				<label for="description" class="font-weight-bold text-muted">Description</label>
-				<textarea class="form-control" id="description" placeholder="Add a description here ..." v-model="description" rows="3"></textarea>
+				<label for="description" class="font-weight-bold text-muted">Descrição</label>
+				<textarea class="form-control" id="description" placeholder="Descreva este álbum..." v-model="description" rows="3"></textarea>
 			</div>
 			<div class="form-group">
-				<label for="visibility" class="font-weight-bold text-muted">Visibility</label>
+				<label for="visibility" class="font-weight-bold text-muted">Visibilidade</label>
 				<select class="custom-select" v-model="visibility">
-					<option value="public">Public</option>
-					<option value="private">Followers Only</option>
+					<option value="public">Público</option>
+					<option value="private">Somente seguidores</option>
 				</select>
 			</div>
 			<div class="d-flex justify-content-between align-items-center pt-3">
-				<a class="text-primary font-weight-bold text-decoration-none" href="#" @click.prevent="showEditPhotosModal">Edit Photos</a>
-				<button type="button" class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right" @click.prevent="updateCollection">Save</button>
+				<a class="text-primary font-weight-bold text-decoration-none" href="#" @click.prevent="showEditPhotosModal">Editar fotos</a>
+				<button type="button" class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right" @click.prevent="updateCollection">Salvar</button>
 			</div>
 		</form>
 	</b-modal>
 	<b-modal ref="addPhotoModal" id="add-photo-modal" hide-footer centered title="Add Photo" body-class="m-3">
 		<div class="form-group">
-			<label for="title" class="font-weight-bold text-muted">Add Recent Post</label>
+			<label for="title" class="font-weight-bold text-muted">Adicionar post recente</label>
 			<div class="row m-1" v-if="postsList.length > 0">
 				<div v-for="(p, index) in postsList" :key="'postList-'+index" class="col-4 p-1 cursor-pointer" @click="addRecentId(p)">
 					<div class="square">
@@ -88,25 +88,25 @@
 		</div>
 		<form>
 			<div class="form-group">
-				<label for="title" class="font-weight-bold text-muted">Add Post by URL</label>
+				<label for="title" class="font-weight-bold text-muted">Adicionar post pela URL</label>
 				<input type="text" class="form-control" placeholder="https://pixelfed.dev/p/admin/1" v-model="photoId">
-				<p class="help-text small text-muted">Only local, public posts can be added</p>
+				<p class="help-text small text-muted">Somente posts públicos podem ser adicionados.</p>
 			</div>
 			<button type="button" class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right" @click.prevent="pushId">
 				<span v-if="addingPostToCollection" class="px-4">
 					<div class="spinner-border spinner-border-sm" role="status">
-						<span class="sr-only">Loading...</span>
+						<span class="sr-only">Carregando...</span>
 					</div>
 				</span>
 				<span v-else>
-					Add Photo
+					Adicionar foto
 				</span>
 			</button>
 		</form>
 	</b-modal>
 	<b-modal ref="editPhotosModal" id="edit-photos-modal" hide-footer centered title="Edit Collection Photos" body-class="m-3">
 		<div class="form-group">
-			<p class="font-weight-bold text-dark text-center">Select a Photo to Delete</p>
+			<p class="font-weight-bold text-dark text-center">Selecione uma foto para ser removida</p>
 			<div class="row m-1 scrollbar-hidden" v-if="posts.length > 0" style="max-height: 350px;overflow-y: auto;">
 				<div v-for="(p, index) in posts" :key="'plm-'+index" class="col-4 p-1 cursor-pointer">
 					<div :class="[markedForDeletion.indexOf(p.id) == -1 ? 'square' : 'square  delete-border']" @click="markPhotoForDeletion(p.id)">
@@ -115,7 +115,7 @@
 				</div>
 			</div>
 			<div v-show="markedForDeletion.length > 0">
-				<button type="button" @click.prevent="confirmDeletion" class="btn btn-primary font-weight-bold py-0 btn-block mb-0 mt-4">Delete {{markedForDeletion.length}} {{markedForDeletion.length == 1 ? 'photo':'photos'}}</button>
+				<button type="button" @click.prevent="confirmDeletion" class="btn btn-primary font-weight-bold py-0 btn-block mb-0 mt-4">Remover {{markedForDeletion.length}} {{markedForDeletion.length == 1 ? 'foto':'fotos'}}</button>
 			</div>
 		</div>
 
@@ -151,7 +151,7 @@ import VueMasonry from 'vue-masonry-css'
 Vue.use(VueMasonry);
 export default {
 	props: [
-		'collection-id', 
+		'collection-id',
 		'collection-title',
 		'collection-description',
 		'collection-visibility',
@@ -207,7 +207,7 @@ export default {
 				this.loaded = true;
 			});
 		},
-		
+
 		previewUrl(status) {
 			return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
 		},
@@ -364,7 +364,7 @@ export default {
 				swal('Oops!', 'An error occured, please try selecting another post.', 'error');
 				this.photoId = '';
 			});
-		}		
+		}
 	}
 }
 </script>

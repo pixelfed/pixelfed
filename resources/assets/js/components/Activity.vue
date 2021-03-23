@@ -19,42 +19,42 @@
 						<div class="media-body font-weight-light">
 							<div v-if="n.type == 'favourite'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> curtiu seu <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'comment'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> comentou seu <a class="font-weight-bold" v-bind:href="n.status.url">post</a>.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'mention'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mencionou</a> você.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'follow'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> followed you.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> seguiu você.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'share'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{truncate(n.account.username)}}</a> compartilhou seu <a class="font-weight-bold" v-bind:href="n.status.reblog.url">post</a>.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'modlog'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> updated a <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> atualizou o <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'tagged'">
 								<p class="my-0">
-									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> tagged you in a <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
+									<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> marcou você em um <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
 								</p>
 							</div>
 							<div v-else-if="n.type == 'direct'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> sent a <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">dm</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> te mandou uma <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">mensagem</a>.
 							</p>
 						</div>
 							<div class="align-items-center">
@@ -83,14 +83,14 @@
 									Follow
 								</a>
 							</div> -->
-							
+
 							<!-- <div v-else-if="n.status && n.status.parent && !n.status.parent.media_attachments && n.type == 'like' && n.relationship.following == false">
 								<a href="#" class="btn btn-primary py-0 font-weight-bold">
 									Follow
 								</a>
 							</div> -->
 							<div v-else>
-								<a class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">View</a>
+								<a class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">Visualizar</a>
 							</div>
 						</div>
 					</div>
@@ -102,7 +102,7 @@
 					</div>
 					<div v-if="notifications.length == 0" class="text-lighter text-center py-3">
 						<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
-						<p class="mb-0 small font-weight-bold">0 Notifications!</p>
+						<p class="mb-0 small font-weight-bold">Sem notificações!</p>
 					</div>
 				</div>
 			</div>
@@ -226,7 +226,7 @@ export default {
 
 		followProfile(n) {
 			let self = this;
-			let id = n.account.id; 
+			let id = n.account.id;
 			axios.post('/i/follow', {
 					item: id
 			}).then(res => {

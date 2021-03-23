@@ -21,23 +21,23 @@
 									<a v-else :href="'/'+thread.username" class="text-decoration-none text-muted">&commat;{{thread.username}}</a>
 								</p>
 							</div>
-						</div>   
+						</div>
 					</span>
 					<span><a href="#" class="text-muted" @click.prevent="showOptions()"><i class="fas fa-cog fa-lg"></i></a></span>
 				</div>
 				<ul class="list-group list-group-flush dm-wrapper" style="height:60vh;overflow-y: scroll;">
 					<li class="list-group-item border-0">
 						<p class="text-center small text-muted">
-							Conversation with <span class="font-weight-bold">{{thread.username}}</span>
+							Conversa com <span class="font-weight-bold">{{thread.username}}</span>
 						</p>
 						<hr>
 					</li>
 					<li v-if="showLoadMore && thread.messages && thread.messages.length > 5" class="list-group-item border-0 mt-n4">
 						<p class="text-center small text-muted">
-							<button v-if="!loadingMessages" class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" @click="loadOlderMessages()">Load Older Messages</button>
-							<button v-else class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" disabled>Loading...</button>
+							<button v-if="!loadingMessages" class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" @click="loadOlderMessages()">Carregar mensagens anteriores</button>
+							<button v-else class="btn btn-primary font-weight-bold rounded-pill btn-sm px-3" disabled>Carregando...</button>
 						</p>
-					</li> 
+					</li>
 					<li v-for="(convo, index) in thread.messages" class="list-group-item border-0 chat-msg cursor-pointer" @click="openCtxMenu(convo, index)">
 						<div v-if="!convo.isAuthor" class="media d-inline-flex mb-0">
 							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32px">
@@ -158,7 +158,7 @@
 							</span> -->
 							<span class="btn btn-primary btn-sm font-weight-bold py-0 px-3 rounded-pill" @click="uploadMedia">
 								<i class="fas fa-upload mr-1"></i>
-								Add Photo/Video
+								Adicionar foto/vídeo
 							</span>
 						</span>
 						<input type="file" id="uploadMedia" class="d-none" name="uploadMedia" accept="image/jpeg,image/png,image/gif,video/mp4" >
@@ -178,7 +178,7 @@
 						</a>
 					</span>
 					<span>
-						<p class="mb-0 lead font-weight-bold py-2">Message Settings</p>
+						<p class="mb-0 lead font-weight-bold py-2">Configurações</p>
 					</span>
 					<span class="text-lighter" data-toggle="tooltip" data-placement="bottom" title="Have a nice day!"><i class="far fa-smile fa-lg"></i></span>
 				</div>
@@ -189,7 +189,7 @@
 							<label class="custom-control-label" for="customSwitch0"></label>
 						</div>
 						<div class="d-inline-block ml-3 font-weight-bold">
-							Hide Avatars
+							Ocultar Avatares
 						</div>
 					</div>
 					<div class="list-group-item media border-bottom">
@@ -198,7 +198,7 @@
 							<label class="custom-control-label" for="customSwitch1"></label>
 						</div>
 						<div class="d-inline-block ml-3 font-weight-bold">
-							Hide Timestamps
+							Ocultar data/hora
 						</div>
 					</div>
 					<div class="list-group-item media border-bottom">
@@ -207,7 +207,7 @@
 							<label class="custom-control-label" for="customSwitch2"></label>
 						</div>
 						<div class="d-inline-block ml-3 font-weight-bold">
-							Larger Text
+							Texto grande
 						</div>
 					</div>
 					<!-- <div class="list-group-item media border-bottom">
@@ -225,8 +225,8 @@
 							<label class="custom-control-label" for="customSwitch4"></label>
 						</div>
 						<div class="d-inline-block ml-3 font-weight-bold">
-							Mute Notifications 
-							<p class="small mb-0">You will not receive any direct message notifications from <strong>{{thread.username}}</strong>.</p>
+							Mutar notificações
+							<p class="small mb-0">Você não irá receber nenhuma mensagem direta de <strong>{{thread.username}}</strong>.</p>
 						</div>
 					</div>
 				</ul>
@@ -246,16 +246,16 @@
 		<div v-if="ctxContext && ctxContext.type == 'video'" class="list-group-item rounded cursor-pointer font-weight-bold text-dark" @click="viewOriginal()">Play</div>
 		<div v-if="ctxContext && ctxContext.type == 'link'" class="list-group-item rounded cursor-pointer" @click="clickLink()">
 			<p class="mb-0" style="font-size:12px;">
-				Navigate to 
+				Ir para
 			</p>
 			<p class="mb-0 font-weight-bold text-dark">
 				{{this.ctxContext.meta.domain}}
 			</p>
 		</div>
-		<div v-if="ctxContext && (ctxContext.type == 'text' || ctxContext.type == 'emoji' || ctxContext.type == 'link')" class="list-group-item rounded cursor-pointer text-dark" @click="copyText()">Copy</div>
-		<div v-if="ctxContext && !ctxContext.isAuthor" class="list-group-item rounded cursor-pointer text-muted" @click="reportMessage()">Report</div>
-		<div v-if="ctxContext && ctxContext.isAuthor" class="list-group-item rounded cursor-pointer text-muted" @click="deleteMessage()">Delete</div>
-		<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+		<div v-if="ctxContext && (ctxContext.type == 'text' || ctxContext.type == 'emoji' || ctxContext.type == 'link')" class="list-group-item rounded cursor-pointer text-dark" @click="copyText()">Copia</div>
+		<div v-if="ctxContext && !ctxContext.isAuthor" class="list-group-item rounded cursor-pointer text-muted" @click="reportMessage()">Reportar</div>
+		<div v-if="ctxContext && ctxContext.isAuthor" class="list-group-item rounded cursor-pointer text-muted" @click="deleteMessage()">Apagar</div>
+		<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancelar</div>
 	</div>
 	</b-modal>
 </div>
@@ -479,7 +479,7 @@
 
 			deleteMessage() {
 				let self = this;
-				let c = window.confirm('Are you sure you want to delete this message?');
+				let c = window.confirm('Confirma pagar esta mensagem?');
 				if(c) {
 					axios.delete('/api/direct/message', {
 						params: {

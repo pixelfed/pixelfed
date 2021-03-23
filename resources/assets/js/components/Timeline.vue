@@ -4,7 +4,7 @@
 			<div class="row">
 				<div v-if="morePostsAvailable == true" class="col-12 mt-5 pt-3 mb-3 fixed-top">
 					<p class="text-center">
-						<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Load New Posts</button>
+						<button class="btn btn-dark px-4 rounded-pill font-weight-bold shadow" @click="syncNewPosts">Carregar novos posts</button>
 					</p>
 				</div>
 				<div class="d-none col-12 pl-3 pl-md-0 pt-3 pl-0">
@@ -18,7 +18,7 @@
 						</p>
 						<p class="mb-0 d-none d-md-block">
 							<a class="btn btn-block btn-primary btn-sm font-weight-bold" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-								New Post
+								Novo Post
 							</a>
 						</p>
 					</div>
@@ -31,7 +31,7 @@
 					<div>
 						<div v-if="loading" class="text-center" style="padding-top:10px;">
 							<div class="spinner-border" role="status">
-								<span class="sr-only">Loading...</span>
+								<span class="sr-only">Carregando...</span>
 							</div>
 						</div>
 						<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
@@ -41,7 +41,7 @@
 
 							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
 								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
+									<h6 class="text-muted font-weight-bold mb-0">Sugestões</h6>
 									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
 								</div>
 								<div class="card-body row mx-0">
@@ -62,7 +62,7 @@
 													<p class="small text-muted mb-0">{{rec.message}}</p>
 												</div>
 												<p class="mb-0">
-													<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+													<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Seguir</a>
 												</p>
 											</div>
 										</div>
@@ -131,7 +131,7 @@
 									<div class="pl-2">
 										<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
 											<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
-												Loading...
+												Carregando...
 											</a>
 											<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
 												<i class="fas fa-certificate text-danger fa-stack-1x"></i>
@@ -188,7 +188,7 @@
 								</div>
 
 								<div v-else class="w-100">
-									<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+									<p class="text-center p-0 font-weight-bold text-white">Erro ao carregar pré visualização.</p>
 								</div>
 
 							</div>
@@ -279,8 +279,8 @@
 							<div class="card shadow-none">
 								<div class="card-body">
 									<infinite-loading @infinite="infiniteTimeline" :distance="800">
-										<div slot="no-more" class="font-weight-bold">No more posts to load</div>
-										<div slot="no-results" class="font-weight-bold">No more posts to load</div>
+										<div slot="no-more" class="font-weight-bold">Sem novos posts para exibir</div>
+										<div slot="no-results" class="font-weight-bold">Sem novos posts para exibir</div>
 									</infinite-loading>
 								</div>
 							</div>
@@ -288,10 +288,10 @@
 						<div v-if="!loading && scope == 'home' && feed.length == 0">
 							<div class="card shadow-none border">
 								<div class="card-body text-center">
-									<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
+									<p class="h2 font-weight-lighter p-5">Oi, {{profile.acct}}</p>
 									<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
-									<p class="h3 font-weight-lighter p-5">Start following people to build your timeline.</p>
-									<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Discover new people and posts</a></p>
+									<p class="h3 font-weight-lighter p-5">Siga novas pessoas para a sua timeline.</p>
+									<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Descobrir</a></p>
 								</div>
 							</div>
 						</div>
@@ -327,7 +327,7 @@
 											<div class="ml-2">
 												<a class="text-muted" href="/settings/home">
 													<i class="fas fa-cog fa-lg"></i>
-													<span class="sr-only">User Settings</span>
+													<span class="sr-only">Configurações</span>
 												</a>
 											</div>
 										</div>
@@ -360,7 +360,7 @@
 							<div class="card shadow-none border">
 								<div class="card-header bg-white d-flex align-items-center justify-content-between">
 									<a class="small text-muted cursor-pointer" href="#" @click.prevent="refreshSuggestions" ref="suggestionRefresh"><i class="fas fa-sync-alt"></i></a>
-									<div class="small text-dark text-uppercase font-weight-bold">Suggestions</div>
+									<div class="small text-dark text-uppercase font-weight-bold">Sugestões</div>
 									<div class="small text-muted cursor-pointer" v-on:click="hideSuggestions"><i class="fas fa-times"></i></div>
 								</div>
 								<div class="card-body pt-0">
@@ -376,7 +376,7 @@
 											</p>
 											<p class="mb-0 small text-muted">{{rec.message}}</p>
 										</div>
-										<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+										<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Seguir</a>
 									</div>
 								</div>
 							</div>
@@ -385,17 +385,17 @@
 						<footer>
 							<div class="container pb-5">
 								<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-									<a href="/site/about" class="text-dark pr-2">About</a>
-									<a href="/site/help" class="text-dark pr-2">Help</a>
-									<a href="/site/language" class="text-dark pr-2">Language</a>
-									<a href="/discover/profiles" class="text-dark pr-2">Profiles</a>
-									<a href="/discover/places" class="text-dark pr-2">Places</a>
-									<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
-									<a href="/site/terms" class="text-dark pr-2">Terms</a>
+									<a href="/site/about" class="text-dark pr-2">Sobre</a>
+									<a href="/site/help" class="text-dark pr-2">Ajuda</a>
+									<!-- <a href="/site/language" class="text-dark pr-2">Language</a> -->
+									<a href="/discover/profiles" class="text-dark pr-2">Pessoas</a>
+									<!-- <a href="/discover/places" class="text-dark pr-2">Places</a> -->
+									<a href="/site/privacy" class="text-dark pr-2">Privacidade</a>
+									<!-- <a href="/site/terms" class="text-dark pr-2">Terms</a> -->
 								</p>
-								<p class="mb-0 text-uppercase font-weight-bold text-muted small">
+								<!-- <p class="mb-0 text-uppercase font-weight-bold text-muted small">
 									<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by Pixelfed</a>
-								</p>
+								</p> -->
 							</div>
 						</footer>
 					</div>
@@ -408,14 +408,14 @@
 				<div class="col-12 col-md-6 offset-md-3">
 					<div class="card shadow-none border" style="height:100vh;">
 						<div class="card-header d-flex justify-content-between align-items-center">
-							<div 
+							<div
 								@click="commentNavigateBack(status.id)"
 								class="cursor-pointer"
 								>
 								<i class="fas fa-chevron-left fa-lg px-2"></i>
 							</div>
 							<div>
-								<p class="font-weight-bold mb-0 h5">Comments</p>
+								<p class="font-weight-bold mb-0 h5">Commentários</p>
 							</div>
 							<div>
 								<i class="fas fa-cog fa-lg text-white"></i>
@@ -436,14 +436,14 @@
 							<hr>
 							<div class="postCommentsLoader text-center py-2">
 								<div class="spinner-border" role="status">
-									<span class="sr-only">Loading...</span>
+									<span class="sr-only">Carregando...</span>
 								</div>
 							</div>
 							<div class="postCommentsContainer d-none">
 								<p v-if="replies.length" class="mb-1 text-center load-more-link my-4">
-									<a 
-										href="#" 
-										class="text-dark" 
+									<a
+										href="#"
+										class="text-dark"
 										title="Load more comments"
 										@click.prevent="loadMoreComments"
 									>
@@ -483,7 +483,7 @@
 											</p>
 											<div v-if="reply.reply_count > 0" class="cursor-pointer pb-2" v-on:click="toggleReplies(reply)">
 												<span class="show-reply-bar"></span>
-												<span class="comment-reaction small font-weight-bold">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
+												<span class="comment-reaction small font-weight-bold">{{reply.thread ? 'Ocultar' : 'Exibir'}} Respostas ({{reply.reply_count}})</span>
 											</div>
 											<div v-if="reply.thread == true" class="comment-thread">
 												<div v-for="(s, sindex) in reply.replies" class="py-1 media" :key="'cr' + s.id + '_' + index">
@@ -501,7 +501,7 @@
 														</p>
 														<p class="mb-0">
 															<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
-															<span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
+															<span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 curtida' : s.favourites_count + ' curtidas'}}</span>
 														</p>
 													</div>
 												</div>
@@ -510,25 +510,25 @@
 									</div>
 								</div>
 								<div v-if="!replies.length">
-									<p class="text-center text-muted font-weight-bold small">No comments yet</p>
+									<p class="text-center text-muted font-weight-bold small">Nenhum comentário ainda</p>
 								</div>
 							</div>
 						</div>
 						<div class="card-footer mb-3">
 							<div class="align-middle d-flex">
-								<img 
+								<img
 									:src="profile.avatar"
 									width="36"
 									height="36"
 									class="rounded-circle border mr-3">
-								<textarea 
-									class="form-control rounded-pill" 
-									name="comment" 
-									placeholder="Add a comment…" 
-									autocomplete="off" 
+								<textarea
+									class="form-control rounded-pill"
+									name="comment"
+									placeholder="Add a comment…"
+									autocomplete="off"
 									autocorrect="off"
 									rows="1"
-									maxlength="0" 
+									maxlength="0"
 									style="resize: none;overflow-y: hidden"
 									@click="replyFocus(status)">
 								</textarea>
@@ -551,13 +551,13 @@
 				<div class="list-group text-center">
 					<!-- <div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
 					<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
-					<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">View Post</div>
+					<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">Ver Post</div>
 					<!-- <div v-if="ctxMenuStatus && ctxMenuStatus.local == true && !ctxMenuStatus.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
 					<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div> -->
-					<div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div>
+					<div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Compartilhar</div>
 					<div v-if="ctxMenuStatus && profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
-					<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer text-danger" @click="ctxMenuReportPost()">Report</div>
-					<div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
+					<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer text-danger" @click="ctxMenuReportPost()">Reportar</div>
+					<div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Apagar</div>
 					<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
 				</div>
 			</b-modal>
@@ -608,9 +608,9 @@
 				rounded
 				size="sm"
 				body-class="list-group-flush p-0 rounded text-center">
-				<div class="list-group-item rounded cursor-pointer" @click="shareStatus(ctxMenuStatus, $event)">{{ctxMenuStatus.reblogged ? 'Unshare' : 'Share'}} to Followers</div>
-				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
-				<div v-if="ctxMenuStatus && ctxMenuStatus.local == true && !ctxMenuStatus.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
+				<div class="list-group-item rounded cursor-pointer" @click="shareStatus(ctxMenuStatus, $event)">{{ctxMenuStatus.reblogged ? 'Cancelar compartilhamento' : 'Compartilhar'}} com seguidores</div>
+				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copiar Link</div>
+				<!-- <div v-if="ctxMenuStatus && ctxMenuStatus.local == true && !ctxMenuStatus.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div> -->
 				<!-- <div class="list-group-item rounded cursor-pointer border-top-0">Email</div>
 				<div class="list-group-item rounded cursor-pointer">Facebook</div>
 				<div class="list-group-item rounded cursor-pointer">Mastodon</div>
@@ -618,7 +618,7 @@
 				<div class="list-group-item rounded cursor-pointer">Pixelfed</div>
 				<div class="list-group-item rounded cursor-pointer">Twitter</div>
 				<div class="list-group-item rounded cursor-pointer">VK</div> -->
-				<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxShareMenu()">Cancel</div>
+				<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxShareMenu()">Cancelar</div>
 			</b-modal>
 			<b-modal ref="ctxEmbedModal"
 				id="ctx-embed-modal"
@@ -636,25 +636,25 @@
 						<div class="form-check mr-3">
 							<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
 							<label class="form-check-label font-weight-light">
-								Show Caption
+								Exibir Legenda
 							</label>
 						</div>
 						<div class="form-check mr-3">
 							<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
 							<label class="form-check-label font-weight-light">
-								Show Likes
+								Exibir Curtidas
 							</label>
 						</div>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
 							<label class="form-check-label font-weight-light">
-								Compact Mode
+								Modo Compacto
 							</label>
 						</div>
 					</div>
-					<hr>
+					<!-- <hr>
 					<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-					<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+					<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p> -->
 				</div>
 			</b-modal>
 			<b-modal ref="ctxReport"
@@ -666,16 +666,16 @@
 				size="sm"
 				body-class="list-group-flush p-0 rounded">
 				<p class="py-2 px-3 mb-0">
-					<div class="text-center font-weight-bold text-danger">Report</div>
-					<div class="small text-center text-muted">Select one of the following options</div>
+					<div class="text-center font-weight-bold text-danger">Reportar</div>
+					<div class="small text-center text-muted">Selecione uma ou mais opções</div>
 				</p>
 				<div class="list-group text-center">
 					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('spam')">Spam</div>
-					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('sensitive')">Sensitive Content</div>
-					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('abusive')">Abusive or Harmful</div>
-					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="openCtxReportOtherMenu()">Other</div>
+					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('sensitive')">Conteúdo Inapropriado</div>
+					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('abusive')">Abusivo ou Nocivo</div>
+					<!-- <div class="list-group-item rounded cursor-pointer font-weight-bold" @click="openCtxReportOtherMenu()">Others</div> -->
 					<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxReportMenuGoBack()">Go Back</div> -->
-					<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxReportMenuGoBack()">Cancel</div>
+					<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxReportMenuGoBack()">Cancelar</div>
 				</div>
 			</b-modal>
 			<b-modal ref="ctxReportOther"
@@ -687,8 +687,8 @@
 				size="sm"
 				body-class="list-group-flush p-0 rounded">
 				<p class="py-2 px-3 mb-0">
-					<div class="text-center font-weight-bold text-danger">Report</div>
-					<div class="small text-center text-muted">Select one of the following options</div>
+					<div class="text-center font-weight-bold text-danger">Reportar</div>
+					<div class="small text-center text-muted">Selecione uma ou mais opções</div>
 				</p>
 				<div class="list-group text-center">
 					<div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('underage')">Underage Account</div>
@@ -713,8 +713,8 @@
 					<div>{{ this.confirmModalTitle }}</div>
 				</div>
 				<div class="d-flex border-top btn-group btn-group-block rounded-0" role="group">
-					<button type="button" class="btn btn-outline-lighter border-left-0 border-top-0 border-bottom-0 border-right py-2" style="color: rgb(0,122,255) !important;" @click.prevent="confirmModalCancel()">Cancel</button>
-					<button type="button" class="btn btn-outline-lighter border-0" style="color: rgb(0,122,255) !important;" @click.prevent="confirmModalConfirm()">Confirm</button>
+					<button type="button" class="btn btn-outline-lighter border-left-0 border-top-0 border-bottom-0 border-right py-2" style="color: rgb(0,122,255) !important;" @click.prevent="confirmModalCancel()">Cancelar</button>
+					<button type="button" class="btn btn-outline-lighter border-0" style="color: rgb(0,122,255) !important;" @click.prevent="confirmModalConfirm()">Confirmar</button>
 				</div>
 			</b-modal>
 			<b-modal ref="lightboxModal"
@@ -734,16 +734,16 @@
 				hide-footer
 				centered
 				rounded
-				:title-html="replyStatus.account ? 'Reply to <span class=text-dark>' + replyStatus.account.username + '</span>' : ''"
+				:title-html="replyStatus.account ? 'Responder para <span class=text-dark>' + replyStatus.account.username + '</span>' : ''"
 				title-tag="p"
 				title-class="font-weight-bold text-muted"
 				size="md"
 				body-class="p-2 rounded">
 				<div>
 					<vue-tribute :options="tributeSettings">
-						<textarea 
-							class="form-control replyModalTextarea" 
-							rows="4" 
+						<textarea
+							class="form-control replyModalTextarea"
+							rows="4"
 							v-model="replyText">
 						</textarea>
 					</vue-tribute>
@@ -760,11 +760,11 @@
 							</span>
 						</div>
 						<div class="d-flex align-items-center">
-							<div class="custom-control custom-switch mr-3">
+							<!-- <div class="custom-control custom-switch mr-3">
 								<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replyNsfw">
 								<label :class="[replyNsfw ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
-							</div>
-								
+							</div> -->
+
 							<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0">
 								{{replySending == true ? 'POSTING' : 'POST'}}
 							</button>
@@ -781,14 +781,14 @@
 				size="xl"
 				body-class="list-group-flush p-0 m-0 rounded">
 				<!-- <post-component
-					v-if="ctxMenuStatus" 
-					:status-template="ctxMenuStatus.pf_type" 
-					:status-id="ctxMenuStatus.id" 
-					:status-username="ctxMenuStatus.account.username" 
-					:status-url="ctxMenuStatus.url" 
-					:status-profile-url="ctxMenuStatus.account.url" 
-					:status-avatar="ctxMenuStatus.account.avatar" 
-					:status-profile-id="ctxMenuStatus.account.id" 
+					v-if="ctxMenuStatus"
+					:status-template="ctxMenuStatus.pf_type"
+					:status-id="ctxMenuStatus.id"
+					:status-username="ctxMenuStatus.account.username"
+					:status-url="ctxMenuStatus.url"
+					:status-profile-url="ctxMenuStatus.account.url"
+					:status-avatar="ctxMenuStatus.account.avatar"
+					:status-profile-id="ctxMenuStatus.account.id"
 					profile-layout="metro">
 				</post-component> -->
 			</b-modal>
@@ -934,7 +934,7 @@
 
 				let el = document.querySelector('link[data-stylesheet="light"]');
 				el.setAttribute('href', '/css/appdark.css?id=' + Date.now());
-				el.setAttribute('data-stylesheet', 'dark'); 
+				el.setAttribute('data-stylesheet', 'dark');
 			}*/
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
@@ -1019,14 +1019,14 @@
 					$('.timeline .pagination').removeClass('d-none');
 					// if(this.feed.length == 4) {
 					// 	this.fetchTimelineApi();
-					// } 
+					// }
 					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
 					// this.fetchStories();
 					this.rtw();
 					setTimeout(function() {
-						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
@@ -1079,7 +1079,7 @@
 									'status_id': d.id,
 									'profile_id': d.account.id
 								});
-							} 
+							}
 						});
 						this.min_id = Math.max(...this.ids).toString();
 						this.max_id = Math.min(...this.ids).toString();
@@ -1211,7 +1211,7 @@
 			},
 
 			fetchStatusComments(status, card) {
-				// axios.get('/api/v2/status/'+status.id+'/replies', 
+				// axios.get('/api/v2/status/'+status.id+'/replies',
 				// {
 				// 	params: {
 				// 		limit: 6
@@ -1223,7 +1223,7 @@
 				// 	});
 				// 	this.replies = _.reverse(data);
 				// 	setTimeout(function() {
-				// 		document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+				// 		document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 				// 			i.href = App.util.format.rewriteLinks(i);
 				// 		});
 				// 	}, 500);
@@ -1233,7 +1233,7 @@
 				axios.get(url)
 				.then(response => {
 					let self = this;
-					// this.results = this.layout == 'metro' ? 
+					// this.results = this.layout == 'metro' ?
 					// _.reverse(response.data.data) :
 					// response.data.data;
 					this.replies = _.reverse(response.data.data);
@@ -1244,7 +1244,7 @@
 					$('.postCommentsLoader').addClass('d-none');
 					$('.postCommentsContainer').removeClass('d-none');
 					// setTimeout(function() {
-					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
 					// 		i.href = App.util.format.rewriteLinks(i);
 					// 	});
 					// }, 500);
@@ -1584,9 +1584,9 @@
 					let username = status.account.acct;
 
 					if(status.account.relationship.following) {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
+						swal('Seguindo!', 'Você agora está seguindo ' + username, 'success');
 					} else {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
+						swal('Unfollow!', 'Você deixou de seguir ' + username, 'success');
 					}
 
 				}).catch(err => {
@@ -1622,7 +1622,7 @@
 					this.replyText += em + ' ';
 					$('textarea[name="comment"]').focus();
 				}
-			}, 
+			},
 
 			refreshSuggestions() {
 				return;
@@ -1731,7 +1731,7 @@
 					let username = this.ctxMenuStatus.account.acct;
 					this.closeCtxMenu();
 					setTimeout(function() {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
+						swal('Seguindo!', 'Você agora está seguindo ' + username, 'success');
 					}, 500);
 				});
 			},
@@ -1749,7 +1749,7 @@
 					}
 					this.closeCtxMenu();
 					setTimeout(function() {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
+						swal('Unfollow!', 'Você deixou de seguir ' + username, 'success');
 					}, 500);
 				});
 			},
@@ -1794,7 +1794,7 @@
 				this.$refs.ctxModModal.hide();
 				this.$refs.ctxModOtherModal.show();
 			},
-			
+
 			ctxModMenu() {
 				this.$refs.ctxModal.hide();
 			},
@@ -1854,7 +1854,7 @@
 					return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
 					break;
 
-					default: 
+					default:
 					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
 					break;
 				}
@@ -1976,8 +1976,8 @@
 				let id = this.ctxMenuStatus.id;
 
 				swal({
-					'title': 'Confirm Report',
-					'text': 'Are you sure you want to report this post?',
+					'title': 'Confirmar Report',
+					'text': 'Confirma que deseja reportar este post?',
 					'icon': 'warning',
 					'buttons': true,
 					'dangerMode': true
@@ -1989,7 +1989,7 @@
 							'id': id,
 						}).then(res => {
 							this.closeCtxMenu();
-							swal('Report Sent!', 'We have successfully received your report.', 'success');
+							swal('Obrigado!', 'Recebemos sua solicitação.', 'success');
 						}).catch(err => {
 							swal('Oops!', 'There was an issue reporting this post.', 'error');
 						})
@@ -2025,7 +2025,7 @@
 
 			closeConfirmModal() {
 				this.closeModals();
-				this.confirmModalTitle = 'Are you sure?';
+				this.confirmModalTitle = 'Confirma?';
 				this.confirmModalType = false;
 				this.confirmModalIdentifer = null;
 			},
@@ -2078,7 +2078,7 @@
 
 			likeReply(status, $event) {
 				if($('body').hasClass('loggedIn') == false) {
-					swal('Login', 'Please login to perform this action.', 'info');
+					swal('Login', 'Por favor, efetue login para esta ação.', 'info');
 					return;
 				}
 
@@ -2104,7 +2104,7 @@
 				if(this.status.comments_disabled) {
 					return;
 				}
-				
+
 				this.replyToIndex = index;
 				this.replyingToId = e.id;
 				this.replyingToUsername = e.account.username;
@@ -2184,9 +2184,9 @@
 		color: #3897f0;
 	}
 	.replyModalTextarea {
-		border: none; 
-		font-size: 18px; 
-		resize: none; 
+		border: none;
+		font-size: 18px;
+		resize: none;
 		white-space: pre-wrap;
 		outline: none;
 	}

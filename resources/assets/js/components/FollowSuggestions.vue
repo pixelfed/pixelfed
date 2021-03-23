@@ -5,14 +5,14 @@
 <template>
     <div class="card mb-4">
       <div class="card-header bg-white">
-        <span class="font-weight-bold h5">Who to follow</span>
+        <span class="font-weight-bold h5">Quem seguir</span>
         <span class="small float-right font-weight-bold">
-          <a href="javascript:void(0);" class="pr-2" v-on:click="fetchData">Refresh</a>
+          <a href="javascript:void(0);" class="pr-2" v-on:click="fetchData">Atualizar</a>
         </span>
       </div>
       <div class="card-body">
         <div v-if="results.length == 0">
-          <p class="mb-0 font-weight-bold">You are not following anyone yet, try the <a href="/discover">discover</a> feature to find users to follow.</p>
+          <p class="mb-0 font-weight-bold">Você ainda não está seguindo ninguém, experimente a página <a href="/discover">discover</a> pra encontrar novas pessoas.</p>
         </div>
         <div v-for="(user, index) in results">
           <div class="media " style="width:100%">

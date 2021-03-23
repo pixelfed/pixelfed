@@ -3,7 +3,7 @@
 	<transition name="fade">
 		<div v-if="announcements.length" class="card border shadow-none mb-3">
 			<div class="card-header text-muted bg-white">
-				<i class="fas fa-bullhorn mr-2"></i> <span class="text-weight-light">ANNOUNCEMENTS</span>
+				<i class="fas fa-bullhorn mr-2"></i> <span class="text-weight-light">COMUNICADOS</span>
 				<span class="float-right cursor-pointer" title="Close" @click="close"><i class="fas fa-times text-lighter"></i></span>
 			</div>
 			<div class="card-body">
@@ -14,7 +14,7 @@
 					<span style="font-size:13px;">{{announcement.summary}}</span>
 				</p>
 				<p class="d-flex align-items-center justify-content-between mb-0">
-					<a v-if="announcement.url" :href="announcement.url" class="small font-weight-bold mb-0">Read more</a>
+					<a v-if="announcement.url" :href="announcement.url" class="small font-weight-bold mb-0">Ver mais</a>
 					<span v-else></span>
 					<span>
 						<span :class="[showPrev ? 'btn btn-outline-secondary btn-sm py-0':'btn btn-outline-secondary btn-sm py-0 disabled']" :disabled="showPrev == false" @click="loadPrev()">
