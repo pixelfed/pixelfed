@@ -136,7 +136,7 @@
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span>
+												<span class="h5 mt-0 font-weight-bold text-primary">Novo Post</span>
 											</p>
 											<p class="mb-0 text-muted">Compartilhe até {{config.uploader.album_limit}} fotos ou vídeos</p>
 										</div>
@@ -190,7 +190,7 @@
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span>
+												<span class="h5 mt-0 font-weight-bold text-primary">Novo Álbum</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
@@ -296,7 +296,7 @@
 									<div class="form-group">
 										<label class="font-weight-bold text-muted small d-none">Caption</label>
 										<vue-tribute :options="tributeSettings">
-											<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Write a caption..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+											<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Legenda desta foto..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
 										</vue-tribute>
 										<p class="help-text small text-right text-muted mb-0">{{composeTextLength}}/{{config.uploader.max_caption_length}}</p>
 									</div>
@@ -315,7 +315,7 @@
 							</div>
 						</div> -->
 						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Marcar alguém <span class="ml-2 badge badge-primary">NEW</span></p>
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Marcar alguém</p>
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Adicionar localização</p>
@@ -329,7 +329,7 @@
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2">
-								<span>Audience</span>
+								<span>Visibilidade</span>
 								<span class="float-right">
 									<a href="#" @click.prevent="showVisibilityCard()" class="btn btn-outline-secondary btn-sm small mr-3 mt-n1 disabled" style="font-size:10px;padding:3px;text-transform: uppercase" disabled>{{visibilityTag}}</a>
 									<a href="#" @click.prevent="showVisibilityCard()" class="text-decoration-none"><i class="fas fa-chevron-right fa-lg text-lighter"></i></a>
@@ -516,8 +516,8 @@
 							<hr>
 						</div>
 						<p class="d-flex justify-content-between mb-0">
-							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancel</button>
-							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Save</button>
+							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancelar</button>
+							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Salvar</button>
 						</p>
 					</div>
 
@@ -534,7 +534,7 @@
 							</div>
 						</div>
 						<p class="d-flex justify-content-between mb-0">
-							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancel</button>
+							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancelar</button>
 							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Save</button>
 						</p>
 					</div>
@@ -575,8 +575,8 @@
 						</div>
 						<hr>
 						<p class="d-flex justify-content-between mb-0">
-							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancel</button>
-							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Save</button>
+							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancelar</button>
+							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Salvar</button>
 						</p>
 					</div>
 
@@ -812,7 +812,7 @@ export default {
 			}
 			Array.prototype.forEach.call(io.files, function(io, i) {
 				if(self.media && self.media.length + i >= self.config.uploader.album_limit) {
-					swal('Error', 'You can only upload ' + self.config.uploader.album_limit + ' photos per album', 'error');
+					swal('Error', 'Somente são permitidas até ' + self.config.uploader.album_limit + ' fotos por álbum', 'error');
 					self.uploading = false;
 					self.page = 2;
 					return;
@@ -821,7 +821,7 @@ export default {
 				let acceptedMimes = self.config.uploader.media_types.split(',');
 				let validated = $.inArray(type, acceptedMimes);
 				if(validated == -1) {
-					swal('Invalid File Type', 'The file you are trying to add is not a valid mime type. Please upload a '+self.config.uploader.media_types+' only.', 'error');
+					swal('Invalid File Type', 'Tipo de arquivo inválido. Somente os formatos '+self.config.uploader.media_types+' são permitidos.', 'error');
 					self.uploading = false;
 					self.page = 2;
 					return;
@@ -858,7 +858,7 @@ export default {
 						case 429:
 							self.uploading = false;
 							io.value = null;
-							swal('Limit Reached', 'You can upload up to 250 photos or videos per day and you\'ve reached that limit. Please try again later.', 'error');
+							swal('Limite Atingido', 'Limite máximo de uploads diário atingido.', 'error');
 							self.page = 2;
 						break;
 
@@ -963,7 +963,7 @@ export default {
 			let state = this.composeState;
 
 			if(this.composeText.length > this.config.uploader.max_caption_length) {
-				swal('Error', 'Caption is too long', 'error');
+				swal('Error', 'Legenda acima do tamanho máximo', 'error');
 				return;
 			}
 
@@ -1067,7 +1067,7 @@ export default {
 
 				case 2:
 					if(this.currentFilter) {
-						if(window.confirm('Are you sure you want to apply this filter?')) {
+						if(window.confirm('Deseja realmente aplicar este filtro?')) {
 							this.applyFilterToMedia();
 							this.page++;
 						}
@@ -1091,22 +1091,22 @@ export default {
 		},
 
 		showTagCard() {
-			this.pageTitle = 'Tag People';
+			this.pageTitle = 'Marcar Alguém';
 			this.page = 'tagPeople';
 		},
 
 		showTagHelpCard() {
-			this.pageTitle = 'About Tag People';
+			this.pageTitle = 'Ajuda';
 			this.page = 'tagPeopleHelp';
 		},
 
 		showLocationCard() {
-			this.pageTitle = 'Add Location';
+			this.pageTitle = 'Adicionar Localização';
 			this.page = 'addLocation';
 		},
 
 		showAdvancedSettingsCard() {
-			this.pageTitle = 'Advanced Settings';
+			this.pageTitle = 'Configurações';
 			this.page = 'advancedSettings';
 		},
 
@@ -1128,13 +1128,13 @@ export default {
 
 		onSubmitLocation(result) {
 			this.place = result;
-			this.pageTitle = this.textMode ? 'New Text Post' : '';
+			this.pageTitle = this.textMode ? 'Novo post de texto' : '';
 			this.page = (this.textMode ? 'addText' : 3);
 			return;
 		},
 
 		showVisibilityCard() {
-			this.pageTitle = 'Post Visibility';
+			this.pageTitle = 'Visibilidade';
 			this.page = 'visibility';
 		},
 
@@ -1144,15 +1144,15 @@ export default {
 		},
 
 		showCropPhotoCard() {
-			this.pageTitle = 'Edit Photo';
+			this.pageTitle = 'Editar Foto';
 			this.page = 'cropPhoto';
 		},
 
 		toggleVisibility(state) {
 			let tags = {
-				public: 'Public',
-				private: 'Followers Only',
-				unlisted: 'Unlisted'
+				public: 'Público',
+				private: 'Somente seguidores',
+				unlisted: 'Privado'
 			}
 			this.visibility = state;
 			this.visibilityTag = tags[state];
@@ -1161,22 +1161,22 @@ export default {
 		},
 
 		showMediaDescriptionsCard() {
-			this.pageTitle = 'Media Descriptions';
+			this.pageTitle = 'Descrição de Midia';
 			this.page = 'altText';
 		},
 
 		showAddToCollectionsCard() {
-			this.pageTitle = 'Add to Collection';
+			this.pageTitle = 'Adicionar ao álbum';
 			this.page = 'addToCollection';
 		},
 
 		showSchedulePostCard() {
-			this.pageTitle = 'Schedule Post';
+			this.pageTitle = 'Agendar Publicação';
 			this.page = 'schedulePost';
 		},
 
 		showEditMediaCard() {
-			this.pageTitle = 'Edit Media';
+			this.pageTitle = 'Editar Midia';
 			this.page = 'editMedia';
 		},
 
@@ -1191,7 +1191,7 @@ export default {
 			// this is where the magic happens
 			var ua = navigator.userAgent.toLowerCase();
 			if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
-			 	swal('Oops!', 'Your browser does not support the filter feature.', 'error');
+			 	swal('Oops!', 'Seu navegador não suporta filtros.', 'error');
 			 	return;
 			}
 
@@ -1269,7 +1269,7 @@ export default {
 
 		showTextOptions() {
 			this.page = 'textOptions';
-			this.pageTitle = 'Text Post Options';
+			this.pageTitle = 'Opções';
 		}
 	}
 }

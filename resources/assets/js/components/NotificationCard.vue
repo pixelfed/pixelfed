@@ -44,7 +44,7 @@
 						</div>
 						<div v-else-if="n.type == 'follow'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> te seguiu.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> seguiu você.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'share'">
@@ -59,12 +59,12 @@
 						</div>
 						<div v-else-if="n.type == 'tagged'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> te marcou em um <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> marcou você em um <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'direct'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> te enviou uma <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">mensagem</a>.
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> enviou uma <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">mensagem</a>.
 							</p>
 						</div>
 						<div v-else>

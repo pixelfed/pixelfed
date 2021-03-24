@@ -558,7 +558,7 @@
 					<div v-if="ctxMenuStatus && profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
 					<div v-if="ctxMenuStatus && ctxMenuStatus.account.id != profile.id" class="list-group-item rounded cursor-pointer text-danger" @click="ctxMenuReportPost()">Reportar</div>
 					<div v-if="ctxMenuStatus && (profile.is_admin || profile.id == ctxMenuStatus.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Apagar</div>
-					<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+					<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancelar</div>
 				</div>
 			</b-modal>
 			<b-modal ref="ctxModModal"
@@ -698,7 +698,7 @@
 					<!-- <div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('terrorism')">Terrorism Related</div> -->
 					<!-- <div class="list-group-item rounded cursor-pointer font-weight-bold" @click="sendReport('other')">Other or Not listed</div> -->
 					<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxReportOtherMenuGoBack()">Go Back</div> -->
-					<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxReportOtherMenuGoBack()">Cancel</div>
+					<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxReportOtherMenuGoBack()">Cancelar</div>
 				</div>
 			</b-modal>
 			<b-modal ref="ctxConfirm"

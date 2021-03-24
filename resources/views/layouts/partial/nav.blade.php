@@ -15,7 +15,7 @@
             @endauth
 
             @guest
-                    
+
                 <ul class="navbar-nav ml-auto">
                     <li>
                         <a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
@@ -33,33 +33,33 @@
                 <div class="ml-auto">
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item px-md-2 d-none d-md-block">
-                            <a class="nav-link font-weight-bold text-dark" href="/" title="Home" data-toggle="tooltip" data-placement="bottom">
+                            <a class="nav-link font-weight-bold text-dark" href="/" title="{{__('Home')}}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="fas fa-home fa-lg"></i>
-                                <span class="sr-only">Home</span>
+                                <span class="sr-only">{{__('Home')}}</span>
                             </a>
                         </li>
                         <li class="nav-item px-md-2 d-none d-md-block">
-                            <div class="nav-link font-weight-bold text-dark cursor-pointer" title="Compose" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
+                            <div class="nav-link font-weight-bold text-dark cursor-pointer" title="{{__('Compose')}}" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
                                 <i class="far fa-plus-square fa-lg"></i>
-                                <span class="sr-only">Compose</span>
+                                <span class="sr-only">{{__('Compose')}}</span>
                             </div>
                         </li>
                         <li class="nav-item px-md-2">
-                            <a class="nav-link font-weight-bold text-dark" href="/account/direct" title="Direct" data-toggle="tooltip" data-placement="bottom">
+                            <a class="nav-link font-weight-bold text-dark" href="/account/direct" title="{{__('Direct')}}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="far fa-comment-dots fa-lg"></i>
-                                <span class="sr-only">Direct</span>
+                                <span class="sr-only">{{__('Direct')}}</span>
                             </a>
                         </li>
                         <li class="nav-item px-md-2 d-none d-md-block">
-                            <a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
+                            <a class="nav-link font-weight-bold text-dark" href="/account/activity" title="{{__('Notifications')}}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="far fa-bell fa-lg"></i>
-                                <span class="sr-only">Notifications</span>
+                                <span class="sr-only">{{__('Notifications')}}</span>
                             </a>
                         </li>
                         <li class="nav-item dropdown ml-2">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{__('User Menu')}}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="far fa-user fa-lg text-dark"></i>
-                                <span class="sr-only">User Menu</span>
+                                <span class="sr-only">{{__('User Menu')}}</span>
                                 <img class="d-none" src="/storage/avatars/default.png?v=0" class="rounded-circle border shadow" width="34" height="34" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                             </a>
 
@@ -70,11 +70,11 @@
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                     <span class="fas fa-stream pr-2 text-lighter"></span>
-                                    Public
+                                    {{__('Public')}}
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="/i/stories/new">
                                     <span class="fas fa-history text-lighter pr-2"></span>
-                                    Stories
+                                    {{__('Stories')}}
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item font-weight-bold" href="/i/me">
