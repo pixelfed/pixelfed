@@ -33,7 +33,7 @@ class SiteController extends Controller
                 ],
             ];
         });
-        return view('site.index', compact('data'));
+        return view('site.index-contrariamente', compact('data'));
     }
 
     public function homeTimeline(Request $request)
