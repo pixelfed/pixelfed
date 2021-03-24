@@ -24,7 +24,7 @@
 				</div>
 				<ul v-if="tab == 'inbox'" class="list-group list-group-flush">
 					<div v-if="!messages.inbox.length" class="list-group-item d-flex justify-content-center align-items-center" style="min-height: 40vh;">
-						<p class="lead mb-0">Nenhuma mensage ainda :(</p>
+						<p class="lead mb-0">Nenhuma mensagem ainda :(</p>
 					</div>
 					<div v-else v-for="(thread, index) in messages.inbox">
 						<a class="list-group-item text-dark text-decoration-none border-left-0 border-right-0 border-top-0" :href="'/account/direct/t/'+thread.id">
