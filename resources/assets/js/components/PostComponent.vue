@@ -238,10 +238,10 @@
             </div>
             <div v-if="showComments" class="card-footer bg-white sticky-md-bottom p-0">
               <div v-if="user.length == 0" class="comment-form-guest p-3">
-                <a href="/login">Login</a> to like or comment.
+                <a href="/login">Login</a> para comentar ou curtir.
               </div>
               <form v-else class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="statusId" data-truncate="false">
-                <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" @click="replyFocus(status)"></textarea>
+                <textarea class="form-control border-0 rounded-0" name="comment" placeholder="Comentar…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" @click="replyFocus(status)"></textarea>
                 <input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" disabled/>
               </form>
             </div>
@@ -322,7 +322,7 @@
                   <div class="like-count font-weight-bold mt-2 rounded border" style="cursor:pointer;" v-on:click="likesModal">{{status.favourites_count || 0}}</div>
                 </div>
                 <div class="text-center">
-                  <div v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'h3 far fa-share-square m-0 text-primary cursor-pointer' : 'h3 far fa-share-square m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus">
+                  <div v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'h3 far fa-share-square m-0 text-primary cursor-pointer' : 'h3 far fa-share-square m-0 share-btn cursor-pointer']" title="Compartilhar" v-on:click="shareStatus">
                   </div>
                   <div class="share-count font-weight-bold mt-2 rounded border" v-if="status.visibility == 'public'" style="cursor:pointer;" v-on:click="sharesModal">{{status.reblogs_count || 0}}</div>
                 </div>
@@ -344,7 +344,7 @@
               <div v-else class="media align-items-center mt-3">
                 <div class="media-body">
                   <h2 class="font-weight-bold mr-2">
-                    {{status.content_text.length ? status.content_text : 'Untitled Post'}}
+                    {{status.content_text.length ? status.content_text : 'Post sem legenda'}}
                   </h2>
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
@@ -361,7 +361,7 @@
                     <i class="fas fa-map-marker-alt text-lighter mr-3"></i> {{status.place.name}}, {{status.place.country}}
                   </span>
                   <span v-once class="float-right">
-                    <i class="far fa-clock text-lighter mr-3"></i> {{timeAgo(status.created_at)}} ago
+                    <i class="far fa-clock text-lighter mr-3"></i> {{timeAgo(status.created_at)}} atrás
                   </span>
                 </p>
                 <!-- <div class="">
@@ -386,22 +386,22 @@
               </div>
             </div>
             <div class="col-12 col-md-4 pt-4 pl-md-3">
-              <p class="lead font-weight-bold">Comments</p>
+              <p class="lead font-weight-bold">Comentários</p>
               <div v-if="user != false" class="moment-comments">
                 <div class="form-group">
-                  <textarea class="form-control" rows="3" placeholder="Add a comment ..." v-model="replyText"></textarea>
+                  <textarea class="form-control" rows="3" placeholder="Comentar..." v-model="replyText"></textarea>
                   <p class="d-flex justify-content-between align-items-center mt-3">
                     <span class="small text-lighter font-weight-bold">
                       {{replyText.length}}/{{config.uploader.max_caption_length}}
                     </span>
                     <span v-if="replyText.length > 2">
                       <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" @click="!!replySensitive" v-model="replySensitive" id="sensitiveReply">
-                        <label class="custom-control-label small font-weight-bold text-muted" style="padding-top: 3px" for="sensitiveReply">Add Content Warning</label>
+                        <!-- <input type="checkbox" class="custom-control-input" @click="!!replySensitive" v-model="replySensitive" id="sensitiveReply">
+                        <label class="custom-control-label small font-weight-bold text-muted" style="padding-top: 3px" for="sensitiveReply">Add Content Warning</label> -->
                       </div>
                     </span>
                     <button class="btn btn-sm font-weight-bold btn-outline-primary py-1"
-                    v-if="replyText.length > 2" @click="postReply">Post</button>
+                    v-if="replyText.length > 2" @click="postReply">Enviar</button>
                   </p>
                 </div>
               </div>
@@ -434,7 +434,7 @@
                       </span>
                     </div>
                     <div v-else class="read-more" style="overflow-y: hidden;">
-                      <p v-html="reply.content" class="mb-0">loading ...</p>
+                      <p v-html="reply.content" class="mb-0">carregando...</p>
                     </div>
                     <p>
                       <span class="small">
@@ -546,25 +546,25 @@
         <div class="form-check mr-3">
           <input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
           <label class="form-check-label font-weight-light">
-            Show Caption
+            Exibir Legenda
           </label>
         </div>
         <div class="form-check mr-3">
           <input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
           <label class="form-check-label font-weight-light">
-            Show Likes
+            Exibir Curtidas
           </label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
           <label class="form-check-label font-weight-light">
-            Compact Mode
+            Modo Compacto
           </label>
         </div>
       </div>
-      <hr>
-      <button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-      <p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+      <!-- <hr> -->
+      <!-- <button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+      <p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p> -->
     </div>
   </b-modal>
   <b-modal ref="taggedModal"
@@ -584,13 +584,13 @@
               <a :href="'/'+taguser.username" class="font-weight-bold text-dark">
                 {{taguser.username}}
               </a>
-              <button v-if="taguser.id == user.id" class="btn btn-outline-primary btn-sm py-1 px-3" @click="untagMe()">Untag Me</button>
+              <button v-if="taguser.id == user.id" class="btn btn-outline-primary btn-sm py-1 px-3" @click="untagMe()">Desmarcar-me</button>
             </p>
           </div>
         </div>
       </div>
     </div>
-    <p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p>
+    <!-- <p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p> -->
   </b-modal>
   <b-modal ref="ctxModal"
     id="ctx-modal"
@@ -603,16 +603,16 @@
     <div class="list-group text-center">
       <!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
       <div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
-      <div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
-      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
-      <div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
-      <a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Edit</a>
+      <!-- <div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div> -->
+      <div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copiar Link</div>
+      <div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Desabilitar' : 'Habilitar'}} Comentários</div>
+      <a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Editar</a>
       <div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">Moderation Tools</div>
-      <div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Block</div>
-      <div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Unblock</div>
-      <a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Report</a>
-      <div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
-      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
+      <div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Bloquear</div>
+      <div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Desbloquear</div>
+      <a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Reportar</a>
+      <div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Apagar</div>
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancelar</div>
     </div>
   </b-modal>
   <b-modal ref="ctxModModal"
@@ -624,12 +624,12 @@
     size="sm"
     body-class="list-group-flush p-0 rounded">
     <div class="list-group text-center">
-      <div class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
+      <div class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Desabilitar' : 'Habilitar'}} Comentários</div>
 
-      <div class="list-group-item rounded cursor-pointer" @click="moderatePost('unlist')">Unlist from Timelines</div>
-      <div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost('remcw')">Remove Content Warning</div>
-      <div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost('addcw')">Add Content Warning</div>
-      <div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
+      <div class="list-group-item rounded cursor-pointer" @click="moderatePost('unlist')">Remover da Timeline</div>
+      <!-- <div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost('remcw')">Remove Content Warning</div>
+      <div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost('addcw')">Add Content Warning</div> -->
+      <div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancelar</div>
     </div>
   </b-modal>
   <b-modal ref="replyModal"
@@ -637,14 +637,14 @@
     hide-footer
     centered
     rounded
-    :title-html="replyingToUsername ? 'Reply to <span class=text-dark>' + replyingToUsername + '</span>' : ''"
+    :title-html="replyingToUsername ? 'Responder para <span class=text-dark>' + replyingToUsername + '</span>' : ''"
     title-tag="p"
     title-class="font-weight-bold text-muted"
     size="md"
     body-class="p-2 rounded">
     <div>
       <vue-tribute :options="tributeSettings">
-        <textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+        <textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Resposta..." v-model="replyText">
         </textarea>
       </vue-tribute>
 
@@ -661,8 +661,8 @@
         </div>
         <div class="d-flex align-items-center">
           <div class="custom-control custom-switch mr-3">
-            <input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replySensitive">
-            <label :class="[replySensitive ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
+            <!-- <input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replySensitive"> -->
+            <!-- <label :class="[replySensitive ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label> -->
           </div>
           <!-- <select class="custom-select custom-select-sm my-0 mr-2">
             <option value="public" selected="">Public</option>
@@ -670,7 +670,7 @@
             <option value="followers">Followers Only</option>
           </select> -->
           <button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="postReply()" :disabled="replyText.length == 0">
-          {{replySending == true ? 'POSTING' : 'POST'}}
+          {{replySending == true ? 'ENVIAR' : 'ENVIAR'}}
         </button>
         </div>
       </div>

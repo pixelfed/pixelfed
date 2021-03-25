@@ -13,7 +13,7 @@
 				<i class="fas fa-chevron-left fa-lg"></i>
 			</div>
 			<div class="font-weight-bold">
-				{{this.profileUsername}}								
+				{{this.profileUsername}}
 
 			</div>
 			<div>
@@ -23,8 +23,8 @@
 	</div>
 	<div v-if="relationship && relationship.blocking && warning" class="bg-white pt-3 border-bottom">
 		<div class="container">
-			<p class="text-center font-weight-bold">You are blocking this account</p>
-			<p class="text-center font-weight-bold">Click <a href="#" class="cursor-pointer" @click.prevent="warning = false;">here</a> to view profile</p>
+			<p class="text-center font-weight-bold">Você bloqueou esta conta</p>
+			<p class="text-center font-weight-bold">Clique <a href="#" class="cursor-pointer" @click.prevent="warning = false;">aqui</a> para visualizar o perfil</p>
 		</div>
 	</div>
 	<div v-if="loading" style="height: 80vh;" class="d-flex justify-content-center align-items-center">
@@ -64,7 +64,7 @@
 														<div v-if="profileSettings.followers.count" class="font-weight-light">
 															<a class="text-dark cursor-pointer text-center" v-on:click="followersModal()">
 																<p class="font-weight-bold mb-0">{{formatCount(profile.followers_count)}}</p>
-																<p class="text-muted mb-0 small">Followers</p>
+																<p class="text-muted mb-0 small">Seguidores</p>
 															</a>
 														</div>
 													</li>
@@ -72,7 +72,7 @@
 														<div v-if="profileSettings.following.count" class="font-weight-light">
 															<a class="text-dark cursor-pointer text-center" v-on:click="followingModal()">
 																<p class="font-weight-bold mb-0">{{formatCount(profile.following_count)}}</p>
-																<p class="text-muted mb-0 small">Following</p>
+																<p class="text-muted mb-0 small">Seguindo</p>
 															</a>
 														</div>
 													</li>
@@ -109,19 +109,19 @@
 									</span>
 									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 										<span class="pl-4" v-if="relationship.following == true">
-											<a :href="'/account/direct/t/'+profile.id"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1 text-dark mr-2 px-3 btn-sec-alt" style="border:1px solid #dbdbdb;" data-toggle="tooltip" title="Message">Message</a>
-											<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1 text-dark btn-sec-alt" style="border:1px solid #dbdbdb;" v-on:click="followProfile" data-toggle="tooltip" title="Unfollow"><i class="fas fa-user-check mx-3"></i></button>
+											<a :href="'/account/direct/t/'+profile.id"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1 text-dark mr-2 px-3 btn-sec-alt" style="border:1px solid #dbdbdb;" data-toggle="tooltip" title="Mensagem">Mensagem</a>
+											<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1 text-dark btn-sec-alt" style="border:1px solid #dbdbdb;" v-on:click="followProfile" data-toggle="tooltip" title="Deixar de seguir"><i class="fas fa-user-check mx-3"></i></button>
 										</span>
 										<span class="pl-4" v-if="!relationship.following">
-											<button type="button" class="btn btn-primary font-weight-bold btn-sm py-1 px-3" v-on:click="followProfile" data-toggle="tooltip" title="Follow">Follow</button>
+											<button type="button" class="btn btn-primary font-weight-bold btn-sm py-1 px-3" v-on:click="followProfile" data-toggle="tooltip" title="Seguir">Seguir</button>
 										</span>
 									</span>
 									<span class="pl-4" v-if="owner && user.hasOwnProperty('id')">
-										<a class="btn btn-outline-secondary btn-sm" href="/settings/home" style="font-weight: 600;">Edit Profile</a>
+										<a class="btn btn-outline-secondary btn-sm" href="/settings/home" style="font-weight: 600;">Editar Perfil</a>
 									</span>
 									<span class="pl-4">
 										<a class="fas fa-ellipsis-h fa-lg text-dark text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
-									</span> 
+									</span>
 								</div>
 								<div class="font-size-16px">
 									<div class="d-none d-md-inline-flex profile-stats pb-3">
@@ -134,13 +134,13 @@
 										<div v-if="profileSettings.followers.count" class="font-weight-light pr-5">
 											<a class="text-dark cursor-pointer" v-on:click="followersModal()">
 												<span class="font-weight-bold">{{formatCount(profile.followers_count)}}</span>
-												Followers
+												Seguidores
 											</a>
 										</div>
 										<div v-if="profileSettings.following.count" class="font-weight-light">
 											<a class="text-dark cursor-pointer" v-on:click="followingModal()">
 												<span class="font-weight-bold">{{formatCount(profile.following_count)}}</span>
-												Following
+												Seguindo
 											</a>
 										</div>
 									</div>
@@ -157,9 +157,9 @@
 			</div>
 			<div class="d-block d-md-none my-0 pt-3 border-bottom">
 				<p v-if="user && user.hasOwnProperty('id')" class="pt-3">
-					<button v-if="owner" class="btn btn-outline-secondary bg-white btn-sm py-1 btn-block text-center font-weight-bold text-dark border border-lighter" @click.prevent="redirect('/settings/home')">Edit Profile</button>
-					<button v-if="!owner && relationship.following" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter" @click="followProfile">&nbsp;&nbsp; Unfollow &nbsp;&nbsp;</button>
-					<button v-if="!owner && !relationship.following" class="btn btn-primary btn-sm py-1 px-5 font-weight-bold" @click="followProfile">{{relationship.followed_by ? 'Follow Back' : '&nbsp;&nbsp;&nbsp;&nbsp; Follow &nbsp;&nbsp;&nbsp;&nbsp;'}}</button>
+					<button v-if="owner" class="btn btn-outline-secondary bg-white btn-sm py-1 btn-block text-center font-weight-bold text-dark border border-lighter" @click.prevent="redirect('/settings/home')">Editar Perfil</button>
+					<button v-if="!owner && relationship.following" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter" @click="followProfile">&nbsp;&nbsp; Deixar de seguir &nbsp;&nbsp;</button>
+					<button v-if="!owner && !relationship.following" class="btn btn-primary btn-sm py-1 px-5 font-weight-bold" @click="followProfile">{{relationship.followed_by ? 'Seguir' : '&nbsp;&nbsp;&nbsp;&nbsp; Follow &nbsp;&nbsp;&nbsp;&nbsp;'}}</button>
 					<!-- <button v-if="!owner" class="btn btn-outline-secondary bg-white btn-sm py-1 px-5 font-weight-bold text-dark border border-lighter mx-2">Message</button>
 					<button v-if="!owner" class="btn btn-outline-secondary bg-white btn-sm py-1 font-weight-bold text-dark border border-lighter"><i class="fas fa-chevron-down fa-sm"></i></button> -->
 				</p>
@@ -170,10 +170,10 @@
 						<a :class="this.mode == 'grid' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('grid')"><i class="fas fa-th"></i> <span class="d-none d-md-inline-block small pl-1">POSTS</span></a>
 					</li>
 					<li class="nav-item px-0 border-top">
-						<a :class="this.mode == 'collections' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('collections')"><i class="fas fa-images"></i> <span class="d-none d-md-inline-block small pl-1">COLLECTIONS</span></a>
+						<a :class="this.mode == 'collections' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('collections')"><i class="fas fa-images"></i> <span class="d-none d-md-inline-block small pl-1">ÁLBUMS</span></a>
 					</li>
 					<li v-if="owner" class="nav-item border-top">
-						<a :class="this.mode == 'bookmarks' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark"></i> <span class="d-none d-md-inline-block small pl-1">SAVED</span></a>
+						<a :class="this.mode == 'bookmarks' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark"></i> <span class="d-none d-md-inline-block small pl-1">SALVOS</span></a>
 					</li>
 				</ul>
 			</div>
@@ -199,7 +199,7 @@
 											/>
 									</div>
 									<div v-else class="square-content">
-										
+
 										<blur-hash-image
 											width="32"
 											height="32"
@@ -228,7 +228,7 @@
 						<div v-if="timeline.length == 0" class="col-12">
 							<div class="py-5 text-center text-muted">
 								<p><i class="fas fa-camera-retro fa-2x"></i></p>
-								<p class="h2 font-weight-light pt-3">No posts yet</p>
+								<p class="h2 font-weight-light pt-3">Nenhum post</p>
 							</div>
 						</div>
 					</div>
@@ -277,7 +277,7 @@
 							<div v-else class="col-12">
 								<div class="py-5 text-center text-muted">
 									<p><i class="fas fa-bookmark fa-2x"></i></p>
-									<p class="h2 font-weight-light pt-3">No saved bookmarks</p>
+									<p class="h2 font-weight-light pt-3">Nenhum post salvo</p>
 								</div>
 							</div>
 						</div>
@@ -296,7 +296,7 @@
 						<div v-else>
 							<div class="py-5 text-center text-muted">
 								<p><i class="fas fa-images fa-2x"></i></p>
-								<p class="h2 font-weight-light pt-3">No collections yet</p>
+								<p class="h2 font-weight-light pt-3">Nenhum álbum</p>
 							</div>
 						</div>
 					</div>
@@ -313,7 +313,7 @@
 						<div class="col-12 row mx-0">
 							<div class="col-4 text-left mt-2">
 								<span v-if="relationship && relationship.followed_by">
-									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">FOLLOWS YOU</span>
+									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">SEGUE VOÇÊ</span>
 								</span>
 								<span v-if="profile.is_admin">
 									<span class="bg-light border border-danger font-weight-bold small py-1 px-2 text-danger rounded">ADMIN</span>
@@ -339,10 +339,10 @@
 								</span>
 								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 									<span class="pl-md-4 pl-sm-2" v-if="relationship.following == true">
-										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()">Unfollow</button>
+										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()">Deixar de seguir</button>
 									</span>
 									<span class="pl-md-4 pl-sm-2" v-else>
-										<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()">Follow</button>
+										<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()">Seguir</button>
 									</span>
 								</span>
 							</div>
@@ -359,11 +359,11 @@
 									</a>
 									<a v-if="profileSettings.followers.count" class="text-lighter cursor-pointer px-3" v-on:click="followersModal()">
 										<span class="font-weight-bold">{{formatCount(profile.followers_count)}}</span>
-										Followers
+										Seguidores
 									</a>
 									<a v-if="profileSettings.following.count" class="text-lighter cursor-pointer" v-on:click="followingModal()">
 										<span class="font-weight-bold">{{formatCount(profile.following_count)}}</span>
-										Following
+										Seguindo
 									</a>
 								</div>
 							</div>
@@ -409,15 +409,15 @@
 			<div v-if="owner == true" class="list-group-item border-0 pt-0 px-0 mt-n2 mb-3">
 				<span class="d-flex px-4 pb-0 align-items-center">
 					<i class="fas fa-search text-lighter"></i>
-					<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Search Following..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
+					<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Buscar seguidores..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
 				</span>
 			</div>
-			<div v-if="owner == true" class="btn-group rounded-0 mt-n3 mb-3 border-top" role="group" aria-label="Following">
+			<div v-if="owner == true" class="btn-group rounded-0 mt-n3 mb-3 border-top" role="group" aria-label="Seguindo">
 					<!-- <button type="button" :class="[followingModalTab == 'following' ? ' btn btn-light py-3 rounded-0 font-weight-bold modal-tab-active' : 'btn btn-light py-3 rounded-0 font-weight-bold']" style="font-size: 12px;">FOLLOWING</button> -->
 					<!-- <button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">MUTED</button>
 					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">BLOCKED</button> -->
 			</div>
-			<div v-else class="btn-group rounded-0 mt-n3 mb-3" role="group" aria-label="Following">
+			<div v-else class="btn-group rounded-0 mt-n3 mb-3" role="group" aria-label="Seguindo">
 					<!-- <button type="button" class="btn btn-light py-3 rounded-0 border-primary border-left-0 border-right-0 border-top-0 font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'following'">FOLLOWING</button>
 					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'mutual'">MUTUAL</button>
 					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'blocked'">BLOCKED</button> -->
@@ -441,17 +441,17 @@
 						</p>
 					</div>
 					<div v-if="owner">
-						<a class="btn btn-outline-dark btn-sm font-weight-bold" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Following</a>
+						<a class="btn btn-outline-dark btn-sm font-weight-bold" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Seguindo</a>
 					</div>
 				</div>
 			</div>
 			<div v-if="followingModalSearch && following.length == 0" class="list-group-item border-0">
 				<div class="list-group-item border-0 pt-5">
-					<p class="p-3 text-center mb-0 lead">No Results Found</p>
+					<p class="p-3 text-center mb-0 lead">Nenhum resultado encontrado</p>
 				</div>
 			</div>
 			<div v-if="following.length > 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
-				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Mais</p>
 			</div>
 		</div>
 	</b-modal>
@@ -467,7 +467,7 @@
 		<div class="list-group">
 			<div v-if="followers.length == 0" class="list-group-item border-0">
 				<p class="text-center mb-0 font-weight-bold text-muted py-5">
-					<span class="text-dark">{{profileUsername}}</span> has no followers yet</p>
+					<span class="text-dark">{{profileUsername}}</span> não tem seguidores ainda.</p>
 			</div>
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
 				<div class="media mb-0">
@@ -488,7 +488,7 @@
 				</div>
 			</div>
 			<div v-if="followers.length && followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
-				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Mais</p>
 			</div>
 		</div>
 	</b-modal>
@@ -501,40 +501,37 @@
 		body-class="list-group-flush p-0">
 		<div class="list-group" v-if="relationship">
 			<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="copyProfileLink">
-				Copy Link
-			</div>
-			<div v-if="profile.locked == false" class="list-group-item cursor-pointer text-center rounded text-dark" @click="showEmbedProfileModal">
-				Embed
+				Copiar Link
 			</div>
 			<div v-if="user && !owner && !relationship.following" class="list-group-item cursor-pointer text-center rounded text-dark" @click="followProfile">
-				Follow
+				Seguir
 			</div>
 			<div v-if="user && !owner && relationship.following" class="list-group-item cursor-pointer text-center rounded" @click="followProfile">
-				Unfollow
+				Deixar de seguir
 			</div>
 			<div v-if="user && !owner && !relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="muteProfile">
-				Mute
+				Silenciar
 			</div>
 			<div v-if="user && !owner && relationship.muting" class="list-group-item cursor-pointer text-center rounded" @click="unmuteProfile">
 				Unmute
 			</div>
 			<div v-if="user && !owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="reportProfile">
-				Report User
+				Reportar Perfil
 			</div>
 			<div v-if="user && !owner && !relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="blockProfile">
-				Block
+				Bloquear
 			</div>
 			<div v-if="user && !owner && relationship.blocking" class="list-group-item cursor-pointer text-center rounded text-dark" @click="unblockProfile">
-				Unblock
+				Desbloquear
 			</div>
 			<div v-if="user && owner" class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/settings/home')">
-				Settings
+				Opções
 			</div>
-			<div class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/users/' + profileUsername + '.atom')">
+			<!-- <div class="list-group-item cursor-pointer text-center rounded text-dark" @click="redirect('/users/' + profileUsername + '.atom')">
 				Atom Feed
-			</div>
+			</div> -->
 			<div class="list-group-item cursor-pointer text-center rounded text-muted font-weight-bold" @click="$refs.visitorContextMenu.hide()">
-				Close
+				Cancelar
 			</div>
 		</div>
 	</b-modal>
@@ -707,7 +704,7 @@
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
 				this.layout = 'metro';
 			}
-			
+
 			if(this.layout == 'metro' && u.has('t')) {
 				if(this.modes.indexOf(u.get('t')) != -1) {
 					if(u.get('t') == 'bookmarks') {
@@ -813,7 +810,7 @@
 							if(self.ids.indexOf(d.id) == -1) {
 								self.timeline.push(d);
 								self.ids.push(d.id);
-							} 
+							}
 						});
 						let max = Math.min(...this.ids);
 						if(max == this.max_id) {
@@ -1305,8 +1302,8 @@
 					this.followingModalSearch = null;
 				}
 				if(q.length > 0) {
-					let url = '/api/pixelfed/v1/accounts/' + 
-						self.profileId + '/following?page=1&fbu=' + 
+					let url = '/api/pixelfed/v1/accounts/' +
+						self.profileId + '/following?page=1&fbu=' +
 						q;
 
 					axios.get(url).then(res => {
