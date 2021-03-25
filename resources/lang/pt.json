@@ -107,5 +107,9 @@
     "Invites": "Convites",
     "Reports": "Relatórios",
     "Security": "Segurança",
-    "Import": "Importar"
+    "Import": "Importar",
+    "Register a new account": "Criar nova conta",
+    "Reset Password": "Recuperar Senha",
+    "Send Password Reset Link": "Enviar e-mail",
+    "Back to Login": "Voltar para Login"
 }

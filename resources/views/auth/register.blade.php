@@ -40,7 +40,7 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">{{ __('Email') }}</label>
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail') }}" required>
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -87,7 +87,7 @@
                         </div>
                         @endif
 
-                        <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
+                        <p class="small">Ao se cadastrar, você concorda com nossos <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Termos de Uso</a> e <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Política de Prividade</a>.</p>
 
                         <div class="form-group row">
                             <div class="col-md-12">
