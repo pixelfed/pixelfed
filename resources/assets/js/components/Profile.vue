@@ -313,7 +313,7 @@
 						<div class="col-12 row mx-0">
 							<div class="col-4 text-left mt-2">
 								<span v-if="relationship && relationship.followed_by">
-									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">SEGUE VOÇÊ</span>
+									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">SEGUE VOCÊ</span>
 								</span>
 								<span v-if="profile.is_admin">
 									<span class="bg-light border border-danger font-weight-bold small py-1 px-2 text-danger rounded">ADMIN</span>
