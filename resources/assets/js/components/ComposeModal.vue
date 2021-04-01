@@ -12,6 +12,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div v-else-if="page == 'cameraRoll'">
 			<div class="card status-card card-md-rounded-0" style="display:flex;">
 				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
@@ -42,6 +43,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div v-else>
 			<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
 				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
@@ -91,8 +93,21 @@
 					</div>
 				</div>
 				<div class="card-body p-0 border-top">
+					<div v-if="page == 'licensePicker'" class="w-100 h-100" style="min-height: 280px;">
+						<div class="list-group list-group-flush">
+							<div
+								v-for="(item, index) in availableLicenses"
+								class="list-group-item cursor-pointer" 
+								:class="{ 
+									'text-primary': licenseIndex === index,  
+									'font-weight-bold': licenseIndex === index
+								}" 
+								@click="toggleLicense(index)">
+								{{item.name}}
+							</div>
+						</div>
+					</div>
 					<div v-if="page == 'textOptions'" class="w-100 h-100" style="min-height: 280px;">
-						test
 					</div>
 					<div v-if="page == 'addText'" class="w-100 h-100" style="min-height: 280px;">
 						<div class="mt-2">
@@ -315,7 +330,10 @@
 							</div>
 						</div>
 						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people <span class="ml-2 badge badge-primary">NEW</span></p>
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">Add license <span class="ml-2 badge badge-primary">NEW</span></p>
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
@@ -565,11 +583,19 @@
 								</div>
 								<div class="form-group">
 									<label class="font-weight-bold text-muted small">License</label>
-									<input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="All Rights Reserved (Default license)">
-									<p class="help-text small text-muted mb-0 d-flex justify-content-between">
+									<!-- <input type="text" class="form-control" v-model="media[carouselCursor].license" placeholder="All Rights Reserved (Default license)"> -->
+									<!-- <p class="help-text small text-muted mb-0 d-flex justify-content-between">
 										<span></span>
 										<span>{{media[carouselCursor].license ? media[carouselCursor].license.length : 0}}/140</span>
-									</p>
+									</p> -->
+									<select class="form-control" v-model="licenseIndex">
+										<option 
+											v-for="(item, index) in availableLicenses"
+											:value="index"
+											:selected="index === licenseIndex">
+											{{item.name}}
+										</option>
+									</select>
 								</div>
 							</div>
 						</div>
@@ -707,7 +733,8 @@ export default {
 				'editMedia',
 				'cameraRoll',
 				'tagPeopleHelp',
-				'textOptions'
+				'textOptions',
+				'licensePicker'
 			],
 			cameraRollMedia: [],
 			taggedUsernames: [],
@@ -744,7 +771,46 @@ export default {
 						})
 					}
 				]
-			}
+			},
+			availableLicenses: [
+				{
+					id: 1,
+					name: "All Rights Reserved"
+				},
+				{
+					id: 5,
+					name: "Public Domain Work"
+				},
+				{
+					id: 6,
+					name: "Public Domain Dedication (CC0)"
+				},
+				{
+					id: 11,
+					name: "Attribution"
+				},
+				{
+					id: 12,
+					name: "Attribution-ShareAlike"
+				},
+				{
+					id: 13,
+					name: "Attribution-NonCommercial"
+				},
+				{
+					id: 14,
+					name: "Attribution-NonCommercial-ShareAlike"
+				},
+				{
+					id: 15,
+					name: "Attribution-NoDerivs"
+				},
+				{
+					id: 16,
+					name: "Attribution-NonCommercial-NoDerivs"
+				}
+			],
+			licenseIndex: 0
 		}
 	},
 
@@ -934,7 +1000,8 @@ export default {
 						comments_disabled: this.commentsDisabled,
 						place: this.place,
 						tagged: this.taggedUsernames,
-						optimize_media: this.optimizeMedia
+						optimize_media: this.optimizeMedia,
+						license: this.availableLicenses[this.licenseIndex].id
 					};
 					axios.post('/api/compose/v0/publish', data)
 					.then(res => {
@@ -1024,6 +1091,10 @@ export default {
 
 				case 'tagPeopleHelp':
 					this.showTagCard();
+				break;
+
+				case 'licensePicker':
+					this.page = 3;
 				break;
 
 				default:
@@ -1270,7 +1341,18 @@ export default {
 		showTextOptions() {
 			this.page = 'textOptions';
 			this.pageTitle = 'Text Post Options';
-		}
+		},
+
+		showLicenseCard() {
+			this.pageTitle = 'Select a License';
+			this.page = 'licensePicker';
+		},
+
+		toggleLicense(index) {
+			this.licenseIndex = index;
+			this.pageTitle = '';
+			this.page = 3;
+		},
 	}
 }
 </script>

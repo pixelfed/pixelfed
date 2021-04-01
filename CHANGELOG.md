@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.10...dev)
 ### Added
 - Autocomplete Support (hashtags + mentions) ([de514f7d](https://github.com/pixelfed/pixelfed/commit/de514f7d))
+- Creative Commons Licenses ([552e950](https://github.com/pixelfed/pixelfed/commit/552e950))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
@@ -403,7 +404,7 @@
 - Updated CollectionController, increase limit from 18 to 50. ([c2826fd3](https://github.com/pixelfed/pixelfed/c2826fd3))
 
 ## Deprecated
-    
+
 
 ## [v0.10.6 (2019-09-30)](https://github.com/pixelfed/pixelfed/compare/v0.10.5...v0.10.6)
 
@@ -468,7 +469,7 @@
 - Run ```php artisan passport:keys```
 - Add ```OAUTH_ENABLED=true``` to .env
 - Run ```php artisan config:cache```
-    
+
 
 ## [v0.10.5 (2019-09-24)](https://github.com/pixelfed/pixelfed/compare/v0.10.4...v0.10.5)
 
@@ -479,8 +480,8 @@
 - Fixed cache bug in privacy and terms pages [#1712](https://github.com/pixelfed/pixelfed/commit/fe522da8db7a8b0d7c18d405abcb885f8678f35c)
 
 ### Changed
-    
-    
+
+
 ## [v0.10.4 (2019-09-24)](https://github.com/pixelfed/pixelfed/compare/v0.10.3...v0.10.4)
 
 ### Added
@@ -511,17 +512,17 @@
 ## Deprecated
 - Remove deprecated profile following/followers [#1697](https://github.com/pixelfed/pixelfed/pull/1697)
 - Remove old comment permalink [05f6598](https://github.com/pixelfed/pixelfed/pull/1708/commits/05f659896d903e1ff41dba810f125d721fa057e7)
-    
-    
+
+
 ## [v0.10.3 (2019-09-08)](https://github.com/pixelfed/pixelfed/compare/v0.10.2...v0.10.3)
 
 ### Added
 - Append ```.json``` to local status urls to view ActivityPub object [#1666](https://github.com/pixelfed/pixelfed/pull/1666)
 
 ### Fixed
-- Reverted ```strict``` Same-Site Cookies to ```null``` to fix 2FA/session expiry [#1667](https://github.com/pixelfed/pixelfed/pull/1667) 
-- Fixed AP errors by storing ActivityPub object id and url [#1668](https://github.com/pixelfed/pixelfed/pull/1668) [#1683](https://github.com/pixelfed/pixelfed/pull/1683) 
-- Fixed content warnings that had filter applied [#1669](https://github.com/pixelfed/pixelfed/pull/1669) 
+- Reverted ```strict``` Same-Site Cookies to ```null``` to fix 2FA/session expiry [#1667](https://github.com/pixelfed/pixelfed/pull/1667)
+- Fixed AP errors by storing ActivityPub object id and url [#1668](https://github.com/pixelfed/pixelfed/pull/1668) [#1683](https://github.com/pixelfed/pixelfed/pull/1683)
+- Fixed content warnings that had filter applied [#1669](https://github.com/pixelfed/pixelfed/pull/1669)
 
 ### Changed
 - Japanese Translations [#1673](https://github.com/pixelfed/pixelfed/pull/1673)
@@ -531,7 +532,7 @@
 
 ### Deprecated
 - Personalized Discover has been deprecated due to low use [#1670](https://github.com/pixelfed/pixelfed/pull/1670)
-    
+
 
 ## [v0.10.2 (2019-09-06)](https://github.com/pixelfed/pixelfed/compare/v0.10.1...v0.10.2)
 
@@ -551,7 +552,7 @@
 - Loops! Discover short videos
 - Preliminary support for profile PropertyValue metadata
 - Preliminary support for Direct Messages
-- Places! Run the artisan task `import:cities` 
+- Places! Run the artisan task `import:cities`
 - Emails are now validated and banned email domains are disallowed at signup. Artisan task `email:bancheck` will validate existing users.
 - .env vars `REDIS_SCHEME` and `REDIS_PATH` allow for using Redis over a Unix socket instead of TCP [#1602](https://github.com/pixelfed/pixelfed/pull/1602)
 - .env var `IMAGE_DRIVER` allows using imagick instead of gd
@@ -574,7 +575,7 @@
 - Sample nginx.conf in contrib/ now uses HTTPS instead of HTTP. Docs updated to reference this file
 - Updated register form
 - Allow users to edit email after registrations
-    
+
 
 ## [v0.10.0 (2019-07-17)](https://github.com/pixelfed/pixelfed/compare/v0.9.6...v0.10.0)
 
@@ -595,7 +596,7 @@
 
 ### Fixed
 - Hashtag post count off-by-one [#1485](https://github.com/pixelfed/pixelfed/pull/1485)
-    
+
 
 ## [v0.9.5 (2019-07-10)](https://github.com/pixelfed/pixelfed/compare/v0.9.4...v0.9.5)
 
@@ -631,8 +632,8 @@
 
 ### Removed
 - Remove Classic Compose UI [#1434](https://github.com/pixelfed/pixelfed/pull/1434), [72bffd1](https://github.com/pixelfed/pixelfed/commit/72bffd1) [a2640af](https://github.com/pixelfed/pixelfed/commit/a2640af)
-- 
-    
+-
+
 
 ## [v0.9.4 (2019-06-03)](https://github.com/pixelfed/pixelfed/compare/v0.9.0...v0.9.4)
 
@@ -672,7 +673,7 @@ php artisan config:cache
 ### Removed
 - Google Recaptcha is no longer supported (#1231)
 - Lightbox has been deprecated in favor of double-tap-to-like; it will return as a dedicated button in the future (#1277)
-    
+
 
 ## [v0.9.0 (2019-04-17)](https://github.com/pixelfed/pixelfed/compare/v0.8.6...v0.9.0)
 
@@ -698,7 +699,7 @@ php artisan config:cache
 
 ### Removed
 - Removed identicons due to SVG compatibility issues with federation. New users will instead be assigned a default avatar.
-    
+
 
 ## [v0.8.6 (2019-04-06)](https://github.com/pixelfed/pixelfed/compare/v0.8.5...v0.8.6)
 
