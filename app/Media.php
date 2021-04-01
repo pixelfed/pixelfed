@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Util\Media\License;
 use Storage;
 
 class Media extends Model
@@ -100,5 +101,26 @@ class Media extends Model
         if($meta && isset($meta['Model'])) {
             return $meta['Model'];
         }
+    }
+
+    public function getLicense()
+    {
+        $license = $this->license;
+
+        if(!$license || strlen($license) > 2 || $license == 1) {
+            return null;
+        }
+
+        if(!in_array($license, License::keys())) {
+            return null;
+        }
+
+        $res = License::get()[$license];
+
+        return [
+            'id' => $res['id'],
+            'title' => $res['title'],
+            'url' => $res['url']
+        ];
     }
 }

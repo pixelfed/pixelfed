@@ -45,6 +45,7 @@ use App\Services\ServiceService;
 use Illuminate\Support\Str;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
+use App\Util\Media\License;
 
 class ComposeController extends Controller
 {
@@ -407,6 +408,7 @@ class ComposeController extends Controller
 			'place' => 'nullable',
 			'comments_disabled' => 'nullable',
 			'tagged' => 'nullable',
+			'license' => 'nullable|integer|min:1|max:16'
 			// 'optimize_media' => 'nullable'
 		]);
 
@@ -439,6 +441,8 @@ class ComposeController extends Controller
 
 		abort_if($limitReached == true, 429);
 
+		$license = in_array($request->input('license'), License::keys()) ? $request->input('license') : null;
+
 		$visibility = $request->input('visibility');
 		$medias = $request->input('media');
 		$attachments = [];
@@ -458,7 +462,7 @@ class ComposeController extends Controller
 				abort(403, 'Invalid media id');
 			}
 			$m->filter_class = in_array($media['filter_class'], Filter::classes()) ? $media['filter_class'] : null;
-			$m->license = $media['license'];
+			$m->license = $license;
 			$m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
 			$m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
 			// if($optimize_media == false) {
