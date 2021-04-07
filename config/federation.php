@@ -10,7 +10,6 @@ return [
 	| ActivityPub configuration
 	|
 	*/
-
 	'activitypub' => [
 		'enabled' => env('ACTIVITY_PUB', false),
 		'outbox' => env('AP_OUTBOX', true),
@@ -40,5 +39,7 @@ return [
 	'webfinger' => [
 		'enabled' => env('WEBFINGER', true)
 	],
+
+	'network_timeline' => env('PF_NETWORK_TIMELINE', false)
 
 ];

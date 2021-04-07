@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Auth; 
-use Cache; 
-use Mail; 
+use Auth;
+use Cache;
+use Mail;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -81,7 +81,7 @@ class AccountController extends Controller
 
 		if ($recentAttempt > 0) {
 			return redirect()->back()->with('error', 'A verification email has already been sent recently. Please check your email, or try again later.');
-		} 
+		}
 
 		EmailVerification::whereUserId(Auth::id())->delete();
 
@@ -247,7 +247,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id || $profile->user->is_admin == true) {
+			if ($profile->id == $user->id || ($profile->user && $profile->user->is_admin == true)) {
 				return abort(403);
 			}
 			$class = get_class($profile);
@@ -394,7 +394,7 @@ class AccountController extends Controller
             $request->session()->pull('sudoModeAttempts');
             Auth::logout();
             return redirect(route('login'));
-        } 
+        }
 		return view('auth.sudo');
 	}
 
@@ -485,7 +485,7 @@ class AccountController extends Controller
 			}
 		} else {
 			return false;
-		}  
+		}
 	}
 
 	public function accountRestored(Request $request)

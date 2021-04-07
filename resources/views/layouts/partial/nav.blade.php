@@ -15,7 +15,7 @@
             @endauth
 
             @guest
-                    
+
                 <ul class="navbar-nav ml-auto">
                     <li>
                         <a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
@@ -64,13 +64,29 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item font-weight-bold" href="{{route('discover')}}">
-                                    <span class="far fa-compass pr-2 text-lighter"></span>
-                                    {{__('navmenu.discover')}}
+                                @if(config('federation.network_timeline'))
+                                <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
+                                    <span class="fas fa-stream pr-2 text-lighter"></span>
+                                    Public
+                                </a>
+                                <a class="dropdown-item font-weight-bold" href="{{route('timeline.network')}}">
+                                    <span class="fas fa-globe pr-2 text-lighter"></span>
+                                    Network
+                                </a>
+                                @else
+                                <a class="dropdown-item font-weight-bold" href="/">
+                                    <span class="fas fa-home pr-2 text-lighter"></span>
+                                    Home
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
                                     <span class="fas fa-stream pr-2 text-lighter"></span>
                                     Public
+                                </a>
+                                @endif
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item font-weight-bold" href="{{route('discover')}}">
+                                    <span class="far fa-compass pr-2 text-lighter"></span>
+                                    {{__('navmenu.discover')}}
                                 </a>
                                 <a class="dropdown-item font-weight-bold" href="/i/stories/new">
                                     <span class="fas fa-history text-lighter pr-2"></span>

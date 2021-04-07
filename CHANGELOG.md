@@ -4,6 +4,7 @@
 ### Added
 - Autocomplete Support (hashtags + mentions) ([de514f7d](https://github.com/pixelfed/pixelfed/commit/de514f7d))
 - Creative Commons Licenses ([552e950](https://github.com/pixelfed/pixelfed/commit/552e950))
+- Add Network Timeline ([af7face4](https://github.com/pixelfed/pixelfed/commit/af7face4))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
