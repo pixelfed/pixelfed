@@ -1,17 +1,9 @@
 let mix = require('laravel-mix');
 
-mix.sass('resources/assets/sass/app.scss', 'public/css', {
-	implementation: require('node-sass')
-})
-.sass('resources/assets/sass/appdark.scss', 'public/css', {
-	implementation: require('node-sass')
-})
-.sass('resources/assets/sass/landing.scss', 'public/css', {
-	implementation: require('node-sass')
-})
-.sass('resources/assets/sass/quill.scss', 'public/css', {
-	implementation: require('node-sass')
-}).version();
+mix.sass('resources/assets/sass/app.scss', 'public/css')
+.sass('resources/assets/sass/appdark.scss', 'public/css')
+.sass('resources/assets/sass/landing.scss', 'public/css')
+.sass('resources/assets/sass/quill.scss', 'public/css').version();
 
 mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/activity.js', 'public/js')
@@ -41,6 +33,11 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/rempro.js', 'public/js')
 .js('resources/assets/js/rempos.js', 'public/js')
 //.js('resources/assets/js/timeline_next.js', 'public/js')
+// .js('resources/assets/js/memoryprofile.js', 'public/js')
+// .js('resources/assets/js/my2020.js', 'public/js')
+.js('resources/assets/js/network-timeline.js', 'public/js')
+// .js('resources/assets/js/drive.js', 'public/js')
+// .js('resources/assets/js/register.js', 'public/js')
 
 .extract([
 	'lodash',
@@ -49,6 +46,6 @@ mix.js('resources/assets/js/app.js', 'public/js')
 	'axios',
 	'bootstrap',
 	'vue',
-	'readmore-js' 
+	'readmore-js'
 ])
 .version();
