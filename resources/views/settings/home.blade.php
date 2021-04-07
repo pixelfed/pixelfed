@@ -58,7 +58,7 @@
       </div>
     </div>
     <div class="form-group row">
-      <label for="bio" class="col-sm-3 col-form-label font-weight-bold">Language</label>
+      <label for="language" class="col-sm-3 col-form-label font-weight-bold">Language</label>
       <div class="col-sm-9">
         <select class="form-control" name="language">
         @foreach(App\Util\Localization\Localization::languages() as $lang)
