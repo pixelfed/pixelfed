@@ -523,7 +523,7 @@ class PublicApiController extends Controller
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotNull('uri')
                       ->whereScope('public')
-                      // ->where('created_at', '>', now()->subMonths(3))
+                      ->where('created_at', '>', now()->subMonths(3))
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
