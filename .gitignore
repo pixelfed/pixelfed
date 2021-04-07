@@ -22,3 +22,4 @@ yarn-error.log
 /nginx.conf
 /public/css
 /public/js
+/public/mix-manifest.json
