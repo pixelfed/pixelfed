@@ -20,6 +20,6 @@ yarn-error.log
 .git-credentials
 /.composer/
 /nginx.conf
-/public/css
-/public/js
+/public/css/
+/public/js/
 /public/mix-manifest.json
