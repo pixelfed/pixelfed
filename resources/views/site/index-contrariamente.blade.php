@@ -49,8 +49,10 @@
             <div class="row pt-md-5 mt-5">
                 <div class="col-12 col-md-6 d-none d-md-block">
                     <div class="m-my-4">
-                        <p class="display-2 font-weight-bold">Photo Sharing</p>
-                        <p class="h1 font-weight-bold">For Everyone.</p>
+                        <p class="display-2 font-weight-bold">UM NOVO PORTAL SE ABRE</p>
+                        <p class="sub-text-form">Conecte-se com outros profissionais, compartilhe suas técnicas
+                        e encontre novas oportunidades de trabalho. Contrariamente é uma plataforma completa
+                        para profissionais e empresários da área da beleza e estética.</p>
                     </div>
                 </div>
                 <div class="col-12 col-md-5 offset-md-1">
