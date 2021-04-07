@@ -2,6 +2,6 @@
 
 return [
 
-  'emptyPersonalTimeline' => 'إنّ خيطك الزمني فارغ.',
+  'emptyPersonalTimeline' => 'إنَّ الخَطَّ الزَّمَنِيَّ الخاصَّ بِكَ فَارِغ.',
 
 ];

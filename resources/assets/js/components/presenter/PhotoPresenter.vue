@@ -23,27 +23,27 @@
 	</div>
 	<div v-else>
 		<div :title="status.media_attachments[0].description" style="position: relative;">
-			<img class="card-img-top" 
-				:src="status.media_attachments[0].url" 
-				loading="lazy" 
+			<img class="card-img-top"
+				:src="status.media_attachments[0].url"
+				loading="lazy"
 				:alt="altText(status)"
 				:width="width()"
 				:height="height()"
 				onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 
-				<p 
+				<p
 					v-if="status.media_attachments[0].license"
 					style="
-				    margin-bottom: 0;
-				    padding: 0 5px;
-				    color: #fff;
-				    font-size: 10px;
-				    text-align: right;
-				    position: absolute;
-				    bottom: 0;
-				    right: 0;
-				    border-top-left-radius: 5px;
-				    background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+					margin-bottom: 0;
+					padding: 0 5px;
+					color: #fff;
+					font-size: 10px;
+					text-align: right;
+					position: absolute;
+					bottom: 0;
+					right: 0;
+					border-top-left-radius: 5px;
+					background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
 				"><a :href="status.url" class="font-weight-bold text-light">Photo</a> by <a :href="status.account.url" class="font-weight-bold text-light">&commat;{{status.account.username}}</a> licensed under <a :href="status.media_attachments[0].license.url" class="font-weight-bold text-light">{{status.media_attachments[0].license.title}}</a></p>
 		</div>
 	</div>
@@ -91,7 +91,7 @@
 			},
 
 			width() {
-				if( !this.status.media_attachments[0].meta || 
+				if( !this.status.media_attachments[0].meta ||
 					!this.status.media_attachments[0].meta.original ||
 					!this.status.media_attachments[0].meta.original.width ) {
 					return;
@@ -100,7 +100,7 @@
 			},
 
 			height() {
-				if( !this.status.media_attachments[0].meta || 
+				if( !this.status.media_attachments[0].meta ||
 					!this.status.media_attachments[0].meta.original ||
 					!this.status.media_attachments[0].meta.original.height ) {
 					return;

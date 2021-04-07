@@ -334,7 +334,7 @@
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
                     <span v-if="relationship && profile && user && !relationship.following && profile.id != user.id">
-                      <span class="px-1 text-lighter">•</span> 
+                      <span class="px-1 text-lighter">•</span>
                       <a class="font-weight-bold small" href="#">Follow</a>
                     </span>
                   </p>
@@ -348,7 +348,7 @@
                   </h2>
                   <p class="lead mb-0">
                     by <a :href="statusProfileUrl">{{statusUsername}}</a>
-                    <!-- <span class="px-1 text-lighter">•</span> 
+                    <!-- <span class="px-1 text-lighter">•</span>
                     <a class="font-weight-bold small" href="#">Follow</a> -->
                   </p>
                 </div>
@@ -400,7 +400,7 @@
                         <label class="custom-control-label small font-weight-bold text-muted" style="padding-top: 3px" for="sensitiveReply">Add Content Warning</label>
                       </div>
                     </span>
-                    <button class="btn btn-sm font-weight-bold btn-outline-primary py-1" 
+                    <button class="btn btn-sm font-weight-bold btn-outline-primary py-1"
                     v-if="replyText.length > 2" @click="postReply">Post</button>
                   </p>
                 </div>
@@ -442,7 +442,7 @@
                       </span>
                     </p>
                   </div>
-                </div> 
+                </div>
               </div>
             </div>
           </div>
@@ -687,10 +687,10 @@
   .postPresenterContainer {
     background: #fff;
   }
-  @media(min-width: 720px) {  
-    .postPresenterContainer { 
-      min-height: 600px;  
-    } 
+  @media(min-width: 720px) {
+    .postPresenterContainer {
+      min-height: 600px;
+    }
   }
   ::-webkit-scrollbar {
       width: 0px;
@@ -773,10 +773,11 @@ export default {
       'status-profile-url',
       'status-avatar',
       'status-profile-id',
-      'profile-layout'
+      'profile-layout',
+      'profile-recent'
     ],
 
-    components: { 
+    components: {
         VueTribute
     },
 
@@ -941,12 +942,15 @@ export default {
                   this.fetchComments();
                 }
                 this.loaded = true;
-                setTimeout(function() {
-                  self.fetchProfilePosts();
-                }, 3000);
+
+                if(this.profileRecent !== false) {
+	                setTimeout(function() {
+	                  self.fetchProfilePosts();
+	                }, 3000);
+                }
                 setTimeout(function() {
                   self.fetchState();
-                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
                     i.href = App.util.format.rewriteLinks(i);
                   });
                 }, 500);
@@ -1202,7 +1206,7 @@ export default {
           comment: this.replyText,
           sensitive: this.replySensitive
         }
-        
+
         this.replyText = '';
 
         axios.post('/i/comment', data)
@@ -1262,7 +1266,7 @@ export default {
             this.redirect('/login?next=' + encodeURIComponent(window.location.pathname));
             return;
           }
-          
+
           if(this.status.comments_disabled) {
             return;
           }
@@ -1284,7 +1288,7 @@ export default {
           axios.get(url)
             .then(response => {
                 let self = this;
-                this.results = this.layout == 'metro' ? 
+                this.results = this.layout == 'metro' ?
                   _.reverse(response.data.data) :
                   response.data.data;
                 this.pagination = response.data.meta.pagination;
@@ -1294,7 +1298,7 @@ export default {
                 $('.postCommentsLoader').addClass('d-none');
                 $('.postCommentsContainer').removeClass('d-none');
                 setTimeout(function() {
-                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+                  document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
                     i.href = App.util.format.rewriteLinks(i);
                   });
                 }, 500);
@@ -1505,9 +1509,9 @@ export default {
         if(profile.local == true) {
           return reply.url;
         } else {
-          return showOrigin ? 
+          return showOrigin ?
             reply.url :
-            '/i/web/post/_/' + profile.id + '/' + reply.id; 
+            '/i/web/post/_/' + profile.id + '/' + reply.id;
         }
       },
 
@@ -1575,7 +1579,7 @@ export default {
             });
             swal('Untagged', 'You have been untagged from this post.', 'success');
         }).catch(err => {
-            swal('An Error Occurred', 'Please try again later.', 'error');  
+            swal('An Error Occurred', 'Please try again later.', 'error');
         });
       },
 
@@ -1737,7 +1741,7 @@ export default {
           }, 500);
         });
       },
-    
+
     },
 }
 </script>

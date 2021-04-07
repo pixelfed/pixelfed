@@ -130,7 +130,7 @@
 									</div>
 									<div class="pl-2">
 										<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
-											<a class="username font-weight-bold text-dark text-decoration-none" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
+											<a class="username font-weight-bold text-dark text-decoration-none text-break" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
 												Loading...
 											</a>
 											<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
@@ -408,7 +408,7 @@
 				<div class="col-12 col-md-6 offset-md-3">
 					<div class="card shadow-none border" style="height:100vh;">
 						<div class="card-header d-flex justify-content-between align-items-center">
-							<div 
+							<div
 								@click="commentNavigateBack(status.id)"
 								class="cursor-pointer"
 								>
@@ -441,9 +441,9 @@
 							</div>
 							<div class="postCommentsContainer d-none">
 								<p v-if="replies.length" class="mb-1 text-center load-more-link my-4">
-									<a 
-										href="#" 
-										class="text-dark" 
+									<a
+										href="#"
+										class="text-dark"
 										title="Load more comments"
 										@click.prevent="loadMoreComments"
 									>
@@ -516,19 +516,19 @@
 						</div>
 						<div class="card-footer mb-3">
 							<div class="align-middle d-flex">
-								<img 
+								<img
 									:src="profile.avatar"
 									width="36"
 									height="36"
 									class="rounded-circle border mr-3">
-								<textarea 
-									class="form-control rounded-pill" 
-									name="comment" 
-									placeholder="Add a comment…" 
-									autocomplete="off" 
+								<textarea
+									class="form-control rounded-pill"
+									name="comment"
+									placeholder="Add a comment…"
+									autocomplete="off"
 									autocorrect="off"
 									rows="1"
-									maxlength="0" 
+									maxlength="0"
 									style="resize: none;overflow-y: hidden"
 									@click="replyFocus(status)">
 								</textarea>
@@ -741,9 +741,9 @@
 				body-class="p-2 rounded">
 				<div>
 					<vue-tribute :options="tributeSettings">
-						<textarea 
-							class="form-control replyModalTextarea" 
-							rows="4" 
+						<textarea
+							class="form-control replyModalTextarea"
+							rows="4"
 							v-model="replyText">
 						</textarea>
 					</vue-tribute>
@@ -764,7 +764,7 @@
 								<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replyNsfw">
 								<label :class="[replyNsfw ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
 							</div>
-								
+
 							<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0">
 								{{replySending == true ? 'POSTING' : 'POST'}}
 							</button>
@@ -781,14 +781,14 @@
 				size="xl"
 				body-class="list-group-flush p-0 m-0 rounded">
 				<!-- <post-component
-					v-if="ctxMenuStatus" 
-					:status-template="ctxMenuStatus.pf_type" 
-					:status-id="ctxMenuStatus.id" 
-					:status-username="ctxMenuStatus.account.username" 
-					:status-url="ctxMenuStatus.url" 
-					:status-profile-url="ctxMenuStatus.account.url" 
-					:status-avatar="ctxMenuStatus.account.avatar" 
-					:status-profile-id="ctxMenuStatus.account.id" 
+					v-if="ctxMenuStatus"
+					:status-template="ctxMenuStatus.pf_type"
+					:status-id="ctxMenuStatus.id"
+					:status-username="ctxMenuStatus.account.username"
+					:status-url="ctxMenuStatus.url"
+					:status-profile-url="ctxMenuStatus.account.url"
+					:status-avatar="ctxMenuStatus.account.avatar"
+					:status-profile-id="ctxMenuStatus.account.id"
 					profile-layout="metro">
 				</post-component> -->
 			</b-modal>
@@ -934,7 +934,7 @@
 
 				let el = document.querySelector('link[data-stylesheet="light"]');
 				el.setAttribute('href', '/css/appdark.css?id=' + Date.now());
-				el.setAttribute('data-stylesheet', 'dark'); 
+				el.setAttribute('data-stylesheet', 'dark');
 			}*/
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
@@ -1019,14 +1019,14 @@
 					$('.timeline .pagination').removeClass('d-none');
 					// if(this.feed.length == 4) {
 					// 	this.fetchTimelineApi();
-					// } 
+					// }
 					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
 					// this.fetchStories();
 					this.rtw();
 					setTimeout(function() {
-						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
@@ -1079,7 +1079,7 @@
 									'status_id': d.id,
 									'profile_id': d.account.id
 								});
-							} 
+							}
 						});
 						this.min_id = Math.max(...this.ids).toString();
 						this.max_id = Math.min(...this.ids).toString();
@@ -1211,7 +1211,7 @@
 			},
 
 			fetchStatusComments(status, card) {
-				// axios.get('/api/v2/status/'+status.id+'/replies', 
+				// axios.get('/api/v2/status/'+status.id+'/replies',
 				// {
 				// 	params: {
 				// 		limit: 6
@@ -1223,7 +1223,7 @@
 				// 	});
 				// 	this.replies = _.reverse(data);
 				// 	setTimeout(function() {
-				// 		document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) { 
+				// 		document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 				// 			i.href = App.util.format.rewriteLinks(i);
 				// 		});
 				// 	}, 500);
@@ -1233,7 +1233,7 @@
 				axios.get(url)
 				.then(response => {
 					let self = this;
-					// this.results = this.layout == 'metro' ? 
+					// this.results = this.layout == 'metro' ?
 					// _.reverse(response.data.data) :
 					// response.data.data;
 					this.replies = _.reverse(response.data.data);
@@ -1244,7 +1244,7 @@
 					$('.postCommentsLoader').addClass('d-none');
 					$('.postCommentsContainer').removeClass('d-none');
 					// setTimeout(function() {
-					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) { 
+					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
 					// 		i.href = App.util.format.rewriteLinks(i);
 					// 	});
 					// }, 500);
@@ -1622,7 +1622,7 @@
 					this.replyText += em + ' ';
 					$('textarea[name="comment"]').focus();
 				}
-			}, 
+			},
 
 			refreshSuggestions() {
 				return;
@@ -1794,7 +1794,7 @@
 				this.$refs.ctxModModal.hide();
 				this.$refs.ctxModOtherModal.show();
 			},
-			
+
 			ctxModMenu() {
 				this.$refs.ctxModal.hide();
 			},
@@ -1854,7 +1854,7 @@
 					return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
 					break;
 
-					default: 
+					default:
 					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
 					break;
 				}
@@ -2104,7 +2104,7 @@
 				if(this.status.comments_disabled) {
 					return;
 				}
-				
+
 				this.replyToIndex = index;
 				this.replyingToId = e.id;
 				this.replyingToUsername = e.account.username;
@@ -2184,9 +2184,9 @@
 		color: #3897f0;
 	}
 	.replyModalTextarea {
-		border: none; 
-		font-size: 18px; 
-		resize: none; 
+		border: none;
+		font-size: 18px;
+		resize: none;
 		white-space: pre-wrap;
 		outline: none;
 	}

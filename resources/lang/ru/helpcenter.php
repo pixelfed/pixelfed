@@ -5,22 +5,24 @@ return [
 	'helpcenter' => 'Помощь',
 	'whatsnew' => 'Что нового',
 
-	'gettingStarted' => 'Первые шаги',
+	'gettingStarted' => 'Начало работы',
 	'sharingMedia' => 'Поделиться',
 	'profile' => 'Профиль',
 	'stories' => 'Истории',
-	'hashtags' => 'Хэштэти',
+	'hashtags' => 'Хэштэги',
 	'discover' => 'Discover',
-	'directMessages' => 'Личное сообщение',
+	'directMessages' => 'Личные сообщения',
 	'timelines' => 'Ленты',
 	'embed'	=> 'Вставить',
 
 	'communityGuidelines' => 'Правила сообщества',
 	'whatIsTheFediverse' => 'Что такое fediverse?',
 	'controllingVisibility' => 'Управление видимостью',
-	'blockingAccounts' => 'Заблокированные аккаунты',
+	'blockingAccounts' => 'Блокировка аккаунтов',
 	'safetyTips' => 'Советы по безопасности',
-	'reportSomething' => 'Пожаловаться',
+	'reportSomething' => 'Жалобы',
 	'dataPolicy' => 'Конфиденциальность'
+    
+    'taggingPeople' => 'Отметки людей'
 
 ];
