@@ -6,7 +6,7 @@
         <div class="col-lg-5">
             <div class="text-center">
                 <img src="/img/pixelfed-icon-color.svg" height="60px">
-                <p class="font-weight-light h3 py-4">Confirm password to continue</p>
+                <p class="font-weight-light h3 py-4">{{ __('Confirm password to continue')}}</p>
             </div>
             <div class="card">
                 <div class="card-body">
@@ -26,7 +26,7 @@
                         <div class="form-group">
                             <div class="custom-control custom-checkbox">
                               <input type="checkbox" class="custom-control-input" id="trusted-device" name="trustDevice">
-                              <label class="custom-control-label text-muted" for="trusted-device">Trust this device and don't ask again</label>
+                              <label class="custom-control-label text-muted" for="trusted-device">{{ __('Trust this device and don\'t ask again')}}</label>
                             </div>
                         </div>  
 

@@ -3,18 +3,18 @@
 @section('section')
 
 <div class="title">
-	<h3 class="font-weight-bold">Relationships</h3>
+	<h3 class="font-weight-bold">{{ __('Relationships')}}</h3>
 </div>
 <hr>
 <ul class="nav nav-pills">
 	<li class="nav-item">
-		<a class="nav-link font-weight-bold {{!request()->has('mode') || $mode == 'followers' ? 'active' : ''}}" href="?mode=followers&page=1">Followers</a>
+		<a class="nav-link font-weight-bold {{!request()->has('mode') || $mode == 'followers' ? 'active' : ''}}" href="?mode=followers&page=1">{{ __('Followers')}}</a>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link font-weight-bold {{$mode == 'following' ? 'active' : ''}}" href="?mode=following&page=1">Following</a>
+		<a class="nav-link font-weight-bold {{$mode == 'following' ? 'active' : ''}}" href="?mode=following&page=1">{{ __('Following')}}</a>
 	</li>
 	<li class="nav-item">
-		<a class="nav-link font-weight-bold {{$mode == 'hashtags' ? 'active' : ''}}" href="?mode=hashtags&page=1">Hashtags</a>
+		<a class="nav-link font-weight-bold {{$mode == 'hashtags' ? 'active' : ''}}" href="?mode=hashtags&page=1">{{ __('Hashtags')}}</a>
 	</li>
 </ul>
 <hr>
@@ -29,8 +29,8 @@
 			{{-- <th scope="col" class="pt-0 pb-1 mt-0">
 				<input type="checkbox" name="check" class="form-control check-all">
 			</th> --}}
-			<th scope="col">Hashtag</th>
-			<th scope="col">Action</th>
+			<th scope="col">{{ __('Hashtag')}}</th>
+			<th scope="col">{{ __('Action')}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -42,7 +42,7 @@
 				</a>
 			</td>
 			<td class="text-center">
-				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$hashtag->hashtag->name}}" data-action="unfollowhashtag">Unfollow</a>
+				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$hashtag->hashtag->name}}" data-action="unfollowhashtag">{{ __('Unfollow')}}</a>
 			</td>
 		</tr>
 		@endforeach
@@ -52,8 +52,8 @@
 			{{-- <th scope="col" class="pt-0 pb-1 mt-0">
 				<input type="checkbox" name="check" class="form-control check-all">
 			</th> --}}
-			<th scope="col">Username</th>
-			<th scope="col">Action</th>
+			<th scope="col">{{ __('Username')}}</th>
+			<th scope="col">{{ __('Action')}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -69,12 +69,12 @@
 			</td>
 			@if($mode == 'following')
 			<td class="text-center">
-				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="unfollow">Unfollow</a>
+				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="unfollow">{{ __('Unfollow')}}</a>
 			</td>
 			@else
 			<td class="text-center">
-				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">Mute</a>
-				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">Block</a>
+				<a class="btn btn-outline-primary btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="mute">{{ __('Mute')}}</a>
+				<a class="btn btn-outline-danger btn-sm py-0 action-btn" href="#" data-id="{{$follower->id}}" data-action="block">{{ __('Block')}}</a>
 			</td>
 			@endif
 		</tr>

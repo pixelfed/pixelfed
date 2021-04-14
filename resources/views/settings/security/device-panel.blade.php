@@ -1,5 +1,5 @@
 <div class="mb-4 pb-4">
-  <h4 class="font-weight-bold">Devices</h4>
+  <h4 class="font-weight-bold">{{ __('Devices')}}</h4>
   <hr>
   <ul class="list-group">
     @foreach($devices as $device)
@@ -18,26 +18,26 @@
             <span class="text-truncate">{{$device->ip}}</span>
           </p>
           <p class="mb-0 font-weight-bold">
-            <span class="text-muted">Device:</span>
+            <span class="text-muted">{{ __('Device')}}:</span>
             <span>{{$device->getUserAgent()->device()}}</span>
           </p>
           <p class="mb-0 font-weight-bold">
-            <span class="text-muted">Browser:</span>
+            <span class="text-muted">{{ __('Browser')}}:</span>
             <span>{{$device->getUserAgent()->browser()}}</span>
           </p>
           {{-- <p class="mb-0 font-weight-bold">
-            <span class="text-muted">Country:</span>
+            <span class="text-muted">{{ __('Country')}}:</span>
             <span>Canada</span>
           </p> --}}
           <p class="mb-0 font-weight-bold">
-            <span class="text-muted">Last Login:</span>
+            <span class="text-muted">{{ __('Last Login')}}:</span>
             <span>{{$device->updated_at->diffForHumans()}}</span>
           </p>
         </div>
         <div>
           <div class="btn-group">
-            {{-- <a class="btn btn-success font-weight-bold py-0 btn-sm" href="#">Trust</a>
-            <a class="btn btn-outline-secondary font-weight-bold py-0 btn-sm" href="#">Remove Device</a> --}}
+            {{-- <a class="btn btn-success font-weight-bold py-0 btn-sm" href="#">{{ __('Trust')}}</a>
+            <a class="btn btn-outline-secondary font-weight-bold py-0 btn-sm" href="#">{{ __('Remove Device')}}</a> --}}
           </div>
         </div>
       </div>
