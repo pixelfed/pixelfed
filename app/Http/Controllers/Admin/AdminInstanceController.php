@@ -14,29 +14,58 @@ trait AdminInstanceController
 	public function instances(Request $request)
 	{
 		$this->validate($request, [
+
 			'filter' => [
 				'nullable',
 				'string',
 				'min:1',
 				'max:20',
-				Rule::in(['autocw', 'unlisted', 'banned'])
+				Rule::in([
+					'cw',
+					'unlisted',
+					'banned',
+					// 'popular',
+					'new',
+					'all'
+				])
 			],
 		]);
-		if($request->has('filter') && $request->filled('filter')) {
+		if($request->has('q') && $request->filled('q')) {
+			$instances = Instance::where('domain', 'like', '%' . $request->input('q') . '%')->simplePaginate(10);
+		} else if($request->has('filter') && $request->filled('filter')) {
 			switch ($request->filter) {
-				case 'autocw':
-					$instances = Instance::whereAutoCw(true)->orderByDesc('id')->paginate(5);
+				case 'cw':
+					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereAutoCw(true)->orderByDesc('id')->simplePaginate(10);
 					break;
 				case 'unlisted':
-					$instances = Instance::whereUnlisted(true)->orderByDesc('id')->paginate(5);
+					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereUnlisted(true)->orderByDesc('id')->simplePaginate(10);
 					break;
 				case 'banned':
-					$instances = Instance::whereBanned(true)->orderByDesc('id')->paginate(5);
+					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereBanned(true)->orderByDesc('id')->simplePaginate(10);
 					break;
+				case 'new':
+					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->latest()->simplePaginate(10);
+					break;
+				// case 'popular':
+				// 	$popular = Profile::selectRaw('*, count(domain) as count')
+				// 		->whereNotNull('domain')
+				// 		->groupBy('domain')
+				// 		->orderByDesc('count')
+				// 		->take(10)
+				// 		->get()
+				// 		->pluck('domain')
+				// 		->toArray();
+				// 	$instances = Instance::whereIn('domain', $popular)->simplePaginate(10);
+				// 	break;
+
+				default:
+					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->orderByDesc('id')->simplePaginate(10);
+				break;
 			}
 		} else {
-			$instances = Instance::orderByDesc('id')->paginate(5);
+			$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->orderByDesc('id')->simplePaginate(10);
 		}
+
 		return view('admin.instances.home', compact('instances'));
 	}
 
@@ -96,6 +125,10 @@ trait AdminInstanceController
 				$instance->save();
 				break;
 		}
+
+		Cache::forget('instances:banned:domains');
+		Cache::forget('instances:unlisted:domains');
+		Cache::forget('instances:auto_cw:domains');
 
 		return response()->json([]);
 	}
