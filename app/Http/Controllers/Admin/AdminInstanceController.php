@@ -127,6 +127,8 @@ trait AdminInstanceController
 		}
 
 		Cache::forget('instances:banned:domains');
+		Cache::forget('instances:unlisted:domains');
+		Cache::forget('instances:auto_cw:domains');
 
 		return response()->json([]);
 	}

@@ -26,6 +26,7 @@ use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 use App\Services\ActivityPubFetchService;
 use App\Services\ActivityPubDeliveryService;
+use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
@@ -175,9 +176,7 @@ class Helpers {
 				}
 			}
 
-			$bannedInstances = Cache::remember('instances:banned:domains', now()->addHours(12), function() {
-				return Instance::whereBanned(true)->pluck('domain')->toArray();
-			});
+			$bannedInstances = InstanceService::getBannedDomains();
 
 			if(in_array($host, $bannedInstances)) {
 				return false;
@@ -328,6 +327,7 @@ class Helpers {
 		$idDomain = parse_url($id, PHP_URL_HOST);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 
+
 		if(!self::validateUrl($id)) {
 			return;
 		}
@@ -355,6 +355,14 @@ class Helpers {
 			$reply_to = null;
 		}
 		$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
+
+		if($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+			$scope = 'unlisted';
+		}
+
+		if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
+			$cw = true;
+		}
 
 		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
 		$status = Cache::lock($statusLockKey)
