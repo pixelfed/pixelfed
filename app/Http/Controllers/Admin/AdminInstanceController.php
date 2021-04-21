@@ -126,6 +126,8 @@ trait AdminInstanceController
 				break;
 		}
 
+		Cache::forget('instances:banned:domains');
+
 		return response()->json([]);
 	}
 }
