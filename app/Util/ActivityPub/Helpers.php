@@ -161,13 +161,13 @@ class Helpers {
 
 			$host = parse_url($valid, PHP_URL_HOST);
 
-			if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
-				return false;
-			}
+			// if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
+			// 	return false;
+			// }
 
 			if(config('costar.enabled') == true) {
 				if(
-					(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) || 
+					(config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) ||
 					(config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
 				) {
 					return false;
@@ -257,7 +257,7 @@ class Helpers {
 		}
 
 		$res = self::fetchFromUrl($url);
-		
+
 		if(!$res || empty($res) || isset($res['error']) ) {
 			return;
 		}
@@ -269,7 +269,7 @@ class Helpers {
 		}
 
 		$scope = 'private';
-		
+
 		$cw = isset($res['sensitive']) ? (bool) $res['sensitive'] : false;
 
 		if(isset($res['to']) == true) {
@@ -312,7 +312,7 @@ class Helpers {
 			$cwDomains = config('costar.domain.cw');
 			if(in_array(parse_url($url, PHP_URL_HOST), $cwDomains) == true) {
 				$cw = true;
-			} 
+			}
 		}
 
 		$id = isset($res['id']) ? $res['id'] : $url;
@@ -350,13 +350,13 @@ class Helpers {
 		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
 		$status = Cache::lock($statusLockKey)
 			->get(function () use(
-				$profile, 
-				$res, 
-				$url, 
-				$ts, 
-				$reply_to, 
-				$cw, 
-				$scope, 
+				$profile,
+				$res,
+				$url,
+				$ts,
+				$reply_to,
+				$cw,
+				$scope,
 				$id
 		) {
 			return DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
@@ -426,7 +426,7 @@ class Helpers {
 				MediaStoragePipeline::dispatch($media);
 			}
 		}
-		
+
 		$status->viewType();
 		return;
 	}
@@ -497,7 +497,7 @@ class Helpers {
 				});
 			} else {
 				// Update info after 24 hours
-				if($profile->last_fetched_at == null || 
+				if($profile->last_fetched_at == null ||
 				   $profile->last_fetched_at->lt(now()->subHours(24)) == true
 				) {
 					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
