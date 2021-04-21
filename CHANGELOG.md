@@ -64,6 +64,8 @@
 - Updated ApiV1Controller, add missing variable. ([886ea617](https://github.com/pixelfed/pixelfed/commit/886ea617))
 - Updated PublicApiController, limit network pagination to 3 months. ([10119bbb](https://github.com/pixelfed/pixelfed/commit/10119bbb))
 - Updated admin instance page, add search and improve performance. ([f5829373](https://github.com/pixelfed/pixelfed/commit/f5829373))
+- Updated AdminInstanceController, invalidate banned domain cache when updated. ([35393edf](https://github.com/pixelfed/pixelfed/commit/35393edf))
+- Updated AP Helpers, use instance filtering. ([66b4f8c7](https://github.com/pixelfed/pixelfed/commit/66b4f8c7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
