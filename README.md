@@ -20,7 +20,7 @@ Documentation for Pixelfed can be found on the [Pixelfed documentation website](
 
 ## License
 
-Pixelfed is open-sourced software licensed under the AGPL license.
+Pixelfed is open-sourced software licensed under the AGPLv3. For accurate information regarding license and copyrights, please check individual files. 
 
 ## Communication
 
