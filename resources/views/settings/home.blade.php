@@ -79,7 +79,7 @@
         </div>
         <div class="help-text">
           <span class="small text-muted">
-            {{$storage['percentUsed']}}% used
+            {{$storage['percentUsed']}}% {{ __('used')}}
           </span>
           <span class="small text-muted float-right">
             {{$storage['usedPretty']}} / {{$storage['limitPretty']}}
@@ -159,7 +159,7 @@ $(document).ready(function() {
 
     $('.delete-profile-photo').on('click', function(e) {
       e.preventDefault();
-      if(window.confirm('Are you sure you want to delete your profile photo.') == false) {
+      if(window.confirm('Confirma a exclusão da foto do seu perfil?') == false) {
         return;
       }
       axios.delete('/settings/avatar').then(res => {
