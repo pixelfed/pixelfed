@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * SPDX-FileCopyrightText: 2018 Daniel Supernault 
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+ 
 use BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize;
 
 return [

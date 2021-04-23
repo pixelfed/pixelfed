@@ -1,6 +1,11 @@
 <?php
 
 /*
+ * SPDX-FileCopyrightText: 2018 Vincent Klaiber <hello@vinkla.com>
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
+/*
  * This file is part of Laravel Hashids.
  *
  * (c) Vincent Klaiber <hello@vinkla.com>
