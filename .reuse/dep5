@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pixelfed
+Upstream-Contact: Daniel Supernault  <danielsupernault@gmail.com>
+Source: https://github.com/pixelfed/pixelfed
+ 
+Files: public/img/*
+Copyright: 2018 Daniel Supernault 
+License: AGPL-3.0-only
