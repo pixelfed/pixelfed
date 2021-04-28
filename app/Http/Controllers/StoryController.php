@@ -12,7 +12,7 @@ use App\Services\StoryService;
 use Cache, Storage;
 use Image as Intervention;
 use App\Services\FollowerService;
-
+use App\Services\MediaPathService;
 
 class StoryController extends Controller
 {
@@ -37,7 +37,7 @@ class StoryController extends Controller
 		}
 
 		$photo = $request->file('file');
-		$path = $this->storePhoto($photo);
+		$path = $this->storePhoto($photo, $user);
 
 		$story = new Story();
 		$story->duration = 3;
@@ -47,21 +47,18 @@ class StoryController extends Controller
 		$story->path = $path;
 		$story->local = true;
 		$story->size = $photo->getSize();
-		$story->expires_at = now()->addHours(24);
 		$story->save();
 
 		return [
 			'code' => 200,
 			'msg'  => 'Successfully added',
+			'media_id' => (string) $story->id,
 			'media_url' => url(Storage::url($story->path))
 		];
 	}
 
-	protected function storePhoto($photo)
+	protected function storePhoto($photo, $user)
 	{
-		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
-		$sid = (string) Str::uuid();
-		$rid = Str::random(9).'.'.Str::random(9);
 		$mimes = explode(',', config('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
@@ -72,9 +69,9 @@ class StoryController extends Controller
 			return;
 		}
 
-		$storagePath = "public/_esm.t2/{$monthHash}/{$sid}/{$rid}";
+		$storagePath = MediaPathService::story($user->profile);
 		$path = $photo->store($storagePath);
-		if(in_array($photo->getMimeType(), ['image/jpeg','image/png',])) {
+		if(in_array($photo->getMimeType(), ['image/jpeg','image/png'])) {
 			$fpath = storage_path('app/' . $path);
 			$img = Intervention::make($fpath);
 			$img->orientate();
@@ -84,6 +81,68 @@ class StoryController extends Controller
 		return $path;
 	}
 
+	public function cropPhoto(Request $request)
+	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+
+		$this->validate($request, [
+			'media_id' => 'required|integer|min:1',
+			'width' => 'required',
+			'height' => 'required',
+			'x' => 'required',
+			'y' => 'required'
+		]);
+
+		$user = $request->user();
+		$id = $request->input('media_id');
+		$width = round($request->input('width'));
+		$height = round($request->input('height'));
+		$x = round($request->input('x'));
+		$y = round($request->input('y'));
+
+		$story = Story::whereProfileId($user->profile_id)->findOrFail($id);
+
+		$path = storage_path('app/' . $story->path);
+
+		if(!is_file($path)) {
+			abort(400, 'Invalid or missing media.');
+		}
+
+		$img = Intervention::make($path);
+		$img->crop($width, $height, $x, $y);
+		$img->save($path, config('pixelfed.image_quality'));
+
+		return [
+			'code' => 200,
+			'msg'  => 'Successfully cropped',
+		];
+	}
+
+	public function publishStory(Request $request)
+	{
+		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+
+		$this->validate($request, [
+			'media_id' => 'required',
+			'duration' => 'required|integer|min:3|max:10'
+		]);
+
+		$id = $request->input('media_id');
+		$user = $request->user();
+		$story = Story::whereProfileId($user->profile_id)
+			->findOrFail($id);
+
+		$story->active = true;
+		$story->duration = $request->input('duration', 10);
+		$story->expires_at = now()->addHours(24);
+		$story->save();
+
+		return [
+			'code' => 200,
+			'msg'  => 'Successfully published',
+		];
+	}
+
 	public function apiV1Delete(Request $request, $id)
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
@@ -91,7 +150,7 @@ class StoryController extends Controller
 		$user = $request->user();
 
 		$story = Story::whereProfileId($user->profile_id)
-		->findOrFail($id);
+			->findOrFail($id);
 
 		if(Storage::exists($story->path) == true) {
 			Storage::delete($story->path);
@@ -114,6 +173,7 @@ class StoryController extends Controller
 
 		if(config('database.default') == 'pgsql') {
 			$db = Story::with('profile')
+			->whereActive(true)
 			->whereIn('profile_id', $following)
 			->where('expires_at', '>', now())
 			->distinct('profile_id')
@@ -121,8 +181,9 @@ class StoryController extends Controller
 			->get();
 		} else {
 			$db = Story::with('profile')
+			->whereActive(true)
 			->whereIn('profile_id', $following)
-			->where('expires_at', '>', now())
+			->where('created_at', '>', now()->subDay())
 			->orderByDesc('expires_at')
 			->groupBy('profile_id')
 			->take(9)
@@ -158,6 +219,7 @@ class StoryController extends Controller
 		}
 
 		$stories = Story::whereProfileId($profile->id)
+		->whereActive(true)
 		->orderBy('expires_at', 'desc')
 		->where('expires_at', '>', now())
 		->when(!$publicOnly, function($query, $publicOnly) {
@@ -187,6 +249,7 @@ class StoryController extends Controller
 
 		$authed = $request->user()->profile;
 		$story = Story::with('profile')
+			->whereActive(true)
 			->where('expires_at', '>', now())
 			->findOrFail($id);
 
@@ -198,11 +261,11 @@ class StoryController extends Controller
 		}
 
 		abort_if(!$publicOnly, 403);
-		
+
 		$res = [
 			'id' => (string) $story->id,
 			'type' => Str::endsWith($story->path, '.mp4') ? 'video' :'photo',
-			'length' => 3,
+			'length' => 10,
 			'src' => url(Storage::url($story->path)),
 			'preview' => null,
 			'link' => null,
@@ -227,6 +290,7 @@ class StoryController extends Controller
 		}
 
 		$stories = Story::whereProfileId($profile->id)
+		->whereActive(true)
 		->orderBy('expires_at')
 		->where('expires_at', '>', now())
 		->when(!$publicOnly, function($query, $publicOnly) {
@@ -237,7 +301,7 @@ class StoryController extends Controller
 			return [
 				'id' => $s->id,
 				'type' => Str::endsWith($s->path, '.mp4') ? 'video' :'photo',
-				'length' => 3,
+				'length' => 10,
 				'src' => url(Storage::url($s->path)),
 				'preview' => null,
 				'link' => null,
@@ -272,25 +336,30 @@ class StoryController extends Controller
 			'id'	=> 'required|integer|min:1|exists:stories',
 		]);
 		$id = $request->input('id');
+
 		$authed = $request->user()->profile;
+
 		$story = Story::with('profile')
 			->where('expires_at', '>', now())
 			->orderByDesc('expires_at')
 			->findOrFail($id);
 
 		$profile = $story->profile;
+
 		if($story->profile_id == $authed->id) {
-			$publicOnly = true;
-		} else {
-			$publicOnly = (bool) $profile->followedBy($authed);
+			return [];
 		}
 
+		$publicOnly = (bool) $profile->followedBy($authed);
 		abort_if(!$publicOnly, 403);
 
 		StoryView::firstOrCreate([
 			'story_id' => $id,
 			'profile_id' => $authed->id
 		]);
+
+		$story->view_count = $story->view_count + 1;
+		$story->save();
 
 		return ['code' => 200];
 	}
@@ -300,6 +369,7 @@ class StoryController extends Controller
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
 
 		$res = (bool) Story::whereProfileId($id)
+		->whereActive(true)
 		->where('expires_at', '>', now())
 		->count();
 
@@ -312,6 +382,7 @@ class StoryController extends Controller
 
 		$profile = $request->user()->profile;
 		$stories = Story::whereProfileId($profile->id)
+			->whereActive(true)
 			->orderBy('expires_at')
 			->where('expires_at', '>', now())
 			->get()
@@ -346,7 +417,7 @@ class StoryController extends Controller
 	public function compose(Request $request)
 	{
 		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
-		
+
 		return view('stories.compose');
 	}
 
