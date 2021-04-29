@@ -960,7 +960,7 @@ class ApiV1Controller extends Controller
         $res = [
         	'approval_required' => false,
         	'contact_account' => null,
-            'description' => 'Pixelfed - Photo sharing for everyone',
+            'description' => config('instance.description'),
             'email' => config('instance.email'),
             'invites_enabled' => false,
             'rules' => [],
