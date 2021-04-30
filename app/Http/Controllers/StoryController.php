@@ -130,6 +130,9 @@ class StoryController extends Controller
 		if($story->type === 'photo') {
 			$img = Intervention::make($path);
 			$img->crop($width, $height, $x, $y);
+			$img->resize(1080, 1920, function ($constraint) {
+				$constraint->aspectRatio();
+			});
 			$img->save($path, config('pixelfed.image_quality'));
 		}
 
