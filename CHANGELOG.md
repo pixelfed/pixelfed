@@ -71,6 +71,7 @@
 - Updated Stories, add crop and duration settings to composer. ([c8edca69](https://github.com/pixelfed/pixelfed/commit/c8edca69))
 - Updated instance endpoint, add custom description. ([668e936e](https://github.com/pixelfed/pixelfed/commit/668e936e))
 - Updated StoryCompose component, improve full screen preview. ([39a76103](https://github.com/pixelfed/pixelfed/commit/39a76103))
+- Updated Helpers, fix broken tests. ([22dddaa0](https://github.com/pixelfed/pixelfed/commit/22dddaa0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
