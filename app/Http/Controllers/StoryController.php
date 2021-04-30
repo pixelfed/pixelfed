@@ -71,7 +71,7 @@ class StoryController extends Controller
 			'code' => 200,
 			'msg'  => 'Successfully added',
 			'media_id' => (string) $story->id,
-			'media_url' => url(Storage::url($url)),
+			'media_url' => url(Storage::url($url)) . '?v=' . time(),
 			'media_type' => $story->type
 		];
 	}
