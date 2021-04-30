@@ -1,60 +1,92 @@
 <template>
-<div class="container mt-2 mt-md-5">
+<div class="container mt-2 mt-md-5 bg-black">
 	<input type="file" id="pf-dz" name="media" class="d-none file-input" v-bind:accept="config.mimes">
+	<span class="fixed-top text-right m-3 cursor-pointer" @click="navigateTo()">
+		<i class="fas fa-times fa-lg text-white"></i>
+	</span>
 	<div v-if="loaded" class="row">
-		<div class="col-12 col-md-6 offset-md-3">
+		<div class="col-12 col-md-6 offset-md-3 bg-dark rounded-lg">
 
 			<!-- LANDING -->
 			<div v-if="page == 'landing'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
-				<div class="text-center flex-fill mt-5 pt-5">
-					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
-					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
-					<!-- <p v-if="loaded" class="font-weight-bold small text-uppercase text-muted">
-						<span>{{stories.length}} Active</span>
-						<span class="px-2">|</span>
-						<span>30K Views</span>
-					</p> -->
+				<div class="text-center flex-fill pt-3">
+					<p class="text-muted font-weight-light mb-1">
+						<i class="fas fa-history fa-5x"></i>
+					</p>
+					<p class="text-muted font-weight-bold mb-0">STORIES</p>
 				</div>
 				<div class="flex-fill py-4">
-					<div class="card w-100 shadow-none">
-						<div class="list-group">
+					<div class="card w-100 shadow-none bg-transparent">
+						<div class="list-group bg-transparent">
 							<!-- <a class="list-group-item text-center lead text-decoration-none text-dark" href="#">Camera</a> -->
-							<a class="list-group-item text-center lead text-decoration-none text-dark" href="#" @click.prevent="upload()">Add Photo</a>
-							<a v-if="stories.length" class="list-group-item text-center lead text-decoration-none text-dark" href="#" @click.prevent="edit()">Edit</a>
+							<a class="list-group-item bg-transparent lead text-decoration-none text-light font-weight-bold border-light" href="#" @click.prevent="upload()">
+								<i class="fas fa-plus-square mr-2"></i>
+								Add to Story
+							</a>
+							<a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
+								<i class="far fa-clone mr-2"></i>
+								My Story
+							</a>
+							<a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="viewMyStory()">
+								<i class="fas fa-history mr-2"></i>
+								View My Story
+							</a>
+							<!-- <a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
+								<i class="fas fa-network-wired mr-1"></i>
+								Audience
+							</a> -->
+							<!-- <a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
+								<i class="far fa-chart-bar mr-2"></i>
+								Stats
+							</a> -->
+							<!-- <a class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
+								<i class="far fa-folder mr-2"></i>
+								Archived
+							</a> -->
+							<!-- <a class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
+								<i class="far fa-question-circle mr-2"></i>
+								Help
+							</a> -->
+							<a class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="/">
+								<i class="fas fa-arrow-left mr-2"></i>
+								Go back
+							</a>
 							<!-- <a class="list-group-item text-center lead text-decoration-none text-dark" href="#">Options</a> -->
 						</div>
 					</div>
 				</div>
 				<div class="text-center flex-fill">
-					<p class="text-lighter small text-uppercase">
+					<!-- <p class="text-lighter small text-uppercase">
 						<a href="/" class="text-muted font-weight-bold">Home</a>
 						<span class="px-2 text-lighter">|</span>
 						<a href="/i/my/story" class="text-muted font-weight-bold">View My Story</a>
 						<span class="px-2 text-lighter">|</span>
 						<a href="/site/help" class="text-muted font-weight-bold">Help</a>
-					</p>
+					</p> -->
 				</div>
 			</div>
 
 			<!-- CROP -->
-			<div v-if="page == 'crop'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 95vh;">
-				<div class="text-center pt-5 mb-3 d-flex justify-content-between align-items-center">
+			<div v-if="page == 'crop'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
+				<div class="text-center py-3 d-flex justify-content-between align-items-center">
 					<div>
-						<button class="btn btn-outline-lighter btn-sm py-0 px-md-3"><i class="pr-2 fas fa-chevron-left fa-sm"></i> Delete</button>
+						<button class="btn btn-outline-lighter btn-sm py-1 px-md-3" @click="deleteCurrentStory()"><i class="pr-2 fas fa-chevron-left fa-sm"></i> Delete</button>
 					</div>
-					<div class="d-flex align-items-center">
-						<img class="d-inline-block mr-2" src="/img/pixelfed-icon-grey.svg" width="30px" height="30px">
-						<span class="font-weight-bold lead text-lighter">Stories</span>
+					<div class="">
+						<p class="text-muted font-weight-light mb-1">
+							<i class="fas fa-history fa-5x"></i>
+						</p>
+						<p class="text-muted font-weight-bold mb-0">STORIES</p>
 					</div>
 					<div>
-						<button class="btn btn-outline-success btn-sm py-0 px-md-3">Crop <i class="pl-2 fas fa-chevron-right fa-sm"></i></button>
+						<button class="btn btn-primary btn-sm py-1 px-md-3" @click="performCrop()">Crop <i class="pl-2 fas fa-chevron-right fa-sm"></i></button>
 					</div>
 				</div>
 				<div class="flex-fill">
 					<div class="card w-100 mt-3">
 						<div class="card-body p-0">
 							<vue-cropper
-								ref="cropper"
+								ref="croppa"
 								:relativeZoom="cropper.zoom"
 								:aspectRatio="cropper.aspectRatio"
 								:viewMode="cropper.viewMode"
@@ -66,20 +98,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="text-center flex-fill">
-					<p class="text-lighter small text-uppercase pt-2">
-						<!-- <a href="#" class="text-muted font-weight-bold">Home</a>
-						<span class="px-2 text-lighter">|</span>
-						<a href="#" class="text-muted font-weight-bold">View My Story</a>
-						<span class="px-2 text-lighter">|</span> -->
-						<a href="/site/help" class="text-muted font-weight-bold mb-0">Help</a>
-					</p>
-				</div>
 			</div>
 
 			<!-- ERROR -->
 			<div v-if="page == 'error'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
-				<p class="h3 mb-0">Oops!</p>
+				<p class="h3 mb-0 text-light">Oops!</p>
 				<p class="text-muted lead">An error occurred, please try again later.</p>
 				<p class="text-muted mb-0">
 					<a class="btn btn-outline-secondary py-0 px-5 font-weight-bold" href="/">Go back</a>
@@ -88,30 +111,63 @@
 
 			<!-- UPLOADING -->
 			<div v-if="page == 'uploading'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
-				<p v-if="uploadProgress != 100" class="display-4 mb-0">Uploading {{uploadProgress}}%</p>
-				<p v-else class="display-4 mb-0">Publishing Story</p>
+				<p v-if="uploadProgress != 100" class="display-4 mb-0 text-muted">Uploading {{uploadProgress}}%</p>
+				<p v-else class="display-4 mb-0 text-muted">Processing ...</p>
 			</div>
 
-			<div v-if="page == 'edit'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
-				<div class="text-center flex-fill mt-5 pt-5">
-					<img src="/img/pixelfed-icon-grey.svg" width="60px" height="60px">
-					<p class="font-weight-bold lead text-lighter mt-1">Stories</p>
+			<!-- CROPPING -->
+			<div v-if="page == 'cropping'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
+				<p class="display-4 mb-0 text-muted">Cropping ...</p>
+			</div>
+
+			<!-- PREVIEW -->
+			<div v-if="page == 'preview'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center align-items-center" style="height: 90vh;">
+				<div>
+					<div class="form-group">
+						<label for="durationSlider" class="text-light lead font-weight-bold">Story Duration</label>
+						<input type="range" class="custom-range" min="3" max="10" id="durationSlider" v-model="duration">
+						<p class="help-text text-center">
+							<span class="text-light">{{duration}} seconds</span>
+						</p>
+					</div>
+					<hr class="my-3">
+					<a class="btn btn-primary btn-block px-5 font-weight-bold my-3" href="#" @click.prevent="shareStoryToFollowers()">
+						Share Story with followers
+					</a>
+
+					<a class="btn btn-outline-muted btn-block px-5 font-weight-bold" href="/" @click.prevent="deleteCurrentStory()">
+						Cancel
+					</a>
 				</div>
-				<div class="flex-fill py-5">
-					<div class="card w-100 shadow-none" style="max-height: 500px; overflow-y: auto">
+				<!-- <a class="btn btn-outline-secondary btn-block px-5 font-weight-bold" href="#">
+					Share Story with everyone
+				</a> -->
+			</div>
+
+			<!-- EDIT -->
+			<div v-if="page == 'edit'" class="card card-body bg-transparent border-0 shadow-none d-flex justify-content-center" style="height: 90vh;">
+				<div class="text-center flex-fill mt-5">
+					<p class="text-muted font-weight-light mb-1">
+						<i class="fas fa-history fa-5x"></i>
+					</p>
+					<p class="text-muted font-weight-bold mb-0">STORIES</p>
+				</div>
+				<div class="flex-fill py-4">
+					<p class="lead font-weight-bold text-lighter">My Stories</p>
+					<div class="card w-100 shadow-none bg-transparent" style="max-height: 50vh; overflow-y: scroll">
 						<div class="list-group">
-							<div v-for="(story, index) in stories" class="list-group-item text-center text-dark" href="#">
+							<div v-for="(story, index) in stories" class="list-group-item bg-transparent text-center border-muted text-lighter" href="#">
 								<div class="media align-items-center">
 									<div class="mr-3 cursor-pointer" @click="showLightbox(story)">
-										<img :src="story.src" class="img-fluid" width="70px" height="70px">
-										<p class="small text-muted text-center mb-0">(expand)</p>
+										<img :src="story.src" class="rounded-circle border" width="40px" height="40px" style="object-fit: cover;">
 									</div>
-									<div class="media-body">
-										<p class="mb-0">Expires</p>
-										<p class="mb-0 text-muted small"><span>{{expiresTimestamp(story.expires_at)}}</span></p>
+									<div class="media-body text-left">
+										<p class="mb-0 text-muted font-weight-bold"><span>{{story.created_ago}} ago</span></p>
 									</div>
-									<div class="float-right">
-										<button @click="deleteStory(story, index)" class="btn btn-danger btn-sm font-weight-bold text-uppercase">Delete</button>
+									<div class="flex-grow-1 text-right">
+										<button @click="deleteStory(story, index)" class="btn btn-link btn-sm">
+											<i class="fas fa-trash-alt fa-lg text-muted"></i>
+										</button>
 									</div>
 								</div>
 							</div>
@@ -119,7 +175,7 @@
 					</div>
 				</div>
 				<div class="flex-fill text-center">
-					<a class="btn btn-outline-secondary py-0 px-5 font-weight-bold" href="/i/stories/new">Go back</a>
+					<a class="btn btn-outline-secondary btn-block px-5 font-weight-bold" href="/i/stories/new" @click.prevent="goBack()">Go back</a>
 				</div>
 			</div>
 		</div>
@@ -130,18 +186,24 @@
 		hide-header
 		hide-footer
 		centered
-		size="lg"
-		body-class="p-0"
+		size="md"
+		class="bg-transparent"
+		body-class="p-0 bg-transparent"
 		>
-		<div v-if="lightboxMedia" class="w-100 h-100">
-			<img :src="lightboxMedia.url" style="max-height: 100%; max-width: 100%">
+		<div v-if="lightboxMedia" class="w-100 h-100 bg-transparent">
+			<img :src="lightboxMedia.url" style="max-height: 90vh; width: 100%; object-fit: contain;">
 		</div>
 	</b-modal>
 </div>
 </template>
 
-<style type="text/css" scoped>
-
+<style type="text/css">
+.bg-black {
+	background-color: #262626;
+}
+#lightbox .modal-content {
+	background: transparent;
+}
 </style>
 
 <script type="text/javascript">
@@ -149,7 +211,7 @@
 	import VueCropper from 'vue-cropperjs';
 	import 'cropperjs/dist/cropper.css';
 	export default {
-		components: { 
+		components: {
 			VueCropper,
 			VueTimeago
 		},
@@ -182,12 +244,15 @@
 					zoom: null
 				},
 				mediaUrl: null,
+				mediaId: null,
 				stories: [],
 				lightboxMedia: false,
+				duration: 3
 			};
 		},
 
 		mounted() {
+			$('body').addClass('bg-black');
 			this.mediaWatcher();
 			axios.get('/api/stories/v0/fetch/' + this.profileId)
 			.then(res => {
@@ -241,19 +306,22 @@
 						}
 					};
 
+					io.value = null;
 					axios.post('/api/stories/v0/add', form, xhrConfig)
 					.then(function(e) {
 						self.uploadProgress = 100;
 						self.uploading = false;
-						window.location.href = '/i/my/story';
 						self.mediaUrl = e.data.media_url;
+						self.mediaId = e.data.media_id;
+						self.page = e.data.media_type === 'video' ? 'preview' : 'crop';
+						// window.location.href = '/i/my/story';
 					}).catch(function(e) {
 						self.uploading = false;
 						io.value = null;
 						let msg = e.response.data.message ? e.response.data.message : 'Something went wrong.'
 						swal('Oops!', msg, 'warning');
+						self.page = 'error';
 					});
-					io.value = null;
 					self.uploadProgress = 0;
 				});
 			},
@@ -286,7 +354,49 @@
 						window.location.href = '/i/stories/new';
 					}
 				});
+			},
 
+			navigateTo(path = '/') {
+				window.location.href = path;
+			},
+
+			goBack() {
+				this.page = 'landing';
+			},
+
+			performCrop() {
+				this.page = 'cropping';
+				let data = this.$refs.croppa.getData();
+				axios.post('/api/stories/v0/crop', {
+					media_id: this.mediaId,
+					width: data.width,
+					height: data.height,
+					x: data.x,
+					y: data.y
+				}).then(res => {
+					this.page = 'preview';
+				});
+			},
+
+			deleteCurrentStory() {
+				let story = {
+					id: this.mediaId
+				};
+				this.deleteStory(story);
+				this.page = 'landing';
+			},
+
+			shareStoryToFollowers() {
+				axios.post('/api/stories/v0/publish', {
+					media_id: this.mediaId,
+					duration: this.duration
+				}).then(res => {
+					window.location.href = '/i/my/story?id=' + this.mediaId;
+				})
+			},
+
+			viewMyStory() {
+				window.location.href = '/i/my/story';
 			}
 		}
 	}

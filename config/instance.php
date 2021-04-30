@@ -2,7 +2,7 @@
 
 return [
 
-	'description' => env('INSTANCE_DESCRIPTION', null),
+	'description' => env('INSTANCE_DESCRIPTION', 'Pixelfed - Photo sharing for everyone'),
 
 	'contact' => [
 		'enabled' => env('INSTANCE_CONTACT_FORM', false),
@@ -18,7 +18,7 @@ return [
 			'is_public' => env('INSTANCE_PUBLIC_HASHTAGS', false)
 		],
 	],
-	
+
 	'email' => env('INSTANCE_CONTACT_EMAIL'),
 
 	'timeline' => [

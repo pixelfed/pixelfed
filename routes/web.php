@@ -230,6 +230,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete')->middleware('throttle:maxStoryDeletePerDay,1440');
 			Route::get('v0/me', 'StoryController@apiV1Me');
 			Route::get('v0/item/{id}', 'StoryController@apiV1Item');
+			Route::post('v0/crop', 'StoryController@cropPhoto');
+    		Route::post('v0/publish', 'StoryController@publishStory');
 		});
 
 	});
