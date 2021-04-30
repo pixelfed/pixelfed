@@ -27,6 +27,10 @@
 								<i class="far fa-clone mr-2"></i>
 								My Story
 							</a>
+							<a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="viewMyStory()">
+								<i class="fas fa-history mr-2"></i>
+								View My Story
+							</a>
 							<!-- <a v-if="stories.length" class="list-group-item bg-transparent lead text-decoration-none text-lighter font-weight-bold border-muted" href="#" @click.prevent="edit()">
 								<i class="fas fa-network-wired mr-1"></i>
 								Audience
@@ -149,23 +153,21 @@
 					<p class="text-muted font-weight-bold mb-0">STORIES</p>
 				</div>
 				<div class="flex-fill py-4">
+					<p class="lead font-weight-bold text-lighter">My Stories</p>
 					<div class="card w-100 shadow-none bg-transparent" style="max-height: 50vh; overflow-y: scroll">
 						<div class="list-group">
 							<div v-for="(story, index) in stories" class="list-group-item bg-transparent text-center border-muted text-lighter" href="#">
 								<div class="media align-items-center">
 									<div class="mr-3 cursor-pointer" @click="showLightbox(story)">
-										<img :src="story.src" class="img-fluid" width="70px" height="70px">
-										<p class="small text-muted text-center mb-0">(expand)</p>
+										<img :src="story.src" class="rounded-circle border" width="40px" height="40px" style="object-fit: cover;">
 									</div>
 									<div class="media-body text-left">
-										<p class="mb-0">Expires</p>
-										<p class="mb-1 text-muted small"><span>{{expiresTimestamp(story.expires_at)}}</span></p>
-										<p class="mb-0">
-											<button class="btn btn-outline-muted btn-sm py-0 px-2">Followers Only</button>
-										</p>
+										<p class="mb-0 text-muted font-weight-bold"><span>{{story.created_ago}} ago</span></p>
 									</div>
-									<div class="float-right">
-										<button @click="deleteStory(story, index)" class="btn btn-danger btn-sm font-weight-bold text-uppercase">Delete</button>
+									<div class="flex-grow-1 text-right">
+										<button @click="deleteStory(story, index)" class="btn btn-link btn-sm">
+											<i class="fas fa-trash-alt fa-lg text-muted"></i>
+										</button>
 									</div>
 								</div>
 							</div>
@@ -184,11 +186,12 @@
 		hide-header
 		hide-footer
 		centered
-		size="lg"
-		body-class="p-0"
+		size="md"
+		class="bg-transparent"
+		body-class="p-0 bg-transparent"
 		>
-		<div v-if="lightboxMedia" class="w-100 h-100">
-			<img :src="lightboxMedia.url" style="max-height: 90vh; width: 100%; object-fit: cover;">
+		<div v-if="lightboxMedia" class="w-100 h-100 bg-transparent">
+			<img :src="lightboxMedia.url" style="max-height: 90vh; width: 100%; object-fit: contain;">
 		</div>
 	</b-modal>
 </div>
@@ -197,6 +200,9 @@
 <style type="text/css">
 .bg-black {
 	background-color: #262626;
+}
+#lightbox .modal-content {
+	background: transparent;
 }
 </style>
 
@@ -307,13 +313,14 @@
 						self.uploading = false;
 						self.mediaUrl = e.data.media_url;
 						self.mediaId = e.data.media_id;
-						self.page = 'crop';
+						self.page = e.data.media_type === 'video' ? 'preview' : 'crop';
 						// window.location.href = '/i/my/story';
 					}).catch(function(e) {
 						self.uploading = false;
 						io.value = null;
 						let msg = e.response.data.message ? e.response.data.message : 'Something went wrong.'
 						swal('Oops!', msg, 'warning');
+						self.page = 'error';
 					});
 					self.uploadProgress = 0;
 				});
@@ -386,6 +393,10 @@
 				}).then(res => {
 					window.location.href = '/i/my/story?id=' + this.mediaId;
 				})
+			},
+
+			viewMyStory() {
+				window.location.href = '/i/my/story';
 			}
 		}
 	}
