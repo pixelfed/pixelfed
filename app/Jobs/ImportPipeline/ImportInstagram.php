@@ -101,7 +101,11 @@ class ImportInstagram implements ShouldQueue
 
                 $path = storage_path("app/$importData->path");
                 $storagePath = "public/m/{$monthHash}/{$userHash}";
-                $newPath = "app/$storagePath/$filename";
+                $dir = "app/$storagePath";
+                if(!is_dir(storage_path($dir))) {
+                    mkdir(storage_path($dir), 0777, true);
+                }
+                $newPath = "$dir/$filename";
                 $fs->move($path,storage_path($newPath));
                 $path = $newPath;
                 $hash = \hash_file('sha256', storage_path($path));
