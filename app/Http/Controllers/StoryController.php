@@ -13,6 +13,9 @@ use Cache, Storage;
 use Image as Intervention;
 use App\Services\FollowerService;
 use App\Services\MediaPathService;
+use FFMpeg;
+use FFMpeg\Coordinate\Dimension;
+use FFMpeg\Format\Video\X264;
 
 class StoryController extends Controller
 {
@@ -49,11 +52,27 @@ class StoryController extends Controller
 		$story->size = $photo->getSize();
 		$story->save();
 
+		$url = $story->path;
+
+		if($story->type === 'video') {
+			$video = FFMpeg::open($path);
+			$width = $video->getVideoStream()->get('width');
+			$height = $video->getVideoStream()->get('height');
+
+
+			if($width !== 1080 || $height !== 1920) {
+				Storage::delete($story->path);
+				$story->delete();
+				abort(422, 'Invalid video dimensions, must be 1080x1920');
+			}
+		}
+
 		return [
 			'code' => 200,
 			'msg'  => 'Successfully added',
 			'media_id' => (string) $story->id,
-			'media_url' => url(Storage::url($story->path))
+			'media_url' => url(Storage::url($url)),
+			'media_type' => $story->type
 		];
 	}
 
@@ -108,9 +127,11 @@ class StoryController extends Controller
 			abort(400, 'Invalid or missing media.');
 		}
 
-		$img = Intervention::make($path);
-		$img->crop($width, $height, $x, $y);
-		$img->save($path, config('pixelfed.image_quality'));
+		if($story->type === 'photo') {
+			$img = Intervention::make($path);
+			$img->crop($width, $height, $x, $y);
+			$img->save($path, config('pixelfed.image_quality'));
+		}
 
 		return [
 			'code' => 200,
@@ -237,6 +258,7 @@ class StoryController extends Controller
 				'linkText' => null,
 				'time' => $s->created_at->format('U'),
 				'expires_at' => (int)  $s->expires_at->format('U'),
+				'created_ago' => $s->created_at->diffForHumans(null, true, true),
 				'seen' => $s->seen()
 			];
 		})->toArray();
