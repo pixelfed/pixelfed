@@ -176,11 +176,13 @@ class Helpers {
 				}
 			}
 
-			$bannedInstances = InstanceService::getBannedDomains();
-
-			if(in_array($host, $bannedInstances)) {
-				return false;
+			if(app()->environment() === 'production') {
+				$bannedInstances = InstanceService::getBannedDomains();
+				if(in_array($host, $bannedInstances)) {
+					return false;
+				}
 			}
+
 
 			if(in_array($host, $localhosts)) {
 				return false;
