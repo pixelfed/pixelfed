@@ -67,6 +67,10 @@
 - Updated AdminInstanceController, invalidate banned domain cache when updated. ([35393edf](https://github.com/pixelfed/pixelfed/commit/35393edf))
 - Updated AP Helpers, use instance filtering. ([66b4f8c7](https://github.com/pixelfed/pixelfed/commit/66b4f8c7))
 - Updated ApiV1Controller, add missing instance api attributes. ([64b86546](https://github.com/pixelfed/pixelfed/commit/64b86546))
+- Updated story garbage collection, handle non active stories and new ephemeral story media directory. ([c43f8bcc](https://github.com/pixelfed/pixelfed/commit/c43f8bcc))
+- Updated Stories, add crop and duration settings to composer. ([c8edca69](https://github.com/pixelfed/pixelfed/commit/c8edca69))
+- Updated instance endpoint, add custom description. ([668e936e](https://github.com/pixelfed/pixelfed/commit/668e936e))
+- Updated StoryCompose component, improve full screen preview. ([39a76103](https://github.com/pixelfed/pixelfed/commit/39a76103))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
