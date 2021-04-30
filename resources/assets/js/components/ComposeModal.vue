@@ -89,6 +89,7 @@
 							<a v-if="!pageLoading && (page > 1 && page <= 2) || (page == 1 && ids.length != 0) || page == 'cropPhoto'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
 							<a v-if="!pageLoading && page == 3" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
 							<a v-if="!pageLoading && page == 'addText'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="composeTextPost()">Post</a>
+							<a v-if="!pageLoading && page == 'video-2'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
 						</span>
 					</div>
 				</div>
@@ -97,18 +98,20 @@
 						<div class="list-group list-group-flush">
 							<div
 								v-for="(item, index) in availableLicenses"
-								class="list-group-item cursor-pointer" 
-								:class="{ 
-									'text-primary': licenseIndex === index,  
+								class="list-group-item cursor-pointer"
+								:class="{
+									'text-primary': licenseIndex === index,
 									'font-weight-bold': licenseIndex === index
-								}" 
+								}"
 								@click="toggleLicense(index)">
 								{{item.name}}
 							</div>
 						</div>
 					</div>
+
 					<div v-if="page == 'textOptions'" class="w-100 h-100" style="min-height: 280px;">
 					</div>
+
 					<div v-if="page == 'addText'" class="w-100 h-100" style="min-height: 280px;">
 						<div class="mt-2">
 							<div class="media px-3">
@@ -148,10 +151,10 @@
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
 											<i class="fas fa-bolt text-white fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span>
 											</p>
 											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
 										</div>
@@ -164,7 +167,7 @@
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="far fa-edit text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
 												<span class="h5 mt-0 font-weight-bold text-primary">New Text Post</span>
@@ -183,10 +186,10 @@
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="fas fa-history text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Story</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
@@ -202,10 +205,10 @@
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="fas fa-images text-primary fa-lg"></i>
-										</div>	
+										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
-												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span> 
+												<span class="h5 mt-0 font-weight-bold text-primary">New Collection</span>
 												<sup class="float-right mt-2">
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
@@ -216,7 +219,7 @@
 								</div>
 							</a>
 
-							
+
 							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>
 							</p>
@@ -268,7 +271,7 @@
 										<div class="nav-link" style="display:block;width:300px;height:300px;" @click="carouselCursor = i">
 											<!-- <img :class="'d-block img-fluid w-100 ' + [m.filter_class?m.filter_class:'']" :src="m.url" :alt="m.description" :title="m.description"> -->
 											<span :class="[m.filter_class?m.filter_class:'']">
-												
+
 												<span :class="'rounded border ' +  [i == carouselCursor ? ' border-primary shadow':'']" :style="'display:block;padding:5px;width:100%;height:100%;background-image: url(' + m.url + ');background-size:cover;border-width:3px !important;'"></span>
 											</span>
 										</div>
@@ -372,7 +375,7 @@
 					</div>
 
 					<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
-						<autocomplete 
+						<autocomplete
 							v-show="taggedUsernames.length < 10"
 							:search="tagSearch"
 							placeholder="@pixelfed"
@@ -413,7 +416,7 @@
 
 					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
 						<p class="mb-0">Add Location</p>
-						<autocomplete 
+						<autocomplete
 							:search="locationSearch"
 							placeholder="Search locations ..."
 							aria-label="Search locations ..."
@@ -501,21 +504,21 @@
 						<div class="list-group list-group-flush">
 							<div
 								v-if="!profile.locked"
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'public' }" 
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'public' }"
 								@click="toggleVisibility('public')">
 								Public
 							</div>
 							<div
 								v-if="!profile.locked"
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'unlisted' }" 
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'unlisted' }"
 								@click="toggleVisibility('unlisted')">
 								Unlisted
 							</div>
-							<div 
-								class="list-group-item lead cursor-pointer" 
-								:class="{ 'text-primary': visibility == 'private' }"  
+							<div
+								class="list-group-item lead cursor-pointer"
+								:class="{ 'text-primary': visibility == 'private' }"
 								@click="toggleVisibility('private')">
 								Followers Only
 							</div>
@@ -589,7 +592,7 @@
 										<span>{{media[carouselCursor].license ? media[carouselCursor].license.length : 0}}/140</span>
 									</p> -->
 									<select class="form-control" v-model="licenseIndex">
-										<option 
+										<option
 											v-for="(item, index) in availableLicenses"
 											:value="index"
 											:selected="index === licenseIndex">
@@ -604,6 +607,69 @@
 							<button type="button" @click="goBack()" class="btn btn-link text-muted font-weight-bold text-decoration-none">Cancel</button>
 							<button type="button" @click="goBack()" class="btn btn-primary font-weight-bold">Save</button>
 						</p>
+					</div>
+
+					<div v-if="page == 'video-2'" class="w-100 h-100">
+						<div v-if="video.title.length" class="border-bottom">
+							<div class="media p-3">
+								<img :src="media[0].url" width="100px" height="70px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
+								<div class="media-body">
+									<p class="font-weight-bold mb-1">{{video.title ? video.title.slice(0,70) : 'Untitled'}}</p>
+									<p class="mb-0 text-muted small">{{video.description ? video.description.slice(0,90) : 'No description'}}</p>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="border-bottom d-flex justify-content-between px-4 mb-0 py-2 ">
+							<div>
+								<div class="text-dark ">Contains NSFW Media</div>
+							</div>
+							<div>
+								<div class="custom-control custom-switch" style="z-index: 9999;">
+									<input type="checkbox" class="custom-control-input" id="asnsfw" v-model="nsfw">
+									<label class="custom-control-label" for="asnsfw"></label>
+								</div>
+							</div>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">Add license</p>
+						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2">
+								<span>Audience</span>
+								<span class="float-right">
+									<a href="#" @click.prevent="showVisibilityCard()" class="btn btn-outline-secondary btn-sm small mr-3 mt-n1 disabled" style="font-size:10px;padding:3px;text-transform: uppercase" disabled>{{visibilityTag}}</a>
+									<a href="#" @click.prevent="showVisibilityCard()" class="text-decoration-none"><i class="fas fa-chevron-right fa-lg text-lighter"></i></a>
+								</span>
+							</p>
+						</div>
+
+						<div class="p-3">
+							<!-- <div class="card card-body shadow-none border d-flex justify-content-center align-items-center mb-3 p-5">
+								<div class="d-flex align-items-center">
+									<p class="mb-0 text-center">
+										<div class="spinner-border text-primary" role="status">
+											<span class="sr-only">Loading...</span>
+										</div>
+									</p>
+									<p class="ml-3 mb-0 text-center font-weight-bold">
+										Processing video
+									</p>
+								</div>
+							</div> -->
+							<div class="form-group">
+								<p class="small font-weight-bold text-muted mb-0">Title</p>
+								<input class="form-control" v-model="video.title" placeholder="Add a good title">
+								<p class="help-text mb-0 small text-muted">{{video.title.length}}/70</p>
+							</div>
+
+							<div class="form-group mb-0">
+								<p class="small font-weight-bold text-muted mb-0">Description</p>
+								<textarea class="form-control" v-model="video.description" placeholder="Add an optional description" maxlength="5000" rows="5"></textarea>
+								<p class="help-text mb-0 small text-muted">{{video.description.length}}/5000</p>
+							</div>
+						</div>
 					</div>
 
 				</div>
@@ -679,7 +745,7 @@ import VueTribute from 'vue-tribute'
 
 export default {
 
-	components: { 
+	components: {
 		VueCropper,
 		Autocomplete,
 		VueTribute
@@ -700,12 +766,16 @@ export default {
 			carouselCursor: 0,
 			uploading: false,
 			uploadProgress: 100,
-			composeType: false,
+			mode: 'photo',
+			modes: [
+				'photo',
+				'video',
+				'plain'
+			],
 			page: 1,
 			composeState: 'publish',
 			visibility: 'public',
 			visibilityTag: 'Public',
-			nsfw: false,
 			place: false,
 			commentsDisabled: false,
 			optimizeMedia: true,
@@ -810,15 +880,16 @@ export default {
 					name: "Attribution-NonCommercial-NoDerivs"
 				}
 			],
-			licenseIndex: 0
+			licenseIndex: 0,
+			video: {
+				title: '',
+				description: ''
+			}
 		}
 	},
 
 	beforeMount() {
 		this.fetchProfile();
-		if(this.config.uploader.media_types.includes('video/mp4') == false) {
-			this.composeType = 'post'
-		}
 		this.filters = window.App.util.filters;
 	},
 
@@ -860,6 +931,7 @@ export default {
 			this.pageTitle = 'New Text Post';
 			this.page = 'addText';
 			this.textMode = true;
+			this.mode = 'text';
 		},
 
 		mediaWatcher() {
@@ -910,7 +982,14 @@ export default {
 					self.media.push(e.data);
 					self.uploading = false;
 					setTimeout(function() {
-						self.page = 2;
+						// if(type === 'video/mp4') {
+						// 	self.pageTitle = 'Edit Video Details';
+						// 	self.mode = 'video';
+						// 	self.page = 'video-2';
+						// } else {
+						// 	self.page = 2;
+						// }
+						self.page = 3;
 					}, 300);
 				}).catch(function(e) {
 					switch(e.response.status) {
@@ -951,7 +1030,7 @@ export default {
 				return;
 			}
 			let id = this.media[this.carouselCursor].id;
-			
+
 			axios.delete('/api/compose/v0/media/delete', {
 				params: {
 					id: id
@@ -1001,7 +1080,8 @@ export default {
 						place: this.place,
 						tagged: this.taggedUsernames,
 						optimize_media: this.optimizeMedia,
-						license: this.availableLicenses[this.licenseIndex].id
+						license: this.availableLicenses[this.licenseIndex].id,
+						video: this.video
 					};
 					axios.post('/api/compose/v0/publish', data)
 					.then(res => {
@@ -1068,41 +1148,99 @@ export default {
 		},
 
 		closeModal() {
-			this.composeType = '';
 			$('#composeModal').modal('hide');
 		},
 
 		goBack() {
 			this.pageTitle = '';
-			
-			switch(this.page) {
-				case 'addText':
-					this.page = 1;
+
+			switch(this.mode) {
+				case 'photo':
+					switch(this.page) {
+						case 'addText':
+							this.page = 1;
+						break;
+
+						case 'textOptions':
+							this.page = 'addText';
+						break;
+
+						case 'cropPhoto':
+						case 'editMedia':
+							this.page = 2;
+						break;
+
+						case 'tagPeopleHelp':
+							this.showTagCard();
+						break;
+
+						case 'licensePicker':
+							this.page = 3;
+						break;
+
+						case 'video-2':
+							this.page = 1;
+						break;
+
+						default:
+							this.namedPages.indexOf(this.page) != -1 ?
+							this.page = 3 : this.page--;
+						break;
+					}
 				break;
 
-				case 'textOptions':
-					this.page = 'addText';
-				break;
+				case 'video':
+					switch(this.page) {
+						case 'licensePicker':
+							this.page = 'video-2';
+						break;
 
-				case 'cropPhoto':
-				case 'editMedia':
-					this.page = 2;
-				break;
+						case 'video-2':
+							this.page = 'video-2';
+						break;
 
-				case 'tagPeopleHelp':
-					this.showTagCard();
-				break;
-
-				case 'licensePicker':
-					this.page = 3;
+						default:
+							this.page = 'video-2';
+						break;
+					}
 				break;
 
 				default:
-					this.namedPages.indexOf(this.page) != -1 ? 
-					this.page = (this.textMode ? 'addText' : 3) : 
-					(this.textMode ? 'addText' : this.page--);
+					switch(this.page) {
+						case 'addText':
+							this.page = 1;
+						break;
+
+						case 'textOptions':
+							this.page = 'addText';
+						break;
+
+						case 'cropPhoto':
+						case 'editMedia':
+							this.page = 2;
+						break;
+
+						case 'tagPeopleHelp':
+							this.showTagCard();
+						break;
+
+						case 'licensePicker':
+							this.page = 3;
+						break;
+
+						case 'video-2':
+							this.page = 1;
+						break;
+
+						default:
+							this.namedPages.indexOf(this.page) != -1 ?
+							this.page = (this.mode == 'text' ? 'addText' : 3) :
+							(this.mode == 'text' ? 'addText' : this.page--);
+						break;
+					}
 				break;
 			}
+
 		},
 
 		nextPage() {
@@ -1115,7 +1253,7 @@ export default {
 				case 'cropPhoto':
 					this.pageLoading = true;
 					let self = this;
-					this.$refs.cropper.getCroppedCanvas({  
+					this.$refs.cropper.getCroppedCanvas({
 							maxWidth: 4096,
 							maxHeight: 4096,
 							fillColor: '#fff',
@@ -1199,8 +1337,22 @@ export default {
 
 		onSubmitLocation(result) {
 			this.place = result;
-			this.pageTitle = this.textMode ? 'New Text Post' : '';
-			this.page = (this.textMode ? 'addText' : 3);
+			switch(this.mode) {
+				case 'photo':
+					this.pageTitle = '';
+					this.page = 3;
+				break;
+
+				case 'video':
+					this.pageTitle = 'Edit Video Details';
+					this.page = 'video-2';
+				break;
+
+				case 'text':
+					this.pageTitle = 'New Text Post';
+					this.page = 'addText';
+				break;
+			}
 			return;
 		},
 
@@ -1227,8 +1379,23 @@ export default {
 			}
 			this.visibility = state;
 			this.visibilityTag = tags[state];
-			this.pageTitle = '';
-			this.page = this.textMode ? 'addText' : 3;
+
+			switch(this.mode) {
+				case 'photo':
+					this.pageTitle = '';
+					this.page = 3;
+				break;
+
+				case 'video':
+					this.pageTitle = 'Edit Video Details';
+					this.page = 'video-2';
+				break;
+
+				case 'text':
+					this.pageTitle = 'New Text Post';
+					this.page = 'addText';
+				break;
+			}
 		},
 
 		showMediaDescriptionsCard() {
@@ -1350,8 +1517,23 @@ export default {
 
 		toggleLicense(index) {
 			this.licenseIndex = index;
-			this.pageTitle = '';
-			this.page = 3;
+
+			switch(this.mode) {
+				case 'photo':
+					this.pageTitle = '';
+					this.page = 3;
+				break;
+
+				case 'video':
+					this.pageTitle = 'Edit Video Details';
+					this.page = 'video-2';
+				break;
+
+				case 'text':
+					this.pageTitle = 'New Text Post';
+					this.page = 'addText';
+				break;
+			}
 		},
 	}
 }
