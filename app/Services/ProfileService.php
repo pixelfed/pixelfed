@@ -4,41 +4,29 @@ namespace App\Services;
 
 use Cache;
 use Illuminate\Support\Facades\Redis;
-
-use App\{
-	Follower,
-	Profile
-};
+use App\Transformer\Api\AccountTransformer;
+use League\Fractal;
+use League\Fractal\Serializer\ArraySerializer;
+use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Profile;
 
 class ProfileService {
 
-	protected $profile;
-	protected $profile_prefix;
-
-	public static function build()
+	public static function get($id)
 	{
-		return new self();
-	}
-
-	public function profile(Profile $profile)
-	{
-		$this->profile = $profile;
-		$this->profile_prefix = 'profile:model:'.$profile->id;
-		return $this;
-	}
-
-	public function profileId($id)
-	{
-		return Cache::rememberForever('profile:model:'.$id, function() use($id) {
-			return Profile::findOrFail($id);
+		$key = 'profile:model:' . $id;
+		$ttl = now()->addHours(4);
+		$res = Cache::remember($key, $ttl, function() use($id) {
+			$profile = Profile::find($id);
+			if(!$profile) {
+				return false;
+			}
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
+			return $fractal->createData($resource)->toArray();
 		});
-	}
-
-	public function get()
-	{
-		return Cache::rememberForever($this->profile_prefix, function() {
-			return $this->profile;
-		});
+		return $res;
 	}
 
 }

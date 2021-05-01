@@ -57,7 +57,7 @@ class MediaTagService
 
 	protected function idToUsername($id)
 	{
-		$profile = ProfileService::build()->profileId($id);
+		$profile = ProfileService::get($id);
 
 		if(!$profile) {
 			return 'unavailable';
@@ -65,8 +65,8 @@ class MediaTagService
 
 		return [
 			'id' => (string) $id,
-			'username' => $profile->username,
-			'avatar' => $profile->avatarUrl()
+			'username' => $profile['username'],
+			'avatar' => $profile['avatar']
 		];
 	}
 
