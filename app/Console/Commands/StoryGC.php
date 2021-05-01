@@ -48,9 +48,9 @@ class StoryGC extends Command
 
 	protected function directoryScan()
 	{
-		$hour = now()->hour;
+		$day = now()->day;
 
-		if($hour !== 1) {
+		if($day !== 3) {
 			return;
 		}
 
