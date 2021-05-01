@@ -48,9 +48,6 @@
 							<div v-else class="square-content" :style="'background-image: url('+tag.status.media_attachments[0].preview_url+')'"></div>
 							<div class="info-overlay-text">
 								<h5 class="text-white m-auto font-weight-bold">
-									<span class="pr-4">
-										<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.like_count}}
-									</span>
 									<span>
 										<span class="fas fa-retweet fa-lg pr-1"></span> {{tag.status.share_count}}
 									</span>
@@ -92,9 +89,6 @@
 							<span v-if="tag.status.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
 							<div class="info-overlay-text">
 								<h5 class="text-white m-auto font-weight-bold">
-									<span class="pr-4">
-										<span class="far fa-heart fa-lg pr-1"></span> {{tag.status.favourites_count}}
-									</span>
 									<span>
 										<span class="far fa-comment fa-lg pr-1"></span> {{tag.status.reply_count}}
 									</span>
@@ -227,7 +221,7 @@
 				}).then(res => {
 					this.following = false;
 				});
-			},	
+			},
 
 		}
 	}

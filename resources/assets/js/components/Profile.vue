@@ -13,7 +13,7 @@
 				<i class="fas fa-chevron-left fa-lg"></i>
 			</div>
 			<div class="font-weight-bold">
-				{{this.profileUsername}}								
+				{{this.profileUsername}}
 
 			</div>
 			<div>
@@ -121,7 +121,7 @@
 									</span>
 									<span class="pl-4">
 										<a class="fas fa-ellipsis-h fa-lg text-dark text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
-									</span> 
+									</span>
 								</div>
 								<div class="font-size-16px">
 									<div class="d-none d-md-inline-flex profile-stats pb-3">
@@ -199,7 +199,7 @@
 											/>
 									</div>
 									<div v-else class="square-content">
-										
+
 										<blur-hash-image
 											width="32"
 											height="32"
@@ -212,10 +212,6 @@
 									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
 									<div class="info-overlay-text">
 										<h5 class="text-white m-auto font-weight-bold">
-											<span>
-												<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
-												<span class="d-flex-inline">{{formatCount(s.favourites_count)}}</span>
-											</span>
 											<span>
 												<span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
 												<span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
@@ -260,10 +256,6 @@
 											</div>
 											<div class="info-overlay-text">
 												<h5 class="text-white m-auto font-weight-bold">
-													<span>
-														<span class="far fa-heart fa-lg p-2 d-flex-inline"></span>
-														<span class="d-flex-inline">{{s.favourites_count}}</span>
-													</span>
 													<span>
 														<span class="fas fa-retweet fa-lg p-2 d-flex-inline"></span>
 														<span class="d-flex-inline">{{s.reblogs_count}}</span>
@@ -707,7 +699,7 @@
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
 				this.layout = 'metro';
 			}
-			
+
 			if(this.layout == 'metro' && u.has('t')) {
 				if(this.modes.indexOf(u.get('t')) != -1) {
 					if(u.get('t') == 'bookmarks') {
@@ -813,7 +805,7 @@
 							if(self.ids.indexOf(d.id) == -1) {
 								self.timeline.push(d);
 								self.ids.push(d.id);
-							} 
+							}
 						});
 						let max = Math.min(...this.ids);
 						if(max == this.max_id) {
@@ -1305,8 +1297,8 @@
 					this.followingModalSearch = null;
 				}
 				if(q.length > 0) {
-					let url = '/api/pixelfed/v1/accounts/' + 
-						self.profileId + '/following?page=1&fbu=' + 
+					let url = '/api/pixelfed/v1/accounts/' +
+						self.profileId + '/following?page=1&fbu=' +
 						q;
 
 					axios.get(url).then(res => {
