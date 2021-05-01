@@ -224,8 +224,13 @@
 									</span>
 								</div>
 
-								<div class="likes font-weight-bold" v-if="expLc(status) == true">
-									<span class="like-count">{{status.favourites_count}}</span> {{status.favourites_count == 1 ? 'like' : 'likes'}}
+								<div v-if="status.liked_by.username && status.liked_by.username !== profile.username" class="likes mb-1">
+									<span class="like-count">Liked by
+										<a class="font-weight-bold text-dark" :href="'/'+status.liked_by.username">{{status.liked_by.username}}</a>
+										<span v-if="status.liked_by.others == true">
+											and <span class="font-weight-bold">others</span>
+										</span>
+									</span>
 								</div>
 								<div v-if="status.pf_type != 'text'" class="caption">
 									<p v-if="!status.sensitive" class="mb-2 read-more" style="overflow: hidden;">
