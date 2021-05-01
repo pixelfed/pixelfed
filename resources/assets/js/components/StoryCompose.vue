@@ -239,7 +239,7 @@
 				uploadProgress: 0,
 				cropper: {
 					aspectRatio: 9/16,
-					viewMode: 1,
+					viewMode: 2,
 					zoomable: true,
 					zoom: null
 				},
