@@ -190,7 +190,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('loops', 'DiscoverController@loopsApi');
 				Route::post('loops/watch', 'DiscoverController@loopWatch');
 				Route::get('discover/tag', 'DiscoverController@getHashtags');
-				Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
+				Route::post('status/compose', 'InternalApiController@composePost');
 				Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
 				Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');
 				Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
@@ -202,7 +202,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::group(['prefix' => 'local'], function () {
 			// Route::post('status/compose', 'InternalApiController@composePost')->middleware('throttle:maxPostsPerHour,60')->middleware('throttle:maxPostsPerDay,1440');
 			Route::get('exp/rec', 'ApiController@userRecommendations');
-			Route::post('discover/tag/subscribe', 'HashtagFollowController@store')->middleware('throttle:maxHashtagFollowsPerHour,60')->middleware('throttle:maxHashtagFollowsPerDay,1440');
+			Route::post('discover/tag/subscribe', 'HashtagFollowController@store');
 			Route::get('discover/tag/list', 'HashtagFollowController@getTags');
 			// Route::get('profile/sponsor/{id}', 'ProfileSponsorController@get');
 			Route::get('bookmarks', 'InternalApiController@bookmarks');
@@ -211,8 +211,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::delete('collection/item', 'CollectionController@deleteId');
 			Route::get('collection/{id}', 'CollectionController@get');
 			Route::post('collection/{id}', 'CollectionController@store');
-			Route::delete('collection/{id}', 'CollectionController@delete')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
-			Route::post('collection/{id}/publish', 'CollectionController@publish')->middleware('throttle:maxCollectionsPerHour,60')->middleware('throttle:maxCollectionsPerDay,1440')->middleware('throttle:maxCollectionsPerMonth,43800');
+			Route::delete('collection/{id}', 'CollectionController@delete');
+			Route::post('collection/{id}/publish', 'CollectionController@publish');
 			Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
 
 			Route::get('compose/location/search', 'ApiController@composeLocationSearch');
@@ -223,11 +223,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		});
 		Route::group(['prefix' => 'stories'], function () {
 			Route::get('v0/recent', 'StoryController@apiV1Recent');
-			Route::post('v0/add', 'StoryController@apiV1Add')->middleware('throttle:maxStoriesPerDay,1440');
+			Route::post('v0/add', 'StoryController@apiV1Add');
 			Route::get('v0/fetch/{id}', 'StoryController@apiV1Fetch');
 			Route::get('v0/profile/{id}', 'StoryController@apiV1Profile');
 			Route::get('v0/exists/{id}', 'StoryController@apiV1Exists');
-			Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete')->middleware('throttle:maxStoryDeletePerDay,1440');
+			Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete');
 			Route::get('v0/me', 'StoryController@apiV1Me');
 			Route::get('v0/item/{id}', 'StoryController@apiV1Item');
 			Route::post('v0/crop', 'StoryController@cropPhoto');
@@ -244,14 +244,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 	Route::group(['prefix' => 'i'], function () {
 		Route::redirect('/', '/');
 		Route::get('compose', 'StatusController@compose')->name('compose');
-		Route::post('comment', 'CommentController@store')->middleware('throttle:maxCommentsPerDay,1440');
+		Route::post('comment', 'CommentController@store');
 		Route::post('delete', 'StatusController@delete');
 		Route::post('mute', 'AccountController@mute');
 		Route::post('unmute', 'AccountController@unmute');
 		Route::post('block', 'AccountController@block');
 		Route::post('unblock', 'AccountController@unblock');
-		Route::post('like', 'LikeController@store')->middleware('throttle:maxLikesPerDay,1440');
-		Route::post('share', 'StatusController@storeShare')->middleware('throttle:maxSharesPerHour,60')->middleware('throttle:maxSharesPerDay,1440');
+		Route::post('like', 'LikeController@store');
+		Route::post('share', 'StatusController@storeShare');
 		Route::post('follow', 'FollowerController@store');
 		Route::post('bookmark', 'BookmarkController@store');
 		Route::get('lang/{locale}', 'SiteController@changeLocale');
@@ -347,7 +347,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
 		Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
 		Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
-		Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore')->middleware('throttle:maxInstanceBansPerDay,1440');
+		Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore');
 		Route::post('privacy/blocked-instances/unblock', 'SettingsController@blockedInstanceUnblock')->name('settings.privacy.blocked-instances.unblock');
 		Route::get('privacy/blocked-keywords', 'SettingsController@blockedKeywords')->name('settings.privacy.blocked-keywords');
 		Route::post('privacy/account', 'SettingsController@privateAccountOptions')->name('settings.privacy.account');
@@ -489,7 +489,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 	Route::get('p/{username}/{id}/c', 'CommentController@showAll');
 	Route::get('p/{username}/{id}/embed', 'StatusController@showEmbed');
 	Route::get('p/{username}/{id}/edit', 'StatusController@edit');
-	Route::post('p/{username}/{id}/edit', 'StatusController@editStore')->middleware('throttle:maxPostEditsPerHour,60')->middleware('throttle:maxPostEditsPerDay,1440');
+	Route::post('p/{username}/{id}/edit', 'StatusController@editStore');
 	Route::get('p/{username}/{id}.json', 'StatusController@showObject');
 	Route::get('p/{username}/{id}', 'StatusController@show');
 	Route::get('{username}/embed', 'ProfileController@embed');
