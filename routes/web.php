@@ -351,7 +351,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('privacy/blocked-instances/unblock', 'SettingsController@blockedInstanceUnblock')->name('settings.privacy.blocked-instances.unblock');
 		Route::get('privacy/blocked-keywords', 'SettingsController@blockedKeywords')->name('settings.privacy.blocked-keywords');
 		Route::post('privacy/account', 'SettingsController@privateAccountOptions')->name('settings.privacy.account');
-		Route::get('reports', 'SettingsController@reportsHome')->name('settings.reports');
 		Route::group(['prefix' => 'remove', 'middleware' => 'dangerzone'], function() {
 			Route::get('request/temporary', 'SettingsController@removeAccountTemporary')->name('settings.remove.temporary');
 			Route::post('request/temporary', 'SettingsController@removeAccountTemporarySubmit');
