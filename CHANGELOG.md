@@ -74,6 +74,7 @@
 - Updated Helpers, fix broken tests. ([22dddaa0](https://github.com/pixelfed/pixelfed/commit/22dddaa0))
 - Updated StoryController, fix cache crop bug. ([c2f8faae](https://github.com/pixelfed/pixelfed/commit/c2f8faae))
 - Updated StoryController, optimize photo size by resizing to 9:16 aspect. ([e66ed9a2](https://github.com/pixelfed/pixelfed/commit/e66ed9a2))
+- Updated StoryCompose crop logic. ([2ead622c](https://github.com/pixelfed/pixelfed/commit/2ead622c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
