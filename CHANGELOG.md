@@ -76,6 +76,12 @@
 - Updated StoryController, optimize photo size by resizing to 9:16 aspect. ([e66ed9a2](https://github.com/pixelfed/pixelfed/commit/e66ed9a2))
 - Updated StoryCompose crop logic. ([2ead622c](https://github.com/pixelfed/pixelfed/commit/2ead622c))
 - Updated StatusController, allow license edits without 24 hour limit. ([c799a01a](https://github.com/pixelfed/pixelfed/commit/c799a01a))
+- Updated Settings, remove reports page. ([9cf962ff](https://github.com/pixelfed/pixelfed/commit/9cf962ff))
+- Updated ProfileService, use account transformer. ([391b1287](https://github.com/pixelfed/pixelfed/commit/391b1287))
+- Updated LikeController, hide like counts. ([ea687240](https://github.com/pixelfed/pixelfed/commit/ea687240))
+- Updated StatusTransformers, add liked_by attribute. ([372bacb0](https://github.com/pixelfed/pixelfed/commit/372bacb0))
+- Updated PostComponent, change like logic. ([0a35f5d6](https://github.com/pixelfed/pixelfed/commit/0a35f5d6))
+- Updated Timeline component, change like logic. ([7bcbf96b](https://github.com/pixelfed/pixelfed/commit/7bcbf96b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
