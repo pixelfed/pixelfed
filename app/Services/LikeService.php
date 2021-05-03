@@ -50,13 +50,27 @@ class LikeService {
 
 	public static function likedBy($status)
 	{
-		if(!$status->likes_count) {
-			return [
-				'username' => null,
-				'others' => false
-			];
+		$empty = [
+			'username' => null,
+			'others' => false
+		];
+
+		if(!$status) {
+			return $empty;
 		}
-		$id = Like::whereStatusId($status->id)->first()->profile_id;
+
+		if(!$status->likes_count) {
+			return $empty;
+		}
+
+		$like = Like::whereStatusId($status->id)->first();
+
+		if(!$like) {
+			return $empty;
+		}
+
+		$id = $like->profile_id;
+
 		return [
 			'username' => ProfileService::get($id)['username'],
 			'others' => $status->likes_count >= 5,
