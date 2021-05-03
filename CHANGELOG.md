@@ -82,6 +82,7 @@
 - Updated StatusTransformers, add liked_by attribute. ([372bacb0](https://github.com/pixelfed/pixelfed/commit/372bacb0))
 - Updated PostComponent, change like logic. ([0a35f5d6](https://github.com/pixelfed/pixelfed/commit/0a35f5d6))
 - Updated Timeline component, change like logic. ([7bcbf96b](https://github.com/pixelfed/pixelfed/commit/7bcbf96b))
+- Updated LikeService, fix likedBy method. ([a5e64da6](https://github.com/pixelfed/pixelfed/commit/a5e64da6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
