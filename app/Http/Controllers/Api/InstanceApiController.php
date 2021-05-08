@@ -34,7 +34,7 @@ class InstanceApiController extends Controller {
 
 		$res = [
 			'uri' => config('pixelfed.domain.app'),
-			'title' => config('app.name'),
+			'title' => config_cache('app.name'),
 			'description' => '',
 			'version' => config('pixelfed.version'),
 			'urls' => [],

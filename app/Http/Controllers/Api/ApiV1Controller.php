@@ -974,7 +974,7 @@ class ApiV1Controller extends Controller
                 'domain_count' => 0
             ],
             'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.png',
-            'title' => config('app.name'),
+            'title' => config_cache('app.name'),
             'uri' => config('pixelfed.domain.app'),
             'urls' => [],
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
