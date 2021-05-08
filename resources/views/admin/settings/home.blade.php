@@ -3,61 +3,39 @@
 @include('admin.settings.sidebar')
 
 @section('section')
-  <div class="title">
-    <h3 class="font-weight-bold">Settings</h3>
-  </div>
-  <hr>
-  <form method="post">
-    @csrf
-    <div class="form-group row">
-      <label for="app_name" class="col-sm-3 col-form-label font-weight-bold text-right">App Name</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" id="app_name" name="APP_NAME" placeholder="Application Name ex: pixelfed" value="{{config('app.name')}}" autocomplete="off">
-        <p class="text-muted small help-text font-weight-bold mb-0">Site name, default: pixelfed</p>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">App URL</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" id="app_url" name="APP_URL" placeholder="Application URL" value="{{config('app.url')}}">
-        <p class="text-muted small help-text font-weight-bold mb-0">App URL, used for building URLs ex: https://example.org</p>
-      </div>
-    </div>
+<div class="title mb-4">
+	<h3 class="font-weight-bold">Settings</h3>
+	<p class="lead">Manage instance settings</p>
+</div>
+<form method="post">
+	@csrf
+	<div class="form-group mb-0">
+		<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<label class="font-weight-bold text-muted">Name</label>
+			<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{$name}}">
+			<p class="help-text small text-muted mt-3 mb-0">The instance name used in titles, metadata and apis.</p>
+		</div>
+	</div>
+	<div class="form-group mb-0">
+		<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<label class="font-weight-bold text-muted">Short Description</label>
+			<textarea class="form-control" rows="3" name="short_description">{{$short_description}}</textarea>
+			<p class="help-text small text-muted mt-3 mb-0">Short description of instance used on various pages and apis.</p>
+		</div>
+	</div>
+	<div class="form-group mb-0">
+		<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<label class="font-weight-bold text-muted">Long Description</label>
+			<textarea class="form-control" rows="3" name="long_description">{{$description}}</textarea>
+			<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
+		</div>
+	</div>
 
-    <div class="form-group row">
-      <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">App Domain</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" id="app_url" name="app_domain" placeholder="example.org" value="{{config('pixelfed.domain.app')}}">
-        <p class="text-muted small help-text font-weight-bold mb-0">Used for routing ex: example.org</p>
-      </div>
-    </div>
 
-
-    <div class="form-group row">
-      <label for="app_url" class="col-sm-3 col-form-label font-weight-bold text-right">Admin Domain</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" id="admin_domain" name="admin_domain" placeholder="admin.example.org" value="{{config('pixelfed.domain.admin')}}">
-        <p class="text-muted small help-text font-weight-bold mb-0">Used for routing the admin dashboard ex: admin.example.org</p>
-      </div>
-    </div>
-
-    {{-- <div class="alert alert-info border-0">
-      <div class="media d-flex align-items-center">
-      <div class="mr-3">
-        <i class="fas fa-info-circle fa-2x"></i>
-      </div>
-      <div class="media-body">
-        <p class="mb-0 lead">Tip:</p>
-        <p class="mb-0">You can edit the .env file in the <a href="#" class="font-weight-bold">Configuration</a> settings.</p>
-      </div>
-      </div>
-    </div>
-
-    <hr>
-    <div class="form-group row mb-0">
-      <div class="col-12 text-right">
-        <button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
-      </div>
-    </div> --}}
-  </form>
+	<div class="form-group row mb-0 mt-4">
+		<div class="col-12 text-right">
+			<button type="submit" class="btn btn-primary font-weight-bold px-5">Save</button>
+		</div>
+	</div>
+</form>
 @endsection

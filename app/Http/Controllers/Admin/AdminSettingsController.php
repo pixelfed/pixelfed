@@ -8,12 +8,51 @@ use Carbon\Carbon;
 use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
 use App\Http\Controllers\Controller;
 use App\Util\Lexer\PrettyNumber;
+use App\Models\ConfigCache;
+use App\Services\ConfigCacheService;
 
 trait AdminSettingsController
 {
 	public function settings(Request $request)
 	{
-		return view('admin.settings.home');
+		$name = ConfigCacheService::get('app.name');
+		$short_description = ConfigCacheService::get('app.short_description');
+		$description = ConfigCacheService::get('app.description');
+
+		return view('admin.settings.home', compact(
+			'name',
+			'short_description',
+			'description'
+		));
+	}
+
+	public function settingsHomeStore(Request $request)
+	{
+		$this->validate($request, [
+			'name' => 'nullable|string',
+			'short_description' => 'nullable',
+			'long_description' => 'nullable'
+		]);
+
+		$cc = ConfigCache::whereK('app.name')->first();
+		$val = $request->input('name');
+		if($cc && $cc->v != $val) {
+			ConfigCacheService::put('app.name', $val);
+		}
+
+		$cc = ConfigCache::whereK('app.short_description')->first();
+		$val = $request->input('short_description');
+		if($cc && $cc->v != $val) {
+			ConfigCacheService::put('app.short_description', $val);
+		}
+
+		$cc = ConfigCache::whereK('app.description')->first();
+		$val = $request->input('long_description');
+		if($cc && $cc->v != $val) {
+			ConfigCacheService::put('app.description', $val);
+		}
+
+		return redirect('/i/admin/settings');
 	}
 
 	public function settingsBackups(Request $request)
@@ -82,15 +121,6 @@ trait AdminSettingsController
 	public function settingsFeatures(Request $request)
 	{
 		return view('admin.settings.features');
-	}
-
-	public function settingsHomeStore(Request $request)
-	{
-		$this->validate($request, [
-			'APP_NAME' => 'required|string',
-		]);
-		// Artisan::call('config:clear');
-		return redirect()->back();
 	}
 
 	public function settingsPages(Request $request)
