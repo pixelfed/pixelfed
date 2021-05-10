@@ -10,7 +10,7 @@ class ImportJob extends Model
     {
         return $this->belongsTo(Profile::class, 'profile_id');
     }
-    
+
     public function url()
     {
     	return url("/i/import/job/{$this->uuid}/{$this->stage}");
@@ -21,9 +21,9 @@ class ImportJob extends Model
     	return $this->hasMany(ImportData::class, 'job_id');
     }
 
-    public function mediaJson()
+    public function postsJson()
     {
-    	$path = storage_path("app/$this->media_json");
+    	$path = storage_path("app/$this->posts_json");
     	return json_decode(file_get_contents($path), true);
     }
 }

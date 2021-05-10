@@ -56,26 +56,29 @@ class ImportInstagram implements ShouldQueue
 		$job = ImportJob::findOrFail($this->import->id);
 		$profile = Profile::findOrFail($job->profile_id);
 		$user = $profile->user;
-		$json = $job->mediaJson();
-		$collection = array_reverse($json['photos']);
+		$collection = $job->postsJson();
 		$files = $job->files;
 		$monthHash = hash('sha1', date('Y').date('m'));
 		$userHash = hash('sha1', $user->id . (string) $user->created_at);
 		$fs = new Filesystem;
 
-		foreach($collection as $import)
+		foreach($collection as $entry)
 		{
-			$caption = $import['caption'];
+            if (!isset($entry['media'][0])) {
+                continue;
+            }
+            $import = $entry['media'][0];
+			$caption = $import['title'] ?? '';
 			try {
 				$min = Carbon::create(2010, 10, 6, 0, 0, 0);
-				$taken_at = Carbon::parse($import['taken_at']);
+				$taken_at = Carbon::parse($import['creation_timestamp']);
 				if(!$min->lt($taken_at)) {
 					$taken_at = Carbon::now();
 				}
 			} catch (Exception $e) {
 
 			}
-			$filename = last( explode('/', $import['path']) );
+			$filename = last( explode('/', $import['uri']) );
 			$importData = ImportData::whereJobId($job->id)
 				->whereOriginalName($filename)
 				->first();

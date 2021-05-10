@@ -12,15 +12,15 @@
     </div>
     <p class="lead font-weight-bold mb-1">Requirements:</p>
     <ul class="lead mb-4">
-      <li>media.json file</li>      
-      <li>photos directory</li>      
+      <li>media/posts directory</li>
+      <li>content/post_1.json file</li>
     </ul>
     <p class="lead font-weight-bold mb-1">Process:</p>
     <ol class="lead mb-4">
-      <li>Upload media.json file</li>      
-      <li>Upload photos directory</li>      
+      <li>Upload posts directory</li>
+      <li>Upload posts_1.json file</li>
       {{-- <li>Confirm each post</li> --}}
-      <li>Import Data</li>      
+      <li>Import Data</li>
     </ol>
     <form method="post">
       @csrf

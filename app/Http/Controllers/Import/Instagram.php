@@ -8,7 +8,7 @@ use Auth, DB;
 use App\{
 	ImportData,
 	ImportJob,
-	Profile, 
+	Profile,
 	User
 };
 use App\Jobs\ImportPipeline\ImportInstagram;
@@ -21,7 +21,7 @@ trait Instagram
     }
 
     public function instagramStart(Request $request)
-    {	
+    {
         $completed = ImportJob::whereProfileId(Auth::user()->profile->id)
             ->whereService('instagram')
             ->whereNotNull('completed_at')
@@ -71,10 +71,10 @@ trait Instagram
     {
         $max = 'max:' . config('pixelfed.import.instagram.limits.size');
     	$this->validate($request, [
-    		'media.*' => 'required|mimes:bin,jpeg,png,gif|'.$max,
+    		'posts.*' => 'required|mimes:bin,jpeg,png,gif|'.$max,
     		//'mediajson' => 'required|file|mimes:json'
     	]);
-    	$media = $request->file('media');
+    	$posts = $request->file('posts');
 
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
@@ -82,9 +82,9 @@ trait Instagram
     		->whereUuid($uuid)
     		->whereStage(1)
     		->firstOrFail();
-    		
+
         $limit = config('pixelfed.import.instagram.limits.posts');
-        foreach ($media as $k => $v) {
+        foreach ($posts as $k => $v) {
         	$original = $v->getClientOriginalName();
     		if(strlen($original) < 32 || $k > $limit) {
     			continue;
@@ -123,7 +123,7 @@ trait Instagram
     public function instagramStepTwoStore(Request $request, $uuid)
     {
     	$this->validate($request, [
-    		'media' => 'required|file|max:1000'
+    		'posts_1' => 'required|file|max:1000'
     	]);
     	$profile = Auth::user()->profile;
     	$job = ImportJob::whereProfileId($profile->id)
@@ -131,15 +131,15 @@ trait Instagram
     		->whereUuid($uuid)
     		->whereStage(2)
     		->firstOrFail();
-    	$media = $request->file('media');
-    	$file = file_get_contents($media);
-		$json = json_decode($file, true, 5);
-		if(!$json || !isset($json['photos'])) {
+    	$posts = $request->file('posts_1');
+    	$file = file_get_contents($posts);
+		$json = json_decode($file, true, 10);
+		if(!$json || !isset($json[0]['media'])) {
 			return abort(500);
 		}
 		$storagePath = "import/{$job->uuid}";
-        $path = $media->store($storagePath);
-        $job->media_json = $path;
+        $path = $posts->store($storagePath);
+        $job->posts_json = $path;
         $job->stage = 3;
         $job->save();
         return redirect($job->url());
@@ -164,7 +164,7 @@ trait Instagram
         try {
         $import = ImportJob::whereProfileId($profile->id)
             ->where('uuid', $uuid)
-            ->whereNotNull('media_json')
+            ->whereNotNull('posts_json')
             ->whereNull('completed_at')
             ->whereStage(3)
             ->firstOrFail();
