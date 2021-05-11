@@ -28,7 +28,7 @@ class StoryController extends Controller
 				return [
 					'required',
 					'mimes:image/jpeg,image/png,video/mp4',
-					'max:' . config('pixelfed.max_photo_size'),
+					'max:' . config_cache('pixelfed.max_photo_size'),
 				];
 			},
 		]);

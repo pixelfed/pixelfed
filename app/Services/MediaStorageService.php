@@ -43,11 +43,11 @@ class MediaStorageService {
 
 		$h = $r->getHeaders();
 
-		if (isset($h['Content-Length'], $h['Content-Type']) == false || 
+		if (isset($h['Content-Length'], $h['Content-Type']) == false ||
 			empty($h['Content-Length']) ||
-			empty($h['Content-Type']) || 
+			empty($h['Content-Type']) ||
 			$h['Content-Length'] < 10 ||
-			$h['Content-Length'] > (config('pixelfed.max_photo_size') * 1000)
+			$h['Content-Length'] > (config_cache('pixelfed.max_photo_size') * 1000)
 		) {
 			return false;
 		}
@@ -77,7 +77,7 @@ class MediaStorageService {
 		$pt = explode('/', $media->thumbnail_path);
 		$thumbname = array_pop($pt);
 		$storagePath = implode('/', $p);
-		
+
 		$disk = Storage::disk(config('filesystems.cloud'));
 		$file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
 		$url = $disk->url($file);
@@ -102,11 +102,11 @@ class MediaStorageService {
 		}
 
 		$head = $this->head($media->remote_url);
-		
+
 		if(!$head) {
 			return;
 		}
-		
+
 		$mimes = [
 			'image/jpeg',
 			'image/png',
@@ -114,7 +114,7 @@ class MediaStorageService {
 		];
 
 		$mime = $head['mime'];
-		$max_size = (int) config('pixelfed.max_photo_size') * 1000;
+		$max_size = (int) config_cache('pixelfed.max_photo_size') * 1000;
 		$media->size = $head['length'];
 		$media->remote_media = true;
 		$media->save();

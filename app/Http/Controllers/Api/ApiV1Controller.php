@@ -960,7 +960,7 @@ class ApiV1Controller extends Controller
         $res = [
         	'approval_required' => false,
         	'contact_account' => null,
-            'description' => config('instance.description'),
+            'description' => config_cache('app.description'),
             'email' => config('instance.email'),
             'invites_enabled' => false,
             'rules' => [],
@@ -979,7 +979,7 @@ class ApiV1Controller extends Controller
             'urls' => [],
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
             'environment' => [
-                'max_photo_size' => (int) config('pixelfed.max_photo_size'),
+                'max_photo_size' => (int) config_cache('pixelfed.max_photo_size'),
                 'max_avatar_size' => (int) config('pixelfed.max_avatar_size'),
                 'max_caption_length' => (int) config('pixelfed.max_caption_length'),
                 'max_bio_length' => (int) config('pixelfed.max_bio_length'),
@@ -1034,7 +1034,7 @@ class ApiV1Controller extends Controller
             return [
                 'required',
                 'mimes:' . config('pixelfed.media_types'),
-                'max:' . config('pixelfed.max_photo_size'),
+                'max:' . config_cache('pixelfed.max_photo_size'),
             ];
           },
           'filter_name' => 'nullable|string|max:24',
