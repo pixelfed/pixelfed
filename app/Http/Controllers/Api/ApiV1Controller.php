@@ -1033,7 +1033,7 @@ class ApiV1Controller extends Controller
           'file.*'      => function() {
             return [
                 'required',
-                'mimes:' . config('pixelfed.media_types'),
+                'mimes:' . config_cache('pixelfed.media_types'),
                 'max:' . config_cache('pixelfed.max_photo_size'),
             ];
           },
@@ -1074,7 +1074,7 @@ class ApiV1Controller extends Controller
 
         $photo = $request->file('file');
 
-        $mimes = explode(',', config('pixelfed.media_types'));
+        $mimes = explode(',', config_cache('pixelfed.media_types'));
         if(in_array($photo->getMimeType(), $mimes) == false) {
             abort(403, 'Invalid or unsupported mime type.');
         }

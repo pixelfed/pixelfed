@@ -22,7 +22,7 @@ class Config {
 					'optimize_image' => config('pixelfed.optimize_image'),
 					'optimize_video' => config('pixelfed.optimize_video'),
 
-					'media_types' => config('pixelfed.media_types'),
+					'media_types' => config_cache('pixelfed.media_types'),
 					'enforce_account_limit' => config('pixelfed.enforce_account_limit')
 				],
 
@@ -57,7 +57,7 @@ class Config {
 					'mobile_apis' => config('pixelfed.oauth_enabled'),
 					'circles' => false,
 					'stories' => config('instance.stories.enabled'),
-					'video'	=> Str::contains(config('pixelfed.media_types'), 'video/mp4'),
+					'video'	=> Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),
 					'import' => [
 						'instagram' => config('pixelfed.import.instagram.enabled'),
 						'mastodon' => false,

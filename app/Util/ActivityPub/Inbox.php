@@ -251,7 +251,7 @@ class Inbox
         if(count($activity['attachment'])) {
             $photos = 0;
             $videos = 0;
-            $allowed = explode(',', config('pixelfed.media_types'));
+            $allowed = explode(',', config_cache('pixelfed.media_types'));
             $activity['attachment'] = array_slice($activity['attachment'], 0, config_cache('pixelfed.max_album_length'));
             foreach($activity['attachment'] as $a) {
                 $type = $a['mediaType'];

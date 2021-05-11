@@ -78,7 +78,7 @@ class StoryController extends Controller
 
 	protected function storePhoto($photo, $user)
 	{
-		$mimes = explode(',', config('pixelfed.media_types'));
+		$mimes = explode(',', config_cache('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
 			'image/png',
