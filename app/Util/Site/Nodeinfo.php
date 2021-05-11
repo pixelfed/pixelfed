@@ -70,7 +70,7 @@ class Nodeinfo {
 				'version' => '2.0',
 			];
 		});
-		$res['openRegistrations'] = config('pixelfed.open_registration');
+		$res['openRegistrations'] = (bool) config_cache('pixelfed.open_registration');
 		return $res;
 	}
 

@@ -10,7 +10,7 @@ class Config {
 	public static function get() {
 		return Cache::remember('api:site:configuration:_v0.2', now()->addMinutes(5), function() {
 			return [
-				'open_registration' => config('pixelfed.open_registration'),
+				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
 					'max_photo_size' => config('pixelfed.max_photo_size'),
 					'max_caption_length' => config('pixelfed.max_caption_length'),

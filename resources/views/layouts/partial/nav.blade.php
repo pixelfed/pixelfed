@@ -22,7 +22,7 @@
                             {{ __('Login') }}
                         </a>
                     </li>
-                @if(config('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
+                @if(config_cache('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
                     <li>
                         <a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
                             {{ __('Register') }}

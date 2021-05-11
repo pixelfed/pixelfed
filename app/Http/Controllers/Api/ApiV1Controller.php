@@ -967,7 +967,7 @@ class ApiV1Controller extends Controller
             'short_description' => 'Pixelfed - Photo sharing for everyone',
             'languages' => ['en'],
             'max_toot_chars' => (int) config('pixelfed.max_caption_length'),
-            'registrations' => config('pixelfed.open_registration'),
+            'registrations' => config_cache('pixelfed.open_registration'),
             'stats' => [
                 'user_count' => 0,
                 'status_count' => 0,
