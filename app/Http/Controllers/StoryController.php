@@ -94,7 +94,7 @@ class StoryController extends Controller
 			$fpath = storage_path('app/' . $path);
 			$img = Intervention::make($fpath);
 			$img->orientate();
-			$img->save($fpath, config('pixelfed.image_quality'));
+			$img->save($fpath, config_cache('pixelfed.image_quality'));
 			$img->destroy();
 		}
 		return $path;
@@ -133,7 +133,7 @@ class StoryController extends Controller
 			$img->resize(1080, 1920, function ($constraint) {
 				$constraint->aspectRatio();
 			});
-			$img->save($path, config('pixelfed.image_quality'));
+			$img->save($path, config_cache('pixelfed.image_quality'));
 		}
 
 		return [

@@ -983,7 +983,7 @@ class ApiV1Controller extends Controller
                 'max_avatar_size' => (int) config('pixelfed.max_avatar_size'),
                 'max_caption_length' => (int) config('pixelfed.max_caption_length'),
                 'max_bio_length' => (int) config('pixelfed.max_bio_length'),
-                'max_album_length' => (int) config('pixelfed.max_album_length'),
+                'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
                 'mobile_apis' => config('pixelfed.oauth_enabled')
 
             ]
@@ -1742,7 +1742,7 @@ class ApiV1Controller extends Controller
         $this->validate($request, [
             'status' => 'nullable|string',
             'in_reply_to_id' => 'nullable|integer',
-            'media_ids' => 'array|max:' . config('pixelfed.max_album_length'),
+            'media_ids' => 'array|max:' . config_cache('pixelfed.max_album_length'),
             'media_ids.*' => 'integer|min:1',
             'sensitive' => 'nullable|boolean',
             'visibility' => 'string|in:private,unlisted,public',
@@ -1824,7 +1824,7 @@ class ApiV1Controller extends Controller
             $mimes = [];
 
             foreach($ids as $k => $v) {
-                if($k + 1 > config('pixelfed.max_album_length')) {
+                if($k + 1 > config_cache('pixelfed.max_album_length')) {
                     continue;
                 }
                 $m = Media::whereUserId($user->id)->whereNull('status_id')->findOrFail($v);

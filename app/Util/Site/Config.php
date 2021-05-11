@@ -14,8 +14,8 @@ class Config {
 				'uploader' => [
 					'max_photo_size' => config('pixelfed.max_photo_size'),
 					'max_caption_length' => config('pixelfed.max_caption_length'),
-					'album_limit' => config('pixelfed.max_album_length'),
-					'image_quality' => config('pixelfed.image_quality'),
+					'album_limit' => config_cache('pixelfed.max_album_length'),
+					'image_quality' => config_cache('pixelfed.image_quality'),
 
 					'max_collection_length' => config('pixelfed.max_collection_length', 18),
 
