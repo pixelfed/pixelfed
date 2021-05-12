@@ -145,7 +145,8 @@
 										</div>
 									</div>
 									<p class="mb-0 d-flex align-items-center">
-										<span class="font-weight-bold pr-3">{{profile.display_name}}</span>
+										<span class="font-weight-bold mr-1">{{profile.display_name}}</span>
+										<span v-if="profile.pronouns" class="text-muted small">{{profile.pronouns.join('/')}}</span>
 									</p>
 									<div v-if="profile.note" class="mb-0" v-html="profile.note"></div>
 									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank" @click.prevent="remoteRedirect(profile.website)">{{truncate(profile.website,24)}}</a></p>
@@ -387,6 +388,7 @@
 			</div>
 		</div>
 	</div>
+
 	<b-modal
 		v-if="profile && following"
 		ref="followingModal"

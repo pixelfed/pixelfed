@@ -16,6 +16,7 @@ use Mail;
 use Purify;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
+use App\Services\PronounService;
 
 trait HomeSettings
 {
@@ -30,18 +31,20 @@ trait HomeSettings
         $storage['percentUsed'] = ceil($storage['used'] / $storage['limit'] * 100);
         $storage['limitPretty'] = PrettyNumber::size($storage['limit']);
         $storage['usedPretty'] = PrettyNumber::size($storage['used']);
+        $pronouns = PronounService::get($id);
 
-        return view('settings.home', compact('storage'));
+        return view('settings.home', compact('storage', 'pronouns'));
     }
 
     public function homeUpdate(Request $request)
     {
-        $this->validate($request, [
-        'name'    => 'required|string|max:'.config('pixelfed.max_name_length'),
-        'bio'     => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
-        'website' => 'nullable|url',
-        'language' => 'nullable|string|min:2|max:5'
-      ]);
+		$this->validate($request, [
+			'name'    => 'required|string|max:'.config('pixelfed.max_name_length'),
+			'bio'     => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
+			'website' => 'nullable|url',
+			'language' => 'nullable|string|min:2|max:5',
+			'pronouns' => 'nullable|array|max:4'
+		]);
 
         $changes = false;
         $name = strip_tags(Purify::clean($request->input('name')));
@@ -50,6 +53,8 @@ trait HomeSettings
         $language = $request->input('language');
         $user = Auth::user();
         $profile = $user->profile;
+        $pronouns = $request->input('pronouns');
+        $existingPronouns = PronounService::get($profile->id);
         $layout = $request->input('profile_layout');
         if($layout) {
             $layout = !in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
@@ -81,6 +86,14 @@ trait HomeSettings
                 $changes = true;
                 $user->language = $language;
                 session()->put('locale', $language);
+            }
+
+            if($existingPronouns != $pronouns) {
+            	if($pronouns && in_array('Select Pronoun(s)', $pronouns)) {
+            		PronounService::clear($profile->id);
+            	} else {
+            		PronounService::put($profile->id, $pronouns);
+            	}
             }
         }
 

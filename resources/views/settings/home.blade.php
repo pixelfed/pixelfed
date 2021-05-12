@@ -67,6 +67,18 @@
 				</select>
 			</div>
 		</div>
+		<div class="form-group row">
+			<label for="pronouns" class="col-sm-3 col-form-label font-weight-bold">Pronouns</label>
+			<div class="col-sm-9">
+				<select class="form-control" name="pronouns[]" multiple="" id="pronouns">
+					<option>Select Pronoun(s)</option>
+				@foreach(\App\Services\PronounService::pronouns() as $val)
+					<option value="{{$val}}" {{$pronouns && in_array($val, $pronouns) ? 'selected' : ''}}>{{$val}}</option>
+				@endforeach
+				</select>
+				<p class="help-text text-muted small">Select up to 4 pronouns that will appear on your profile.</p>
+			</div>
+		</div>
 		@if(config_cache('pixelfed.enforce_account_limit'))
 		<div class="pt-3">
 			<p class="font-weight-bold text-muted text-center">Storage Usage</p>
