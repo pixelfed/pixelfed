@@ -1,0 +1,76 @@
+
+#text-primary-form{
+    font-size: 18px;
+    text-align: center;
+}
+#title-portal{
+    font-size: 40px;
+}
+#card-form-login{
+    border: none !important;
+    background-color: unset !important;
+    box-shadow: none !important;
+
+}
+#card-form-login a{
+ color: #707070 !important;
+}
+#logoandtext-contra span{
+    font-size: 1rem;
+    margin-left: unset;
+}
+#email, #password{
+    border-radius: 25px;
+    padding: 7%;
+}
+#btn-login{
+    border-radius: 25px;
+    width: 65%;
+    margin: auto;
+    height: 41px;
+}
+.div-total{
+    padding-top: unset !important;
+}
+.img-left-form{
+    width: 124%;
+}
+.container-1{
+  background-size: cover;
+  background-repeat: no-repeat;
+    background-image: url("/img/Tela-01-Background.png");
+}
+
+@media (max-width: 1024px){
+.container-1{
+    background-size: 85em;
+}
+.pt-md-5, .py-md-5{
+    padding-top: unset !important;
+}
+}
+
+@media (max-width: 768px){
+    .container-1{
+        background-image: unset;
+    }
+    .section-espaco-top{
+        height: 1vh !important;
+    }
+    .offset-md-1 {
+       margin-left: 29% !important;
+       max-width: 100.666667% !important; 
+}
+}
+@media (min-width: 769px){
+    .offset-md-1 {
+        margin-left: 64% !important;
+        margin-top: -8% !important;
+    }
+    
+}
+@media (max-width: 600px){
+    .offset-md-1 {
+        margin-left: unset !important;
+    }
+}
