@@ -6,7 +6,7 @@
 	<h3 class="font-weight-bold">Applications</h3>
 </div>
 <hr>
-@if(config('pixelfed.oauth_enabled') == true)
+@if(config_cache('pixelfed.oauth_enabled') == true)
 	<passport-authorized-clients></passport-authorized-clients>
 	<passport-personal-access-tokens></passport-personal-access-tokens>
 @else

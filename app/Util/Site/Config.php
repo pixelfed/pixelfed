@@ -54,7 +54,7 @@ class Config {
 				],
 
 				'features' => [
-					'mobile_apis' => config('pixelfed.oauth_enabled'),
+					'mobile_apis' => config_cache('pixelfed.oauth_enabled'),
 					'circles' => false,
 					'stories' => config('instance.stories.enabled'),
 					'video'	=> Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),

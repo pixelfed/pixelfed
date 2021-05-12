@@ -26,7 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        if(config('pixelfed.oauth_enabled')) {
+        if(config_cache('pixelfed.oauth_enabled')) {
             Passport::routes(null, ['middleware' => ['twofactor', \Fruitcake\Cors\HandleCors::class]]);
             Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 15)));
             Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 30)));

@@ -41,7 +41,7 @@
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
       </li>
 
-      @if(config('pixelfed.oauth_enabled') == true)
+      @if(config_cache('pixelfed.oauth_enabled') == true)
       <li class="nav-item">
       <hr>
       </li>

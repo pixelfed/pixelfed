@@ -66,7 +66,7 @@ class ApiV1Controller extends Controller
 
 	public function apps(Request $request)
 	{
-		abort_if(!config('pixelfed.oauth_enabled'), 404);
+		abort_if(!config_cache('pixelfed.oauth_enabled'), 404);
 
 		$this->validate($request, [
 			'client_name' 		=> 'required',
@@ -984,7 +984,7 @@ class ApiV1Controller extends Controller
                 'max_caption_length' => (int) config('pixelfed.max_caption_length'),
                 'max_bio_length' => (int) config('pixelfed.max_bio_length'),
                 'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
-                'mobile_apis' => config('pixelfed.oauth_enabled')
+                'mobile_apis' => config_cache('pixelfed.oauth_enabled')
 
             ]
         ];

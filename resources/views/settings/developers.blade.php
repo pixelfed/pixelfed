@@ -6,7 +6,7 @@
 	<h3 class="font-weight-bold">Developers</h3>
 </div>
 <hr>
-@if(config('pixelfed.oauth_enabled') == true)
+@if(config_cache('pixelfed.oauth_enabled') == true)
 	<passport-clients></passport-clients>
 @else
 	<p class="lead">OAuth has not been enabled on this instance.</p>
