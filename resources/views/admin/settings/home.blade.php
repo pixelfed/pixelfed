@@ -5,6 +5,7 @@
 @section('section')
 <div class="title mb-4">
 	<h3 class="font-weight-bold">Settings</h3>
+@if(config('instance.enable_cc'))
 	<p class="lead mb-0">Manage instance settings.</p>
 	<p class="mb-0"><span class="font-weight-bold">Warning</span>: These settings will override .env variables</p>
 </div>
@@ -172,4 +173,11 @@
 		</div>
 	</div>
 </form>
+@else
+</div>
+<div class="py-5">
+	<p class="lead text-center font-weight-bold">Not enabled</p>
+	<p class="text-center">Add <code>ENABLE_CONFIG_CACHE=true</code> in your <span class="font-weight-bold">.env</span> file <br /> and run <span class="font-weight-bold">php artisan config:cache</span></p>
+</div>
+@endif
 @endsection
