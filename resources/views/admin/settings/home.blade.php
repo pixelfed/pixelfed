@@ -39,10 +39,10 @@
 					<input type="checkbox" name="open_registration" class="custom-control-input" id="openReg" {{config_cache('pixelfed.open_registration') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="openReg">Open Registrations</label>
 				</div>
-				<div class="custom-control custom-checkbox mt-2">
+				{{-- <div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="mobile_apis" class="custom-control-input" id="cf2" {{config_cache('pixelfed.oauth_enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf2">Mobile APIs</label>
-				</div>
+				</div> --}}
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="stories" class="custom-control-input" id="cf3" {{config_cache('instance.stories.enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf3">Stories</label>
