@@ -79,7 +79,7 @@ class FederationController extends Controller
 
     public function userOutbox(Request $request, $username)
     {
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.outbox'), 404);
 
         $profile = Profile::whereNull('domain')
@@ -99,7 +99,7 @@ class FederationController extends Controller
 
     public function userInbox(Request $request, $username)
     {
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.inbox'), 404);
 
         $headers = $request->headers->all();
@@ -110,7 +110,7 @@ class FederationController extends Controller
 
     public function sharedInbox(Request $request)
     {
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.sharedInbox'), 404);
 
         $headers = $request->headers->all();
@@ -121,13 +121,13 @@ class FederationController extends Controller
 
     public function userFollowing(Request $request, $username)
     {
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
 
         $profile = Profile::whereNull('remote_url')
             ->whereUsername($username)
             ->whereIsPrivate(false)
             ->firstOrFail();
-            
+
         if($profile->status != null) {
             abort(404);
         }
@@ -139,12 +139,12 @@ class FederationController extends Controller
             'totalItems' => 0,
             'orderedItems' => []
         ];
-        return response()->json($obj); 
+        return response()->json($obj);
     }
 
     public function userFollowers(Request $request, $username)
     {
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
 
         $profile = Profile::whereNull('remote_url')
             ->whereUsername($username)
@@ -163,6 +163,6 @@ class FederationController extends Controller
             'orderedItems' => []
         ];
 
-        return response()->json($obj); 
+        return response()->json($obj);
     }
 }

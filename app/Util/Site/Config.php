@@ -27,7 +27,7 @@ class Config {
 				],
 
 				'activitypub' => [
-					'enabled' => config('federation.activitypub.enabled'),
+					'enabled' => config_cache('federation.activitypub.enabled'),
 					'remote_follow' => config('federation.activitypub.remoteFollow')
 				],
 

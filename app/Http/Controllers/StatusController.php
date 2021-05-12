@@ -70,11 +70,16 @@ class StatusController extends Controller
 			]);
 		}
 
-		if ($request->wantsJson() && config('federation.activitypub.enabled')) {
+		if ($request->wantsJson() && config_cache('federation.activitypub.enabled')) {
 			return $this->showActivityPub($request, $status);
 		}
 
 		$template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
+		// $template = $status->type === 'video' &&
+		// 	$request->has('video_beta') &&
+		// 	$request->video_beta == 1 &&
+		// 	$request->user() ?
+		// 	'status.show_video' : 'status.show';
 
 		return view($template, compact('user', 'status'));
 	}
@@ -340,7 +345,7 @@ class StatusController extends Controller
 
 	public static function mimeTypeCheck($mimes)
 	{
-		$allowed = explode(',', config('pixelfed.media_types'));
+		$allowed = explode(',', config_cache('pixelfed.media_types'));
 		$count = count($mimes);
 		$photos = 0;
 		$videos = 0;
