@@ -1063,7 +1063,7 @@ class ApiV1Controller extends Controller
             $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
                 return Media::whereUserId($user->id)->sum('size') / 1000;
             });
-            $limit = (int) config('pixelfed.max_account_size');
+            $limit = (int) config_cache('pixelfed.max_account_size');
             if ($size >= $limit) {
                abort(403, 'Account size limit reached.');
             }
