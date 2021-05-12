@@ -44,6 +44,10 @@ class ConfigCacheService
 				'uikit.show_custom.js'
 			];
 
+			if(!config('instance.enable_cc')) {
+				return config($key);
+			}
+
 			if(!in_array($key, $allowed)) {
 				return config($key);
 			}
