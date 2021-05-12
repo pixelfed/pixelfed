@@ -25,7 +25,7 @@ trait HomeSettings
         $id = Auth::user()->profile->id;
         $storage = [];
         $used = Media::whereProfileId($id)->sum('size');
-        $storage['limit'] = config('pixelfed.max_account_size') * 1024;
+        $storage['limit'] = config_cache('pixelfed.max_account_size') * 1024;
         $storage['used'] = $used;
         $storage['percentUsed'] = ceil($storage['used'] / $storage['limit'] * 100);
         $storage['limitPretty'] = PrettyNumber::size($storage['limit']);

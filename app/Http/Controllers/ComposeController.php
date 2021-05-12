@@ -92,7 +92,7 @@ class ComposeController extends Controller
 
 		abort_if($limitReached == true, 429);
 
-		if(config('pixelfed.enforce_account_limit') == true) {
+		if(config_cache('pixelfed.enforce_account_limit') == true) {
 			$size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
 				return Media::whereUserId($user->id)->sum('size') / 1000;
 			});

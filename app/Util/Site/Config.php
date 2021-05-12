@@ -23,7 +23,7 @@ class Config {
 					'optimize_video' => config('pixelfed.optimize_video'),
 
 					'media_types' => config_cache('pixelfed.media_types'),
-					'enforce_account_limit' => config('pixelfed.enforce_account_limit')
+					'enforce_account_limit' => config_cache('pixelfed.enforce_account_limit')
 				],
 
 				'activitypub' => [
