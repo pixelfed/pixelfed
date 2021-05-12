@@ -90,7 +90,7 @@
 					</tr>
 					<tr>
 						<th scope="row" class="font-weight-bold text-muted text-uppercase pl-3 small" style="line-height: 2;">storage used</th>
-						<td class="text-right font-weight-bold">{{PrettyNumber::size($profile->media()->sum('size'))}}<span class="text-muted"> / {{PrettyNumber::size(config('pixelfed.max_account_size') * 1000)}}</span></td>
+						<td class="text-right font-weight-bold">{{PrettyNumber::size($profile->media()->sum('size'))}}<span class="text-muted"> / {{PrettyNumber::size(config_cache('pixelfed.max_account_size') * 1000)}}</span></td>
 					</tr>
 				</tbody>
 			</table>

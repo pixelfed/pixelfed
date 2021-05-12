@@ -4,13 +4,14 @@ namespace App\Jobs\StatusPipeline;
 
 use DB, Storage;
 use App\{
-    AccountInterstitial,
-    MediaTag,
-    Notification,
-    Report,
-    Status,
-    StatusHashtag,
+	AccountInterstitial,
+	MediaTag,
+	Notification,
+	Report,
+	Status,
+	StatusHashtag,
 };
+use App\Models\StatusVideo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,150 +31,149 @@ use App\Services\MediaStorageService;
 
 class StatusDelete implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $status;
-    
-    /**
-     * Delete the job if its models no longer exist.
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
-    
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct(Status $status)
-    {
-        $this->status = $status;
-    }
+	protected $status;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $status = $this->status;
-        $profile = $this->status->profile;
+	/**
+	 * Delete the job if its models no longer exist.
+	 *
+	 * @var bool
+	 */
+	public $deleteWhenMissingModels = true;
 
-        StatusService::del($status->id);
-        $count = $profile->statuses()
-        ->getQuery()
-        ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-        ->whereNull('in_reply_to_id')
-        ->whereNull('reblog_of_id')
-        ->count();
+	/**
+	 * Create a new job instance.
+	 *
+	 * @return void
+	 */
+	public function __construct(Status $status)
+	{
+		$this->status = $status;
+	}
 
-        $profile->status_count = ($count - 1);
-        $profile->save();
+	/**
+	 * Execute the job.
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$status = $this->status;
+		$profile = $this->status->profile;
 
-        if(config('federation.activitypub.enabled') == true) {
-            $this->fanoutDelete($status);
-        } else {
-            $this->unlinkRemoveMedia($status);
-        }
+		StatusService::del($status->id);
+		$count = $profile->statuses()
+		->getQuery()
+		->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+		->whereNull('in_reply_to_id')
+		->whereNull('reblog_of_id')
+		->count();
 
-    }
+		$profile->status_count = ($count - 1);
+		$profile->save();
 
-    public function unlinkRemoveMedia($status)
-    {
-        foreach ($status->media as $media) {
-            MediaStorageService::delete($media, true);
-        }
+		if(config_cache('federation.activitypub.enabled') == true) {
+			$this->fanoutDelete($status);
+		} else {
+			$this->unlinkRemoveMedia($status);
+		}
 
-        if($status->in_reply_to_id) {
-            DB::transaction(function() use($status) {
-                $parent = Status::findOrFail($status->in_reply_to_id);
-                --$parent->reply_count;
-                $parent->save();
-            });
-        }
-        DB::transaction(function() use($status) {
-            $comments = Status::where('in_reply_to_id', $status->id)->get();
-            foreach ($comments as $comment) {
-                $comment->in_reply_to_id = null;
-                $comment->save();
-                Notification::whereItemType('App\Status')
-                    ->whereItemId($comment->id)
-                    ->delete();
-            }
-            $status->likes()->delete();
-            Notification::whereItemType('App\Status')
-                ->whereItemId($status->id)
-                ->delete();
-            StatusHashtag::whereStatusId($status->id)->delete();
-            Report::whereObjectType('App\Status')
-                ->whereObjectId($status->id)
-                ->delete();
+	}
 
-            MediaTag::where('status_id', $status->id)
-                ->cursor()
-                ->each(function($tag) {
-                    Notification::where('item_type', 'App\MediaTag')
-                        ->where('item_id', $tag->id)
-                        ->forceDelete();
-                    $tag->delete();
-            });
+	public function unlinkRemoveMedia($status)
+	{
+		foreach ($status->media as $media) {
+			MediaStorageService::delete($media, true);
+		}
 
-            AccountInterstitial::where('item_type', 'App\Status')
-                ->where('item_id', $status->id)
-                ->delete();
+		if($status->in_reply_to_id) {
+			DB::transaction(function() use($status) {
+				$parent = Status::findOrFail($status->in_reply_to_id);
+				--$parent->reply_count;
+				$parent->save();
+			});
+		}
+		DB::transaction(function() use($status) {
+			$comments = Status::where('in_reply_to_id', $status->id)->get();
+			foreach ($comments as $comment) {
+				$comment->in_reply_to_id = null;
+				$comment->save();
+				Notification::whereItemType('App\Status')
+					->whereItemId($comment->id)
+					->delete();
+			}
+			$status->likes()->delete();
+			Notification::whereItemType('App\Status')
+				->whereItemId($status->id)
+				->delete();
+			StatusHashtag::whereStatusId($status->id)->delete();
+			Report::whereObjectType('App\Status')
+				->whereObjectId($status->id)
+				->delete();
+			MediaTag::where('status_id', $status->id)
+				->cursor()
+				->each(function($tag) {
+					Notification::where('item_type', 'App\MediaTag')
+						->where('item_id', $tag->id)
+						->forceDelete();
+					$tag->delete();
+			});
+			StatusVideo::whereStatusId($status->id)->delete();
+			AccountInterstitial::where('item_type', 'App\Status')
+				->where('item_id', $status->id)
+				->delete();
 
-            $status->forceDelete();
-        });
+			$status->forceDelete();
+		});
 
-        return true;
-    }
+		return true;
+	}
 
-    protected function fanoutDelete($status)
-    {
-        $audience = $status->profile->getAudienceInbox();
-        $profile = $status->profile;
+	protected function fanoutDelete($status)
+	{
+		$audience = $status->profile->getAudienceInbox();
+		$profile = $status->profile;
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Item($status, new DeleteNote());
-        $activity = $fractal->createData($resource)->toArray();
+		$fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+		$resource = new Fractal\Resource\Item($status, new DeleteNote());
+		$activity = $fractal->createData($resource)->toArray();
 
-        $this->unlinkRemoveMedia($status);
-        
-        $payload = json_encode($activity);
-        
-        $client = new Client([
-            'timeout'  => config('federation.activitypub.delivery.timeout')
-        ]);
+		$this->unlinkRemoveMedia($status);
 
-        $requests = function($audience) use ($client, $activity, $profile, $payload) {
-            foreach($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity);
-                yield function() use ($client, $url, $headers, $payload) {
-                    return $client->postAsync($url, [
-                        'curl' => [
-                            CURLOPT_HTTPHEADER => $headers, 
-                            CURLOPT_POSTFIELDS => $payload,
-                            CURLOPT_HEADER => true
-                        ]
-                    ]);
-                };
-            }
-        };
+		$payload = json_encode($activity);
 
-        $pool = new Pool($client, $requests($audience), [
-            'concurrency' => config('federation.activitypub.delivery.concurrency'),
-            'fulfilled' => function ($response, $index) {
-            },
-            'rejected' => function ($reason, $index) {
-            }
-        ]);
-        
-        $promise = $pool->promise();
+		$client = new Client([
+			'timeout'  => config('federation.activitypub.delivery.timeout')
+		]);
 
-        $promise->wait();
+		$requests = function($audience) use ($client, $activity, $profile, $payload) {
+			foreach($audience as $url) {
+				$headers = HttpSignature::sign($profile, $url, $activity);
+				yield function() use ($client, $url, $headers, $payload) {
+					return $client->postAsync($url, [
+						'curl' => [
+							CURLOPT_HTTPHEADER => $headers,
+							CURLOPT_POSTFIELDS => $payload,
+							CURLOPT_HEADER => true
+						]
+					]);
+				};
+			}
+		};
 
-    }
+		$pool = new Pool($client, $requests($audience), [
+			'concurrency' => config('federation.activitypub.delivery.concurrency'),
+			'fulfilled' => function ($response, $index) {
+			},
+			'rejected' => function ($reason, $index) {
+			}
+		]);
+
+		$promise = $pool->promise();
+
+		$promise->wait();
+
+	}
 }

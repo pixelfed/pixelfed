@@ -63,7 +63,7 @@ class Helpers {
 
 		$activity = $data['object'];
 
-		$mimeTypes = explode(',', config('pixelfed.media_types'));
+		$mimeTypes = explode(',', config_cache('pixelfed.media_types'));
 		$mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
 
 		if(!isset($activity['attachment']) || empty($activity['attachment'])) {
@@ -418,7 +418,7 @@ class Helpers {
 		$attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
 		$user = $status->profile;
 		$storagePath = MediaPathService::get($user, 2);
-		$allowed = explode(',', config('pixelfed.media_types'));
+		$allowed = explode(',', config_cache('pixelfed.media_types'));
 
 		foreach($attachments as $media) {
 			$type = $media['mediaType'];

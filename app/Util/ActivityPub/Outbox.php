@@ -13,7 +13,7 @@ class Outbox {
 
 	public static function get($profile)
 	{
-        abort_if(!config('federation.activitypub.enabled'), 404);
+        abort_if(!config_cache('federation.activitypub.enabled'), 404);
         abort_if(!config('federation.activitypub.outbox'), 404);
 
         if($profile->status != null) {

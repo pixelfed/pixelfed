@@ -72,4 +72,6 @@ return [
 			'org' => env('COVID_LABEL_ORG', 'visit the WHO website')
 		]
 	],
+
+	'enable_cc' => env('ENABLE_CONFIG_CACHE', false)
 ];

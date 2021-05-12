@@ -66,7 +66,7 @@ class ApiV1Controller extends Controller
 
 	public function apps(Request $request)
 	{
-		abort_if(!config('pixelfed.oauth_enabled'), 404);
+		abort_if(!config_cache('pixelfed.oauth_enabled'), 404);
 
 		$this->validate($request, [
 			'client_name' 		=> 'required',
@@ -960,31 +960,31 @@ class ApiV1Controller extends Controller
         $res = [
         	'approval_required' => false,
         	'contact_account' => null,
-            'description' => config('instance.description'),
+            'description' => config_cache('app.description'),
             'email' => config('instance.email'),
             'invites_enabled' => false,
             'rules' => [],
             'short_description' => 'Pixelfed - Photo sharing for everyone',
             'languages' => ['en'],
             'max_toot_chars' => (int) config('pixelfed.max_caption_length'),
-            'registrations' => config('pixelfed.open_registration'),
+            'registrations' => config_cache('pixelfed.open_registration'),
             'stats' => [
                 'user_count' => 0,
                 'status_count' => 0,
                 'domain_count' => 0
             ],
             'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.png',
-            'title' => config('app.name'),
+            'title' => config_cache('app.name'),
             'uri' => config('pixelfed.domain.app'),
             'urls' => [],
             'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
             'environment' => [
-                'max_photo_size' => (int) config('pixelfed.max_photo_size'),
+                'max_photo_size' => (int) config_cache('pixelfed.max_photo_size'),
                 'max_avatar_size' => (int) config('pixelfed.max_avatar_size'),
                 'max_caption_length' => (int) config('pixelfed.max_caption_length'),
                 'max_bio_length' => (int) config('pixelfed.max_bio_length'),
-                'max_album_length' => (int) config('pixelfed.max_album_length'),
-                'mobile_apis' => config('pixelfed.oauth_enabled')
+                'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
+                'mobile_apis' => config_cache('pixelfed.oauth_enabled')
 
             ]
         ];
@@ -1033,8 +1033,8 @@ class ApiV1Controller extends Controller
           'file.*'      => function() {
             return [
                 'required',
-                'mimes:' . config('pixelfed.media_types'),
-                'max:' . config('pixelfed.max_photo_size'),
+                'mimes:' . config_cache('pixelfed.media_types'),
+                'max:' . config_cache('pixelfed.max_photo_size'),
             ];
           },
           'filter_name' => 'nullable|string|max:24',
@@ -1059,11 +1059,11 @@ class ApiV1Controller extends Controller
 
         $profile = $user->profile;
 
-        if(config('pixelfed.enforce_account_limit') == true) {
+        if(config_cache('pixelfed.enforce_account_limit') == true) {
             $size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
                 return Media::whereUserId($user->id)->sum('size') / 1000;
             });
-            $limit = (int) config('pixelfed.max_account_size');
+            $limit = (int) config_cache('pixelfed.max_account_size');
             if ($size >= $limit) {
                abort(403, 'Account size limit reached.');
             }
@@ -1074,7 +1074,7 @@ class ApiV1Controller extends Controller
 
         $photo = $request->file('file');
 
-        $mimes = explode(',', config('pixelfed.media_types'));
+        $mimes = explode(',', config_cache('pixelfed.media_types'));
         if(in_array($photo->getMimeType(), $mimes) == false) {
             abort(403, 'Invalid or unsupported mime type.');
         }
@@ -1742,7 +1742,7 @@ class ApiV1Controller extends Controller
         $this->validate($request, [
             'status' => 'nullable|string',
             'in_reply_to_id' => 'nullable|integer',
-            'media_ids' => 'array|max:' . config('pixelfed.max_album_length'),
+            'media_ids' => 'array|max:' . config_cache('pixelfed.max_album_length'),
             'media_ids.*' => 'integer|min:1',
             'sensitive' => 'nullable|boolean',
             'visibility' => 'string|in:private,unlisted,public',
@@ -1824,7 +1824,7 @@ class ApiV1Controller extends Controller
             $mimes = [];
 
             foreach($ids as $k => $v) {
-                if($k + 1 > config('pixelfed.max_album_length')) {
+                if($k + 1 > config_cache('pixelfed.max_album_length')) {
                     continue;
                 }
                 $m = Media::whereUserId($user->id)->whereNull('status_id')->findOrFail($v);

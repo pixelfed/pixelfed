@@ -108,6 +108,11 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'short_description' => 'Pixelfed - Photo sharing for everyone',
+    'description' => 'Pixelfed - Photo sharing for everyone',
+    'rules' => null,
+    'logo' => '/img/pixelfed-icon-color.svg',
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

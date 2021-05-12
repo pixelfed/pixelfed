@@ -32,7 +32,7 @@
       <li class="nav-item">
         <hr>
       </li>
-      @if(config('pixelfed.import.instagram.enabled'))
+      @if(config_cache('pixelfed.import.instagram.enabled'))
       <li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
       </li>
@@ -41,7 +41,7 @@
         <a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
       </li>
 
-      @if(config('pixelfed.oauth_enabled') == true)
+      @if(config_cache('pixelfed.oauth_enabled') == true)
       <li class="nav-item">
       <hr>
       </li>

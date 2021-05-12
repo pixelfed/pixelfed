@@ -8,26 +8,26 @@ use Illuminate\Support\Str;
 class Config {
 
 	public static function get() {
-		return Cache::remember('api:site:configuration:_v0.2', now()->addHours(30), function() {
+		return Cache::remember('api:site:configuration:_v0.2', now()->addMinutes(5), function() {
 			return [
-				'open_registration' => config('pixelfed.open_registration'),
+				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
 					'max_photo_size' => config('pixelfed.max_photo_size'),
 					'max_caption_length' => config('pixelfed.max_caption_length'),
-					'album_limit' => config('pixelfed.max_album_length'),
-					'image_quality' => config('pixelfed.image_quality'),
+					'album_limit' => config_cache('pixelfed.max_album_length'),
+					'image_quality' => config_cache('pixelfed.image_quality'),
 
 					'max_collection_length' => config('pixelfed.max_collection_length', 18),
 
 					'optimize_image' => config('pixelfed.optimize_image'),
 					'optimize_video' => config('pixelfed.optimize_video'),
 
-					'media_types' => config('pixelfed.media_types'),
-					'enforce_account_limit' => config('pixelfed.enforce_account_limit')
+					'media_types' => config_cache('pixelfed.media_types'),
+					'enforce_account_limit' => config_cache('pixelfed.enforce_account_limit')
 				],
 
 				'activitypub' => [
-					'enabled' => config('federation.activitypub.enabled'),
+					'enabled' => config_cache('federation.activitypub.enabled'),
 					'remote_follow' => config('federation.activitypub.remoteFollow')
 				],
 
@@ -39,10 +39,10 @@ class Config {
 				],
 
 				'site' => [
-					'name' => config('app.name', 'pixelfed'),
+					'name' => config_cache('app.name'),
 					'domain' => config('pixelfed.domain.app'),
 					'url'    => config('app.url'),
-					'description' => config('instance.description')
+					'description' => config_cache('app.short_description')
 				],
 
 				'username' => [
@@ -54,12 +54,12 @@ class Config {
 				],
 
 				'features' => [
-					'mobile_apis' => config('pixelfed.oauth_enabled'),
+					'mobile_apis' => config_cache('pixelfed.oauth_enabled'),
 					'circles' => false,
-					'stories' => config('instance.stories.enabled'),
-					'video'	=> Str::contains(config('pixelfed.media_types'), 'video/mp4'),
+					'stories' => config_cache('instance.stories.enabled'),
+					'video'	=> Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),
 					'import' => [
-						'instagram' => config('pixelfed.import.instagram.enabled'),
+						'instagram' => config_cache('pixelfed.import.instagram.enabled'),
 						'mastodon' => false,
 						'pixelfed' => false
 					],

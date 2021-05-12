@@ -160,7 +160,7 @@ class DirectMessageController extends Controller
 						'messages' => []
 					];
 				});
-			} 
+			}
 		} elseif(config('database.default') == 'mysql') {
 			if($action == 'inbox') {
 				$dms = DirectMessage::selectRaw('*, max(created_at) as createdAt')
@@ -334,7 +334,7 @@ class DirectMessageController extends Controller
 				$dm->type = 'link';
 				$dm->meta = [
 					'domain' => parse_url($msg, PHP_URL_HOST),
-					'local' => parse_url($msg, PHP_URL_HOST) == 
+					'local' => parse_url($msg, PHP_URL_HOST) ==
 					parse_url(config('app.url'), PHP_URL_HOST)
 				];
 				$dm->save();
@@ -500,8 +500,8 @@ class DirectMessageController extends Controller
 			'file'      => function() {
 				return [
 					'required',
-					'mimes:' . config('pixelfed.media_types'),
-					'max:' . config('pixelfed.max_photo_size'),
+					'mimes:' . config_cache('pixelfed.media_types'),
+					'max:' . config_cache('pixelfed.max_photo_size'),
 				];
 			},
 			'to_id'     => 'required'
@@ -522,18 +522,18 @@ class DirectMessageController extends Controller
 			$hidden = false;
 		}
 
-		if(config('pixelfed.enforce_account_limit') == true) {
+		if(config_cache('pixelfed.enforce_account_limit') == true) {
 			$size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
 				return Media::whereUserId($user->id)->sum('size') / 1000;
-			}); 
-			$limit = (int) config('pixelfed.max_account_size');
+			});
+			$limit = (int) config_cache('pixelfed.max_account_size');
 			if ($size >= $limit) {
 				abort(403, 'Account size limit reached.');
 			}
 		}
 		$photo = $request->file('file');
 
-		$mimes = explode(',', config('pixelfed.media_types'));
+		$mimes = explode(',', config_cache('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), $mimes) == false) {
 			abort(403, 'Invalid or unsupported mime type.');
 		}

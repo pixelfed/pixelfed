@@ -115,8 +115,8 @@ class Inbox
     {
         $activity = $this->payload['object'];
 
-        if(isset($activity['inReplyTo']) && 
-            !empty($activity['inReplyTo']) && 
+        if(isset($activity['inReplyTo']) &&
+            !empty($activity['inReplyTo']) &&
             Helpers::validateUrl($activity['inReplyTo'])
         ) {
             // reply detected, skip attachment check
@@ -147,8 +147,8 @@ class Inbox
         }
         $to = $activity['to'];
         $cc = isset($activity['cc']) ? $activity['cc'] : [];
-        if(count($to) == 1 && 
-            count($cc) == 0 && 
+        if(count($to) == 1 &&
+            count($cc) == 0 &&
             parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
         ) {
             $this->handleDirectMessage();
@@ -175,7 +175,7 @@ class Inbox
 
         $inReplyTo = $activity['inReplyTo'];
         $url = isset($activity['url']) ? $activity['url'] : $activity['id'];
-        
+
         Helpers::statusFirstOrFetch($url, true);
         return;
     }
@@ -251,8 +251,8 @@ class Inbox
         if(count($activity['attachment'])) {
             $photos = 0;
             $videos = 0;
-            $allowed = explode(',', config('pixelfed.media_types'));
-            $activity['attachment'] = array_slice($activity['attachment'], 0, config('pixelfed.max_album_length'));
+            $allowed = explode(',', config_cache('pixelfed.media_types'));
+            $activity['attachment'] = array_slice($activity['attachment'], 0, config_cache('pixelfed.max_album_length'));
             foreach($activity['attachment'] as $a) {
                 $type = $a['mediaType'];
                 $url = $a['url'];
@@ -293,7 +293,7 @@ class Inbox
                 $dm->type = 'link';
                 $dm->meta = [
                     'domain' => parse_url($msgText, PHP_URL_HOST),
-                    'local' => parse_url($msgText, PHP_URL_HOST) == 
+                    'local' => parse_url($msgText, PHP_URL_HOST) ==
                         parse_url(config('app.url'), PHP_URL_HOST)
                 ];
                 $dm->save();
@@ -459,8 +459,8 @@ class Inbox
     public function handleDeleteActivity()
     {
         if(!isset(
-            $this->payload['actor'], 
-            $this->payload['object'] 
+            $this->payload['actor'],
+            $this->payload['object']
         )) {
             return;
         }
@@ -510,7 +510,7 @@ class Inbox
                         $status->delete();
                         return;
                     break;
-                
+
                 default:
                     return;
                     break;
@@ -564,7 +564,7 @@ class Inbox
         switch ($obj['type']) {
             case 'Accept':
                 break;
-                
+
             case 'Announce':
                 $obj = $obj['object'];
                 if(!Helpers::validateLocalUrl($obj)) {
@@ -603,7 +603,7 @@ class Inbox
                     ->whereItemType('App\Profile')
                     ->forceDelete();
                 break;
-                
+
             case 'Like':
                 $status = Helpers::statusFirstOrFetch($obj['object']);
                 if(!$status) {

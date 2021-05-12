@@ -2,7 +2,7 @@
     <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
                 <img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
-                <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config('app.name', 'pixelfed') }}</span>
+                <span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config_cache('app.name') }}</span>
             </a>
 
             <div class="collapse navbar-collapse">
@@ -22,7 +22,7 @@
                             {{ __('Login') }}
                         </a>
                     </li>
-                @if(config('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
+                @if(config_cache('pixelfed.open_registration') && config('instance.restricted.enabled') == false)
                     <li>
                         <a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
                             {{ __('Register') }}

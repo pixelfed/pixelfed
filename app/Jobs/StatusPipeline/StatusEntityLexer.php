@@ -21,146 +21,146 @@ use Illuminate\Queue\SerializesModels;
 
 class StatusEntityLexer implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $status;
-    protected $entities;
-    protected $autolink;
-    
-    /**
-     * Delete the job if its models no longer exist.
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
-    
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct(Status $status)
-    {
-        $this->status = $status;
-    }
+	protected $status;
+	protected $entities;
+	protected $autolink;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $profile = $this->status->profile;
+	/**
+	 * Delete the job if its models no longer exist.
+	 *
+	 * @var bool
+	 */
+	public $deleteWhenMissingModels = true;
 
-        $count = $profile->statuses()
-        ->getQuery()
-        ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-        ->whereNull('in_reply_to_id')
-        ->whereNull('reblog_of_id')
-        ->count();
+	/**
+	 * Create a new job instance.
+	 *
+	 * @return void
+	 */
+	public function __construct(Status $status)
+	{
+		$this->status = $status;
+	}
 
-        $profile->status_count = $count;
-        $profile->save();
+	/**
+	 * Execute the job.
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$profile = $this->status->profile;
 
-        if($profile->no_autolink == false) {
-            $this->parseEntities();
-        }
-    }
+		$count = $profile->statuses()
+		->getQuery()
+		->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+		->whereNull('in_reply_to_id')
+		->whereNull('reblog_of_id')
+		->count();
 
-    public function parseEntities()
-    {
-        $this->extractEntities();
-    }
+		$profile->status_count = $count;
+		$profile->save();
 
-    public function extractEntities()
-    {
-        $this->entities = Extractor::create()->extract($this->status->caption);
-        $this->autolinkStatus();
-    }
+		if($profile->no_autolink == false) {
+			$this->parseEntities();
+		}
+	}
 
-    public function autolinkStatus()
-    {
-        $this->autolink = Autolink::create()->autolink($this->status->caption);
-        $this->storeEntities();
-    }
+	public function parseEntities()
+	{
+		$this->extractEntities();
+	}
 
-    public function storeEntities()
-    {
-        $this->storeHashtags();
-        DB::transaction(function () {
-            $status = $this->status;
-            $status->rendered = nl2br($this->autolink);
-            $status->entities = json_encode($this->entities);
-            $status->save();
-        });
-    }
+	public function extractEntities()
+	{
+		$this->entities = Extractor::create()->extract($this->status->caption);
+		$this->autolinkStatus();
+	}
 
-    public function storeHashtags()
-    {
-        $tags = array_unique($this->entities['hashtags']);
-        $status = $this->status;
+	public function autolinkStatus()
+	{
+		$this->autolink = Autolink::create()->autolink($this->status->caption);
+		$this->storeEntities();
+	}
 
-        foreach ($tags as $tag) {
-            if(mb_strlen($tag) > 124) {
-                continue;
-            }
-            DB::transaction(function () use ($status, $tag) {
-                $slug = str_slug($tag, '-', false);
-                $hashtag = Hashtag::firstOrCreate(
-                    ['name' => $tag, 'slug' => $slug]
-                );
-                StatusHashtag::firstOrCreate(
-                    [
-                        'status_id' => $status->id, 
-                        'hashtag_id' => $hashtag->id,
-                        'profile_id' => $status->profile_id,
-                        'status_visibility' => $status->visibility,
-                    ]
-                );
-            });
-        }
-        $this->storeMentions();
-    }
+	public function storeEntities()
+	{
+		$this->storeHashtags();
+		DB::transaction(function () {
+			$status = $this->status;
+			$status->rendered = nl2br($this->autolink);
+			$status->entities = json_encode($this->entities);
+			$status->save();
+		});
+	}
 
-    public function storeMentions()
-    {
-        $mentions = array_unique($this->entities['mentions']);
-        $status = $this->status;
+	public function storeHashtags()
+	{
+		$tags = array_unique($this->entities['hashtags']);
+		$status = $this->status;
 
-        foreach ($mentions as $mention) {
-            $mentioned = Profile::whereUsername($mention)->first();
+		foreach ($tags as $tag) {
+			if(mb_strlen($tag) > 124) {
+				continue;
+			}
+			DB::transaction(function () use ($status, $tag) {
+				$slug = str_slug($tag, '-', false);
+				$hashtag = Hashtag::firstOrCreate(
+					['name' => $tag, 'slug' => $slug]
+				);
+				StatusHashtag::firstOrCreate(
+					[
+						'status_id' => $status->id,
+						'hashtag_id' => $hashtag->id,
+						'profile_id' => $status->profile_id,
+						'status_visibility' => $status->visibility,
+					]
+				);
+			});
+		}
+		$this->storeMentions();
+	}
 
-            if (empty($mentioned) || !isset($mentioned->id)) {
-                continue;
-            }
+	public function storeMentions()
+	{
+		$mentions = array_unique($this->entities['mentions']);
+		$status = $this->status;
 
-            DB::transaction(function () use ($status, $mentioned) {
-                $m = new Mention();
-                $m->status_id = $status->id;
-                $m->profile_id = $mentioned->id;
-                $m->save();
+		foreach ($mentions as $mention) {
+			$mentioned = Profile::whereUsername($mention)->first();
 
-                MentionPipeline::dispatch($status, $m);
-            });
-        }
-        $this->deliver();
-    }
+			if (empty($mentioned) || !isset($mentioned->id)) {
+				continue;
+			}
 
-    public function deliver()
-    {
-        $status = $this->status;
+			DB::transaction(function () use ($status, $mentioned) {
+				$m = new Mention();
+				$m->status_id = $status->id;
+				$m->profile_id = $mentioned->id;
+				$m->save();
 
-        if(config('pixelfed.bouncer.enabled')) {
-            Bouncer::get($status);
-        }
+				MentionPipeline::dispatch($status, $m);
+			});
+		}
+		$this->deliver();
+	}
 
-        if($status->uri == null && $status->scope == 'public') {
-            PublicTimelineService::add($status->id);
-        }
+	public function deliver()
+	{
+		$status = $this->status;
 
-        if(config('federation.activitypub.enabled') == true && config('app.env') == 'production') {
-            StatusActivityPubDeliver::dispatch($this->status);
-        }
-    }
+		if(config_cache('pixelfed.bouncer.enabled')) {
+			Bouncer::get($status);
+		}
+
+		if($status->uri == null && $status->scope == 'public') {
+			PublicTimelineService::add($status->id);
+		}
+
+		if(config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {
+			StatusActivityPubDeliver::dispatch($this->status);
+		}
+	}
 }

@@ -12,7 +12,7 @@ class ImportController extends Controller
 	{
 		$this->middleware('auth');
 
-		if(config('pixelfed.import.instagram.enabled') != true) {
+		if(config_cache('pixelfed.import.instagram.enabled') != true) {
 			abort(404, 'Feature not enabled');
 		}
 	}

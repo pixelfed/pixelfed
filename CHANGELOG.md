@@ -4,7 +4,9 @@
 ### Added
 - Autocomplete Support (hashtags + mentions) ([de514f7d](https://github.com/pixelfed/pixelfed/commit/de514f7d))
 - Creative Commons Licenses ([552e950](https://github.com/pixelfed/pixelfed/commit/552e950))
-- Add Network Timeline ([af7face4](https://github.com/pixelfed/pixelfed/commit/af7face4))
+- Network Timeline ([af7face4](https://github.com/pixelfed/pixelfed/commit/af7face4))
+- Admin config settings ([f2066b74](https://github.com/pixelfed/pixelfed/commit/f2066b74))
+- Profile pronouns ([fabb57a9](https://github.com/pixelfed/pixelfed/commit/fabb57a9))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
@@ -83,6 +85,7 @@
 - Updated PostComponent, change like logic. ([0a35f5d6](https://github.com/pixelfed/pixelfed/commit/0a35f5d6))
 - Updated Timeline component, change like logic. ([7bcbf96b](https://github.com/pixelfed/pixelfed/commit/7bcbf96b))
 - Updated LikeService, fix likedBy method. ([a5e64da6](https://github.com/pixelfed/pixelfed/commit/a5e64da6))
+- Updated PublicApiController, increase public timeline to 6 months from 3. ([8a736432](https://github.com/pixelfed/pixelfed/commit/8a736432))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

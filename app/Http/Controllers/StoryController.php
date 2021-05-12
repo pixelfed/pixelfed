@@ -21,14 +21,14 @@ class StoryController extends Controller
 {
 	public function apiV1Add(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$this->validate($request, [
 			'file' => function() {
 				return [
 					'required',
 					'mimes:image/jpeg,image/png,video/mp4',
-					'max:' . config('pixelfed.max_photo_size'),
+					'max:' . config_cache('pixelfed.max_photo_size'),
 				];
 			},
 		]);
@@ -78,7 +78,7 @@ class StoryController extends Controller
 
 	protected function storePhoto($photo, $user)
 	{
-		$mimes = explode(',', config('pixelfed.media_types'));
+		$mimes = explode(',', config_cache('pixelfed.media_types'));
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
 			'image/png',
@@ -94,7 +94,7 @@ class StoryController extends Controller
 			$fpath = storage_path('app/' . $path);
 			$img = Intervention::make($fpath);
 			$img->orientate();
-			$img->save($fpath, config('pixelfed.image_quality'));
+			$img->save($fpath, config_cache('pixelfed.image_quality'));
 			$img->destroy();
 		}
 		return $path;
@@ -102,7 +102,7 @@ class StoryController extends Controller
 
 	public function cropPhoto(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$this->validate($request, [
 			'media_id' => 'required|integer|min:1',
@@ -133,7 +133,7 @@ class StoryController extends Controller
 			$img->resize(1080, 1920, function ($constraint) {
 				$constraint->aspectRatio();
 			});
-			$img->save($path, config('pixelfed.image_quality'));
+			$img->save($path, config_cache('pixelfed.image_quality'));
 		}
 
 		return [
@@ -144,7 +144,7 @@ class StoryController extends Controller
 
 	public function publishStory(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$this->validate($request, [
 			'media_id' => 'required',
@@ -169,7 +169,7 @@ class StoryController extends Controller
 
 	public function apiV1Delete(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$user = $request->user();
 
@@ -190,7 +190,7 @@ class StoryController extends Controller
 
 	public function apiV1Recent(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$profile = $request->user()->profile;
 		$following = $profile->following->pluck('id')->toArray();
@@ -232,7 +232,7 @@ class StoryController extends Controller
 
 	public function apiV1Fetch(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$authed = $request->user()->profile;
 		$profile = Profile::findOrFail($id);
@@ -270,7 +270,7 @@ class StoryController extends Controller
 
 	public function apiV1Item(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$authed = $request->user()->profile;
 		$story = Story::with('profile')
@@ -304,7 +304,7 @@ class StoryController extends Controller
 
 	public function apiV1Profile(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$authed = $request->user()->profile;
 		$profile = Profile::findOrFail($id);
@@ -355,7 +355,7 @@ class StoryController extends Controller
 
 	public function apiV1Viewed(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$this->validate($request, [
 			'id'	=> 'required|integer|min:1|exists:stories',
@@ -391,7 +391,7 @@ class StoryController extends Controller
 
 	public function apiV1Exists(Request $request, $id)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$res = (bool) Story::whereProfileId($id)
 		->whereActive(true)
@@ -403,7 +403,7 @@ class StoryController extends Controller
 
 	public function apiV1Me(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$profile = $request->user()->profile;
 		$stories = Story::whereProfileId($profile->id)
@@ -441,14 +441,14 @@ class StoryController extends Controller
 
 	public function compose(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		return view('stories.compose');
 	}
 
 	public function iRedirect(Request $request)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 
 		$user = $request->user();
 		abort_if(!$user, 404);
