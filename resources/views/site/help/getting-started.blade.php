@@ -20,14 +20,14 @@
 				<li>Go to <a href="{{config('app.url')}}">{{config('app.url')}}</a>.</li>
 				<li>Click on the register link at the top of the page.</li>
 				<li>Enter your name, email address, username and password.</li>
-				@if(config('pixelfed.enforce_email_verification') != true)
+				@if(config_cache('pixelfed.enforce_email_verification') != true)
 				<li>Wait for an account verification email, it may take a few minutes.</li>
 				@endif
 			</ol>
 		</div>
 	</div>
 </p>
-<p>	
+<p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="collapse2">
 		<i class="fas fa-chevron-down mr-2"></i>
 		How to I update profile info like name, bio, email?
@@ -38,7 +38,7 @@
 		</div>
 	</div>
 </p>
-<p>	
+<p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapse3">
 		<i class="fas fa-chevron-down mr-2"></i>
 		What can I do if a username I want is taken but seems inactive?
@@ -49,18 +49,18 @@
 		</div>
 	</div>
 </p>
-<p>	
+<p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse4" role="button" aria-expanded="false" aria-controls="collapse4">
 		<i class="fas fa-chevron-down mr-2"></i>
 		Why can't I change my username?
 	</a>
 	<div class="collapse" id="collapse4">
 		<div class="mt-2">
-			Pixelfed is a federated application, changing your username is not supported in every <a href="https://en.wikipedia.org/wiki/ActivityPub">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username. 
+			Pixelfed is a federated application, changing your username is not supported in every <a href="https://en.wikipedia.org/wiki/ActivityPub">federated software</a> so we cannot allow username changes. Your best option is to create a new account with your desired username.
 		</div>
 	</div>
 </p>
-<p>	
+<p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse5" role="button" aria-expanded="false" aria-controls="collapse5">
 		<i class="fas fa-chevron-down mr-2"></i>
 		I received an email that I created an account, but I never signed up for one.
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 </p>
-<p>	
+<p>
 	<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse6" role="button" aria-expanded="false" aria-controls="collapse6">
 		<i class="fas fa-chevron-down mr-2"></i>
 		I can't create a new account because an account with this email already exists.

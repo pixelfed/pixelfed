@@ -55,7 +55,7 @@ trait HomeSettings
             $layout = !in_array($layout, ['metro', 'moment']) ? 'metro' : $layout;
         }
 
-        $enforceEmailVerification = config('pixelfed.enforce_email_verification');
+        $enforceEmailVerification = config_cache('pixelfed.enforce_email_verification');
 
         // Only allow email to be updated if not yet verified
         if (!$enforceEmailVerification || !$changes && $user->email_verified_at) {
@@ -152,7 +152,7 @@ trait HomeSettings
         $user = Auth::user();
         $profile = $user->profile;
 
-        $validate = config('pixelfed.enforce_email_verification');
+        $validate = config_cache('pixelfed.enforce_email_verification');
 
         if ($user->email != $email) {
             $changes = true;
