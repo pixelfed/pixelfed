@@ -77,13 +77,13 @@ class SettingsController extends Controller
 
 	public function dataImport()
 	{
-		abort_if(!config('pixelfed.import.instagram.enabled'), 404);
+		abort_if(!config_cache('pixelfed.import.instagram.enabled'), 404);
 		return view('settings.import.home');
 	}
 
 	public function dataImportInstagram()
 	{
-		abort_if(!config('pixelfed.import.instagram.enabled'), 404);
+		abort_if(!config_cache('pixelfed.import.instagram.enabled'), 404);
 		return view('settings.import.instagram.home');
 	}
 

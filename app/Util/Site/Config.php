@@ -59,7 +59,7 @@ class Config {
 					'stories' => config_cache('instance.stories.enabled'),
 					'video'	=> Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),
 					'import' => [
-						'instagram' => config('pixelfed.import.instagram.enabled'),
+						'instagram' => config_cache('pixelfed.import.instagram.enabled'),
 						'mastodon' => false,
 						'pixelfed' => false
 					],
