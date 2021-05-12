@@ -151,7 +151,7 @@ class StatusEntityLexer implements ShouldQueue
 	{
 		$status = $this->status;
 
-		if(config('pixelfed.bouncer.enabled')) {
+		if(config_cache('pixelfed.bouncer.enabled')) {
 			Bouncer::get($status);
 		}
 
