@@ -234,7 +234,7 @@ class ProfileController extends Controller
 
 	public function stories(Request $request, $username)
 	{
-		abort_if(!config('instance.stories.enabled') || !$request->user(), 404);
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 		$profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 		$pid = $profile->id;
 		$authed = Auth::user()->profile;
