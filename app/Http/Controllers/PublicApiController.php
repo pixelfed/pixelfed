@@ -314,7 +314,7 @@ class PublicApiController extends Controller
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subMonths(3))
+                      ->where('created_at', '>', now()->subMonths(6))
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get();
@@ -343,7 +343,7 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subMonths(3))
+                      ->where('created_at', '>', now()->subMonths(6))
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
         }
