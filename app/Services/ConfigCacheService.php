@@ -21,7 +21,27 @@ class ConfigCacheService
 				'app.short_description',
 				'app.description',
 				'app.rules',
-				'app.logo'
+
+				'pixelfed.max_photo_size',
+				'pixelfed.max_album_length',
+				'pixelfed.image_quality',
+				'pixelfed.media_types',
+
+				'pixelfed.open_registration',
+				'federation.activitypub.enabled',
+				'pixelfed.oauth_enabled',
+				'instance.stories.enabled',
+				'pixelfed.import.instagram.enabled',
+				'pixelfed.bouncer.enabled',
+
+				'pixelfed.enforce_email_verification',
+				'pixelfed.max_account_size',
+				'pixelfed.enforce_account_limit',
+
+				'uikit.custom.css',
+				'uikit.custom.js',
+				'uikit.show_custom.css',
+				'uikit.show_custom.js'
 			];
 
 			if(!in_array($key, $allowed)) {
@@ -32,7 +52,7 @@ class ConfigCacheService
 			$c = ConfigCacheModel::where('k', $key)->first();
 
 			if($c) {
-				return $c->v;
+				return $c->v ?? config($key);
 			}
 
 			if(!$v) {
@@ -63,6 +83,8 @@ class ConfigCacheService
 		$cc->k = $key;
 		$cc->v = $val;
 		$cc->save();
+
+		Cache::forget(self::CACHE_KEY . $key);
 
 		return self::get($key);
 	}
