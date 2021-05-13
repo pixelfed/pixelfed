@@ -11,7 +11,6 @@ use App\{
 	Status,
 	StatusHashtag,
 };
-use App\Models\StatusVideo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -119,7 +118,6 @@ class StatusDelete implements ShouldQueue
 						->forceDelete();
 					$tag->delete();
 			});
-			StatusVideo::whereStatusId($status->id)->delete();
 			AccountInterstitial::where('item_type', 'App\Status')
 				->where('item_id', $status->id)
 				->delete();
