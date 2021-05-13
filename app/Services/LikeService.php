@@ -71,9 +71,16 @@ class LikeService {
 
 		$id = $like->profile_id;
 
-		return [
+		$res = [
 			'username' => ProfileService::get($id)['username'],
 			'others' => $status->likes_count >= 5,
 		];
+
+		if(request()->user()->profile_id == $status->profile_id) {
+			$res['total_count'] = $status->likes_count;
+			$res['total_count_pretty'] = number_format($res['total_count']);
+		}
+
+		return $res;
 	}
 }
