@@ -19,6 +19,7 @@ trait AdminSettingsController
 		$short_description = ConfigCacheService::get('app.short_description');
 		$description = ConfigCacheService::get('app.description');
 		$types = explode(',', ConfigCacheService::get('pixelfed.media_types'));
+		$rules = ConfigCacheService::get('app.rules') ? json_decode(ConfigCacheService::get('app.rules'), true) : null;
 		$jpeg = in_array('image/jpg', $types) ? true : in_array('image/jpeg', $types);
 		$png = in_array('image/png', $types);
 		$gif = in_array('image/gif', $types);
@@ -31,7 +32,8 @@ trait AdminSettingsController
 			'jpeg',
 			'png',
 			'gif',
-			'mp4'
+			'mp4',
+			'rules'
 		));
 	}
 
@@ -49,6 +51,19 @@ trait AdminSettingsController
 			'type_gif' => 'nullable',
 			'type_mp4' => 'nullable',
 		]);
+
+		if($request->filled('rule_delete')) {
+			$index = (int) $request->input('rule_delete');
+			$rules = ConfigCacheService::get('app.rules');
+			$json = json_decode($rules, true);
+			if(!$rules || empty($json)) {
+				return;
+			}
+			unset($json[$index]);
+			$json = json_encode(array_values($json));
+			ConfigCacheService::put('app.rules', $json);
+			return 200;
+		}
 
 		$media_types = explode(',', config_cache('pixelfed.media_types'));
 		$media_types_original = $media_types;
@@ -112,6 +127,18 @@ trait AdminSettingsController
 
 			if(config_cache($value) !== $active) {
 				ConfigCacheService::put($value, (bool) $active);
+			}
+		}
+
+		if($request->filled('new_rule')) {
+			$rules = ConfigCacheService::get('app.rules');
+			$val = $request->input('new_rule');
+			if(!$rules) {
+				ConfigCacheService::put('app.rules', json_encode([$val]));
+			} else {
+				$json = json_decode($rules, true);
+				$json[] = $val;
+				ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 			}
 		}
 

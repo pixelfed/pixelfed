@@ -21,6 +21,9 @@
 		<li class="nav-item border-none">
 			<a class="nav-link font-weight-bold px-4" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users">Users</a>
 		</li>
+		<li class="nav-item border-none">
+			<a class="nav-link font-weight-bold px-4" id="rules-tab" data-toggle="tab" href="#rules" role="tab" aria-controls="rules">Rules</a>
+		</li>
 		<li class="nav-item">
 			<a class="nav-link font-weight-bold px-4" id="advanced-tab" data-toggle="tab" href="#advanced" role="tab" aria-controls="advanced">Advanced</a>
 		</li>
@@ -151,6 +154,35 @@
 		</div>
 	</div>
 
+	<div class="tab-pane" id="rules" role="tabpanel" aria-labelledby="rules-tab">
+		<div class="border-top">
+			<p class="lead mt-3 py-3 text-center">Add rules that explain what is acceptable use.</p>
+		</div>
+		<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<p class="font-weight-bold text-muted">Active Rules</p>
+			<ol class="font-weight-bold">
+				@if($rules)
+				@foreach($rules as $rule)
+				<li class="mb-4">
+					<p class="mb-0">
+						{{$rule}}
+					</p>
+					<p>
+						<button type="button" class="btn btn-outline-danger btn-sm py-0 rule-delete" data-index="{{$loop->index}}">Delete</button>
+					</p>
+				</li>
+				@endforeach
+				@endif
+			</ol>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+				<label class="font-weight-bold text-muted">Add Rule</label>
+				<input class="form-control" name="new_rule" placeholder="Add a new rule, we recommend being descriptive but keeping it short"/>
+			</div>
+		</div>
+	</div>
+
 	<div class="tab-pane" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
 		<div class="form-group mb-0">
 			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
@@ -181,3 +213,18 @@
 </div>
 @endif
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+	$('.rule-delete').on('click', function(e) {
+		if(window.confirm('Are you sure you want to delete this rule?')) {
+			let idx = e.target.dataset.index;
+			axios.post(window.location.href, {
+				'rule_delete': idx
+			}).then(res => {
+				$('.rule-delete[data-index="'+idx+'"]').parents().eq(1).remove();
+			});
+		}
+	});
+</script>
+@endpush
