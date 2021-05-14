@@ -87,6 +87,7 @@
 - Updated LikeService, fix likedBy method. ([a5e64da6](https://github.com/pixelfed/pixelfed/commit/a5e64da6))
 - Updated PublicApiController, increase public timeline to 6 months from 3. ([8a736432](https://github.com/pixelfed/pixelfed/commit/8a736432))
 - Updated LikeService, show like count to status owner. ([4408e2ef](https://github.com/pixelfed/pixelfed/commit/4408e2ef))
+- Updated admin settings, add rules. ([a4efbb75](https://github.com/pixelfed/pixelfed/commit/a4efbb75))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
