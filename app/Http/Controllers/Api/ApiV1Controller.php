@@ -977,7 +977,7 @@ class ApiV1Controller extends Controller
 	            'short_description' => 'Pixelfed - Photo sharing for everyone',
 	            'languages' => ['en'],
 	            'max_toot_chars' => (int) config('pixelfed.max_caption_length'),
-	            'registrations' => config_cache('pixelfed.open_registration'),
+	            'registrations' => (bool) config_cache('pixelfed.open_registration'),
 	            'stats' => [
 	                'user_count' => 0,
 	                'status_count' => 0,
@@ -994,7 +994,7 @@ class ApiV1Controller extends Controller
 	                'max_caption_length' => (int) config('pixelfed.max_caption_length'),
 	                'max_bio_length' => (int) config('pixelfed.max_bio_length'),
 	                'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
-	                'mobile_apis' => config_cache('pixelfed.oauth_enabled')
+	                'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled')
 
 	            ]
 	        ];
