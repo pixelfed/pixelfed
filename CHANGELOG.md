@@ -7,10 +7,11 @@
 - Network Timeline ([af7face4](https://github.com/pixelfed/pixelfed/commit/af7face4))
 - Admin config settings ([f2066b74](https://github.com/pixelfed/pixelfed/commit/f2066b74))
 - Profile pronouns ([fabb57a9](https://github.com/pixelfed/pixelfed/commit/fabb57a9))
+- Hashtag timeline api support ([241ae036](https://github.com/pixelfed/pixelfed/commit/241ae036))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
-- Updated RemotAvatarFetch, only dispatch jobs if cloud storage is enabled. ([4f40f6f5](https://github.com/pixelfed/pixelfed/commit/4f40f6f5))
+- Updated RemoteAvatarFetch, only dispatch jobs if cloud storage is enabled. ([4f40f6f5](https://github.com/pixelfed/pixelfed/commit/4f40f6f5))
 - Updated StatusService, add ttl of 7 days. ([6e44ae0b](https://github.com/pixelfed/pixelfed/commit/6e44ae0b))
 - Updated StatusHashtagService, use StatusService for statuses. ([0355b567](https://github.com/pixelfed/pixelfed/commit/0355b567))
 - Updated StatusHashtagService, remove deprecated methods. ([aa4c718d](https://github.com/pixelfed/pixelfed/commit/aa4c718d))
@@ -89,6 +90,7 @@
 - Updated LikeService, show like count to status owner. ([4408e2ef](https://github.com/pixelfed/pixelfed/commit/4408e2ef))
 - Updated admin settings, add rules. ([a4efbb75](https://github.com/pixelfed/pixelfed/commit/a4efbb75))
 - Updated LikeService, fix authentication bug. ([c9abd70e](https://github.com/pixelfed/pixelfed/commit/c9abd70e))
+- Updated StatusTransformer, fix missing tags attribute. ([dac326e9](https://github.com/pixelfed/pixelfed/commit/dac326e9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
