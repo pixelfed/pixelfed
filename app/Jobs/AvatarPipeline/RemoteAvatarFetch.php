@@ -51,7 +51,7 @@ class RemoteAvatarFetch implements ShouldQueue
 	{
 		$profile = $this->profile;
 
-		if(config('pixelfed.cloud_storage') !== true) {
+		if(config_cache('pixelfed.cloud_storage') !== true) {
 			return 1;
 		}
 
@@ -75,7 +75,7 @@ class RemoteAvatarFetch implements ShouldQueue
 			return 1;
 		}
 
-		if( !isset($person['icon']) || 
+		if( !isset($person['icon']) ||
 			!isset($person['icon']['type']) ||
 			!isset($person['icon']['url'])
 		) {

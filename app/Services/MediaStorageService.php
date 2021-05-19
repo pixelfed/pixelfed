@@ -20,7 +20,7 @@ class MediaStorageService {
 
 	public static function store(Media $media)
 	{
-		if(config('pixelfed.cloud_storage') == true) {
+		if(config_cache('pixelfed.cloud_storage') == true) {
 			(new self())->cloudStore($media);
 		}
 
