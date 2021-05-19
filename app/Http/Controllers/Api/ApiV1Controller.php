@@ -13,11 +13,13 @@ use App\{
     Bookmark,
     Follower,
     FollowRequest,
+    Hashtag,
     Like,
     Media,
     Notification,
     Profile,
     Status,
+    StatusHashtag,
     User,
     UserFilter,
 };
@@ -1988,9 +1990,46 @@ class ApiV1Controller extends Controller
     {
         abort_if(!$request->user(), 403);
 
-        // todo
-        $res = [];
-        return response()->json($res);
+        $this->validate($request,[
+          'page'        => 'nullable|integer|max:40',
+          'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+          'limit'       => 'nullable|integer|max:40'
+        ]);
+
+        $tag = Hashtag::whereName($hashtag)
+          ->orWhere('slug', $hashtag)
+          ->first();
+
+        if(!$tag) {
+        	return response()->json([]);
+        }
+
+        $min = $request->input('min_id');
+        $max = $request->input('max_id');
+        $limit = $request->input('limit', 20);
+
+        if(!$min && !$max) {
+        	$id = 1;
+        	$dir = '>';
+        } else {
+	        $dir = $min ? '>' : '<';
+	        $id = $min ?? $max;
+        }
+
+        $res = StatusHashtag::whereHashtagId($tag->id)
+			->whereStatusVisibility('public')
+			->whereHas('media')
+			->where('status_id', $dir, $id)
+			->latest()
+			->limit($limit)
+			->pluck('status_id')
+			->map(function ($i) {
+				return StatusService::get($i);
+			})
+			->all();
+
+        return response()->json($res, 200, [], JSON_PRETTY_PRINT);
     }
 
     /**
