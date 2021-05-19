@@ -6,23 +6,28 @@
 <div class="title mb-4">
 	<h3 class="font-weight-bold">Settings</h3>
 @if(config('instance.enable_cc'))
-	<p class="lead mb-0">Manage instance settings.</p>
-	<p class="mb-0"><span class="font-weight-bold">Warning</span>: These settings will override .env variables</p>
+	<p class="lead mb-0">Manage instance settings</p>
 </div>
 <form method="post">
 	@csrf
 	<ul class="nav nav-tabs nav-fill border-bottom-0" id="myTab" role="tablist">
 		<li class="nav-item">
-			<a class="nav-link font-weight-bold px-4 active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">General</a>
+			<a class="nav-link font-weight-bold active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-home"></i></a>
 		</li>
+		<li class="nav-item border-none">
+			<a class="nav-link font-weight-bold px-4" id="brand-tab" data-toggle="tab" href="#brand" role="tab" aria-controls="brand">Brand</a>
+		</li>
+		{{-- <li class="nav-item border-none">
+			<a class="nav-link font-weight-bold px-4" id="media-tab" data-toggle="tab" href="#media" role="tab" aria-controls="media">Mail</a>
+		</li> --}}
 		<li class="nav-item border-none">
 			<a class="nav-link font-weight-bold px-4" id="media-tab" data-toggle="tab" href="#media" role="tab" aria-controls="media">Media</a>
 		</li>
 		<li class="nav-item border-none">
-			<a class="nav-link font-weight-bold px-4" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users">Users</a>
+			<a class="nav-link font-weight-bold px-4" id="rules-tab" data-toggle="tab" href="#rules" role="tab" aria-controls="rules">Rules</a>
 		</li>
 		<li class="nav-item border-none">
-			<a class="nav-link font-weight-bold px-4" id="rules-tab" data-toggle="tab" href="#rules" role="tab" aria-controls="rules">Rules</a>
+			<a class="nav-link font-weight-bold px-4" id="users-tab" data-toggle="tab" href="#users" role="tab" aria-controls="users">Users</a>
 		</li>
 		<li class="nav-item">
 			<a class="nav-link font-weight-bold px-4" id="advanced-tab" data-toggle="tab" href="#advanced" role="tab" aria-controls="advanced">Advanced</a>
@@ -31,35 +36,115 @@
 	<div class="tab-content" id="myTabContent">
 
 	<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+		{{-- <div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<label class="font-weight-bold text-muted">System Configuration</label>
+			<ul class="list-unstyled">
+				<li>
+					<span class="text-muted">Max Upload Size: </span>
+					<span class="font-weight-bold">{{$system['max_upload_size']}}</span>
+				</li>
+				<li>
+					<span class="text-muted">Image Driver: </span>
+					<span class="font-weight-bold">{{$system['image_driver']}}</span>
+				</li>
+				<li>
+					<span class="text-muted">Image Driver Loaded: </span>
+					<span class="font-weight-bold">
+						@if($system['image_driver_loaded'])
+						<i class="fas fa-check text-success"></i>
+						@else
+						<i class="fas fa-times text-danger"></i>
+						@endif
+					</span>
+				</li>
+				<li>
+					<span class="text-muted">File Permissions: </span>
+					<span class="font-weight-bold">
+						@if($system['permissions'])
+						<i class="fas fa-check text-success"></i>
+						@else
+						<i class="fas fa-times text-danger"></i>
+						@endif
+					</span>
+				</li>
+				<li>
+					<span class="text-muted"></span>
+					<span class="font-weight-bold"></span>
+				</li>
+			</ul>
+		</div> --}}
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top">
-				<label class="font-weight-bold text-muted">Manage Core Features</label>
+			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+				<label class="font-weight-bold text-muted">Features</label>
+				@if($cloud_ready)
+				<div class="custom-control custom-checkbox mt-2">
+					<input type="checkbox" name="cloud_storage" class="custom-control-input" id="cls1" {{config_cache('pixelfed.cloud_storage') ? 'checked' : ''}}>
+					<label class="custom-control-label font-weight-bold" for="cls1">Cloud Storage</label>
+				</div>
+				<p class="mb-4 small">Store photos &amp; videos on S3 compatible object storage providers.</p>
+				@endif
+
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="activitypub" class="custom-control-input" id="ap" {{config_cache('federation.activitypub.enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="ap">ActivityPub</label>
 				</div>
+				<p class="mb-4 small">ActivityPub federation, compatible with Pixelfed, Mastodon and other projects.</p>
+
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="open_registration" class="custom-control-input" id="openReg" {{config_cache('pixelfed.open_registration') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="openReg">Open Registrations</label>
 				</div>
-				{{-- <div class="custom-control custom-checkbox mt-2">
+				<p class="mb-4 small">Allow new user registrations.</p>
+
+				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="mobile_apis" class="custom-control-input" id="cf2" {{config_cache('pixelfed.oauth_enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf2">Mobile APIs</label>
-				</div> --}}
+				</div>
+				<p class="mb-4 small">Enable apis required for mobile app support.</p>
+
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="stories" class="custom-control-input" id="cf3" {{config_cache('instance.stories.enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf3">Stories</label>
 				</div>
+				<p class="mb-4 small">Allow users to share ephemeral Stories.</p>
+
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="ig_import" class="custom-control-input" id="cf4" {{config_cache('pixelfed.import.instagram.enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf4">Instagram Import</label>
 				</div>
+				<p class="mb-4 small">Allow <span class="font-weight-bold">experimental</span> Instagram Import support.</p>
+
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="spam_detection" class="custom-control-input" id="cf5" {{config_cache('pixelfed.bouncer.enabled') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="cf5">Spam detection</label>
 				</div>
+				<p class="mb-4 small">Detect and remove spam from timelines.</p>
 			</div>
 		</div>
+		{{-- <div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+				<label class="font-weight-bold text-muted">Name</label>
+				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}">
+				<p class="help-text small text-muted mt-3 mb-0">The instance name used in titles, metadata and apis.</p>
+			</div>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+				<label class="font-weight-bold text-muted">Short Description</label>
+				<textarea class="form-control" rows="3" name="short_description">{{config_cache('app.short_description')}}</textarea>
+				<p class="help-text small text-muted mt-3 mb-0">Short description of instance used on various pages and apis.</p>
+			</div>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+				<label class="font-weight-bold text-muted">Long Description</label>
+				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
+				<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
+			</div>
+		</div> --}}
+	</div>
+
+	<div class="tab-pane" id="brand" role="tabpanel" aria-labelledby="brand-tab">
 		<div class="form-group mb-0">
 			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
 				<label class="font-weight-bold text-muted">Name</label>
@@ -79,6 +164,13 @@
 				<label class="font-weight-bold text-muted">Long Description</label>
 				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
 				<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
+			</div>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+				<label class="font-weight-bold text-muted">About Title</label>
+				<input class="form-control col-8" name="about_title" placeholder="Photo Sharing. For Everyone" value="{{config_cache('about.title')}}">
+				<p class="help-text small text-muted mt-3 mb-0">The header title used on the <a href="/site/about">about page</a>.</p>
 			</div>
 		</div>
 	</div>
@@ -135,19 +227,19 @@
 				<label class="font-weight-bold text-muted">Media Types</label>
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="type_jpeg" class="custom-control-input" id="mediaType1" {{$jpeg ? 'checked' : ''}}>
-					<label class="custom-control-label" for="mediaType1">Allow <span class="border border-dark px-1 rounded font-weight-bold">JPEG</span> images (image/jpg)</label>
+					<label class="custom-control-label" for="mediaType1"><span class="border border-dark px-1 rounded font-weight-bold">JPEG</span></label>
 				</div>
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="type_png" class="custom-control-input" id="mediaType2" {{$png ? 'checked' : ''}}>
-					<label class="custom-control-label" for="mediaType2">Allow <span class="border border-dark px-1 rounded font-weight-bold">PNG</span> images (image/png)</label>
+					<label class="custom-control-label" for="mediaType2"><span class="border border-dark px-1 rounded font-weight-bold">PNG</span></label>
 				</div>
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="type_gif" class="custom-control-input" id="mediaType3" {{$gif ? 'checked' : ''}}>
-					<label class="custom-control-label" for="mediaType3">Allow <span class="border border-dark px-1 rounded font-weight-bold">GIF</span> images (image/gif)</label>
+					<label class="custom-control-label" for="mediaType3"><span class="border border-dark px-1 rounded font-weight-bold">GIF</span></label>
 				</div>
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="type_mp4" class="custom-control-input" id="mediaType4" {{$mp4 ? 'checked' : ''}}>
-					<label class="custom-control-label" for="mediaType4">Allow <span class="border border-dark px-1 rounded font-weight-bold">MP4</span> video (video/mp4)</label>
+					<label class="custom-control-label" for="mediaType4"><span class="border border-dark px-1 rounded font-weight-bold">MP4</span></label>
 				</div>
 				<p class="help-text small text-muted mt-3 mb-0">Allowed media types.</p>
 			</div>
@@ -225,6 +317,12 @@
 				$('.rule-delete[data-index="'+idx+'"]').parents().eq(1).remove();
 			});
 		}
+	});
+
+	$(document).ready(function() {
+		setTimeout(() => {
+			$('.alert-success').fadeOut();
+		}, 1000);
 	});
 </script>
 @endpush

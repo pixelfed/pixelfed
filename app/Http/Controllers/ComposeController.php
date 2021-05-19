@@ -646,7 +646,7 @@ class ComposeController extends Controller
 			case 'image/jpeg':
 			case 'image/png':
 			case 'video/mp4':
-				$finished = config('pixelfed.cloud_storage') ? (bool) $media->cdn_url : (bool) $media->processed_at;
+				$finished = config_cache('pixelfed.cloud_storage') ? (bool) $media->cdn_url : (bool) $media->processed_at;
 				break;
 
 			default:

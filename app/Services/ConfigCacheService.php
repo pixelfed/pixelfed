@@ -8,12 +8,13 @@ use App\Models\ConfigCache as ConfigCacheModel;
 
 class ConfigCacheService
 {
-	const CACHE_KEY = 'config_cache:_key:';
+	const CACHE_KEY = 'config_cache:_v0-key:';
 
 	public static function get($key)
 	{
-		$cacheKey = "config_cache:_key:{$key}";
+		$cacheKey = self::CACHE_KEY . $key;
 		$ttl = now()->addHours(12);
+
 		return Cache::remember($cacheKey, $ttl, function() use($key) {
 
 			$allowed = [
@@ -29,8 +30,8 @@ class ConfigCacheService
 
 				'pixelfed.open_registration',
 				'federation.activitypub.enabled',
-				'pixelfed.oauth_enabled',
 				'instance.stories.enabled',
+				'pixelfed.oauth_enabled',
 				'pixelfed.import.instagram.enabled',
 				'pixelfed.bouncer.enabled',
 
@@ -41,7 +42,10 @@ class ConfigCacheService
 				'uikit.custom.css',
 				'uikit.custom.js',
 				'uikit.show_custom.css',
-				'uikit.show_custom.js'
+				'uikit.show_custom.js',
+				'about.title',
+
+				'pixelfed.cloud_storage'
 			];
 
 			if(!config('instance.enable_cc')) {
@@ -79,7 +83,7 @@ class ConfigCacheService
 		if($exists) {
 			$exists->v = $val;
 			$exists->save();
-			Cache::forget(self::CACHE_KEY . $key);
+			Cache::put(self::CACHE_KEY . $key, $val, now()->addHours(12));
 			return self::get($key);
 		}
 
@@ -88,7 +92,7 @@ class ConfigCacheService
 		$cc->v = $val;
 		$cc->save();
 
-		Cache::forget(self::CACHE_KEY . $key);
+		Cache::put(self::CACHE_KEY . $key, $val, now()->addHours(12));
 
 		return self::get($key);
 	}

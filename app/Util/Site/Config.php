@@ -7,8 +7,10 @@ use Illuminate\Support\Str;
 
 class Config {
 
+	const CACHE_KEY = 'api:site:configuration:_v0.3';
+
 	public static function get() {
-		return Cache::remember('api:site:configuration:_v0.3', now()->addMinutes(5), function() {
+		return Cache::remember(self::CACHE_KEY, now()->addMinutes(5), function() {
 			return [
 				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
