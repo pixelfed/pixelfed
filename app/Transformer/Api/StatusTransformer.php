@@ -17,6 +17,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 {
 	protected $defaultIncludes = [
 		'account',
+		'tags',
 		'media_attachments',
 	];
 
@@ -72,6 +73,13 @@ class StatusTransformer extends Fractal\TransformerAbstract
 		$account = $status->profile;
 
 		return $this->item($account, new AccountTransformer());
+	}
+
+	public function includeTags(Status $status)
+	{
+		$tags = $status->hashtags;
+
+		return $this->collection($tags, new HashtagTransformer());
 	}
 
 	public function includeMediaAttachments(Status $status)
