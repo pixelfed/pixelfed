@@ -5,19 +5,20 @@ namespace App\Http\Controllers\Admin;
 use Artisan, Cache, DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\{Comment, Like, Media, Page, Profile, Report, Status, User};
+use App\{Comment, InstanceActor, Like, Media, Page, Profile, Report, Status, User};
 use App\Http\Controllers\Controller;
 use App\Util\Lexer\PrettyNumber;
 use App\Models\ConfigCache;
 use App\Services\ConfigCacheService;
+use App\Util\Site\Config;
 
 trait AdminSettingsController
 {
 	public function settings(Request $request)
 	{
-		$name = ConfigCacheService::get('app.name');
-		$short_description = ConfigCacheService::get('app.short_description');
-		$description = ConfigCacheService::get('app.description');
+		$cloud_storage = ConfigCacheService::get('pixelfed.cloud_storage');
+		$cloud_disk = config('filesystems.cloud');
+		$cloud_ready = !empty(config('filesystems.disks.' . $cloud_disk . '.key')) && !empty(config('filesystems.disks.' . $cloud_disk . '.secret'));
 		$types = explode(',', ConfigCacheService::get('pixelfed.media_types'));
 		$rules = ConfigCacheService::get('app.rules') ? json_decode(ConfigCacheService::get('app.rules'), true) : null;
 		$jpeg = in_array('image/jpg', $types) ? true : in_array('image/jpeg', $types);
@@ -25,15 +26,23 @@ trait AdminSettingsController
 		$gif = in_array('image/gif', $types);
 		$mp4 = in_array('video/mp4', $types);
 
+		// $system = [
+		// 	'permissions' => is_writable(base_path('storage')) && is_writable(base_path('bootstrap')),
+		// 	'max_upload_size' => ini_get('post_max_size'),
+		// 	'image_driver' => config('image.driver'),
+		// 	'image_driver_loaded' => extension_loaded(config('image.driver'))
+		// ];
+
 		return view('admin.settings.home', compact(
-			'name',
-			'short_description',
-			'description',
 			'jpeg',
 			'png',
 			'gif',
 			'mp4',
-			'rules'
+			'rules',
+			'cloud_storage',
+			'cloud_disk',
+			'cloud_ready',
+			// 'system'
 		));
 	}
 
@@ -98,7 +107,8 @@ trait AdminSettingsController
 			'image_quality' => 'pixelfed.image_quality',
 			'account_limit' => 'pixelfed.max_account_size',
 			'custom_css' => 'uikit.custom.css',
-			'custom_js' => 'uikit.custom.js'
+			'custom_js' => 'uikit.custom.js',
+			'about_title' => 'about.title'
 		];
 
 		foreach ($keys as $key => $value) {
@@ -120,10 +130,24 @@ trait AdminSettingsController
 			'enforce_account_limit' => 'pixelfed.enforce_account_limit',
 			'show_custom_css' => 'uikit.show_custom.css',
 			'show_custom_js' => 'uikit.show_custom.js',
+			'cloud_storage' => 'pixelfed.cloud_storage'
 		];
 
 		foreach ($bools as $key => $value) {
 			$active = $request->input($key) == 'on';
+
+			if($key == 'activitypub' && $active && !InstanceActor::exists()) {
+				Artisan::call('instance:actor');
+			}
+
+			if( $key == 'mobile_apis' &&
+				$active &&
+				!file_exists(storage_path('oauth-public.key')) &&
+				!file_exists(storage_path('oauth-private.key'))
+			) {
+				Artisan::call('passport:keys');
+				Artisan::call('route:cache');
+			}
 
 			if(config_cache($value) !== $active) {
 				ConfigCacheService::put($value, (bool) $active);
@@ -142,9 +166,9 @@ trait AdminSettingsController
 			}
 		}
 
-		Cache::forget('api:site:configuration:_v0.2');
+		Cache::forget(Config::CACHE_KEY);
 
-		return redirect('/i/admin/settings');
+		return redirect('/i/admin/settings')->with('status', 'Successfully updated settings!');
 	}
 
 	public function settingsBackups(Request $request)
@@ -167,19 +191,6 @@ trait AdminSettingsController
 		if(config('pixelfed.admin.env_editor') !== true) {
 			abort(400);
 		}
-		$res = $request->input('res');
-
-		$old = file_get_contents(app()->environmentFilePath());
-		if(empty($old) || $old != $res) {
-			$oldFile = fopen(app()->environmentFilePath().'.backup', 'w');
-			fwrite($oldFile, $old);
-			fclose($oldFile);
-		}
-
-		$file = fopen(app()->environmentFilePath(), 'w');
-		fwrite($file, $res);
-		fclose($file);
-		Artisan::call('config:cache');
 		return ['msg' => 200];
 	}
 
@@ -188,14 +199,6 @@ trait AdminSettingsController
 		if(config('pixelfed.admin.env_editor') !== true) {
 			abort(400);
 		}
-		$res = file_get_contents(app()->environmentFilePath().'.backup');
-		if(empty($res)) {
-			abort(400, 'No backup exists.');
-		}
-		$file = fopen(app()->environmentFilePath(), 'w');
-		fwrite($file, $res);
-		fclose($file);
-		Artisan::call('config:cache');
 		return ['msg' => 200];
 	}
 
