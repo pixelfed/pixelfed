@@ -91,6 +91,8 @@
 - Updated admin settings, add rules. ([a4efbb75](https://github.com/pixelfed/pixelfed/commit/a4efbb75))
 - Updated LikeService, fix authentication bug. ([c9abd70e](https://github.com/pixelfed/pixelfed/commit/c9abd70e))
 - Updated StatusTransformer, fix missing tags attribute. ([dac326e9](https://github.com/pixelfed/pixelfed/commit/dac326e9))
+- Updated ComposeController, bail on empty attachments. ([061b145b](https://github.com/pixelfed/pixelfed/commit/061b145b))
+- Updated landing and about page. ([92dc7af6](https://github.com/pixelfed/pixelfed/commit/92dc7af6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
