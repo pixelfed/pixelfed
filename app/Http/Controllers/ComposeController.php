@@ -480,6 +480,8 @@ class ComposeController extends Controller
 			array_push($mimes, $m->mime);
 		}
 
+		abort_if(empty($attachments), 422);
+
 		$mediaType = StatusController::mimeTypeCheck($mimes);
 
 		if(in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {

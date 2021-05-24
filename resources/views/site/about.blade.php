@@ -1,138 +1,238 @@
-@extends('layouts.anon')
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}">
+<head>
 
-@section('content')
-<div class="jumbotron jumbotron-fluid bg-primary text-white mb-0 py-4">
-	<div class="container">
-		<p class="h1 font-weight-light">About</p>
-		<p class="h3 font-weight-light py-4">Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.</p>
-	</div>
-</div>
-<div class="bg-white">
-	<div class="container d-flex justify-content-center">
-		<div class="card mr-3" style="width:500px;margin-top:-30px;">
-			<div class="card-header d-inline-flex align-items-center bg-white">
-				<img src="/storage/avatars/default.png" width="32px" height="32px" style="border-radius: 32px; border: 1px solid #ccc">
-				<span class="username font-weight-bold pl-2 text-dark">
-					username
-				</span>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="mobile-web-app-capable" content="yes">
+	<title>{{ config('app.name', 'Pixelfed') }}</title>
+	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}">
+	<meta property="og:title" content="{{ config_cache('app.name', 'pixelfed') }}">
+	<meta property="og:type" content="article">
+	<meta property="og:url" content="{{route('site.about')}}">
+	<meta property="og:description" content="{{config_cache('app.short_description')}}">
+	<meta name="medium" content="image">
+	<meta name="theme-color" content="#10c5f8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="shortcut icon" type="image/png" href="/img/favicon.png?v=2">
+	<link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
+	<link href="{{ mix('css/app.css') }}" rel="stylesheet">
+	<style type="text/css">
+		.section-spacer {
+			height: 13vh;
+		}
+	</style>
+</head>
+<body>
+	<main id="content">
+		<div class="container">
+			<p class="text-right mt-3">
+				<a href="/" class="font-weight-bold text-dark">Home</a>
+				<a href="/site/newsroom" class="ml-4 font-weight-bold text-dark">Newsroom</a>
+			</p>
+		</div>
+		<div class="px-4 py-5 my-5 text-center">
+			<a href="/">
+				<img class="d-block mx-auto mb-4" src="/img/pixelfed-icon-color.svg" alt="" width="72" height="57">
+			</a>
+			<h1 class="display-4 font-weight-bold py-3">{{ config_cache('about.title') ?? 'Photo Sharing. For Everyone' }}</h1>
+			<div class="col-lg-6 mx-auto py-3">
+			  <p class="mb-4 font-weight-light text-left" style="font-size: 26px; line-height: 40px;">
+				{!! config_cache('app.description') ?? config_cache('app.short_description') ?? 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.'!!}
+			  </p>
 			</div>
-			<div class="card-body p-0">
-				<img class="img-fluid" src="/img/sample-post.jpeg">
-			</div>
-			<div class="card-footer bg-white">
-				<div class="likes font-weight-bold mb-2">
-					<span class="like-count">124k</span> likes
+		</div>
+
+		<div class="container">
+			<div class="row align-items-stretch pt-5">
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/3.jpeg');min-height:400px;border-radius:1rem;">
+					</div>
 				</div>
-				<div class="caption">
-					<p class="mb-1">
-						<span class="username font-weight-bold">
-							<bdi>username</bdi>
-						</span>
-						<span class="caption-body" data-processed="false">Hello world! <a href="#">#introduction</a></span>
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/8.jpeg');min-height:400px;border-radius:1rem;">
+					</div>
+				</div>
+
+			</div>
+
+			<div class="row align-items-stretch pt-5">
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/6.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/4.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/7.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+			</div>
+			<div class="row align-items-stretch py-5">
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/1.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/5.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="card h-100 shadow-lg" style="background-image: url('/_landing/9.jpeg');min-height:200px;border-radius:1rem;background-size: cover;">
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		@if($rules)
+		<div class="section-spacer"></div>
+		<div class="section-spacer"></div>
+
+		<div id="rules" class="container">
+			<div class="row mb-4">
+				<div class="col">
+					<h1 class="display-4 font-weight-bold mb-0 text-center">Rules</h1>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-12 mb-2 col-lg-8 mb-lg-0">
+					<ol>
+						@foreach($rules as $rule)
+						<li class="h3 my-4">{{$rule}}</li>
+						@endforeach
+					</ol>
+					<p class="h5 text-center pt-4">For more information, please review our <a href="/site/terms">Terms of Use</a></p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section-spacer"></div>
+		<div class="section-spacer"></div>
+		@endif
+
+		<section class="container">
+			<div class="row">
+				<div class="col-12 col-md-8 offset-md-2">
+					<div class="mt-5">
+						<p class="text-center display-4 font-weight-bold">Feature Packed.</p>
+					</div>
+					<div class="my-2">
+						<p class="h3 font-weight-light text-muted text-center">The best for the brightest 📸</p>
+					</div>
+				</div>
+			</div>
+		</section>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Albums</h1>
+					<p class="h4 font-weight-light">Share posts with up to {{config_cache('pixelfed.max_album_length')}} photos</p>
+				</div>
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/1.jpeg" alt="" width="720">
+				</div>
+			</div>
+		</div>
+		<div class="section-spacer"></div>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/2.jpeg" alt="" width="720">
+				</div>
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Comments</h1>
+					<p class="h4 font-weight-light text-justify">Comment on a post, or send a reply</p>
+				</div>
+			</div>
+		</div>
+		<div class="section-spacer"></div>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Collections</h1>
+					<p class="h4 font-weight-light text-justify">Organize and share collections of multiple posts</p>
+				</div>
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/3.jpeg" alt="" width="720">
+				</div>
+			</div>
+		</div>
+		<div class="section-spacer"></div>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/4.jpeg" alt="" width="720">
+				</div>
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Discover</h1>
+					<p class="h4 font-weight-light text-justify">Explore categories, hashtags and topics</p>
+				</div>
+			</div>
+		</div>
+		<div class="section-spacer"></div>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Photo Filters</h1>
+					<p class="h4 font-weight-light text-justify">Add a special touch to your photos</p>
+				</div>
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/5.jpeg" alt="" width="720">
+				</div>
+			</div>
+		</div>
+		<div class="section-spacer"></div>
+		<div class="container my-5">
+			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
+				<div class="col-lg-6 overflow-hidden">
+					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/6.jpeg" alt="" width="720">
+				</div>
+				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
+					<h1 class="display-4 font-weight-bold lh-1">Stories</h1>
+					<p class="h4 font-weight-light text-justify">Share moments with your followers that disappear after 24 hours</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section-spacer"></div>
+		<div class="section-spacer"></div>
+
+		<div id="stats" class="container">
+			<div class="row mb-4">
+				<div class="col">
+					<p class="display-3 font-weight-bold">
+						<span class="text-primary">{{$user_count}}</span>
+						people have shared
+						<span class="text-primary">{{$post_count}}</span>
+						photos and videos on {{config_cache('app.name')}}!
 					</p>
-				</div>
-			</div>
-		</div>
-		<div style="width:300px;margin-top:-30px;text-align: center;">
-			<div class="card border-left-blue mb-3">
-				<div class="card-body">
-					<p class="h2 mb-0">{{$stats['posts']}}</p>
-					<p class="font-weight-bold mb-0">Posts</p>
-				</div>
-			</div>
-
-			<div class="card border-left-blue mb-3">
-				<div class="card-body">
-					<p class="h2 mb-0">{{$stats['users']}}</p>
-					<p class="font-weight-bold mb-0">Users</p>
-				</div>
-			</div>
-
-			@if($stats['admin'])
-			<div class="card border-left-blue mb-3">
-				<div class="card-body">
-					<p class="h2 mb-0">
-						<a href="{{$stats['admin']->url()}}">
-							&commat;{{$stats['admin']->username}}
-						</a>
+					@if(config_cache('pixelfed.open_registration'))
+					<div class="section-spacer"></div>
+					<p class="display-4 font-weight-bold mb-0">
+						<a class="text-primary" href="/register">Sign up today</a>
+						and join our community of photographers from around the world.
 					</p>
-					<p class="font-weight-bold mb-0">Instance Admin</p>
-				</div>
-			</div>
-			@endif
-		</div>
-	</div>
-	<div class="container py-5">
-	</div>
-</div>
-<div class="bg-primary pt-5 pb-4">
-	<div class="container">
-		<div class="row">
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Ad Free
-						</p>
-						<p class="font-weight-light mb-0">No Ads or Trackers</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Chronological
-						</p>
-						<p class="font-weight-light mb-0">Timelines in order</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Federated
-						</p>
-						<p class="font-weight-light mb-0">A network of millions</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Discover
-						</p>
-						<p class="font-weight-light mb-0">Discover popular posts</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Photo Filters
-						</p>
-						<p class="font-weight-light mb-0">Add an optional filter</p>
-					</div>
-				</div>
-			</div>
-			<div class="col-12 col-md-4 mb-4">
-				<div class="card bg-transparent" style="box-shadow: none;border:1px solid #fff">
-					<div class="card-body text-white text-center">
-						<p class="font-weight-bold lead mb-0">
-							Stories
-						</p>
-						<p class="font-weight-light mb-0">Coming Soon!</p>
-					</div>
+					@endif
 				</div>
 			</div>
 		</div>
-	</div>
-</div>
-@endsection
 
-@push('meta')
-<meta property="og:description" content="Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.">
-@endpush
+		<div class="section-spacer"></div>
+		<div class="section-spacer"></div>
+	</main>
+  </div>
+	@include('layouts.partial.footer')
+</body>
+</html>
