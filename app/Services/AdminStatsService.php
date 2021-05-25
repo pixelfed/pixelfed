@@ -67,10 +67,11 @@ class AdminStatsService
 	protected static function postsGraph()
 	{
 		$ttl = now()->addHours(12);
-		return Cache::remember('admin:dashboard:home:data-postsGraph:v0:24hr', $ttl, function() {
+		return Cache::remember('admin:dashboard:home:data-postsGraph:v0.1:24hr', $ttl, function() {
+			$gb = config('database.default') == 'pgsql' ? ['statuses.id', DB::raw('Date(created_at)')] : DB::raw('Date(created_at)');
 			$s = Status::selectRaw('Date(created_at) as date, count(statuses.id) as count, statuses.*')
 				->where('created_at', '>=', now()->subWeek())
-				->groupBy(DB::raw('Date(created_at)'))
+				->groupBy($gb)
 				->orderBy('created_at', 'DESC')
 				->pluck('count', 'date');
 
@@ -88,7 +89,7 @@ class AdminStatsService
 			$s = Status::selectRaw('Date(created_at) as date, count(statuses.id) as count, statuses.*')
 				->where('created_at', '>=', now()->subWeeks(2))
 				->where('created_at', '<=', now()->subWeeks(1))
-				->groupBy(DB::raw('Date(created_at)'))
+				->groupBy($gb)
 				->orderBy('created_at', 'DESC')
 				->pluck('count', 'date');
 
