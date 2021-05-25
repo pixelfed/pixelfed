@@ -403,20 +403,28 @@ class StatusController extends Controller
 	public function storeView(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-
 		$this->validate($request, [
-			'status_id' => 'required|integer|exists:statuses,id',
-			'profile_id' => 'required|integer|exists:profiles,id'
+			'_v' => 'required|array'
 		]);
 
-		$sid = (int) $request->input('status_id');
-		$pid = (int) $request->input('profile_id');
+		$views = $request->input('_v');
+		$uid = $request->user()->profile_id;
 
-		StatusView::firstOrCreate([
-				'status_id' => $sid,
-				'status_profile_id' => $pid,
-				'profile_id' => $request->user()->profile_id
-		]);
+		if(empty($views)) {
+			return;
+		}
+
+		foreach($views as $view) {
+			if(!isset($view['sid']) || !isset($view['pid'])) {
+				continue;
+			}
+
+			StatusView::firstOrCreate([
+					'status_id' => $view['sid'],
+					'status_profile_id' => $view['pid'],
+					'profile_id' => $uid
+			]);
+		}
 
 		return response()->json(1);
 	}

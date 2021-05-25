@@ -1076,13 +1076,14 @@
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
 						let self = this;
+						let vids = [];
 						data.forEach((d, index) => {
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
 								self.ids.push(d.id);
-								axios.post('/api/status/view', {
-									'status_id': d.id,
-									'profile_id': d.account.id
+								vids.push({
+									sid: d.id,
+									pid: d.account.id
 								});
 							}
 						});
@@ -1091,6 +1092,9 @@
 						this.page += 1;
 						$state.loaded();
 						this.loading = false;
+						axios.post('/api/status/view', {
+							'_v': vids,
+						});
 					} else {
 						$state.complete();
 					}
