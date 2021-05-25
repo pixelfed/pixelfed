@@ -2,6 +2,7 @@ let mix = require('laravel-mix');
 
 mix.sass('resources/assets/sass/app.scss', 'public/css')
 .sass('resources/assets/sass/appdark.scss', 'public/css')
+.sass('resources/assets/sass/admin.scss', 'public/css')
 .sass('resources/assets/sass/landing.scss', 'public/css')
 .sass('resources/assets/sass/quill.scss', 'public/css').version();
 
@@ -28,7 +29,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/story-compose.js', 'public/js')
 // .js('resources/assets/js/embed.js', 'public')
  .js('resources/assets/js/direct.js', 'public/js')
-// .js('resources/assets/js/admin.js', 'public/js')
+.js('resources/assets/js/admin.js', 'public/js')
 // .js('resources/assets/js/micro.js', 'public/js')
 .js('resources/assets/js/rempro.js', 'public/js')
 .js('resources/assets/js/rempos.js', 'public/js')

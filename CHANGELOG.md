@@ -8,6 +8,7 @@
 - Admin config settings ([f2066b74](https://github.com/pixelfed/pixelfed/commit/f2066b74))
 - Profile pronouns ([fabb57a9](https://github.com/pixelfed/pixelfed/commit/fabb57a9))
 - Hashtag timeline api support ([241ae036](https://github.com/pixelfed/pixelfed/commit/241ae036))
+- New admin dashboard layout ([eb7d5a4e](https://github.com/pixelfed/pixelfed/commit/eb7d5a4e))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))

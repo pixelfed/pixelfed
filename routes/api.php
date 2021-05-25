@@ -16,7 +16,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('apps', 'Api\ApiV1Controller@apps');
 		Route::get('instance', 'Api\ApiV1Controller@instance');
 		Route::get('bookmarks', 'Api\ApiV1Controller@bookmarks')->middleware($middleware);
-		
+
 		Route::get('accounts/verify_credentials', 'Api\ApiV1Controller@verifyCredentials')->middleware($middleware);
 		Route::patch('accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware($middleware);
 		Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById')->middleware($middleware);
@@ -73,7 +73,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 		Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
 		Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic');
-		Route::get('timelines/tag/{hashtag}', 'Api\ApiV1Controller@timelineHashtag')->middleware($middleware);
+		Route::get('timelines/tag/{hashtag}', 'Api\ApiV1Controller@timelineHashtag');
 	});
 	Route::group(['prefix' => 'stories'], function () use($middleware) {
 		Route::get('v1/me', 'StoryController@apiV1Me');
