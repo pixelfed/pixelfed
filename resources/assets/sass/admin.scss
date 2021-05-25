@@ -1,0 +1,15 @@
+@import "lib/nucleo";
+@import "lib/nucleo-svg";
+@import "lib/argon";
+
+body, button, input, textarea {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",
+                 Roboto,Helvetica,Arial,sans-serif;
+}
+
+.title {
+	p.h3,
+	h3 {
+		font-size: 30px;
+	}
+}

@@ -36,7 +36,7 @@
 	<div class="tab-content" id="myTabContent">
 
 	<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-		{{-- <div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+		{{-- <div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 			<label class="font-weight-bold text-muted">System Configuration</label>
 			<ul class="list-unstyled">
 				<li>
@@ -74,7 +74,7 @@
 			</ul>
 		</div> --}}
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Features</label>
 				@if($cloud_ready)
 				<div class="custom-control custom-checkbox mt-2">
@@ -122,21 +122,21 @@
 			</div>
 		</div>
 		{{-- <div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Name</label>
 				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}">
 				<p class="help-text small text-muted mt-3 mb-0">The instance name used in titles, metadata and apis.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
 				<label class="font-weight-bold text-muted">Short Description</label>
 				<textarea class="form-control" rows="3" name="short_description">{{config_cache('app.short_description')}}</textarea>
 				<p class="help-text small text-muted mt-3 mb-0">Short description of instance used on various pages and apis.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
 				<label class="font-weight-bold text-muted">Long Description</label>
 				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
 				<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
@@ -146,28 +146,28 @@
 
 	<div class="tab-pane" id="brand" role="tabpanel" aria-labelledby="brand-tab">
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Name</label>
 				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}">
 				<p class="help-text small text-muted mt-3 mb-0">The instance name used in titles, metadata and apis.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
 				<label class="font-weight-bold text-muted">Short Description</label>
 				<textarea class="form-control" rows="3" name="short_description">{{config_cache('app.short_description')}}</textarea>
 				<p class="help-text small text-muted mt-3 mb-0">Short description of instance used on various pages and apis.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
 				<label class="font-weight-bold text-muted">Long Description</label>
 				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
 				<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">About Title</label>
 				<input class="form-control col-8" name="about_title" placeholder="Photo Sharing. For Everyone" value="{{config_cache('about.title')}}">
 				<p class="help-text small text-muted mt-3 mb-0">The header title used on the <a href="/site/about">about page</a>.</p>
@@ -177,7 +177,7 @@
 
 	<div class="tab-pane" id="users" role="tabpanel" aria-labelledby="users-tab">
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top">
+			<div class="ml-n4 mr-n2 p-3 border-top">
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="require_email_verification" class="custom-control-input" id="mailVerification" {{config_cache('pixelfed.enforce_email_verification') ? 'checked' : ''}}>
 					<label class="custom-control-label font-weight-bold" for="mailVerification">Require Email Verification</label>
@@ -185,7 +185,7 @@
 			</div>
 		</div>
 		<div class="form-group">
-				<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+				<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 					<div class="custom-control custom-checkbox my-2">
 						<input type="checkbox" name="enforce_account_limit" class="custom-control-input" id="userEnforceLimit" {{config_cache('pixelfed.enforce_account_limit') ? 'checked' : ''}}>
 						<label class="custom-control-label font-weight-bold" for="userEnforceLimit">Enable account storage limit</label>
@@ -201,7 +201,7 @@
 
 	<div class="tab-pane" id="media" role="tabpanel" aria-labelledby="media-tab">
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top">
+			<div class="ml-n4 mr-n2 p-3 border-top">
 				<label class="font-weight-bold text-muted">Max Size</label>
 				<input class="form-control" name="max_photo_size" value="{{config_cache('pixelfed.max_photo_size')}}">
 				<p class="help-text small text-muted mt-3 mb-0">Maximum file upload size in KB</p>
@@ -209,21 +209,21 @@
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top">
+			<div class="ml-n4 mr-n2 p-3 border-top">
 				<label class="font-weight-bold text-muted">Photo Album Limit</label>
 				<input class="form-control" name="max_album_length" value="{{config_cache('pixelfed.max_album_length')}}">
 				<p class="help-text small text-muted mt-3 mb-0">The maximum number of photos or videos per album</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top">
+			<div class="ml-n4 mr-n2 p-3 border-top">
 				<label class="font-weight-bold text-muted">Image Quality</label>
 				<input class="form-control" name="image_quality" value="{{config_cache('pixelfed.image_quality')}}">
 				<p class="help-text small text-muted mt-3 mb-0">Image optimization quality from 0-100%. Set to 0 to disable image optimization.</p>
 			</div>
 		</div>
 		<div class="form-group">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Media Types</label>
 				<div class="custom-control custom-checkbox mt-2">
 					<input type="checkbox" name="type_jpeg" class="custom-control-input" id="mediaType1" {{$jpeg ? 'checked' : ''}}>
@@ -250,7 +250,7 @@
 		<div class="border-top">
 			<p class="lead mt-3 py-3 text-center">Add rules that explain what is acceptable use.</p>
 		</div>
-		<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+		<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 			<p class="font-weight-bold text-muted">Active Rules</p>
 			<ol class="font-weight-bold">
 				@if($rules)
@@ -268,7 +268,7 @@
 			</ol>
 		</div>
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Add Rule</label>
 				<input class="form-control" name="new_rule" placeholder="Add a new rule, we recommend being descriptive but keeping it short"/>
 			</div>
@@ -277,7 +277,7 @@
 
 	<div class="tab-pane" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
 		<div class="form-group mb-0">
-			<div class="ml-n4 mr-n2 p-3 bg-light border-top border-bottom">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Custom CSS</label>
 				<div class="custom-control custom-checkbox my-2">
 					<input type="checkbox" name="show_custom_css" class="custom-control-input" id="showCustomCss" {{config_cache('uikit.show_custom.css') ? 'checked' : ''}}>
