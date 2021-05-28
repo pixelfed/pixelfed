@@ -355,6 +355,22 @@
 									</div>
 								</div> -->
 							</div>
+							<div class="card-footer bg-transparent border-0 pt-0 pb-1">
+                                <div class="d-flex justify-content-between text-center">
+                                    <span class="cursor-pointer" @click="redirect(profile.url)">
+                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
+                                        <p class="mb-0 small text-muted">Posts</p>
+                                    </span>
+                                    <span class="cursor-pointer" @click="redirect(profile.url+'?md=followers')">
+                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.followers_count)}}</p>
+                                        <p class="mb-0 small text-muted">Followers</p>
+                                    </span>
+                                    <span class="cursor-pointer" @click="redirect(profile.url+'?md=following')">
+                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.following_count)}}</p>
+                                        <p class="mb-0 small text-muted">Following</p>
+                                    </span>
+                                </div>
+                            </div>
 						</div>
 
 						<div v-show="modes.notify == true && !loading" class="mb-4">
@@ -388,18 +404,17 @@
 						</div>
 
 						<footer>
-							<div class="container pb-5">
-								<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-									<a href="/site/about" class="text-dark pr-2">About</a>
-									<a href="/site/help" class="text-dark pr-2">Help</a>
-									<a href="/site/language" class="text-dark pr-2">Language</a>
-									<a href="/discover/profiles" class="text-dark pr-2">Profiles</a>
-									<a href="/discover/places" class="text-dark pr-2">Places</a>
-									<a href="/site/privacy" class="text-dark pr-2">Privacy</a>
-									<a href="/site/terms" class="text-dark pr-2">Terms</a>
+							<div class="container px-0 pb-5">
+								<p class="mb-2 small text-justify">
+									<a href="/site/about" class="text-lighter pr-2">About</a>
+									<a href="/site/help" class="text-lighter pr-2">Help</a>
+									<a href="/site/language" class="text-lighter pr-2">Language</a>
+									<a href="/discover/places" class="text-lighter pr-2">Places</a>
+									<a href="/site/privacy" class="text-lighter pr-2">Privacy</a>
+									<a href="/site/terms" class="text-lighter pr-2">Terms</a>
 								</p>
-								<p class="mb-0 text-uppercase font-weight-bold text-muted small">
-									<a href="http://pixelfed.org" class="text-muted" rel="noopener" title="" data-toggle="tooltip">Powered by Pixelfed</a>
+								<p class="mb-0 text-uppercase text-muted small">
+									<a href="http://pixelfed.org" class="text-lighter" rel="noopener" title="" data-toggle="tooltip">Powered by Pixelfed</a>
 								</p>
 							</div>
 						</footer>
@@ -898,7 +913,10 @@
 							})
 						}
 					]
-				}
+				},
+				discover_min_id: 0,
+				discover_max_id: 0,
+				discover_feed: []
 			}
 		},
 

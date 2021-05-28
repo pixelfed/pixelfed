@@ -20,7 +20,7 @@
 					<div class="media-body font-weight-light small">
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
-								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your 
+								<a :href="n.account.url" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> liked your
 								<span v-if="n.status.hasOwnProperty('media_attachments')">
 									<a class="font-weight-bold" v-bind:href="n.status.url" :id="'fvn-' + n.id">post</a>.
 									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
@@ -84,6 +84,12 @@
 				<div v-if="notifications.length == 0" class="text-lighter text-center py-3">
 					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
 					<p class="mb-0 small font-weight-bold">0 Notifications!</p>
+				</div>
+			</div>
+			<div v-else class="card-body px-0 py-0" style="max-height: 240px;">
+				<div class="text-lighter text-center py-3">
+					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
+					<p class="mb-0 small font-weight-bold">No notifications yet</p>
 				</div>
 			</div>
 		</div>

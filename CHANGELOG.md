@@ -9,6 +9,8 @@
 - Profile pronouns ([fabb57a9](https://github.com/pixelfed/pixelfed/commit/fabb57a9))
 - Hashtag timeline api support ([241ae036](https://github.com/pixelfed/pixelfed/commit/241ae036))
 - New admin dashboard layout ([eb7d5a4e](https://github.com/pixelfed/pixelfed/commit/eb7d5a4e))
+- Fresh about page layout ([92dc7af6](https://github.com/pixelfed/pixelfed/commit/92dc7af6))
+- Instance Rules ([a4efbb75](https://github.com/pixelfed/pixelfed/commit/a4efbb75))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
@@ -95,6 +97,10 @@
 - Updated ComposeController, bail on empty attachments. ([061b145b](https://github.com/pixelfed/pixelfed/commit/061b145b))
 - Updated landing and about page. ([92dc7af6](https://github.com/pixelfed/pixelfed/commit/92dc7af6))
 - Updated AdminStatsService, fix postgres bug. ([af719135](https://github.com/pixelfed/pixelfed/commit/af719135))
+- Updated api, remove auth requirement for hashtag timeline. ([c8e43c60](https://github.com/pixelfed/pixelfed/commit/c8e43c60))
+- Updated NotificationCard component, fix default value. ([78ad4e77](https://github.com/pixelfed/pixelfed/commit/78ad4e77))
+- Updated Timeline component, show counts and make sidebar footer lighter. ([0788bffa](https://github.com/pixelfed/pixelfed/commit/0788bffa))
+- Updated AuthServiceProvider, increase default token + refresh token lifetime. ([178ed63d](https://github.com/pixelfed/pixelfed/commit/178ed63d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)

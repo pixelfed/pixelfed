@@ -26,10 +26,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        if(config('pixelfed.oauth_enabled')) {
+        if(config_cache('pixelfed.oauth_enabled') == true) {
             Passport::routes(null, ['middleware' => ['twofactor', \Fruitcake\Cors\HandleCors::class]]);
-            Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 15)));
-            Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 30)));
+            Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
+            Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
             Passport::enableImplicitGrant();
             if(config('instance.oauth.pat.enabled')) {
                 Passport::personalAccessClientId(config('instance.oauth.pat.id'));
@@ -48,8 +48,8 @@ class AuthServiceProvider extends ServiceProvider
             ]);
         }
 
-        Gate::define('viewWebSocketsDashboard', function ($user = null) {
-            return $user->is_admin;
-        });
+        // Gate::define('viewWebSocketsDashboard', function ($user = null) {
+        //     return $user->is_admin;
+        // });
     }
 }
