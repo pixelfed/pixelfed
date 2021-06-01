@@ -226,7 +226,7 @@
 
 								<div v-if="status.liked_by.username && status.liked_by.username !== profile.username" class="likes mb-1">
 									<span class="like-count">Liked by
-										<a class="font-weight-bold text-dark" :href="'/'+status.liked_by.username">{{status.liked_by.username}}</a>
+										<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
 										<span v-if="status.liked_by.others == true">
 											and <span class="font-weight-bold" v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> <span class="font-weight-bold">others</span>
 										</span>

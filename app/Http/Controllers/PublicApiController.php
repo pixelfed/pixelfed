@@ -199,8 +199,15 @@ class PublicApiController extends Controller
 
     public function statusLikes(Request $request, $username, $id)
     {
+    	abort_if(!$request->user(), 404);
         $status = Status::findOrFail($id);
         $this->scopeCheck($status->profile, $status);
+        $page = $request->input('page');
+        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
+        	return response()->json([
+        		'data' => []
+        	]);
+        }
         $likes = $this->getLikes($status);
         return response()->json([
             'data' => $likes
@@ -209,9 +216,16 @@ class PublicApiController extends Controller
 
     public function statusShares(Request $request, $username, $id)
     {
+    	abort_if(!$request->user(), 404);
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($id);
         $this->scopeCheck($profile, $status);
+        $page = $request->input('page');
+        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
+        	return response()->json([
+        		'data' => []
+        	]);
+        }
         $shares = $this->getShares($status);
         return response()->json([
             'data' => $shares
