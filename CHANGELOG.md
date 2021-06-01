@@ -101,6 +101,7 @@
 - Updated NotificationCard component, fix default value. ([78ad4e77](https://github.com/pixelfed/pixelfed/commit/78ad4e77))
 - Updated Timeline component, show counts and make sidebar footer lighter. ([0788bffa](https://github.com/pixelfed/pixelfed/commit/0788bffa))
 - Updated AuthServiceProvider, increase default token + refresh token lifetime. ([178ed63d](https://github.com/pixelfed/pixelfed/commit/178ed63d))
+- Updated liked by, fix remote username urls. ([f767d99a](https://github.com/pixelfed/pixelfed/commit/f767d99a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
