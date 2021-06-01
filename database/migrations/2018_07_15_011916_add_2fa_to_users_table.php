@@ -29,10 +29,7 @@ class Add2faToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('2fa_enabled');
-            $table->dropColumn('2fa_secret');
-            $table->dropColumn('2fa_backup_codes');
-            $table->dropColumn('2fa_setup_at');
+            $table->dropColumn(['2fa_enabled','2fa_secret','2fa_backup_codes','2fa_setup_at']);
         });
     }
 }

@@ -32,8 +32,7 @@ class AddLayoutToProfilesTable extends Migration
     public function down()
     {
         Schema::table('profiles', function (Blueprint $table) {
-            $table->dropColumn('profile_layout');
-            $table->dropColumn('post_layout');
+            $table->dropColumn(['profile_layout','post_layout']);
         });
     }
 }

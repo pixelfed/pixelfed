@@ -16,10 +16,7 @@ class AddAccountStatusToProfilesTable extends Migration
         // Drop old columns, fix stories
         if(Schema::hasColumn('profiles', 'hub_url')) {
             Schema::table('profiles', function (Blueprint $table) {
-                $table->dropColumn('verify_token');
-                $table->dropColumn('secret');
-                $table->dropColumn('salmon_url');
-                $table->dropColumn('hub_url');
+                $table->dropColumn(['verify_token','secret','salmon_url','hub_url']);
             });
         }
 

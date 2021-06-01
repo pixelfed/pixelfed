@@ -27,8 +27,7 @@ class AddRemoteToAvatarsTable extends Migration
     public function down()
     {
         Schema::table('avatars', function (Blueprint $table) {
-            $table->dropColumn('remote_url');
-            $table->dropColumn('last_fetched_at');
+            $table->dropColumn(['remote_url','last_fetched_at']);
         });
     }
 }

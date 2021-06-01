@@ -32,13 +32,7 @@ class UpdateMediaTableAddAltText extends Migration
     public function down()
     {
         Schema::table('media', function (Blueprint $table) {
-            $table->dropColumn('original_sha256');
-            $table->dropColumn('optimized_sha256');
-            $table->dropColumn('caption');
-            $table->dropColumn('hls_path');
-            $table->dropColumn('hls_transcoded_at');
-            $table->dropColumn('key');
-            $table->dropColumn('metadata');
+            $table->dropColumn(['original_sha256','optimized_sha256','caption','hls_path','hls_transcoded_at','key','metadata']);
         });
     }
 }
