@@ -199,9 +199,8 @@ class PublicApiController extends Controller
 
     public function statusLikes(Request $request, $username, $id)
     {
-        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
-        $status = Status::whereProfileId($profile->id)->findOrFail($id);
-        $this->scopeCheck($profile, $status);
+        $status = Status::findOrFail($id);
+        $this->scopeCheck($status->profile, $status);
         $likes = $this->getLikes($status);
         return response()->json([
             'data' => $likes
