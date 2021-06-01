@@ -71,13 +71,16 @@ class LikeService {
 
 		$id = $like->profile_id;
 
+		$profile = ProfileService::get($id);
+		$profileUrl = $profile['local'] ? $profile['url'] : '/i/web/profile/_/' . $profile['id'];
 		$res = [
-			'username' => ProfileService::get($id)['username'],
-			'others' => $status->likes_count >= 5,
+			'username' => $profile['username'],
+			'url' => $profileUrl,
+			'others' => $status->likes_count >= 3,
 		];
 
 		if(request()->user() && request()->user()->profile_id == $status->profile_id) {
-			$res['total_count'] = $status->likes_count;
+			$res['total_count'] = ($status->likes_count - 1);
 			$res['total_count_pretty'] = number_format($res['total_count']);
 		}
 
