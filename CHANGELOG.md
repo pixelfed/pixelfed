@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.10.10...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
+
+## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
 ### Added
 - Autocomplete Support (hashtags + mentions) ([de514f7d](https://github.com/pixelfed/pixelfed/commit/de514f7d))
 - Creative Commons Licenses ([552e950](https://github.com/pixelfed/pixelfed/commit/552e950))
@@ -11,6 +13,7 @@
 - New admin dashboard layout ([eb7d5a4e](https://github.com/pixelfed/pixelfed/commit/eb7d5a4e))
 - Fresh about page layout ([92dc7af6](https://github.com/pixelfed/pixelfed/commit/92dc7af6))
 - Instance Rules ([a4efbb75](https://github.com/pixelfed/pixelfed/commit/a4efbb75))
+- New Home Timeline ([56215be7](https://github.com/pixelfed/pixelfed/commit/56215be7))
 
 ### Updated
 - Updated AdminController, fix variable name in updateSpam method. ([6edaf940](https://github.com/pixelfed/pixelfed/commit/6edaf940))
@@ -102,7 +105,13 @@
 - Updated Timeline component, show counts and make sidebar footer lighter. ([0788bffa](https://github.com/pixelfed/pixelfed/commit/0788bffa))
 - Updated AuthServiceProvider, increase default token + refresh token lifetime. ([178ed63d](https://github.com/pixelfed/pixelfed/commit/178ed63d))
 - Updated liked by, fix remote username urls. ([f767d99a](https://github.com/pixelfed/pixelfed/commit/f767d99a))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Updated StatusController, add cache invalidation for timeline cursor. ([f3bf2fd4](https://github.com/pixelfed/pixelfed/commit/f3bf2fd4))
+- Updated PublicApiController, add recent feed support to home timeline. ([1e230e80](https://github.com/pixelfed/pixelfed/commit/1e230e80))
+- Updated Inbox, fix reply/comment bug by moving attachment validation to Note with attachments. ([28df9f7e](https://github.com/pixelfed/pixelfed/commit/28df9f7e))
+- Updated PrettyNumber, add decimal option. ([84520fe1](https://github.com/pixelfed/pixelfed/commit/84520fe1))
+- Updated app config, change default descriptions. ([7d24560d](https://github.com/pixelfed/pixelfed/commit/7d24560d))
+- Updated NotificationCard, fix loading bug. ([69567e19](https://github.com/pixelfed/pixelfed/commit/69567e19))
+- Updated DirectMessageController, disable exception logging for invalid urls. Fixes ([#2752](https://github.com/pixelfed/pixelfed/issues/2752)). ([2d0a253e](https://github.com/pixelfed/pixelfed/commit/2d0a253e))
 
 ## [v0.10.10 (2021-01-28)](https://github.com/pixelfed/pixelfed/compare/v0.10.9...v0.10.10)
 ### Added
