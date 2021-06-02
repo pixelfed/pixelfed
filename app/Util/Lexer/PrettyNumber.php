@@ -4,7 +4,7 @@ namespace App\Util\Lexer;
 
 class PrettyNumber
 {
-    public static function convert($number)
+    public static function convert($number, $showDecimals = true)
     {
         if(!is_integer($number)) {
             return $number;
@@ -14,7 +14,7 @@ class PrettyNumber
         foreach ($abbrevs as $exponent => $abbrev) {
             if(abs($number) >= pow(10, $exponent)) {
                 $display = $number / pow(10, $exponent);
-                $decimals = ($exponent >= 3 && round($display) < 100) ? 1 : 0;
+                $decimals = !$showDecimals ? 0 : ($exponent >= 3 && round($display) < 100) ? 1 : 0;
                 $number = number_format($display, $decimals).$abbrev;
                 break;
             }
