@@ -34,7 +34,8 @@
 								<span class="sr-only">Loading...</span>
 							</div>
 						</div>
-						<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`${index}-${status.id}`">
+
+						<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`feed-${index}-${status.id}`">
 							<div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
 								<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 							</div>
@@ -118,7 +119,7 @@
 								</div>
 							</div>
 
-							<div :class="index == 0 ? 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card mb-sm-4 status-card card-md-rounded-0 shadow-none border'">
+							<div :class="index == 0 ? 'card rounded-0 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border'">
 								<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
 									<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
 								<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
@@ -280,26 +281,299 @@
 							</div>-->
 							</div>
 						</div>
+
 						<div v-if="!loading && feed.length">
-							<div class="card shadow-none">
-								<div class="card-body">
+							<div class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
+								<div class="card-body py-5 my-5">
 									<infinite-loading @infinite="infiniteTimeline" :distance="800">
-										<div slot="no-more" class="font-weight-bold">No more posts to load</div>
-										<div slot="no-results" class="font-weight-bold">No more posts to load</div>
+										<div slot="no-more">
+											<div v-if="recentFeed">
+												<p class="text-center"><i class="far fa-check-circle fa-8x text-lighter"></i></p>
+												<p class="text-center h3 font-weight-light">You're All Caught Up!</p>
+												<p class="text-center text-muted font-weight-light">You've seen all the new posts from the accounts you follow.</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
+												</p>
+											</div>
+											<div v-else>
+												<p class="text-center h3 font-weight-light">You've reached the end of this feed</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/discover">Discover new posts and people</a>
+												</p>
+											</div>
+										</div>
+										<div slot="no-results">
+											<div v-if="recentFeed">
+												<p class="text-center"><i class="far fa-check-circle fa-8x text-lighter"></i></p>
+												<p class="text-center h3 font-weight-light">You're All Caught Up!</p>
+												<p class="text-center text-muted font-weight-light">You've seen all the new posts from the accounts you follow.</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
+												</p>
+											</div>
+											<div v-else>
+												<p class="text-center h3 font-weight-light">You've reached the end of this feed</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/discover">Discover new posts and people</a>
+												</p>
+											</div>
+										</div>
 									</infinite-loading>
 								</div>
 							</div>
 						</div>
 						<div v-if="!loading && scope == 'home' && feed.length == 0">
-							<div class="card shadow-none border">
-								<div class="card-body text-center">
-									<p class="h2 font-weight-lighter p-5">Hello, {{profile.acct}}</p>
-									<p class="text-lighter"><i class="fas fa-camera-retro fa-5x"></i></p>
-									<p class="h3 font-weight-lighter p-5">Start following people to build your timeline.</p>
-									<p><a href="/discover" class="btn btn-primary font-weight-bold py-0">Discover new people and posts</a></p>
+							<div class="card rounded-0 mt-4 status-card card-md-rounded-0 shadow-none border">
+								<div v-if="profile.following_count != '0'" class="card-body py-5 my-5">
+									<p class="text-center"><i class="far fa-check-circle fa-8x text-lighter"></i></p>
+									<p class="text-center h3 font-weight-light">You're All Caught Up!</p>
+									<p class="text-center text-muted font-weight-light">You've seen all the new posts from the accounts you follow.</p>
+									<p class="text-center mb-0">
+										<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
+									</p>
+								</div>
+								<div v-else class="card-body py-5 my-5">
+									<p class="text-center"><i class="far fa-smile fa-8x text-lighter"></i></p>
+									<p class="text-center h3 font-weight-light">Hello {{profile.username}}</p>
+									<p class="text-center text-muted font-weight-light">Accounts you follow will appear in this feed.</p>
+									<p class="text-center mb-0">
+										<a class="btn btn-link font-weight-bold px-4" href="/discover">Discover new posts and people</a>
+									</p>
 								</div>
 							</div>
 						</div>
+
+						<div v-if="!loading && scope == 'home' && recentFeed && discover_feed.length" class="pt-3">
+							<p class="h5 font-weight-bold pt-3 mb-0 d-flex justify-content-between align-items-center">
+								<span>Suggested Posts</span>
+								<a href="/?a=vop" class="small font-weight-bold">Older Posts</a>
+							</p>
+						</div>
+
+						<div
+							 v-if="!loading && scope == 'home' && recentFeed && discover_feed.length"
+							 :data-status-id="status.id"
+							 v-for="(status, index) in discover_feed"
+							 :key="`discover_feed-${index}-${status.id}`">
+
+							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
+									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
+								</div>
+								<div class="card-body row mx-0">
+									<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
+										<div class="card">
+											<div class="card-body text-center pt-3">
+												<p class="mb-0">
+													<a :href="'/'+rec.username">
+														<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+													</a>
+												</p>
+												<div class="py-3">
+													<p class="font-weight-bold text-dark cursor-pointer mb-0">
+														<a :href="'/'+rec.username" class="text-decoration-none text-dark">
+															{{rec.username}}
+														</a>
+													</p>
+													<p class="small text-muted mb-0">{{rec.message}}</p>
+												</div>
+												<p class="mb-0">
+													<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border-top-0 border">
+								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
+									<span></span>
+									<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
+									<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
+								</div>
+								<div class="card-body row mx-0">
+									<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+										<a class="card info-overlay card-md-border-0" :href="tag.status.url">
+											<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
+												<div v-if="tag.status.sensitive" class="square-content">
+													<div class="info-overlay-text-label">
+														<h5 class="text-white m-auto font-weight-bold">
+															<span>
+																<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+															</span>
+														</h5>
+													</div>
+													<blur-hash-canvas
+														width="32"
+														height="32"
+														:hash="tag.status.media_attachments[0].blurhash"
+														/>
+												</div>
+												<div v-else class="square-content">
+													<blur-hash-image
+														width="32"
+														height="32"
+														:hash="tag.status.media_attachments[0].blurhash"
+														:src="tag.status.media_attachments[0].preview_url"
+														/>
+												</div>
+												<div class="info-overlay-text">
+													<h5 class="text-white m-auto font-weight-bold">
+														<span class="pr-4">
+															<span class="far fa-heart fa-lg pr-1"></span> {{formatCount(tag.status.favourites_count)}}
+														</span>
+														<span>
+															<span class="far fa-comment fa-lg pr-1"></span> {{formatCount(tag.status.reply_count)}}
+														</span>
+													</h5>
+												</div>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<div :class="index == 0 ? 'card rounded-0 status-card card-md-rounded-0 shadow-none border mt-md-4' : 'card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border'">
+								<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
+									<!-- <img v-bind:src="status.account.avatar" width="38px" height="38px" class="cursor-pointer" style="border-radius: 38px;" @click="profileUrl(status)" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'"> -->
+								<!-- <div v-if="hasStory" class="has-story has-story-sm cursor-pointer shadow-sm" @click="profileUrl(status)">
+									<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+								</div>
+								<div v-else> -->
+									<div>
+										<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+									</div>
+									<div class="pl-2">
+										<!-- <a class="d-block username font-weight-bold text-dark" v-bind:href="status.account.url" style="line-height:0.5;"> -->
+											<a class="username font-weight-bold text-dark text-decoration-none text-break" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
+												Loading...
+											</a>
+											<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
+												<i class="fas fa-certificate text-danger fa-stack-1x"></i>
+												<i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:7px;"></i>
+											</span>
+									<!-- <span v-if="scope != 'home' && status.account.id != profile.id && status.account.relationship">
+										<span class="px-1">•</span>
+										<span :class="'font-weight-bold cursor-pointer ' + [status.account.relationship.following == true ? 'text-muted' : 'text-primary']" @click="followAction(status)">{{status.account.relationship.following == true ? 'Following' : 'Follow'}}</span>
+									</span> -->
+									<!-- <span v-if="status.account.id != profile.id">
+										<span class="px-1">•</span>
+										<span class="font-weight-bold cursor-pointer text-primary">Follow</span>
+									</span> -->
+									<div class="d-flex align-items-center">
+										<a v-if="status.place" class="small text-decoration-none text-muted" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" title="Location" data-toggle="tooltip"><i class="fas fa-map-marked-alt"></i> {{status.place.name}}, {{status.place.country}}</a>
+									</div>
+								</div>
+								<div class="text-right" style="flex-grow:1;">
+									<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
+										<span class="fas fa-ellipsis-h text-lighter"></span>
+										<span class="sr-only">Post Menu</span>
+									</button>
+								</div>
+							</div>
+
+							<div class="postPresenterContainer cursor-pointer" style="background: #000;" @click="redirect(statusUrl(status))">
+
+								<div v-if="config.ab.top && status.pf_type === 'text'" class="w-100">
+									<div class="w-100 card-img-top border-bottom rounded-0" style="background-image: url(/storage/textimg/bg_1.jpg);background-size: cover;width: 100%;height: 540px;">
+											<div class="w-100 h-100 d-flex justify-content-center align-items-center">
+												<p class="text-center text-break h3 px-5 font-weight-bold" v-html="status.content"></p>
+											</div>
+										</div>
+								</div>
+
+								<div v-else-if="status.pf_type === 'photo'" class="w-100">
+									<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
+								</div>
+
+								<div v-else-if="status.pf_type === 'video'" class="w-100">
+									<video-presenter :status="status"></video-presenter>
+								</div>
+
+								<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
+									<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+								</div>
+
+								<div v-else-if="status.pf_type === 'video:album'" class="w-100">
+									<video-album-presenter :status="status"></video-album-presenter>
+								</div>
+
+								<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
+									<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+								</div>
+
+								<div v-else class="w-100">
+									<p class="text-center p-0 font-weight-bold text-white">Error: Problem rendering preview.</p>
+								</div>
+
+							</div>
+
+							<div v-if="config.features.label.covid.enabled && status.label && status.label.covid == true" class="card-body border-top border-bottom py-2 cursor-pointer pr-2" @click="labelRedirect()">
+								<p class="font-weight-bold d-flex justify-content-between align-items-center mb-0">
+									<span>
+										<i class="fas fa-info-circle mr-2"></i>
+										For information about COVID-19, {{config.features.label.covid.org}}
+									</span>
+									<span>
+										<i class="fas fa-chevron-right text-lighter"></i>
+									</span>
+								</p>
+							</div>
+
+							<div class="card-body">
+								<div v-if="status.pf_type != 'text'" class="caption">
+									<p v-if="!status.sensitive" class="mb-2 read-more" style="overflow: hidden;">
+										<span class="username font-weight-bold">
+											<bdi><a class="text-dark" :href="profileUrl(status)">{{status.account.username}}</a></bdi>
+										</span>
+										<span class="status-content" v-html="status.content"></span>
+									</p>
+								</div>
+								<!-- <div class="comments" v-if="status.id == replyId && !status.comments_disabled">
+									<p class="mb-0 d-flex justify-content-between align-items-top read-more mt-2" style="overflow-y: hidden;" v-for="(reply, index) in replies">
+										<span>
+											<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)">{{reply.account.username}}</a>
+											<span v-html="reply.content" style="word-break: break-all;" class="comment-body"></span>
+										</span>
+										<span class="mb-0" style="min-width:38px">
+											<span v-on:click="likeStatus(reply, $event);">
+												<i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger cursor-pointer':'far fa-heart fa-sm text-lighter cursor-pointer']"></i>
+											</span>
+											<!-- <post-menu :status="reply" :profile="profile" size="sm" :modal="'true'" :feed="feed" class="d-inline-flex pl-2"></post-menu> - ->
+											<span class="text-lighter pl-2 cursor-pointer" @click="ctxMenu(reply)">
+												<span class="fas fa-ellipsis-v text-lighter"></span>
+											</span>
+										</span>
+									</p>
+								</div> -->
+								<div class="timestamp mt-2">
+									<p class="small mb-0">
+										<a :href="statusUrl(status)" class="text-muted text-uppercase">
+											<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+										</a>
+										<span class="px-1">&middot;</span>
+										<span class="text-muted">Based on popular and trending content</span>
+									</p>
+								</div>
+							</div>
+
+							<!--<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white px-2 py-0">
+								<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+									<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+								</ul>
+							</div>-->
+
+							<!--<div v-if="status.id == replyId && !status.comments_disabled" class="card-footer bg-white sticky-md-bottom p-0">
+								<form class="border-0 rounded-0 align-middle" method="post" action="/i/comment" :data-id="status.id" data-truncate="false">
+									<textarea class="form-control border-0 rounded-0" name="comment" placeholder="Add a comment…" autocomplete="off" autocorrect="off" style="height:56px;line-height: 18px;max-height:80px;resize: none; padding-right:4.2rem;" v-model="replyText"></textarea>
+									<input type="button" value="Post" class="d-inline-block btn btn-link font-weight-bold reply-btn text-decoration-none" v-on:click.prevent="commentSubmit(status, $event)" :disabled="replyText.length == 0" />
+								</form>
+							</div>-->
+							</div>
+						</div>
+
 					</div>
 				</div>
 				<div class="col-md-4 col-lg-4 my-4 order-1 order-md-2 d-none d-md-block">
@@ -916,7 +1190,10 @@
 				},
 				discover_min_id: 0,
 				discover_max_id: 0,
-				discover_feed: []
+				discover_feed: [],
+				recentFeed: this.scope === 'home' ? true : false,
+				recentFeedMin: null,
+				recentFeedMax: null
 			}
 		},
 
@@ -946,6 +1223,19 @@
 		},
 
 		beforeMount() {
+			let u = new URLSearchParams(window.location.search);
+			if(u.has('a')) {
+				switch(u.get('a')) {
+					case 'recent_feed':
+						if(this.scope === 'home') {
+							this.recentFeed = true;
+						}
+					break;
+					case 'vop':
+						this.recentFeed = false;
+					break;
+				}
+			}
 			this.fetchProfile();
 			this.fetchTimelineApi();
 		},
@@ -979,8 +1269,12 @@
 			this.$nextTick(function () {
 				$('[data-toggle="tooltip"]').tooltip();
 				let u = new URLSearchParams(window.location.search);
-				if(u.has('a') && u.get('a') == 'co') {
-					$('#composeModal').modal('show');
+				if(u.has('a')) {
+					switch(u.get('a')) {
+						case 'co':
+							$('#composeModal').modal('show');
+						break;
+					}
 				}
 			});
 		},
@@ -1029,7 +1323,8 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 3
+						limit: 3,
+						recent_feed: this.recentFeed
 					}
 				}).then(res => {
 					let data = res.data;
@@ -1040,9 +1335,7 @@
 					this.max_id = Math.min(...ids).toString();
 					this.loading = false;
 					$('.timeline .pagination').removeClass('d-none');
-					// if(this.feed.length == 4) {
-					// 	this.fetchTimelineApi();
-					// }
+
 					if(this.hashtagPosts.length == 0) {
 						this.fetchHashtagPosts();
 					}
@@ -1053,6 +1346,16 @@
 							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
+
+					axios.get('/api/pixelfed/v2/discover/posts/trending', {
+						params: {
+							range: 'daily'
+						}
+					}).then(res => {
+						let data = res.data.filter(post => this.ids.indexOf(post.id) === -1);
+						this.discover_feed = data;
+					});
+
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -1071,7 +1374,9 @@
 					this.loading = false;
 					$state.complete();
 				}
+
 				let apiUrl = false;
+
 				switch(this.scope) {
 					case 'home':
 					apiUrl = '/api/pixelfed/v1/timelines/home';
@@ -1085,16 +1390,23 @@
 					apiUrl = '/api/pixelfed/v1/timelines/network';
 					break;
 				}
+
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 6
+						limit: 6,
+						recent_feed: this.recentFeed
 					},
 				}).then(res => {
 					if (res.data.length && this.loading == false) {
 						let data = res.data;
 						let self = this;
 						let vids = [];
+						if(self.recentFeed && self.ids.indexOf(data[0].id) != -1) {
+							this.loading = false;
+							$state.complete();
+							return;
+						}
 						data.forEach((d, index) => {
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
@@ -1936,7 +2248,8 @@
 					axios.get(apiUrl, {
 						params: {
 							max_id: 0,
-							limit: 20
+							limit: 20,
+							recent_feed: this.recentFeed
 						}
 					}).then(res => {
 						let self = this;
