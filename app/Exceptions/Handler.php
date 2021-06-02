@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Zttp\ConnectionException;
 
 class Handler extends ExceptionHandler
 {
@@ -14,7 +15,8 @@ class Handler extends ExceptionHandler
 	 * @var array
 	 */
 	protected $dontReport = [
-		OAuthServerException::class
+		OAuthServerException::class,
+		ConnectionException::class
 	];
 
 	/**
