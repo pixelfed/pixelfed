@@ -405,6 +405,8 @@ class StatusController extends Controller
 			return response()->json(0);
 		}
 
+		Cache::forget('profile:home-timeline-cursor:' . $request->user()->id);
+
 		foreach($views as $view) {
 			if(!isset($view['sid']) || !isset($view['pid'])) {
 				continue;
