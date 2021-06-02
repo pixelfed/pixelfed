@@ -154,13 +154,13 @@ class Inbox
             $this->handleDirectMessage();
             return;
         }
-        if(!$this->verifyNoteAttachment()) {
-            return;
-        }
         if($activity['type'] == 'Note' && !empty($activity['inReplyTo'])) {
             $this->handleNoteReply();
 
         } elseif($activity['type'] == 'Note' && !empty($activity['attachment'])) {
+	        if(!$this->verifyNoteAttachment()) {
+	            return;
+	        }
             $this->handleNoteCreate();
         }
     }

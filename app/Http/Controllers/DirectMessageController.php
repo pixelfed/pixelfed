@@ -596,6 +596,10 @@ class DirectMessageController extends Controller
 		$q = $request->input('q');
 		$r = $request->input('remote');
 
+		if(!Str::of($q)->contains('.')) {
+			return [];
+		}
+
 		if($r && Helpers::validateUrl($q)) {
 			Helpers::profileFetch($q);
 		}

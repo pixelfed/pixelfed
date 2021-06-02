@@ -30,11 +30,7 @@ class UpdateMediaAddAltText extends Migration
     public function down()
     {
         Schema::table('media', function (Blueprint $table) {
-            $table->dropColumn('license');
-            $table->dropColumn('is_nsfw');
-            $table->dropColumn('version');
-            $table->dropColumn('remote_media');
-            $table->dropColumn('remote_url');
+            $table->dropColumn(['license','is_nsfw','version','remote_media','remote_url']);
         });
     }
 }

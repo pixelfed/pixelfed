@@ -27,8 +27,7 @@ class AddRepliesCountToStatusesTable extends Migration
     public function down()
     {
         Schema::table('statuses', function (Blueprint $table) {
-            $table->dropColumn('reply_count');
-            $table->dropColumn('comments_disabled');
+            $table->dropColumn(['reply_count','comments_disabled']);
         });
     }
 }

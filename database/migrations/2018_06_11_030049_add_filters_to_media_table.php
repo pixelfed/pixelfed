@@ -27,8 +27,7 @@ class AddFiltersToMediaTable extends Migration
     public function down()
     {
         Schema::table('media', function (Blueprint $table) {
-            $table->dropColumn('filter_name');
-            $table->dropColumn('filter_class');
+            $table->dropColumn(['filter_name','filter_class']);
         });
     }
 }

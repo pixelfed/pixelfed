@@ -27,8 +27,7 @@ class UpdateFollowerTableAddRemoteFlags extends Migration
     public function down()
     {
         Schema::table('followers', function (Blueprint $table) {
-            $table->dropColumn('local_profile');
-            $table->dropColumn('local_following');
+            $table->dropColumn(['local_profile','local_following']);
         });
     }
 }

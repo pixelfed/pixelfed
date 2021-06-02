@@ -14,7 +14,7 @@ use App\StatusView;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
 use App\User;
-use Auth, Cache;
+use Auth, DB, Cache;
 use Illuminate\Http\Request;
 use League\Fractal;
 use App\Util\Media\Filter;
@@ -75,12 +75,6 @@ class StatusController extends Controller
 		}
 
 		$template = $status->in_reply_to_id ? 'status.reply' : 'status.show';
-		// $template = $status->type === 'video' &&
-		// 	$request->has('video_beta') &&
-		// 	$request->video_beta == 1 &&
-		// 	$request->user() ?
-		// 	'status.show_video' : 'status.show';
-
 		return view($template, compact('user', 'status'));
 	}
 
@@ -403,27 +397,27 @@ class StatusController extends Controller
 	public function storeView(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-		$this->validate($request, [
-			'_v' => 'required|array'
-		]);
 
 		$views = $request->input('_v');
 		$uid = $request->user()->profile_id;
 
-		if(empty($views)) {
-			return;
+		if(empty($views) || !is_array($views)) {
+			return response()->json(0);
 		}
+
+		Cache::forget('profile:home-timeline-cursor:' . $request->user()->id);
 
 		foreach($views as $view) {
 			if(!isset($view['sid']) || !isset($view['pid'])) {
 				continue;
 			}
-
-			StatusView::firstOrCreate([
-					'status_id' => $view['sid'],
-					'status_profile_id' => $view['pid'],
-					'profile_id' => $uid
-			]);
+			DB::transaction(function () use($view, $uid) {
+				StatusView::firstOrCreate([
+						'status_id' => $view['sid'],
+						'status_profile_id' => $view['pid'],
+						'profile_id' => $uid
+				]);
+			});
 		}
 
 		return response()->json(1);

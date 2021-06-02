@@ -2,12 +2,12 @@
 <div>
 	<transition name="fade">
 		<div class="card notification-card shadow-none border">
-			<div class="card-body loader text-center" style="height: 200px;">
+			<div v-if="loading" class="card-body loader text-center" style="height: 240px;">
 				<div class="spinner-border" role="status">
 					<span class="sr-only">Loading...</span>
 				</div>
 			</div>
-			<div v-if="notifications.length > 0" class="card-body px-0 py-0 contents" style="max-height: 240px; overflow-y: scroll;">
+			<div v-if="!loading && notifications.length > 0" class="card-body px-0 py-0 contents" style="height: 240px; overflow-y: scroll;">
 				<div v-if="profile.locked" class="media align-items-center mt-n2 px-3 py-2 border-bottom border-lighter bg-light cursor-pointer" @click="redirect('/account/follow-requests')">
 					<div class="media-body font-weight-light pt-2 small d-flex align-items-center justify-content-between">
 						<p class="mb-0 text-lighter"><i class="fas fa-cog text-light"></i></p>
@@ -86,7 +86,7 @@
 					<p class="mb-0 small font-weight-bold">0 Notifications!</p>
 				</div>
 			</div>
-			<div v-else class="card-body px-0 py-0" style="max-height: 240px;">
+			<div v-if="!loading && !notifications.length" class="card-body px-0 py-0" style="height: 240px;">
 				<div class="text-lighter text-center py-3">
 					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
 					<p class="mb-0 small font-weight-bold">No notifications yet</p>
@@ -103,6 +103,7 @@
 	export default {
 		data() {
 			return {
+				loading: true,
 				notifications: {},
 				notificationCursor: 2,
 				notificationMaxId: 0,
@@ -133,8 +134,7 @@
 					let ids = res.data.map(n => n.id);
 					this.notificationMaxId = Math.min(...ids);
 					this.notifications = data;
-					$('.notification-card .loader').addClass('d-none');
-					$('.notification-card .contents').removeClass('d-none');
+					this.loading = false;
 					//this.notificationPoll();
 				});
 			},
