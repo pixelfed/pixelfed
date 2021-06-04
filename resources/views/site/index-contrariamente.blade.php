@@ -145,7 +145,91 @@
             </div>
         </section>
         </section>
+
+
+
+        <section class="container-03">
+        <section class="container" id="container-total03">
+      
+        <div class="row pt-md-5 mt-5" id="div-total">
+                <div class="col-12 col-md-6 d-none d-md-block">
+                <div class="section-03-l01">
+                <h1>
+             CONECTE-SE<br>
+             <b>COMPARTILHE</b><br>
+             CRESÇA <img src="/img/pixelfed-icon-color.svg" loading="lazy" width="30px" height="50px">
+             </h1>
+             <p>
+             barba <br>
+             cabelo <br>
+             estética <br>
+             maquiagem <br>
+             sobrancelha <br>
+             </p>
+                </div>
+
+             
+                </div>
+                <div class="col-12 col-md-6 offset-md-1" id="section-depoimentos">
+                  <div class="depoimento-top">
+                  <div class="titulo-name">
+                  <p>Bárbara Koch</p>
+                  <span>Software Engineering Coordinator</span>
+                  </div>
+                  <div class="text-depoimento">
+                      <p>
+                      "Depois que eu entrei na Contrariamente a minha vida mudou mil vezes p/ melhor.
+                  Aqui tive a oportunidade de contratar pessoas super talentosas e compartilhar
+                  todo o meu trabalho com a rede. A usabilidade é ótima e com um design incrivel,
+                  não trocaria por nenhuma rede a nossa roxinha rs."
+                      </p>
+                  
+                  </div>
+                  </div>
+                  <img src="/img/barbara.jpg" loading="lazy"  id="img-depoimento">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="">
+                <div class="section-03-l02">
+                <img src="/img/alexandre.jpg" loading="lazy"  id="img-depoimento-02">
+                <div class="text-depoimento-bottom">
+                <p>O contrariamente me ajudou demais a encontrar novos trabalhos através das conexãoes,
+                acho que nos dias de hoje com tudo muito virtual essa rede apostou muito e ganhou!
+                Melhor opção e desing bem atual. Recomendo a todos.</p>
+                 <div class="titulo-name-02">
+                  <p>Alexadre Merello</p>
+                  <span>Business Intelligence Analyst</span>
+                  </div>
+                </div>
+               </div>
+               <div class="col-12 col-md-6 offset-md-1" id="section-depoimentos">
+                  <div class="nova-forma-div">
+                  <img src="/img/forma-a.png" loading="lazy"  id="forma-a">
+                  <p class="a-suarede">
+                    a sua rede social<br> da área da beleza<br> e estética</p>
+                  <p class="umanovaforma">uma nova forma de<br> compartilhar e<br> mostrar o seu trabalho</p>
+            </div>
+
+            <div class="nova-oportunidade">
+            <h1>UMA NOVA<br>OPORTUNIDADE<br>COMEÇA AQUI</h1>
+            
+              <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold text-uppercase" id="btn-cadastro">
+                Cadastre-se
+                </button>
+             
+            </div>
+            <div class="img-logo-photo">
+            <img src="/img/foto-bglogo.png" loading="lazy"  id="foto-bg">
+            </div>
+        </section>
+        </section>
+
     </main>
+
+
+
 
 </body>
 
