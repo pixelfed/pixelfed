@@ -1,6 +1,8 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
+### Updated
+- Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
 ### Added
