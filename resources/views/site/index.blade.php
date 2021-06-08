@@ -127,7 +127,7 @@
 						</div>
 						<div class="card shadow-none border card-body">
 							<p class="text-center mb-0 font-weight-bold small">
-								@if(config('pixelfed.open_registration'))
+								@if(config_cache('pixelfed.open_registration'))
 								<a href="/register">Register</a>
 								<span class="px-1">·</span>
 								@endif

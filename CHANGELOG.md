@@ -3,6 +3,9 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
+- Updated landing page, use config_cache. ([54920294](https://github.com/pixelfed/pixelfed/commit/54920294))
+- Updated Timeline, implement suggested post opt out. ([66750d34](https://github.com/pixelfed/pixelfed/commit/66750d34))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
 ### Added
