@@ -136,6 +136,7 @@ class ComposeController extends Controller
 		switch ($media->mime) {
 			case 'image/jpeg':
 			case 'image/png':
+			case 'image/webp':
 			ImageOptimize::dispatch($media);
 			break;
 

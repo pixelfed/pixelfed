@@ -15,7 +15,8 @@ class Image
 	public $orientation;
 	public $acceptedMimes = [
 		'image/png',
-		'image/jpeg'
+		'image/jpeg',
+		'image/webp'
 	];
 
 	public function __construct()
