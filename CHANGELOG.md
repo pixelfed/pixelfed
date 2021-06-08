@@ -1,6 +1,9 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
+### Added
+- WebP Support ([069a0e4a](https://github.com/pixelfed/pixelfed/commit/069a0e4a))
+
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
 - Updated landing page, use config_cache. ([54920294](https://github.com/pixelfed/pixelfed/commit/54920294))
