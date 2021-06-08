@@ -238,8 +238,12 @@
 					<label class="custom-control-label" for="mediaType3"><span class="border border-dark px-1 rounded font-weight-bold">GIF</span></label>
 				</div>
 				<div class="custom-control custom-checkbox mt-2">
-					<input type="checkbox" name="type_mp4" class="custom-control-input" id="mediaType4" {{$mp4 ? 'checked' : ''}}>
-					<label class="custom-control-label" for="mediaType4"><span class="border border-dark px-1 rounded font-weight-bold">MP4</span></label>
+					<input type="checkbox" name="type_webp" class="custom-control-input" id="mediaType4" {{$webp ? 'checked' : ''}}>
+					<label class="custom-control-label" for="mediaType4"><span class="border border-dark px-1 rounded font-weight-bold">WebP</span></label>
+				</div>
+				<div class="custom-control custom-checkbox mt-2">
+					<input type="checkbox" name="type_mp4" class="custom-control-input" id="mediaType5" {{$mp4 ? 'checked' : ''}}>
+					<label class="custom-control-label" for="mediaType5"><span class="border border-dark px-1 rounded font-weight-bold">MP4</span></label>
 				</div>
 				<p class="help-text small text-muted mt-3 mb-0">Allowed media types.</p>
 			</div>

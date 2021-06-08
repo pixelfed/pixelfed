@@ -26,6 +26,7 @@ trait AdminSettingsController
 		$png = in_array('image/png', $types);
 		$gif = in_array('image/gif', $types);
 		$mp4 = in_array('video/mp4', $types);
+		$webp = in_array('image/webp', $types);
 
 		// $system = [
 		// 	'permissions' => is_writable(base_path('storage')) && is_writable(base_path('bootstrap')),
@@ -39,6 +40,7 @@ trait AdminSettingsController
 			'png',
 			'gif',
 			'mp4',
+			'webp',
 			'rules',
 			'cloud_storage',
 			'cloud_disk',
@@ -60,6 +62,7 @@ trait AdminSettingsController
 			'type_png' => 'nullable',
 			'type_gif' => 'nullable',
 			'type_mp4' => 'nullable',
+			'type_webp' => 'nullable',
 		]);
 
 		if($request->filled('rule_delete')) {
@@ -83,6 +86,7 @@ trait AdminSettingsController
 			'type_png' => 'image/png',
 			'type_gif' => 'image/gif',
 			'type_mp4' => 'video/mp4',
+			'type_webp' => 'image/webp',
 		];
 
 		foreach ($mimes as $key => $value) {
