@@ -294,6 +294,9 @@
 												<p class="text-center mb-0">
 													<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
 												</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/" @click.prevent="alwaysViewOlderPosts()">Always show older posts on this device</a>
+												</p>
 											</div>
 											<div v-else>
 												<p class="text-center h3 font-weight-light">You've reached the end of this feed</p>
@@ -309,6 +312,9 @@
 												<p class="text-center text-muted font-weight-light">You've seen all the new posts from the accounts you follow.</p>
 												<p class="text-center mb-0">
 													<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
+												</p>
+												<p class="text-center mb-0">
+													<a class="btn btn-link font-weight-bold px-4" href="/" @click.prevent="alwaysViewOlderPosts()">Always show older posts on this device</a>
 												</p>
 											</div>
 											<div v-else>
@@ -330,6 +336,9 @@
 									<p class="text-center text-muted font-weight-light">You've seen all the new posts from the accounts you follow.</p>
 									<p class="text-center mb-0">
 										<a class="btn btn-link font-weight-bold px-4" href="/?a=vop">View Older Posts</a>
+									</p>
+									<p class="text-center mb-0">
+										<a class="btn btn-link font-weight-bold px-4" href="/" @click.prevent="alwaysViewOlderPosts()">Always show older posts on this device</a>
 									</p>
 								</div>
 								<div v-else class="card-body py-5 my-5">
@@ -1223,6 +1232,7 @@
 		},
 
 		beforeMount() {
+			let avop = window.localStorage.getItem('pf.feed:avop') === 'always';
 			let u = new URLSearchParams(window.location.search);
 			if(u.has('a')) {
 				switch(u.get('a')) {
@@ -1236,6 +1246,7 @@
 					break;
 				}
 			}
+			this.recentFeed = avop ? false : this.recentFeed;
 			this.fetchProfile();
 			this.fetchTimelineApi();
 		},
@@ -2479,6 +2490,12 @@
 					this.pagination = response.data.meta.pagination;
 					$('.load-more-link').removeClass('d-none');
 				});
+			},
+
+			alwaysViewOlderPosts() {
+				// Set Feed:Always View Older Posts
+				window.localStorage.setItem('pf.feed:avop', 'always');
+				window.location.href = '/';
 			}
 		},
 
