@@ -15,8 +15,8 @@ return [
 	'timelines' => 'خط زمانی',
 	'embed'	=> 'توکار',
 
-	'communityGuidelines' => 'دستورالعمل‌های انجمن',
-	'whatIsTheFediverse' => 'نامتمرکز یعنی چی؟',
+	'communityGuidelines' => 'دستورالعمل‌های اجتماع',
+	'whatIsTheFediverse' => 'فدیورس چیست؟',
 	'controllingVisibility' => 'کنترل نمایش',
 	'blockingAccounts' => 'حساب‌های مسدودشده',
 	'safetyTips' => 'نکات امنیتی',
