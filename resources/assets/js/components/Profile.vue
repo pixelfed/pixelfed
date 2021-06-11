@@ -103,10 +103,6 @@
 							<div class="profile-details">
 								<div class="d-none d-md-flex username-bar pb-3 align-items-center">
 									<span class="font-weight-ultralight h3 mb-0">{{profile.username}}</span>
-									<span class="pl-1 pb-2 fa-stack" v-if="profile.is_admin" title="Admin Account" data-toggle="tooltip">
-										<i class="fas fa-certificate fa-lg text-danger fa-stack-1x"></i>
-										<i class="fas fa-crown text-white fa-sm fa-stack-1x" style="font-size:9px;"></i>
-									</span>
 									<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
 										<span class="pl-4" v-if="relationship.following == true">
 											<a :href="'/account/direct/t/'+profile.id"  class="btn btn-outline-secondary font-weight-bold btn-sm py-1 text-dark mr-2 px-3 btn-sec-alt" style="border:1px solid #dbdbdb;" data-toggle="tooltip" title="Message">Message</a>
@@ -144,12 +140,21 @@
 											</a>
 										</div>
 									</div>
-									<p class="mb-0 d-flex align-items-center">
+									<p class="d-flex align-items-center mb-1">
 										<span class="font-weight-bold mr-1">{{profile.display_name}}</span>
 										<span v-if="profile.pronouns" class="text-muted small">{{profile.pronouns.join('/')}}</span>
 									</p>
-									<div v-if="profile.note" class="mb-0" v-html="profile.note"></div>
-									<p v-if="profile.website" class=""><a :href="profile.website" class="profile-website" rel="me external nofollow noopener" target="_blank" @click.prevent="remoteRedirect(profile.website)">{{truncate(profile.website,24)}}</a></p>
+									<p v-if="profile.note" class="mb-0" v-html="profile.note"></p>
+									<p v-if="profile.website"><a :href="profile.website" class="profile-website small" rel="me external nofollow noopener" target="_blank" @click.prevent="remoteRedirect(profile.website)">{{formatWebsite(profile.website)}}</a></p>
+									<p class="d-flex small text-muted align-items-center">
+										<span v-if="profile.is_admin" class="btn btn-outline-danger btn-sm py-0 mr-3" title="Admin Account" data-toggle="tooltip">
+											Admin
+										</span>
+										<span v-if="relationship && relationship.followed_by" class="btn btn-outline-muted btn-sm py-0 mr-3">Follows You</span>
+										<span>
+											Joined {{joinedAtFormat(profile.created_at)}}
+										</span>
+									</p>
 								</div>
 							</div>
 						</div>
@@ -1316,6 +1321,24 @@
 				return _.truncate(str, {
 					length: len
 				});
+			},
+
+			formatWebsite(site) {
+				if(site.slice(0, 8) === 'https://') {
+					site = site.substr(8);
+				} else if(site.slice(0, 7) === 'http://') {
+					site = site.substr(7);
+				} else {
+					this.profile.website = null;
+					return;
+				}
+
+				return this.truncate(site, 60);
+			},
+
+			joinedAtFormat(created) {
+				let d = new Date(created);
+				return d.toDateString();
 			}
 		}
 	}
