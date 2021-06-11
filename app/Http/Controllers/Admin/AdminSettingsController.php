@@ -135,7 +135,8 @@ trait AdminSettingsController
 			'enforce_account_limit' => 'pixelfed.enforce_account_limit',
 			'show_custom_css' => 'uikit.show_custom.css',
 			'show_custom_js' => 'uikit.show_custom.js',
-			'cloud_storage' => 'pixelfed.cloud_storage'
+			'cloud_storage' => 'pixelfed.cloud_storage',
+			'account_autofollow' => 'account.autofollow'
 		];
 
 		foreach ($bools as $key => $value) {
@@ -169,6 +170,21 @@ trait AdminSettingsController
 				$json[] = $val;
 				ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 			}
+		}
+
+		if($request->filled('account_autofollow_usernames')) {
+			$usernames = explode(',', $request->input('account_autofollow_usernames'));
+			$names = [];
+
+			foreach($usernames as $n) {
+				$p = Profile::whereUsername($n)->first();
+				if(!$p) {
+					continue;
+				}
+				array_push($names, $p->username);
+			}
+
+			ConfigCacheService::put('account.autofollow_usernames', implode(',', $names));
 		}
 
 		Cache::forget(Config::CACHE_KEY);

@@ -45,7 +45,10 @@ class ConfigCacheService
 				'uikit.show_custom.js',
 				'about.title',
 
-				'pixelfed.cloud_storage'
+				'pixelfed.cloud_storage',
+
+				'account.autofollow',
+				'account.autofollow_usernames'
 			];
 
 			if(!config('instance.enable_cc')) {
