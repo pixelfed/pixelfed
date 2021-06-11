@@ -184,19 +184,33 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="form-group">
-				<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
-					<div class="custom-control custom-checkbox my-2">
-						<input type="checkbox" name="enforce_account_limit" class="custom-control-input" id="userEnforceLimit" {{config_cache('pixelfed.enforce_account_limit') ? 'checked' : ''}}>
-						<label class="custom-control-label font-weight-bold" for="userEnforceLimit">Enable account storage limit</label>
-						<p class="help-text small text-muted">Set a storage limit per user account.</p>
-					</div>
-					<label class="font-weight-bold text-muted">Account Limit</label>
-					<input class="form-control" name="account_limit" placeholder="Pixelfed" value="{{config_cache('pixelfed.max_account_size')}}">
-					<p class="help-text small text-muted mt-3 mb-0">Account limit size in KB.</p>
-					<p class="help-text small text-muted mb-0">{{config_cache('pixelfed.max_account_size')}} KB = {{floor(config_cache('pixelfed.max_account_size') / 1024)}} MB</p>
+			<div class="ml-n4 mr-n2 p-3 border-top">
+				<div class="custom-control custom-checkbox my-2">
+					<input type="checkbox" name="enforce_account_limit" class="custom-control-input" id="userEnforceLimit" {{config_cache('pixelfed.enforce_account_limit') ? 'checked' : ''}}>
+					<label class="custom-control-label font-weight-bold" for="userEnforceLimit">Enable account storage limit</label>
+					<p class="help-text small text-muted">Set a storage limit per user account.</p>
 				</div>
+				<label class="font-weight-bold text-muted">Account Limit</label>
+				<input class="form-control" name="account_limit" placeholder="Pixelfed" value="{{config_cache('pixelfed.max_account_size')}}">
+				<p class="help-text small text-muted mt-3 mb-0">Account limit size in KB.</p>
+				<p class="help-text small text-muted mb-0">{{config_cache('pixelfed.max_account_size')}} KB = {{floor(config_cache('pixelfed.max_account_size') / 1024)}} MB</p>
 			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="ml-n4 mr-n2 p-3 border-top">
+				<div class="custom-control custom-checkbox my-2">
+					<input type="checkbox" name="account_autofollow" class="custom-control-input" id="userAccountAutofollow" {{config_cache('account.autofollow') ? 'checked' : ''}}>
+					<label class="custom-control-label font-weight-bold" for="userAccountAutofollow">Auto Follow Accounts</label>
+					<p class="help-text small text-muted">Enable auto follow accounts, new accounts will follow accounts you set.</p>
+				</div>
+				<label class="font-weight-bold text-muted">Accounts</label>
+				<textarea class="form-control" name="account_autofollow_usernames" placeholder="Add account usernames to follow separated by commas">{{config_cache('account.autofollow_usernames')}}</textarea>
+				<p class="help-text small text-muted mt-3 mb-0">Add account usernames to follow separated by commas.</p>
+			</div>
+		</div>
 	</div>
 
 	<div class="tab-pane" id="media" role="tabpanel" aria-labelledby="media-tab">
