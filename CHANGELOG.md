@@ -3,6 +3,7 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
 ### Added
 - WebP Support ([069a0e4a](https://github.com/pixelfed/pixelfed/commit/069a0e4a))
+- Auto Following support for admins ([68aa2540](https://github.com/pixelfed/pixelfed/commit/68aa2540))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
