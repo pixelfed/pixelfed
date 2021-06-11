@@ -11,6 +11,7 @@
 - Updated Timeline, implement suggested post opt out. ([66750d34](https://github.com/pixelfed/pixelfed/commit/66750d34))
 - Updated Notification component, add at (@) symbol for remote profiles and local urls for remote posts and profile. ([aafd6a21](https://github.com/pixelfed/pixelfed/commit/aafd6a21))
 - Updated Activity component, add at (@) symbol for remote profiles and local urls for remote posts and profile. ([a2211815](https://github.com/pixelfed/pixelfed/commit/a2211815))
+- Updated Profile, add linkified bio, joined date, follows you label and improved website handling. ([8ee10436](https://github.com/pixelfed/pixelfed/commit/8ee10436))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
