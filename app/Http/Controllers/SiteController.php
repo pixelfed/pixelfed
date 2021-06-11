@@ -139,4 +139,19 @@ class SiteController extends Controller
 
 		return redirect($url);
 	}
+
+	public function legacyWebfingerRedirect(Request $request, $username, $domain)
+	{
+		$un = '@'.$username.'@'.$domain;
+		$profile = Profile::whereUsername($un)
+			->firstOrFail();
+
+		if($profile->domain == null) {
+			$url = "/$profile->username";
+		} else {
+			$url = $request->user() ? "/i/web/profile/_/{$profile->id}" : $profile->url();
+		}
+
+		return redirect($url);
+	}
 }
