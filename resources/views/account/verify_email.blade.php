@@ -13,10 +13,12 @@
             <p class="font-weight-bold mb-0">{{ session('error') }}</p>
         </div>
     @endif
-    <div class="card">
+    <div class="card shadow-none border">
       <div class="card-header font-weight-bold bg-white">Confirm Email Address</div>
       <div class="card-body">
         <p class="lead">You need to confirm your email address (<span class="font-weight-bold">{{Auth::user()->email}}</span>) before you can proceed.</p>
+    	<p class="lead">You can change your email address <a href="/settings/email">here</a>.</p>
+    	<p class="small">If you don't recieve an email within 30 minutes, you can <a href="/site/contact">contact the administrator</a>.</p>
         <hr>
         <form method="post">
           @csrf
