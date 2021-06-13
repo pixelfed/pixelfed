@@ -125,7 +125,16 @@
 					</div>
 
 					<div v-else class="col-12 mt-4">
-						<p class="text-center mb-0 px-0"><button class="btn btn-outline-primary btn-block font-weight-bold">Load More</button></p>
+						<p v-if="showLoadMore" class="text-center mb-0 px-0">
+							<button @click="loadMorePosts()" class="btn btn-outline-primary btn-block font-weight-bold">
+								<span v-if="!loadingMore">Load More</span>
+								<span v-else>
+									<div class="spinner-border spinner-border-sm" role="status">
+										<span class="sr-only">Loading...</span>
+									</div>
+								</span>
+							</button>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -193,6 +202,7 @@
 		data() {
 			return {
 				id: [],
+				ids: [],
 				user: false,
 				profile: {},
 				feed: [],
@@ -206,7 +216,9 @@
 				ctxMenuStatus: false,
 				ctxMenuRelationship: false,
 				fetchingRemotePosts: false,
-				showMutualFollowers: false
+				showMutualFollowers: false,
+				loadingMore: false,
+				showLoadMore: true
 			}
 		},
 
@@ -274,6 +286,52 @@
 					swal('Oops, something went wrong',
 						'Please release the page.',
 						'error');
+				});
+			},
+
+			loadMorePosts() {
+				this.loadingMore = true;
+				let apiUrl = '/api/pixelfed/v1/accounts/' + this.profileId + '/statuses';
+				axios.get(apiUrl, {
+					params: {
+						only_media: true,
+						max_id: this.max_id,
+					}
+				})
+				.then(res => {
+					let data = res.data
+						.filter(status => this.ids.indexOf(status.id) === -1)
+						.filter(status => status.media_attachments.length > 0)
+						.map(status => {
+							return {
+								id: status.id,
+								caption: {
+									text: status.content_text,
+									html: status.content
+								},
+								count: {
+									likes: status.favourites_count,
+									shares: status.reblogs_count,
+									comments: status.reply_count
+								},
+								thumb: status.media_attachments[0].url,
+								media: status.media_attachments,
+								timestamp: status.created_at,
+								type: status.pf_type,
+								url: status.url,
+								sensitive: status.sensitive,
+								cw: status.sensitive,
+								spoiler_text: status.spoiler_text
+							}
+					});
+					let ids = data.map(status => status.id);
+					this.ids.push(...ids);
+					this.max_id = Math.min(...ids);
+					this.feed.push(...data);
+					this.loadingMore = false;
+				}).catch(err => {
+					this.loadingMore = false;
+					this.showLoadMore = false;
 				});
 			},
 
