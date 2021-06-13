@@ -165,9 +165,19 @@
 										<p class="mb-0 text-muted font-weight-bold"><span>{{story.created_ago}} ago</span></p>
 									</div>
 									<div class="flex-grow-1 text-right">
+										<button v-if="story.viewers.length" @click="toggleShowViewers(index)" class="btn btn-link btn-sm mr-1">
+											<i class="fas fa-eye fa-lg text-muted"></i>
+										</button>
 										<button @click="deleteStory(story, index)" class="btn btn-link btn-sm">
 											<i class="fas fa-trash-alt fa-lg text-muted"></i>
 										</button>
+									</div>
+								</div>
+								<div v-if="story.showViewers && story.viewers.length" class="m-2 text-left">
+									<p class="font-weight-bold mb-2">Viewed By</p>
+									<div v-for="viewer in story.viewers" class="d-flex">
+										<img src="/storage/avatars/default.png" width="24" height="24" class="rounded-circle mr-2">
+										<p class="mb-0 font-weight-bold">viewer.username</p>
 									</div>
 								</div>
 							</div>
@@ -256,7 +266,11 @@
 			this.mediaWatcher();
 			axios.get('/api/stories/v0/fetch/' + this.profileId)
 			.then(res => {
-				this.stories = res.data;
+				this.stories = res.data.map(s => {
+					s.showViewers = false;
+					s.viewers = [];
+					return s;
+				});
 				this.loaded = true;
 			});
 		},
@@ -397,6 +411,10 @@
 
 			viewMyStory() {
 				window.location.href = '/i/my/story';
+			},
+
+			toggleShowViewers(index) {
+				this.stories[index].showViewers = this.stories[index].showViewers ? false : true;
 			}
 		}
 	}
