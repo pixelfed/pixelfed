@@ -13,6 +13,7 @@
 - Updated Activity component, add at (@) symbol for remote profiles and local urls for remote posts and profile. ([a2211815](https://github.com/pixelfed/pixelfed/commit/a2211815))
 - Updated Profile, add linkified bio, joined date, follows you label and improved website handling. ([8ee10436](https://github.com/pixelfed/pixelfed/commit/8ee10436))
 - Updated routes, add legacy webfinger profile redirect. ([93c7af74](https://github.com/pixelfed/pixelfed/commit/93c7af74))
+- Updated StoryController, fix expiration time bug. ([39e57f95](https://github.com/pixelfed/pixelfed/commit/39e57f95))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
