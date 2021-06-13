@@ -158,7 +158,7 @@ class StoryController extends Controller
 
 		$story->active = true;
 		$story->duration = $request->input('duration', 10);
-		$story->expires_at = now()->addHours(24);
+		$story->expires_at = now()->addMinutes(1450);
 		$story->save();
 
 		return [
