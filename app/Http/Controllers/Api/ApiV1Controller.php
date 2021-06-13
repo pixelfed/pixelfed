@@ -19,6 +19,7 @@ use App\{
 	Notification,
 	Profile,
 	Status,
+    Report,
 	StatusHashtag,
 	User,
 	UserFilter,
@@ -646,6 +647,61 @@ class ApiV1Controller extends Controller
 		return response()->json($res);
 	}
 
+    /**
+     * POST /api/v1/reports
+     *
+     *
+     * @return ???
+     */
+    public function accountReport(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $this->validate($request,[
+          'account_id'   => 'string',
+          'status_ids'   => 'array|min:1|max:1', //TODO check max - Report() doesn't seem to handle multiple statuses at once
+          'status_ids.*' => 'integer|min:1|max:' . PHP_INT_MAX,
+          'comment'      => 'nullable|string|min:0|max:1000' //TODO check max - 1000 is mastodon default
+          //'forward'      => 'nullable|boolean'
+        ]);
+
+        $account_id = $request->input('account_id');
+
+        $user = $request->user();
+        $pid = $user->profile_id ?? $user->profile->id;
+
+        if($account_id == $pid) {
+            abort(400, 'You cannot report yourself');
+        }
+
+        $profile = Profile::findOrFail($account_id);
+
+        $object = Status::findOrFail($request->input('status_ids')[0]);
+        $object_type = 'App\Status';
+        $exists = Report::whereUserId($pid)
+            ->whereObjectId($object->id)
+            ->whereObjectType($object_type)
+            ->count();
+
+        if ($exists !== 0) {
+            return response()->json(200);
+        }
+
+        $report = new Report();
+        $report->profile_id = $profile->id;
+        $report->user_id = $pid;
+        $report->object_id = $object->id;
+        $report->object_type = $object_type;
+        $report->reported_profile_id = $account_id;
+        //The API - as documented by Mastodon - doesn't support report types.
+        //So, spam is chosen here. Maybe it would be good to add a field to the API
+        $report->type = 'spam';
+        $report->message = e($request->input('comment'));
+        $report->save();
+
+        return response()->json(200);
+    }
+    
 	/**
 	 * POST /api/v1/accounts/{id}/block
 	 *
