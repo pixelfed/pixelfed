@@ -16,6 +16,7 @@
 - Updated StoryController, fix expiration time bug. ([39e57f95](https://github.com/pixelfed/pixelfed/commit/39e57f95))
 - Updated Profile component, fix remote urls. ([6e56dbed](https://github.com/pixelfed/pixelfed/commit/6e56dbed))
 - Updated verify email screen, add contact admin link. ([f37952d6](https://github.com/pixelfed/pixelfed/commit/f37952d6))
+- Updated RemoteProfile component, implement pagination. ([02b04a4b](https://github.com/pixelfed/pixelfed/commit/02b04a4b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
