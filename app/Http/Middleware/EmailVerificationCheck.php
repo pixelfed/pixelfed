@@ -23,6 +23,7 @@ class EmailVerificationCheck
 				'i/auth/*',
 				'i/verify-email',
 				'log*',
+				'site*',
 				'i/confirm-email/*',
 				'settings/home',
 				'settings/email'

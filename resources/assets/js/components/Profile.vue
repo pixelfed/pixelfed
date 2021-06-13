@@ -423,12 +423,12 @@
 			</div>
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in following" :key="'following_'+index">
 				<div class="media">
-					<a :href="user.url">
+					<a :href="profileUrlRedirect(user)">
 						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy">
 					</a>
 					<div class="media-body text-truncate">
 						<p class="mb-0" style="font-size: 14px">
-							<a :href="user.url" class="font-weight-bold text-dark">
+							<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
 								{{user.username}}
 							</a>
 						</p>
@@ -470,12 +470,12 @@
 			</div>
 			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
 				<div class="media mb-0">
-					<a :href="user.url">
+					<a :href="profileUrlRedirect(user)">
 						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy">
 					</a>
 					<div class="media-body mb-0">
 						<p class="mb-0" style="font-size: 14px">
-							<a :href="user.url" class="font-weight-bold text-dark">
+							<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
 								{{user.username}}
 							</a>
 						</p>
@@ -1179,7 +1179,6 @@
 				});
 			},
 
-
 			followersLoadMore() {
 				if($('body').hasClass('loggedIn') == false) {
 					return;
@@ -1277,6 +1276,14 @@
 				}
 
 				return '/i/web/profile/_/' + status.account.id;
+			},
+
+			profileUrlRedirect(profile) {
+				if(profile.local == true) {
+					return profile.url;
+				}
+
+				return '/i/web/profile/_/' + profile.id;
 			},
 
 			showEmbedProfileModal() {
