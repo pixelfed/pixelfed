@@ -11,7 +11,7 @@
 A free and ethical photo sharing platform, powered by ActivityPub federation.
 
 <p align="center">
-<img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/Screen%20Shot%202019-09-08%20at%2010.40.54%20PM.png">
+<img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-screenshot.jpg">
 </p>
 
 ## Official Documentation
@@ -27,7 +27,6 @@ Pixelfed is open-sourced software licensed under the AGPL license.
 The ways you can communicate on the project are below. Before interacting, please
 read through the [Code Of Conduct](CODE_OF_CONDUCT.md).
 
-* IRC: [#pixelfed](irc://chat.freenode.net/pixelfed) on irc.freenode.net
 * Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
 * E-mail: [hello@pixelfed.org](mailto:hello@pixelfed.org)
 
