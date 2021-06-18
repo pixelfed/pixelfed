@@ -817,6 +817,9 @@ class ApiV1Controller extends Controller
 		]);
 
 		if($like->wasRecentlyCreated == true) {
+			$like->status_profile_id = $status->profile_id;
+			$like->is_comment = !empty($status->in_reply_to_id);
+			$like->save();
 			$status->likes_count = $status->likes()->count();
 			$status->save();
 			LikePipeline::dispatch($like);
