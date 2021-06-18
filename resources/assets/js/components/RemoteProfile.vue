@@ -227,6 +227,12 @@
 			this.fetchProfile();
 		},
 
+		updated() {
+			document.querySelectorAll('.hashtag').forEach(function(i, e) {
+			    i.href = App.util.format.rewriteLinks(i);
+			});
+		},
+
 		methods: {
 
 			fetchProfile() {

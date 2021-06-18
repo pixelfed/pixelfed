@@ -19,6 +19,7 @@
 - Updated RemoteProfile component, implement pagination. ([02b04a4b](https://github.com/pixelfed/pixelfed/commit/02b04a4b))
 - Updated AP Helpers, generate notification for remote replies. ([8edd8294](https://github.com/pixelfed/pixelfed/commit/8edd8294))
 - Updated like api, store status_profile_id and is_comment. ([c8c6b983](https://github.com/pixelfed/pixelfed/commit/c8c6b983))
+- Updated Remote Post + Profile hashtag to redirect to local urls. ([1fa08644](https://github.com/pixelfed/pixelfed/commit/1fa08644))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)

@@ -1,7 +1,7 @@
 {
   "name": "Pixelfed",
   "short_name": "Pixelfed",
-  "start_url": ".",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#f5f8fa",
   "description": "Federated Image Sharing",
