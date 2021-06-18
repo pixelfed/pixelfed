@@ -34,6 +34,12 @@ window.App.boot = function() {
 	new Vue({ el: '#content'});
 }
 
+window.addEventListener("load", () => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js");
+  }
+});
+
 window.App.util = {
 	compose: {
 		post: (function() {
