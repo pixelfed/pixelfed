@@ -144,6 +144,12 @@ export default {
 					if(n.type == 'share' && !status) {
 						return false;
 					}
+					if(n.type == 'comment' && !status) {
+						return false;
+					}
+					if(n.type == 'mention' && !status) {
+						return false;
+					}
 					return true;
 				});
 				let ids = res.data.map(n => n.id);
@@ -168,6 +174,12 @@ export default {
 				if(res.data.length) {
 					let data = res.data.filter(n => {
 						if(n.type == 'share' && !status) {
+							return false;
+						}
+						if(n.type == 'comment' && !status) {
+							return false;
+						}
+						if(n.type == 'mention' && !status) {
 							return false;
 						}
 						if(_.find(this.notifications, {id: n.id})) {
