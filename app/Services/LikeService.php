@@ -62,8 +62,16 @@ class LikeService {
 		if(!$status->likes_count) {
 			return $empty;
 		}
+		$user = request()->user();
 
-		$like = Like::whereStatusId($status->id)->first();
+		if($user) {
+			$like = Like::whereStatusId($status->id)
+			->where('profile_id', '!=', $user->profile_id)
+			->first();
+		} else {
+			$like = Like::whereStatusId($status->id)
+			->first();
+		}
 
 		if(!$like) {
 			return $empty;
