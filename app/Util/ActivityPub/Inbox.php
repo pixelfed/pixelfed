@@ -500,13 +500,13 @@ class Inbox
 							->orWhere('url', $id)
 							->orWhere('object_url', $id)
 							->first();
+						if(!$status) {
+							return;
+						}
 						Notification::whereActorId($profile->id)
 							->whereItemType('App\Status')
 							->whereItemId($status->id)
 							->forceDelete();
-						if(!$status) {
-							return;
-						}
 						$status->directMessage()->delete();
 						$status->media()->delete();
 						$status->likes()->delete();

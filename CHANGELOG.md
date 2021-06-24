@@ -23,6 +23,7 @@
 - Updated Inbox, delete notifications on tombstone. ([ef63124d](https://github.com/pixelfed/pixelfed/commit/ef63124d))
 - Updated NotificationCard, fix missing status bug. ([a3a86d46](https://github.com/pixelfed/pixelfed/commit/a3a86d46))
 - Updated Activity component, fix comment bug. ([9a2db8eb](https://github.com/pixelfed/pixelfed/commit/9a2db8eb))
+- Updated Inbox, fix tombstone bug. ([929ff5eb](https://github.com/pixelfed/pixelfed/commit/929ff5eb))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
