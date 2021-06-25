@@ -435,8 +435,13 @@ class Inbox
 		if(!$actor || !$target) {
 			return;
 		}
+
 		$actor = Helpers::profileFetch($actor);
 		$target = Helpers::profileFetch($target);
+
+		if(!$actor || !$target) {
+			return;
+		}
 
 		$request = FollowRequest::whereFollowerId($actor->id)
 			->whereFollowingId($target->id)
