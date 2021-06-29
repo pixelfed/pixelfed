@@ -288,7 +288,7 @@
 				<div class="container" style="max-width: 700px;">
 							<div class="postPresenterContainer d-none d-flex justify-content-center align-items-center bg-dark">
 								<div v-if="status.pf_type === 'photo'" class="w-100">
-									<photo-presenter :status="status" v-on:lightbox="lightbox"></photo-presenter>
+									<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -321,7 +321,10 @@
 								<div class="text-center mr-5">
 									<div v-bind:class="[reactions.liked ? 'fas fa-heart text-danger m-0 cursor-pointer' : 'far fa-heart m-0 like-btn cursor-pointer']" title="Like" v-on:click="likeStatus" style="font-size:1.575rem">
 									</div>
-									<div class="like-count font-weight-bold mt-2 rounded border" style="cursor:pointer;" v-on:click="likesModal">{{status.favourites_count || 0}}</div>
+									<div class="like-count font-weight-bold mt-2 rounded border" style="cursor:pointer;" v-on:click="likesModal">
+
+										{{ownerOrAdmin() ? (status.liked_by.total_count + 1) : 0}}
+									</div>
 								</div>
 								<div class="text-center">
 									<div v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'h3 far fa-share-square m-0 text-primary cursor-pointer' : 'h3 far fa-share-square m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus">
@@ -894,6 +897,7 @@ export default {
 				this.layout = 'metro';
 				return;
 			}
+
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
 				this.layout = 'metro';
 			}

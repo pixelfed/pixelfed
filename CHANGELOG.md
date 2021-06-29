@@ -35,6 +35,7 @@
 - Updated Timeline, disable new post update checker and hide reaction bar on network timeline. ([1e3d3a69](https://github.com/pixelfed/pixelfed/commit/1e3d3a69))
 - Updated PublicApiController, improve network timeline perf. ([e5f683fd](https://github.com/pixelfed/pixelfed/commit/e5f683fd))
 - Updated Network Timeline, use existing Timeline component. ([0deaafc0](https://github.com/pixelfed/pixelfed/commit/0deaafc0))
+- Updated PostComponent, show like count to owner using MomentUI. ([e9c46bab](https://github.com/pixelfed/pixelfed/commit/e9c46bab))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
