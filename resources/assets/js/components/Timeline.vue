@@ -105,6 +105,7 @@
 
 							<status-card
 								:status="status"
+								:reaction-bar="reactionBar"
 								v-on:status-delete="deleteStatus"
 								v-on:comment-focus="commentFocus"
 							/>
@@ -707,7 +708,8 @@
 				discover_feed: [],
 				recentFeed: this.scope === 'home' ? true : false,
 				recentFeedMin: null,
-				recentFeedMax: null
+				recentFeedMax: null,
+				reactionBar: this.scope === 'network' ? false : true
 			}
 		},
 
@@ -831,7 +833,8 @@
 						this.fetchHashtagPosts();
 					}
 					// this.fetchStories();
-					this.rtw();
+					// this.rtw();
+
 					setTimeout(function() {
 						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 							i.href = App.util.format.rewriteLinks(i);
@@ -902,10 +905,10 @@
 							if(self.ids.indexOf(d.id) == -1) {
 								self.feed.push(d);
 								self.ids.push(d.id);
-								vids.push({
-									sid: d.id,
-									pid: d.account.id
-								});
+								// vids.push({
+								// 	sid: d.id,
+								// 	pid: d.account.id
+								// });
 							}
 						});
 						this.min_id = Math.max(...this.ids).toString();
@@ -913,9 +916,9 @@
 						this.page += 1;
 						$state.loaded();
 						this.loading = false;
-						axios.post('/api/status/view', {
-							'_v': vids,
-						});
+						// axios.post('/api/status/view', {
+						// 	'_v': vids,
+						// });
 					} else {
 						$state.complete();
 					}

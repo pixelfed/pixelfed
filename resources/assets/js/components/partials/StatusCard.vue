@@ -74,7 +74,7 @@
 			</div>
 
 			<div class="card-body">
-				<div class="reactions my-1 pb-2">
+				<div v-if="reactionBar" class="reactions my-1 pb-2">
 					<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
 					<h3 v-else class="far fa-heart pr-3 m-0 like-btn text-dark cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
 					<h3 v-if="!status.comments_disabled" class="far fa-comment text-dark pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
@@ -140,6 +140,11 @@
 			recommended: {
 				type: Boolean,
 				default: false
+			},
+
+			reactionBar: {
+				type: Boolean,
+				default: true
 			}
 		},
 
