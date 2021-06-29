@@ -181,7 +181,7 @@
 						</div>
 
 						<div v-if="!loading && scope == 'home' && recentFeed && discover_feed.length" class="pt-3">
-							<p class="h5 font-weight-bold pt-3 mb-0 d-flex justify-content-between align-items-center">
+							<p class="h5 font-weight-bold py-3 d-flex justify-content-between align-items-center">
 								<span>Suggested Posts</span>
 								<a href="/?a=vop" class="small font-weight-bold">Older Posts</a>
 							</p>
@@ -272,7 +272,7 @@
 								</div>
 							</div>
 
-							<status :status="status" :recommended="true" />
+							<status-card :status="status" :recommended="true" />
 						</div>
 					</div>
 				</div>

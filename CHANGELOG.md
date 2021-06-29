@@ -30,6 +30,7 @@
 - Updated SharePipeline, add Undo->Announce support. ([c8e40e0f](https://github.com/pixelfed/pixelfed/commit/c8e40e0f))
 - Updated NetworkTimeline, fix remote comment urls. ([308acc91](https://github.com/pixelfed/pixelfed/commit/308acc91))
 - Updated Timeline component, abstracted reusable partials. ([858f3f9e](https://github.com/pixelfed/pixelfed/commit/858f3f9e))
+- Updated Timeline, fix suggested posts. ([3ba5c88c](https://github.com/pixelfed/pixelfed/commit/3ba5c88c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
