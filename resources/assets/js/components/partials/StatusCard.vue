@@ -107,14 +107,14 @@
 					</p>
 				</div>
 				<div class="timestamp mt-2">
-					<p class="small text-uppercase mb-0">
-						<a :href="statusUrl(status)" class="text-muted">
+					<p class="small mb-0">
+						<a :href="statusUrl(status)" class="text-muted text-uppercase">
 							<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
 						</a>
-						<div v-if="recommended">
+						<span v-if="recommended">
 							<span class="px-1">&middot;</span>
 							<span class="text-muted">Based on popular and trending content</span>
-						</div>
+						</span>
 					</p>
 				</div>
 			</div>
