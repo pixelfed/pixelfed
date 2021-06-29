@@ -28,6 +28,7 @@ use App\Transformer\Api\{
 };
 use App\Util\Media\Filter;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Jobs\ModPipeline\HandleSpammerPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use Illuminate\Validation\Rule;
@@ -175,7 +176,8 @@ class InternalApiController extends Controller
 				Rule::in([
 					'addcw',
 					'remcw',
-					'unlist'
+					'unlist',
+					'spammer'
 				])
 			],
 			'item_id' => 'required|integer|min:1',
@@ -309,6 +311,23 @@ class InternalApiController extends Controller
 					$u->has_interstitial = true;
 					$u->save();
 				}
+			break;
+
+			case 'spammer':
+				$status = Status::findOrFail($item_id);
+				HandleSpammerPipeline::dispatch($status->profile);
+				ModLogService::boot()
+					->user(Auth::user())
+					->objectUid($status->profile->user_id)
+					->objectId($status->id)
+					->objectType('App\User::class')
+					->action('admin.status.moderate')
+					->metadata([
+						'action' => 'spammer',
+						'message' => 'Success!'
+					])
+					->accessLevel('admin')
+					->save();
 			break;
 		}
 
