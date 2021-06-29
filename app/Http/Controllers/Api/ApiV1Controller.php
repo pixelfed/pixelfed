@@ -2029,6 +2029,7 @@ class ApiV1Controller extends Controller
 			->map(function ($i) {
 				return StatusService::get($i);
 			})
+			->filter()
 			->all();
 
 		return response()->json($res, 200, [], JSON_PRETTY_PRINT);
