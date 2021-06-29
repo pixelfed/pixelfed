@@ -27,18 +27,10 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/collections.js', 'public/js')
 .js('resources/assets/js/profile-directory.js', 'public/js')
 .js('resources/assets/js/story-compose.js', 'public/js')
-// .js('resources/assets/js/embed.js', 'public')
  .js('resources/assets/js/direct.js', 'public/js')
 .js('resources/assets/js/admin.js', 'public/js')
-// .js('resources/assets/js/micro.js', 'public/js')
 .js('resources/assets/js/rempro.js', 'public/js')
 .js('resources/assets/js/rempos.js', 'public/js')
-//.js('resources/assets/js/timeline_next.js', 'public/js')
-// .js('resources/assets/js/memoryprofile.js', 'public/js')
-// .js('resources/assets/js/my2020.js', 'public/js')
-.js('resources/assets/js/network-timeline.js', 'public/js')
-// .js('resources/assets/js/drive.js', 'public/js')
-// .js('resources/assets/js/register.js', 'public/js')
 
 .extract([
 	'lodash',
