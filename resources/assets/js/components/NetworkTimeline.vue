@@ -1100,7 +1100,7 @@
 				$('.mobile-footer-spacer').attr('style', 'display:none !important');
 				$('.mobile-footer').attr('style', 'display:none !important');
 				this.currentLayout = 'comments';
-				window.history.pushState({}, '', status.url);
+				window.history.pushState({}, '', this.statusUrl(status));
 				return;
 			},
 
