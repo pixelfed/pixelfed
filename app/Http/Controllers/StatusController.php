@@ -6,6 +6,7 @@ use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\SharePipeline\SharePipeline;
+use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\AccountInterstitial;
 use App\Media;
 use App\Profile;
@@ -237,21 +238,20 @@ class StatusController extends Controller
 
 		$user = Auth::user();
 		$profile = $user->profile;
-		$status = Status::withCount('shares')
-			->whereIn('scope', ['public', 'unlisted'])
+		$status = Status::whereIn('scope', ['public', 'unlisted'])
 			->findOrFail($request->input('item'));
 
-		$count = $status->shares()->count();
+		$count = $status->reblogs_count;
 
 		$exists = Status::whereProfileId(Auth::user()->profile->id)
 				  ->whereReblogOfId($status->id)
-				  ->count();
-		if ($exists !== 0) {
+				  ->exists();
+		if ($exists == true) {
 			$shares = Status::whereProfileId(Auth::user()->profile->id)
 				  ->whereReblogOfId($status->id)
 				  ->get();
 			foreach ($shares as $share) {
-				$share->delete();
+				UndoSharePipeline::dispatch($share);
 				$count--;
 			}
 		} else {
@@ -262,11 +262,6 @@ class StatusController extends Controller
 			$share->save();
 			$count++;
 			SharePipeline::dispatch($share);
-		}
-
-		if($count >= 0) {
-			$status->reblogs_count = $count;
-			$status->save();
 		}
 
 		Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);

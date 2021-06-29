@@ -24,6 +24,12 @@
 - Updated NotificationCard, fix missing status bug. ([a3a86d46](https://github.com/pixelfed/pixelfed/commit/a3a86d46))
 - Updated Activity component, fix comment bug. ([9a2db8eb](https://github.com/pixelfed/pixelfed/commit/9a2db8eb))
 - Updated Inbox, fix tombstone bug. ([929ff5eb](https://github.com/pixelfed/pixelfed/commit/929ff5eb))
+- Updated LikeService, skip self likes. ([3741c76d](https://github.com/pixelfed/pixelfed/commit/3741c76d))
+- Updated StatusController, improve share api perf (11s to 72ms). ([d48ebb82](https://github.com/pixelfed/pixelfed/commit/d48ebb82))
+- Updated ApiController, fix nulls in  hashtag endpoint. ([f1208de0](https://github.com/pixelfed/pixelfed/commit/f1208de0))
+- Updated SharePipeline, add Undo->Announce support. ([c8e40e0f](https://github.com/pixelfed/pixelfed/commit/c8e40e0f))
+- Updated NetworkTimeline, fix remote comment urls. ([308acc91](https://github.com/pixelfed/pixelfed/commit/308acc91))
+- Updated Timeline component, abstracted reusable partials. ([858f3f9e](https://github.com/pixelfed/pixelfed/commit/858f3f9e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
