@@ -37,6 +37,10 @@
 				<div class="list-group-item rounded cursor-pointer" @click="moderatePost(status, 'unlist')">Unlist from Timelines</div>
 				<div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost(status, 'remcw')">Remove Content Warning</div>
 				<div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost(status, 'addcw')">Add Content Warning</div>
+				<div class="list-group-item rounded cursor-pointer" @click="moderatePost(status, 'spammer')">
+					Mark as Spammer<br />
+					<span class="small">Unlist + CW existing and future posts</span>
+				</div>
 				<!-- <div class="list-group-item rounded cursor-pointer" @click="ctxModOtherMenuShow()">Other</div> -->
 				<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
 			</div>
@@ -465,99 +469,129 @@
 
 			moderatePost(status, action, $event) {
 				let username = status.account.username;
+				let pid = status.id;
 				let msg = '';
 				let self = this;
 				switch(action) {
 					case 'addcw':
-					msg = 'Are you sure you want to add a content warning to this post?';
-					swal({
-						title: 'Confirm',
-						text: msg,
-						icon: 'warning',
-						buttons: true,
-						dangerMode: true
-					}).then(res =>  {
-						if(res) {
-							axios.post('/api/v2/moderator/action', {
-								action: action,
-								item_id: status.id,
-								item_type: 'status'
-							}).then(res => {
-								swal('Success', 'Successfully added content warning', 'success');
-								status.sensitive = true;
-								self.ctxModMenuClose();
-							}).catch(err => {
-								swal(
-									'Error',
-									'Something went wrong, please try again later.',
-									'error'
-									);
-								self.ctxModMenuClose();
-							});
-						}
-					});
+						msg = 'Are you sure you want to add a content warning to this post?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully added content warning', 'success');
+									status.sensitive = true;
+									self.ctxModMenuClose();
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+										);
+									self.ctxModMenuClose();
+								});
+							}
+						});
 					break;
 
 					case 'remcw':
-					msg = 'Are you sure you want to remove the content warning on this post?';
-					swal({
-						title: 'Confirm',
-						text: msg,
-						icon: 'warning',
-						buttons: true,
-						dangerMode: true
-					}).then(res =>  {
-						if(res) {
-							axios.post('/api/v2/moderator/action', {
-								action: action,
-								item_id: status.id,
-								item_type: 'status'
-							}).then(res => {
-								swal('Success', 'Successfully added content warning', 'success');
-								status.sensitive = false;
-								self.ctxModMenuClose();
-							}).catch(err => {
-								swal(
-									'Error',
-									'Something went wrong, please try again later.',
-									'error'
-									);
-								self.ctxModMenuClose();
-							});
-						}
-					});
+						msg = 'Are you sure you want to remove the content warning on this post?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully added content warning', 'success');
+									status.sensitive = false;
+									self.ctxModMenuClose();
+								}).catch(err => {
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+										);
+									self.ctxModMenuClose();
+								});
+							}
+						});
 					break;
 
 					case 'unlist':
-					msg = 'Are you sure you want to unlist this post?';
-					swal({
-						title: 'Confirm',
-						text: msg,
-						icon: 'warning',
-						buttons: true,
-						dangerMode: true
-					}).then(res =>  {
-						if(res) {
-							axios.post('/api/v2/moderator/action', {
-								action: action,
-								item_id: status.id,
-								item_type: 'status'
-							}).then(res => {
-								this.feed = this.feed.filter(f => {
-									return f.id != status.id;
+						msg = 'Are you sure you want to unlist this post?';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									this.feed = this.feed.filter(f => {
+										return f.id != status.id;
+									});
+									swal('Success', 'Successfully unlisted post', 'success');
+									self.ctxModMenuClose();
+								}).catch(err => {
+									self.ctxModMenuClose();
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+										);
 								});
-								swal('Success', 'Successfully unlisted post', 'success');
-								self.ctxModMenuClose();
-							}).catch(err => {
-								self.ctxModMenuClose();
-								swal(
-									'Error',
-									'Something went wrong, please try again later.',
-									'error'
-									);
-							});
-						}
-					});
+							}
+						});
+					break;
+
+					case 'spammer':
+						msg = 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.';
+						swal({
+							title: 'Confirm',
+							text: msg,
+							icon: 'warning',
+							buttons: true,
+							dangerMode: true
+						}).then(res =>  {
+							if(res) {
+								axios.post('/api/v2/moderator/action', {
+									action: action,
+									item_id: status.id,
+									item_type: 'status'
+								}).then(res => {
+									swal('Success', 'Successfully marked account as spammer', 'success');
+									self.ctxModMenuClose();
+								}).catch(err => {
+									self.ctxModMenuClose();
+									swal(
+										'Error',
+										'Something went wrong, please try again later.',
+										'error'
+										);
+								});
+							}
+						});
 					break;
 				}
 			},
