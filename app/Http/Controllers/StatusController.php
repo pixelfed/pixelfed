@@ -237,16 +237,15 @@ class StatusController extends Controller
 
 		$user = Auth::user();
 		$profile = $user->profile;
-		$status = Status::withCount('shares')
-			->whereIn('scope', ['public', 'unlisted'])
+		$status = Status::whereIn('scope', ['public', 'unlisted'])
 			->findOrFail($request->input('item'));
 
-		$count = $status->shares()->count();
+		$count = $status->reblogs_count;
 
 		$exists = Status::whereProfileId(Auth::user()->profile->id)
 				  ->whereReblogOfId($status->id)
-				  ->count();
-		if ($exists !== 0) {
+				  ->exists();
+		if ($exists == true) {
 			$shares = Status::whereProfileId(Auth::user()->profile->id)
 				  ->whereReblogOfId($status->id)
 				  ->get();
