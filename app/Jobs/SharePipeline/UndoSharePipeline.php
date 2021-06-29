@@ -12,108 +12,73 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
-use App\Transformer\ActivityPub\Verb\Announce;
+use App\Transformer\ActivityPub\Verb\UndoAnnounce;
 use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\StatusService;
 
-class SharePipeline implements ShouldQueue
+class UndoSharePipeline implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
 	protected $status;
-
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
 	public $deleteWhenMissingModels = true;
 
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
 	public function __construct(Status $status)
 	{
 		$this->status = $status;
 	}
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
 	public function handle()
 	{
 		$status = $this->status;
-		$parent = $this->status->parent();
 		$actor = $status->profile;
-		$target = $parent->profile;
+		$parent = $status->parent();
+		$target = $status->parent()->profile;
 
 		if ($status->uri !== null) {
-			// Ignore notifications to remote statuses
 			return;
 		}
 
-		$exists = Notification::whereProfileId($target->id)
-				  ->whereActorId($status->profile_id)
-				  ->whereAction('share')
-				  ->whereItemId($status->reblog_of_id)
-				  ->whereItemType('App\Status')
-				  ->exists();
-
-		if($target->id === $status->profile_id) {
-			$this->remoteAnnounceDeliver();
-			return true;
-		}
-
-		if($exists === true) {
-			return true;
+		if($target->domain === null) {
+			Notification::whereProfileId($target->id)
+			->whereActorId($status->profile_id)
+			->whereAction('share')
+			->whereItemId($status->reblog_of_id)
+			->whereItemType('App\Status')
+			->delete();
 		}
 
 		$this->remoteAnnounceDeliver();
 
-		$parent->reblogs_count = $parent->shares()->count();
-		$parent->save();
-
-		try {
-			$notification = new Notification;
-			$notification->profile_id = $target->id;
-			$notification->actor_id = $actor->id;
-			$notification->action = 'share';
-			$notification->message = $status->shareToText();
-			$notification->rendered = $status->shareToHtml();
-			$notification->item_id = $status->reblog_of_id ?? $status->id;
-			$notification->item_type = "App\Status";
-			$notification->save();
-
-			$redis = Redis::connection();
-			$key = config('cache.prefix').':user.'.$status->profile_id.'.notifications';
-			$redis->lpush($key, $notification->id);
-		} catch (Exception $e) {
-			Log::error($e);
+		if($parent->reblogs_count > 0) {
+			$parent->reblogs_count = $parent->reblogs_count - 1;
+			$parent->save();
+			StatusService::del($parent->id);
 		}
+
+		$status->delete();
+
+		return 1;
 	}
 
 	public function remoteAnnounceDeliver()
 	{
 		if(config_cache('federation.activitypub.enabled') == false) {
-			return true;
+			return 1;
 		}
+
 		$status = $this->status;
 		$profile = $status->profile;
 
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($status, new Announce());
+		$resource = new Fractal\Resource\Item($status, new UndoAnnounce());
 		$activity = $fractal->createData($resource)->toArray();
 
 		$audience = $status->profile->getAudienceInbox();
 
 		if(empty($audience) || $status->scope != 'public') {
-			// Return on profiles with no remote followers
-			return;
+			return 1;
 		}
 
 		$payload = json_encode($activity);

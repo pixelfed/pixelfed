@@ -6,6 +6,7 @@ use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\SharePipeline\SharePipeline;
+use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\AccountInterstitial;
 use App\Media;
 use App\Profile;
@@ -250,7 +251,7 @@ class StatusController extends Controller
 				  ->whereReblogOfId($status->id)
 				  ->get();
 			foreach ($shares as $share) {
-				$share->delete();
+				UndoSharePipeline::dispatch($share);
 				$count--;
 			}
 		} else {
@@ -261,11 +262,6 @@ class StatusController extends Controller
 			$share->save();
 			$count++;
 			SharePipeline::dispatch($share);
-		}
-
-		if($count >= 0) {
-			$status->reblogs_count = $count;
-			$status->save();
 		}
 
 		Cache::forget('status:'.$status->id.':sharedby:userid:'.$user->id);

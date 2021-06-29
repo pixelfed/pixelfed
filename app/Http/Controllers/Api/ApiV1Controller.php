@@ -1938,8 +1938,6 @@ class ApiV1Controller extends Controller
 		]);
 
 		if($share->wasRecentlyCreated == true) {
-			$status->reblogs_count = $status->shares()->count();
-			$status->save();
 			SharePipeline::dispatch($share);
 		}
 
@@ -1971,13 +1969,17 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		Status::whereProfileId($user->profile_id)
+		$reblog = Status::whereProfileId($user->profile_id)
 		  ->whereReblogOfId($status->id)
-		  ->delete();
-		$status->reblogs_count = $status->shares()->count();
-		$status->save();
+		  ->first();
 
-		StatusService::del($status->id);
+		if(!$reblog) {
+			$resource = new Fractal\Resource\Item($status, new StatusTransformer());
+			$res = $this->fractal->createData($resource)->toArray();
+			return response()->json($res);
+		}
+
+		UndoSharePipeline::dispatch($reblog);
 		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 		return response()->json($res);
