@@ -2028,11 +2028,15 @@ class ApiV1Controller extends Controller
 			->latest()
 			->limit($limit)
 			->pluck('status_id')
+			->filter(function($i) {
+				return StatusService::get($i);
+			})
 			->map(function ($i) {
 				return StatusService::get($i);
 			})
 			->filter()
-			->all();
+			->values()
+			->toArray();
 
 		return response()->json($res, 200, [], JSON_PRETTY_PRINT);
 	}
