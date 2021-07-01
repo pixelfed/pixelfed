@@ -583,6 +583,7 @@
 									swal('Success', 'Successfully marked account as spammer', 'success');
 									self.ctxModMenuClose();
 								}).catch(err => {
+									console.log(err);
 									self.ctxModMenuClose();
 									swal(
 										'Error',
@@ -617,6 +618,14 @@
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
 			},
+
+			statusUrl(status) {
+				if(status.local == true) {
+					return status.url;
+				}
+
+				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			}
 		}
 	}
 </script>
