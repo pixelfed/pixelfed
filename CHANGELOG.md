@@ -36,6 +36,7 @@
 - Updated PublicApiController, improve network timeline perf. ([e5f683fd](https://github.com/pixelfed/pixelfed/commit/e5f683fd))
 - Updated Network Timeline, use existing Timeline component. ([0deaafc0](https://github.com/pixelfed/pixelfed/commit/0deaafc0))
 - Updated PostComponent, show like count to owner using MomentUI. ([e9c46bab](https://github.com/pixelfed/pixelfed/commit/e9c46bab))
+- Updated ContextMenu, add missing statusUrl method. ([3cffdb11](https://github.com/pixelfed/pixelfed/commit/3cffdb11))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
