@@ -290,6 +290,7 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
+        $amin = SnowflakeService::byDate(now()->subDays(90));
 
         $key = 'user:last_active_at:id:'.$user->id;
         $ttl = now()->addMinutes(5);
@@ -309,64 +310,49 @@ class PublicApiController extends Controller
             $id = $min ?? $max;
             $timeline = Status::select(
                         'id',
-                        'uri',
-                        'caption',
-                        'rendered',
                         'profile_id',
                         'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
                         'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'created_at',
-                        'updated_at'
+                        'local'
                       )->where('id', $dir, $id)
+                      ->where('id', '>', $amin)
                       ->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subMonths(6))
-                      ->orderBy('created_at', 'desc')
+                      ->orderBy('id', 'desc')
                       ->limit($limit)
-                      ->get();
+                      ->get()
+                      ->map(function($s) use ($user) {
+                           $status = StatusService::get($s->id);
+                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                           return $status;
+                      });
+            $res = $timeline->toArray();
         } else {
             $timeline = Status::select(
                         'id',
-                        'uri',
-                        'caption',
-                        'rendered',
                         'profile_id',
                         'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
                         'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'created_at',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'updated_at'
+                        'local'
                       )->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      ->where('id', '>', $amin)
                       ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
                       ->whereScope('public')
-                      ->where('created_at', '>', now()->subMonths(6))
-                      ->orderBy('created_at', 'desc')
-                      ->simplePaginate($limit);
+                      ->orderBy('id', 'desc')
+                      ->limit($limit)
+                      ->get()
+                      ->map(function($s) use ($user) {
+                           $status = StatusService::get($s->id);
+                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                           return $status;
+                      });
+            $res = $timeline->toArray();
         }
 
-        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-        $res = $this->fractal->createData($fractal)->toArray();
         return response()->json($res);
     }
 
