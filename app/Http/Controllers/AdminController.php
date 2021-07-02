@@ -440,4 +440,29 @@ class AdminController extends Controller
 		$redirect = $news->published_at ? $news->permalink() : $news->editUrl();
 		return redirect($redirect);
 	}
+
+	public function diagnosticsHome(Request $request)
+	{
+		return view('admin.diagnostics.home');
+	}
+
+	public function diagnosticsDecrypt(Request $request)
+	{
+		$this->validate($request, [
+			'payload' => 'required'
+		]);
+
+		$key = 'exception_report:';
+		$decrypted = decrypt($request->input('payload'));
+
+		if(!starts_with($decrypted, $key)) {
+			abort(403, 'Can only decrypt error diagnostics');
+		}
+
+		$res = [
+			'decrypted' => substr($decrypted, strlen($key))
+		];
+
+		return response()->json($res);
+	}
 }
