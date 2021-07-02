@@ -709,7 +709,7 @@
 				recentFeed: this.scope === 'home' ? true : false,
 				recentFeedMin: null,
 				recentFeedMax: null,
-				reactionBar: this.scope === 'network' ? false : true
+				reactionBar: true
 			}
 		},
 

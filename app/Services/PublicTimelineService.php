@@ -28,7 +28,8 @@ class PublicTimelineService {
 
 	public static function add($val)
 	{
-		return Redis::zadd(self::CACHE_KEY, 1, $val);
+		// return Redis::zadd(self::CACHE_KEY, $val, $val);
+		return;
 	}
 
 	public static function rem($val)

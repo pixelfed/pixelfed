@@ -26,6 +26,7 @@ use App\Transformer\Api\{
 };
 use App\Services\{
     AccountService,
+    LikeService,
     PublicTimelineService,
     StatusService,
     SnowflakeService,
@@ -527,8 +528,10 @@ class PublicApiController extends Controller
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
                       ->get()
-                      ->map(function($s) {
-                      	return StatusService::get($s->id);
+                     ->map(function($s) use ($user) {
+                            $status = StatusService::get($s->id);
+                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                            return $status;
                       });
             $res = $timeline->toArray();
         } else {
@@ -543,11 +546,13 @@ class PublicApiController extends Controller
 	                      ->whereScope('public')
                       	  ->where('id', '>', $amin)
 	                      ->orderBy('created_at', 'desc')
-	                      ->limit($limit)
-	                      ->get()
-	                      ->map(function($s) {
-	                      	return StatusService::get($s->id);
-	                      });
+                          ->limit($limit)
+                          ->get()
+                          ->map(function($s) use ($user) {
+                                $status = StatusService::get($s->id);
+                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                                return $status;
+                          });
 	          	$res = $timeline->toArray();
         }
 
