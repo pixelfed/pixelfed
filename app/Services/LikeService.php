@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Like;
 
@@ -10,42 +11,27 @@ class LikeService {
 
 	const CACHE_KEY = 'pf:services:likes:ids:';
 
-	public static function getUser($profile_id)
+	public static function add($profileId, $statusId)
 	{
-		return self::get($profile_id);
+		$key = self::CACHE_KEY . $profileId . ':' . $statusId;
+		$ttl = now()->addHours(2);
+		return Cache::put($key, true, $ttl);
 	}
 
-	protected static function get($profile_id)
+	public static function remove($profileId, $statusId)
 	{
-		$key = self::CACHE_KEY . $profile_id;
-		if(Redis::zcard($key) == 0) {
-			self::warmCache($profile_id);
-		} else {
-			return Redis::zrevrange($key, 0, 40);
-		}
-	}
-
-	protected static function set($profile_id, $status_id)
-	{
-		$key = self::CACHE_KEY . $profile_id;
-		Redis::zadd($key, $status_id, $status_id);
-	}
-
-	public static function warmCache($profile_id)
-	{
-		Like::select('id', 'profile_id', 'status_id')
-			->whereProfileId($profile_id)
-			->latest()
-			->get()
-			->each(function($like) use ($profile_id) {
-				self::set($profile_id, $like->status_id);
-			});
+		$key = self::CACHE_KEY . $profileId . ':' . $statusId;
+		$ttl = now()->addHours(2);
+		return Cache::put($key, false, $ttl);
 	}
 
 	public static function liked($profileId, $statusId)
 	{
-		$key = self::CACHE_KEY . $profileId;
-		return (bool) Redis::zrank($key, $statusId);
+		$key = self::CACHE_KEY . $profileId . ':' . $statusId;
+		$ttl = now()->addMinutes(30);
+		return Cache::remember($key, $ttl, function() use($profileId, $statusId) {
+			return Like::whereProfileId($profileId)->whereStatusId($statusId)->exists();
+		});
 	}
 
 	public static function likedBy($status)
