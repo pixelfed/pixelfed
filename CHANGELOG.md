@@ -5,6 +5,7 @@
 - WebP Support ([069a0e4a](https://github.com/pixelfed/pixelfed/commit/069a0e4a))
 - Auto Following support for admins ([68aa2540](https://github.com/pixelfed/pixelfed/commit/68aa2540))
 - Mark as spammer mod tool, unlists and applies content warning to existing and future post ([6d956a86](https://github.com/pixelfed/pixelfed/commit/6d956a86))
+- Diagnostics for error page and admin dashboard ([64725ecc](https://github.com/pixelfed/pixelfed/commit/64725ecc))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
