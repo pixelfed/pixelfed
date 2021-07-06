@@ -333,6 +333,7 @@ class InternalApiController extends Controller
 
 		Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
 		Cache::forget('profile:embed:' . $status->profile_id);
+		StatusService::del($status->id);
 
 		return ['msg' => 200];
 	}
