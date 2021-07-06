@@ -18,18 +18,41 @@ class PublicTimelineService {
 		if($stop > 100) {
 			$stop = 100;
 		}
-		$tl = [];
-		$keys = Redis::zrevrange(self::CACHE_KEY, $start, $stop);
-		foreach($keys as $key) {
-			array_push($tl, StatusService::get($key));
+
+		return Redis::zrevrange(self::CACHE_KEY, $start, $stop);
+	}
+
+	public static function getRankedMaxId($start = null, $limit = 10)
+	{
+		if(!$start) {
+			return [];
 		}
-		return $tl;
+
+		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, $start, '-inf', [
+			'withscores' => true,
+			'limit' => [1, $limit]
+		]));
+	}
+
+	public static function getRankedMinId($end = null, $limit = 10)
+	{
+		if(!$end) {
+			return [];
+		}
+
+		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY, '+inf', $end, [
+			'withscores' => true,
+			'limit' => [0, $limit]
+		]));
 	}
 
 	public static function add($val)
 	{
-		// return Redis::zadd(self::CACHE_KEY, $val, $val);
-		return;
+		if(self::count() > 400) {
+			Redis::zpopmin(self::CACHE_KEY);
+		}
+
+		return Redis::zadd(self::CACHE_KEY, $val, $val);
 	}
 
 	public static function rem($val)
@@ -44,7 +67,7 @@ class PublicTimelineService {
 
 	public static function count()
 	{
-		return Redis::zcount(self::CACHE_KEY, '-inf', '+inf');
+		return Redis::zcard(self::CACHE_KEY);
 	}
 
 	public static function warmCache($force = false, $limit = 100)
@@ -55,7 +78,7 @@ class PublicTimelineService {
 				->whereNull('reblog_of_id')
 				->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 				->whereScope('public')
-				->latest()
+				->orderByDesc('id')
 				->limit($limit)
 				->pluck('id');
 			foreach($ids as $id) {

@@ -37,6 +37,7 @@ class StatusService {
 
 	public static function del($id)
 	{
+		PublicTimelineService::rem($id);
 		return Cache::forget(self::key($id));
 	}
 }
