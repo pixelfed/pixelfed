@@ -30,6 +30,9 @@ class StatusHashtagService {
 			->map(function ($i, $k) use ($id) {
 				return self::getStatus($i, $id);
 			})
+			->filter(function ($i) {
+				return isset($i['status']) && !empty($i['status']);
+			})
 			->all();
 	}
 
