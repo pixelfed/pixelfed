@@ -398,140 +398,6 @@
 			</div>
 		</div>
 
-		<!-- <div v-if="currentLayout === 'comments'" class="container p-0 overflow-hidden">
-			<div class="row">
-				<div class="col-12 col-md-6 offset-md-3">
-					<div class="card shadow-none border" style="height:100vh;">
-						<div class="card-header d-flex justify-content-between align-items-center">
-							<div
-								@click="commentNavigateBack(status.id)"
-								class="cursor-pointer"
-								>
-								<i class="fas fa-chevron-left fa-lg px-2"></i>
-							</div>
-							<div>
-								<p class="font-weight-bold mb-0 h5">Comments</p>
-							</div>
-							<div>
-								<i class="fas fa-cog fa-lg text-white"></i>
-							</div>
-						</div>
-						<div class="card-body" style="overflow-y: auto !important">
-							<div class="media">
-								<img :src="status.account.avatar" class="rounded-circle border mr-3" width="32px" height="32px">
-								<div class="media-body">
-									<p class="d-flex justify-content-between align-items-top mb-0" style="overflow-y: hidden;">
-										<span class="mr-2" style="font-size: 13px;">
-											<a class="text-dark font-weight-bold mr-1 text-break" :href="status.account.url" v-bind:title="status.account.username">{{trimCaption(status.account.username,15)}}</a>
-											<span class="text-break comment-body" style="word-break: break-all;" v-html="status.content"></span>
-										</span>
-									</p>
-								</div>
-							</div>
-							<hr>
-							<div class="postCommentsLoader text-center py-2">
-								<div class="spinner-border" role="status">
-									<span class="sr-only">Loading...</span>
-								</div>
-							</div>
-							<div class="postCommentsContainer d-none">
-								<p v-if="replies.length" class="mb-1 text-center load-more-link my-4">
-									<a
-										href="#"
-										class="text-dark"
-										title="Load more comments"
-										@click.prevent="loadMoreComments"
-									>
-										<svg class="bi bi-plus-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="font-size:2em;">  <path fill-rule="evenodd" d="M8 3.5a.5.5 0 01.5.5v4a.5.5 0 01-.5.5H4a.5.5 0 010-1h3.5V4a.5.5 0 01.5-.5z" clip-rule="evenodd"/>  <path fill-rule="evenodd" d="M7.5 8a.5.5 0 01.5-.5h4a.5.5 0 010 1H8.5V12a.5.5 0 01-1 0V8z" clip-rule="evenodd"/>  <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/></svg>
-									</a>
-								</p>
-								<div v-for="(reply, index) in replies" class="pb-3 media" :key="'tl' + reply.id + '_' + index">
-									<img :src="reply.account.avatar" class="rounded-circle border mr-3" width="32px" height="32px">
-									<div class="media-body">
-										<div v-if="reply.sensitive == true">
-											<span class="py-3">
-												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="reply.account.url" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-												<span class="text-break" style="font-size: 13px;">
-													<span class="font-italic text-muted">This comment may contain sensitive material</span>
-													<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
-												</span>
-											</span>
-										</div>
-										<div v-else>
-											<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
-												<span class="mr-3" style="font-size: 13px;">
-													<a class="text-dark font-weight-bold mr-1 text-break" :href="reply.account.url" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
-													<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
-												</span>
-												<span class="text-right" style="min-width: 30px;">
-													<span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-													<span class="pl-2 text-lighter cursor-pointer" @click="ctxMenu(reply)">
-														<span class="fas fa-ellipsis-v text-lighter"></span>
-													</span>
-												</span>
-											</p>
-											<p class="mb-0">
-												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
-												<span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3 small">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
-												<span class="small text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
-											</p>
-											<div v-if="reply.reply_count > 0" class="cursor-pointer pb-2" v-on:click="toggleReplies(reply)">
-												<span class="show-reply-bar"></span>
-												<span class="comment-reaction small font-weight-bold">{{reply.thread ? 'Hide' : 'View'}} Replies ({{reply.reply_count}})</span>
-											</div>
-											<div v-if="reply.thread == true" class="comment-thread">
-												<div v-for="(s, sindex) in reply.replies" class="py-1 media" :key="'cr' + s.id + '_' + index">
-													<img :src="s.account.avatar" class="rounded-circle border mr-3" width="25px" height="25px">
-													<div class="media-body">
-														<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
-															<span class="mr-2" style="font-size: 13px;">
-																<a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
-																<span class="text-break comment-body" style="word-break: break-all;" v-html="s.content"></span>
-															</span>
-															<span>
-																<span v-on:click="likeReply(s, $event)"><i v-bind:class="[s.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
-															</span>
-														</p>
-														<p class="mb-0">
-															<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
-															<span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
-														</p>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div v-if="!replies.length">
-									<p class="text-center text-muted font-weight-bold small">No comments yet</p>
-								</div>
-							</div>
-						</div>
-						<div class="card-footer mb-3">
-							<div class="align-middle d-flex">
-								<img
-									:src="profile.avatar"
-									width="36"
-									height="36"
-									class="rounded-circle border mr-3">
-								<textarea
-									class="form-control rounded-pill"
-									name="comment"
-									placeholder="Add a comment…"
-									autocomplete="off"
-									autocorrect="off"
-									rows="1"
-									maxlength="0"
-									style="resize: none;overflow-y: hidden"
-									@click="replyFocus(status)">
-								</textarea>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div> -->
-
 		<comment-card
 			v-if="replyStatus && replyStatus.hasOwnProperty('id')"
 			:status="replyStatus"
@@ -928,269 +794,9 @@
 				});
 			},
 
-			reportUrl(status) {
-				let type = status.in_reply_to ? 'comment' : 'post';
-				let id = status.id;
-				return '/i/report?type=' + type + '&id=' + id;
-			},
-
-			commentFocus(status, $event) {
-				if(status.comments_disabled) {
-					return;
-				}
-
-				// if(this.status && this.status.id == status.id) {
-				// 	this.$refs.replyModal.show();
-				// 	return;
-				// }
-
-				this.status = status;
-				this.replies = {};
-				this.replyStatus = {};
-				this.replyText = '';
-				this.replyId = status.id;
-				this.replyStatus = status;
-				// this.$refs.replyModal.show();
-				this.fetchStatusComments(status, '');
-
-				$('nav').hide();
-				$('footer').hide();
-				$('.mobile-footer-spacer').attr('style', 'display:none !important');
-				$('.mobile-footer').attr('style', 'display:none !important');
-				this.currentLayout = 'comments';
-				window.history.pushState({}, '', this.statusUrl(status));
-				return;
-			},
-
-			commentNavigateBack(id) {
-				$('nav').show();
-				$('footer').show();
-				$('.mobile-footer-spacer').attr('style', 'display:block');
-				$('.mobile-footer').attr('style', 'display:block');
-				this.currentLayout = 'feed';
-
-				let path = this.scope == 'home' ? '/' : '/timeline/public';
-				window.history.pushState({}, '', path);
-			},
-
-			likeStatus(status, event) {
-				if($('body').hasClass('loggedIn') == false) {
-					return;
-				}
-				let count = status.favourites_count;
-				status.favourited = !status.favourited;
-				axios.post('/i/like', {
-					item: status.id
-				}).then(res => {
-					status.favourites_count = res.data.count;
-				}).catch(err => {
-					status.favourited = !status.favourited;
-					status.favourites_count = count;
-					swal('Error', 'Something went wrong, please try again later.', 'error');
-				});
-				window.navigator.vibrate(200);
-				if(status.favourited) {
-					setTimeout(function() {
-						event.target.classList.add('animate__animated', 'animate__bounce');
-					},100);
-				}
-			},
-
-			shareStatus(status, $event) {
-				if($('body').hasClass('loggedIn') == false) {
-					return;
-				}
-
-				this.closeModals();
-
-				axios.post('/i/share', {
-					item: status.id
-				}).then(res => {
-					status.reblogs_count = res.data.count;
-					status.reblogged = !status.reblogged;
-					if(status.reblogged) {
-						swal('Success', 'You shared this post', 'success');
-					} else {
-						swal('Success', 'You unshared this post', 'success');
-					}
-				}).catch(err => {
-					swal('Error', 'Something went wrong, please try again later.', 'error');
-				});
-			},
-
-			timestampFormat(timestamp) {
-				let ts = new Date(timestamp);
-				return ts.toDateString() + ' ' + ts.toLocaleTimeString();
-			},
-
 			redirect(url) {
 				window.location.href = url;
 				return;
-			},
-
-			statusOwner(status) {
-				let sid = status.account.id;
-				let uid = this.profile.id;
-				if(sid == uid) {
-					return true;
-				} else {
-					return false;
-				}
-			},
-
-			fetchStatusComments(status, card) {
-				// axios.get('/api/v2/status/'+status.id+'/replies',
-				// {
-				// 	params: {
-				// 		limit: 6
-				// 	}
-				// })
-				// .then(res => {
-				// 	let data = res.data.filter(res => {
-				// 		return res.sensitive == false;
-				// 	});
-				// 	this.replies = _.reverse(data);
-				// 	setTimeout(function() {
-				// 		document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
-				// 			i.href = App.util.format.rewriteLinks(i);
-				// 		});
-				// 	}, 500);
-				// }).catch(err => {
-				// })
-				let url = '/api/v2/comments/'+status.account.id+'/status/'+status.id;
-				axios.get(url)
-				.then(response => {
-					let self = this;
-					// this.results = this.layout == 'metro' ?
-					// _.reverse(response.data.data) :
-					// response.data.data;
-					this.replies = _.reverse(response.data.data);
-					this.pagination = response.data.meta.pagination;
-					if(this.replies.length > 0) {
-						$('.load-more-link').removeClass('d-none');
-					}
-					$('.postCommentsLoader').addClass('d-none');
-					$('.postCommentsContainer').removeClass('d-none');
-					// setTimeout(function() {
-					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
-					// 		i.href = App.util.format.rewriteLinks(i);
-					// 	});
-					// }, 500);
-				}).catch(error => {
-					if(!error.response) {
-						$('.postCommentsLoader .lds-ring')
-						.attr('style','width:100%')
-						.addClass('pt-4 font-weight-bold text-muted')
-						.text('An error occurred, cannot fetch comments. Please try again later.');
-					} else {
-						switch(error.response.status) {
-							case 401:
-							$('.postCommentsLoader .lds-ring')
-							.attr('style','width:100%')
-							.addClass('pt-4 font-weight-bold text-muted')
-							.text('Please login to view.');
-							break;
-
-							default:
-							$('.postCommentsLoader .lds-ring')
-							.attr('style','width:100%')
-							.addClass('pt-4 font-weight-bold text-muted')
-							.text('An error occurred, cannot fetch comments. Please try again later.');
-							break;
-						}
-					}
-				});
-			},
-
-			followingModal() {
-				if(this.following.length > 0) {
-					this.$refs.followingModal.show();
-					return;
-				}
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
-					params: {
-						page: this.followingCursor
-					}
-				})
-				.then(res => {
-					this.following = res.data;
-					this.followingCursor++;
-				});
-				if(res.data.length < 10) {
-					this.followingMore = false;
-				}
-				this.$refs.followingModal.show();
-			},
-
-			followersModal() {
-				if(this.followers.length > 0) {
-					this.$refs.followerModal.show();
-					return;
-				}
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
-					params: {
-						page: this.followerCursor
-					}
-				})
-				.then(res => {
-					this.followers = res.data;
-					this.followerCursor++;
-				})
-				if(res.data.length < 10) {
-					this.followerMore = false;
-				}
-				this.$refs.followerModal.show();
-			},
-
-			followingLoadMore() {
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/following', {
-					params: {
-						page: this.followingCursor
-					}
-				})
-				.then(res => {
-					if(res.data.length > 0) {
-						this.following.push(...res.data);
-						this.followingCursor++;
-					}
-					if(res.data.length < 10) {
-						this.followingMore = false;
-					}
-				});
-			},
-
-			followersLoadMore() {
-				axios.get('/api/pixelfed/v1/accounts/'+this.profile.id+'/followers', {
-					params: {
-						page: this.followerCursor
-					}
-				})
-				.then(res => {
-					if(res.data.length > 0) {
-						this.followers.push(...res.data);
-						this.followerCursor++;
-					}
-					if(res.data.length < 10) {
-						this.followerMore = false;
-					}
-				});
-			},
-
-			lightbox(status) {
-				window.location.href = status.media_attachments[0].url;
-				return;
-				this.lightboxMedia = status.media_attachments[0];
-				this.$refs.lightboxModal.show();
-			},
-
-			expLc(status) {
-				if(this.config.ab.lc == false) {
-					return true;
-				}
-				if(this.statusOwner(status) == true) {
-					return true;
-				}
-				return false;
 			},
 
 			expRec() {
@@ -1216,33 +822,6 @@
 					item: id
 				}).then(res => {
 					this.suggestions.splice(index, 1);
-				}).catch(err => {
-					if(err.response.data.message) {
-						swal('Error', err.response.data.message, 'error');
-					}
-				});
-			},
-
-			followAction(status) {
-				let id = status.account.id;
-
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					this.feed.forEach(s => {
-						if(s.account.id == id) {
-							s.account.relationship.following = !s.account.relationship.following;
-						}
-					});
-
-					let username = status.account.acct;
-
-					if(status.account.relationship.following) {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
-					} else {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
-					}
-
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');
@@ -1335,78 +914,36 @@
 				})
 			},
 
-			ctxCopyEmbed() {
-				navigator.clipboard.writeText(this.ctxEmbedPayload);
-				this.ctxEmbedShowCaption = true;
-				this.ctxEmbedShowLikes = false;
-				this.ctxEmbedCompactMode = false;
-				this.$refs.ctxEmbedModal.hide();
-			},
+			commentFocus(status, $event) {
+                if(status.comments_disabled) {
+                    return;
+                }
+
+                // if(this.status && this.status.id == status.id) {
+                //  this.$refs.replyModal.show();
+                //  return;
+                // }
+
+                this.status = status;
+                this.replies = {};
+                this.replyStatus = {};
+                this.replyText = '';
+                this.replyId = status.id;
+                this.replyStatus = status;
+                // this.$refs.replyModal.show();
+                this.fetchStatusComments(status, '');
+
+                $('nav').hide();
+                $('footer').hide();
+                $('.mobile-footer-spacer').attr('style', 'display:none !important');
+                $('.mobile-footer').attr('style', 'display:none !important');
+                this.currentLayout = 'comments';
+                window.history.pushState({}, '', this.statusUrl(status));
+                return;
+            },
 
 			formatCount(count) {
 				return App.util.format.count(count);
-			},
-
-			statusUrl(status) {
-				if(status.local == true) {
-					return status.url;
-				}
-
-				return '/i/web/post/_/' + status.account.id + '/' + status.id;
-			},
-
-			profileUrl(status) {
-				if(status.local == true) {
-					return status.account.url;
-				}
-
-				return '/i/web/profile/_/' + status.account.id;
-			},
-
-			statusCardUsernameFormat(status) {
-				if(status.account.local == true) {
-					return status.account.username;
-				}
-
-				let fmt = window.App.config.username.remote.format;
-				let txt = window.App.config.username.remote.custom;
-				let usr = status.account.username;
-				let dom = document.createElement('a');
-				dom.href = status.account.url;
-				dom = dom.hostname;
-
-				switch(fmt) {
-					case '@':
-					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
-					break;
-
-					case 'from':
-					return usr + '<span class="text-lighter font-weight-bold"> <span class="font-weight-normal">from</span> ' + dom + '</span>';
-					break;
-
-					case 'custom':
-					return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
-					break;
-
-					default:
-					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
-					break;
-				}
-			},
-
-			previewUrl(status) {
-				return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
-			},
-
-			previewBackground(status) {
-				let preview = this.previewUrl(status);
-				return 'background-image: url(' + preview + ');';
-			},
-
-			trimCaption(caption, len = 60) {
-				return _.truncate(caption, {
-					length: len
-				});
 			},
 
 			hasStory() {

@@ -356,7 +356,6 @@
 
 			ctxModMenuClose() {
 				this.closeModals();
-				this.$refs.ctxModal.show();
 			},
 
 			ctxModOtherMenuClose() {
@@ -490,6 +489,7 @@
 								}).then(res => {
 									swal('Success', 'Successfully added content warning', 'success');
 									status.sensitive = true;
+									self.closeModals();
 									self.ctxModMenuClose();
 								}).catch(err => {
 									swal(
@@ -497,6 +497,7 @@
 										'Something went wrong, please try again later.',
 										'error'
 										);
+									self.closeModals();
 									self.ctxModMenuClose();
 								});
 							}
@@ -520,6 +521,7 @@
 								}).then(res => {
 									swal('Success', 'Successfully added content warning', 'success');
 									status.sensitive = false;
+									self.closeModals();
 									self.ctxModMenuClose();
 								}).catch(err => {
 									swal(
@@ -527,6 +529,7 @@
 										'Something went wrong, please try again later.',
 										'error'
 										);
+									self.closeModals();
 									self.ctxModMenuClose();
 								});
 							}
@@ -552,8 +555,10 @@
 										return f.id != status.id;
 									});
 									swal('Success', 'Successfully unlisted post', 'success');
+									self.closeModals();
 									self.ctxModMenuClose();
 								}).catch(err => {
+									self.closeModals();
 									self.ctxModMenuClose();
 									swal(
 										'Error',
@@ -581,9 +586,10 @@
 									item_type: 'status'
 								}).then(res => {
 									swal('Success', 'Successfully marked account as spammer', 'success');
+									self.closeModals();
 									self.ctxModMenuClose();
 								}).catch(err => {
-									console.log(err);
+									self.closeModals();
 									self.ctxModMenuClose();
 									swal(
 										'Error',
@@ -625,7 +631,39 @@
 				}
 
 				return '/i/web/post/_/' + status.account.id + '/' + status.id;
-			}
+			},
+
+			deletePost(status) {
+				if($('body').hasClass('loggedIn') == false || this.ownerOrAdmin(status) == false) {
+					return;
+				}
+
+				if(window.confirm('Are you sure you want to delete this post?') == false) {
+					return;
+				}
+
+				axios.post('/i/delete', {
+					type: 'status',
+					item: status.id
+				}).then(res => {
+					this.$emit('status-delete', status.id);
+					this.closeModals();
+				}).catch(err => {
+					swal('Error', 'Something went wrong. Please try again later.', 'error');
+				});
+			},
+
+			owner(status) {
+				return this.profile.id === status.account.id;
+			},
+
+			admin() {
+				return this.profile.is_admin == true;
+			},
+
+			ownerOrAdmin(status) {
+				return this.owner(status) || this.admin();
+			},
 		}
 	}
 </script>

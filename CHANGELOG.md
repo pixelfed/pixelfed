@@ -39,6 +39,8 @@
 - Updated PostComponent, show like count to owner using MomentUI. ([e9c46bab](https://github.com/pixelfed/pixelfed/commit/e9c46bab))
 - Updated ContextMenu, add missing statusUrl method. ([3cffdb11](https://github.com/pixelfed/pixelfed/commit/3cffdb11))
 - Updated PublicApiController, add LikeService to Network timeline. ([82895591](https://github.com/pixelfed/pixelfed/commit/82895591))
+- Updated moderator api, expire cached status in StatusService. ([f215ee26](https://github.com/pixelfed/pixelfed/commit/f215ee26))
+- Updated StatusHashtagService, fix null status bug. ([51a277e1](https://github.com/pixelfed/pixelfed/commit/51a277e1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
