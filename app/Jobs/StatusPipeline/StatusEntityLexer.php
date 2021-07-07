@@ -150,17 +150,24 @@ class StatusEntityLexer implements ShouldQueue
 	public function deliver()
 	{
 		$status = $this->status;
+		$types = [
+			'photo',
+			'photo:album',
+			'video',
+			'video:album',
+			'photo:video:album'
+		];
 
 		if(config_cache('pixelfed.bouncer.enabled')) {
 			Bouncer::get($status);
 		}
 
-		if($status->uri == null && $status->scope == 'public') {
+		if($status->uri == null && $status->scope == 'public' && in_array($status->type, $types)) {
 			PublicTimelineService::add($status->id);
 		}
 
 		if(config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {
-			StatusActivityPubDeliver::dispatch($this->status);
+			StatusActivityPubDeliver::dispatch($status);
 		}
 	}
 }
