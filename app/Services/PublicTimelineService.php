@@ -48,7 +48,7 @@ class PublicTimelineService {
 
 	public static function add($val)
 	{
-		if(self::count() > 400) {
+		if(config('database.redis.client') === 'phpredis' && self::count() > 400) {
 			Redis::zpopmin(self::CACHE_KEY);
 		}
 
