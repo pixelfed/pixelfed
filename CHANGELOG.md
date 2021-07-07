@@ -46,6 +46,7 @@
 - Updated ApiV1Controller, use ProfileService for verify_credentials. ([352aa573](https://github.com/pixelfed/pixelfed/commit/352aa573))
 - Updated RemotePost.vue, fix content warning button. ([7647e724](https://github.com/pixelfed/pixelfed/commit/7647e724))
 - Updated AdminMediaController, improve perf and use simple pagination. ([f2686cac](https://github.com/pixelfed/pixelfed/commit/f2686cac))
+- Updated PostComponent, fix MomentUI like counter. ([42c6121a](https://github.com/pixelfed/pixelfed/commit/42c6121a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
