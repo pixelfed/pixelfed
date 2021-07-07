@@ -103,6 +103,7 @@
 @endsection
 
 @push('scripts')
+<script type="text/javascript" src="{{mix('js/components.js')}}"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('.filesize').each(function(k,v) {
