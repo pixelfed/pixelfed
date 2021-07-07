@@ -53,6 +53,7 @@ use App\Services\{
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
+	ProfileService,
 	SearchApiV2Service,
 	StatusService,
 	MediaBlocklistService
@@ -118,25 +119,13 @@ class ApiV1Controller extends Controller
 	public function verifyCredentials(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-		$id = $request->user()->id;
+		$id = $request->user()->profile_id;
 
-		if($request->user()->last_active_at) {
-			$key = 'user:last_active_at:id:'.$id;
-			$ttl = now()->addMinutes(5);
-			Cache::remember($key, $ttl, function() use($id) {
-				$user = User::findOrFail($id);
-				$user->last_active_at = now();
-				$user->save();
-				return;
-			});
-		}
+		$res = ProfileService::get($id);
 
-		$profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
-		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
 		$res['source'] = [
-			'privacy' => $profile->is_private ? 'private' : 'public',
-			'sensitive' => $profile->cw ? true : false,
+			'privacy' => $res['locked'] ? 'private' : 'public',
+			'sensitive' => false,
 			'language' => null,
 			'note' => '',
 			'fields' => []
