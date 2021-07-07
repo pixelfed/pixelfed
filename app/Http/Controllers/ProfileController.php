@@ -47,7 +47,8 @@ class ProfileController extends Controller
 			});
 
 			if ($user->is_private == true) {
-				abort(404);
+				$profile = null;
+				return view('profile.private', compact('user'));
 			}
 
 			$owner = false;

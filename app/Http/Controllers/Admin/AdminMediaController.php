@@ -27,6 +27,7 @@ trait AdminMediaController
 			],
 			'search' => 'nullable|string|min:1|max:20'
 		]);
+
 		if($request->filled('search')) {
 			$profiles = Profile::where('username', 'like', '%'.$request->input('search').'%')->pluck('id')->toArray();
 			$media = Media::whereHas('status')
@@ -42,7 +43,8 @@ trait AdminMediaController
 			$media = MediaBlocklist::latest()->paginate(12);
 			return view('admin.media.home', compact('media'));
 		}
-		$media = Media::whereHas('status')->with('status')->orderby('id', 'desc')->paginate(12);
+
+		$media = Media::whereNull('remote_url')->orderby('id', 'desc')->simplePaginate(12);
 		return view('admin.media.home', compact('media'));
 	}
 
