@@ -49,8 +49,10 @@ use App\Jobs\VideoPipeline\{
 	VideoThumbnail
 };
 use App\Services\{
+	LikeService,
 	NotificationService,
 	MediaPathService,
+	PublicTimelineService,
 	SearchApiV2Service,
 	StatusService,
 	MediaBlocklistService
@@ -1462,90 +1464,37 @@ class ApiV1Controller extends Controller
 	public function timelinePublic(Request $request)
 	{
 		$this->validate($request,[
-		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'limit'       => 'nullable|integer|max:80'
 		]);
 
-		$page = $request->input('page');
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 3;
 		$user = $request->user();
 
-		if($user) {
-			$key = 'user:last_active_at:id:'.$user->id;
-			$ttl = now()->addMinutes(5);
-			Cache::remember($key, $ttl, function() use($user) {
-				$user->last_active_at = now();
-				$user->save();
-				return;
-			});
-		}
+		if(PublicTimelineService::count() == 0) {
+        	PublicTimelineService::warmCache(true, 400);
+        }
 
-		if($min || $max) {
-			$dir = $min ? '>' : '<';
-			$id = $min ?? $max;
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'comments_disabled',
-						'place_id',
-						'likes_count',
-						'reblogs_count',
-						'created_at',
-						'updated_at'
-					  )->whereNull('uri')
-					  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->where('id', $dir, $id)
-					  ->whereScope('public')
-					  ->where('created_at', '>', now()->subDays(14))
-					  ->latest()
-					  ->limit($limit)
-					  ->get();
+        if ($max) {
+			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
+		} else if ($min) {
+			$feed = PublicTimelineService::getRankedMinId($min, $limit);
 		} else {
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'comments_disabled',
-						'place_id',
-						'likes_count',
-						'reblogs_count',
-						'created_at',
-						'updated_at'
-					  )->whereNull('uri')
-					  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->whereScope('public')
-					  ->where('created_at', '>', now()->subDays(14))
-					  ->latest()
-					  ->simplePaginate($limit);
+			$feed = PublicTimelineService::get(0, $limit);
 		}
 
-		$fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-		$res = $this->fractal->createData($fractal)->toArray();
+		$res = collect($feed)
+            ->map(function($k) use($user) {
+                $status = StatusService::get($k);
+                if($user) {
+                	$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+                }
+                return $status;
+            })
+            ->toArray();
 		return response()->json($res);
 	}
 
