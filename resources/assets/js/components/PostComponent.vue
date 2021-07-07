@@ -323,7 +323,7 @@
 									</div>
 									<div class="like-count font-weight-bold mt-2 rounded border" style="cursor:pointer;" v-on:click="likesModal">
 
-										{{ownerOrAdmin() ? (status.liked_by.total_count + 1) : 0}}
+										{{ownerOrAdmin == true ? (status.liked_by.total_count + 1) : 0}}
 									</div>
 								</div>
 								<div class="text-center">
@@ -896,6 +896,10 @@ export default {
 			if(this.statusTemplate == 'text') {
 				this.layout = 'metro';
 				return;
+			}
+
+			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
+				this.layout = 'moment';
 			}
 
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
