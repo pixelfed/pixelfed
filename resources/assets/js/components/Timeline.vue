@@ -942,6 +942,64 @@
                 return;
             },
 
+            fetchStatusComments(status, card) {
+				let url = '/api/v2/comments/'+status.account.id+'/status/'+status.id;
+				axios.get(url)
+				.then(response => {
+					let self = this;
+					this.replies = _.reverse(response.data.data);
+					this.pagination = response.data.meta.pagination;
+					if(this.replies.length > 0) {
+						$('.load-more-link').removeClass('d-none');
+					}
+					$('.postCommentsLoader').addClass('d-none');
+					$('.postCommentsContainer').removeClass('d-none');
+					// setTimeout(function() {
+					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
+					// 		i.href = App.util.format.rewriteLinks(i);
+					// 	});
+					// }, 500);
+				}).catch(error => {
+					if(!error.response) {
+						$('.postCommentsLoader .lds-ring')
+						.attr('style','width:100%')
+						.addClass('pt-4 font-weight-bold text-muted')
+						.text('An error occurred, cannot fetch comments. Please try again later.');
+					} else {
+						switch(error.response.status) {
+							case 401:
+							$('.postCommentsLoader .lds-ring')
+							.attr('style','width:100%')
+							.addClass('pt-4 font-weight-bold text-muted')
+							.text('Please login to view.');
+							break;
+							default:
+							$('.postCommentsLoader .lds-ring')
+							.attr('style','width:100%')
+							.addClass('pt-4 font-weight-bold text-muted')
+							.text('An error occurred, cannot fetch comments. Please try again later.');
+							break;
+						}
+					}
+				});
+			},
+
+			statusUrl(status) {
+				if(status.local == true) {
+					return status.url;
+				}
+
+				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				if(status.local == true) {
+					return status.account.url;
+				}
+
+				return '/i/web/profile/_/' + status.account.id;
+			},
+
 			formatCount(count) {
 				return App.util.format.count(count);
 			},
