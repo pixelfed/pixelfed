@@ -703,6 +703,11 @@
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
 			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
+
+			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
+				this.layout = 'moment';
+			}
+
 			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
 				this.layout = 'metro';
 			}
@@ -738,10 +743,6 @@
 						})
 					}
 				});
-			}
-			if(window.outerWidth < 576) {
-				$('nav.navbar').hide();
-				this.isMobile = true;
 			}
 		},
 
