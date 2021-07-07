@@ -41,6 +41,9 @@
 - Updated PublicApiController, add LikeService to Network timeline. ([82895591](https://github.com/pixelfed/pixelfed/commit/82895591))
 - Updated moderator api, expire cached status in StatusService. ([f215ee26](https://github.com/pixelfed/pixelfed/commit/f215ee26))
 - Updated StatusHashtagService, fix null status bug. ([51a277e1](https://github.com/pixelfed/pixelfed/commit/51a277e1))
+- Updated NotificationService, use zrevrangebyscore for api. ([d43e6d8d](https://github.com/pixelfed/pixelfed/commit/d43e6d8d))
+- Updated ApiV1Controller, use PublicTimelineService. ([f67c67bc](https://github.com/pixelfed/pixelfed/commit/f67c67bc))
+- Updated ApiV1Controller, use ProfileService for verify_credentials. ([352aa573](https://github.com/pixelfed/pixelfed/commit/352aa573))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
