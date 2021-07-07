@@ -46,6 +46,60 @@ class NotificationService {
 		return $ids;
 	}
 
+	public static function getMax($id = false, $start, $limit = 10)
+	{
+		$ids = self::getRankedMaxId($id, $start, $limit);
+
+		if(empty($ids)) {
+			return [];
+		}
+
+		$res = collect([]);
+		foreach($ids as $id) {
+			$res->push(self::getNotification($id));
+		}
+		return $res->toArray();
+	}
+
+	public static function getMin($id = false, $start, $limit = 10)
+	{
+		$ids = self::getRankedMinId($id, $start, $limit);
+
+		if(empty($ids)) {
+			return [];
+		}
+
+		$res = collect([]);
+		foreach($ids as $id) {
+			$res->push(self::getNotification($id));
+		}
+		return $res->toArray();
+	}
+
+	public static function getRankedMaxId($id = false, $start = null, $limit = 10)
+	{
+		if(!$start || !$id) {
+			return [];
+		}
+
+		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, $start, '-inf', [
+			'withscores' => true,
+			'limit' => [1, $limit]
+		]));
+	}
+
+	public static function getRankedMinId($id = false, $end = null, $limit = 10)
+	{
+		if(!$end || !$id) {
+			return [];
+		}
+
+		return array_keys(Redis::zrevrangebyscore(self::CACHE_KEY.$id, '+inf', $end, [
+			'withscores' => true,
+			'limit' => [0, $limit]
+		]));
+	}
+
 	public static function set($id, $val)
 	{
 		return Redis::zadd(self::CACHE_KEY . $id, $val, $val);
@@ -53,6 +107,7 @@ class NotificationService {
 
 	public static function del($id, $val)
 	{
+		Cache::forget('service:notification:' . $val);
 		return Redis::zrem(self::CACHE_KEY . $id, $val);
 	}
 
@@ -73,7 +128,7 @@ class NotificationService {
 
 	public static function getNotification($id)
 	{
-		return Cache::remember('service:notification:'.$id, now()->addMonths(3), function() use($id) {
+		return Cache::remember('service:notification:'.$id, now()->addDays(3), function() use($id) {
 			$n = Notification::with('item')->findOrFail($id);
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
@@ -84,7 +139,7 @@ class NotificationService {
 
 	public static function setNotification(Notification $notification)
 	{
-		return Cache::remember('service:notification:'.$notification->id, now()->addMonths(3), function() use($notification) {
+		return Cache::remember('service:notification:'.$notification->id, now()->addDays(3), function() use($notification) {
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());

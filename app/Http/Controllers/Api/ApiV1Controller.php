@@ -1283,7 +1283,6 @@ class ApiV1Controller extends Controller
 
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit', 20);
-		$timeago = now()->subMonths(6);
 
 		$since = $request->input('since_id');
 		$min = $request->input('min_id');
@@ -1293,27 +1292,20 @@ class ApiV1Controller extends Controller
 			$min = 1;
 		}
 
-		$dir = $since ? '>' : ($min ? '>=' : '<');
-		$id = $since ?? $min ?? $max;
+		$maxId = null;
+		$minId = null;
 
-		$notifications = Notification::whereProfileId($pid)
-			->where('id', $dir, $id)
-			->whereDate('created_at', '>', $timeago)
-			->orderByDesc('id')
-			->limit($limit)
-			->get();
-
-		$minId = $notifications->min('id');
-		$maxId = $notifications->max('id');
-
-		$resource = new Fractal\Resource\Collection(
-			$notifications,
-			new NotificationTransformer()
-		);
-
-		$res = $this->fractal
-			->createData($resource)
-			->toArray();
+		if($max) {
+			$res = NotificationService::getMax($pid, $max, $limit);
+			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
+			$maxId = max($ids);
+			$minId = min($ids);
+		} else {
+			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
+			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
+			$maxId = max($ids);
+			$minId = min($ids);
+		}
 
 		$baseUrl = config('app.url') . '/api/v1/notifications?';
 
