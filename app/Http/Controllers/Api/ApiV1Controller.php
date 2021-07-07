@@ -49,8 +49,11 @@ use App\Jobs\VideoPipeline\{
 	VideoThumbnail
 };
 use App\Services\{
+	LikeService,
 	NotificationService,
 	MediaPathService,
+	PublicTimelineService,
+	ProfileService,
 	SearchApiV2Service,
 	StatusService,
 	MediaBlocklistService
@@ -116,25 +119,13 @@ class ApiV1Controller extends Controller
 	public function verifyCredentials(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-		$id = $request->user()->id;
+		$id = $request->user()->profile_id;
 
-		if($request->user()->last_active_at) {
-			$key = 'user:last_active_at:id:'.$id;
-			$ttl = now()->addMinutes(5);
-			Cache::remember($key, $ttl, function() use($id) {
-				$user = User::findOrFail($id);
-				$user->last_active_at = now();
-				$user->save();
-				return;
-			});
-		}
+		$res = ProfileService::get($id);
 
-		$profile = Profile::whereNull('status')->whereUserId($id)->firstOrFail();
-		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
 		$res['source'] = [
-			'privacy' => $profile->is_private ? 'private' : 'public',
-			'sensitive' => $profile->cw ? true : false,
+			'privacy' => $res['locked'] ? 'private' : 'public',
+			'sensitive' => false,
 			'language' => null,
 			'note' => '',
 			'fields' => []
@@ -1283,7 +1274,6 @@ class ApiV1Controller extends Controller
 
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit', 20);
-		$timeago = now()->subMonths(6);
 
 		$since = $request->input('since_id');
 		$min = $request->input('min_id');
@@ -1293,27 +1283,20 @@ class ApiV1Controller extends Controller
 			$min = 1;
 		}
 
-		$dir = $since ? '>' : ($min ? '>=' : '<');
-		$id = $since ?? $min ?? $max;
+		$maxId = null;
+		$minId = null;
 
-		$notifications = Notification::whereProfileId($pid)
-			->where('id', $dir, $id)
-			->whereDate('created_at', '>', $timeago)
-			->orderByDesc('id')
-			->limit($limit)
-			->get();
-
-		$minId = $notifications->min('id');
-		$maxId = $notifications->max('id');
-
-		$resource = new Fractal\Resource\Collection(
-			$notifications,
-			new NotificationTransformer()
-		);
-
-		$res = $this->fractal
-			->createData($resource)
-			->toArray();
+		if($max) {
+			$res = NotificationService::getMax($pid, $max, $limit);
+			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
+			$maxId = max($ids);
+			$minId = min($ids);
+		} else {
+			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
+			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
+			$maxId = max($ids);
+			$minId = min($ids);
+		}
 
 		$baseUrl = config('app.url') . '/api/v1/notifications?';
 
@@ -1470,90 +1453,37 @@ class ApiV1Controller extends Controller
 	public function timelinePublic(Request $request)
 	{
 		$this->validate($request,[
-		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'limit'       => 'nullable|integer|max:80'
 		]);
 
-		$page = $request->input('page');
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 3;
 		$user = $request->user();
 
-		if($user) {
-			$key = 'user:last_active_at:id:'.$user->id;
-			$ttl = now()->addMinutes(5);
-			Cache::remember($key, $ttl, function() use($user) {
-				$user->last_active_at = now();
-				$user->save();
-				return;
-			});
-		}
+		if(PublicTimelineService::count() == 0) {
+        	PublicTimelineService::warmCache(true, 400);
+        }
 
-		if($min || $max) {
-			$dir = $min ? '>' : '<';
-			$id = $min ?? $max;
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'comments_disabled',
-						'place_id',
-						'likes_count',
-						'reblogs_count',
-						'created_at',
-						'updated_at'
-					  )->whereNull('uri')
-					  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->where('id', $dir, $id)
-					  ->whereScope('public')
-					  ->where('created_at', '>', now()->subDays(14))
-					  ->latest()
-					  ->limit($limit)
-					  ->get();
+        if ($max) {
+			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
+		} else if ($min) {
+			$feed = PublicTimelineService::getRankedMinId($min, $limit);
 		} else {
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'comments_disabled',
-						'place_id',
-						'likes_count',
-						'reblogs_count',
-						'created_at',
-						'updated_at'
-					  )->whereNull('uri')
-					  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->whereScope('public')
-					  ->where('created_at', '>', now()->subDays(14))
-					  ->latest()
-					  ->simplePaginate($limit);
+			$feed = PublicTimelineService::get(0, $limit);
 		}
 
-		$fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-		$res = $this->fractal->createData($fractal)->toArray();
+		$res = collect($feed)
+            ->map(function($k) use($user) {
+                $status = StatusService::get($k);
+                if($user) {
+                	$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+                }
+                return $status;
+            })
+            ->toArray();
 		return response()->json($res);
 	}
 
