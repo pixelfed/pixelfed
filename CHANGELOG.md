@@ -51,6 +51,7 @@
 - Updated Profile, fix unauthenticated private profiles. ([9017f7c4](https://github.com/pixelfed/pixelfed/commit/9017f7c4))
 - Updated PublicApiController, impr home timeline perf. ([4fe42e5b](https://github.com/pixelfed/pixelfed/commit/4fe42e5b))
 - Updated Timeline.vue, fix comment button. ([b6b5ce7c](https://github.com/pixelfed/pixelfed/commit/b6b5ce7c))
+- Updated StatusEntityLexer, only add specific status types to PublicTimelineService. ([1fdcbe5b](https://github.com/pixelfed/pixelfed/commit/1fdcbe5b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
