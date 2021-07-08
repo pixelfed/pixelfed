@@ -48,6 +48,8 @@ class PublicTimelineService {
 
 	public static function add($val)
 	{
+		return;
+
 		if(config('database.redis.client') === 'phpredis' && self::count() > 400) {
 			Redis::zpopmin(self::CACHE_KEY);
 		}
@@ -73,6 +75,7 @@ class PublicTimelineService {
 	public static function warmCache($force = false, $limit = 100)
 	{
 		if(self::count() == 0 || $force == true) {
+			Redis::del(self::CACHE_KEY);
 			$ids = Status::whereNull('uri')
 				->whereNull('in_reply_to_id')
 				->whereNull('reblog_of_id')
