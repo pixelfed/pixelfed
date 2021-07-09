@@ -9,12 +9,12 @@
         <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
             @if($status->parent()->parent()->media()->count())
-            <img src="{{$status->parent()->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            <img src="{{$status->parent()->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->parent()->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <img src="{{$status->parent()->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
                     <span class="font-weight-bold" v-pre>{{$status->parent()->parent()->profile->username}}</span>
                     <div class="">
@@ -36,12 +36,12 @@
         <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
             @if($status->parent()->media()->count())
-            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
                     <span class="font-weight-bold" v-pre>{{$status->parent()->profile->username}}</span>
                     <div class="">
@@ -66,7 +66,7 @@
               <p class="py-5 mb-0 text-center">This comment may contain sensitive content. <span class="float-right font-weight-bold text-primary">Show</span></p>
             </summary>
             <div class="media py-5">
-              <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
+              <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
               <div class="media-body">
                 <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
                 <p class="" v-pre>{!! $status->rendered !!}</p>
@@ -80,7 +80,7 @@
           </details>
           @else
           <div class="media py-5">
-            <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px">
+            <img class="mr-3 rounded-circle img-thumbnail" src="{{$status->profile->avatarUrl()}}" width="60px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
             <div class="media-body">
               <h5 class="mt-0 font-weight-bold" v-pre>{{$status->profile->username}}</h5>
               <p class="" v-pre>{!! $status->rendered !!}</p>
@@ -105,12 +105,12 @@
         <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
             @if($status->comments()->first()->media()->count())
-            <img src="{{$status->comments()->first()->thumb()}}" width="150px" height="150px" class="post-thumbnail">
+            <img src="{{$status->comments()->first()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->comments()->first()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px">
+                  <img src="{{$status->comments()->first()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
                     <span class="font-weight-bold" v-pre>{{$status->comments()->first()->profile->username}}</span>
                     <div class="">
