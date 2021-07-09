@@ -54,6 +54,8 @@
 - Updated StatusEntityLexer, only add specific status types to PublicTimelineService. ([1fdcbe5b](https://github.com/pixelfed/pixelfed/commit/1fdcbe5b))
 - Updated ActivityPub helpers, fix comment threading in statusFetch() method ([26b9c140](https://github.com/pixelfed/pixelfed/commit/26b9c140))
 - Updated NotificationCard, fix typo in mention, share and comments. Fixes #2848. ([b37bb426](https://github.com/pixelfed/pixelfed/commit/b37bb426))
+- Updated StatusCard.vue, add togglecw events to other presenters. ([9607243f](https://github.com/pixelfed/pixelfed/commit/9607243f))
+- Updated presenters, fix content warning layout. ([fc56acb8](https://github.com/pixelfed/pixelfed/commit/fc56acb8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
