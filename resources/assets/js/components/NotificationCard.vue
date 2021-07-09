@@ -131,13 +131,13 @@
 				axios.get('/api/pixelfed/v1/notifications?pg=true')
 				.then(res => {
 					let data = res.data.filter(n => {
-						if(n.type == 'share' && !status) {
+						if(n.type == 'share' && !n.status) {
 							return false;
 						}
-						if(n.type == 'comment' && !status) {
+						if(n.type == 'comment' && !n.status) {
 							return false;
 						}
-						if(n.type == 'mention' && !status) {
+						if(n.type == 'mention' && !n.status) {
 							return false;
 						}
 						return true;
@@ -162,13 +162,13 @@
 				}).then(res => {
 					if(res.data.length) {
 						let data = res.data.filter(n => {
-							if(n.type == 'share' && !status) {
+							if(n.type == 'share' && !n.status) {
 								return false;
 							}
-							if(n.type == 'comment' && !status) {
+							if(n.type == 'comment' && !n.status) {
 								return false;
 							}
-							if(n.type == 'mention' && !status) {
+							if(n.type == 'mention' && !n.status) {
 								return false;
 							}
 							if(_.find(this.notifications, {id: n.id})) {
