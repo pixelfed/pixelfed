@@ -54,12 +54,14 @@
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
   }
+  .content-label-wrapper {
+  	position: relative;
+  }
   .content-label {
   	margin: 0;
   	position: absolute;
   	top:50%;
   	left:50%;
-  	z-index: 2;
   	transform: translate(-50%, -50%);
   	display: flex;
   	flex-direction: column;
