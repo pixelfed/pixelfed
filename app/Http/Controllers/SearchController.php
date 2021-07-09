@@ -321,13 +321,18 @@ class SearchController extends Controller
 
 		if(Status::whereUri($tag)->whereLocal(false)->exists()) {
 			$item = Status::whereUri($tag)->first();
+			$media = $item->firstMedia();
+			$url = null;
+			if($media) {
+				$url = $media->remote_url;
+			}
 			$this->tokens['posts'] = [[
 				'count'  => 0,
 				'url'    => "/i/web/post/_/$item->profile_id/$item->id",
 				'type'   => 'status',
 				'username' => $item->profile->username,
 				'caption'   => $item->rendered ?? $item->caption,
-				'thumb'  => $item->firstMedia()->remote_url,
+				'thumb'  => $url,
 				'timestamp' => $item->created_at->diffForHumans()
 			]];
 		}
@@ -336,13 +341,18 @@ class SearchController extends Controller
 
 		if(isset($remote['type']) && $remote['type'] == 'Note') {
 			$item = Helpers::statusFetch($tag);
+			$media = $item->firstMedia();
+			$url = null;
+			if($media) {
+				$url = $media->remote_url;
+			}
 			$this->tokens['posts'] = [[
 				'count'  => 0,
 				'url'    => "/i/web/post/_/$item->profile_id/$item->id",
 				'type'   => 'status',
 				'username' => $item->profile->username,
 				'caption'   => $item->rendered ?? $item->caption,
-				'thumb'  => $item->firstMedia()->remote_url,
+				'thumb'  => $url,
 				'timestamp' => $item->created_at->diffForHumans()
 			]];
 		}

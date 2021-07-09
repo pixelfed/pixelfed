@@ -351,7 +351,7 @@ class Helpers {
 		}
 
 		$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
-		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) && $replyTo == true) {
+		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) || $replyTo == true) {
 			$reply_to = self::statusFirstOrFetch($activity['object']['inReplyTo'], false);
 			$reply_to = optional($reply_to)->id;
 		} else {
