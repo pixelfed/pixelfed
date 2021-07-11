@@ -56,6 +56,8 @@
 - Updated NotificationCard, fix typo in mention, share and comments. Fixes #2848. ([b37bb426](https://github.com/pixelfed/pixelfed/commit/b37bb426))
 - Updated StatusCard.vue, add togglecw events to other presenters. ([9607243f](https://github.com/pixelfed/pixelfed/commit/9607243f))
 - Updated presenters, fix content warning layout. ([fc56acb8](https://github.com/pixelfed/pixelfed/commit/fc56acb8))
+- Updated reply blade view, fix missing avatar and media images. ([5fb33772](https://github.com/pixelfed/pixelfed/commit/5fb33772))
+- Updated components, add fallback default avatar. ([726553f5](https://github.com/pixelfed/pixelfed/commit/726553f5))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
