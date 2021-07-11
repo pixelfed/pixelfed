@@ -85,10 +85,10 @@
 								<!-- DESKTOP PROFILE PICTURE -->
 								<div class="d-none d-md-block pb-3">
 									<div v-if="hasStory" class="has-story-lg cursor-pointer shadow-sm" @click="storyRedirect()">
-										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150px" height="150px">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow cursor-pointer" :src="profile.avatar" width="150px" height="150px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 									</div>
 									<div v-else>
-										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px">
+										<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle box-shadow" :src="profile.avatar" width="150px" height="150px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 									</div>
 									<p v-if="sponsorList.patreon || sponsorList.liberapay || sponsorList.opencollective" class="text-center mt-3">
 										<button type="button" @click="showSponsorModal" class="btn btn-outline-secondary font-weight-bold py-0">
@@ -404,53 +404,54 @@
 		title="Following"
 		body-class="list-group-flush py-3 px-0"
 		dialog-class="follow-modal">
-		<div v-if="!loading" class="list-group" style="min-height: 60vh;">
-			<div v-if="owner == true" class="list-group-item border-0 pt-0 px-0 mt-n2 mb-3">
-				<span class="d-flex px-4 pb-0 align-items-center">
-					<i class="fas fa-search text-lighter"></i>
-					<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Search Following..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
-				</span>
+		<div v-if="!followingLoading" class="list-group" style="max-height: 60vh;">
+			<div v-if="!following.length" class="list-group-item border-0">
+				<p class="text-center mb-0 font-weight-bold text-muted py-5">
+					<span class="text-dark">{{profileUsername}}</span> is not following yet</p>
 			</div>
-			<div v-if="owner == true" class="btn-group rounded-0 mt-n3 mb-3 border-top" role="group" aria-label="Following">
-					<!-- <button type="button" :class="[followingModalTab == 'following' ? ' btn btn-light py-3 rounded-0 font-weight-bold modal-tab-active' : 'btn btn-light py-3 rounded-0 font-weight-bold']" style="font-size: 12px;">FOLLOWING</button> -->
-					<!-- <button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">MUTED</button>
-					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;">BLOCKED</button> -->
-			</div>
-			<div v-else class="btn-group rounded-0 mt-n3 mb-3" role="group" aria-label="Following">
-					<!-- <button type="button" class="btn btn-light py-3 rounded-0 border-primary border-left-0 border-right-0 border-top-0 font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'following'">FOLLOWING</button>
-					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'mutual'">MUTUAL</button>
-					<button type="button" class="btn btn-light py-3 rounded-0 text-muted font-weight-bold" style="font-size: 12px;" @click="followingModalTab = 'blocked'">BLOCKED</button> -->
-			</div>
-			<div class="list-group-item border-0 py-1" v-for="(user, index) in following" :key="'following_'+index">
-				<div class="media">
-					<a :href="profileUrlRedirect(user)">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
-					</a>
-					<div class="media-body text-truncate">
-						<p class="mb-0" style="font-size: 14px">
-							<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
-								{{user.username}}
-							</a>
-						</p>
-						<p v-if="!user.local" class="text-muted mb-0 text-truncate mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
-							<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
-						</p>
-						<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
-							{{user.display_name}}
-						</p>
-					</div>
-					<div v-if="owner">
-						<a class="btn btn-outline-dark btn-sm font-weight-bold" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Following</a>
+			<div v-else>
+				<div v-if="owner == true" class="list-group-item border-0 pt-0 px-0 mt-n2 mb-3">
+					<span class="d-flex px-4 pb-0 align-items-center">
+						<i class="fas fa-search text-lighter"></i>
+						<input type="text" class="form-control border-0 shadow-0 no-focus" placeholder="Search Following..." v-model="followingModalSearch" v-on:keyup="followingModalSearchHandler">
+					</span>
+				</div>
+				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in following" :key="'following_'+index">
+					<div class="media">
+						<a :href="profileUrlRedirect(user)">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
+						</a>
+						<div class="media-body text-truncate">
+							<p class="mb-0" style="font-size: 14px">
+								<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
+									{{user.username}}
+								</a>
+							</p>
+							<p v-if="!user.local" class="text-muted mb-0 text-break mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
+								<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
+							</p>
+							<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
+								{{user.display_name ? user.display_name : user.username}}
+							</p>
+						</div>
+						<div v-if="owner">
+							<a class="btn btn-outline-dark btn-sm font-weight-bold" href="#" @click.prevent="followModalAction(user.id, index, 'following')">Following</a>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div v-if="followingModalSearch && following.length == 0" class="list-group-item border-0">
-				<div class="list-group-item border-0 pt-5">
-					<p class="p-3 text-center mb-0 lead">No Results Found</p>
+				<div v-if="followingModalSearch && following.length == 0" class="list-group-item border-0">
+					<div class="list-group-item border-0 pt-5">
+						<p class="p-3 text-center mb-0 lead">No Results Found</p>
+					</div>
+				</div>
+				<div v-if="following.length > 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
+					<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
 				</div>
 			</div>
-			<div v-if="following.length > 0 && followingMore" class="list-group-item text-center" v-on:click="followingLoadMore()">
-				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+		</div>
+		<div v-else class="text-center py-5">
+			<div class="spinner-border" role="status">
+				<span class="sr-only">Loading...</span>
 			</div>
 		</div>
 	</b-modal>
@@ -463,31 +464,42 @@
 		body-class="list-group-flush py-3 px-0"
 		dialog-class="follow-modal"
 		>
-		<div class="list-group">
-			<div v-if="followers.length == 0" class="list-group-item border-0">
+		<div v-if="!followerLoading" class="list-group" style="max-height: 60vh;">
+			<div v-if="!followers.length" class="list-group-item border-0">
 				<p class="text-center mb-0 font-weight-bold text-muted py-5">
 					<span class="text-dark">{{profileUsername}}</span> has no followers yet</p>
 			</div>
-			<div class="list-group-item border-0 py-1" v-for="(user, index) in followers" :key="'follower_'+index">
-				<div class="media mb-0">
-					<a :href="profileUrlRedirect(user)">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
-					</a>
-					<div class="media-body mb-0">
-						<p class="mb-0" style="font-size: 14px">
-							<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
-								{{user.username}}
-							</a>
-						</p>
-						<p class="text-secondary mb-0" style="font-size: 13px">
-							{{user.display_name}}
-						</p>
+
+			<div v-else>
+				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in followers" :key="'follower_'+index">
+					<div class="media mb-0">
+						<a :href="profileUrlRedirect(user)">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0'">
+						</a>
+						<div class="media-body mb-0">
+							<p class="mb-0" style="font-size: 14px">
+								<a :href="profileUrlRedirect(user)" class="font-weight-bold text-dark">
+									{{user.username}}
+								</a>
+							</p>
+							<p v-if="!user.local" class="text-muted mb-0 text-break mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
+								<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
+							</p>
+							<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
+								{{user.display_name ? user.display_name : user.username}}
+							</p>
+						</div>
+						<!-- <button class="btn btn-primary font-weight-bold btn-sm py-1">FOLLOW</button> -->
 					</div>
-					<!-- <button class="btn btn-primary font-weight-bold btn-sm py-1">FOLLOW</button> -->
+				</div>
+				<div v-if="followers.length && followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
+					<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
 				</div>
 			</div>
-			<div v-if="followers.length && followerMore" class="list-group-item text-center" v-on:click="followersLoadMore()">
-				<p class="mb-0 small text-muted font-weight-light cursor-pointer">Load more</p>
+		</div>
+		<div v-else class="text-center py-5">
+			<div class="spinner-border" role="status">
+				<span class="sr-only">Loading...</span>
 			</div>
 		</div>
 	</b-modal>
@@ -558,20 +570,20 @@
 		</div>
 	</b-modal>
 	<b-modal ref="embedModal"
-	id="ctx-embed-modal"
-	hide-header
-	hide-footer
-	centered
-	rounded
-	size="md"
-	body-class="p-2 rounded">
-	<div>
-		<textarea class="form-control disabled text-monospace" rows="6" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
-		<hr>
-		<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-		<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
-	</div>
-</b-modal>
+		id="ctx-embed-modal"
+		hide-header
+		hide-footer
+		centered
+		rounded
+		size="md"
+		body-class="p-2 rounded">
+		<div>
+			<textarea class="form-control disabled text-monospace" rows="6" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
+			<hr>
+			<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+			<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+		</div>
+	</b-modal>
 </div>
 </template>
 <style type="text/css" scoped>
@@ -652,7 +664,6 @@
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
 
-
 	export default {
 		props: [
 			'profile-id',
@@ -679,9 +690,11 @@
 				followers: [],
 				followerCursor: 1,
 				followerMore: true,
+				followerLoading: true,
 				following: [],
 				followingCursor: 1,
 				followingMore: true,
+				followingLoading: true,
 				warning: false,
 				sponsorList: [],
 				bookmarks: [],
@@ -1121,6 +1134,7 @@
 						if(res.data.length < 10) {
 							this.followingMore = false;
 						}
+						this.followingLoading = false;
 					});
 					this.$refs.followingModal.show();
 					return;
@@ -1150,6 +1164,7 @@
 						if(res.data.length < 10) {
 							this.followerMore = false;
 						}
+						this.followerLoading = false;
 					})
 					this.$refs.followerModal.show();
 					return;
