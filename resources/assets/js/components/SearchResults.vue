@@ -97,7 +97,7 @@
 					<a v-for="(profile, index) in results.profiles" class="mb-2 result-card" :href="buildUrl('profile', profile)">
 						<div class="pb-3">
 							<div class="media align-items-center py-2 pr-3">
-								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50px" height="50px">
+								<img class="mr-3 rounded-circle border" :src="profile.avatar" width="50px" height="50px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 								<div class="media-body">
 									<p class="mb-0 text-break text-dark font-weight-bold" data-toggle="tooltip" :title="profile.value">
 										{{profile.value}}
@@ -123,8 +123,8 @@
 					<p class="text-secondary small font-weight-bold">STATUSES <span class="pl-1 text-lighter">({{results.statuses.length}})</span></p>
 				</div>
 				<div v-if="results.statuses.length">
-					<a v-for="(status, index) in results.statuses" class="mr-2 result-card" :href="buildUrl('status', status)">
-						<img :src="status.thumb" width="90px" height="90px" class="mb-2">
+					<a v-for="(status, index) in results.statuses" :key="'srs:'+index" class="mr-2 result-card" :href="buildUrl('status', status)">
+						<img :src="status.thumb" width="90px" height="90px" class="mb-2" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';" v-once>
 					</a>
 				</div>
 				<div v-else>

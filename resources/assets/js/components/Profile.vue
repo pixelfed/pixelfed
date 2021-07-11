@@ -43,10 +43,10 @@
 									<div class="row">
 										<div class="col-4">
 											<div v-if="hasStory" class="has-story cursor-pointer shadow-sm" @click="storyRedirect()">
-												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle" :src="profile.avatar" width="77px" height="77px">
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle" :src="profile.avatar" width="77px" height="77px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 											</div>
 											<div v-else>
-												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border" :src="profile.avatar" width="77px" height="77px">
+												<img :alt="profileUsername + '\'s profile picture'" class="rounded-circle border" :src="profile.avatar" width="77px" height="77px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 											</div>
 										</div>
 										<div class="col-8">
