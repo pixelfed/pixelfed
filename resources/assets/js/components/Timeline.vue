@@ -104,6 +104,7 @@
 							</div>
 
 							<status-card
+								:class="{ 'border-top': index === 0 }"
 								:status="status"
 								:reaction-bar="reactionBar"
 								v-on:status-delete="deleteStatus"
