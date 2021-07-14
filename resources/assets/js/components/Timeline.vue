@@ -24,7 +24,7 @@
 								<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 							</div>
 
-							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
 								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
@@ -55,7 +55,7 @@
 								</div>
 							</div>
 
-							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border">
 								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 									<span></span>
 									<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
@@ -104,6 +104,7 @@
 							</div>
 
 							<status-card
+								:class="{ 'border-top': index === 0 }"
 								:status="status"
 								:reaction-bar="reactionBar"
 								v-on:status-delete="deleteStatus"
@@ -112,7 +113,7 @@
 						</div>
 
 						<div v-if="!loading && feed.length">
-							<div class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
+							<div class="card rounded-0 border-top-0 status-card rounded-0 shadow-none border">
 								<div class="card-body py-5 my-5">
 									<infinite-loading @infinite="infiniteTimeline" :distance="800">
 										<div slot="no-more">
@@ -157,8 +158,9 @@
 								</div>
 							</div>
 						</div>
+
 						<div v-if="!loading && scope == 'home' && feed.length == 0">
-							<div class="card rounded-0 mt-4 status-card card-md-rounded-0 shadow-none border">
+							<div class="card rounded-0 mt-4 status-card rounded-0 shadow-none border">
 								<div v-if="profile.following_count != '0'" class="card-body py-5 my-5">
 									<p class="text-center"><i class="far fa-check-circle fa-8x text-lighter"></i></p>
 									<p class="text-center h3 font-weight-light">You're All Caught Up!</p>
@@ -194,7 +196,7 @@
 							 v-for="(status, index) in discover_feed"
 							 :key="`discover_feed-${index}-${status.id}`">
 
-							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border">
+							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
 								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
@@ -273,7 +275,10 @@
 								</div>
 							</div>
 
-							<status-card :status="status" :recommended="true" />
+							<status-card
+								:class="{'border-top': index === 0}"
+								:status="status"
+								:recommended="true" />
 						</div>
 					</div>
 				</div>

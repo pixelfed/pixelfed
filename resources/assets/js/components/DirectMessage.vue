@@ -11,7 +11,7 @@
 					</span>
 					<span>
 						<div class="media">
-							<img class="mr-3 rounded-circle img-thumbnail" :src="thread.avatar" alt="Generic placeholder image" width="40px">
+							<img class="mr-3 rounded-circle img-thumbnail" :src="thread.avatar" width="40" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 							<div class="media-body">
 								<p class="mb-0">
 									<span class="font-weight-bold">{{thread.name}}</span>
@@ -40,10 +40,10 @@
 					</li> 
 					<li v-for="(convo, index) in thread.messages" class="list-group-item border-0 chat-msg cursor-pointer" @click="openCtxMenu(convo, index)">
 						<div v-if="!convo.isAuthor" class="media d-inline-flex mb-0">
-							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32px">
+							<img v-if="!hideAvatars" class="mr-3 mt-2 rounded-circle img-thumbnail" :src="thread.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 							<div class="media-body">
 								<p v-if="convo.type == 'photo'" class="pill-to p-0 shadow">
-									<img :src="convo.media" width="140px" style="border-radius:20px;">
+									<img :src="convo.media" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</p>
 								<div v-else-if="convo.type == 'link'" class="media d-inline-flex mb-0 cursor-pointer">
 									<div class="media-body">
@@ -90,7 +90,7 @@
 						<div v-else class="media d-inline-flex float-right mb-0">
 							<div class="media-body">
 								<p v-if="convo.type == 'photo'" class="pill-from p-0 shadow">
-									<img :src="convo.media" width="140px" style="border-radius:20px;">
+									<img :src="convo.media" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
 								</p>
 								<div v-else-if="convo.type == 'link'" class="media d-inline-flex float-right mb-0 cursor-pointer">
 									<div class="media-body">
@@ -134,7 +134,7 @@
 								</p>
 								<p v-else>&nbsp;</p>
 							</div>
-							<img v-if="!hideAvatars" class="ml-3 mt-2 rounded-circle img-thumbnail" :src="profile.avatar" alt="avatar" width="32px">
+							<img v-if="!hideAvatars" class="ml-3 mt-2 rounded-circle img-thumbnail" :src="profile.avatar" alt="avatar" width="32" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
 						</div>
 					</li>
 
