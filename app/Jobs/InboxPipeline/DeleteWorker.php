@@ -50,7 +50,7 @@ class DeleteWorker implements ShouldQueue
 		$payload = json_decode($this->payload, true, 8);
 
 		if(isset($payload['id'])) {
-			$lockKey = hash('sha256', $payload['id']);
+			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $payload['id']);
 			if(Cache::get($lockKey) !== null) {
 				// Job processed already
 				return 1;
@@ -114,6 +114,18 @@ class DeleteWorker implements ShouldQueue
 				}
 			});
 
+			return;
+		}
+
+		$profile = null;
+
+		if($this->verifySignature($headers, $payload) == true) {
+			(new Inbox($headers, $profile, $payload))->handle();
+			return;
+		} else if($this->blindKeyRotation($headers, $payload) == true) {
+			(new Inbox($headers, $profile, $payload))->handle();
+			return;
+		} else {
 			return;
 		}
 	}
