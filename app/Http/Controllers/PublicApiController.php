@@ -291,10 +291,7 @@ class PublicApiController extends Controller
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
 
-        $filtered = UserFilter::whereUserId($user->profile_id)
-                  ->whereFilterableType('App\Profile')
-                  ->whereIn('filter_type', ['mute', 'block'])
-                  ->pluck('filterable_id')->toArray();
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -305,7 +302,8 @@ class PublicApiController extends Controller
                         'type',
                         'scope',
                         'local'
-                      )->where('id', $dir, $id)
+                      )
+            		  ->where('id', $dir, $id)
                       ->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereLocal(true)
@@ -339,7 +337,8 @@ class PublicApiController extends Controller
                         'likes_count',
                         'reblogs_count',
                         'updated_at'
-                      )->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )
+            		  ->whereIn('type', ['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotIn('profile_id', $filtered)
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereLocal(true)
@@ -378,14 +377,14 @@ class PublicApiController extends Controller
         $user = $request->user();
 
         $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(5);
+        $ttl = now()->addMinutes(20);
         Cache::remember($key, $ttl, function() use($user) {
             $user->last_active_at = now();
             $user->save();
             return;
         });
 
-        $pid = Auth::user()->profile_id;
+        $pid = $user->profile_id;
 
         $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
             $following = Follower::whereProfileId($pid)->pluck('following_id');
@@ -401,7 +400,7 @@ class PublicApiController extends Controller
 			});
         }
 
-        $filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -425,7 +424,8 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )
+            		  ->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
@@ -454,7 +454,8 @@ class PublicApiController extends Controller
                         'reblogs_count',
                         'created_at',
                         'updated_at'
-                      )->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                      )
+            		  ->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
@@ -495,6 +496,8 @@ class PublicApiController extends Controller
             return;
         });
 
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+
         if($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
@@ -504,7 +507,9 @@ class PublicApiController extends Controller
                         'type',
                         'scope',
                         'created_at',
-                      )->where('id', $dir, $id)
+                      )
+            		  ->where('id', $dir, $id)
+                      ->whereNotIn('profile_id', $filtered)
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotNull('uri')
                       ->whereScope('public')
@@ -525,7 +530,9 @@ class PublicApiController extends Controller
 	                        'type',
 	                        'scope',
 	                        'created_at',
-	                      )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+	                      )
+                      	  ->whereNotIn('profile_id', $filtered)
+	            		  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 	                      ->whereNotNull('uri')
 	                      ->whereScope('public')
                       	  ->where('id', '>', $amin)
