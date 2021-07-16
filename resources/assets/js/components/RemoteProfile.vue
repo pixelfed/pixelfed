@@ -60,60 +60,10 @@
 			</div>
 			<div class="col-12 col-md-8 pt-5">
 				<div class="row">
-					<div class="col-12 mb-2" v-for="(status, index) in feed" :key="'remprop' + index">
-						<div class="card mb-sm-4 status-card card-md-rounded-0 shadow-none border cursor-pointer">
-								<div class="card-header d-inline-flex align-items-center bg-white">
-									<img v-bind:src="profile.avatar" width="38px" height="38px" style="border-radius: 38px;" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
-									<div class="pl-2">
-										<span class="username font-weight-bold text-dark">{{profile.username}}
-										</span>
-									</div>
-									<div class="text-right" style="flex-grow:1;">
-										<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu(status)">
-											<span class="fas fa-ellipsis-h text-lighter"></span>
-										</button>
-									</div>
-								</div>
-
-								<div class="card-body p-0">
-									<div v-if="status.sensitive == true">
-										<details class="details-animated" @click="status.sensitive = false;">
-											<summary>
-												<p class="mb-0 lead font-weight-bold">{{status.spoiler_text ? status.spoiler_text : 'CW / NSFW / Hidden Media'}}</p>
-												<p class="font-weight-light">(click to show)</p>
-											</summary>
-											<a :href="remotePostUrl(status)">
-												<img v-once :src="status.thumb" class="w-100 h-100">
-											</a>
-										</details>
-									</div>
-									<div v-else>
-										<a :href="remotePostUrl(status)">
-											<img v-once :src="status.thumb" class="w-100 h-100">
-										</a>
-										<button v-if="status.cw == true && status.sensitive == false" class="btn btn-block btn-primary font-weight-bold rounded-0" @click="status.sensitive = true;">Hide Media</button>
-									</div>
-									
-								</div>
-
-								<div class="card-body">
-									<div class="caption">
-										<p class="mb-2 read-more" style="overflow: hidden;">
-											<span class="username font-weight-bold">
-												<bdi><span class="text-dark">{{profile.username}}</span></bdi>
-											</span>
-											<span class="status-content" v-html="status.caption.html"></span>
-										</p>
-									</div>
-									<div class="timestamp mt-2">
-										<p class="small text-uppercase mb-0">
-											<a :href="remotePostUrl(status)" class="text-muted">
-												<timeago :datetime="status.timestamp" :auto-update="90" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.timestamp)" v-b-tooltip.hover.bottom></timeago>
-											</a>
-										</p>
-									</div>
-								</div>
-						</div>
+					<div class="col-12" v-for="(status, index) in feed" :key="'remprop' + index">
+						<status-card
+							:class="{'border-top': index === 0}"
+							:status="status" />
 					</div>
 
 					<div v-if="feed.length == 0" class="col-12 mb-2">
@@ -195,10 +145,17 @@
 </template>
 
 <script type="text/javascript">
+	import StatusCard from './partials/StatusCard.vue';
+
 	export default {
 		props: [
 			'profile-id',
 		],
+
+		components: {
+			StatusCard
+		},
+
 		data() {
 			return {
 				id: [],
@@ -234,7 +191,6 @@
 		},
 
 		methods: {
-
 			fetchProfile() {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.user = res.data
@@ -258,29 +214,7 @@
 				})
 				.then(res => {
 					let data = res.data
-						.filter(status => status.media_attachments.length > 0)
-						.map(status => {
-							return {
-								id: status.id,
-								caption: {
-									text: status.content_text,
-									html: status.content
-								},
-								count: {
-									likes: status.favourites_count,
-									shares: status.reblogs_count,
-									comments: status.reply_count
-								},
-								thumb: status.media_attachments[0].url,
-								media: status.media_attachments,
-								timestamp: status.created_at,
-								type: status.pf_type,
-								url: status.url,
-								sensitive: status.sensitive,
-								cw: status.sensitive,
-								spoiler_text: status.spoiler_text
-							}
-						});
+						.filter(status => status.media_attachments.length > 0);
 					let ids = data.map(status => status.id);
 					this.ids = ids;
 					this.min_id = Math.max(...ids);
