@@ -54,7 +54,7 @@ class UserFilterService {
 
 	public static function filters(int $profile_id) : array
 	{
-		return array_merge(self::mutes($profile_id), self::blocks($profile_id));
+		return array_unique(array_merge(self::mutes($profile_id), self::blocks($profile_id)));
 	}
 
 	public static function mute(int $profile_id, int $muted_id)
