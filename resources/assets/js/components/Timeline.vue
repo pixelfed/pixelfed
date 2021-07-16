@@ -55,16 +55,21 @@
 								</div>
 							</div>
 
-							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border">
-								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-									<span></span>
-									<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
-									<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
+							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border border-top-0">
+								<div class="card-header bg-white border-0 mb-0">
+									<div class="d-flex align-items-center justify-content-between pt-2">
+										<div></div>
+										<div>
+											<h6 class="text-muted lead font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
+										</div>
+										<div class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></div>
+									</div>
+									<p class="small text-muted text-center mb-0">You follow this hashtag. <a href="/site/kb/hashtags">Learn more</a></p>
 								</div>
 								<div class="card-body row mx-0">
-									<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+									<div v-for="(tag, index) in hashtagPosts" class="col-4 p-1 hashtag-post-square">
 										<a class="card info-overlay card-md-border-0" :href="tag.status.url">
-											<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
+											<div class="square">
 												<div v-if="tag.status.sensitive" class="square-content">
 													<div class="info-overlay-text-label">
 														<h5 class="text-white m-auto font-weight-bold">
@@ -85,17 +90,8 @@
 														height="32"
 														:hash="tag.status.media_attachments[0].blurhash"
 														:src="tag.status.media_attachments[0].preview_url"
+														onerror="this.onerror=null;this.src='/storage/no-preview.png'"
 														/>
-												</div>
-												<div class="info-overlay-text">
-													<h5 class="text-white m-auto font-weight-bold">
-														<span class="pr-4">
-															<span class="far fa-heart fa-lg pr-1"></span> {{formatCount(tag.status.favourites_count)}}
-														</span>
-														<span>
-															<span class="far fa-comment fa-lg pr-1"></span> {{formatCount(tag.status.reply_count)}}
-														</span>
-													</h5>
 												</div>
 											</div>
 										</a>
@@ -195,85 +191,6 @@
 							 :data-status-id="status.id"
 							 v-for="(status, index) in discover_feed"
 							 :key="`discover_feed-${index}-${status.id}`">
-
-							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
-								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
-									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
-								</div>
-								<div class="card-body row mx-0">
-									<div class="col-12 col-md-4 mb-3" v-for="(rec, index) in suggestions">
-										<div class="card">
-											<div class="card-body text-center pt-3">
-												<p class="mb-0">
-													<a :href="'/'+rec.username">
-														<img :src="rec.avatar" class="img-fluid rounded-circle cursor-pointer" width="45px" height="45px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
-													</a>
-												</p>
-												<div class="py-3">
-													<p class="font-weight-bold text-dark cursor-pointer mb-0">
-														<a :href="'/'+rec.username" class="text-decoration-none text-dark">
-															{{rec.username}}
-														</a>
-													</p>
-													<p class="small text-muted mb-0">{{rec.message}}</p>
-												</div>
-												<p class="mb-0">
-													<a class="btn btn-primary btn-block font-weight-bold py-0" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
-												</p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border-top-0 border">
-								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
-									<span></span>
-									<h6 class="text-muted font-weight-bold mb-0"><a :href="'/discover/tags/'+hashtagPostsName+'?src=tr'">#{{hashtagPostsName}}</a></h6>
-									<span class="cursor-pointer text-muted" v-on:click="showHashtagPosts = false"><i class="fas fa-times"></i></span>
-								</div>
-								<div class="card-body row mx-0">
-									<div v-for="(tag, index) in hashtagPosts" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
-										<a class="card info-overlay card-md-border-0" :href="tag.status.url">
-											<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
-												<div v-if="tag.status.sensitive" class="square-content">
-													<div class="info-overlay-text-label">
-														<h5 class="text-white m-auto font-weight-bold">
-															<span>
-																<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
-															</span>
-														</h5>
-													</div>
-													<blur-hash-canvas
-														width="32"
-														height="32"
-														:hash="tag.status.media_attachments[0].blurhash"
-														/>
-												</div>
-												<div v-else class="square-content">
-													<blur-hash-image
-														width="32"
-														height="32"
-														:hash="tag.status.media_attachments[0].blurhash"
-														:src="tag.status.media_attachments[0].preview_url"
-														/>
-												</div>
-												<div class="info-overlay-text">
-													<h5 class="text-white m-auto font-weight-bold">
-														<span class="pr-4">
-															<span class="far fa-heart fa-lg pr-1"></span> {{formatCount(tag.status.favourites_count)}}
-														</span>
-														<span>
-															<span class="far fa-comment fa-lg pr-1"></span> {{formatCount(tag.status.reply_count)}}
-														</span>
-													</h5>
-												</div>
-											</div>
-										</a>
-									</div>
-								</div>
-							</div>
 
 							<status-card
 								:class="{'border-top': index === 0}"
@@ -928,7 +845,7 @@
 					}).then(res => {
 						if(res.data.tags.length > 3) {
 							this.showHashtagPosts = true;
-							this.hashtagPosts = res.data.tags.splice(0,3);
+							this.hashtagPosts = res.data.tags.splice(0,9);
 						}
 					})
 				})
