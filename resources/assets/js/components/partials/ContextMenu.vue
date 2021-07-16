@@ -12,6 +12,7 @@
 				<!-- <div v-if="status && status.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
 				<div v-if="status && status.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">View Post</div>
+				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToProfile()">View Profile</div>
 				<!-- <div v-if="status && status.local == true && !status.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div> -->
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div>
@@ -275,6 +276,13 @@
 			ctxMenuGoToPost() {
 				let status = this.ctxMenuStatus;
 				window.location.href = this.statusUrl(status);
+				this.closeCtxMenu();
+				return;
+			},
+
+			ctxMenuGoToProfile() {
+				let status = this.ctxMenuStatus;
+				window.location.href = this.profileUrl(status);
 				this.closeCtxMenu();
 				return;
 			},
@@ -631,6 +639,14 @@
 				}
 
 				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				if(status.local == true) {
+					return status.account.url;
+				}
+
+				return '/i/web/profile/_/' + status.account.id;
 			},
 
 			deletePost(status) {
