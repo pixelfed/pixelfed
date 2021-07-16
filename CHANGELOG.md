@@ -64,6 +64,7 @@
 - Updated ContextMenu, add View Profile link. ([8544bcbd](https://github.com/pixelfed/pixelfed/commit/8544bcbd))
 - Updated presenters, improve content warnings. ([86422c81](https://github.com/pixelfed/pixelfed/commit/86422c81))
 - Updated Timeline.vue, increase pagination limit from 3 to 12 and add empty feed placeholder. ([916e8f71](https://github.com/pixelfed/pixelfed/commit/916e8f71))
+- Updated Timeline.vue, improve followed hashtags. ([728f10d7](https://github.com/pixelfed/pixelfed/commit/728f10d7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
