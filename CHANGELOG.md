@@ -60,6 +60,10 @@
 - Updated components, add fallback default avatar. ([726553f5](https://github.com/pixelfed/pixelfed/commit/726553f5))
 - Updated job queue, separate deletes into their own queue. ([7f421392](https://github.com/pixelfed/pixelfed/commit/7f421392))
 - Updated DiscoverController, use UserFilterService on trendingApi. ([135474ae](https://github.com/pixelfed/pixelfed/commit/135474ae))
+- Updated PublicApiController, use UserFilterService in public timeline endpoint. ([ca6e491c](https://github.com/pixelfed/pixelfed/commit/ca6e491c))
+- Updated ContextMenu, add View Profile link. ([8544bcbd](https://github.com/pixelfed/pixelfed/commit/8544bcbd))
+- Updated presenters, improve content warnings. ([86422c81](https://github.com/pixelfed/pixelfed/commit/86422c81))
+- Updated Timeline.vue, increase pagination limit from 3 to 12 and add empty feed placeholder. ([916e8f71](https://github.com/pixelfed/pixelfed/commit/916e8f71))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)

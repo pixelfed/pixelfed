@@ -57,19 +57,19 @@
 								</div>
 
 								<div v-else-if="status.pf_type === 'video'" class="w-100">
-									<video-presenter :status="status"></video-presenter>
+									<video-presenter :status="status" v-on:togglecw="status.sensitive = false"></video-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-									<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+									<photo-album-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-album-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'video:album'" class="w-100">
-									<video-album-presenter :status="status"></video-album-presenter>
+									<video-album-presenter :status="status" v-on:togglecw="status.sensitive = false"></video-album-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-									<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+									<mixed-album-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></mixed-album-presenter>
 								</div>
 
 								<div v-else class="w-100">
@@ -292,19 +292,19 @@
 								</div>
 
 								<div v-else-if="status.pf_type === 'video'" class="w-100">
-									<video-presenter :status="status"></video-presenter>
+									<video-presenter :status="status" v-on:togglecw="status.sensitive = false"></video-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
-									<photo-album-presenter :status="status" v-on:lightbox="lightbox"></photo-album-presenter>
+									<photo-album-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-album-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'video:album'" class="w-100">
-									<video-album-presenter :status="status"></video-album-presenter>
+									<video-album-presenter :status="status" v-on:togglecw="status.sensitive = false"></video-album-presenter>
 								</div>
 
 								<div v-else-if="status.pf_type === 'photo:video:album'" class="w-100">
-									<mixed-album-presenter :status="status" v-on:lightbox="lightbox"></mixed-album-presenter>
+									<mixed-album-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></mixed-album-presenter>
 								</div>
 
 								<div v-else class="w-100">

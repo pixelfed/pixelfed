@@ -280,16 +280,23 @@
 								:status="status"
 								:recommended="true" />
 						</div>
+
+						<div v-if="!loading && emptyFeed">
+							<div class="card rounded-0 mt-3 status-card rounded-0 shadow-none border">
+								<div class="card-body py-5 my-5">
+									<p class="text-center"><i class="fas fa-battery-empty fa-8x text-lighter"></i></p>
+									<p class="text-center h3 font-weight-light">empty_timeline.jpg</p>
+									<p class="text-center text-muted font-weight-light">We cannot find any posts for this timeline.</p>
+									<p class="text-center mb-0">
+										<a class="btn btn-link font-weight-bold px-4" href="/discover">Discover new posts and people</a>
+									</p>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="col-md-4 col-lg-4 my-4 order-1 order-md-2 d-none d-md-block">
 					<div>
-
-						<!-- <div class="mb-4">
-							<a class="btn btn-block btn-primary btn-sm font-weight-bold mb-3 border" href="/i/compose" data-toggle="modal" data-target="#composeModal">
-								<i class="far fa-plus-square pr-3 fa-lg pt-1"></i> New Post
-							</a>
-						</div> -->
 
 						<div class="mb-4">
 							<div v-show="!loading" class="">
@@ -580,7 +587,8 @@
 				recentFeed: this.scope === 'home' ? true : false,
 				recentFeedMin: null,
 				recentFeedMax: null,
-				reactionBar: true
+				reactionBar: true,
+				emptyFeed: false
 			}
 		},
 
@@ -687,11 +695,18 @@
 				axios.get(apiUrl, {
 					params: {
 						max_id: this.max_id,
-						limit: 3,
+						limit: 12,
 						recent_feed: this.recentFeed
 					}
 				}).then(res => {
 					let data = res.data;
+
+					if(!data.length) {
+						this.loading = false;
+						this.emptyFeed = true;
+						return;
+					}
+
 					this.feed.push(...data);
 					let ids = data.map(status => status.id);
 					this.ids = ids;
