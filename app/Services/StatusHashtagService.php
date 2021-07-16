@@ -20,6 +20,9 @@ class StatusHashtagService {
 			return [];
 		}
 
+		$pid = request()->user() ? request()->user()->profile_id : false;
+		$filtered = $pid ? UserFilterService::filters($pid) : [];
+
 		return StatusHashtag::whereHashtagId($id)
 			->whereStatusVisibility('public')
 			->whereHas('media')
@@ -30,10 +33,10 @@ class StatusHashtagService {
 			->map(function ($i, $k) use ($id) {
 				return self::getStatus($i, $id);
 			})
-			->filter(function ($i) {
-				return isset($i['status']) && !empty($i['status']);
+			->filter(function ($i) use($filtered) {
+				return isset($i['status']) && !empty($i['status']) && !in_array($i['status']['account']['id'], $filtered);
 			})
-			->all();
+			->values();
 	}
 
 	public static function coldGet($id, $start = 0, $stop = 2000)
