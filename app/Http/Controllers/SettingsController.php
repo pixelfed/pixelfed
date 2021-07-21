@@ -241,13 +241,13 @@ class SettingsController extends Controller
 		if($top) {
 			Redis::zadd('pf:tl:top', $pid, $pid);
 		} else {
-			Redis::zrem('pf:tl:top', $pid, $pid);
+			Redis::zrem('pf:tl:top', $pid);
 		}
 
 		if($replies) {
 			Redis::zadd('pf:tl:replies', $pid, $pid);
 		} else {
-			Redis::zrem('pf:tl:replies', $pid, $pid);
+			Redis::zrem('pf:tl:replies', $pid);
 		}
 		return redirect(route('settings.timeline'));
 	}
