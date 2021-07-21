@@ -430,6 +430,7 @@ class PublicApiController extends Controller
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
@@ -459,6 +460,7 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
+                      ->whereNull('in_reply_to_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
