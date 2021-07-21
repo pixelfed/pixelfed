@@ -49,16 +49,17 @@
 				<span v-bind:class="[size =='lg' ? 'fas fa-ellipsis-v fa-lg text-muted' : 'fas fa-ellipsis-v fa-sm text-lighter']"></span>
 			</span>
 			<div class="modal" tabindex="-1" role="dialog" :id="'mt_pid_'+status.id">
-				<div class="modal-dialog modal-sm" role="document">
+				<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
 					<div class="modal-content">
 						<div class="modal-body text-center">
-							<div class="list-group text-dark">
-								<a class="list-group-item text-dark text-decoration-none" :href="status.url">Go to post</a>
+							<div class="list-group">
+								<a class="list-group-item text-dark text-decoration-none" :href="statusUrl(status)">Go to post</a>
 								<!-- a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Share</a>
 								<a class="list-group-item font-weight-bold text-decoration-none" :href="status.url">Embed</a> -->
 								<a class="list-group-item text-dark text-decoration-none" href="#" @click.prevent="hidePost(status)">Hide</a>
 								<a v-if="activeSession == true && !statusOwner(status)" class="list-group-item text-danger font-weight-bold text-decoration-none" :href="reportUrl(status)">Report</a>
 								<div v-if="activeSession == true && statusOwner(status) == true || profile.is_admin == true" class="list-group-item text-danger font-weight-bold cursor-pointer" @click.prevent="deletePost">Delete</div>
+								<a class="list-group-item text-lighter text-decoration-none" href="#" @click.prevent="closeModal()">Close</a>
 							</div>
 						</div>
 					</div>
@@ -199,6 +200,26 @@
 				}).catch(err => {
 					swal('Error', 'Something went wrong. Please try again later.', 'error');
 				});
+			},
+
+			statusUrl(status) {
+				if(status.local == true) {
+					return status.url;
+				}
+
+				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				if(status.local == true) {
+					return status.account.url;
+				}
+
+				return '/i/web/profile/_/' + status.account.id;
+			},
+
+			closeModal() {
+				$('#mt_pid_'+this.status.id).modal('hide');
 			}
 		}
 	}

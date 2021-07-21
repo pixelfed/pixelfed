@@ -149,7 +149,7 @@
 													<div class="media-body">
 														<div v-if="reply.sensitive == true">
 															<span class="py-3">
-																<a class="text-dark font-weight-bold mr-1" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+																<a class="text-dark font-weight-bold mr-1" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{!reply.account.local ? '@' : '' }}{{truncate(reply.account.username,15)}}</a>
 																<span class="text-break">
 																	<span class="font-italic text-muted">This comment may contain sensitive material</span>
 																	<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
@@ -159,7 +159,7 @@
 														<div v-else>
 															<p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
 																<span>
-																	<a class="text-dark font-weight-bold mr-1 text-break" :href="reply.account.url" v-bind:title="reply.account.username">{{truncate(reply.account.username,15)}}</a>
+																	<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{!reply.account.local ? '@' : '' }}{{truncate(reply.account.username,15)}}</a>
 																	<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
 																</span>
 																<span style="min-width:38px;">
@@ -182,7 +182,7 @@
 																	<div class="media-body">
 																		<p class="d-flex justify-content-between align-items-top read-more" style="overflow-y: hidden;">
 																			<span>
-																				<a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
+																				<a class="text-dark font-weight-bold mr-1" :href="profileUrl(s)" :title="s.account.username">{{!s.account.local ? '@' : '' }}{{s.account.username}}</a>
 																				<span class="text-break comment-body" style="word-break: break-all;" v-html="s.content"></span>
 																			</span>
 																			<span class="pl-2" style="min-width:38px">
@@ -1565,6 +1565,14 @@ export default {
 				}
 
 				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				if(status.local == true) {
+					return status.account.url;
+				}
+
+				return '/i/web/profile/_/' + status.account.id;
 			},
 
 			showTaggedPeopleModal() {
