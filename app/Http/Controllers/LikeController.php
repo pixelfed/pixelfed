@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\LikePipeline\UnlikePipeline;
 use App\Like;
 use App\Status;
 use App\User;
@@ -28,15 +29,12 @@ class LikeController extends Controller
 		$profile = $user->profile;
 		$status = Status::findOrFail($request->input('item'));
 
-		$count = $status->likes()->count();
 
 		if ($status->likes()->whereProfileId($profile->id)->count() !== 0) {
 			$like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
-			$like->forceDelete();
-			$count--;
-			$status->likes_count = $count;
-			$status->save();
+			UnlikePipeline::dispatch($like);
 		} else {
+			$count = $status->likes_count > 4 ? $status->likes_count : $status->likes()->count();
 			$like = Like::firstOrCreate([
 				'profile_id' => $user->profile_id,
 				'status_id' => $status->id
