@@ -402,8 +402,8 @@ class PublicApiController extends Controller
         }
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
-        $textOnlyPosts = Redis::zscore('pf:tl:top', $pid) !== false;
-        $textOnlyReplies = Redis::zscore('pf:tl:replies', $pid) !== false;
+        $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
+        $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
         $types = $textOnlyPosts ?
         	['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'] :
         	['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];

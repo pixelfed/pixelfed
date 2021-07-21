@@ -1289,13 +1289,17 @@ class ApiV1Controller extends Controller
 		if($max) {
 			$res = NotificationService::getMax($pid, $max, $limit);
 			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
-			$maxId = max($ids);
-			$minId = min($ids);
+			if(!empty($ids)) {
+				$maxId = max($ids);
+				$minId = min($ids);
+			}
 		} else {
 			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
 			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
-			$maxId = max($ids);
-			$minId = min($ids);
+			if(!empty($ids)) {
+				$maxId = max($ids);
+				$minId = min($ids);
+			}
 		}
 
 		$baseUrl = config('app.url') . '/api/v1/notifications?';
