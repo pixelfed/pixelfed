@@ -9,9 +9,20 @@
 			<p class="text-center font-weight-bold"><a href="#" class="btn btn-primary font-weight-bold px-5" @click.prevent="warning = false; fetchData()">View Status</a></p>
 		</div>
 	</div>
-	<div v-if="loaded && warning == false" class="postComponent">
+	<div v-if="loaded && warning == false && currentLayout === 'status'" class="postComponent">
 		<div class="container px-0">
-			<div class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
+
+			<div v-if="status.pf_type === 'text'" class="col-12 col-md-6 offset-md-3">
+					<status-card
+							class="border-top"
+							:status="status"
+							:recommended="false"
+							v-on:comment-focus="commentFocus" />
+
+
+			</div>
+
+			<div v-else class="card card-md-rounded-0 status-container orientation-unknown shadow-none border">
 				<div class="row px-0 mx-0">
 				<div class="d-flex d-md-none align-items-center justify-content-between card-header bg-white w-100">
 					<div class="d-flex">
@@ -242,6 +253,7 @@
 
 				</div>
 			</div>
+
 			<div class="container" v-if="showProfileMorePosts">
 				<p class="text-lighter px-3 mt-5" style="font-weight: 600;font-size: 15px;">More posts from <a :href="profileUrl" class="text-dark">{{this.statusUsername}}</a></p>
 				<div class="profile-timeline mt-md-4">
@@ -274,6 +286,14 @@
 			</div>
 		</div>
 	</div>
+
+	<comment-card
+			v-if="currentLayout === 'comments'"
+			:status="status"
+			:profile="profile"
+			v-on:current-layout="setCurrentLayout"
+			:backToStatus="true"
+			/>
 
 	<b-modal ref="likesModal"
 		id="l-modal"
@@ -521,6 +541,9 @@
 
 pixelfed.postComponent = {};
 
+import StatusCard from './partials/StatusCard.vue';
+import CommentCard from './partials/CommentCard.vue';
+
 export default {
 		props: [
 			'status-id',
@@ -532,12 +555,19 @@ export default {
 			'status-profile-id',
 			'profile-layout'
 		],
+
+		components: {
+			StatusCard,
+			CommentCard
+		},
+
 		data() {
 				return {
 						config: window.App.config,
 						status: false,
 						media: {},
 						user: false,
+						profile: false,
 						reactions: {
 							liked: false,
 							shared: false
@@ -573,10 +603,14 @@ export default {
 						replySending: false,
 						reactionBarLoading: true,
 						profileUrl: null,
+						currentLayout: 'status'
 					}
 		},
 
 		mounted() {
+			axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+				this.profile = res.data;
+			});
 			this.fetchRelationships();
 			if(localStorage.getItem('pf_metro_ui.exp.rm') == 'false') {
 				this.showReadMore = false;
@@ -625,9 +659,9 @@ export default {
 								}
 								self.profileUrl = '/i/web/profile/_/' + response.data.status.account.id;
 								this.loaded = true;
-								setTimeout(function() {
-									self.fetchProfilePosts();
-								}, 3000);
+								// setTimeout(function() {
+								// 	self.fetchProfilePosts();
+								// }, 3000);
 								setTimeout(function() {
 									self.fetchState();
 									document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
@@ -1198,9 +1232,9 @@ export default {
 						status.sensitive == false
 					});
 					let ids = data.map(status => status.id);
-					if(data.length >= 3) {
-						self.showProfileMorePosts = true;
-					}
+					// if(data.length >= 3) {
+					// 	self.showProfileMorePosts = true;
+					// }
 					self.profileMorePosts = data.slice(0,6);
 				})
 			},
@@ -1402,6 +1436,75 @@ export default {
 					setTimeout(function() {
 						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
 					}, 500);
+				});
+			},
+
+			setCurrentLayout(layout) {
+				this.currentLayout = layout;
+			},
+
+			commentFocus(status, $event) {
+          if(status.comments_disabled) {
+              return;
+          }
+
+          this.replies = {};
+          this.replyStatus = {};
+          this.replyText = '';
+          this.replyId = status.id;
+          this.replyStatus = status;
+          // this.$refs.replyModal.show();
+          this.fetchStatusComments(status, '');
+
+          $('nav').hide();
+          $('footer').hide();
+          $('.mobile-footer-spacer').attr('style', 'display:none !important');
+          $('.mobile-footer').attr('style', 'display:none !important');
+          $('.mt-md-4').hide();
+          this.currentLayout = 'comments';
+          window.history.pushState({}, '', this.getStatusUrl(status));
+          return;
+      },
+
+      fetchStatusComments(status, card) {
+				let url = '/api/v2/comments/'+status.account.id+'/status/'+status.id;
+				axios.get(url)
+				.then(response => {
+					let self = this;
+					this.replies = _.reverse(response.data.data);
+					this.pagination = response.data.meta.pagination;
+					if(this.replies.length > 0) {
+						$('.load-more-link').removeClass('d-none');
+					}
+					$('.postCommentsLoader').addClass('d-none');
+					$('.postCommentsContainer').removeClass('d-none');
+					// setTimeout(function() {
+					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
+					// 		i.href = App.util.format.rewriteLinks(i);
+					// 	});
+					// }, 500);
+				}).catch(error => {
+					if(!error.response) {
+						$('.postCommentsLoader .lds-ring')
+						.attr('style','width:100%')
+						.addClass('pt-4 font-weight-bold text-muted')
+						.text('An error occurred, cannot fetch comments. Please try again later.');
+					} else {
+						switch(error.response.status) {
+							case 401:
+							$('.postCommentsLoader .lds-ring')
+							.attr('style','width:100%')
+							.addClass('pt-4 font-weight-bold text-muted')
+							.text('Please login to view.');
+							break;
+							default:
+							$('.postCommentsLoader .lds-ring')
+							.attr('style','width:100%')
+							.addClass('pt-4 font-weight-bold text-muted')
+							.text('An error occurred, cannot fetch comments. Please try again later.');
+							break;
+						}
+					}
 				});
 			},
 

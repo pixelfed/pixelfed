@@ -24,7 +24,7 @@
 								<div class="media-body">
 									<p class="d-flex justify-content-between align-items-top mb-0" style="overflow-y: hidden;">
 										<span class="mr-2" style="font-size: 13px;">
-											<a class="text-dark font-weight-bold mr-1 text-break" :href="status.account.url" v-bind:title="status.account.username">{{trimCaption(status.account.username,15)}}</a>
+											<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(status)" v-bind:title="status.account.username">{{trimCaption(status.account.username,15)}}</a>
 											<span class="text-break comment-body" style="word-break: break-all;" v-html="status.content"></span>
 										</span>
 									</p>
@@ -52,7 +52,7 @@
 									<div class="media-body">
 										<div v-if="reply.sensitive == true">
 											<span class="py-3">
-												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="reply.account.url" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
+												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
 												<span class="text-break" style="font-size: 13px;">
 													<span class="font-italic text-muted">This comment may contain sensitive material</span>
 													<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
@@ -62,7 +62,7 @@
 										<div v-else>
 											<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
 												<span class="mr-3" style="font-size: 13px;">
-													<a class="text-dark font-weight-bold mr-1 text-break" :href="reply.account.url" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
+													<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
 													<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
 												</span>
 												<span class="text-right" style="min-width: 30px;">
@@ -73,7 +73,7 @@
 												</span>
 											</p>
 											<p class="mb-0">
-												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="reply.url"></a>
+												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="statusUrl(reply)"></a>
 												<span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3 small">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
 												<span class="small text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
 											</p>
@@ -87,7 +87,7 @@
 													<div class="media-body">
 														<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
 															<span class="mr-2" style="font-size: 13px;">
-																<a class="text-dark font-weight-bold mr-1" :href="s.account.url" :title="s.account.username">{{s.account.username}}</a>
+																<a class="text-dark font-weight-bold mr-1" :href="profileUrl(s)" :title="s.account.username">{{s.account.username}}</a>
 																<span class="text-break comment-body" style="word-break: break-all;" v-html="s.content"></span>
 															</span>
 															<span>
@@ -95,7 +95,7 @@
 															</span>
 														</p>
 														<p class="mb-0">
-															<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="s.url"></a>
+															<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(s.created_at)" :href="statusUrl(s)"></a>
 															<span v-if="s.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3">{{s.favourites_count == 1 ? '1 like' : s.favourites_count + ' likes'}}</span>
 														</p>
 													</div>
@@ -190,7 +190,20 @@
 	import ContextMenu from './ContextMenu.vue';
 
 	export default {
-		props: ['status', 'profile'],
+		props: {
+			'status': {
+				type: Object
+			},
+
+			'profile': {
+				type: Object
+			},
+
+			'backToStatus': {
+				type: Boolean,
+				default: false
+			}
+		},
 
 		components: {
 			"context-menu": ContextMenu
@@ -249,6 +262,11 @@
 
 		methods: {
 			commentNavigateBack(id) {
+				if(this.backToStatus) {
+					window.location.href = this.statusUrl(this.status);
+					return;
+				}
+
 				$('nav').show();
 				$('footer').show();
 				$('.mobile-footer-spacer').attr('style', 'display:block');
@@ -393,7 +411,23 @@
 			ctxMenu(status) {
 				this.ctxMenuStatus = status;
 				this.$refs.cMenu.open();
-			}
+			},
+
+			statusUrl(status) {
+				if(status.local == true) {
+					return status.url;
+				}
+
+				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			profileUrl(status) {
+				if(status.local == true) {
+					return status.account.url;
+				}
+
+				return '/i/web/profile/_/' + status.account.id;
+			},
 		}
 
 	}
