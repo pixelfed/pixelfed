@@ -8,6 +8,7 @@ use App\ProfileSponsor;
 use App\Report;
 use App\UserFilter;
 use Auth, Cookie, DB, Cache, Purify;
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -221,6 +222,34 @@ class SettingsController extends Controller
 		$sponsors->save();
 		$sponsors = $res;
 		return redirect(route('settings'))->with('status', 'Sponsor settings successfully updated!');;
+	}
+
+	public function timelineSettings(Request $request)
+	{
+		$pid = $request->user()->profile_id;
+		$top = Redis::zscore('pf:tl:top', $pid) != false;
+		$replies = Redis::zscore('pf:tl:replies', $pid) != false;
+		return view('settings.timeline', compact('top', 'replies'));
+	}
+
+	public function updateTimelineSettings(Request $request)
+	{
+		$pid = $request->user()->profile_id;
+		$top = $request->has('top') && $request->input('top') === 'on';
+		$replies = $request->has('replies') && $request->input('replies') === 'on';
+
+		if($top) {
+			Redis::zadd('pf:tl:top', $pid, $pid);
+		} else {
+			Redis::zrem('pf:tl:top', $pid, $pid);
+		}
+
+		if($replies) {
+			Redis::zadd('pf:tl:replies', $pid, $pid);
+		} else {
+			Redis::zrem('pf:tl:replies', $pid, $pid);
+		}
+		return redirect(route('settings.timeline'));
 	}
 
 }

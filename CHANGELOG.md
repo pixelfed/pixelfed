@@ -71,6 +71,7 @@
 - Updated StatusCard, add text support. ([ed14ee48](https://github.com/pixelfed/pixelfed/commit/ed14ee48))
 - Updated PublicApiController, filter out text replies on home timeline. ([86219b57](https://github.com/pixelfed/pixelfed/commit/86219b57))
 - Updated RemotePost.vue, improve text only post UI. ([b0257be2](https://github.com/pixelfed/pixelfed/commit/b0257be2))
+- Updated Timeline, make text-only posts opt-in by default. ([0153ed6d](https://github.com/pixelfed/pixelfed/commit/0153ed6d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
