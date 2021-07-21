@@ -1,6 +1,55 @@
 <template>
 	<div>
-		<div class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
+		<div v-if="status.pf_type === 'text'" class="card shadow-none border border-top-0 rounded-0">
+			<div class="card-body">
+				<div class="media">
+					<img class="rounded-circle box-shadow mr-2" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
+					<div class="media-body">
+						<div class="pl-2 d-flex align-items-top">
+							<a class="username font-weight-bold text-dark text-decoration-none text-break" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
+								Loading...
+							</a>
+							<span class="px-1 text-lighter">
+								·
+							</span>
+							<a class="font-weight-bold text-lighter"
+							   :href="statusUrl(status)">
+								{{shortTimestamp(status.created_at)}}
+							</a>
+							<span class="text-right" style="flex-grow:1;">
+								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu()">
+									<span class="fas fa-ellipsis-v text-lighter"></span>
+									<span class="sr-only">Post Menu</span>
+								</button>
+							</span>
+						</div>
+						<div class="pl-2">
+
+							<details v-if="status.sensitive">
+								<summary class="mb-2 font-weight-bold text-muted">Content Warning</summary>
+								<p v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+							</details>
+
+							<p v-else v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+
+							<p class="mb-0">
+								<i class="fa-heart fa-lg cursor-pointer mr-3"
+								   :class="{ 'far text-muted': !status.favourited, 'fas text-danger': status.favourited }"
+								   @click="likeStatus(status, $event);">
+								 </i>
+
+								<i class="far fa-comment cursor-pointer text-muted fa-lg mr-3"
+								   @click="commentFocus(status, $event)">
+
+								</i>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div v-else class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
 			<div v-if="status" class="card-header d-inline-flex align-items-center bg-white">
 				<div>
 					<img class="rounded-circle box-shadow" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
@@ -27,15 +76,7 @@
 
 			<div class="postPresenterContainer" style="background: #000;">
 
-				<div v-if="config.ab.top && status.pf_type === 'text'" class="w-100">
-					<div class="w-100 card-img-top border-bottom rounded-0" style="background-image: url(/storage/textimg/bg_1.jpg);background-size: cover;width: 100%;height: 540px;">
-						<div class="w-100 h-100 d-flex justify-content-center align-items-center">
-							<p class="text-center text-break h3 px-5 font-weight-bold" v-html="status.content"></p>
-						</div>
-					</div>
-				</div>
-
-				<div v-else-if="status.pf_type === 'photo'" class="w-100">
+				<div v-if="status.pf_type === 'photo'" class="w-100">
 					<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
 				</div>
 
@@ -198,6 +239,10 @@
 			timestampFormat(timestamp) {
 				let ts = new Date(timestamp);
 				return ts.toDateString() + ' ' + ts.toLocaleTimeString();
+			},
+
+			shortTimestamp(ts) {
+				return window.App.util.format.timeAgo(ts);
 			},
 
 			statusCardUsernameFormat(status) {

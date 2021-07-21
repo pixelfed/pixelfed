@@ -67,6 +67,8 @@
 - Updated Timeline.vue, improve followed hashtags. ([728f10d7](https://github.com/pixelfed/pixelfed/commit/728f10d7))
 - Updated PostComponent, use profileUrl method for comments. ([7ed65fc9](https://github.com/pixelfed/pixelfed/commit/7ed65fc9))
 - Updated Timeline, fix empty timeline card. ([11eb6acd](https://github.com/pixelfed/pixelfed/commit/11eb6acd))
+- Updated ap helpers, set text type when appropriate. ([9f4f983f](https://github.com/pixelfed/pixelfed/commit/9f4f983f))
+- Updated StatusCard, add text support. ([ed14ee48](https://github.com/pixelfed/pixelfed/commit/ed14ee48))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
