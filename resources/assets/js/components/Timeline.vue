@@ -198,7 +198,7 @@
 								:recommended="true" />
 						</div>
 
-						<div v-if="!loading && emptyFeed">
+						<div v-if="!loading && emptyFeed && scope !== 'home'">
 							<div class="card rounded-0 mt-3 status-card rounded-0 shadow-none border">
 								<div class="card-body py-5 my-5">
 									<p class="text-center"><i class="fas fa-battery-empty fa-8x text-lighter"></i></p>
