@@ -364,6 +364,8 @@ class StatusController extends Controller
 		if($photos >= 1 && $videos >= 1) {
 			return 'photo:video:album';
 		}
+
+		return 'text';
 	}
 
 	public function toggleVisibility(Request $request) {

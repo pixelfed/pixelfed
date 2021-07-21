@@ -416,6 +416,7 @@ class Helpers {
 	public static function importNoteAttachment($data, Status $status)
 	{
 		if(self::verifyAttachments($data) == false) {
+			$status->viewType();
 			return;
 		}
 		$attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
