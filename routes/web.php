@@ -426,6 +426,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('/', 'ImportController@mastodon')->name('settings.import.mastodon');
 		  });
 		});
+
+		Route::get('timeline', 'SettingsController@timelineSettings')->name('settings.timeline');
+		Route::post('timeline', 'SettingsController@updateTimelineSettings');
 	});
 
 	Route::group(['prefix' => 'site'], function () {

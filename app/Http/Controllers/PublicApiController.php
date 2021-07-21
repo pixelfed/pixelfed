@@ -16,6 +16,7 @@ use App\{
     UserFilter
 };
 use Auth, Cache;
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
@@ -401,6 +402,11 @@ class PublicApiController extends Controller
         }
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+        $textOnlyPosts = Redis::zscore('pf:tl:top', $pid) !== false;
+        $textOnlyReplies = Redis::zscore('pf:tl:replies', $pid) !== false;
+        $types = $textOnlyPosts ?
+        	['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'] :
+        	['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -425,12 +431,14 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )
-            		  ->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            		  ->whereIn('type', $types)
+                      ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
+                      	return $q->whereNull('in_reply_to_id');
+                  	  })
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
@@ -456,11 +464,13 @@ class PublicApiController extends Controller
                         'created_at',
                         'updated_at'
                       )
-            		  ->whereIn('type', ['text','photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+            		  ->whereIn('type', $types)
+            		  ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
+                      	return $q->whereNull('in_reply_to_id');
+                  	  })
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereNotIn('profile_id', $filtered)
-                      ->whereNull('in_reply_to_id')
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->simplePaginate($limit);
