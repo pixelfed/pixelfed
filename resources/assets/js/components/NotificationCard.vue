@@ -120,7 +120,7 @@
 			setTimeout(function() {
 				self.profile = window._sharedData.curUser;
 				self.fetchFollowRequests();
-			}, 500);
+			}, 1500);
 		},
 
 		updated() {
@@ -157,7 +157,7 @@
 				}
 				axios.get('/api/pixelfed/v1/notifications', {
 					params: {
-						page: this.notificationCursor
+						max_id: this.notificationMaxId
 					}
 				}).then(res => {
 					if(res.data.length) {

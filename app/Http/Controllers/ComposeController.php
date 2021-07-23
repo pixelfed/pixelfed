@@ -15,7 +15,8 @@ use App\{
 	Profile,
 	Place,
 	Status,
-	UserFilter
+	UserFilter,
+	UserSetting
 };
 use App\Transformer\Api\{
 	MediaTransformer,
@@ -660,5 +661,26 @@ class ComposeController extends Controller
 		return [
 			'finished' => $finished
 		];
+	}
+
+	public function composeSettings(Request $request)
+	{
+		$uid = $request->user()->id;
+
+		return Cache::remember('profile:compose:settings:' . $uid, now()->addHours(12), function() use($uid) {
+			$res = UserSetting::whereUserId($uid)->first();
+
+			if(!$res) {
+				return [
+					'default_license' => null,
+					'media_descriptions' => false
+				];
+			}
+
+			return json_decode($res->compose_settings, true) ?? [
+				'default_license' => null,
+				'media_descriptions' => false
+			];
+		});
 	}
 }

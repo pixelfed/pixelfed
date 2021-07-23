@@ -134,20 +134,16 @@ export default {
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
 			});
-			axios.get('/api/pixelfed/v1/notifications', {
-				params: {
-					pg: true
-				}
-			})
+			axios.get('/api/pixelfed/v1/notifications?pg=true')
 			.then(res => {
 				let data = res.data.filter(n => {
-					if(n.type == 'share' && !status) {
+					if(n.type == 'share' && !n.status) {
 						return false;
 					}
-					if(n.type == 'comment' && !status) {
+					if(n.type == 'comment' && !n.status) {
 						return false;
 					}
-					if(n.type == 'mention' && !status) {
+					if(n.type == 'mention' && !n.status) {
 						return false;
 					}
 					return true;
@@ -167,8 +163,7 @@ export default {
 			}
 			axios.get('/api/pixelfed/v1/notifications', {
 				params: {
-					pg: true,
-					page: this.notificationCursor
+					max_id: this.notificationMaxId
 				}
 			}).then(res => {
 				if(res.data.length) {

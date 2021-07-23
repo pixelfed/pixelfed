@@ -100,10 +100,10 @@
 								v-for="(item, index) in availableLicenses"
 								class="list-group-item cursor-pointer"
 								:class="{
-									'text-primary': licenseIndex === index,
-									'font-weight-bold': licenseIndex === index
+									'text-primary': licenseId === item.id,
+									'font-weight-bold': licenseId === item.id
 								}"
-								@click="toggleLicense(index)">
+								@click="toggleLicense(item)">
 								{{item.name}}
 							</div>
 						</div>
@@ -336,7 +336,13 @@
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
 						</div>
 						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">Add license <span class="ml-2 badge badge-primary">NEW</span></p>
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">
+								<span>Add license <span class="ml-2 badge badge-primary">NEW</span></span>
+								<span class="float-right">
+									<a v-if="licenseTitle" href="#" @click.prevent="showLicenseCard()" class="btn btn-outline-secondary btn-sm small mr-3 mt-n1 disabled" style="font-size:10px;padding:3px;text-transform: uppercase" disabled>{{licenseTitle}}</a>
+									<a href="#" @click.prevent="showLicenseCard()" class="text-decoration-none"><i class="fas fa-chevron-right fa-lg text-lighter"></i></a>
+								</span>
+							</p>
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
@@ -591,11 +597,11 @@
 										<span></span>
 										<span>{{media[carouselCursor].license ? media[carouselCursor].license.length : 0}}/140</span>
 									</p> -->
-									<select class="form-control" v-model="licenseIndex">
+									<select class="form-control" v-model="licenseId">
 										<option
 											v-for="(item, index) in availableLicenses"
-											:value="index"
-											:selected="index === licenseIndex">
+											:value="item.id"
+											:selected="item.id == licenseId">
 											{{item.name}}
 										</option>
 									</select>
@@ -845,52 +851,79 @@ export default {
 			availableLicenses: [
 				{
 					id: 1,
-					name: "All Rights Reserved"
+					name: "All Rights Reserved",
+					title: ""
 				},
 				{
 					id: 5,
-					name: "Public Domain Work"
+					name: "Public Domain Work",
+					title: ""
 				},
 				{
 					id: 6,
-					name: "Public Domain Dedication (CC0)"
+					name: "Public Domain Dedication (CC0)",
+					title: "CC0"
 				},
 				{
 					id: 11,
-					name: "Attribution"
+					name: "Attribution",
+					title: "CC BY"
 				},
 				{
 					id: 12,
-					name: "Attribution-ShareAlike"
+					name: "Attribution-ShareAlike",
+					title: "CC BY-SA"
 				},
 				{
 					id: 13,
-					name: "Attribution-NonCommercial"
+					name: "Attribution-NonCommercial",
+					title: "CC BY-NC"
 				},
 				{
 					id: 14,
-					name: "Attribution-NonCommercial-ShareAlike"
+					name: "Attribution-NonCommercial-ShareAlike",
+					title: "CC BY-NC-SA"
 				},
 				{
 					id: 15,
-					name: "Attribution-NoDerivs"
+					name: "Attribution-NoDerivs",
+					title: "CC BY-ND"
 				},
 				{
 					id: 16,
-					name: "Attribution-NonCommercial-NoDerivs"
+					name: "Attribution-NonCommercial-NoDerivs",
+					title: "CC BY-NC-ND"
 				}
 			],
 			licenseIndex: 0,
 			video: {
 				title: '',
 				description: ''
-			}
+			},
+			composeSettings: {
+				default_license: null,
+				media_descriptions: false
+			},
+			licenseId: null,
+			licenseTitle: null
 		}
 	},
 
 	beforeMount() {
 		this.fetchProfile();
 		this.filters = window.App.util.filters;
+		axios.get('/api/compose/v0/settings')
+		.then(res => {
+			this.composeSettings = res.data;
+			this.licenseId = this.composeSettings.default_license;
+			if(this.licenseId > 10) {
+				this.licenseTitle = this.availableLicenses.filter(l => {
+					return l.id == this.licenseId;
+				}).map(l => {
+					return l.title;
+				})[0];
+			}
+		});
 	},
 
 	mounted() {
@@ -1064,6 +1097,16 @@ export default {
 
 			switch(state) {
 				case 'publish' :
+					if(this.composeSettings.media_descriptions === true) {
+						let count = this.media.filter(m => {
+							return !m.hasOwnProperty('alt') || m.alt.length < 2;
+						});
+
+						if(count.length) {
+							swal('Missing media descriptions', 'You have enabled mandatory media descriptions. Please add media descriptions under Advanced settings to proceed. For more information, please see the media settings page.', 'warning');
+							return;
+						}
+					}
 					if(this.media.length == 0) {
 						swal('Whoops!', 'You need to add media before you can save this!', 'warning');
 						return;
@@ -1080,7 +1123,7 @@ export default {
 						place: this.place,
 						tagged: this.taggedUsernames,
 						optimize_media: this.optimizeMedia,
-						license: this.availableLicenses[this.licenseIndex].id,
+						license: this.licenseId,
 						video: this.video
 					};
 					axios.post('/api/compose/v0/publish', data)
@@ -1515,8 +1558,18 @@ export default {
 			this.page = 'licensePicker';
 		},
 
-		toggleLicense(index) {
-			this.licenseIndex = index;
+		toggleLicense(license) {
+			this.licenseId = license.id;
+
+			if(this.licenseId > 10) {
+				this.licenseTitle = this.availableLicenses.filter(l => {
+					return l.id == this.licenseId;
+				}).map(l => {
+					return l.title;
+				})[0];
+			} else {
+				this.licenseTitle = null;
+			}
 
 			switch(this.mode) {
 				case 'photo':

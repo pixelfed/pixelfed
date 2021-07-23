@@ -14,6 +14,9 @@
 				<a class="nav-link font-weight-light text-muted" href="{{route('settings.invites')}}">Invites</a>
 			</li>
 			@endif
+			<li class="nav-item pl-3 {{request()->is('settings/media*')?'active':''}}">
+				<a class="nav-link font-weight-light text-muted" href="{{route('settings.media')}}">Media</a>
+			</li>
 			<li class="nav-item pl-3 {{request()->is('settings/notifications')?'active':''}}">
 				<a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">Notifications</a>
 			</li>

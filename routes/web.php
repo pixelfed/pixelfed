@@ -119,6 +119,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::post('/publish', 'ComposeController@store');
 				Route::post('/publish/text', 'ComposeController@storeText');
 				Route::get('/media/processing', 'ComposeController@mediaProcessingCheck');
+				Route::get('/settings', 'ComposeController@composeSettings');
 			});
 		});
 
@@ -429,6 +430,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 		Route::get('timeline', 'SettingsController@timelineSettings')->name('settings.timeline');
 		Route::post('timeline', 'SettingsController@updateTimelineSettings');
+		Route::get('media', 'SettingsController@mediaSettings')->name('settings.media');
+		Route::post('media', 'SettingsController@updateMediaSettings');
 	});
 
 	Route::group(['prefix' => 'site'], function () {
