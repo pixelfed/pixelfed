@@ -26,7 +26,7 @@
 		<div class="form-check pb-3">
 			<input class="form-check-input" type="checkbox" name="sync">
 			<label class="form-check-label font-weight-bold" for="">Sync Licenses</label>
-			<p class="text-muted small help-text">Update existing posts with your new default license. You can sync once every 24 hours.</p>
+			<p class="text-muted small help-text">Update existing posts with your new default license. You can sync twice every 24 hours.<br />License changes may not be reflected on remote servers.</p>
 		</div>
 
 		<div class="form-check pb-3">

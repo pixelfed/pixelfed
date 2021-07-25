@@ -22,6 +22,7 @@ use App\Http\Controllers\Settings\{
 	SecuritySettings
 };
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
+use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 
 class SettingsController extends Controller
 {
@@ -274,10 +275,20 @@ class SettingsController extends Controller
 		$license = $request->input('default');
 		$sync = $request->input('sync') == 'on';
 		$media_descriptions = $request->input('media_descriptions') == 'on';
+		$uid = $request->user()->id;
 
-		$setting = UserSetting::whereUserId($request->user()->id)->firstOrFail();
+		$setting = UserSetting::whereUserId($uid)->firstOrFail();
 		$compose = json_decode($setting->compose_settings, true);
 		$changed = false;
+
+		if($sync) {
+			$key = 'pf:settings:mls_recently:'.$uid;
+			if(Cache::get($key) == 2) {
+				$msg = 'You can only sync licenses twice per 24 hours. Try again later.';
+				return redirect(route('settings'))
+					->with('error', $msg);
+			}
+		}
 
 		if(!isset($compose['default_license']) || $compose['default_license'] !== $license) {
 			$compose['default_license'] = (int) $license;
@@ -293,6 +304,13 @@ class SettingsController extends Controller
 			$setting->compose_settings = json_encode($compose);
 			$setting->save();
 			Cache::forget('profile:compose:settings:' . $request->user()->id);
+		}
+
+		if($sync) {
+			$val = Cache::has($key) ? 2 : 1;
+			Cache::put($key, $val, 86400);
+			MediaSyncLicensePipeline::dispatch($uid, $license);
+			return redirect(route('settings'))->with('status', 'Media licenses successfully synced! It may take a few minutes to take effect for every post.');
 		}
 
 		return redirect(route('settings'))->with('status', 'Media settings successfully updated!');
