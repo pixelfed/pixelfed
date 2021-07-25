@@ -146,6 +146,12 @@ export default {
 					if(n.type == 'mention' && !n.status) {
 						return false;
 					}
+					if(n.type == 'favourite' && !n.status) {
+						return false;
+					}
+					if(n.type == 'follow' && !n.account) {
+						return false;
+					}
 					return true;
 				});
 				let ids = res.data.map(n => n.id);
@@ -168,13 +174,19 @@ export default {
 			}).then(res => {
 				if(res.data.length) {
 					let data = res.data.filter(n => {
-						if(n.type == 'share' && !status) {
+						if(n.type == 'share' && !n.status) {
 							return false;
 						}
-						if(n.type == 'comment' && !status) {
+						if(n.type == 'comment' && !n.status) {
 							return false;
 						}
-						if(n.type == 'mention' && !status) {
+						if(n.type == 'mention' && !n.status) {
+							return false;
+						}
+						if(n.type == 'favourite' && !n.status) {
+							return false;
+						}
+						if(n.type == 'follow' && !n.account) {
 							return false;
 						}
 						if(_.find(this.notifications, {id: n.id})) {

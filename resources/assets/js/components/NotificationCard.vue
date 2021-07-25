@@ -21,7 +21,7 @@
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
 								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> liked your
-								<span v-if="n.status.hasOwnProperty('media_attachments')">
+								<span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
 									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id">post</a>.
 									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
 										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
@@ -140,6 +140,12 @@
 						if(n.type == 'mention' && !n.status) {
 							return false;
 						}
+						if(n.type == 'favourite' && !n.status) {
+							return false;
+						}
+						if(n.type == 'follow' && !n.account) {
+							return false;
+						}
 						return true;
 					});
 					let ids = data.map(n => n.id);
@@ -169,6 +175,12 @@
 								return false;
 							}
 							if(n.type == 'mention' && !n.status) {
+								return false;
+							}
+							if(n.type == 'favourite' && !n.status) {
+								return false;
+							}
+							if(n.type == 'follow' && !n.account) {
 								return false;
 							}
 							if(_.find(this.notifications, {id: n.id})) {
@@ -271,7 +283,7 @@
 			},
 
 			notificationPreview(n) {
-				if(!n.status.hasOwnProperty('media_attachments') || !n.status.media_attachments.length) {
+				if(!n.status || !n.status.hasOwnProperty('media_attachments') || !n.status.media_attachments.length) {
 					return '/storage/no-preview.png';
 				}
 				return n.status.media_attachments[0].preview_url;
@@ -286,7 +298,11 @@
 			},
 
 			getPostUrl(status) {
-				if(status.local == true) {
+				if(!status) {
+					return;
+				}
+
+				if(!status.hasOwnProperty('local') || status.local == true) {
 					return status.url;
 				}
 
