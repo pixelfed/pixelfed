@@ -7,18 +7,14 @@ use League\Fractal;
 use Cache;
 use App\Services\HashidService;
 use App\Services\LikeService;
+use App\Services\MediaService;
 use App\Services\MediaTagService;
+use App\Services\StatusHashtagService;
 use App\Services\StatusLabelService;
 use App\Services\ProfileService;
 
 class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
-	protected $defaultIncludes = [
-		'account',
-		'tags',
-		'media_attachments',
-	];
-
 	public function transform(Status $status)
 	{
 		$taggedPeople = MediaTagService::get($status->id);
@@ -62,31 +58,10 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'local'                     => (bool) $status->local,
 			'taggedPeople'              => $taggedPeople,
 			'label'                     => StatusLabelService::get($status),
-			'liked_by'                  => LikeService::likedBy($status)
+			'liked_by'                  => LikeService::likedBy($status),
+			'media_attachments'			=> MediaService::get($status->id),
+			'account'					=> ProfileService::get($status->profile_id),
+			'tags'						=> StatusHashtagService::statusTags($status->id)
 		];
-	}
-
-	public function includeAccount(Status $status)
-	{
-		$account = $status->profile;
-
-		return $this->item($account, new AccountTransformer());
-	}
-
-	public function includeTags(Status $status)
-	{
-		$tags = $status->hashtags;
-
-		return $this->collection($tags, new HashtagTransformer());
-	}
-
-	public function includeMediaAttachments(Status $status)
-	{
-		return Cache::remember('status:transformer:media:attachments:'.$status->id, now()->addMinutes(3), function() use($status) {
-			if(in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
-				$media = $status->media()->orderBy('order')->get();
-				return $this->collection($media, new MediaTransformer());
-			}
-		});
 	}
 }
