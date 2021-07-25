@@ -11,10 +11,6 @@ use App\Services\StatusHashtagService;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
-	protected $defaultIncludes = [
-		'mentions',
-	];
-
 	public function transform(Status $status)
 	{
 		return [
@@ -49,14 +45,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'poll'                      => null,
 			'media_attachments'         => MediaService::get($status->id),
 			'account'                   => ProfileService::get($status->profile_id),
-			'tags'                      => StatusHashtagService::statusTags($status->id)
+			'tags'                      => StatusHashtagService::statusTags($status->id),
 		];
-	}
-
-	public function includeMentions(Status $status)
-	{
-		$mentions = $status->mentions;
-
-		return $this->collection($mentions, new MentionTransformer());
 	}
 }
