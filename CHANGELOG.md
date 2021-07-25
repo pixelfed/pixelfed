@@ -8,6 +8,7 @@
 - Diagnostics for error page and admin dashboard ([64725ecc](https://github.com/pixelfed/pixelfed/commit/64725ecc))
 - Default media licenses and media license sync ([ea0fc90c](https://github.com/pixelfed/pixelfed/commit/ea0fc90c))
 - Customize media description/alt-text length limit ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
+- Federate Media Licenses ([14a1367a](https://github.com/pixelfed/pixelfed/commit/14a1367a))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
@@ -78,6 +79,18 @@
 - Updated Settings, add default license and enforced media descriptions. ([67e3f604](https://github.com/pixelfed/pixelfed/commit/67e3f604))
 - Updated Compose Apis, make media descriptions/alt text length limit configurable. Default length: 1000. ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
 - Updated ApiV1Controller, add default license support. ([2a791f19](https://github.com/pixelfed/pixelfed/commit/2a791f19))
+- Updated StatusTransformers, remove includes and use cached services. ([09d5198c](https://github.com/pixelfed/pixelfed/commit/09d5198c))
+- Updated RemotePost component, update likes reaction bar. ([1060dd23](https://github.com/pixelfed/pixelfed/commit/1060dd23))
+- Updated FollowPipeline, fix cache invalidation bug. ([c1f14f89](https://github.com/pixelfed/pixelfed/commit/c1f14f89))
+- Updated PublicApiController, improve accountStatuses api perf. ([bce8edd9](https://github.com/pixelfed/pixelfed/commit/bce8edd9))
+- Updated ApiControllers, use NotificationService. ([f9516ac3](https://github.com/pixelfed/pixelfed/commit/f9516ac3))
+- Updated Notification components, fix old notifications with missing attributes. ([b6e226ae](https://github.com/pixelfed/pixelfed/commit/b6e226ae))
+- Updated LikeController, improve query perf. ([f3d6023e](https://github.com/pixelfed/pixelfed/commit/f3d6023e))
+- Updated License util, add nameToId method. ([f6131ed7](https://github.com/pixelfed/pixelfed/commit/f6131ed7))
+- Updated RemoteProfile, add warning about potentially out of date information. ([7274574c](https://github.com/pixelfed/pixelfed/commit/7274574c))
+- Updated NotifcationCard.vue component, add refresh button for cold notification cache. ([0e178a33](https://github.com/pixelfed/pixelfed/commit/0e178a33))
+- Updated RemoteProfile component, add follower modals. ([c4146a30](https://github.com/pixelfed/pixelfed/commit/c4146a30))
+- Updated FollowerService, cache audience. ([22257cc2](https://github.com/pixelfed/pixelfed/commit/22257cc2))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
