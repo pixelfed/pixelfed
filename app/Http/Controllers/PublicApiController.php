@@ -656,6 +656,7 @@ class PublicApiController extends Controller
             'limit' => 'nullable|integer|min:1|max:24'
         ]);
 
+        $user = $request->user();
         $profile = Profile::whereNull('status')->findOrFail($id);
 
         $limit = $request->limit ?? 9;
@@ -663,21 +664,21 @@ class PublicApiController extends Controller
         $min_id = $request->min_id;
         $scope = $request->only_media == true ?
             ['photo', 'photo:album', 'video', 'video:album'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply'];
+            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply', 'text'];
 
         if($profile->is_private) {
-            if(!Auth::check()) {
+            if(!$user) {
                 return response()->json([]);
             }
-            $pid = Auth::user()->profile->id;
+            $pid = $user->profile_id;
             $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
                 return $following->push($pid)->toArray();
             });
             $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
         } else {
-            if(Auth::check()) {
-                $pid = Auth::user()->profile->id;
+            if($user) {
+                $pid = $user->profile_id;
                 $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
                     $following = Follower::whereProfileId($pid)->pluck('following_id');
                     return $following->push($pid)->toArray();
@@ -688,84 +689,31 @@ class PublicApiController extends Controller
             }
         }
 
-        $tag = in_array('private', $visibility) ? 'private' : 'public';
-        if($min_id == 1 && $limit == 9 && $tag == 'public') {
-            $limit = 9;
-            $scope = ['photo', 'photo:album', 'video', 'video:album'];
-            $key = '_api:statuses:recent_9:'.$profile->id;
-            $res = Cache::remember($key, now()->addHours(24), function() use($profile, $scope, $visibility, $limit) {
-                $dir = '>';
-                $id = 1;
-                $timeline = Status::select(
-                    'id',
-                    'uri',
-                    'caption',
-                    'rendered',
-                    'profile_id',
-                    'type',
-                    'in_reply_to_id',
-                    'reblog_of_id',
-                    'is_nsfw',
-                    'likes_count',
-                    'reblogs_count',
-                    'scope',
-                    'visibility',
-                    'local',
-                    'place_id',
-                    'comments_disabled',
-                    'cw_summary',
-                    'created_at',
-                    'updated_at'
-                  )->whereProfileId($profile->id)
-                  ->whereIn('type', $scope)
-                  ->where('id', $dir, $id)
-                  ->whereIn('visibility', $visibility)
-                  ->limit($limit)
-                  ->orderByDesc('id')
-                  ->get();
-
-                $resource = new Fractal\Resource\Collection($timeline, new StatusStatelessTransformer());
-                $res = $this->fractal->createData($resource)->toArray();
-
-                return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-            });
-            return $res;
-        }
-
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
-        $timeline = Status::select(
+        $res = Status::select(
             'id',
-            'uri',
-            'caption',
-            'rendered',
             'profile_id',
             'type',
-            'in_reply_to_id',
-            'reblog_of_id',
-            'is_nsfw',
-            'likes_count',
-            'reblogs_count',
             'scope',
-            'visibility',
             'local',
-            'place_id',
-            'comments_disabled',
-            'cw_summary',
-            'created_at',
-            'updated_at'
-          )->whereProfileId($profile->id)
-          ->whereIn('type', $scope)
-          ->where('id', $dir, $id)
-          ->whereIn('visibility', $visibility)
-          ->limit($limit)
-          ->orderByDesc('id')
-          ->get();
-
-        $resource = new Fractal\Resource\Collection($timeline, new StatusStatelessTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            'created_at'
+          )
+        ->whereProfileId($profile->id)
+        ->whereIn('type', $scope)
+        ->where('id', $dir, $id)
+        ->whereIn('scope', $visibility)
+        ->limit($limit)
+        ->orderByDesc('id')
+        ->get()
+        ->map(function($s) use($user) {
+            $status = StatusService::get($s->id, false);
+            if($user) {
+            	$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+            }
+            return $status;
+        });
+        return response()->json($res);
     }
 
 }
