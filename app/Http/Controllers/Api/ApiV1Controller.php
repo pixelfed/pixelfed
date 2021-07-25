@@ -1316,6 +1316,11 @@ class ApiV1Controller extends Controller
 			}
 		}
 
+		if(empty($res) && !Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+			Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+			NotificationService::warmCache($pid, 400, true);
+		}
+
 		$baseUrl = config('app.url') . '/api/v1/notifications?';
 
 		if($minId == $maxId) {
