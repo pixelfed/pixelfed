@@ -120,4 +120,19 @@ class License {
             ->values()
             ->toArray();
     }
+
+    public static function nameToId($name)
+    {
+    	$license = collect(self::get())
+    		->filter(function($l) use($name) {
+    			return $l['title'] == $name;
+    		})
+    		->first();
+
+    	if(!$license || $license['id'] < 2) {
+    		return null;
+    	}
+
+    	return $license['id'];
+    }
 }
