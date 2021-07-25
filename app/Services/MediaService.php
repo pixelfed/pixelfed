@@ -10,6 +10,7 @@ use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformer\Api\MediaTransformer;
+use App\Util\Media\License;
 
 class MediaService
 {
@@ -36,5 +37,25 @@ class MediaService
 	public static function del($statusId)
 	{
 		return Cache::forget(self::CACHE_KEY . $statusId);
+	}
+
+	public static function activitypub($statusId)
+	{
+		$status = self::get($statusId);
+		if(!$status) {
+			return [];
+		}
+
+		return collect($status)->map(function($s) use($license) {
+			$license = isset($s['license']) && $s['license']['title'] ? $s['license']['title'] : null;
+			return [
+				'type'      => 'Document',
+				'mediaType' => $s['mime'],
+				'url'       => $s['url'],
+				'name'      => $s['description'],
+				'blurhash'  => $s['blurhash'],
+				'license'   => $license
+			];
+		});
 	}
 }

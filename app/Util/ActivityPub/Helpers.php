@@ -32,6 +32,7 @@ use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
+use App\Util\Media\License;
 
 class Helpers {
 
@@ -428,6 +429,7 @@ class Helpers {
 			$type = $media['mediaType'];
 			$url = $media['url'];
 			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
+			$license = isset($media['license']) ? License::nameToId($media['license']) : null;
 			$valid = self::validateUrl($url);
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
@@ -441,6 +443,9 @@ class Helpers {
 			$media->user_id = null;
 			$media->media_path = $url;
 			$media->remote_url = $url;
+			if($license) {
+				$media->license = $license;
+			}
 			$media->mime = $type;
 			$media->version = 3;
 			$media->save();

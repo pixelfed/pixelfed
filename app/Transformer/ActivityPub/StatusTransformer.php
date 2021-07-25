@@ -4,6 +4,7 @@ namespace App\Transformer\ActivityPub;
 
 use App\Status;
 use League\Fractal;
+use App\Services\MediaService;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
@@ -45,15 +46,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
           'sensitive'        => (bool) $status->is_nsfw,
           'atomUri'          => $status->url(),
           'inReplyToAtomUri' => null,
-          'attachment'       => $status->media->map(function ($media) {
-              return [
-              'type'      => 'Document',
-              'mediaType' => $media->mime,
-              'url'       => $media->url(),
-              'name'      => $media->caption,
-              'blurhash'  => $media->blurhash
-            ];
-          }),
+          'attachment'       => MediaService::activitypub($status->id),
           'tag' => [],
           'location' => $status->place_id ? [
               'type' => 'Place',
