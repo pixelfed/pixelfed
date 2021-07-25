@@ -1091,6 +1091,17 @@ class ApiV1Controller extends Controller
 		$storagePath = MediaPathService::get($user, 2);
 		$path = $photo->store($storagePath);
 		$hash = \hash_file('sha256', $photo);
+		$license = null;
+
+		$settings = UserSetting::whereUserId($user->id)->first();
+
+		if($settings && !empty($settings->compose_settings)) {
+			$compose = json_decode($settings->compose_settings, true);
+
+			if(isset($compose['default_license']) && $compose['default_license'] != 1) {
+				$license = $compose['default_license'];
+			}
+		}
 
 		abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
@@ -1105,6 +1116,9 @@ class ApiV1Controller extends Controller
 		$media->caption = $request->input('description');
 		$media->filter_class = $filterClass;
 		$media->filter_name = $filterName;
+		if($license) {
+			$media->license = $license;
+		}
 		$media->save();
 
 		switch ($media->mime) {
