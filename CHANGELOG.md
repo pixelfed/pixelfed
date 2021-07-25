@@ -6,6 +6,8 @@
 - Auto Following support for admins ([68aa2540](https://github.com/pixelfed/pixelfed/commit/68aa2540))
 - Mark as spammer mod tool, unlists and applies content warning to existing and future post ([6d956a86](https://github.com/pixelfed/pixelfed/commit/6d956a86))
 - Diagnostics for error page and admin dashboard ([64725ecc](https://github.com/pixelfed/pixelfed/commit/64725ecc))
+- Default media licenses and media license sync ([ea0fc90c](https://github.com/pixelfed/pixelfed/commit/ea0fc90c))
+- Customize media description/alt-text length limit ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
@@ -73,6 +75,8 @@
 - Updated RemotePost.vue, improve text only post UI. ([b0257be2](https://github.com/pixelfed/pixelfed/commit/b0257be2))
 - Updated Timeline, make text-only posts opt-in by default. ([0153ed6d](https://github.com/pixelfed/pixelfed/commit/0153ed6d))
 - Updated LikeController, add UndoLikePipeline and federate Undo Like activities. ([8ac8fcad](https://github.com/pixelfed/pixelfed/commit/8ac8fcad))
+- Updated Settings, add default license and enforced media descriptions. ([67e3f604](https://github.com/pixelfed/pixelfed/commit/67e3f604))
+- Updated Compose Apis, make media descriptions/alt text length limit configurable. Default length: 1000. ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
