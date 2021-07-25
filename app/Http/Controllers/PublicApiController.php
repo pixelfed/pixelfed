@@ -591,10 +591,13 @@ class PublicApiController extends Controller
     public function accountFollowers(Request $request, $id)
     {
         abort_unless(Auth::check(), 403);
-        $profile = Profile::with('user')->whereNull('status')->whereNull('domain')->findOrFail($id);
+        $profile = Profile::with('user')->whereNull('status')->findOrFail($id);
         $owner = Auth::id() == $profile->user_id;
-        if(Auth::id() != $profile->user_id && $profile->is_private || !$profile->user->settings->show_profile_followers) {
+        if(Auth::id() != $profile->user_id && $profile->is_private) {
             return response()->json([]);
+        }
+        if(!$profile->domain && !$profile->user->settings->show_profile_followers) {
+        	return response()->json([]);
         }
         if(!$owner && $request->page > 5) {
         	return [];
@@ -612,7 +615,6 @@ class PublicApiController extends Controller
 
         $profile = Profile::with('user')
             ->whereNull('status')
-            ->whereNull('domain')
             ->findOrFail($id);
 
         // filter by username
@@ -621,7 +623,10 @@ class PublicApiController extends Controller
         $filter = ($owner == true) && ($search != null);
 
         abort_if($owner == false && $profile->is_private == true && !$profile->followedBy(Auth::user()->profile), 404);
-        abort_if($profile->user->settings->show_profile_following == false && $owner == false, 404);
+
+        if(!$profile->domain) {
+        	abort_if($profile->user->settings->show_profile_following == false && $owner == false, 404);
+        }
 
         if(!$owner && $request->page > 5) {
         	return [];
