@@ -77,6 +77,7 @@
 - Updated LikeController, add UndoLikePipeline and federate Undo Like activities. ([8ac8fcad](https://github.com/pixelfed/pixelfed/commit/8ac8fcad))
 - Updated Settings, add default license and enforced media descriptions. ([67e3f604](https://github.com/pixelfed/pixelfed/commit/67e3f604))
 - Updated Compose Apis, make media descriptions/alt text length limit configurable. Default length: 1000. ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
+- Updated ApiV1Controller, add default license support. ([2a791f19](https://github.com/pixelfed/pixelfed/commit/2a791f19))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
