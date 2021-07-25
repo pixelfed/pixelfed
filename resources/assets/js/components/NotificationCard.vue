@@ -316,6 +316,7 @@
 			},
 
 			refreshNotifications() {
+				this.loading = true;
 				this.attemptedRefresh = true;
 				this.fetchNotifications();
 			}
