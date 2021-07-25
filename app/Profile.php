@@ -6,6 +6,7 @@ use Auth, Cache, Storage;
 use App\Util\Lexer\PrettyNumber;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
+use App\Services\FollowerService;
 
 class Profile extends Model
 {
@@ -276,15 +277,7 @@ class Profile extends Model
 
     public function getAudienceInbox($scope = 'public')
     {
-        return $this
-            ->followers()
-            ->whereLocalProfile(false)
-            ->get()
-            ->map(function($follow) {
-                return $follow->sharedInbox ?? $follow->inbox_url;
-             })
-            ->unique()
-            ->toArray();
+        return FollowerService::audience($this->id, $scope);
     }
 
     public function circles()

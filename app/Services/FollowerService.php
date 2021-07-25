@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Redis;
-
+use Cache;
 use App\{
 	Follower,
 	Profile,
@@ -25,6 +25,8 @@ class FollowerService
 	{
 		Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
 		Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
+		Cache::forget('pf:services:follow:audience:' . $actor);
+		Cache::forget('pf:services:follow:audience:' . $target);
 	}
 
 	public static function followers($id, $start = 0, $stop = 10)
@@ -42,28 +44,19 @@ class FollowerService
 		return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
 	}
 
-	public static function audience($profile)
+	public static function audience($profile, $scope = null)
 	{
 		return (new self)->getAudienceInboxes($profile);
 	}
 
-	protected function getAudienceInboxes($profile)
+	protected function getAudienceInboxes($profile, $scope = null)
 	{
-		if($profile instanceOf User) {
-			return $profile
-				->profile
-				->followers()
-				->whereLocalProfile(false)
-				->get()
-				->map(function($follow) {
-					return $follow->sharedInbox ?? $follow->inbox_url;
-				})
-				->unique()
-				->values()
-				->toArray();
+		if(!$profile instanceOf Profile) {
+			return [];
 		}
 
-		if($profile instanceOf Profile) {
+		$key = 'pf:services:follow:audience:' . $profile->id;
+		return Cache::remember($key, 86400, function() use($profile) {
 			return $profile
 				->followers()
 				->whereLocalProfile(false)
@@ -74,27 +67,7 @@ class FollowerService
 				->unique()
 				->values()
 				->toArray();
-		}
-
-		if(is_string($profile) || is_integer($profile)) {
-			$profile = Profile::whereNull('domain')->find($profile);
-			if(!$profile) {
-				return [];
-			}
-
-			return $profile
-				->followers()
-				->whereLocalProfile(false)
-				->get()
-				->map(function($follow) {
-					return $follow->sharedInbox ?? $follow->inbox_url;
-				})
-				->unique()
-				->values()
-				->toArray();
-		}
-
-		return [];
+		});
 	}
 
 }
