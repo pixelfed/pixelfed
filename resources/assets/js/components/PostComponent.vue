@@ -222,13 +222,13 @@
 								</div>
 								<div class="reaction-counts mb-0">
 									<div v-if="status.liked_by.username && status.liked_by.username !== user.username" class="likes mb-1">
-						<span class="like-count">Liked by
-							<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
-							<span v-if="status.liked_by.others == true">
-								and <span class="font-weight-bold text-dark cursor-pointer" @click="likesModal"><span v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> others</span>
-							</span>
-						</span>
-					</div>
+										<span class="like-count">Liked by
+											<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
+											<span v-if="status.liked_by.others == true">
+												and <span class="font-weight-bold text-dark cursor-pointer" @click="likesModal"><span v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> others</span>
+											</span>
+										</span>
+									</div>
 								</div>
 								<div class="timestamp d-flex align-items-bottom justify-content-between">
 									<a v-bind:href="statusUrl" class="small text-muted" :title="status.created_at">
