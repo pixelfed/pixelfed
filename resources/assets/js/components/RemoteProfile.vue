@@ -57,6 +57,7 @@
 					</div>
 				</div>
 				<p class="small text-lighter p-2">Last updated: <time :datetime="profile.last_fetched_at">{{timeAgo(profile.last_fetched_at, 'ago')}}</time></p>
+				<p class="card border-left-primary card-body small py-2 text-muted font-weight-bold shadow-none border-top border-bottom border-right">You are viewing a profile from a remote server, it may not contain up-to-date information.</p>
 			</div>
 			<div class="col-12 col-md-8 pt-5">
 				<div class="row">
