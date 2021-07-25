@@ -536,8 +536,8 @@
 							<div class="media">
 								<img :src="m.preview_url" class="mr-3" width="50px" height="50px">
 								<div class="media-body">
-									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..." maxlength="140"></textarea>
-									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/140</p>
+									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..." :maxlength="maxAltTextLength" rows="4"></textarea>
+									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/{{maxAltTextLength}}</p>
 								</div>
 							</div>
 							<hr>
@@ -904,8 +904,9 @@ export default {
 				default_license: null,
 				media_descriptions: false
 			},
-			licenseId: null,
-			licenseTitle: null
+			licenseId: 1,
+			licenseTitle: null,
+			maxAltTextLength: 140
 		}
 	},
 
@@ -916,6 +917,7 @@ export default {
 		.then(res => {
 			this.composeSettings = res.data;
 			this.licenseId = this.composeSettings.default_license;
+			this.maxAltTextLength = res.data.max_altext_length;
 			if(this.licenseId > 10) {
 				this.licenseTitle = this.availableLicenses.filter(l => {
 					return l.id == this.licenseId;

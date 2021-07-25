@@ -404,7 +404,7 @@ class ComposeController extends Controller
 			'media.*.id' => 'required|integer|min:1',
 			'media.*.filter_class' => 'nullable|alpha_dash|max:30',
 			'media.*.license' => 'nullable|string|max:140',
-			'media.*.alt' => 'nullable|string|max:140',
+			'media.*.alt' => 'nullable|string|max:'.config_cache('pixelfed.max_altext_length'),
 			'cw' => 'nullable|boolean',
 			'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
 			'place' => 'nullable',
@@ -666,21 +666,20 @@ class ComposeController extends Controller
 	public function composeSettings(Request $request)
 	{
 		$uid = $request->user()->id;
+		$default = [
+			'default_license' => 1,
+			'media_descriptions' => false,
+			'max_altext_length' => config_cache('pixelfed.max_altext_length')
+		];
 
-		return Cache::remember('profile:compose:settings:' . $uid, now()->addHours(12), function() use($uid) {
+		return array_merge($default, Cache::remember('profile:compose:settings:' . $uid, now()->addHours(12), function() use($uid) {
 			$res = UserSetting::whereUserId($uid)->first();
 
-			if(!$res) {
-				return [
-					'default_license' => null,
-					'media_descriptions' => false
-				];
+			if(!$res || empty($res->compose_settings)) {
+				return [];
 			}
 
-			return json_decode($res->compose_settings, true) ?? [
-				'default_license' => null,
-				'media_descriptions' => false
-			];
-		});
+			return json_decode($res->compose_settings, true);
+		}));
 	}
 }
