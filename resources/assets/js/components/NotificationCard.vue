@@ -90,6 +90,7 @@
 				<div class="text-lighter text-center py-3">
 					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
 					<p class="mb-0 small font-weight-bold">No notifications yet</p>
+					<p v-if="showRefresh && !attemptedRefresh" class="mt-2 small font-weight-bold text-primary cursor-pointer" @click="refreshNotifications"><i class="fas fa-redo"></i> Refresh</p>
 				</div>
 			</div>
 		</div>
@@ -110,7 +111,9 @@
 				profile: {
 					locked: false
 				},
-				followRequests: null
+				followRequests: null,
+				showRefresh: false,
+				attemptedRefresh: false
 			};
 		},
 
@@ -152,6 +155,9 @@
 					this.notificationMaxId = Math.min(...ids);
 					this.notifications = data;
 					this.loading = false;
+					if(data.length == 0 && !this.attemptedRefresh) {
+						this.showRefresh = true;
+					}
 					//this.notificationPoll();
 				});
 			},
@@ -307,6 +313,11 @@
 				}
 
 				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			refreshNotifications() {
+				this.attemptedRefresh = true;
+				this.fetchNotifications();
 			}
 		}
 	}
