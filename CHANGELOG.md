@@ -9,6 +9,7 @@
 - Default media licenses and media license sync ([ea0fc90c](https://github.com/pixelfed/pixelfed/commit/ea0fc90c))
 - Customize media description/alt-text length limit ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
 - Federate Media Licenses ([14a1367a](https://github.com/pixelfed/pixelfed/commit/14a1367a))
+- Archive Posts ([e9ef0c88](https://github.com/pixelfed/pixelfed/commit/e9ef0c88))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
@@ -91,6 +92,9 @@
 - Updated NotifcationCard.vue component, add refresh button for cold notification cache. ([0e178a33](https://github.com/pixelfed/pixelfed/commit/0e178a33))
 - Updated RemoteProfile component, add follower modals. ([c4146a30](https://github.com/pixelfed/pixelfed/commit/c4146a30))
 - Updated FollowerService, cache audience. ([22257cc2](https://github.com/pixelfed/pixelfed/commit/22257cc2))
+- Updated StatusService, add non-public option and improve cache invalidation. ([15c4fdd9](https://github.com/pixelfed/pixelfed/commit/15c4fdd9))
+- Updated ContactAdmin mail, set New Support Message subject. ([bc3add05](https://github.com/pixelfed/pixelfed/commit/bc3add05))
+- Updated StatusTransformer, prioritize scope over deprecated visibility attribute. ([6e45021f](https://github.com/pixelfed/pixelfed/commit/6e45021f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
