@@ -29,6 +29,7 @@ use App\Services\{
     AccountService,
     LikeService,
     PublicTimelineService,
+    ProfileService,
     StatusService,
     SnowflakeService,
     UserFilterService
@@ -593,6 +594,7 @@ class PublicApiController extends Controller
         abort_unless(Auth::check(), 403);
         $profile = Profile::with('user')->whereNull('status')->findOrFail($id);
         $owner = Auth::id() == $profile->user_id;
+
         if(Auth::id() != $profile->user_id && $profile->is_private) {
             return response()->json([]);
         }
@@ -602,9 +604,15 @@ class PublicApiController extends Controller
         if(!$owner && $request->page > 5) {
         	return [];
         }
-        $followers = $profile->followers()->orderByDesc('followers.created_at')->paginate(10);
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+
+        $res = Follower::select('id', 'profile_id', 'following_id')
+            ->whereFollowingId($profile->id)
+            ->orderByDesc('id')
+            ->simplePaginate(10)
+            ->map(function($follower) {
+                return ProfileService::get($follower['profile_id']);
+            })
+            ->toArray();
 
         return response()->json($res);
     }

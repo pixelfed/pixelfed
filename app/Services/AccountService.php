@@ -8,8 +8,8 @@ use App\Transformer\Api\AccountTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 
-class AccountService {
-
+class AccountService
+{
 	const CACHE_KEY = 'pf:services:account:';
 
 	public static function get($id)
@@ -19,7 +19,7 @@ class AccountService {
 		}
 
 		$key = self::CACHE_KEY . $id;
-		$ttl = now()->addMinutes(15);
+		$ttl = now()->addHours(12);
 
 		return Cache::remember($key, $ttl, function() use($id) {
 			$fractal = new Fractal\Manager();
