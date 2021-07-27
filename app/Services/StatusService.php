@@ -41,6 +41,10 @@ class StatusService {
 
 	public static function del($id)
 	{
+		$status = self::get($id);
+		if($status && isset($status['account']) && isset($status['account']['id'])) {
+			Cache::forget('profile:embed:' . $status['account']['id']);
+		}
 		Cache::forget('status:thumb:nsfw0' . $id);
 		Cache::forget('status:thumb:nsfw1' . $id);
 		Cache::forget('pf:services:sh:id:' . $id);
