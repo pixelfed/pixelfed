@@ -21,10 +21,14 @@ class StatusService {
 		return self::CACHE_KEY . $id;
 	}
 
-	public static function get($id)
+	public static function get($id, $publicOnly = true)
 	{
-		return Cache::remember(self::key($id), now()->addDays(7), function() use($id) {
-			$status = Status::whereScope('public')->find($id);
+		return Cache::remember(self::key($id), now()->addDays(7), function() use($id, $publicOnly) {
+			if($publicOnly) {
+				$status = Status::whereScope('public')->find($id);
+			} else {
+				$status = Status::whereIn('scope', ['public', 'private', 'unlisted'])->find($id);
+			}
 			if(!$status) {
 				return null;
 			}
@@ -37,6 +41,8 @@ class StatusService {
 
 	public static function del($id)
 	{
+		Cache::forget('pf:services:sh:id:' . $id);
+		Cache::forget('status:transformer:media:attachments:' . $id);
 		PublicTimelineService::rem($id);
 		return Cache::forget(self::key($id));
 	}
