@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Cache;
 use App\Profile;
+use App\Status;
 use App\Transformer\Api\AccountTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -35,4 +36,30 @@ class AccountService
 		return Cache::forget(self::CACHE_KEY . $id);
 	}
 
+	public static function syncPostCount($id)
+	{
+		$profile = Profile::find($id);
+
+		if(!$profile) {
+			return false;
+		}
+
+		$key = self::CACHE_KEY . 'pcs:' . $id;
+
+		if(Cache::has($key)) {
+			return;
+		}
+
+		$count = Status::whereProfileId($id)
+			->whereNull('in_reply_to_id')
+			->whereNull('reblog_of_id')
+			->whereIn('scope', ['public', 'unlisted', 'private'])
+			->count();
+
+		$profile->status_count = $count;
+		$profile->save();
+
+		Cache::put($key, 1, 900);
+		return true;
+	}
 }

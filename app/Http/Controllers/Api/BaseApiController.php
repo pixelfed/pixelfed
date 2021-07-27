@@ -37,6 +37,7 @@ use App\Jobs\VideoPipeline\{
     VideoPostProcess,
     VideoThumbnail
 };
+use App\Services\AccountService;
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
@@ -311,10 +312,8 @@ class BaseApiController extends Controller
         $status->scope = 'archived';
         $status->visibility = 'draft';
         $status->save();
-
         StatusService::del($status->id);
-
-        // invalidate caches
+        AccountService::syncPostCount($status->profile_id);
 
         return [200];
     }
@@ -339,8 +338,9 @@ class BaseApiController extends Controller
         $status->scope = $archive->original_scope;
         $status->visibility = $archive->original_scope;
         $status->save();
-
         $archive->delete();
+        StatusService::del($status->id);
+        AccountService::syncPostCount($status->profile_id);
 
         return [200];
     }

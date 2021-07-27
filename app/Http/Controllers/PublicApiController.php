@@ -675,9 +675,7 @@ class PublicApiController extends Controller
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
-        $scope = $request->only_media == true ?
-            ['photo', 'photo:album', 'video', 'video:album'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'share', 'reply', 'text'];
+        $scope = ['photo', 'photo:album', 'video', 'video:album'];
 
         if($profile->is_private) {
             if(!$user) {
@@ -713,6 +711,8 @@ class PublicApiController extends Controller
             'created_at'
           )
         ->whereProfileId($profile->id)
+        ->whereNull('in_reply_to_id')
+        ->whereNull('reblog_of_id')
         ->whereIn('type', $scope)
         ->where('id', $dir, $id)
         ->whereIn('scope', $visibility)
@@ -720,12 +720,21 @@ class PublicApiController extends Controller
         ->orderByDesc('id')
         ->get()
         ->map(function($s) use($user) {
-            $status = StatusService::get($s->id, false);
-            if($user) {
+        	try {
+            	$status = StatusService::get($s->id, false);
+        	} catch (\Exception $e) {
+        		$status = false;
+        	}
+            if($user && $status) {
             	$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
             }
             return $status;
-        });
+        })
+        ->filter(function($s) {
+        	return $s;
+        })
+        ->values();
+
         return response()->json($res);
     }
 
