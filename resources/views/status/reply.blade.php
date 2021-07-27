@@ -5,60 +5,74 @@
 <div class="container reply-container">
   <div class="col-12 col-md-8 offset-md-2 mt-4">
       <div class="card shadow-none border">
-        @if($status->parent()->parent())
+        @php($gp = $status->parent()->parent())
+        @if($gp)
         <div class="card-body p-0 m-0 bg-light border-bottom">
+        	@if($gp->scope == 'archived')
+        		<p class="text-center mb-0 py-5 font-weight-bold">This status cannot be viewed at this time.</p>
+        	@else
           <div class="d-flex p-0 m-0 align-items-center">
-            @if($status->parent()->parent()->media()->count())
-            <img src="{{$status->parent()->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
+            @if($gp->media()->count())
+            <img src="{{$gp->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->parent()->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
+                  <img src="{{$gp->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
-                    <span class="font-weight-bold" v-pre>{{$status->parent()->parent()->profile->username}}</span>
+                    <span class="font-weight-bold" v-pre>{{$gp->profile->username}}</span>
                     <div class="">
-                      <p class="w-100 text-break" v-pre>{!!$status->parent()->parent()->rendered!!}</p>
+                      <p class="w-100 text-break" v-pre>{!!$gp->rendered!!}</p>
                     </div>
                     <div class="mb-0 small">
-                      <a href="{{$status->parent()->parent()->url()}}" class="text-muted">
-                        {{$status->parent()->parent()->created_at->diffForHumans()}}
+                      <a href="{{$gp->url()}}" class="text-muted">
+                        {{$gp->created_at->diffForHumans()}}
                       </a>
                     </div>
                   </div>
-                  <a class="float-right" href="{{$status->parent()->parent()->url()}}"><i class="far fa-share-square"></i></a>
+                  <a class="float-right" href="{{$gp->url()}}"><i class="far fa-share-square"></i></a>
                 </div>
               </div>
             </div>
           </div>
+          @endif
         </div>
         @endif
+
+        @php($parent = $status->parent())
         <div class="card-body p-0 m-0 bg-light border-bottom">
+
+        	@if($parent->scope == 'archived')
+        		<p class="text-center mb-0 py-5 font-weight-bold">This status cannot be viewed at this time.</p>
+        	@else
           <div class="d-flex p-0 m-0 align-items-center">
-            @if($status->parent()->media()->count())
-            <img src="{{$status->parent()->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
+            @if($parent->media()->count())
+            <img src="{{$parent->thumb()}}" width="150px" height="150px" class="post-thumbnail" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0';">
             @endif
             <div class="p-4 w-100">
               <div class="">
                 <div class="media">
-                  <img src="{{$status->parent()->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
+                  <img src="{{$parent->profile->avatarUrl()}}" class="rounded-circle img-thumbnail mb-1 mr-3" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
                   <div class="media-body">
-                    <span class="font-weight-bold" v-pre>{{$status->parent()->profile->username}}</span>
+                    <span class="font-weight-bold" v-pre>{{$parent->profile->username}}</span>
                     <div class="">
-                      <p class="w-100 text-break" v-pre>{!!$status->parent()->rendered!!}</p>
+                      <p class="w-100 text-break" v-pre>{!!$parent->rendered!!}</p>
                     </div>
                     <div class="mb-0 small">
-                      <a href="{{$status->parent()->url()}}" class="text-muted">
-                        {{$status->parent()->created_at->diffForHumans()}}
+                      <a href="{{$parent->url()}}" class="text-muted">
+                        {{$parent->created_at->diffForHumans()}}
                       </a>
                     </div>
                   </div>
-                  <a class="float-right" href="{{$status->parent()->url()}}"><i class="far fa-share-square"></i></a>
+                  <a class="float-right" href="{{$parent->url()}}"><i class="far fa-share-square"></i></a>
                 </div>
               </div>
             </div>
           </div>
+          @endif
         </div>
+
+
         <div class="card-body border-bottom">
           @if($status->is_nsfw)
           <details class="cw">
@@ -101,6 +115,7 @@
           </div>
           @endif
         </div>
+
         @if($status->comments->count())
         <div class="card-body p-0 m-0 bg-light border-bottom">
           <div class="d-flex p-0 m-0 align-items-center">
