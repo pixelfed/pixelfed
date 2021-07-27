@@ -643,7 +643,7 @@ export default {
 
 			timestampFormat() {
 					let ts = new Date(this.status.created_at);
-					return ts.toDateString();
+					return ts.toDateString() + ' · ' + ts.toLocaleTimeString();
 			},
 
 			fetchData() {
