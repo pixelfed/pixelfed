@@ -77,7 +77,10 @@
 			<div class="postPresenterContainer" style="background: #000;">
 
 				<div v-if="status.pf_type === 'photo'" class="w-100">
-					<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
+					<photo-presenter
+						:status="status"
+						v-on:lightbox="lightbox"
+						v-on:togglecw="status.sensitive = false"/>
 				</div>
 
 				<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -149,9 +152,13 @@
 				</div>
 				<div class="timestamp mt-2">
 					<p class="small mb-0">
-						<a :href="statusUrl(status)" class="text-muted text-uppercase">
+						<a v-if="status.visibility != 'archived'" :href="statusUrl(status)" class="text-muted text-uppercase">
 							<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
 						</a>
+						<span v-else class="text-muted text-uppercase">
+							Posted <timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+						</span>
+
 						<span v-if="recommended">
 							<span class="px-1">&middot;</span>
 							<span class="text-muted">Based on popular and trending content</span>

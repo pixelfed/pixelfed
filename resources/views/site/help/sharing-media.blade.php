@@ -32,7 +32,7 @@
 			</div>
 		</div>
 	</p>
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="collapse2">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I share a post with multiple photos or videos?
@@ -43,7 +43,7 @@
 			</div>
 		</div>
 	</p>
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapse3">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I add a caption before sharing my photos or videos on Pixelfed?
@@ -54,7 +54,7 @@
 			</div>
 		</div>
 	</p>
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse4" role="button" aria-expanded="false" aria-controls="collapse4">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I add a filter to my photos?
@@ -74,7 +74,7 @@
 			</div>
 		</div>
 	</p>
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse5" role="button" aria-expanded="false" aria-controls="collapse5">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How do I add a description to each photo or video for the visually impaired?
@@ -94,8 +94,8 @@
 				<p class="small text-muted"><i class="fas fa-info-circle mr-1"></i> Image descriptions are federated to instances where supported.</p>
 			</div>
 		</div>
-	</p>	
-	<p>	
+	</p>
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse6" role="button" aria-expanded="false" aria-controls="collapse6">
 			<i class="fas fa-chevron-down mr-2"></i>
 			What types of photos or videos can I upload?
@@ -104,14 +104,14 @@
 			<div>
 				You can upload the following media types:
 				<ul>
-					@foreach(explode(',', config('pixelfed.media_types')) as $type)
+					@foreach(explode(',', config_cache('pixelfed.media_types')) as $type)
 					<li class="font-weight-bold">{{$type}}</li>
 					@endforeach
 				</ul>
 			</div>
 		</div>
 	</p>
-	{{-- <p>	
+	{{-- <p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse7" role="button" aria-expanded="false" aria-controls="collapse7">
 			<i class="fas fa-chevron-down mr-2"></i>
 			What is the limit for photo and video file sizes?
@@ -122,7 +122,7 @@
 			</div>
 		</div>
 	</p> --}}
-	{{-- <p>	
+	{{-- <p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse8" role="button" aria-expanded="false" aria-controls="collapse8">
 			<i class="fas fa-chevron-down mr-2"></i>
 			When I share a photo, what's the image resolution?
@@ -133,7 +133,7 @@
 			</div>
 		</div>
 	</p> --}}
-	{{-- <p>	
+	{{-- <p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse9" role="button" aria-expanded="false" aria-controls="collapse9">
 			<i class="fas fa-chevron-down mr-2"></i>
 			Can I edit my post captions, photos or videos after sharing them?
@@ -144,7 +144,7 @@
 			</div>
 		</div>
 	</p> --}}
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse10" role="button" aria-expanded="false" aria-controls="collapse10">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How can I disable comments/replies on my post?
@@ -159,7 +159,7 @@
 			</div>
 		</div>
 	</p>
-	<p>	
+	<p>
 		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse11" role="button" aria-expanded="false" aria-controls="collapse11">
 			<i class="fas fa-chevron-down mr-2"></i>
 			How many people can I tag or mention in my comments or posts?
@@ -167,6 +167,57 @@
 		<div class="collapse" id="collapse11">
 			<div>
 				You can tag or mention up to 5 profiles per comment or post.
+			</div>
+		</div>
+	</p>
+
+	<p>
+		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse12" role="button" aria-expanded="false" aria-controls="collapse11">
+			<i class="fas fa-chevron-down mr-2"></i>
+			What does archive mean?
+		</a>
+		<div class="collapse" id="collapse12">
+			<div>
+				You can archive your posts which prevents anyone from interacting or viewing it.
+				<br />
+				<strong class="text-danger">Archived posts cannot be deleted or otherwise interacted with. You may not recieve interactions (comments, likes, shares) from other servers while a post is archived.</strong>
+				<br />
+			</div>
+		</div>
+	</p>
+
+	<p>
+		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse13" role="button" aria-expanded="false" aria-controls="collapse11">
+			<i class="fas fa-chevron-down mr-2"></i>
+			How can I archive my posts?
+		</a>
+		<div class="collapse" id="collapse13">
+			<div>
+				To archive your posts:
+				<ul>
+					<li>Navigate to the post</li>
+					<li>Open the menu, click the <i class="fas fa-ellipsis-v text-muted mx-2 cursor-pointer"></i> or <i class="fas fa-ellipsis-h text-muted mx-2 cursor-pointer"></i> button</li>
+					<li>Click on <span class="small font-weight-bold cursor-pointer">Archive</span></li>
+				</ul>
+			</div>
+		</div>
+	</p>
+
+	<p>
+		<a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse14" role="button" aria-expanded="false" aria-controls="collapse11">
+			<i class="fas fa-chevron-down mr-2"></i>
+			How do I unarchive my posts?
+		</a>
+		<div class="collapse" id="collapse14">
+			<div>
+				To unarchive your posts:
+				<ul>
+					<li>Navigate to your profile</li>
+					<li>Click on the <strong>ARCHIVES</strong> tab</li>
+					<li>Scroll to the post you want to unarchive</li>
+					<li>Open the menu, click the <i class="fas fa-ellipsis-v text-muted mx-2 cursor-pointer"></i> or <i class="fas fa-ellipsis-h text-muted mx-2 cursor-pointer"></i> button</li>
+					<li>Click on <span class="small font-weight-bold cursor-pointer">Unarchive</span></li>
+				</ul>
 			</div>
 		</div>
 	</p>

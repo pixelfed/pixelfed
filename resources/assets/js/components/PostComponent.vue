@@ -616,6 +616,8 @@
 			<div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Block</div>
 			<div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Unblock</div>
 			<a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Report</a>
+			<div v-if="status && user.id == status.account.id && status.visibility != 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="archivePost(status)">Archive</div>
+			<div v-if="status && user.id == status.account.id && status.visibility == 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="unarchivePost(status)">Unarchive</div>
 			<div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
 			<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
 		</div>
@@ -1756,6 +1758,29 @@ export default {
 					}, 500);
 				});
 			},
+
+			archivePost(status) {
+				if(window.confirm('Are you sure you want to archive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/archive')
+				.then(res => {
+					this.$refs.ctxModal.hide();
+					window.location.href = '/';
+				});
+			},
+
+			unarchivePost(status) {
+				if(window.confirm('Are you sure you want to unarchive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/unarchive')
+				.then(res => {
+					this.$refs.ctxModal.hide();
+				});
+			}
 
 		},
 }

@@ -200,6 +200,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
 				Route::get('seasonal/yir', 'SeasonalController@getData');
 				Route::post('seasonal/yir', 'SeasonalController@store');
+				Route::post('status/{id}/archive', 'ApiController@archive');
+				Route::post('status/{id}/unarchive', 'ApiController@unarchive');
+				Route::get('statuses/archives', 'ApiController@archivedPosts');
 			});
 		});
 
