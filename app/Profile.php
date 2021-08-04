@@ -277,7 +277,7 @@ class Profile extends Model
 
     public function getAudienceInbox($scope = 'public')
     {
-        return FollowerService::audience($this->id, $scope);
+        return FollowerService::audience($this, $scope);
     }
 
     public function circles()
