@@ -12,12 +12,14 @@ use App\Services\MediaTagService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusLabelService;
 use App\Services\ProfileService;
+use App\Services\PollService;
 
 class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
 	public function transform(Status $status)
 	{
 		$taggedPeople = MediaTagService::get($status->id);
+		$poll = $status->type === 'poll' ? PollService::get($status->id) : null;
 
 		return [
 			'_v'                        => 1,
@@ -61,7 +63,8 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'liked_by'                  => LikeService::likedBy($status),
 			'media_attachments'			=> MediaService::get($status->id),
 			'account'					=> ProfileService::get($status->profile_id),
-			'tags'						=> StatusHashtagService::statusTags($status->id)
+			'tags'						=> StatusHashtagService::statusTags($status->id),
+			'poll'						=> $poll
 		];
 	}
 }

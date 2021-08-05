@@ -30,6 +30,8 @@ use App\Util\ActivityPub\Validator\Follow as FollowValidator;
 use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
+use App\Services\PollService;
+
 class Inbox
 {
 	protected $headers;
@@ -147,6 +149,12 @@ class Inbox
 		}
 		$to = $activity['to'];
 		$cc = isset($activity['cc']) ? $activity['cc'] : [];
+
+		if($activity['type'] == 'Question') {
+			$this->handlePollCreate();
+			return;
+		}
+
 		if(count($to) == 1 &&
 			count($cc) == 0 &&
 			parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
@@ -154,10 +162,11 @@ class Inbox
 			$this->handleDirectMessage();
 			return;
 		}
+
 		if($activity['type'] == 'Note' && !empty($activity['inReplyTo'])) {
 			$this->handleNoteReply();
 
-		} elseif($activity['type'] == 'Note' && !empty($activity['attachment'])) {
+		} elseif ($activity['type'] == 'Note' && !empty($activity['attachment'])) {
 			if(!$this->verifyNoteAttachment()) {
 				return;
 			}
@@ -180,11 +189,33 @@ class Inbox
 		return;
 	}
 
+	public function handlePollCreate()
+	{
+		$activity = $this->payload['object'];
+		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+		if(!$actor || $actor->domain == null) {
+			return;
+		}
+		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
+		Helpers::statusFirstOrFetch($url);
+		return;
+	}
+
 	public function handleNoteCreate()
 	{
 		$activity = $this->payload['object'];
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
 		if(!$actor || $actor->domain == null) {
+			return;
+		}
+
+		if( isset($activity['inReplyTo']) &&
+			isset($activity['name']) &&
+			!isset($activity['content']) &&
+			!isset($activity['attachment'] &&
+			Helpers::validateLocalUrl($activity['inReplyTo']))
+		) {
+			$this->handlePollVote();
 			return;
 		}
 
@@ -197,6 +228,51 @@ class Inbox
 			return;
 		}
 		Helpers::statusFetch($url);
+		return;
+	}
+
+	public function handlePollVote()
+	{
+		$activity = $this->payload['object'];
+		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+		$status = Helpers::statusFetch($activity['inReplyTo']);
+		$poll = $status->poll;
+
+		if(!$status || !$poll) {
+			return;
+		}
+
+		if(now()->gt($poll->expires_at)) {
+			return;
+		}
+
+		$choices = $poll->poll_options;
+		$choice = array_search($activity['name'], $choices);
+
+		if($choice === false) {
+			return;
+		}
+
+		if(PollVote::whereStatusId($status->id)->whereProfileId($actor->id)->exists()) {
+			return;
+		}
+
+		$vote = new PollVote;
+		$vote->status_id = $status->id;
+		$vote->profile_id = $actor->id;
+		$vote->poll_id = $poll->id;
+		$vote->choice = $choice;
+		$vote->uri = isset($activity['id']) ? $activity['id'] : null;
+		$vote->save();
+
+		$tallies = $poll->cached_tallies;
+		$tallies[$choice] = $tallies[$choice] + 1;
+		$poll->cached_tallies = $tallies;
+		$poll->votes_count = array_sum($tallies);
+		$poll->save();
+
+		PollService::del($status->id);
+
 		return;
 	}
 
@@ -558,10 +634,8 @@ class Inbox
 		return;
 	}
 
-
 	public function handleRejectActivity()
 	{
-
 	}
 
 	public function handleUndoActivity()

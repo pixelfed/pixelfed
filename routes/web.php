@@ -105,6 +105,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('search', 'SearchController@searchAPI');
 		Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 		Route::post('status/view', 'StatusController@storeView');
+		Route::get('v1/polls/{id}', 'PollController@getPoll');
+		Route::post('v1/polls/{id}/votes', 'PollController@vote');
 
 		Route::group(['prefix' => 'compose'], function() {
 			Route::group(['prefix' => 'v0'], function() {
@@ -120,6 +122,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::post('/publish/text', 'ComposeController@storeText');
 				Route::get('/media/processing', 'ComposeController@mediaProcessingCheck');
 				Route::get('/settings', 'ComposeController@composeSettings');
+				Route::post('/poll', 'ComposeController@createPoll');
 			});
 		});
 

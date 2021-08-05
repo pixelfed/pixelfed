@@ -44,6 +44,97 @@
 			</div>
 		</div>
 
+		<div v-else-if="page == 'poll'">
+			<div class="card status-card card-md-rounded-0" style="display:flex;">
+				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
+					<span class="pr-3">
+						<i class="fas fa-info-circle fa-lg text-primary"></i>
+					</span>
+					<span class="font-weight-bold">
+						New Poll
+					</span>
+					<span v-if="postingPoll">
+						<div class="spinner-border spinner-border-sm" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
+					</span>
+					<button v-else-if="!postingPoll && pollOptions.length > 1 && composeText.length" class="btn btn-primary btn-sm font-weight-bold" @click="postNewPoll">
+						<span>Create Poll</span>
+					</button>
+					<span v-else class="font-weight-bold text-lighter">
+						Create Poll
+					</span>
+				</div>
+				<div class="h-100 card-body p-0 border-top" style="width:100%; min-height: 400px;">
+					<div class="border-bottom mt-2">
+						<div class="media px-3">
+							<img src="/storage/avatars/default.png" width="42px" height="42px" class="rounded-circle">
+							<div class="media-body">
+								<div class="form-group">
+									<label class="font-weight-bold text-muted small d-none">Caption</label>
+									<vue-tribute :options="tributeSettings">
+										<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Write a poll question..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+									</vue-tribute>
+									<p class="help-text small text-right text-muted mb-0">{{composeTextLength}}/{{config.uploader.max_caption_length}}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="p-3">
+						<p class="font-weight-bold text-muted small">
+							Poll Options
+						</p>
+
+						<div v-if="pollOptions.length < 4" class="form-group mb-4">
+							<input type="text" class="form-control rounded-pill" placeholder="Add a poll option, press enter to save" v-model="pollOptionModel" @keyup.enter="savePollOption">
+						</div>
+
+						<div v-for="(option, index) in pollOptions" class="form-group mb-4 d-flex align-items-center" style="max-width:400px;position: relative;">
+							<span class="font-weight-bold mr-2" style="position: absolute;left: 10px;">{{ index + 1 }}.</span>
+							<input v-if="pollOptions[index].length < 50" type="text" class="form-control rounded-pill" placeholder="Add a poll option, press enter to save" v-model="pollOptions[index]" style="padding-left: 30px;padding-right: 90px;">
+							<textarea v-else class="form-control" v-model="pollOptions[index]" placeholder="Add a poll option, press enter to save" rows="3" style="padding-left: 30px;padding-right:90px;"></textarea>
+							<button class="btn btn-danger btn-sm rounded-pill font-weight-bold" style="position: absolute;right: 5px;" @click="deletePollOption(index)">
+								<i class="fas fa-trash"></i> Delete
+							</button>
+						</div>
+
+						<hr>
+
+						<div class="d-flex justify-content-between">
+							<div>
+								<p class="font-weight-bold text-muted small">
+									Poll Expiry
+								</p>
+
+								<div class="form-group">
+									<select class="form-control rounded-pill" style="width: 200px;" v-model="pollExpiry">
+										<option value="60">1 hour</option>
+										<option value="360">6 hours</option>
+										<option value="1440" selected>24 hours</option>
+										<option value="10080">7 days</option>
+									</select>
+								</div>
+							</div>
+
+							<div>
+								<p class="font-weight-bold text-muted small">
+									Poll Visibility
+								</p>
+
+								<div class="form-group">
+									<select class="form-control rounded-pill" style="max-width: 200px;" v-model="visibility">
+										<option value="public">Public</option>
+										<option value="private">Followers Only</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div v-else>
 			<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
 				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
@@ -147,7 +238,7 @@
 					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
 						<div class="text-center">
 							<div v-if="media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
-								<div @click.prevent="addMedia" class="card-body">
+								<div @click.prevent="addMedia" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
 											<i class="fas fa-bolt text-white fa-lg"></i>
@@ -163,7 +254,7 @@
 							</div>
 
 							<div v-if="config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
-								<div @click.prevent="addText" class="card-body">
+								<div @click.prevent="addText" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="far fa-edit text-primary fa-lg"></i>
@@ -182,7 +273,7 @@
 							</div>
 
 							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
-								<div class="card-body">
+								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="fas fa-history text-primary fa-lg"></i>
@@ -200,8 +291,27 @@
 								</div>
 							</a>
 
+							<a v-if="config.ab.polls == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
+								<div class="card-body py-2">
+									<div class="media">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-poll-h text-primary fa-lg"></i>
+										</div>
+										<div class="media-body text-left">
+											<p class="mb-0">
+												<span class="h5 mt-0 font-weight-bold text-primary">New Poll</span>
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
+												</sup>
+											</p>
+											<p class="mb-0 text-muted">Create a poll</p>
+										</div>
+									</div>
+								</div>
+							</a>
+
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
-								<div class="card-body">
+								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="fas fa-images text-primary fa-lg"></i>
@@ -906,7 +1016,11 @@ export default {
 			},
 			licenseId: 1,
 			licenseTitle: null,
-			maxAltTextLength: 140
+			maxAltTextLength: 140,
+			pollOptionModel: null,
+			pollOptions: [],
+			pollExpiry: 1440,
+			postingPoll: false
 		}
 	},
 
@@ -1590,6 +1704,53 @@ export default {
 				break;
 			}
 		},
+
+		newPoll() {
+			this.page = 'poll';
+		},
+
+		savePollOption() {
+			if(this.pollOptions.indexOf(this.pollOptionModel) != -1) {
+				this.pollOptionModel = null;
+				return;
+			}
+			this.pollOptions.push(this.pollOptionModel);
+			this.pollOptionModel = null;
+		},
+
+		deletePollOption(index) {
+			this.pollOptions.splice(index, 1);
+		},
+
+		postNewPoll() {
+			this.postingPoll = true;
+			axios.post('/api/compose/v0/poll', {
+				caption: this.composeText,
+				cw: false,
+				visibility: this.visibility,
+				comments_disabled: false,
+				expiry: this.pollExpiry,
+				pollOptions: this.pollOptions
+			}).then(res => {
+				if(!res.data.hasOwnProperty('url')) {
+					swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+					this.postingPoll = false;
+					return;
+				}
+				window.location.href = res.data.url;
+			}).catch(err => {
+				console.log(err.response.data.error);
+				if(err.response.data.hasOwnProperty('error')) {
+					if(err.response.data.error == 'Duplicate detected.') {
+						this.postingPoll = false;
+						swal('Oops!', 'The poll you are trying to create is similar to an existing poll you created. Please make the poll question (caption) unique.', 'error');
+						return;
+					}
+				}
+				this.postingPoll = false;
+				swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+			})
+		}
 	}
 }
 </script>

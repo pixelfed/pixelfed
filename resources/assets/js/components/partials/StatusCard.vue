@@ -1,6 +1,7 @@
 <template>
-	<div>
-		<div v-if="status.pf_type === 'text'" class="card shadow-none border border-top-0 rounded-0">
+	<div class="status-card-component"
+		 :class="{ 'status-card-sm': size === 'small' }">
+		<div v-if="status.pf_type === 'text'" :class="{ 'border-top-0': !hasTopBorder }" class="card shadow-none border rounded-0">
 			<div class="card-body">
 				<div class="media">
 					<img class="rounded-circle box-shadow mr-2" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
@@ -18,7 +19,7 @@
 							</a>
 							<span class="text-right" style="flex-grow:1;">
 								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu()">
-									<span class="fas fa-ellipsis-v text-lighter"></span>
+									<span class="fas fa-ellipsis-h text-lighter"></span>
 									<span class="sr-only">Post Menu</span>
 								</button>
 							</span>
@@ -27,10 +28,10 @@
 
 							<details v-if="status.sensitive">
 								<summary class="mb-2 font-weight-bold text-muted">Content Warning</summary>
-								<p v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+								<p v-html="status.content" class="pt-2 text-break status-content"></p>
 							</details>
 
-							<p v-else v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+							<p v-else v-html="status.content" class="pt-2 text-break status-content"></p>
 
 							<p class="mb-0">
 								<i class="fa-heart fa-lg cursor-pointer mr-3"
@@ -47,6 +48,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<div v-else-if="status.pf_type === 'poll'">
+			<poll-card :status="status" :profile="profile" v-on:status-delete="statusDeleted" />
 		</div>
 
 		<div v-else class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
@@ -179,6 +184,7 @@
 
 <script type="text/javascript">
 	import ContextMenu from './ContextMenu.vue';
+	import PollCard from './PollCard.vue';
 
 	export default {
 		props: {
@@ -194,11 +200,23 @@
 			reactionBar: {
 				type: Boolean,
 				default: true
+			},
+
+			hasTopBorder: {
+				type: Boolean,
+				default: false
+			},
+
+			size: {
+				type: String,
+				validator: (val) => ['regular', 'small'].includes(val),
+				default: 'regular'
 			}
 		},
 
 		components: {
-			"context-menu": ContextMenu
+			"context-menu": ContextMenu,
+			"poll-card": PollCard
 		},
 
 		data() {
@@ -302,8 +320,9 @@
 					item: status.id
 				}).then(res => {
 					status.favourites_count = res.data.count;
+					status.favourited = !!status.favourited;
 				}).catch(err => {
-					status.favourited = !status.favourited;
+					status.favourited = !!status.favourited;
 					status.favourites_count = count;
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
@@ -367,3 +386,23 @@
 		}
 	}
 </script>
+
+<style lang="scss">
+	.status-card-component {
+		.status-content {
+			font-size: 17px;
+		}
+
+		&.status-card-sm {
+			.status-content {
+				font-size: 14px;
+			}
+
+			.fa-lg {
+				font-size: unset;
+				line-height: unset;
+				vertical-align: unset;
+			}
+		}
+	}
+</style>

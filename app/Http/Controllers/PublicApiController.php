@@ -93,20 +93,15 @@ class PublicApiController extends Controller
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
         $this->scopeCheck($profile, $status);
-        if(!Auth::check()) {
-            $res = Cache::remember('wapi:v1:status:stateless_byid:' . $status->id, now()->addMinutes(30), function() use($status) {
-                $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
-                $res = [
-                    'status' => $this->fractal->createData($item)->toArray(),
-                ];
-                return $res;
-            });
-            return response()->json($res);
+        if(!$request->user()) {
+        	$res = ['status' => StatusService::get($status->id)];
+        } else {
+        	$item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
+	        $res = [
+	        	'status' => $this->fractal->createData($item)->toArray(),
+	        ];
         }
-        $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
-        $res = [
-        	'status' => $this->fractal->createData($item)->toArray(),
-        ];
+
         return response()->json($res);
     }
 
@@ -403,11 +398,22 @@ class PublicApiController extends Controller
         }
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
-        $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
-        $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
-        $types = $textOnlyPosts ?
-        	['text', 'photo', 'photo:album', 'video', 'video:album', 'photo:video:album'] :
-        	['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+        $types = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+
+        $textOnlyReplies = false;
+
+        if(config('exp.top')) {
+	        $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
+	        $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
+
+	        if($textOnlyPosts) {
+	        	array_push($types, 'text');
+	        }
+        }
+
+        if(config('exp.polls') == true) {
+        	array_push($types, 'poll');
+        }
 
         if($min || $max) {
             $dir = $min ? '>' : '<';
@@ -433,7 +439,7 @@ class PublicApiController extends Controller
                         'updated_at'
                       )
             		  ->whereIn('type', $types)
-                      ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
+                      ->when($textOnlyReplies != true, function($q, $textOnlyReplies) {
                       	return $q->whereNull('in_reply_to_id');
                   	  })
                       ->with('profile', 'hashtags', 'mentions')

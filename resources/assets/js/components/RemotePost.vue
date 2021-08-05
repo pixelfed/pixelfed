@@ -19,6 +19,14 @@
 							:recommended="false"
 							v-on:comment-focus="commentFocus" />
 
+							<comment-feed :status="status" class="mt-3" />
+
+			</div>
+
+			<div v-if="status.pf_type === 'poll'" class="col-12 col-md-6 offset-md-3">
+					<poll-card :status="status" :profile="profile" :fetch-state="true"/>
+
+					<comment-feed :status="status" class="mt-3" />
 
 			</div>
 
@@ -545,6 +553,8 @@ pixelfed.postComponent = {};
 
 import StatusCard from './partials/StatusCard.vue';
 import CommentCard from './partials/CommentCard.vue';
+import PollCard from './partials/PollCard.vue';
+import CommentFeed from './partials/CommentFeed.vue';
 
 export default {
 		props: [
@@ -560,7 +570,9 @@ export default {
 
 		components: {
 			StatusCard,
-			CommentCard
+			CommentCard,
+			CommentFeed,
+			PollCard
 		},
 
 		data() {

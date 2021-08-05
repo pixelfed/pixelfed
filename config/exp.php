@@ -6,4 +6,5 @@ return [
 	'rec' => false,
 	'loops' => false,
 	'top' => env('EXP_TOP', false),
+	'polls' => env('EXP_POLLS', false)
 ];
