@@ -178,6 +178,32 @@ return [
     'importPixelfed'        => 'Pixelfedからインポート',
     'importMastodon'        => 'Mastodonからインポート',
 
+    'importFromInstagram'   => 'Instagramからインポート',
+    'downloadInstagramBackup'=> '<a href="https://www.instagram.com/download/request/">こちら</a>からInstagramのバックアップを取得することができます。',
+    'requirements'          => '必要なファイル:',
+    'mediaJsonFile'         => 'media.jsonファイル',
+    'photosDirectory'       => 'phtosディレクトリ',
+    'process'               => 'プロセス:',
+    'uploadMediaJson'       => 'media.jsonファイルをアップロード',
+    'uploadphotosDirectory' => 'photosディレクトリをアップロード',
+    'importData'            => 'データをインポート',
+    'confirmEachPost'       => '各投稿の確認',
+    'startImport'           => 'インポートを開始',
+
+    'step1'                 => 'ステップ1',
+    'step1Discription'      => '始める前にInstagramのバックアップを取得する必要があります。<a href="https://www.instagram.com/download/request/">こちら</a>からバックアップを取得することができます。',
+    'importPhotosDirectory' => '<b>photos</b>ディレクトリをインポート',
+    'step1LimitNotice'      => 'ファイルサイズの上限は250MBです。 photosディレクトリがその量を超える場合は、より大きなインポートがサポートされるまで待つ必要があります。',
+    'step1Upload'           => 'photosをアップロード',
+
+    'step2'                 => 'ステップ2',
+    'importMediaJson'       => '<b>media.json</b>ファイルをインポート',
+    'step2LimitNotice'      => 'ファイルサイズの上限は10MBです。media.jsonファイルのみをアップロードしてください。',
+    'step2Upload'           => 'media.jsonをアップロード',
+
+    'step3'                 => 'ステップ3',
+    'importAll'             => 'すべてインポート',
+    
     'applications'          => 'アプリケーション',
     'oathNotEnabled'        => 'このインスタンスではOAuthが有効になっていません。',
 ];

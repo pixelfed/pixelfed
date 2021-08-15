@@ -178,6 +178,32 @@ return [
     'importPixelfed'        => 'Import from Pixelfed',
     'importMastodon'        => 'Import from Mastodon',
 
+    'importFromInstagram'   => 'Import from Instagram',
+    'downloadInstagramBackup'=> 'You can download an Instagram backup <a href="https://www.instagram.com/download/request/">here</a>.',
+    'requirements'          => 'Requirements:',
+    'mediaJsonFile'         => 'media.json file',
+    'photosDirectory'       => 'photos directory',
+    'process'               => 'Process:',
+    'uploadMediaJson'       => 'Upload media.json file',
+    'uploadphotosDirectory' => 'Upload photos directory',
+    'importData'            => 'Import Data',
+    'confirmEachPost'       => 'Confirm each post',
+    'startImport'           => 'Start Import',
+
+    'step1'                 => 'Step 1',
+    'step1Discription'      => 'Before you proceed, you need to have a backup of your account from Instagram, you can do that <a href="https://www.instagram.com/download/request/">here</a>.',
+    'importPhotosDirectory' => 'Import <b>photos</b> directory',
+    'limitNotice'           => '250mb limit, if your photos directory exceeds that amount, you will have to wait until we support larger imports.',
+    'step1Upload'           => 'Upload Photos',
+
+    'step2'                 => 'Step 2',
+    'importMediaJson'       => 'Import <b>media.json</b> file',
+    'step2LimitNotice'      => '10mb limit, please only upload the media.json file',
+    'step2Upload'           => 'Upload media.json',
+    
+    'step3'                 => 'Step 3',
+    'importAll'             => 'Import All',
+
     'applications'          => 'Applications',
     'oathNotEnabled'        => 'OAuth has not been enabled on this instance.',
 ];
