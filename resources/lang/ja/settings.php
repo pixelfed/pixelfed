@@ -169,4 +169,15 @@ return [
     'exportStatuses'        => '投稿',
     'muteBlockList'         => 'ミュート・ブロックリスト',
     'account'               => 'アカウント',
+
+    'import'                => 'インポート',
+    'importDiscription'     => 'アカウントのインポートを使用すると、サポートされているサービスからデータをインポートできます。',
+    'importWarining'        => '<strong>警告: </strong> インポートされた投稿はタイムラインに表示、フォロワーに配信されしません。',
+    'supportedServices'     => 'サポートされているサービス',
+    'importInstagram'       => 'Instagramからインポート',
+    'importPixelfed'        => 'Pixelfedからインポート',
+    'importMastodon'        => 'Mastodonからインポート',
+
+    'applications'          => 'アプリケーション',
+    'oathNotEnabled'        => 'このインスタンスではOAuthが有効になっていません。',
 ];

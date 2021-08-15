@@ -169,4 +169,15 @@ return [
     'exportStatuses'        => 'Statuses',
     'muteBlockList'         => 'Mute/Block List',
     'account'               => 'Account',
+
+    'import'                => 'Import',
+    'importDiscription'     => 'Account Import allows you to import your data from a supported service.',
+    'importWarining'        => '<strong>Warning: </strong> Imported posts will not appear on timelines or be delivered to followers.',
+    'supportedServices'     => 'Supported Services',
+    'importInstagram'       => 'Import from Instagram',
+    'importPixelfed'        => 'Import from Pixelfed',
+    'importMastodon'        => 'Import from Mastodon',
+
+    'applications'          => 'Applications',
+    'oathNotEnabled'        => 'OAuth has not been enabled on this instance.',
 ];
