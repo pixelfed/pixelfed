@@ -172,7 +172,7 @@ return [
 
     'import'                => 'インポート',
     'importDiscription'     => 'アカウントのインポートを使用すると、サポートされているサービスからデータをインポートできます。',
-    'importWarining'        => '<strong>警告: </strong> インポートされた投稿はタイムラインに表示、フォロワーに配信されしません。',
+    'importWarining'        => '<strong>警告: </strong> インポートされた投稿はタイムラインやフォロワーに配信されません。',
     'supportedServices'     => 'サポートされているサービス',
     'importInstagram'       => 'Instagramからインポート',
     'importPixelfed'        => 'Pixelfedからインポート',
