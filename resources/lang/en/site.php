@@ -16,5 +16,12 @@ return [
     'contact-us'        => 'Contact Us',
     'places'            => 'Places',
     'profiles'          => 'Profiles',
+    'accountLogin'	    => 'Account Login',
+    'email'			    => 'Email',
+    'password'		    => 'Password',
+    'remember'		    => 'Remember Me',
+    'login'			    => 'Login',
+    'register'		    => 'Register',
+	'passwordReset'	    => 'Password Reset'
 
 ];

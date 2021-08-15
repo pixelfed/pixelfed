@@ -3,7 +3,7 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Accessibility</h3>
+    <h3 class="font-weight-bold">{{__('settings.accessibility')}}</h3>
   </div>
   <hr>
   <form method="post">
@@ -25,9 +25,9 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="reduce_motion" id="reduce_motion" {{$settings->reduce_motion ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="reduce_motion">
-        {{__('Reduce Motion')}}
+        {{__('settings.reduceMotion')}}
       </label>
-      <p class="text-muted small help-text">Prevent animation effects.</p>
+      <p class="text-muted small help-text">{{__('settings.reduceMotionDiscription')}}</p>
     </div>
     {{-- <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="optimize_screen_reader" id="optimize_screen_reader" {{$settings->optimize_screen_reader ? 'checked=""':''}}>
@@ -39,21 +39,21 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="high_contrast_mode" id="high_contrast_mode" {{$settings->high_contrast_mode ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="high_contrast_mode">
-        {{__('High Contrast Mode')}}
+        {{__('settings.highContrastMode')}}
       </label>
-      <p class="text-muted small help-text">High contrast mode for the visually impaired.</p>
+      <p class="text-muted small help-text">{{__('settings.highContrastModeDiscription')}}</p>
     </div>
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="video_autoplay" id="video_autoplay" {{$settings->video_autoplay ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="video_autoplay">
-        {{__('Disable video autoplay')}}
+        {{__('settings.disableVideoAutoplay')}}
       </label>
-      <p class="text-muted small help-text">Prevent videos from autoplaying.</p>
+      <p class="text-muted small help-text">{{__('settings.disableVideoAutoplayDiscription')}}</p>
     </div>
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
         <hr>
-        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
+        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">{{__('settings.submit')}}</button>
       </div>
     </div>
   </form>

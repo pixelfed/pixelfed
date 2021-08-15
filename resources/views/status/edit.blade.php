@@ -22,7 +22,7 @@
 						</select>
 					</div>
 					<hr>
-					<button class="btn btn-primary btn-block font-weight-bold">Save</button>
+					<button class="btn btn-primary btn-block font-weight-bold">{{__('status.save')}}</button>
 				</form>
 			</div>
 		</div>

@@ -12,4 +12,13 @@ return [
 
   'status.disabled.header'   => 'プロフィールが無効です',
   'status.disabled.body'     => 'このプロフィールは現在利用できません。しばらくしてからもう一度お試しください。',
+
+  'unfollow'              => 'フォロー解除',
+  'followRequested'       => 'フォローをリクエストしました',
+  'follow'                => 'フォロー',
+  'copyLink'              => 'リンクをコピー',
+  'mute'                  => 'ミュート',
+  'reportUser'            => '通報',
+  'block'                 => 'ブロック',
+  'close'                 => '閉じる',
 ];

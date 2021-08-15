@@ -1,4 +1,4 @@
-@extends('layouts.app')
+  @extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
@@ -14,15 +14,16 @@
         </div>
     @endif
     <div class="card shadow-none border">
-      <div class="card-header font-weight-bold bg-white">Confirm Email Address</div>
+      <div class="card-header font-weight-bold bg-white">{{ __('account.confirmEmail') }}</div>
       <div class="card-body">
-        <p class="lead">You need to confirm your email address (<span class="font-weight-bold">{{Auth::user()->email}}</span>) before you can proceed.</p>
-    	<p class="lead">You can change your email address <a href="/settings/email">here</a>.</p>
-    	<p class="small">If you don't recieve an email within 30 minutes, you can <a href="/site/contact">contact the administrator</a>.</p>
+        <p class="lead">{{ __('account.confirmEmailMessage') }}</p>
+        <p class="lead">{{ __('account.yourEmail') }}<span class="font-weight-bold">{{Auth::user()->email}}</span></p>
+        <p class="lead">{!! __('account.changeEmail') !!}</p>
+        <p class="small">{!! __('account.contact') !!}</p>
         <hr>
         <form method="post">
           @csrf
-          <button type="submit" class="btn btn-primary btn-block py-1 font-weight-bold">Send Confirmation Email</button>
+          <button type="submit" class="btn btn-primary btn-block py-1 font-weight-bold">{{ __('account.sendConfirmEmail') }}</button>
         </form>
       </div>
     </div>

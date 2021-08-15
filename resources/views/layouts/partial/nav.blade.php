@@ -19,13 +19,13 @@
 				<ul class="navbar-nav ml-auto">
 					<li>
 						<a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
-							{{ __('Login') }}
+							{{__('navmenu.login')}}
 						</a>
 					</li>
 				@if(config_cache('pixelfed.open_registration') && in_array(config_cache('system.user_mode'), ['default', 'admin']))
 					<li>
 						<a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
-							{{ __('Register') }}
+							{{__('navmenu.register')}}
 						</a>
 					</li>
 				@endif
@@ -35,24 +35,24 @@
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<a class="nav-link font-weight-bold text-dark" href="/" title="Home" data-toggle="tooltip" data-placement="bottom">
 								<i class="fas fa-home fa-lg"></i>
-								<span class="sr-only">Home</span>
+								<span class="sr-only">{{__('navmenu.home')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2">
 							<a class="nav-link font-weight-bold text-dark" href="/account/direct" title="Direct" data-toggle="tooltip" data-placement="bottom">
 								<i class="far fa-comment-dots fa-lg"></i>
-								<span class="sr-only">Direct</span>
+								<span class="sr-only">{{__('navmenu.direct')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
 								<i class="far fa-bell fa-lg"></i>
-								<span class="sr-only">Notifications</span>
+								<span class="sr-only">{{__('navmenu.notifications')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<div class="nav-link btn btn-primary btn-sm py-1 font-weight-bold text-white" title="Compose" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
-								<span>New Post</span>
+								<span>{{__('navmenu.newPost')}}</span>
 							</div>
 						</li>
 						<li class="nav-item dropdown ml-2">
@@ -66,20 +66,20 @@
 								@if(config('federation.network_timeline'))
 								<a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
 									<span class="fas fa-stream pr-2 text-lighter"></span>
-									Public
+									{{__('navmenu.public')}}
 								</a>
 								<a class="dropdown-item font-weight-bold" href="{{route('timeline.network')}}">
 									<span class="fas fa-globe pr-2 text-lighter"></span>
-									Network
+									{{__('navmenu.network')}}
 								</a>
 								@else
 								<a class="dropdown-item font-weight-bold" href="/">
 									<span class="fas fa-home pr-2 text-lighter"></span>
-									Home
+									{{__('navmenu.home')}}
 								</a>
 								<a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
 									<span class="fas fa-stream pr-2 text-lighter"></span>
-									Public
+									{{__('navmenu.public')}}
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
@@ -89,7 +89,7 @@
 								</a>
 								<a class="dropdown-item font-weight-bold" href="/i/stories/new">
 									<span class="fas fa-history text-lighter pr-2"></span>
-									Stories
+									{{__('navmenu.stories')}}
 								</a>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item font-weight-bold" href="/i/me">

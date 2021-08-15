@@ -1,11 +1,14 @@
+  
 <?php
 
 return [
 	'search'			=> 'Search',
 	'home'				=> 'Home',
 	'local'				=> 'Local',
+	'public'			=> 'Public',
 	'network'			=> 'Network',
 	'discover'			=> 'Discover',
+	'stories'			=> 'Stories',
 	'viewMyProfile'		=> 'View my profile',
 	'myProfile'			=> 'My Profile',
 	'myTimeline'		=> 'My Timeline',
@@ -16,4 +19,7 @@ return [
 	'logout'			=> 'Logout',
 	'directMessages'	=> 'Direct Messages',
 	'composePost'		=> 'Compose Post',
+	'newPost'			=> 'New Post',
+	'login' 			=> 'Login',
+	'register' 			=> 'Register',
 ];

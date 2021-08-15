@@ -3,7 +3,7 @@
 @section('section')
 
 	<div class="title">
-		<h3 class="font-weight-bold">Account Settings</h3>
+		<h3 class="font-weight-bold">{{__('settings.accountSettings')}}</h3>
 	</div>
 	<hr>
 	<div class="form-group row">
@@ -13,7 +13,7 @@
 		<div class="col-sm-9">
 			<p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>
 			<p class="">
-				<a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">Change Profile Photo</a>
+				<a href="#" class="font-weight-bold change-profile-photo" data-toggle="collapse" data-target="#avatarCollapse" aria-expanded="false" aria-controls="avatarCollapse">{{__('settings.changePhoto')}}</a>
 			</p>
 			<div class="collapse" id="avatarCollapse">
 				<form method="post" action="/settings/avatar" enctype="multipart/form-data">
@@ -21,44 +21,44 @@
 				<div class="card card-body">
 					<div class="custom-file mb-1">
 						<input type="file" name="avatar" class="custom-file-input" id="avatarInput">
-						<label class="custom-file-label" for="avatarInput">Select a profile photo</label>
+						<label class="custom-file-label" for="avatarInput">{{__('settings.selectPhoto')}}</label>
 					</div>
-					<p><span class="small font-weight-bold">Must be a jpeg or png. Max avatar size: <span id="maxAvatarSize"></span></span></p>
+					<p><span class="small font-weight-bold">{!!__('settings.mustBe' , ['size' => '<span id="maxAvatarSize"></span>'])!!}</span></p>
 					<div id="previewAvatar"></div>
-					<p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">Upload</button></p>
+					<p class="mb-0"><button type="submit" class="btn btn-primary px-4 py-0 font-weight-bold">{{__('settings.upload')}}</button></p>
 				</div>
 				</form>
 			</div>
 			<p class="">
-				<a class="font-weight-bold text-muted delete-profile-photo" href="#">Delete Profile Photo</a>
+				<a class="font-weight-bold text-muted delete-profile-photo" href="#">{{__('settings.deletePhoto')}}</a>
 			</p>
 		</div>
 	</div>
 	<form method="post">
 		@csrf
 		<div class="form-group row">
-			<label for="name" class="col-sm-3 col-form-label font-weight-bold">Name</label>
+			<label for="name" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.name')}}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="{{Auth::user()->profile->name}}" v-pre>
+				<input type="text" class="form-control" id="name" name="name" placeholder="{{__('settings.addName')}}" value="{{Auth::user()->profile->name}}" v-pre>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="website" class="col-sm-3 col-form-label font-weight-bold">Website</label>
+			<label for="website" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.website')}}</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="website" name="website" placeholder="Website" value="{{Auth::user()->profile->website}}" v-pre>
+				<input type="text" class="form-control" id="website" name="website" placeholder="{{__('settings.addWebsite')}}" value="{{Auth::user()->profile->website}}" v-pre>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="bio" class="col-sm-3 col-form-label font-weight-bold">Bio</label>
+			<label for="bio" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.bio')}}</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}" v-pre>{{strip_tags(Auth::user()->profile->bio)}}</textarea>
+				<textarea class="form-control" id="bio" name="bio" placeholder="{{__('settings.addBio')}}" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}" v-pre>{{strip_tags(Auth::user()->profile->bio)}}</textarea>
 				<p class="form-text">
 					<span class="bio-counter float-right small text-muted">0/{{config('pixelfed.max_bio_length')}}</span>
 				</p>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="language" class="col-sm-3 col-form-label font-weight-bold">Language</label>
+			<label for="language" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.language')}}</label>
 			<div class="col-sm-9">
 				<select class="form-control" name="language">
 				@foreach(App\Util\Localization\Localization::languages() as $lang)
@@ -68,30 +68,30 @@
 			</div>
 		</div>
 		<div class="form-group row">
-			<label for="pronouns" class="col-sm-3 col-form-label font-weight-bold">Pronouns</label>
+			<label for="pronouns" class="col-sm-3 col-form-label font-weight-bold">{{__('settings.pronouns')}}</label>
 			<div class="col-sm-9">
 				<select class="form-control" name="pronouns[]" multiple="" id="pronouns">
-					<option>Select Pronoun(s)</option>
+					<option>{{__('settings.selectPronouns')}}</option>
 				@foreach(\App\Services\PronounService::pronouns() as $val)
 					<option value="{{$val}}" {{$pronouns && in_array($val, $pronouns) ? 'selected' : ''}}>{{$val}}</option>
 				@endforeach
 				</select>
-				<p class="help-text text-muted small">Select up to 4 pronouns that will appear on your profile.</p>
+				<p class="help-text text-muted small">{{__('settings.pronounsDiscription')}}</p>
 			</div>
 		</div>
 		@if(config_cache('pixelfed.enforce_account_limit'))
 		<div class="pt-3">
-			<p class="font-weight-bold text-muted text-center">Storage Usage</p>
+			<p class="font-weight-bold text-muted text-center">{{__('settings.storageUsage')}}</p>
 		</div>
 		<div class="form-group row">
-			<label class="col-sm-3 col-form-label font-weight-bold">Storage Used</label>
+			<label class="col-sm-3 col-form-label font-weight-bold">{{__('settings.storageUsed')}}</label>
 			<div class="col-sm-9">
 				<div class="progress mt-2">
 					<div class="progress-bar" role="progressbar" style="width: {{$storage['percentUsed']}}%"  aria-valuenow="{{$storage['percentUsed']}}" aria-valuemin="0" aria-valuemax="100"></div>
 				</div>
 				<div class="help-text">
 					<span class="small text-muted">
-						{{$storage['percentUsed']}}% used
+						{{$storage['percentUsed']}}% {{__('settings.used')}}
 					</span>
 					<span class="small text-muted float-right">
 						{{$storage['usedPretty']}} / {{$storage['limitPretty']}}
@@ -103,7 +103,7 @@
 		<hr>
 		<div class="form-group row">
 			<div class="col-12 text-right">
-				<button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
+				<button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">{{__('settings.submit')}}</button>
 			</div>
 		</div>
 	</form>

@@ -7,22 +7,22 @@
       <div class="card-body p-0">
         <ul class="nav nav-tabs d-flex text-center">
           <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications.following')}}">Following</a>
+            <a class="nav-link font-weight-bold text-uppercase active" href="{{route('notifications.following')}}">{{__('account.following')}}</a>
           </li>
           <li class="nav-item flex-fill">
-            <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications')}}">My Notifications</a>
+            <a class="nav-link font-weight-bold text-uppercase" href="{{route('notifications')}}">{{__('account.myNotifications')}}</a>
           </li>
         </ul>
       </div>
     </div>
     <div class="">
 {{--       <div class="card-header bg-white">
-        <span class="font-weight-bold lead">Notifications</span>
+        <span class="font-weight-bold lead">{{__('account.notifications')}}</span>
         <span class="small float-right font-weight-bold">
           <a href="?a=comment" class="pr-4 text-muted" title="Commented on your post"><i class="fas fa-comment fa-2x"></i></a>
           <a href="?a=follow" class="pr-4 text-muted" title="Followed you"><i class="fas fa-user-plus fa-2x"></i></a>
           <a href="?a=mention" class="pr-4 text-muted" title="Mentioned you"><i class="fas fa-comment-dots fa-2x"></i></a>
-          <a href="{{route('notifications')}}" class="font-weight-bold text-dark">View All</a>
+          <a href="{{route('notifications')}}" class="font-weight-bold text-dark">{{__('account.viewAll')}}</a>
         </span>
       </div> --}}
     </div>

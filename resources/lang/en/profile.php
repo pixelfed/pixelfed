@@ -12,4 +12,13 @@ return [
 
   'status.disabled.header' 	  => 'Profile Unavailable',
   'status.disabled.body'	  => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+  'unfollow'              => 'Unfollow',
+  'followRequested'       => 'Follow Requested',
+  'follow'                => 'Follow',
+  'copyLink'              => 'Copy Link',
+  'mute'                  => 'Mute',
+  'reportUser'            => 'Report User',
+  'block'                 => 'Block',
+  'close'                 => 'Close',
 ];

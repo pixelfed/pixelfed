@@ -15,19 +15,19 @@
 							<form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
 								@csrf
 								<input type="hidden" name="item" value="{{$user->id}}">
-								<button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
+								<button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">{{__('account.unfollow')}}</button>
 							</form>
 						</span>
 						@elseif(Auth::check() && $requested == true)
 						<span class="pl-4">
-							<button class="btn btn-outline-secondary font-weight-bold px-4 py-0 disabled" disabled type="button">Follow Requested</button>
+							<button class="btn btn-outline-secondary font-weight-bold px-4 py-0 disabled" disabled type="button">{{__('account.followRequested')}}</button>
 						</span>
 						@elseif(Auth::check() && $is_following == false)
 						<span class="pl-4">
 							<form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
 								@csrf
 								<input type="hidden" name="item" value="{{$user->id}}">
-								<button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
+								<button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">{{__('account.follow')}}</button>
 							</form>
 						</span>
 						@endif
@@ -39,21 +39,21 @@
 									<div class="modal-content">
 										<div class="modal-body p-0">
 											<div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="window.App.util.clipboard('{{$user->url()}}');$('#ctxProfileMenu').modal('hide')">
-												Copy Link
+												{{__('account.copyLink')}}
 											</div>
 											@auth
 											<div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="muteProfile()">
-												Mute
+												{{__('account.mute')}}
 											</div>
 											<a class="list-group-item cursor-pointer text-center rounded text-dark text-decoration-none" href="i/report?type=user&id={{$user->id}}">
-												Report User
+												{{__('account.reportUser')}}
 											</a>
 											<div class="list-group-item cursor-pointer text-center rounded text-dark" onclick="blockProfile()">
-												Block
+												{{__('account.block')}}
 											</div>
 											@endauth
 											<div class="list-group-item cursor-pointer text-center rounded text-muted" onclick="$('#ctxProfileMenu').modal('hide')">
-												Close
+												{{__('account.close')}}
 											</div>
 										</div>
 									</div>

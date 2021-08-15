@@ -4,7 +4,7 @@ return [
 
 	'about'         => 'このサーバーについて',
 	'help'          => 'ヘルプ',
-	'language'      => '言語',
+	'language'      => 'Language',
 	'fediverse'     => 'Fediverse',
 	'opensource'	=> 'オープンソース',
 	'terms'         => '利用規約',
@@ -16,5 +16,12 @@ return [
 	'contact-us'	=> 'お問い合わせ',
 	'places'        => '場所',
 	'profiles'      => 'プロフィール',
+	'accountLogin'	=> 'アカウントにログイン',
+	'email'			=> 'メールアドレス',
+	'password'		=> 'パスワード',
+	'remember'		=> 'ログイン状態を保持する',
+	'login'			=> 'ログイン',
+	'register'		=> '新規登録',
+	'passwordReset'	=> 'パスワードをリセット'
 
 ];

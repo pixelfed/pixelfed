@@ -3,13 +3,13 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Two-Factor Authentication Recovery Codes</h3>
+    <h3 class="font-weight-bold">{{__('settings.2faRecoveryCodes')}}</h3>
   </div>
 
   <hr>
     @if(count($codes) > 0)
       <p class="lead pb-3">
-      	Each code can only be used once.
+        {{__('settings.codeUsedOnce')}}
       </p>
       <ul class="list-group">
       	@foreach($codes as $code)
@@ -18,12 +18,12 @@
       </ul>
     @else
     <div class="pt-5">
-      <h4 class="font-weight-bold">You are out of recovery codes</h4>
-      <p class="lead">Generate more recovery codes and store them in a safe place.</p>
+      <h4 class="font-weight-bold">{{__('settings.outOfCode')}}</h4>
+      <p class="lead">{{__('settings.generateMoreCode')}}</p>
       <p>
         <form method="post">
           @csrf
-          <button type="submit" class="btn btn-primary font-weight-bold">Generate Recovery Codes</button>
+          <button type="submit" class="btn btn-primary font-weight-bold">{{__('settings.generateRecoveryCode')}}</button>
         </form>
       </p>
     </div>
