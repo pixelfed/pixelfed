@@ -25,6 +25,10 @@ return [
     'ageVerification' => '私は16歳以上です',
     'register' => 'アカウントを登録',
     'login'    => 'ログイン',
-    'forgotPasswoord' => 'パスワードを忘れた場合'
+    'forgotPasswoord' => 'パスワードを忘れた場合',
+
+    'confirmPasswordContinue'   => 'パスワードを入力して続行',
+    'trustDevice'   => 'このデバイスを信頼する',
+    'confirmPassword'   => '認証する',
 
 ];

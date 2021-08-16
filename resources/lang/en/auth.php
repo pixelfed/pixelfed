@@ -27,4 +27,8 @@ return [
     'login'    => 'Login',
     'forgotPasswoord' => 'Forgot Password',
 
+    'confirmPasswordContinue'   => 'Confirm password to continue',
+    'trustDevice'   => 'Trust this device and don\'t ask again',
+    'confirmPassword'   => 'Confirm Password',
+
 ];
