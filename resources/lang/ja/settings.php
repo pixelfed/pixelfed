@@ -1,6 +1,22 @@
 <?php
 
 return [
+    'sidebarAccount'        => 'アカウント',
+    'sidebarAccessibility'  => 'アクセシビリティ',
+    'sidebarEmail'          => 'メールアドレス',
+    'sidebarInvites'        => '招待',
+    'sidebarNotifications'  => '通知',
+    'sidebarPassword'       => 'パスワード',
+    'sidebarPrivacy'        => 'プライバシー',
+    'sidebarRelationships'  => '関係性',
+    'sidebarSecurity'       => 'セキュリティ',
+    'sidebarTimelines'      => 'タイムライン',
+    'sidebarImport'         => 'インポート',
+    'sidebarDataExport'     => 'エクスポート',
+    'sidebarApplications'   => 'アプリケーション',
+    'sidebarDevelopers'     => '開発',
+    'sidebarLabs'           => 'Labs',
+
     'accountSettings'       => 'アカウント設定',
     'changePhoto'           => 'プロフィール画像を変更',
     'selectPhoto'           => 'プロフィール画像を選択',
@@ -206,4 +222,6 @@ return [
     
     'applications'          => 'アプリケーション',
     'oathNotEnabled'        => 'このインスタンスではOAuthが有効になっていません。',
+
+    'developers'            => '開発',
 ];

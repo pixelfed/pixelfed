@@ -1,6 +1,22 @@
 <?php
 
 return [
+    'sidebarAccount'        => 'Account',
+    'sidebarAccessibility'  => 'Accessibility',
+    'sidebarEmail'          => 'Email',
+    'sidebarInvites'        => 'Invites',
+    'sidebarNotifications'  => 'Notifications',
+    'sidebarPassword'       => 'Password',
+    'sidebarPrivacy'        => 'Privacy',
+    'sidebarRelationships'  => 'Relationships',
+    'sidebarSecurity'       => 'Security',
+    'sidebarTimelines'      => 'Timelines',
+    'sidebarImport'         => 'Import',
+    'sidebarDataExport'     => 'Data Export',
+    'sidebarApplications'   => 'Applications',
+    'sidebarDevelopers'     => 'Deveropers',
+    'sidebarLabs'           => 'Labs',
+
     'accountSettings'       => 'Account Settings',
     'changePhoto'           => 'Change Profile Photo',
     'selectPhoto'           => 'Select a profile photo',
@@ -206,4 +222,6 @@ return [
 
     'applications'          => 'Applications',
     'oathNotEnabled'        => 'OAuth has not been enabled on this instance.',
+
+    'developers'            => 'Developers',
 ];
