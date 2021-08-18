@@ -8,7 +8,7 @@
   </div>
   <hr>
   <section>
-    <p class="lead">{!!__('settings.step1Discription')!!}</p>
+    <p class="lead">{!!__('settings.step1Discription',['url'=>'https://www.instagram.com/download/request/'])!!}</p>
   </section>
   <section class="mt-5 col-md-8 offset-md-2">
     <div class="card mb-3 step-one">

@@ -122,8 +122,7 @@ return [
     'delete'                => 'Delete',
 
     'notEnabled2fa'         => 'Two factor authentication is not enabled yet.',
-    'Enabled2faDiscription' => 'Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in. ',
-    'leanMore'              => 'Learn more',
+    'Enabled2faDiscription' => 'Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to log in. <a href=":url">Learn more</a>.',
     'enable2fa'             => 'Enable two-factor authentication',
 
     '2faMethods'            => 'Two-factor methods',
@@ -187,7 +186,7 @@ return [
     'account'               => 'Account',
 
     'import'                => 'Import',
-    'importDiscription'     => 'Account Import allows you to import your data from a supported service.',
+    'importDiscription'     => 'Account Import allows you to import your data from a supported service. <a href=":url">Learn more</a>.',
     'importWarining'        => '<strong>Warning: </strong> Imported posts will not appear on timelines or be delivered to followers.',
     'supportedServices'     => 'Supported Services',
     'importInstagram'       => 'Import from Instagram',
@@ -195,7 +194,7 @@ return [
     'importMastodon'        => 'Import from Mastodon',
 
     'importFromInstagram'   => 'Import from Instagram',
-    'downloadInstagramBackup'=> 'You can download an Instagram backup <a href="https://www.instagram.com/download/request/">here</a>.',
+    'downloadInstagramBackup'=> 'You can download an Instagram backup <a href=":url">here</a>.',
     'requirements'          => 'Requirements:',
     'mediaJsonFile'         => 'media.json file',
     'photosDirectory'       => 'photos directory',
@@ -207,7 +206,7 @@ return [
     'startImport'           => 'Start Import',
 
     'step1'                 => 'Step 1',
-    'step1Discription'      => 'Before you proceed, you need to have a backup of your account from Instagram, you can do that <a href="https://www.instagram.com/download/request/">here</a>.',
+    'step1Discription'      => 'Before you proceed, you need to have a backup of your account from Instagram, you can do that <a href=":url">here</a>.',
     'importPhotosDirectory' => 'Import <b>photos</b> directory',
     'limitNotice'           => '250mb limit, if your photos directory exceeds that amount, you will have to wait until we support larger imports.',
     'step1Upload'           => 'Upload Photos',

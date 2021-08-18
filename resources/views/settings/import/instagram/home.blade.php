@@ -8,7 +8,7 @@
   <hr>
   <section>
     <div class="alert alert-info">
-      <p class="mb-0 font-weight-bold">{!!__('settings.downloadInstagramBackup')!!}</p>
+      <p class="mb-0 font-weight-bold">{!!__('settings.downloadInstagramBackup',['url' => 'https://www.instagram.com/download/request/'])!!}</p>
     </div>
     <p class="lead font-weight-bold mb-1">{{__('settings.requirements')}}</p>
     <ul class="lead mb-4">

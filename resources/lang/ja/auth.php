@@ -23,12 +23,13 @@ return [
     'password' => 'パスワード',
     'confirmPassword' => 'パスワードを再入力',
     'ageVerification' => '私は16歳以上です',
+    'agreement' => '<a href=":terms" class="font-weight-bold text-dark">利用規約</a>と<a href=":privacy" class="font-weight-bold text-dark">プライバシーポリシー</a>に同意する。',
     'register' => 'アカウントを登録',
     'login'    => 'ログイン',
     'forgotPasswoord' => 'パスワードを忘れた場合',
 
     'confirmPasswordContinue'   => 'パスワードを入力して続行',
     'trustDevice'   => 'このデバイスを信頼する',
-    'confirmPassword'   => '認証する',
+    'sudoConfirmPassword'   => '認証する',
 
 ];

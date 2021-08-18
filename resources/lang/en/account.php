@@ -3,11 +3,10 @@
 return [
 
     'confirmEmail'          => 'Confirm Email Address',
-    'confirmEmailMessage'   => 'You need to confirm your email address before you can proceed.',
+    'confirmEmailMessage'   => 'You need to confirm your email address (<span class="font-weight-bold">:email</span>) before you can proceed.',
     'sendConfirmEmail'      => 'Send Confirmation Email',
-    'yourEmail'             => 'Your Email Adress:',
-    'changeEmail'           => 'You can change your email address <a href="/settings/email">here</a>.',
-    'contact'               => 'If you don\'t recieve an email within 30 minutes, you can <a href="/site/contact">contact the administrator</a>.',
+    'changeEmail'           => 'You can change your email address <a href="url">here</a>.',
+    'contact'               => 'If you don\'t recieve an email within 30 minutes, you can <a href=":url">contact the administrator</a>.',
     'notifications'         => 'Notifications',
     'followRequests'        => 'Folllow Requests',
     'createCircle'          => 'Create Circle',

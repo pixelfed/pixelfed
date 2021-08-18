@@ -33,7 +33,7 @@
                         <div class="form-group row mb-0">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-success btn-block  font-weight-bold">
-                                    {{ __('auth.confirmPassword') }}
+                                    {{ __('auth.sudoConfirmPassword') }}
                                 </button>
 
                             </div>

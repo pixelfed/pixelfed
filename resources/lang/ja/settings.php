@@ -122,8 +122,7 @@ return [
     'delete'                => '削除する',
 
     'notEnabled2fa'           => '2段階認証はまだ有効になっていません。',
-    'Enabled2faDiscription'=> '2段階認証は、ログイン時にパスワード以外の情報を要求することで、アカウントのセキュリティを強化します。',
-    'leanMore'                => '詳しくはこちら',
+    'Enabled2faDiscription' => '2段階認証は、ログイン時にパスワード以外の情報を要求することで、アカウントのセキュリティを強化します。<a href=":url">詳しくはこちら</a>',
     'enable2fa'               => '2段階認証を有効にする',
 
     '2faMethods'            => '2段階認証の方法',
@@ -187,7 +186,7 @@ return [
     'account'               => 'アカウント',
 
     'import'                => 'インポート',
-    'importDiscription'     => 'アカウントのインポートを使用すると、サポートされているサービスからデータをインポートできます。',
+    'importDiscription'     => 'アカウントのインポートを使用すると、サポートされているサービスからデータをインポートできます。<a href=":url">詳しくはこちら</a>',
     'importWarining'        => '<strong>警告: </strong> インポートされた投稿はタイムラインやフォロワーに配信されません。',
     'supportedServices'     => 'サポートされているサービス',
     'importInstagram'       => 'Instagramからインポート',
@@ -195,7 +194,7 @@ return [
     'importMastodon'        => 'Mastodonからインポート',
 
     'importFromInstagram'   => 'Instagramからインポート',
-    'downloadInstagramBackup'=> '<a href="https://www.instagram.com/download/request/">こちら</a>からInstagramのバックアップを取得することができます。',
+    'downloadInstagramBackup'=> '<a href=":url">こちら</a>からInstagramのバックアップを取得することができます。',
     'requirements'          => '必要なファイル:',
     'mediaJsonFile'         => 'media.jsonファイル',
     'photosDirectory'       => 'phtosディレクトリ',
@@ -207,7 +206,7 @@ return [
     'startImport'           => 'インポートを開始',
 
     'step1'                 => 'ステップ1',
-    'step1Discription'      => '始める前にInstagramのバックアップを取得する必要があります。<a href="https://www.instagram.com/download/request/">こちら</a>からバックアップを取得することができます。',
+    'step1Discription'      => '始める前にInstagramのバックアップを取得する必要があります。<a href=":url">こちら</a>からバックアップを取得することができます。',
     'importPhotosDirectory' => '<b>photos</b>ディレクトリをインポート',
     'step1LimitNotice'      => 'ファイルサイズの上限は250MBです。 photosディレクトリがその量を超える場合は、より大きなインポートがサポートされるまで待つ必要があります。',
     'step1Upload'           => 'photosをアップロード',

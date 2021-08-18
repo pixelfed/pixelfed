@@ -23,12 +23,13 @@ return [
     'password' => 'Password',
     'confirmPassword' => 'Confirm Password',
     'ageVerification' => 'I am at least 16 years old',
+    'agreement' => 'By signing up, you agree to our <a href=":terms" class="font-weight-bold text-dark">Terms of Use</a> and <a href=":privacy" class="font-weight-bold text-dark">Privacy Policy</a>.',
     'register' => 'Register',
     'login'    => 'Login',
     'forgotPasswoord' => 'Forgot Password',
 
     'confirmPasswordContinue'   => 'Confirm password to continue',
     'trustDevice'   => 'Trust this device and don\'t ask again',
-    'confirmPassword'   => 'Confirm Password',
+    'sudoConfirmPassword'   => 'Confirm Password',
 
 ];

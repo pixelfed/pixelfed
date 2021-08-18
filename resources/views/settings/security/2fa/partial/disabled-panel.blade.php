@@ -8,7 +8,7 @@
 				{{__('settings.notEnabled2fa')}}
 			</p>
 			<p class="text-muted">
-				{{__('settings.Enabled2faDiscription')}}<a href="#">{{__('settings.leanMore')}}</a>.
+				{!!__('settings.Enabled2faDiscription',['url'=>'#'])!!}
 			</p>
 			<p class="mb-0">
 				<a class="btn btn-success font-weight-bold" href="{{route('settings.security.2fa.setup')}}">{{__('settings.enable2fa')}}</a>

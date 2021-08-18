@@ -3,11 +3,10 @@
 return [
 
     'confirmEmail'         => 'メールアドレスの確認',
-    'confirmEmailMessage'  => '続行する前にメールアドレスを確認する必要があります。「確認メールを送信する」からメールを送信してください。',
+    'confirmEmailMessage'  => '続行する前にメールアドレス(<span class="font-weight-bold">:email</span>)を確認する必要があります。「確認メールを送信する」からメールを送信してください。',
     'sendConfirmEmail'     => '確認メールを送信する',
-    'yourEmail'            => 'あなたのメールアドレス:',
-    'changeEmail'          => '<a href="/settings/email">こちら</a>からメールアドレスを変更することができます。',
-    'contact'              => '30分経ってもメールが受信できない場合は<a href="/site/contact">管理者に連絡</a>してください。',
+    'changeEmail'          => '<a href=":url">こちら</a>からメールアドレスを変更することができます。',
+    'contact'              => '30分経ってもメールが受信できない場合は<a href=":url">管理者に連絡</a>してください。',
     'notifications'        => '通知',
     'followRequests'       => 'フォローリクエスト',
     'createCircle'         => 'サークルを作成',

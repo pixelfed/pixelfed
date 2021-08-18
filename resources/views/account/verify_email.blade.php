@@ -16,10 +16,9 @@
     <div class="card shadow-none border">
       <div class="card-header font-weight-bold bg-white">{{ __('account.confirmEmail') }}</div>
       <div class="card-body">
-        <p class="lead">{{ __('account.confirmEmailMessage') }}</p>
-        <p class="lead">{{ __('account.yourEmail') }}<span class="font-weight-bold">{{Auth::user()->email}}</span></p>
-        <p class="lead">{!! __('account.changeEmail') !!}</p>
-        <p class="small">{!! __('account.contact') !!}</p>
+        <p class="lead">{!! __('account.confirmEmailMessage',['email' => Auth::user()->email]) !!}</p>
+        <p class="lead">{!! __('account.changeEmail',['url' => '/settings/email']) !!}</p>
+        <p class="small">{!! __('account.contact',['url' => '/site/contact']) !!}</p>
         <hr>
         <form method="post">
           @csrf

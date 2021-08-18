@@ -7,7 +7,7 @@
   </div>
   <hr>
   <section>
-    <p class="lead">{{__('settings.importDiscription')}} <a href="#">{{__('settings.leanMore')}}</a></p>
+    <p class="lead">{!!__('settings.importDiscription',['url'=>'#'])!!}</p>
     <p class="alert alert-warning">{!!__('settings.importWarining')!!}</p>
   </section>
   <section class="mt-4">
