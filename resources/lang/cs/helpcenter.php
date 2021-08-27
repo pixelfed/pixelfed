@@ -22,5 +22,7 @@ return [
 	'safetyTips' => 'Tipy pro bezpečnost',
 	'reportSomething' => 'Nahlašování',
 	'dataPolicy' => 'Politika dat'
+    
+    'taggingPeople' => 'Označit lidi'
 
 ];
