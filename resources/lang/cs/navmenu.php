@@ -15,5 +15,6 @@ return [
 	'admin'				=> 'Administrace',
 	'logout'			=> 'Odhlásit',
 	'directMessages'	=> 'Přímé zprávy',
+    'composePost'		=> 'Vytvořit příspěvek',
 
 ];
