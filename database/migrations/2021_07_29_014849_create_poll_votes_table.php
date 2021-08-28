@@ -15,7 +15,8 @@ class CreatePollVotesTable extends Migration
     {
         Schema::create('poll_votes', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('status_id')->unsigned()->index();
+            $table->bigInteger('story_id')->unsigned()->nullable()->index();
+            $table->bigInteger('status_id')->unsigned()->nullable()->index();
             $table->bigInteger('profile_id')->unsigned()->index();
             $table->bigInteger('poll_id')->unsigned()->index();
             $table->unsignedInteger('choice')->default(0)->index();
