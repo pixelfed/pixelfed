@@ -10,6 +10,7 @@
 - Customize media description/alt-text length limit ([072d55d1](https://github.com/pixelfed/pixelfed/commit/072d55d1))
 - Federate Media Licenses ([14a1367a](https://github.com/pixelfed/pixelfed/commit/14a1367a))
 - Archive Posts ([e9ef0c88](https://github.com/pixelfed/pixelfed/commit/e9ef0c88))
+- Polls ([77092200](https://github.com/pixelfed/pixelfed/commit/77092200))
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
@@ -95,6 +96,10 @@
 - Updated StatusService, add non-public option and improve cache invalidation. ([15c4fdd9](https://github.com/pixelfed/pixelfed/commit/15c4fdd9))
 - Updated ContactAdmin mail, set New Support Message subject. ([bc3add05](https://github.com/pixelfed/pixelfed/commit/bc3add05))
 - Updated StatusTransformer, prioritize scope over deprecated visibility attribute. ([6e45021f](https://github.com/pixelfed/pixelfed/commit/6e45021f))
+- Updated StatusService, invalidate profile embed cache on deletion. ([acaf630d](https://github.com/pixelfed/pixelfed/commit/acaf630d))
+- Updated status.reply view, fix archived post leakage. ([4fb3d1fa](https://github.com/pixelfed/pixelfed/commit/4fb3d1fa))
+- Updated PostComponents, re-add time to timestamp. ([c5281dcd](https://github.com/pixelfed/pixelfed/commit/c5281dcd))
+- Updated follow intent, fix follower count leak. ([03199e2f](https://github.com/pixelfed/pixelfed/commit/03199e2f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
