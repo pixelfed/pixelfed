@@ -81,6 +81,7 @@ return [
 	'waits' => [
 		'redis:feed' => 30,
 		'redis:default' => 30,
+		'redis:low' => 30,
 		'redis:high' => 30,
 		'redis:delete' => 30
 	],
@@ -166,7 +167,7 @@ return [
 		'production' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'delete'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
@@ -178,7 +179,7 @@ return [
 		'local' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'delete'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
