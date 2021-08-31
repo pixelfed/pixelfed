@@ -14,6 +14,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::get('reports/appeals', 'AdminController@appeals');
 	Route::get('reports/appeal/{id}', 'AdminController@showAppeal');
 	Route::post('reports/appeal/{id}', 'AdminController@updateAppeal');
+	Route::redirect('stories', '/stories/list');
+	Route::get('stories/list', 'AdminController@stories')->name('admin.stories');
 	Route::redirect('statuses', '/statuses/list');
 	Route::get('statuses/list', 'AdminController@statuses')->name('admin.statuses');
 	Route::get('statuses/show/{id}', 'AdminController@showStatus');
@@ -231,18 +233,17 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::group(['prefix' => 'admin'], function () {
 			Route::post('moderate', 'Api\AdminApiController@moderate');
 		});
-		Route::group(['prefix' => 'stories'], function () {
-			Route::get('v0/recent', 'StoryController@apiV1Recent');
-			Route::post('v0/add', 'StoryController@apiV1Add');
-			Route::get('v0/fetch/{id}', 'StoryController@apiV1Fetch');
-			Route::get('v0/profile/{id}', 'StoryController@apiV1Profile');
-			Route::get('v0/exists/{id}', 'StoryController@apiV1Exists');
-			Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete');
-			Route::get('v0/me', 'StoryController@apiV1Me');
-			Route::get('v0/item/{id}', 'StoryController@apiV1Item');
-			Route::post('v0/crop', 'StoryController@cropPhoto');
-    		Route::post('v0/publish', 'StoryController@publishStory');
-		});
+		// Route::group(['prefix' => 'stories'], function () {
+		// 	Route::get('v0/recent', 'StoryController@apiV1Recent');
+		// 	Route::post('v0/add', 'StoryController@apiV1Add');
+		// 	Route::get('v0/fetch/{id}', 'StoryController@apiV1Fetch');
+		// 	Route::get('v0/profile/{id}', 'StoryController@apiV1Profile');
+		// 	Route::get('v0/exists/{id}', 'StoryController@apiV1Exists');
+		// 	Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete');
+		// 	Route::get('v0/item/{id}', 'StoryController@apiV1Item');
+		// 	Route::post('v0/crop', 'StoryController@cropPhoto');
+  //   		Route::post('v0/publish', 'StoryController@publishStory');
+		// });
 
 	});
 
