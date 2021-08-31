@@ -46,7 +46,7 @@ class NotificationService {
 		return $ids;
 	}
 
-	public static function getMax($id = false, $start, $limit = 10)
+	public static function getMax($id = false, $start = 0, $limit = 10)
 	{
 		$ids = self::getRankedMaxId($id, $start, $limit);
 
@@ -61,7 +61,7 @@ class NotificationService {
 		return $res->toArray();
 	}
 
-	public static function getMin($id = false, $start, $limit = 10)
+	public static function getMin($id = false, $start = 0, $limit = 10)
 	{
 		$ids = self::getRankedMinId($id, $start, $limit);
 
