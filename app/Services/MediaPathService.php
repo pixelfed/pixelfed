@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Media;
 use App\Profile;
 use App\User;
+use App\Services\HashidService;
 
 class MediaPathService {
 
@@ -51,24 +52,24 @@ class MediaPathService {
 	public static function story($account, $version = 1)
 	{
 		$mh = hash('sha256', date('Y').'-.-'.date('m'));
-		$monthHash = date('Y').date('m').substr($mh, 0, 6).substr($mh, 58, 6);
-		$random = '03'.Str::random(random_int(6,9)).'_'.Str::random(random_int(6,17));
+		$monthHash = HashidService::encode(date('Y').date('m'));
+		$random = date('d').Str::random(32);
 
 		if($account instanceOf User) {
 			switch ($version) {
 				case 1:
-					$userHash = $account->profile_id;
+					$userHash = HashidService::encode($account->profile_id);
 					$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
 					break;
 				
 				default:
-					$userHash = $account->profile_id;
+					$userHash = HashidService::encode($account->profile_id);
 					$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
 					break;
 			}
 		} 
 		if($account instanceOf Profile) {
-			$userHash = $account->id;
+			$userHash = HashidService::encode($account->id);
 			$path = "public/_esm.t3/{$monthHash}/{$userHash}/{$random}";
 		}
 		return $path;
