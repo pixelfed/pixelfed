@@ -63,6 +63,31 @@ class PollService
 			->exists();
 	}
 
+	public static function votedStory($id, $profileId = false)
+	{
+		return !$profileId ? false : PollVote::whereStoryId($id)
+			->whereProfileId($profileId)
+			->exists();
+	}
+
+	public static function storyResults($sid)
+	{
+		$key = self::CACHE_KEY . 'story_poll_results:' . $sid;
+		return Cache::remember($key, 60, function() use($sid) {
+			return Poll::whereStoryId($sid)
+			->firstOrFail()
+			->cached_tallies;
+		});
+	}
+
+	public static function storyChoice($id, $profileId = false)
+	{
+		return !$profileId ? false : PollVote::whereStoryId($id)
+			->whereProfileId($profileId)
+			->pluck('choice')
+			->first();
+	}
+
 	public static function ownVotes($id, $profileId = false)
 	{
 		return !$profileId ? [] : PollVote::whereStatusId($id)
