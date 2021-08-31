@@ -14,7 +14,7 @@ class PollController extends Controller
 
 	public function __construct()
 	{
-		abort_if(!config_cache('exp.polls'), 404);
+		abort_if(!config_cache('instance.polls.enabled'), 404);
 	}
 
 	public function getPoll(Request $request, $id)

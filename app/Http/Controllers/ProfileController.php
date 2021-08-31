@@ -13,6 +13,7 @@ use App\Story;
 use App\User;
 use App\UserFilter;
 use League\Fractal;
+use App\Services\FollowerService;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
 use App\Transformer\ActivityPub\ProfileOutbox;
@@ -238,12 +239,12 @@ class ProfileController extends Controller
 		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 		$profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 		$pid = $profile->id;
-		$authed = Auth::user()->profile;
-		abort_if($pid != $authed->id && $profile->followedBy($authed) == false, 404);
+		$authed = Auth::user()->profile_id;
+		abort_if($pid != $authed && !FollowerService::follows($authed, $pid), 404);
 		$exists = Story::whereProfileId($pid)
-			->where('expires_at', '>', now())
-			->count();
-		abort_unless($exists > 0, 404);
+			->whereActive(true)
+			->exists();
+		abort_unless($exists, 404);
 		return view('profile.story', compact('pid', 'profile'));
 	}
 }
