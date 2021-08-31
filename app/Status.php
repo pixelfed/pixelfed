@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Poll;
 
 class Status extends Model
 {
@@ -48,7 +49,7 @@ class Status extends Model
 
 	const MAX_HASHTAGS = 30;
 
-	const MAX_LINKS = 0;
+	const MAX_LINKS = 2;
 
 	public function profile()
 	{
@@ -414,4 +415,8 @@ class Status extends Model
 		return $this->hasOne(DirectMessage::class);
 	}
 
+	public function poll()
+	{
+		return $this->hasOne(Poll::class);
+	}
 }
