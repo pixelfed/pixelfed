@@ -18,12 +18,13 @@ class MediaService
 
 	public static function get($statusId)
 	{
-		return Cache::remember(self::CACHE_KEY.$statusId, 129600, function() use($statusId) {
-			$status = Status::find($statusId);
+		$status = Status::find($statusId);
+		$ttl = $status->created_at->lt(now()->subMinutes(30)) ? 129600 : 30;
+		return Cache::remember(self::CACHE_KEY.$statusId, $ttl, function() use($status) {
 			if(!$status) {
 				return [];
 			}
-			if(in_array($status->type, ['photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
+			if(in_array($status->type, ['group:post', 'photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
 				$media = Media::whereStatusId($status->id)->orderBy('order')->get();
 				$fractal = new Fractal\Manager();
 				$fractal->setSerializer(new ArraySerializer());
@@ -46,7 +47,7 @@ class MediaService
 			return [];
 		}
 
-		return collect($status)->map(function($s) use($license) {
+		return collect($status)->map(function($s) {
 			$license = isset($s['license']) && $s['license']['title'] ? $s['license']['title'] : null;
 			return [
 				'type'      => 'Document',
