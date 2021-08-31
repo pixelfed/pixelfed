@@ -167,7 +167,7 @@ return [
 		'production' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'low', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
@@ -179,7 +179,7 @@ return [
 		'local' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'low', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
