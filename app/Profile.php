@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Auth, Cache, Storage;
+use Auth, Cache, DB, Storage;
 use App\Util\Lexer\PrettyNumber;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
@@ -18,7 +18,7 @@ class Profile extends Model
      * @var bool
      */
     public $incrementing = false;
-    
+
     protected $dates = [
         'deleted_at',
         'last_fetched_at'
@@ -52,7 +52,7 @@ class Profile extends Model
         if($this->domain) {
             return $this->username;
         }
-        
+
         $domain = parse_url(config('app.url'), PHP_URL_HOST);
 
         return $this->username.'@'.$domain;
@@ -69,7 +69,7 @@ class Profile extends Model
             if($this->domain == null && $this->user->settings->show_profile_following_count == false) {
                 return 0;
             }
-            $count = $this->following()->count();
+            $count = DB::table('followers')->select('following_id')->where('following_id', $this->id)->count();
             if($this->following_count != $count) {
                 $this->following_count = $count;
                 $this->save();
@@ -277,7 +277,7 @@ class Profile extends Model
 
     public function getAudienceInbox($scope = 'public')
     {
-        return FollowerService::audience($this, $scope);
+        return FollowerService::audience($this->id, $scope);
     }
 
     public function circles()
