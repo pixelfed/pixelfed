@@ -16,18 +16,19 @@ class StatusService {
 
 	const CACHE_KEY = 'pf:services:status:';
 
-	public static function key($id)
+	public static function key($id, $publicOnly = true)
 	{
-		return self::CACHE_KEY . $id;
+		$p = $publicOnly ? '' : 'all:';
+		return self::CACHE_KEY . $p . $id;
 	}
 
 	public static function get($id, $publicOnly = true)
 	{
-		return Cache::remember(self::key($id), now()->addDays(7), function() use($id, $publicOnly) {
+		return Cache::remember(self::key($id, $publicOnly), now()->addDays(7), function() use($id, $publicOnly) {
 			if($publicOnly) {
 				$status = Status::whereScope('public')->find($id);
 			} else {
-				$status = Status::whereIn('scope', ['public', 'private', 'unlisted'])->find($id);
+				$status = Status::whereIn('scope', ['public', 'private', 'unlisted', 'group'])->find($id);
 			}
 			if(!$status) {
 				return null;
@@ -45,11 +46,13 @@ class StatusService {
 		if($status && isset($status['account']) && isset($status['account']['id'])) {
 			Cache::forget('profile:embed:' . $status['account']['id']);
 		}
+		Cache::forget('status:transformer:media:attachments:' . $id);
+		MediaService::del($id);
 		Cache::forget('status:thumb:nsfw0' . $id);
 		Cache::forget('status:thumb:nsfw1' . $id);
 		Cache::forget('pf:services:sh:id:' . $id);
-		Cache::forget('status:transformer:media:attachments:' . $id);
 		PublicTimelineService::rem($id);
+		Cache::forget(self::key($id, false));
 		return Cache::forget(self::key($id));
 	}
 }
