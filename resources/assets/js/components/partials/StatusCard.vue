@@ -125,8 +125,8 @@
 			<div class="card-body">
 				<div v-if="reactionBar" class="reactions my-1 pb-2">
 					<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
-					<h3 v-else class="far fa-heart pr-3 m-0 like-btn text-dark cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
-					<h3 v-if="!status.comments_disabled" class="far fa-comment text-dark pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+					<h3 v-else class="fal fa-heart pr-3 m-0 like-btn text-dark cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
+					<h3 v-if="!status.comments_disabled" class="fal fa-comment text-dark pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 					<span v-if="status.taggedPeople.length" class="float-right">
 						<span class="font-weight-light small" style="color:#718096">
 							<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>

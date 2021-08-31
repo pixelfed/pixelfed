@@ -80,14 +80,32 @@
 								<p v-else-if="convo.type == 'emoji'" class="p-0 emoji-msg">
 									{{convo.text}}
 								</p>
+								<p v-else-if="convo.type == 'story:react'" class="pill-to p-0 shadow" style="width: 140px;margin-bottom: 10px;position:relative;">
+									<img :src="convo.meta.story_media_url" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+									<span class="badge badge-light rounded-pill border" style="font-size: 20px;position: absolute;bottom:-10px;left:-10px;">
+										{{convo.meta.reaction}}
+									</span>
+								</p>
+								<span v-else-if="convo.type == 'story:comment'" class="p-0" style="display: flex;justify-content: flex-start;margin-bottom: 10px;position:relative;">
+									<span class="">
+										<img class="d-block pill-to p-0 mr-0 pr-0 mb-n1" :src="convo.meta.story_media_url" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+										<span class="pill-to shadow text-break" style="width:fit-content;">{{convo.meta.caption}}</span>
+									</span>
+								</span>
 								<p v-else :class="[largerText ? 'pill-to shadow larger-text text-break':'pill-to shadow text-break']">
 									{{convo.text}}
 								</p>
-								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold ml-2 d-flex align-items-center justify-content-start" data-timestamp="timestamp"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}</p>
+								<p v-if="convo.type == 'story:react'" class="small text-muted mb-0 ml-0">
+									<span class="font-weight-bold">{{ convo.meta.story_actor_username }}</span> reacted your story
+								</p>
+								<p v-if="convo.type == 'story:comment'" class="small text-muted mb-0 ml-0">
+									<span class="font-weight-bold">{{ convo.meta.story_actor_username }}</span> replied to your story
+								</p>
+								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold d-flex align-items-center justify-content-start" data-timestamp="timestamp"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}</p>
 								<p v-else>&nbsp;</p>
 							</div>
 						</div>
-						<div v-else class="media d-inline-flex float-right mb-0">
+						<div v-else class="media d-inline-flex float-right mb-0 mr-2">
 							<div class="media-body">
 								<p v-if="convo.type == 'photo'" class="pill-from p-0 shadow">
 									<img :src="convo.media" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
@@ -127,10 +145,28 @@
 								<p v-else-if="convo.type == 'emoji'" class="p-0 emoji-msg">
 									{{convo.text}}
 								</p>
+								<p v-else-if="convo.type == 'story:react'" class="pill-from p-0 shadow" style="margin-bottom: 10px;position:relative;width:fit-content;">
+									<img :src="convo.meta.story_media_url" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+									<span class="badge badge-light rounded-pill border" style="font-size: 20px;position: absolute;bottom:-10px;right:-10px;">
+										{{convo.meta.reaction}}
+									</span>
+								</p>
+								<span v-else-if="convo.type == 'story:comment'" class="p-0" style="display: flex;justify-content: flex-end;margin-bottom: 10px;position:relative;">
+									<span class="d-flex align-items-end flex-column">
+										<img class="d-block pill-from p-0 mr-0 pr-0 mb-n1" :src="convo.meta.story_media_url" width="140" style="border-radius:20px;" onerror="this.onerror=null;this.src='/storage/no-preview.png';">
+										<span class="pill-from shadow text-break" style="width:fit-content;">{{convo.meta.caption}}</span>
+									</span>
+								</span>
 								<p v-else :class="[largerText ? 'pill-from shadow larger-text text-break':'pill-from shadow text-break']">
 									{{convo.text}}
 								</p>
-								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold text-right mr-2"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}
+								<p v-if="convo.type == 'story:react'" class="small text-muted text-right mb-0 mr-0">
+									You reacted to <span class="font-weight-bold">{{ convo.meta.story_username }}</span>'s story
+								</p>
+								<p v-if="convo.type == 'story:comment'" class="small text-muted text-right mb-0 mr-0">
+									You replied to <span class="font-weight-bold">{{ convo.meta.story_username }}</span>'s story
+								</p>
+								<p v-if="!hideTimestamps" class="small text-muted font-weight-bold text-right"> <span v-if="convo.hidden" class="mr-2 small" title="Filtered Message" data-toggle="tooltip" data-placement="bottom"><i class="fas fa-lock"></i></span> {{convo.timeAgo}}
 								</p>
 								<p v-else>&nbsp;</p>
 							</div>
@@ -262,60 +298,60 @@
 </template>
 
 <style type="text/css" scoped>
-.reply-btn {
-	position: absolute;
-	bottom: 54px;
-	right: 20px;
-	width: 90px;
-	text-align: center;
-	border-radius: 0 3px 3px 0;
-}
-.media-body .bg-primary {
-	background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
-}
-.pill-to {
-	background:#EDF2F7;
-	font-weight: 500;
-	border-radius: 20px !important;
-	padding-left: 1rem;
-	padding-right: 1rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-	margin-right: 3rem;
-	margin-bottom: 0.25rem;
-}
-.pill-from {
-	color: white !important;
-	text-align: right !important;
-	/*background: #53d769;*/
-	background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
-	font-weight: 500;
-	border-radius: 20px !important;
-	padding-left: 1rem;
-	padding-right: 1rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-	margin-left: 3rem;
-	margin-bottom: 0.25rem;
-}
-.chat-msg:hover {
-	background: #f7fbfd;
-}
-.no-focus:focus {
-	outline: none !important;
-	outline-width: 0 !important;
-	box-shadow: none;
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-}
-.emoji-msg {
-	font-size: 4rem !important;
-	line-height: 30px !important;
-	margin-top: 10px !important;
-}
-.larger-text {
-	font-size: 22px;
-}
+	.reply-btn {
+		position: absolute;
+		bottom: 54px;
+		right: 20px;
+		width: 90px;
+		text-align: center;
+		border-radius: 0 3px 3px 0;
+	}
+	.media-body .bg-primary {
+		background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
+	}
+	.pill-to {
+		background:#EDF2F7;
+		font-weight: 500;
+		border-radius: 20px !important;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+		margin-right: 3rem;
+		margin-bottom: 0.25rem;
+	}
+	.pill-from {
+		color: white !important;
+		text-align: right !important;
+		/*background: #53d769;*/
+		background: linear-gradient(135deg, #2EA2F4 0%, #0B93F6 100%) !important;
+		font-weight: 500;
+		border-radius: 20px !important;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+		margin-left: 3rem;
+		margin-bottom: 0.25rem;
+	}
+	.chat-msg:hover {
+		background: #f7fbfd;
+	}
+	.no-focus:focus {
+		outline: none !important;
+		outline-width: 0 !important;
+		box-shadow: none;
+		-moz-box-shadow: none;
+		-webkit-box-shadow: none;
+	}
+	.emoji-msg {
+		font-size: 4rem !important;
+		line-height: 30px !important;
+		margin-top: 10px !important;
+	}
+	.larger-text {
+		font-size: 22px;
+	}
 </style>
 
 <script type="text/javascript">

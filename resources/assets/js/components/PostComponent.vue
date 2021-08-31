@@ -981,20 +981,7 @@ export default {
 			}
 		},
 		beforeMount() {
-			let u = new URLSearchParams(window.location.search);
-			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
-			if(this.statusTemplate == 'text') {
-				this.layout = 'metro';
-				return;
-			}
-
-			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
-				this.layout = 'moment';
-			}
-
-			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
-				this.layout = 'metro';
-			}
+			this.layout = 'metro';
 		},
 
 		mounted() {

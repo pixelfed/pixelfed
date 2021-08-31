@@ -10,7 +10,7 @@
 
 				<div class="col-md-8 col-lg-8 px-0 mb-sm-3 timeline order-2 order-md-1">
 					<div style="margin-top:-2px;">
-						<story-component v-if="config.features.stories"></story-component>
+						<story-component v-if="config.features.stories" :scope="scope"></story-component>
 					</div>
 					<div>
 						<div v-if="loading" class="text-center" style="padding-top:10px;">
@@ -103,6 +103,7 @@
 								:class="{ 'border-top': index === 0 }"
 								:status="status"
 								:reaction-bar="reactionBar"
+								size="small"
 								v-on:status-delete="deleteStatus"
 								v-on:comment-focus="commentFocus"
 							/>
@@ -942,7 +943,7 @@
 			},
 
 			hasStory() {
-				axios.get('/api/stories/v0/exists/'+this.profile.id)
+				axios.get('/api/web/stories/v1/exists/'+this.profile.id)
 				.then(res => {
 					this.userStory = res.data;
 				})

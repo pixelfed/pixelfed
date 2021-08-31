@@ -68,7 +68,7 @@
 				<div class="h-100 card-body p-0 border-top" style="width:100%; min-height: 400px;">
 					<div class="border-bottom mt-2">
 						<div class="media px-3">
-							<img src="/storage/avatars/default.png" width="42px" height="42px" class="rounded-circle">
+							<img :src="profile.avatar" width="42px" height="42px" class="rounded-circle">
 							<div class="media-body">
 								<div class="form-group">
 									<label class="font-weight-bold text-muted small d-none">Caption</label>
@@ -241,7 +241,7 @@
 								<div @click.prevent="addMedia" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-bolt text-white fa-lg"></i>
+											<i class="fal fa-bolt text-white fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
@@ -253,7 +253,7 @@
 								</div>
 							</div>
 
-							<div v-if="config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
+							<div v-if="1==0 && config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addText" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
@@ -275,7 +275,7 @@
 							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
 								<div class="card-body py-2">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
 											<i class="fas fa-history text-primary fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
@@ -285,13 +285,13 @@
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">Add Photo to Story</p>
+											<p class="mb-0 text-muted">Add to your story</p>
 										</div>
 									</div>
 								</div>
 							</a>
 
-							<a v-if="config.ab.polls == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
+							<a v-if="1==0 && config.ab.polls == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
 								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
@@ -313,8 +313,8 @@
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
 								<div class="card-body py-2">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
-											<i class="fas fa-images text-primary fa-lg"></i>
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
+											<i class="fal fa-images text-primary fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
@@ -328,7 +328,6 @@
 									</div>
 								</div>
 							</a>
-
 
 							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>

@@ -103,6 +103,32 @@ window.App.util = {
 			}
 			return Math.floor(seconds) + "s";
 		}),
+		timeAhead: (function(ts) {
+			let date = Date.parse(ts);
+			let diff = date - Date.parse(new Date());
+			let seconds = Math.floor((diff) / 1000);
+			let interval = Math.floor(seconds / 63072000);
+			if (interval >= 1) {
+				return interval + "y";
+			}
+			interval = Math.floor(seconds / 604800);
+			if (interval >= 1) {
+				return interval + "w";
+			}
+			interval = Math.floor(seconds / 86400);
+			if (interval >= 1) {
+				return interval + "d";
+			}
+			interval = Math.floor(seconds / 3600);
+			if (interval >= 1) {
+				return interval + "h";
+			}
+			interval = Math.floor(seconds / 60);
+			if (interval >= 1) {
+				return interval + "m";
+			}
+			return Math.floor(seconds) + "s";
+		}),
 		rewriteLinks: (function(i) {
 
 			let tag = i.innerText;
@@ -233,7 +259,7 @@ window.App.util = {
 			$('#navbarDropdown img').attr('src',window._sharedData.curUser.avatar)
 			.removeClass('d-none')
 			.addClass('rounded-circle border shadow')
-			.attr('width', 34).attr('height', 34);
+			.attr('width', 38).attr('height', 38);
 	})
 
 };

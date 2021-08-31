@@ -715,7 +715,7 @@
 				max_id: 0,
 				loading: true,
 				owner: false,
-				layout: this.profileLayout,
+				layout: 'metro',
 				mode: 'grid',
 				modes: ['grid', 'collections', 'bookmarks', 'archives'],
 				modalStatus: false,
@@ -748,7 +748,6 @@
 			}
 		},
 		beforeMount() {
-			this.fetchRelationships();
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
 			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
@@ -818,12 +817,7 @@
 					this.user = res.data;
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
-					if(res.data.id == this.profileId || this.relationship.following == true) {
-						axios.get('/api/stories/v0/exists/' + this.profileId)
-						.then(res => {
-							this.hasStory = res.data == true;
-						})
-					}
+					this.fetchRelationships();
 				});
 			}
 		},
@@ -838,7 +832,6 @@
 					this.profile = res.data;
 				}).then(res => {
 					this.fetchPosts();
-
 				});
 			},
 
@@ -1062,6 +1055,12 @@
 						if(res.data[0].blocking == true) {
 							this.warning = true;
 						}
+					}
+					if(this.user.id == this.profileId || this.relationship.following == true) {
+						axios.get('/api/web/stories/v1/exists/' + this.profileId)
+						.then(res => {
+							this.hasStory = (res.data == true);
+						})
 					}
 				});
 			},
@@ -1380,7 +1379,7 @@
 			},
 
 			storyRedirect() {
-				window.location.href = '/stories/' + this.profileUsername;
+				window.location.href = '/stories/' + this.profileUsername + '?t=4';
 			},
 
 			followingModalSearchHandler() {
