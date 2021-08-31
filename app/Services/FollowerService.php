@@ -49,14 +49,28 @@ class FollowerService
 		return (new self)->getAudienceInboxes($profile);
 	}
 
-	protected function getAudienceInboxes($profile, $scope = null)
+	public static function softwareAudience($profile, $software = 'pixelfed')
 	{
-		if(!$profile instanceOf Profile) {
-			return [];
-		}
+		return collect(self::audience($profile))
+			->filter(function($inbox) use($software) {
+				$domain = parse_url($inbox, PHP_URL_HOST);
+				if(!$domain) {
+					return false;
+				}
+				return InstanceService::software($domain) === strtolower($software);
+			})
+			->unique()
+			->values();
+	}
 
-		$key = 'pf:services:follow:audience:' . $profile->id;
-		return Cache::remember($key, 86400, function() use($profile) {
+	protected function getAudienceInboxes($pid, $scope = null)
+	{
+		$key = 'pf:services:follow:audience:' . $pid;
+		return Cache::remember($key, 86400, function() use($pid) {
+			$profile = Profile::find($pid);
+			if(!$profile) {
+				return [];
+			}
 			return $profile
 				->followers()
 				->whereLocalProfile(false)
