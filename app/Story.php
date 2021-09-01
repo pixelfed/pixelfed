@@ -6,6 +6,7 @@ use Auth;
 use Storage;
 use Illuminate\Database\Eloquent\Model;
 use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\Util\Lexer\Bearcap;
 
 class Story extends Model
 {
@@ -66,7 +67,7 @@ class Story extends Model
 
 	public function bearcapUrl()
 	{
-		return "bear:?t={$this->bearcap_token}&u={$this->url()}";
+		return Bearcap::encode($this->url(), $this->bearcap_token);
 	}
 
 	public function scopeToAudience($scope)
