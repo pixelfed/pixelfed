@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
 
 class Place extends Model
 {

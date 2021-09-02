@@ -4,7 +4,7 @@ namespace App;
 
 use Auth, Cache, Hashids, Storage;
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Poll;

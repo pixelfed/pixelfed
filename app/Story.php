@@ -5,7 +5,7 @@ namespace App;
 use Auth;
 use Storage;
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\HasSnowflakePrimary;
 use App\Util\Lexer\Bearcap;
 
 class Story extends Model

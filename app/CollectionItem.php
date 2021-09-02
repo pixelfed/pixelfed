@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\HasSnowflakePrimary;
 
 class CollectionItem extends Model
 {

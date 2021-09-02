@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\HasSnowflakePrimary;
 
 class Collection extends Model
 {
