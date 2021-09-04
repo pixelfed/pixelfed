@@ -19,13 +19,13 @@
 				<ul class="navbar-nav ml-auto">
 					<li>
 						<a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
-							{{ __('Login') }}
+							{{__('navmenu.login')}}
 						</a>
 					</li>
 				@if(config_cache('pixelfed.open_registration') && in_array(config_cache('system.user_mode'), ['default', 'admin']))
 					<li>
 						<a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
-							{{ __('Register') }}
+							{{__('navmenu.register')}}
 						</a>
 					</li>
 				@endif
@@ -35,25 +35,25 @@
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<a class="nav-link font-weight-bold text-dark" href="/" title="Home" data-toggle="tooltip" data-placement="bottom">
 								<i class="fal fa-home fa-lg" style="font-size: 22px;"></i>
-								<span class="sr-only">Home</span>
+								<span class="sr-only">{{__('navmenu.home')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2">
 							<a class="nav-link font-weight-bold text-dark" href="/account/direct" title="Direct" data-toggle="tooltip" data-placement="bottom">
 								<i class="fal fa-location-circle fa-lg" style="font-size: 22px;"></i>
-								<span class="sr-only">Direct</span>
+								<span class="sr-only">{{__('navmenu.direct')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
 								<i class="fal fa-bell fa-lg" style="font-size: 22px;"></i>
-								<span class="sr-only">Notifications</span>
+								<span class="sr-only">{{__('navmenu.notifications')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
 							<div class="nav-link btn btn-primary lead btn-sm px-3 py-1 text-white shadow rounded-pill d-flex align-items-center" title="Compose" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
 								<i class="fal fa-plus-circle" style="font-size:14px;margin-right:6px;"></i>
-								New
+								{{__('navmenu.newPost')}}
 							</div>
 						</li>
 						<li class="nav-item dropdown ml-2">
@@ -88,13 +88,13 @@
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-home text-lighter fa-lg"></span>
 									</span>
-									Home
+									{{__('navmenu.home')}}
 								</a>
 								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fas fa-stream text-lighter fa-lg"></span>
 									</span>
-									Public
+									{{__('navmenu.public')}}
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
@@ -115,7 +115,7 @@
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-history text-lighter fa-lg"></span>
 									</span>
-									Stories
+									{{__('navmenu.stories')}}
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>

@@ -15,5 +15,21 @@ return [
 
     'failed'   => 'これらの認証情報は正しくありません。',
     'throttle' => 'ログイン試行回数が多すぎます。 :seconds 秒後にもう一度お試しください。',
+    'remember' => 'ログイン状態を保持する',
+    'name'     => '名前',
+    'userName' => 'ユーザー名',
+    'registerNewAccount' => 'アカウントを新規登録',
+    'email'    => 'メールアドレス',
+    'password' => 'パスワード',
+    'confirmPassword' => 'パスワードを再入力',
+    'ageVerification' => '私は16歳以上です',
+    'agreement' => '<a href=":terms" class="font-weight-bold text-dark">利用規約</a>と<a href=":privacy" class="font-weight-bold text-dark">プライバシーポリシー</a>に同意する。',
+    'register' => 'アカウントを登録',
+    'login'    => 'ログイン',
+    'forgotPasswoord' => 'パスワードを忘れた場合',
+
+    'confirmPasswordContinue'   => 'パスワードを入力して続行',
+    'trustDevice'   => 'このデバイスを信頼する',
+    'sudoConfirmPassword'   => '認証する',
 
 ];

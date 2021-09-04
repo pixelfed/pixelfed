@@ -3,8 +3,8 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Import from Instagram</h3>
-    <p class="lead">Step 3</p>
+    <h3 class="font-weight-bold">{{__('settings.importFromInstagram')}}</h3>
+    <p class="lead">{{__('settings.step3')}}</p>
   </div>
   <hr>
   <section class="mt-5 col-md-8 offset-md-2">
@@ -15,7 +15,7 @@
         <hr>
         <form enctype="multipart/form-data" class="" method="post">
           @csrf
-          <button type="submit" class="mt-4 btn btn-primary btn-block font-weight-bold">Import All</button>
+          <button type="submit" class="mt-4 btn btn-primary btn-block font-weight-bold">{{__('settings.importAll')}}</button>
         </form>
       </div>
       </div>

@@ -65,7 +65,7 @@
 						<div class="card my-4 shadow-none border">
 							<div class="card-body px-lg-5">
 								<div class="text-center">
-									<p class="small text-uppercase font-weight-bold text-muted">Account Login</p>
+									<p class="small text-uppercase font-weight-bold text-muted">{{__('site.accountLogin')}}</p>
 								</div>
 								<div>
 									<form class="px-1" method="POST" action="{{ route('login') }}" id="login_form">
@@ -73,7 +73,7 @@
 										<div class="form-group row">
 
 											<div class="col-md-12">
-												<input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
+												<input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('site.email')}}" required autofocus>
 
 												@if ($errors->has('email'))
 													<span class="invalid-feedback">
@@ -86,7 +86,7 @@
 										<div class="form-group row">
 
 											<div class="col-md-12">
-												<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+												<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('site.password')}}" required>
 
 												@if ($errors->has('password'))
 													<span class="invalid-feedback">
@@ -102,7 +102,7 @@
 													<label>
 														<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
 														<span class="font-weight-bold small ml-1 text-muted">
-															{{ __('Remember Me') }}
+															{{ __('site.remember') }}
 														</span>
 													</label>
 												</div>
@@ -116,7 +116,7 @@
 										<div class="form-group row mb-0">
 											<div class="col-md-12">
 												<button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold text-uppercase">
-													{{ __('Login') }}
+													{{ __('site.login') }}
 												</button>
 
 											</div>
@@ -128,10 +128,10 @@
 						<div class="card shadow-none border card-body">
 							<p class="text-center mb-0 font-weight-bold small">
 								@if(config_cache('pixelfed.open_registration'))
-								<a href="/register">Register</a>
+								<a href="/register">{{ __('site.register') }}</a>
 								<span class="px-1">·</span>
 								@endif
-								<a href="/password/reset">Password Reset</a>
+								<a href="/password/reset">{{ __('site.passwordReset') }}</a>
 							</p>
 						</div>
 					</div>

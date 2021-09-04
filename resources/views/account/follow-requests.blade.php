@@ -5,8 +5,8 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <div></div>
-      <a href="/account/activity" class="cursor-pointer font-weight-bold text-dark">Notifications</a>
-      <a href="/account/follow-requests" class="cursor-pointer font-weight-bold text-primary">Follow Requests</a>
+      <a href="/account/activity" class="cursor-pointer font-weight-bold text-dark">{{__('account.notifications')}}</a>
+      <a href="/account/follow-requests" class="cursor-pointer font-weight-bold text-primary">{{__('account.followReqests')}}</a>
       <div></div>
     </div>
   </div>
@@ -21,7 +21,7 @@
             <img src="{{$follow->follower->avatarUrl()}}" width="32px" class="rounded-circle">
           </span>
           <span class="notification-text">
-            <a class="font-weight-bold text-dark" href="{{$follow->follower->url()}}">{{$follow->follower->username}}</a> {{__('wants to follow you')}}
+            <a class="font-weight-bold text-dark" href="{{$follow->follower->url()}}">{{$follow->follower->username}}</a> {{__('account.wantsToFollow')}}
             <span class="text-muted notification-timestamp pl-1">{{$follow->created_at->diffForHumans(null, true, true)}}</span>
           </span>
           <span class="float-right">
@@ -39,7 +39,7 @@
     </div>
     @else
     <div class="text-center pt-5">
-      <p class="font-weight-bold text-muted">You don't have any follow requests</p>
+      <p class="font-weight-bold text-muted">{{__('account.dontHaveFollowRequests')}}</p>
     </div>
     @endif
 
@@ -56,7 +56,6 @@ $(document).ready(function() {
     let el = $(this);
     let action = el.data('action');
     let id = el.data('id');
-
     axios.post(window.location.href, {
       action: action,
       id: id

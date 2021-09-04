@@ -1,9 +1,9 @@
     <div class="mb-4 pb-4">
-      <h4 class="font-weight-bold">Account Log</h4>
+      <h4 class="font-weight-bold">{{__('settings.accountLog')}}</h4>
       <hr>
       <ul class="list-group border" style="max-height: 400px;overflow-y: auto;">
         @if($activity->count() == 0) 
-        <p class="alert alert-info font-weight-bold">No activity logs found!</p>
+        <p class="alert alert-info font-weight-bold">{{__('settings.noLogFound')}}</p>
         @endif
         @foreach($activity as $log)
         <li class="list-group-item rounded-0 border-0">
@@ -21,13 +21,13 @@
               <div class="collapse" id="log-details-{{$log->id}}">
               	<div class="py-2">
               		<p class="mb-0">
-              			<span class="font-weight-bold">IP Address:</span>
+              			<span class="font-weight-bold">{{__('settings.ipAdress')}}</span>
               			<span>
               				{{$log->ip_address}}
               			</span>
               		</p>
             		<p class="mb-0">
-              			<span class="font-weight-bold">User Agent:</span>
+              			<span class="font-weight-bold">{{__('settings.userAgent')}}</span>
               			<span>
               				{{$log->user_agent}}
               			</span>

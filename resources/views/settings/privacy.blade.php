@@ -3,13 +3,13 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Privacy Settings</h3>
+    <h3 class="font-weight-bold">{{__('settings.privacySettings')}}</h3>
   </div>
   <hr>
   <div class="form-group pb-1">
     <p>
-      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">Muted Users</a>
-      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">Blocked Users</a>
+      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">{{__('settings.mutedUsers')}}</a>
+      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">{{__('settings.blockedUsers')}}</a>
     </p>
   </div>
   <form method="post">
@@ -20,76 +20,76 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="is_private" id="is_private" {{$settings->is_private ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="is_private">
-        {{__('Private Account')}}
+        {{__('settings.privateAccount')}}
       </label>
-      <p class="text-muted small help-text">When your account is private, only people you approve can see your photos and videos on pixelfed. Your existing followers won't be affected.</p>
+      <p class="text-muted small help-text">{{__('settings.privateAccountDiscription')}}</p>
     </div>
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="crawlable" id="crawlable" {{!$settings->crawlable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
       <label class="form-check-label font-weight-bold" for="crawlable">
-        {{__('Opt-out of search engine indexing')}}
+        {{__('settings.optOutSerchEngine')}}
       </label>
-      <p class="text-muted small help-text">When your account is visible to search engines, your information can be crawled and stored by search engines.</p>
+      <p class="text-muted small help-text">{{__('settings.optOutSerchEngineDiscription')}}</p>
     </div>
 
 
     {{-- <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_discover" id="show_discover" {{$settings->is_private ? 'disabled=""':''}} {{$settings->show_discover ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_discover">
-        {{__('Visible on discover')}}
+        {{__('settings.visibleDiscover')}}
       </label>
-      <p class="text-muted small help-text">When this option is enabled, your profile and posts are used for discover recommendations. Only public profiles and posts are used.</p>
+      <p class="text-muted small help-text">{{__('settings.visibleDiscoverDiscription')}}</p>
     </div> --}}
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" id="public_dm" {{$settings->public_dm ? 'checked=""':''}} name="public_dm">
       <label class="form-check-label font-weight-bold" for="public_dm">
-        {{__('Receive Direct Messages from anyone')}}
+        {{__('settings.receiveDirectAnyone')}}
       </label>
-      <p class="text-muted small help-text">If selected, you will be able to receive messages and notifications from any user even if you do not follow them.</p>
+      <p class="text-muted small help-text">{{__('settings.receiveDirectAnyoneDiscription')}}</p>
     </div>
     {{-- <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" value="" id="srs" checked="">
       <label class="form-check-label font-weight-bold" for="srs">
-        {{__('Hide sensitive content from search results')}}
+        {{__('settings.hideSensitiveSearch')}}
       </label>
-      <p class="text-muted small help-text">This prevents posts with potentially sensitive content from displaying in your search results.</p>
+      <p class="text-muted small help-text">{{__('settings.hideSensitiveSearchDiscription')}}</p>
     </div> --}}
     {{-- <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" value="" id="rbma" checked="">
       <label class="form-check-label font-weight-bold" for="rbma">
-        {{__('Remove blocked and muted accounts')}}
+        {{__('settings.removeBlockdMuteRemove')}}
       </label>
-      <p class="text-muted small help-text">Use this to eliminate search results from accounts you've blocked or muted.</p>
+      <p class="text-muted small help-text">{{__('settings.removeBlockdMuteRemoveDiscription')}}</p>
     </div>
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" value="" id="ssp">
       <label class="form-check-label font-weight-bold" for="ssp">
-        {{__('Display media that may contain sensitive content')}}
+        {{__('settings.displayMediaSensitive')}}
       </label>
-      <p class="text-muted small help-text">Show all media, including potentially sensitive content.</p>
+      <p class="text-muted small help-text">{{__('settings.displayMediaSensitiveDiscription')}}</p>
     </div> --}}
 
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_profile_follower_count" id="show_profile_follower_count" {{$settings->show_profile_follower_count ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_profile_follower_count">
-        {{__('Show Follower Count')}}
+        {{__('settings.showFollowerCount')}}
       </label>
-      <p class="text-muted small help-text">Display follower count on profile</p>
+      <p class="text-muted small help-text">{{__('settings.showFollowerCountDiscription')}}</p>
     </div>
 
 
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="show_profile_following_count" id="show_profile_following_count" {{$settings->show_profile_following_count ? 'checked=""':''}}>
       <label class="form-check-label font-weight-bold" for="show_profile_following_count">
-        {{__('Show Following Count')}}
+        {{__('settings.showFollowingCount')}}
       </label>
-      <p class="text-muted small help-text">Display following count on profile</p>
+      <p class="text-muted small help-text">{{__('settings.showFollowingCountDiscription')}}</p>
     </div>
 
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
         <hr>
-        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">Submit</button>
+        <button type="submit" class="btn btn-primary font-weight-bold py-0 px-5">{{__('settings.submit')}}</button>
       </div>
     </div>
   </form>
@@ -97,63 +97,63 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Confirm this action</h5>
+        <h5 class="modal-title">{{__('settings.confirmThisAction')}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body p-3">
-        <p class="font-weight-bold">Please select the type of private account you would like:</p>
+        <p class="font-weight-bold">{{__('settings.confirmThisActionDiscription')}}</p>
         <div>
           <div class="form-check">
             <input class="form-check-input" type="radio" id="fm-1" name="pfType" value="keep-all" checked>
             <label class="form-check-label pb-2 font-weight-bold" for="fm-1">
-              Keep existing followers
+              {{__('settings.keepExistingFollowers')}}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" id="fm-2" name="pfType" value="mutual-only">
             <label class="form-check-label pb-2 font-weight-bold" for="fm-2">
-              Only keep mutual followers
+              {{__('settings.keepMutalFollowers')}}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" id="fm-3" name="pfType" value="only-followers">
             <label class="form-check-label pb-2 font-weight-bold" for="fm-3">
-              Only followers that have followed you for atleast <select name="pfDuration">
-                  <option value="60">1 hour</option>
-                  <option value="1440">1 day</option>
-                  <option value="20160">2 weeks</option>
-                  <option value="43200">1 month</option>
-                  <option value="259200">6 months</option>
-                  <option value="525600">1 year</option>
+              {{__('settings.keepAtleastFollowers')}} <select name="pfDuration">
+                  <option value="60">{{__('settings.1hour')}}</option>
+                  <option value="1440">{{__('settings.1day')}}</option>
+                  <option value="20160">{{__('settings.2weeks')}}</option>
+                  <option value="43200">{{__('settings.1month')}}</option>
+                  <option value="259200">{{__('settings.6months')}}</option>
+                  <option value="525600">{{__('settings.1year')}}</option>
                 </select>
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" id="fm-4" name="pfType" value="remove-all">
             <label class="form-check-label font-weight-bold text-danger" for="fm-4">
-              Remove existing followers
+              {{__('settings.removeExistingFollowers')}}
             </label>
           </div>
           {{-- <hr>
           <div class="form-check pt-3">
             <input class="form-check-input" type="checkbox" id="allowFollowRequest">
             <label class="form-check-label" for="allowFollowRequest">
-              Allow new follow requests
+              {{__('settings.allowNewFollowRequest')}}
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" name="blockNotifications" id="chk4">
             <label class="form-check-label" for="chk4">
-              Block notifications from accounts I don't follow
+              {{__('settings.blockNotificationsDontFollow')}}
             </label>
           </div> --}}
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary font-weight-bold py-0" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary font-weight-bold py-0" id="modal_confirm">Save</button>
+        <button type="button" class="btn btn-outline-secondary font-weight-bold py-0" data-dismiss="modal">{{__('settings.cancel')}}</button>
+        <button type="button" class="btn btn-primary font-weight-bold py-0" id="modal_confirm">{{__('settings.save')}}</button>
       </div>
     </div>
   </div>

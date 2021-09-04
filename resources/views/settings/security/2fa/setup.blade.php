@@ -3,19 +3,19 @@
 @section('section')
 
   <div class="title">
-    <h3 class="font-weight-bold">Setup Two-Factor Authentication</h3>
+    <h3 class="font-weight-bold">{{__('settings.setup2fa')}}</h3>
   </div>
   <hr>
   <div class="alert alert-info font-weight-light mb-3">
-  	We only support Two-Factor Authentication via TOTP mobile apps.
+  	{{__('settings.onlySupportTOTP')}}
   </div>
   <section class="step-one pb-5">
   	<div class="sub-title font-weight-bold h5" data-toggle="collapse" data-target="#step1" aria-expanded="true" aria-controls="step1" data-step="1">
-  		Step 1: Install compatible 2FA mobile app <i class="float-right fas fa-chevron-down"></i>
+	  {{__('settings.2faStep1')}}<i class="float-right fas fa-chevron-down"></i>
   	</div>
   	<hr>
   	<div class="collapse show" id="step1">
-	  	<p>You will need to install a compatible mobile app, we recommend the following apps:</p>
+	  	<p>{{__('settings.2faStep1Discription')}}</p>
 	  	<ul>
 	  		<li><a href="https://1password.com/downloads/" rel="nooopener nofollow">1Password</a></li>
 	  		<li><a href="https://authy.com/download/" rel="nooopener nofollow">Authy</a></li>
@@ -36,29 +36,29 @@
 
   <section class="step-two pb-5">
   	<div class="sub-title font-weight-bold h5" data-toggle="collapse" data-target="#step2" aria-expanded="false" aria-controls="step2" data-step="2">
-  		Step 2: Scan QR Code and confirm <i class="float-right fas fa-chevron-down"></i>
+	  	{{__('settings.2faStep2')}} <i class="float-right fas fa-chevron-down"></i>
   	</div>
   	<hr>
   	<div class="collapse" id="step2">
-	  	<p>Please scan the QR code and then enter the 6 digit code in the form below. Keep in mind the code changes every 30 seconds, and is only good for 1 minute.</p>
+	  	<p>{{__('settings.2faStep2Discription')}}</p>
 	  	<div class="card">
 	  		<div class="card-body text-center">
 	  			<div class="pb-3">
-	  				<p class="font-weight-bold">QR Code</p>
+	  				<p class="font-weight-bold">{{__('settings.qrcode')}}</p>
 	  				<img src="data:image/png;base64,{{$qrcode}}" class="img-fluid" width="200px">
 	  			</div>
 	  			<div>
-	  				<p class="font-weight-bold">OTP Secret</p>
+	  				<p class="font-weight-bold">{{__('settings.otpSecret')}}</p>
 	  				<input type="text" class="form-control" value="{{ $user->{'2fa_secret'} }}" disabled>
 	  			</div>
 	  		</div>
 	  		<div class="card-body">
 	  			<form id="confirm-code">
 		  			<div class="form-group">
-		  				<label class="font-weight-bold small">Code</label>
+		  				<label class="font-weight-bold small">{{__('settings.code')}}</label>
 		  				<input type="text" name="code" id="verifyCode" class="form-control" placeholder="Code" autocomplete="off">
 		  			</div>
-		  			<button type="submit" class="btn btn-primary font-weight-bold">Submit</button>
+		  			<button type="submit" class="btn btn-primary font-weight-bold">{{__('settings.2faSubmit')}}</button>
 	  			</form>
 	  		</div>
 	  	</div>
@@ -67,11 +67,11 @@
 
   <section class="step-three pb-5">
   	<div class="sub-title font-weight-bold h5" data-toggle="collapse" data-target="#step3" aria-expanded="true" aria-controls="step3" data-step="3">
-  		Step 3: Download Backup Codes <i class="float-right fas fa-chevron-down"></i>
+	  	{{__('settings.2faStep3')}}<i class="float-right fas fa-chevron-down"></i>
   	</div>
   	<hr>
   	<div class="collapse" id="step3">
-	  	<p>Please store the following codes in a safe place, each backup code can be used only once if you do not have access to your 2FA mobile app.</p>
+	  	<p>{{__('settings.2faStep3Discription')}}</p>
 
 	  	<code>
 	  	@foreach($backups as $code)

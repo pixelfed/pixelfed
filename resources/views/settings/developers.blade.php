@@ -3,13 +3,13 @@
 @section('section')
 
 <div class="title">
-	<h3 class="font-weight-bold">Developers</h3>
+	<h3 class="font-weight-bold">{{__('settings.developers')}}</h3>
 </div>
 <hr>
 @if(config_cache('pixelfed.oauth_enabled') == true)
 	<passport-clients></passport-clients>
 @else
-	<p class="lead">OAuth has not been enabled on this instance.</p>
+	<p class="lead">{{__('settings.oathNotEnabled')}}</p>
 @endif
 
 @endsection
