@@ -100,6 +100,10 @@
 - Updated status.reply view, fix archived post leakage. ([4fb3d1fa](https://github.com/pixelfed/pixelfed/commit/4fb3d1fa))
 - Updated PostComponents, re-add time to timestamp. ([c5281dcd](https://github.com/pixelfed/pixelfed/commit/c5281dcd))
 - Updated follow intent, fix follower count leak. ([03199e2f](https://github.com/pixelfed/pixelfed/commit/03199e2f))
+- Updated Status model, add poll relation and allow up to 2 urls to autolink. ([2593cdee](https://github.com/pixelfed/pixelfed/commit/2593cdee))
+- Updated snowflake id generation to improve randomness. ([e5aea490](https://github.com/pixelfed/pixelfed/commit/e5aea490))
+- Updated Timeline, remove recent posts. ([7641b731](https://github.com/pixelfed/pixelfed/commit/7641b731))
+- Updated InstanceCrawlPipeline, remove unused variable. ([e73cf531](https://github.com/pixelfed/pixelfed/commit/e73cf531))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
