@@ -18,7 +18,7 @@ class SnowflakeService {
 		return ((round($ts * 1000) - 1549756800000) << 22)
 		| (random_int(1,31) << 17)
 		| (random_int(1,31) << 12)
-		| $seq;
+		| 0;
 	}
 
 	public static function next()
