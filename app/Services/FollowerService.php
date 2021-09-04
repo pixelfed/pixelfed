@@ -46,7 +46,7 @@ class FollowerService
 
 	public static function audience($profile, $scope = null)
 	{
-		return (new self)->getAudienceInboxes($profile);
+		return (new self)->getAudienceInboxes($profile, $scope);
 	}
 
 	public static function softwareAudience($profile, $software = 'pixelfed')
@@ -60,7 +60,8 @@ class FollowerService
 				return InstanceService::software($domain) === strtolower($software);
 			})
 			->unique()
-			->values();
+			->values()
+			->toArray();
 	}
 
 	protected function getAudienceInboxes($pid, $scope = null)
