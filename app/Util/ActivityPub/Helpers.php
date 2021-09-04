@@ -563,9 +563,12 @@ class Helpers {
 
 			$profile = Profile::whereRemoteUrl($res['id'])->first();
 			if(!$profile) {
-				Instance::firstOrCreate([
+				$instance = Instance::firstOrCreate([
 					'domain' => $domain
 				]);
+				if($instance->wasRecentlyCreated == true) {
+					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+				}
 				$profileLockKey = 'helpers:profile-lock:' . hash('sha256', $res['id']);
 				$profile = Cache::lock($profileLockKey)->get(function () use($domain, $webfinger, $res, $runJobs) {
 					return DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
