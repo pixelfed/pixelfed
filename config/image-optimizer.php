@@ -14,7 +14,7 @@ return [
     'optimizers' => [
 
         Jpegoptim::class => [
-            '-m75', // set maximum quality to 75%
+            '-m' . (int) env('IMAGE_QUALITY', 80),
             '--strip-all',  // this strips out all text information such as comments and EXIF data
             '--all-progressive',  // this will make sure the resulting image is a progressive one
         ],
