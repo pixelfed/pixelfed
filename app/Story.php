@@ -22,7 +22,7 @@ class Story extends Model
     public $incrementing = false;
 
     protected $casts = [
-    	'expires_at' => 'immutable_datetime'
+    	'expires_at' => 'datetime'
     ];
 
     protected $fillable = ['profile_id', 'view_count'];
