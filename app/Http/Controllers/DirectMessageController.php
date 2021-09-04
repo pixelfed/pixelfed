@@ -390,7 +390,6 @@ class DirectMessageController extends Controller
 		$min_id = $request->input('min_id');
 
 		$r = Profile::findOrFail($pid);
-// $r = Profile::whereNull('domain')->findOrFail($pid);
 
 		if($min_id) {
 			$res = DirectMessage::select('*')
@@ -590,13 +589,13 @@ class DirectMessageController extends Controller
 	{
 		$this->validate($request, [
 			'q' => 'required|string|min:2|max:50',
-			'remote' => 'nullable|boolean',
+			'remote' => 'nullable',
 		]);
 
 		$q = $request->input('q');
-		$r = $request->input('remote');
+		$r = $request->input('remote', false);
 
-		if(!Str::of($q)->contains('.')) {
+		if($r && !Str::of($q)->contains('.')) {
 			return [];
 		}
 
