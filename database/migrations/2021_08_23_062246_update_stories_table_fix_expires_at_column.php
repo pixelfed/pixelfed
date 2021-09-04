@@ -23,6 +23,9 @@ class UpdateStoriesTableFixExpiresAtColumn extends Migration
 			$table->timestamp('expires_at')->default(null)->index()->nullable()->change();
 			$table->boolean('can_reply')->default(true);
 			$table->boolean('can_react')->default(true);
+			$table->string('object_id')->nullable()->unique();
+			$table->string('object_uri')->nullable()->unique();
+			$table->string('bearcap_token')->nullable();
 		});
 	}
 
@@ -43,6 +46,9 @@ class UpdateStoriesTableFixExpiresAtColumn extends Migration
 			$table->timestamp('expires_at')->default(null)->index()->nullable()->change();
 			$table->dropColumn('can_reply');
 			$table->dropColumn('can_react');
+			$table->dropColumn('object_id');
+			$table->dropColumn('object_uri');
+			$table->dropColumn('bearcap_token');
 		});
 	}
 }
