@@ -63,26 +63,7 @@
 								<img class="d-none" src="/storage/avatars/default.png?v=0" class="rounded-circle border shadow" width="38" height="38" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 							</a>
 
-							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" style="min-width: 200px;">
-								<a class="dropdown-item lead" href="{{route('discover')}}">
-									<span style="width: 50px;margin-right:14px;">
-										<span class="fal fa-compass text-lighter fa-lg"></span>
-									</span>
-									{{__('navmenu.discover')}}
-								</a>
-								<a class="dropdown-item lead" href="/groups">
-									<span style="width: 50px;margin-right:14px;">
-										<span class="fal fa-user-friends text-lighter"></span>
-									</span>
-									Groups
-								</a>
-								<a class="dropdown-item lead" href="/i/stories/new">
-									<span style="width: 50px;margin-right:14px;">
-										<span class="fal fa-history text-lighter fa-lg"></span>
-									</span>
-									Stories
-								</a>
-								<div class="dropdown-divider"></div>
+							<div class="dropdown-menu dropdown-menu-right px-0 shadow" aria-labelledby="navbarDropdown" style="min-width: 220px;">
 								@if(config('federation.network_timeline'))
 								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
 									<span style="width: 50px;margin-right:14px;">
@@ -117,6 +98,27 @@
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
+								<a class="dropdown-item lead" href="{{route('discover')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-compass text-lighter fa-lg"></span>
+									</span>
+									{{__('navmenu.discover')}}
+								</a>
+								{{-- <a class="dropdown-item lead" href="/groups">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-user-friends text-lighter"></span>
+									</span>
+									Groups
+								</a> --}}
+								@if(config_cache('instance.stories.enabled'))
+								<a class="dropdown-item lead" href="/i/stories/new">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-history text-lighter fa-lg"></span>
+									</span>
+									Stories
+								</a>
+								@endif
+								<div class="dropdown-divider"></div>
 								<a class="dropdown-item lead" href="/i/me">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-user text-lighter fa-lg"></span>
@@ -141,10 +143,10 @@
 								<a class="dropdown-item lead" href="{{ route('logout') }}"
 								   onclick="event.preventDefault();
 												 document.getElementById('logout-form').submit();">
-									<span style="width: 50px;margin-right:14px;">
+									<span style="width: 50px;margin-right:14px;" class="text-lighter">
 										<span class="fal fa-sign-out-alt fa-lg"></span>
 									</span>
-									{{ __('navmenu.logout') }}
+									<span class="text-lighter">{{ __('navmenu.logout') }}</span>
 								</a>
 
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
