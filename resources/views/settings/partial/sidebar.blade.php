@@ -15,7 +15,7 @@
 			</li>
 			@endif
 			<li class="nav-item pl-3 {{request()->is('settings/media*')?'active':''}}">
-				<a class="nav-link font-weight-light text-muted" href="{{route('settings.media')}}">Media</a>
+				<a class="nav-link font-weight-light text-muted" href="{{route('settings.media')}}">{{__('settings.sidebarMedia')}}</a>
 			</li>
 			<li class="nav-item pl-3 {{request()->is('settings/notifications')?'active':''}}">
 				<a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">{{__('settings.sidebarNotifications')}}</a>
