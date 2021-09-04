@@ -20,11 +20,11 @@
 						</div>
 
 						<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`feed-${index}-${status.id}`">
-							<div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
+							<!-- <div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
 								<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
-							</div>
+							</div> -->
 
-							<div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
+							<!-- <div v-if="index == 2 && showSuggestions == true && suggestions.length" class="card status-card rounded-0 shadow-none border">
 								<div class="card-header d-flex align-items-center justify-content-between bg-white border-0 pb-0">
 									<h6 class="text-muted font-weight-bold mb-0">Suggestions For You</h6>
 									<span class="cursor-pointer text-muted" v-on:click="hideSuggestions"><i class="fas fa-times"></i></span>
@@ -53,9 +53,9 @@
 										</div>
 									</div>
 								</div>
-							</div>
+							</div> -->
 
-							<div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border border-top-0">
+							<!-- <div v-if="index == 4 && showHashtagPosts && hashtagPosts.length" class="card status-card rounded-0 shadow-none border border-top-0">
 								<div class="card-header bg-white border-0 mb-0">
 									<div class="d-flex align-items-center justify-content-between pt-2">
 										<div></div>
@@ -97,7 +97,7 @@
 										</a>
 									</div>
 								</div>
-							</div>
+							</div> -->
 
 							<status-card
 								:class="{ 'border-top': index === 0 }"
@@ -502,7 +502,7 @@
 				discover_min_id: 0,
 				discover_max_id: 0,
 				discover_feed: [],
-				recentFeed: this.scope === 'home' ? true : false,
+				recentFeed: false,
 				recentFeedMin: null,
 				recentFeedMax: null,
 				reactionBar: true,
@@ -511,23 +511,22 @@
 		},
 
 		beforeMount() {
-			let avop = window.localStorage.getItem('pf.feed:avop') === 'always';
-			let u = new URLSearchParams(window.location.search);
-			if(u.has('a')) {
-				switch(u.get('a')) {
-					case 'recent_feed':
-						if(this.scope === 'home') {
-							this.recentFeed = true;
-						}
-					break;
-					case 'vop':
-						this.recentFeed = false;
-					break;
-				}
-			}
-			this.recentFeed = avop ? false : this.recentFeed;
+			// let avop = window.localStorage.getItem('pf.feed:avop') === 'always';
+			// let u = new URLSearchParams(window.location.search);
+			// if(u.has('a')) {
+			// 	switch(u.get('a')) {
+			// 		case 'recent_feed':
+			// 			if(this.scope === 'home') {
+			// 				this.recentFeed = true;
+			// 			}
+			// 		break;
+			// 		case 'vop':
+			// 			this.recentFeed = false;
+			// 		break;
+			// 	}
+			// }
+			// this.recentFeed = avop ? false : this.recentFeed;
 			this.fetchProfile();
-			this.fetchTimelineApi();
 		},
 
 		mounted() {
@@ -556,7 +555,7 @@
 				this.showTips = false;
 			}
 
-			this.$nextTick(function () {
+			this.$nextTick(() => {
 				$('[data-toggle="tooltip"]').tooltip();
 				let u = new URLSearchParams(window.location.search);
 				if(u.has('a')) {
@@ -566,6 +565,7 @@
 						break;
 					}
 				}
+				this.fetchTimelineApi();
 			});
 		},
 
@@ -584,7 +584,9 @@
 					}
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
-					this.hasStory();
+					// this.$nextTick(() => {
+					// 	this.hasStory();
+					// });
 					// this.expRec();
 				}).catch(err => {
 					swal(
@@ -631,11 +633,14 @@
 					this.min_id = Math.max(...ids).toString();
 					this.max_id = Math.min(...ids).toString();
 					this.loading = false;
-					$('.timeline .pagination').removeClass('d-none');
+					// $('.timeline .pagination').removeClass('d-none');
 
-					if(this.hashtagPosts.length == 0) {
-						this.fetchHashtagPosts();
-					}
+					// if(this.hashtagPosts.length == 0) {
+					// 	this.fetchHashtagPosts();
+					// }
+					this.$nextTick(() => {
+						this.hasStory();
+					});
 					// this.fetchStories();
 					// this.rtw();
 
@@ -645,14 +650,14 @@
 						});
 					}, 500);
 
-					axios.get('/api/pixelfed/v2/discover/posts/trending', {
-						params: {
-							range: 'daily'
-						}
-					}).then(res => {
-						let data = res.data.filter(post => this.ids.indexOf(post.id) === -1);
-						this.discover_feed = data;
-					});
+					// axios.get('/api/pixelfed/v2/discover/posts/trending', {
+					// 	params: {
+					// 		range: 'daily'
+					// 	}
+					// }).then(res => {
+					// 	let data = res.data.filter(post => this.ids.indexOf(post.id) === -1);
+					// 	this.discover_feed = data;
+					// });
 
 				}).catch(err => {
 					swal(
