@@ -63,7 +63,6 @@ class Inbox
 		switch ($verb) {
 
 			case 'Add':
-				if(AddValidator::validate($this->payload) == false) { return; }
 				$this->handleAddActivity();
 				break;
 
@@ -167,7 +166,7 @@ class Inbox
 
 		switch($obj['type']) {
 			case 'Story':
-				StoryFetch::dispatch($this->payload)->onQueue('story');
+				StoryFetch::dispatchNow($this->payload);
 			break;
 		}
 	}
