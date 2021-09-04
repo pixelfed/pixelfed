@@ -11,6 +11,7 @@ use App\{
 	Profile,
 	Report,
 	Status,
+	Story,
 	User
 };
 use DB, Cache;
@@ -27,6 +28,7 @@ use App\Http\Controllers\Admin\{
 };
 use Illuminate\Validation\Rule;
 use App\Services\AdminStatsService;
+use App\Services\StoryService;
 
 class AdminController extends Controller
 {
@@ -464,5 +466,12 @@ class AdminController extends Controller
 		];
 
 		return response()->json($res);
+	}
+
+	public function stories(Request $request)
+	{
+		$stories = Story::with('profile')->latest()->paginate(10);
+		$stats = StoryService::adminStats();
+		return view('admin.stories.home', compact('stories', 'stats'));
 	}
 }

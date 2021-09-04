@@ -181,64 +181,68 @@
 					<li v-if="owner" class="nav-item border-top">
 						<a :class="this.mode == 'bookmarks' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('bookmarks')"><i class="fas fa-bookmark"></i> <span class="d-none d-md-inline-block small pl-1">SAVED</span></a>
 					</li>
+					<li v-if="owner" class="nav-item border-top">
+						<a :class="this.mode == 'archives' ? 'nav-link text-dark' : 'nav-link'" href="#" v-on:click.prevent="switchMode('archives')"><i class="far fa-folder-open"></i> <span class="d-none d-md-inline-block small pl-1">ARCHIVES</span></a>
+					</li>
 				</ul>
 			</div>
 
 			<div class="container px-0">
 				<div class="profile-timeline mt-md-4">
-					<div class="row" v-if="mode == 'grid'">
-						<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline" :key="'tlob:'+index">
-							<a class="card info-overlay card-md-border-0" :href="statusUrl(s)" v-once>
-								<div class="square">
-									<div v-if="s.sensitive" class="square-content">
-										<div class="info-overlay-text-label">
+					<div v-if="mode == 'grid'">
+						<div class="row">
+							<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline" :key="'tlob:'+index">
+								<a class="card info-overlay card-md-border-0" :href="statusUrl(s)" v-once>
+									<div class="square">
+										<div v-if="s.sensitive" class="square-content">
+											<div class="info-overlay-text-label">
+												<h5 class="text-white m-auto font-weight-bold">
+													<span>
+														<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+													</span>
+												</h5>
+											</div>
+											<blur-hash-canvas
+												width="32"
+												height="32"
+												:hash="s.media_attachments[0].blurhash"
+												/>
+										</div>
+										<div v-else class="square-content">
+											<blur-hash-image
+												width="32"
+												height="32"
+												:hash="s.media_attachments[0].blurhash"
+												:src="s.media_attachments[0].preview_url"
+												/>
+										</div>
+										<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
+										<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
+										<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
+										<div class="info-overlay-text">
 											<h5 class="text-white m-auto font-weight-bold">
 												<span>
-													<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+													<span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
+													<span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
 												</span>
 											</h5>
 										</div>
-										<blur-hash-canvas
-											width="32"
-											height="32"
-											:hash="s.media_attachments[0].blurhash"
-											/>
 									</div>
-									<div v-else class="square-content">
-
-										<blur-hash-image
-											width="32"
-											height="32"
-											:hash="s.media_attachments[0].blurhash"
-											:src="s.media_attachments[0].preview_url"
-											/>
-									</div>
-									<span v-if="s.pf_type == 'photo:album'" class="float-right mr-3 post-icon"><i class="fas fa-images fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video'" class="float-right mr-3 post-icon"><i class="fas fa-video fa-2x"></i></span>
-									<span v-if="s.pf_type == 'video:album'" class="float-right mr-3 post-icon"><i class="fas fa-film fa-2x"></i></span>
-									<div class="info-overlay-text">
-										<h5 class="text-white m-auto font-weight-bold">
-											<span>
-												<span class="far fa-comment fa-lg p-2 d-flex-inline"></span>
-												<span class="d-flex-inline">{{formatCount(s.reply_count)}}</span>
-											</span>
-										</h5>
-									</div>
+								</a>
+							</div>
+							<div v-if="timeline.length == 0" class="col-12">
+								<div class="py-5 text-center text-muted">
+									<p><i class="fas fa-camera-retro fa-2x"></i></p>
+									<p class="h2 font-weight-light pt-3">No posts yet</p>
 								</div>
-							</a>
-						</div>
-						<div v-if="timeline.length == 0" class="col-12">
-							<div class="py-5 text-center text-muted">
-								<p><i class="fas fa-camera-retro fa-2x"></i></p>
-								<p class="h2 font-weight-light pt-3">No posts yet</p>
 							</div>
 						</div>
-					</div>
-					<div v-if="timeline.length && mode == 'grid'">
-						<infinite-loading @infinite="infiniteTimeline">
-							<div slot="no-more"></div>
-							<div slot="no-results"></div>
-						</infinite-loading>
+						<div v-if="timeline.length">
+							<infinite-loading @infinite="infiniteTimeline">
+								<div slot="no-more"></div>
+								<div slot="no-results"></div>
+							</infinite-loading>
+						</div>
 					</div>
 					<div v-if="mode == 'bookmarks'">
 						<div v-if="bookmarksLoading">
@@ -280,8 +284,9 @@
 							</div>
 						</div>
 					</div>
+
 					<div v-if="mode == 'collections'">
-						<div v-if="collections.length" class="row">
+						<div v-if="collections.length && collectionsLoaded" class="row">
 							<div class="col-4 p-1 p-sm-2 p-md-3" v-for="(c, index) in collections">
 								<a class="card info-overlay card-md-border-0" :href="c.url">
 									<div class="square">
@@ -296,6 +301,28 @@
 								<p><i class="fas fa-images fa-2x"></i></p>
 								<p class="h2 font-weight-light pt-3">No collections yet</p>
 							</div>
+						</div>
+					</div>
+
+					<div v-if="mode == 'archives'">
+						<div v-if="archives.length" class="col-12 col-md-8 offset-md-2 px-0 mb-sm-3 timeline mt-5">
+							<div class="alert alert-info">
+								<p class="mb-0">Posts you archive can only be seen by you.</p>
+								<p class="mb-0">For more information see the <a href="/site/kb/sharing-media">Sharing Media</a> help center page.</p>
+							</div>
+
+							<div v-for="(status, index) in archives">
+								<status-card
+									:class="{ 'border-top': index === 0 }"
+									:status="status"
+									:reaction-bar="false"
+								/>
+							</div>
+
+							<infinite-loading @infinite="archivesInfiniteLoader">
+								<div slot="no-more"></div>
+								<div slot="no-results"></div>
+							</infinite-loading>
 						</div>
 					</div>
 				</div>
@@ -663,6 +690,7 @@
 </style>
 <script type="text/javascript">
 	import VueMasonry from 'vue-masonry-css'
+	import StatusCard from './partials/StatusCard.vue';
 
 	export default {
 		props: [
@@ -671,6 +699,11 @@
 			'profile-settings',
 			'profile-username'
 		],
+
+		components: {
+			StatusCard,
+		},
+
 		data() {
 			return {
 				ids: [],
@@ -682,9 +715,9 @@
 				max_id: 0,
 				loading: true,
 				owner: false,
-				layout: this.profileLayout,
+				layout: 'metro',
 				mode: 'grid',
-				modes: ['grid', 'collections', 'bookmarks'],
+				modes: ['grid', 'collections', 'bookmarks', 'archives'],
 				modalStatus: false,
 				relationship: {},
 				followers: [],
@@ -700,6 +733,7 @@
 				bookmarks: [],
 				bookmarksPage: 2,
 				collections: [],
+				collectionsLoaded: false,
 				collectionsPage: 2,
 				isMobile: false,
 				ctxEmbedPayload: null,
@@ -709,10 +743,11 @@
 				followingModalSearchCache: null,
 				followingModalTab: 'following',
 				bookmarksLoading: true,
+				archives: [],
+				archivesPage: 2
 			}
 		},
 		beforeMount() {
-			this.fetchRelationships();
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
 			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
@@ -734,6 +769,39 @@
 				}
 			}
 
+			if(u.has('m') && this.modes.includes(u.get('m'))) {
+				this.mode = u.get('m');
+
+				if(this.mode == 'bookmarks') {
+					axios.get('/api/local/bookmarks')
+					.then(res => {
+						this.bookmarks = res.data;
+						this.bookmarksLoading = false;
+					}).catch(err => {
+						this.mode = 'grid';
+					});
+				}
+
+				if(this.mode == 'collections') {
+					axios.get('/api/local/profile/collections/' + this.profileId)
+					.then(res => {
+						this.collections = res.data
+						this.collectionsLoaded = true;
+					}).catch(err => {
+						this.mode = 'grid';
+					});
+				}
+
+				if(this.mode == 'archives') {
+					axios.get('/api/pixelfed/v2/statuses/archives')
+					.then(res => {
+						this.archives = res.data;
+					}).catch(err => {
+						this.mode = 'grid';
+					});
+				}
+			}
+
 		},
 
 		mounted() {
@@ -749,12 +817,7 @@
 					this.user = res.data;
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
-					if(res.data.id == this.profileId || this.relationship.following == true) {
-						axios.get('/api/stories/v0/exists/' + this.profileId)
-						.then(res => {
-							this.hasStory = res.data == true;
-						})
-					}
+					this.fetchRelationships();
 				});
 			}
 		},
@@ -769,7 +832,6 @@
 					this.profile = res.data;
 				}).then(res => {
 					this.fetchPosts();
-
 				});
 			},
 
@@ -858,19 +920,15 @@
 			},
 
 			switchMode(mode) {
-				this.mode = _.indexOf(this.modes, mode) ? mode : 'grid';
-				if(this.mode == 'bookmarks' && this.bookmarks.length == 0) {
-					axios.get('/api/local/bookmarks')
-					.then(res => {
-						this.bookmarks = res.data;
-						this.bookmarksLoading = false;
-					});
-				}
-				if(this.mode == 'collections' && this.collections.length == 0) {
-					axios.get('/api/local/profile/collections/' + this.profileId)
-					.then(res => {
-						this.collections = res.data
-					});
+				if(mode == 'grid') {
+					this.mode = mode;
+				} else if(mode == 'bookmarks' && this.bookmarks.length) {
+					this.mode = 'bookmarks';
+				} else if(mode == 'collections' && this.collections.length) {
+					this.mode = 'collections';
+				} else {
+					window.location.href = '/' + this.profileUsername + '?m=' + mode;
+					return;
 				}
 			},
 
@@ -997,6 +1055,12 @@
 						if(res.data[0].blocking == true) {
 							this.warning = true;
 						}
+					}
+					if(this.user.id == this.profileId || this.relationship.following == true) {
+						axios.get('/api/web/stories/v1/exists/' + this.profileId)
+						.then(res => {
+							this.hasStory = (res.data == true);
+						})
 					}
 				});
 			},
@@ -1315,7 +1379,7 @@
 			},
 
 			storyRedirect() {
-				window.location.href = '/stories/' + this.profileUsername;
+				window.location.href = '/stories/' + this.profileUsername + '?t=4';
 			},
 
 			followingModalSearchHandler() {
@@ -1362,6 +1426,23 @@
 			joinedAtFormat(created) {
 				let d = new Date(created);
 				return d.toDateString();
+			},
+
+			archivesInfiniteLoader($state) {
+				axios.get('/api/pixelfed/v2/statuses/archives', {
+					params: {
+						page: this.archivesPage
+					}
+				}).then(res => {
+					if(res.data.length) {
+						this.archives.push(...res.data);
+						this.archivesPage++;
+						$state.loaded();
+					} else {
+						$state.complete();
+					}
+
+				});
 			}
 		}
 	}

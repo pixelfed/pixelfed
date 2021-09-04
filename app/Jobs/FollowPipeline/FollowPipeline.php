@@ -14,59 +14,62 @@ use Illuminate\Support\Facades\Redis;
 
 class FollowPipeline implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $follower;
+	protected $follower;
 
-    /**
-     * Delete the job if its models no longer exist.
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
-    
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct($follower)
-    {
-        $this->follower = $follower;
-    }
+	/**
+	 * Delete the job if its models no longer exist.
+	 *
+	 * @var bool
+	 */
+	public $deleteWhenMissingModels = true;
+	
+	/**
+	 * Create a new job instance.
+	 *
+	 * @return void
+	 */
+	public function __construct($follower)
+	{
+		$this->follower = $follower;
+	}
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $follower = $this->follower;
-        $actor = $follower->actor;
-        $target = $follower->target;
+	/**
+	 * Execute the job.
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$follower = $this->follower;
+		$actor = $follower->actor;
+		$target = $follower->target;
 
-        if($target->domain || !$target->private_key) {
-            return;
-        }
+		Cache::forget('profile:following:' . $actor->id);
+		Cache::forget('profile:following:' . $target->id);
 
-        try {
-            $notification = new Notification();
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'follow';
-            $notification->message = $follower->toText();
-            $notification->rendered = $follower->toHtml();
-            $notification->item_id = $target->id;
-            $notification->item_type = "App\Profile";
-            $notification->save();
+		if($target->domain || !$target->private_key) {
+			return;
+		}
 
-            $redis = Redis::connection();
+		try {
+			$notification = new Notification();
+			$notification->profile_id = $target->id;
+			$notification->actor_id = $actor->id;
+			$notification->action = 'follow';
+			$notification->message = $follower->toText();
+			$notification->rendered = $follower->toHtml();
+			$notification->item_id = $target->id;
+			$notification->item_type = "App\Profile";
+			$notification->save();
 
-            $nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
-            $redis->lpush($nkey, $notification->id);
-        } catch (Exception $e) {
-            Log::error($e);
-        }
-    }
+			$redis = Redis::connection();
+
+			$nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
+			$redis->lpush($nkey, $notification->id);
+		} catch (Exception $e) {
+			Log::error($e);
+		}
+	}
 }

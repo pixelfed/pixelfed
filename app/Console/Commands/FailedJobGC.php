@@ -40,7 +40,7 @@ class FailedJobGC extends Command
     {
         FailedJob::chunk(50, function($jobs) {
             foreach($jobs as $job) {
-                if($job->failed_at->lt(now()->subMonth())) {
+                if($job->failed_at->lt(now()->subHours(48))) {
                     $job->delete();
                 }
             }

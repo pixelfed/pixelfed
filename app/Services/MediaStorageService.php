@@ -70,7 +70,7 @@ class MediaStorageService {
 	protected function localToCloud($media)
 	{
 		$path = storage_path('app/'.$media->media_path);
-        $thumb = storage_path('app/'.$media->thumbnail_path);
+		$thumb = storage_path('app/'.$media->thumbnail_path);
 
 		$p = explode('/', $media->media_path);
 		$name = array_pop($p);
