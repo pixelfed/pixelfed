@@ -19,7 +19,7 @@ return [
 	'logout'			=> 'Logout',
 	'directMessages'	=> 'Direct Messages',
 	'composePost'		=> 'Compose Post',
-	'newPost'			=> 'New Post',
+	'newPost'			=> 'New',
 	'login' 			=> 'Login',
 	'register' 			=> 'Register',
 ];
