@@ -233,17 +233,24 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::group(['prefix' => 'admin'], function () {
 			Route::post('moderate', 'Api\AdminApiController@moderate');
 		});
-		// Route::group(['prefix' => 'stories'], function () {
-		// 	Route::get('v0/recent', 'StoryController@apiV1Recent');
-		// 	Route::post('v0/add', 'StoryController@apiV1Add');
-		// 	Route::get('v0/fetch/{id}', 'StoryController@apiV1Fetch');
-		// 	Route::get('v0/profile/{id}', 'StoryController@apiV1Profile');
-		// 	Route::get('v0/exists/{id}', 'StoryController@apiV1Exists');
-		// 	Route::delete('v0/delete/{id}', 'StoryController@apiV1Delete');
-		// 	Route::get('v0/item/{id}', 'StoryController@apiV1Item');
-		// 	Route::post('v0/crop', 'StoryController@cropPhoto');
-  //   		Route::post('v0/publish', 'StoryController@publishStory');
-		// });
+
+		Route::group(['prefix' => 'web/stories'], function () {
+			Route::get('v1/recent', 'StoryController@recent');
+			Route::get('v1/viewers', 'StoryController@viewers');
+			Route::get('v1/profile/{id}', 'StoryController@profile');
+			Route::get('v1/exists/{id}', 'StoryController@exists');
+			Route::get('v1/poll/results', 'StoryController@pollResults');
+			Route::post('v1/viewed', 'StoryController@viewed');
+			Route::post('v1/react', 'StoryController@react');
+			Route::post('v1/comment', 'StoryController@comment');
+			Route::post('v1/publish/poll', 'StoryController@publishStoryPoll');
+			Route::post('v1/poll/vote', 'StoryController@storyPollVote');
+			Route::post('v1/report', 'StoryController@storeReport');
+			Route::post('v1/add', 'StoryController@apiV1Add');
+			Route::post('v1/crop', 'StoryController@cropPhoto');
+			Route::post('v1/publish', 'StoryController@publishStory');
+			Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete');
+		});
 
 	});
 
@@ -304,7 +311,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 		Route::get('me', 'ProfileController@meRedirect');
 		Route::get('intent/follow', 'SiteController@followIntent');
-		Route::post('stories/viewed', 'StoryController@apiV1Viewed');
+		Route::get('rs/{id}', 'StoryController@remoteStory');
 		Route::get('stories/new', 'StoryController@compose');
 		Route::get('my/story', 'StoryController@iRedirect');
 		Route::get('web/profile/_/{id}', 'InternalApiController@remoteProfile');
@@ -498,6 +505,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('{username}', 'ProfileController@permalinkRedirect');
 	});
 
+	Route::get('/stories/{username}/{id}', 'StoryController@getActivityObject');
 	Route::get('stories/{username}', 'ProfileController@stories');
 	Route::get('p/{id}', 'StatusController@shortcodeRedirect');
 	Route::get('c/{collection}', 'CollectionController@show');
