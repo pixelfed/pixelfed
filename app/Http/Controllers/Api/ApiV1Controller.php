@@ -1048,7 +1048,7 @@ class ApiV1Controller extends Controller
 		  },
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
-		  'description' => 'nullable|string|max:420'
+		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
 		]);
 
 		$user = $request->user();
@@ -1091,6 +1091,17 @@ class ApiV1Controller extends Controller
 		$storagePath = MediaPathService::get($user, 2);
 		$path = $photo->store($storagePath);
 		$hash = \hash_file('sha256', $photo);
+		$license = null;
+
+		$settings = UserSetting::whereUserId($user->id)->first();
+
+		if($settings && !empty($settings->compose_settings)) {
+			$compose = json_decode($settings->compose_settings, true);
+
+			if(isset($compose['default_license']) && $compose['default_license'] != 1) {
+				$license = $compose['default_license'];
+			}
+		}
 
 		abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
@@ -1105,6 +1116,9 @@ class ApiV1Controller extends Controller
 		$media->caption = $request->input('description');
 		$media->filter_class = $filterClass;
 		$media->filter_name = $filterName;
+		if($license) {
+			$media->license = $license;
+		}
 		$media->save();
 
 		switch ($media->mime) {
@@ -1140,7 +1154,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'description' => 'nullable|string|max:420'
+		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
 		]);
 
 		$user = $request->user();
@@ -1300,6 +1314,11 @@ class ApiV1Controller extends Controller
 				$maxId = max($ids);
 				$minId = min($ids);
 			}
+		}
+
+		if(empty($res) && !Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+			Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+			NotificationService::warmCache($pid, 400, true);
 		}
 
 		$baseUrl = config('app.url') . '/api/v1/notifications?';

@@ -21,7 +21,7 @@
 						<div v-if="n.type == 'favourite'">
 							<p class="my-0">
 								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> liked your
-								<span v-if="n.status.hasOwnProperty('media_attachments')">
+								<span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
 									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id">post</a>.
 									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
 										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
@@ -35,6 +35,21 @@
 						<div v-else-if="n.type == 'comment'">
 							<p class="my-0">
 								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
+							</p>
+						</div>
+						<div v-else-if="n.type == 'group:comment'">
+							<p class="my-0">
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.group_post_url">group post</a>.
+							</p>
+						</div>
+						<div v-else-if="n.type == 'story:react'">
+							<p class="my-0">
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+							</p>
+						</div>
+						<div v-else-if="n.type == 'story:comment'">
+							<p class="my-0">
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
 							</p>
 						</div>
 						<div v-else-if="n.type == 'mention'">
@@ -90,6 +105,7 @@
 				<div class="text-lighter text-center py-3">
 					<p class="mb-0"><i class="fas fa-inbox fa-3x"></i></p>
 					<p class="mb-0 small font-weight-bold">No notifications yet</p>
+					<p v-if="showRefresh && !attemptedRefresh" class="mt-2 small font-weight-bold text-primary cursor-pointer" @click="refreshNotifications"><i class="fas fa-redo"></i> Refresh</p>
 				</div>
 			</div>
 		</div>
@@ -110,7 +126,9 @@
 				profile: {
 					locked: false
 				},
-				followRequests: null
+				followRequests: null,
+				showRefresh: false,
+				attemptedRefresh: false
 			};
 		},
 
@@ -120,7 +138,7 @@
 			setTimeout(function() {
 				self.profile = window._sharedData.curUser;
 				self.fetchFollowRequests();
-			}, 500);
+			}, 1500);
 		},
 
 		updated() {
@@ -140,12 +158,21 @@
 						if(n.type == 'mention' && !n.status) {
 							return false;
 						}
+						if(n.type == 'favourite' && !n.status) {
+							return false;
+						}
+						if(n.type == 'follow' && !n.account) {
+							return false;
+						}
 						return true;
 					});
 					let ids = data.map(n => n.id);
 					this.notificationMaxId = Math.min(...ids);
 					this.notifications = data;
 					this.loading = false;
+					if(data.length == 0 && !this.attemptedRefresh) {
+						this.showRefresh = true;
+					}
 					//this.notificationPoll();
 				});
 			},
@@ -157,7 +184,7 @@
 				}
 				axios.get('/api/pixelfed/v1/notifications', {
 					params: {
-						page: this.notificationCursor
+						max_id: this.notificationMaxId
 					}
 				}).then(res => {
 					if(res.data.length) {
@@ -169,6 +196,12 @@
 								return false;
 							}
 							if(n.type == 'mention' && !n.status) {
+								return false;
+							}
+							if(n.type == 'favourite' && !n.status) {
+								return false;
+							}
+							if(n.type == 'follow' && !n.account) {
 								return false;
 							}
 							if(_.find(this.notifications, {id: n.id})) {
@@ -271,7 +304,7 @@
 			},
 
 			notificationPreview(n) {
-				if(!n.status.hasOwnProperty('media_attachments') || !n.status.media_attachments.length) {
+				if(!n.status || !n.status.hasOwnProperty('media_attachments') || !n.status.media_attachments.length) {
 					return '/storage/no-preview.png';
 				}
 				return n.status.media_attachments[0].preview_url;
@@ -286,11 +319,21 @@
 			},
 
 			getPostUrl(status) {
-				if(status.local == true) {
+				if(!status) {
+					return;
+				}
+
+				if(!status.hasOwnProperty('local') || status.local == true) {
 					return status.url;
 				}
 
 				return '/i/web/post/_/' + status.account.id + '/' + status.id;
+			},
+
+			refreshNotifications() {
+				this.loading = true;
+				this.attemptedRefresh = true;
+				this.fetchNotifications();
 			}
 		}
 	}

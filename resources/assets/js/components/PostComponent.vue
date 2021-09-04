@@ -222,13 +222,13 @@
 								</div>
 								<div class="reaction-counts mb-0">
 									<div v-if="status.liked_by.username && status.liked_by.username !== user.username" class="likes mb-1">
-						<span class="like-count">Liked by
-							<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
-							<span v-if="status.liked_by.others == true">
-								and <span class="font-weight-bold text-dark cursor-pointer" @click="likesModal"><span v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> others</span>
-							</span>
-						</span>
-					</div>
+										<span class="like-count">Liked by
+											<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
+											<span v-if="status.liked_by.others == true">
+												and <span class="font-weight-bold text-dark cursor-pointer" @click="likesModal"><span v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> others</span>
+											</span>
+										</span>
+									</div>
 								</div>
 								<div class="timestamp d-flex align-items-bottom justify-content-between">
 									<a v-bind:href="statusUrl" class="small text-muted" :title="status.created_at">
@@ -454,233 +454,317 @@
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<b-modal ref="likesModal"
-		id="l-modal"
-		hide-footer
-		centered
-		title="Likes"
-		body-class="list-group-flush py-3 px-0">
-		<div class="list-group">
-			<div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
-				<div class="media">
-					<a :href="user.url">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
-					</a>
-					<div class="media-body">
-						<p class="mb-0" style="font-size: 14px">
-							<a :href="user.url" class="font-weight-bold text-dark">
-								{{user.username}}
-							</a>
-						</p>
-						<p v-if="!user.local" class="text-muted mb-0 text-truncate mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
-							<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
-						</p>
-						<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
-							{{user.display_name}}
-						</p>
+		<div v-if="layout == 'poll'" class="container px-0">
+			<div class="row justify-content-center">
+				<div class="col-12 col-md-6">
+
+					<div v-if="loading || !user || !reactions" class="text-center">
+						<div class="spinner-border" role="status">
+						  <span class="sr-only">Loading...</span>
+						</div>
+					</div>
+					<div v-else>
+						<poll-card
+								:status="status"
+								:profile="user"
+								:showBorderTop="true"
+								:fetch-state="true"
+								:reactions="reactions"
+								v-on:likeStatus="likeStatus" />
+
+						<comment-feed :status="status" class="mt-3" />
+						<!-- <div v-if="user.hasOwnProperty('id')" class="card card-body shadow-none border border-top-0 bg-light">
+								<div class="media">
+									<img src="/storage/avatars/default.png" class="rounded-circle mr-2" width="40" height="40">
+									<div class="media-body">
+											<div class="form-group mb-0" style="position:relative;">
+												  <input class="form-control rounded-pill" placeholder="Add a comment..." style="padding-right: 90px;">
+												  <div class="btn btn-primary btn-sm rounded-pill font-weight-bold px-3" style="position:absolute;top: 5px;right:6px;">Post</div>
+											</div>
+									</div>
+								</div>
+						</div>
+
+						<div v-if="user.hasOwnProperty('id')" v-for="(reply, index) in results" :key="'replies:'+index" class="card card-body shadow-none border border-top-0">
+							<div class="media">
+								<img :src="reply.account.avatar" class="rounded-circle border mr-3" width="32px" height="32px">
+									<div class="media-body">
+										<div v-if="reply.sensitive == true">
+											<span class="py-3">
+												<a class="text-dark font-weight-bold mr-3"  style="font-size: 13px;" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
+												<span class="text-break" style="font-size: 13px;">
+													<span class="font-italic text-muted">This comment may contain sensitive material</span>
+													<span class="text-primary cursor-pointer pl-1" @click="reply.sensitive = false;">Show</span>
+												</span>
+											</span>
+										</div>
+										<div v-else>
+											<p class="d-flex justify-content-between align-items-top read-more mb-0" style="overflow-y: hidden;">
+												<span class="mr-3" style="font-size: 13px;">
+													<a class="text-dark font-weight-bold mr-1 text-break" :href="profileUrl(reply)" v-bind:title="reply.account.username">{{trimCaption(reply.account.username,15)}}</a>
+													<span class="text-break comment-body" style="word-break: break-all;" v-html="reply.content"></span>
+												</span>
+												<span class="text-right" style="min-width: 30px;">
+													<span v-on:click="likeReply(reply, $event)"><i v-bind:class="[reply.favourited ? 'fas fa-heart fa-sm text-danger':'far fa-heart fa-sm text-lighter']"></i></span>
+													<span class="pl-2 text-lighter cursor-pointer" @click="ctxMenu(reply)">
+														<span class="fas fa-ellipsis-v text-lighter"></span>
+													</span>
+												</span>
+											</p>
+											<p class="mb-0">
+												<a v-once class="text-muted mr-3 text-decoration-none small" style="width: 20px;" v-text="timeAgo(reply.created_at)" :href="getStatusUrl(reply)"></a>
+												<span v-if="reply.favourites_count" class="text-muted comment-reaction font-weight-bold mr-3 small">{{reply.favourites_count == 1 ? '1 like' : reply.favourites_count + ' likes'}}</span>
+												<span class="small text-muted comment-reaction font-weight-bold cursor-pointer" v-on:click="replyFocus(reply, index, true)">Reply</span>
+											</p>
+										</div>
+									</div>
+							</div>
+						</div> -->
 					</div>
 				</div>
 			</div>
-			<infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
-				<div slot="no-more"></div>
-				<div slot="no-results"></div>
-			</infinite-loading>
 		</div>
-	</b-modal>
-	<b-modal ref="sharesModal"
-		id="s-modal"
-		hide-footer
-		centered
-		title="Shares"
-		body-class="list-group-flush py-3 px-0">
-		<div class="list-group">
-			<div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
-				<div class="media">
-					<a :href="user.url">
-						<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-					</a>
-					<div class="media-body">
-						<div class="d-inline-block">
+
+		<div v-if="layout == 'text'" class="container px-0">
+			<div class="row justify-content-center">
+				<div class="col-12 col-md-6">
+					<status-card :status="status" :hasTopBorder="true" />
+					<comment-feed :status="status" class="mt-3" />
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal-stack">
+		<b-modal ref="likesModal"
+			id="l-modal"
+			hide-footer
+			centered
+			title="Likes"
+			body-class="list-group-flush py-3 px-0">
+			<div class="list-group">
+				<div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
+					<div class="media">
+						<a :href="user.url">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg';">
+						</a>
+						<div class="media-body">
 							<p class="mb-0" style="font-size: 14px">
 								<a :href="user.url" class="font-weight-bold text-dark">
 									{{user.username}}
 								</a>
 							</p>
-							<p class="text-muted mb-0" style="font-size: 14px">
-									{{user.display_name}}
-								</a>
+							<p v-if="!user.local" class="text-muted mb-0 text-truncate mr-3" style="font-size: 14px" :title="user.acct" data-toggle="dropdown" data-placement="bottom">
+								<span class="font-weight-bold">{{user.acct.split('@')[0]}}</span><span class="text-lighter">&commat;{{user.acct.split('@')[1]}}</span>
+							</p>
+							<p v-else class="text-muted mb-0 text-truncate" style="font-size: 14px">
+								{{user.display_name}}
 							</p>
 						</div>
-						<p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
+					</div>
+				</div>
+				<infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
+					<div slot="no-more"></div>
+					<div slot="no-results"></div>
+				</infinite-loading>
+			</div>
+		</b-modal>
+		<b-modal ref="sharesModal"
+			id="s-modal"
+			hide-footer
+			centered
+			title="Shares"
+			body-class="list-group-flush py-3 px-0">
+			<div class="list-group">
+				<div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
+					<div class="media">
+						<a :href="user.url">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
+						</a>
+						<div class="media-body">
+							<div class="d-inline-block">
+								<p class="mb-0" style="font-size: 14px">
+									<a :href="user.url" class="font-weight-bold text-dark">
+										{{user.username}}
+									</a>
+								</p>
+								<p class="text-muted mb-0" style="font-size: 14px">
+										{{user.display_name}}
+									</a>
+								</p>
+							</div>
+							<p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
+						</div>
+					</div>
+				</div>
+				<infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
+					<div slot="no-more"></div>
+					<div slot="no-results"></div>
+				</infinite-loading>
+			</div>
+		</b-modal>
+		<b-modal ref="lightboxModal"
+			id="lightbox"
+			:hide-header="true"
+			:hide-footer="true"
+			centered
+			size="lg"
+			body-class="p-0"
+			>
+			<div v-if="lightboxMedia" >
+				<img :src="lightboxMedia.url" :class="lightboxMedia.filter_class + ' img-fluid'" style="min-height: 100%; min-width: 100%">
+			</div>
+		</b-modal>
+		<b-modal ref="embedModal"
+			id="ctx-embed-modal"
+			hide-header
+			hide-footer
+			centered
+			rounded
+			size="md"
+			body-class="p-2 rounded">
+			<div>
+				<div class="form-group">
+					<textarea class="form-control disabled text-monospace" rows="8" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
+				</div>
+				<div class="form-group pl-2 d-flex justify-content-center">
+					<div class="form-check mr-3">
+						<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
+						<label class="form-check-label font-weight-light">
+							Show Caption
+						</label>
+					</div>
+					<div class="form-check mr-3">
+						<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
+						<label class="form-check-label font-weight-light">
+							Show Likes
+						</label>
+					</div>
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
+						<label class="form-check-label font-weight-light">
+							Compact Mode
+						</label>
+					</div>
+				</div>
+				<hr>
+				<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
+				<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
+			</div>
+		</b-modal>
+		<b-modal ref="taggedModal"
+			id="tagged-modal"
+			hide-footer
+			centered
+			title="Tagged People"
+			body-class="list-group-flush py-3 px-0">
+			<div class="list-group">
+				<div class="list-group-item border-0 py-1" v-for="(taguser, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
+					<div class="media">
+						<a :href="'/'+taguser.username">
+							<img class="mr-3 rounded-circle box-shadow" :src="taguser.avatar" :alt="taguser.username + '’s avatar'" width="30px">
+						</a>
+						<div class="media-body">
+							<p class="pt-1 d-flex justify-content-between" style="font-size: 14px">
+								<a :href="'/'+taguser.username" class="font-weight-bold text-dark">
+									{{taguser.username}}
+								</a>
+								<button v-if="taguser.id == user.id" class="btn btn-outline-primary btn-sm py-1 px-3" @click="untagMe()">Untag Me</button>
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
-			<infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
-				<div slot="no-more"></div>
-				<div slot="no-results"></div>
-			</infinite-loading>
-		</div>
-	</b-modal>
-	<b-modal ref="lightboxModal"
-		id="lightbox"
-		:hide-header="true"
-		:hide-footer="true"
-		centered
-		size="lg"
-		body-class="p-0"
-		>
-		<div v-if="lightboxMedia" >
-			<img :src="lightboxMedia.url" :class="lightboxMedia.filter_class + ' img-fluid'" style="min-height: 100%; min-width: 100%">
-		</div>
-	</b-modal>
-	<b-modal ref="embedModal"
-		id="ctx-embed-modal"
-		hide-header
-		hide-footer
-		centered
-		rounded
-		size="md"
-		body-class="p-2 rounded">
-		<div>
-			<div class="form-group">
-				<textarea class="form-control disabled text-monospace" rows="8" style="overflow-y:hidden;border: 1px solid #efefef; font-size: 12px; line-height: 18px; margin: 0 0 7px;resize:none;" v-model="ctxEmbedPayload" disabled=""></textarea>
+			<p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p>
+		</b-modal>
+		<b-modal ref="ctxModal"
+			id="ctx-modal"
+			hide-header
+			hide-footer
+			centered
+			rounded
+			size="sm"
+			body-class="list-group-flush p-0 rounded">
+			<div class="list-group text-center">
+				<!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
+				<div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
+				<div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
+				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
+				<div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
+				<a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Edit</a>
+				<div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">Moderation Tools</div>
+				<div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Block</div>
+				<div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Unblock</div>
+				<a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Report</a>
+				<div v-if="status && user.id == status.account.id && status.visibility != 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="archivePost(status)">Archive</div>
+				<div v-if="status && user.id == status.account.id && status.visibility == 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="unarchivePost(status)">Unarchive</div>
+				<div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
+				<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
 			</div>
-			<div class="form-group pl-2 d-flex justify-content-center">
-				<div class="form-check mr-3">
-					<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowCaption" :disabled="ctxEmbedCompactMode == true">
-					<label class="form-check-label font-weight-light">
-						Show Caption
-					</label>
-				</div>
-				<div class="form-check mr-3">
-					<input class="form-check-input" type="checkbox" v-model="ctxEmbedShowLikes" :disabled="ctxEmbedCompactMode == true">
-					<label class="form-check-label font-weight-light">
-						Show Likes
-					</label>
-				</div>
-				<div class="form-check">
-					<input class="form-check-input" type="checkbox" v-model="ctxEmbedCompactMode">
-					<label class="form-check-label font-weight-light">
-						Compact Mode
-					</label>
-				</div>
-			</div>
-			<hr>
-			<button :class="copiedEmbed ? 'btn btn-primary btn-block btn-sm py-1 font-weight-bold disabed': 'btn btn-primary btn-block btn-sm py-1 font-weight-bold'" @click="ctxCopyEmbed" :disabled="copiedEmbed">{{copiedEmbed ? 'Embed Code Copied!' : 'Copy Embed Code'}}</button>
-			<p class="mb-0 px-2 small text-muted">By using this embed, you agree to our <a href="/site/terms">Terms of Use</a></p>
-		</div>
-	</b-modal>
-	<b-modal ref="taggedModal"
-		id="tagged-modal"
-		hide-footer
-		centered
-		title="Tagged People"
-		body-class="list-group-flush py-3 px-0">
-		<div class="list-group">
-			<div class="list-group-item border-0 py-1" v-for="(taguser, index) in status.taggedPeople" :key="'modal_taggedpeople_'+index">
-				<div class="media">
-					<a :href="'/'+taguser.username">
-						<img class="mr-3 rounded-circle box-shadow" :src="taguser.avatar" :alt="taguser.username + '’s avatar'" width="30px">
-					</a>
-					<div class="media-body">
-						<p class="pt-1 d-flex justify-content-between" style="font-size: 14px">
-							<a :href="'/'+taguser.username" class="font-weight-bold text-dark">
-								{{taguser.username}}
-							</a>
-							<button v-if="taguser.id == user.id" class="btn btn-outline-primary btn-sm py-1 px-3" @click="untagMe()">Untag Me</button>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-		<p class="mb-0 text-center small text-muted font-weight-bold"><a href="/site/kb/tagging-people">Learn more</a> about Tagging People.</p>
-	</b-modal>
-	<b-modal ref="ctxModal"
-		id="ctx-modal"
-		hide-header
-		hide-footer
-		centered
-		rounded
-		size="sm"
-		body-class="list-group-flush p-0 rounded">
-		<div class="list-group text-center">
-			<!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-			<div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
-			<div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
-			<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
-			<div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
-			<a v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer text-dark text-decoration-none" :href="editUrl()">Edit</a>
-			<div v-if="user && user.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenu()">Moderation Tools</div>
-			<div v-if="status && user.id != status.account.id && !relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="blockProfile()">Block</div>
-			<div v-if="status && user.id != status.account.id && relationship.blocking && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger" @click="unblockProfile()">Unblock</div>
-			<a v-if="user && user.id != status.account.id && !user.is_admin" class="list-group-item rounded cursor-pointer text-danger text-decoration-none" :href="reportUrl()">Report</a>
-			<div v-if="status && (user.is_admin || user.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(ctxMenuStatus)">Delete</div>
-			<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
-		</div>
-	</b-modal>
-	<b-modal ref="ctxModModal"
-		id="ctx-mod-modal"
-		hide-header
-		hide-footer
-		centered
-		rounded
-		size="sm"
-		body-class="list-group-flush p-0 rounded">
-		<div class="list-group text-center">
-			<div class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
+		</b-modal>
+		<b-modal ref="ctxModModal"
+			id="ctx-mod-modal"
+			hide-header
+			hide-footer
+			centered
+			rounded
+			size="sm"
+			body-class="list-group-flush p-0 rounded">
+			<div class="list-group text-center">
+				<div class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
 
-			<div class="list-group-item rounded cursor-pointer" @click="moderatePost('unlist')">Unlist from Timelines</div>
-			<div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost('remcw')">Remove Content Warning</div>
-			<div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost('addcw')">Add Content Warning</div>
-			<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
-		</div>
-	</b-modal>
-	<b-modal ref="replyModal"
-		id="ctx-reply-modal"
-		hide-footer
-		centered
-		rounded
-		:title-html="replyingToUsername ? 'Reply to <span class=text-dark>' + replyingToUsername + '</span>' : ''"
-		title-tag="p"
-		title-class="font-weight-bold text-muted"
-		size="md"
-		body-class="p-2 rounded">
-		<div>
-			<vue-tribute :options="tributeSettings">
-				<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
-				</textarea>
-			</vue-tribute>
+				<div class="list-group-item rounded cursor-pointer" @click="moderatePost('unlist')">Unlist from Timelines</div>
+				<div v-if="status.sensitive" class="list-group-item rounded cursor-pointer" @click="moderatePost('remcw')">Remove Content Warning</div>
+				<div v-else class="list-group-item rounded cursor-pointer" @click="moderatePost('addcw')">Add Content Warning</div>
+				<div class="list-group-item rounded cursor-pointer text-lighter" @click="ctxModMenuClose()">Cancel</div>
+			</div>
+		</b-modal>
+		<b-modal ref="replyModal"
+			id="ctx-reply-modal"
+			hide-footer
+			centered
+			rounded
+			:title-html="replyingToUsername ? 'Reply to <span class=text-dark>' + replyingToUsername + '</span>' : ''"
+			title-tag="p"
+			title-class="font-weight-bold text-muted"
+			size="md"
+			body-class="p-2 rounded">
+			<div>
+				<vue-tribute :options="tributeSettings">
+					<textarea class="form-control" rows="4" style="border: none; font-size: 18px; resize: none; white-space: pre-wrap;outline: none;" placeholder="Reply here ..." v-model="replyText">
+					</textarea>
+				</vue-tribute>
 
-			<div class="border-top border-bottom my-2">
-				<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
-					<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
-				</ul>
-			</div>
-			<div class="d-flex justify-content-between align-items-center">
-				<div>
-					<span class="pl-2 small text-muted font-weight-bold text-monospace">
-						<span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
-					</span>
+				<div class="border-top border-bottom my-2">
+					<ul class="nav align-items-center emoji-reactions" style="overflow-x: scroll;flex-wrap: unset;">
+						<li class="nav-item" v-on:click="emojiReaction(status)" v-for="e in emoji">{{e}}</li>
+					</ul>
 				</div>
-				<div class="d-flex align-items-center">
-					<div class="custom-control custom-switch mr-3">
-						<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replySensitive">
-						<label :class="[replySensitive ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
+				<div class="d-flex justify-content-between align-items-center">
+					<div>
+						<span class="pl-2 small text-muted font-weight-bold text-monospace">
+							<span :class="[replyText.length > config.uploader.max_caption_length ? 'text-danger':'text-dark']">{{replyText.length > config.uploader.max_caption_length ? config.uploader.max_caption_length - replyText.length : replyText.length}}</span>/{{config.uploader.max_caption_length}}
+						</span>
 					</div>
-					<!-- <select class="custom-select custom-select-sm my-0 mr-2">
-						<option value="public" selected="">Public</option>
-						<option value="unlisted">Unlisted</option>
-						<option value="followers">Followers Only</option>
-					</select> -->
-					<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="postReply()" :disabled="replyText.length == 0">
-					{{replySending == true ? 'POSTING' : 'POST'}}
-				</button>
+					<div class="d-flex align-items-center">
+						<div class="custom-control custom-switch mr-3">
+							<input type="checkbox" class="custom-control-input" id="replyModalCWSwitch" v-model="replySensitive">
+							<label :class="[replySensitive ? 'custom-control-label font-weight-bold text-dark':'custom-control-label text-lighter']" for="replyModalCWSwitch">Mark as NSFW</label>
+						</div>
+						<!-- <select class="custom-select custom-select-sm my-0 mr-2">
+							<option value="public" selected="">Public</option>
+							<option value="unlisted">Unlisted</option>
+							<option value="followers">Followers Only</option>
+						</select> -->
+						<button class="btn btn-primary btn-sm py-2 px-4 lead text-uppercase font-weight-bold" v-on:click.prevent="postReply()" :disabled="replyText.length == 0">
+						{{replySending == true ? 'POSTING' : 'POST'}}
+					</button>
+					</div>
 				</div>
 			</div>
-		</div>
-	</b-modal>
+		</b-modal>
+	</div>
 </div>
 </template>
 
@@ -764,7 +848,10 @@
 </style>
 
 <script>
-import VueTribute from 'vue-tribute'
+import VueTribute from 'vue-tribute';
+import PollCard from './partials/PollCard.vue';
+import CommentFeed from './partials/CommentFeed.vue';
+import StatusCard from './partials/StatusCard.vue';
 
 pixelfed.postComponent = {};
 
@@ -783,7 +870,10 @@ export default {
 		],
 
 		components: {
-				VueTribute
+				VueTribute,
+				PollCard,
+				CommentFeed,
+				StatusCard
 		},
 
 		data() {
@@ -891,20 +981,7 @@ export default {
 			}
 		},
 		beforeMount() {
-			let u = new URLSearchParams(window.location.search);
-			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
-			if(this.statusTemplate == 'text') {
-				this.layout = 'metro';
-				return;
-			}
-
-			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
-				this.layout = 'moment';
-			}
-
-			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
-				this.layout = 'metro';
-			}
+			this.layout = 'metro';
 		},
 
 		mounted() {
@@ -935,13 +1012,19 @@ export default {
 
 			timestampFormat() {
 					let ts = new Date(this.status.created_at);
-					return ts.toDateString();
+					return ts.toDateString() + ' · ' + ts.toLocaleTimeString();
 			},
 
 			fetchData() {
 					let self = this;
 					axios.get('/api/v2/profile/'+this.statusUsername+'/status/'+this.statusId)
 						.then(response => {
+								if(response.data.status.pf_type == 'poll') {
+									self.layout = 'poll';
+								}
+								if(response.data.status.pf_type == 'text') {
+									self.layout = 'text';
+								}
 								self.status = response.data.status;
 								self.media = self.status.media_attachments;
 								self.likesPage = 2;
@@ -1757,6 +1840,38 @@ export default {
 				});
 			},
 
+			archivePost(status) {
+				if(window.confirm('Are you sure you want to archive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/archive')
+				.then(res => {
+					this.$refs.ctxModal.hide();
+					window.location.href = '/';
+				});
+			},
+
+			unarchivePost(status) {
+				if(window.confirm('Are you sure you want to unarchive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/unarchive')
+				.then(res => {
+					this.$refs.ctxModal.hide();
+				});
+			},
+
+			statusLike(s) {
+				this.reactions.liked = !!this.reactions.liked;
+			},
+
+			trimCaption(caption, len = 60) {
+				return _.truncate(caption, {
+					length: len
+				});
+			},
 		},
 }
 </script>

@@ -33,7 +33,7 @@
 		<div v-if="tags.length" class="tag-timeline">
 			<p v-if="top.length" class="font-weight-bold text-muted mb-0">Top Posts</p>
 			<div class="row pb-5">
-				<div v-for="(tag, index) in top" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+				<div v-for="(tag, index) in top" class="col-3 p-0 p-sm-2 p-md-3 hashtag-post-square">
 					<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 						<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
 							<div v-if="tag.status.sensitive && forceNsfw == false" class="square-content">
@@ -59,7 +59,7 @@
 			</div>
 			<p class="font-weight-bold text-muted mb-0">Most Recent</p>
 			<div class="row">
-				<div v-for="(tag, index) in tags" class="col-4 p-0 p-sm-2 p-md-3 hashtag-post-square">
+				<div v-for="(tag, index) in tags" class="col-3 p-1 hashtag-post-square">
 					<a class="card info-overlay card-md-border-0" :href="tag.status.url">
 						<div :class="[tag.status.filter ? 'square ' + tag.status.filter : 'square']">
 							<div v-if="tag.status.sensitive && forceNsfw == false" class="square-content">
@@ -97,7 +97,7 @@
 						</div>
 					</a>
 				</div>
-				<div v-if="tags.length && loaded" class="card card-body text-center shadow-none bg-transparent border-0">
+				<div v-if="tags.length && loaded" class="col-12 text-center mt-4">
 					<infinite-loading @infinite="infiniteLoader">
 						<div slot="no-results" class="font-weight-bold"></div>
 						<div slot="no-more" class="font-weight-bold"></div>
@@ -110,7 +110,7 @@
 		</div>
 	</div>
 	<div v-else class="container text-center">
-		<div class="mt-5 spinner-border" role="status">
+		<div class="col-12 mt-5 spinner-border" role="status">
 			<span class="sr-only">Loading...</span>
 		</div>
 	</div>

@@ -32,6 +32,8 @@ use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
+use App\Util\Media\License;
+use App\Models\Poll;
 
 class Helpers {
 
@@ -269,7 +271,7 @@ class Helpers {
 
 		$res = self::fetchFromUrl($url);
 
-		if(!$res || empty($res) || isset($res['error']) ) {
+		if(!$res || empty($res) || isset($res['error']) || !isset($res['@context']) ) {
 			return;
 		}
 
@@ -330,7 +332,6 @@ class Helpers {
 		$idDomain = parse_url($id, PHP_URL_HOST);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 
-
 		if(!self::validateUrl($id)) {
 			return;
 		}
@@ -367,6 +368,7 @@ class Helpers {
 			$cw = true;
 		}
 
+
 		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
 		$status = Cache::lock($statusLockKey)
 			->get(function () use(
@@ -379,6 +381,19 @@ class Helpers {
 				$scope,
 				$id
 		) {
+			if($res['type'] === 'Question') {
+				$status = self::storePoll(
+					$profile,
+					$res,
+					$url,
+					$ts,
+					$reply_to,
+					$cw,
+					$scope,
+					$id
+				);
+				return $status;
+			}
 			return DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
 				$status = new Status;
 				$status->profile_id = $profile->id;
@@ -408,6 +423,55 @@ class Helpers {
 		return $status;
 	}
 
+	private static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)
+	{
+		if(!isset($res['endTime']) || !isset($res['oneOf']) || !is_array($res['oneOf']) || count($res['oneOf']) > 4) {
+			return;
+		}
+
+		$options = collect($res['oneOf'])->map(function($option) {
+			return $option['name'];
+		})->toArray();
+
+		$cachedTallies = collect($res['oneOf'])->map(function($option) {
+			return $option['replies']['totalItems'] ?? 0;
+		})->toArray();
+
+		$status = new Status;
+		$status->profile_id = $profile->id;
+		$status->url = isset($res['url']) ? $res['url'] : $url;
+		$status->uri = isset($res['url']) ? $res['url'] : $url;
+		$status->object_url = $id;
+		$status->caption = strip_tags($res['content']);
+		$status->rendered = Purify::clean($res['content']);
+		$status->created_at = Carbon::parse($ts);
+		$status->in_reply_to_id = null;
+		$status->local = false;
+		$status->is_nsfw = $cw;
+		$status->scope = 'draft';
+		$status->visibility = 'draft';
+		$status->cw_summary = $cw == true && isset($res['summary']) ?
+			Purify::clean(strip_tags($res['summary'])) : null;
+		$status->save();
+
+		$poll = new Poll;
+		$poll->status_id = $status->id;
+		$poll->profile_id = $status->profile_id;
+		$poll->poll_options = $options;
+		$poll->cached_tallies = $cachedTallies;
+		$poll->votes_count = array_sum($cachedTallies);
+		$poll->expires_at = now()->parse($res['endTime']);
+		$poll->last_fetched_at = now();
+		$poll->save();
+
+		$status->type = 'poll';
+		$status->scope = $scope;
+		$status->visibility = $scope;
+		$status->save();
+
+		return $status;
+	}
+
 	public static function statusFetch($url)
 	{
 		return self::statusFirstOrFetch($url);
@@ -428,6 +492,7 @@ class Helpers {
 			$type = $media['mediaType'];
 			$url = $media['url'];
 			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
+			$license = isset($media['license']) ? License::nameToId($media['license']) : null;
 			$valid = self::validateUrl($url);
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
@@ -441,6 +506,9 @@ class Helpers {
 			$media->user_id = null;
 			$media->media_path = $url;
 			$media->remote_url = $url;
+			if($license) {
+				$media->license = $license;
+			}
 			$media->mime = $type;
 			$media->version = 3;
 			$media->save();
@@ -495,9 +563,12 @@ class Helpers {
 
 			$profile = Profile::whereRemoteUrl($res['id'])->first();
 			if(!$profile) {
-				Instance::firstOrCreate([
+				$instance = Instance::firstOrCreate([
 					'domain' => $domain
 				]);
+				if($instance->wasRecentlyCreated == true) {
+					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+				}
 				$profileLockKey = 'helpers:profile-lock:' . hash('sha256', $res['id']);
 				$profile = Cache::lock($profileLockKey)->get(function () use($domain, $webfinger, $res, $runJobs) {
 					return DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {

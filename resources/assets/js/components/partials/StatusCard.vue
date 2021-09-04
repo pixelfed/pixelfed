@@ -1,6 +1,7 @@
 <template>
-	<div>
-		<div v-if="status.pf_type === 'text'" class="card shadow-none border border-top-0 rounded-0">
+	<div class="status-card-component"
+		 :class="{ 'status-card-sm': size === 'small' }">
+		<div v-if="status.pf_type === 'text'" :class="{ 'border-top-0': !hasTopBorder }" class="card shadow-none border rounded-0">
 			<div class="card-body">
 				<div class="media">
 					<img class="rounded-circle box-shadow mr-2" :src="status.account.avatar" width="32px" height="32px" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'" alt="avatar">
@@ -18,7 +19,7 @@
 							</a>
 							<span class="text-right" style="flex-grow:1;">
 								<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu()">
-									<span class="fas fa-ellipsis-v text-lighter"></span>
+									<span class="fas fa-ellipsis-h text-lighter"></span>
 									<span class="sr-only">Post Menu</span>
 								</button>
 							</span>
@@ -27,10 +28,10 @@
 
 							<details v-if="status.sensitive">
 								<summary class="mb-2 font-weight-bold text-muted">Content Warning</summary>
-								<p v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+								<p v-html="status.content" class="pt-2 text-break status-content"></p>
 							</details>
 
-							<p v-else v-html="status.content" class="pt-2 text-break" style="font-size: 17px;"></p>
+							<p v-else v-html="status.content" class="pt-2 text-break status-content"></p>
 
 							<p class="mb-0">
 								<i class="fa-heart fa-lg cursor-pointer mr-3"
@@ -47,6 +48,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
+
+		<div v-else-if="status.pf_type === 'poll'">
+			<poll-card :status="status" :profile="profile" v-on:status-delete="statusDeleted" />
 		</div>
 
 		<div v-else class="card rounded-0 border-top-0 status-card card-md-rounded-0 shadow-none border">
@@ -77,7 +82,10 @@
 			<div class="postPresenterContainer" style="background: #000;">
 
 				<div v-if="status.pf_type === 'photo'" class="w-100">
-					<photo-presenter :status="status" v-on:lightbox="lightbox" v-on:togglecw="status.sensitive = false"></photo-presenter>
+					<photo-presenter
+						:status="status"
+						v-on:lightbox="lightbox"
+						v-on:togglecw="status.sensitive = false"/>
 				</div>
 
 				<div v-else-if="status.pf_type === 'video'" class="w-100">
@@ -117,8 +125,8 @@
 			<div class="card-body">
 				<div v-if="reactionBar" class="reactions my-1 pb-2">
 					<h3 v-if="status.favourited" class="fas fa-heart text-danger pr-3 m-0 cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
-					<h3 v-else class="far fa-heart pr-3 m-0 like-btn text-dark cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
-					<h3 v-if="!status.comments_disabled" class="far fa-comment text-dark pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
+					<h3 v-else class="fal fa-heart pr-3 m-0 like-btn text-dark cursor-pointer" title="Like" v-on:click="likeStatus(status, $event);"></h3>
+					<h3 v-if="!status.comments_disabled" class="fal fa-comment text-dark pr-3 m-0 cursor-pointer" title="Comment" v-on:click="commentFocus(status, $event)"></h3>
 					<span v-if="status.taggedPeople.length" class="float-right">
 						<span class="font-weight-light small" style="color:#718096">
 							<i class="far fa-user" data-toggle="tooltip" title="Tagged People"></i>
@@ -149,9 +157,13 @@
 				</div>
 				<div class="timestamp mt-2">
 					<p class="small mb-0">
-						<a :href="statusUrl(status)" class="text-muted text-uppercase">
+						<a v-if="status.visibility != 'archived'" :href="statusUrl(status)" class="text-muted text-uppercase">
 							<timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
 						</a>
+						<span v-else class="text-muted text-uppercase">
+							Posted <timeago :datetime="status.created_at" :auto-update="60" :converter-options="{includeSeconds:true}" :title="timestampFormat(status.created_at)" v-b-tooltip.hover.bottom></timeago>
+						</span>
+
 						<span v-if="recommended">
 							<span class="px-1">&middot;</span>
 							<span class="text-muted">Based on popular and trending content</span>
@@ -172,6 +184,7 @@
 
 <script type="text/javascript">
 	import ContextMenu from './ContextMenu.vue';
+	import PollCard from './PollCard.vue';
 
 	export default {
 		props: {
@@ -187,11 +200,23 @@
 			reactionBar: {
 				type: Boolean,
 				default: true
+			},
+
+			hasTopBorder: {
+				type: Boolean,
+				default: false
+			},
+
+			size: {
+				type: String,
+				validator: (val) => ['regular', 'small'].includes(val),
+				default: 'regular'
 			}
 		},
 
 		components: {
-			"context-menu": ContextMenu
+			"context-menu": ContextMenu,
+			"poll-card": PollCard
 		},
 
 		data() {
@@ -295,8 +320,9 @@
 					item: status.id
 				}).then(res => {
 					status.favourites_count = res.data.count;
+					status.favourited = !!status.favourited;
 				}).catch(err => {
-					status.favourited = !status.favourited;
+					status.favourited = !!status.favourited;
 					status.favourites_count = count;
 					swal('Error', 'Something went wrong, please try again later.', 'error');
 				});
@@ -360,3 +386,23 @@
 		}
 	}
 </script>
+
+<style lang="scss">
+	.status-card-component {
+		.status-content {
+			font-size: 17px;
+		}
+
+		&.status-card-sm {
+			.status-content {
+				font-size: 14px;
+			}
+
+			.fa-lg {
+				font-size: unset;
+				line-height: unset;
+				vertical-align: unset;
+			}
+		}
+	}
+</style>

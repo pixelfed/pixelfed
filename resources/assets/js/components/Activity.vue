@@ -27,6 +27,21 @@
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
 								</p>
 							</div>
+							<div v-else-if="n.type == 'group:comment'">
+								<p class="my-0">
+									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.group_post_url">group post</a>.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'story:react'">
+								<p class="my-0">
+									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+								</p>
+							</div>
+							<div v-else-if="n.type == 'story:comment'">
+								<p class="my-0">
+									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+								</p>
+							</div>
 							<div v-else-if="n.type == 'mention'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
@@ -134,20 +149,22 @@ export default {
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
 			});
-			axios.get('/api/pixelfed/v1/notifications', {
-				params: {
-					pg: true
-				}
-			})
+			axios.get('/api/pixelfed/v1/notifications?pg=true')
 			.then(res => {
 				let data = res.data.filter(n => {
-					if(n.type == 'share' && !status) {
+					if(n.type == 'share' && !n.status) {
 						return false;
 					}
-					if(n.type == 'comment' && !status) {
+					if(n.type == 'comment' && !n.status) {
 						return false;
 					}
-					if(n.type == 'mention' && !status) {
+					if(n.type == 'mention' && !n.status) {
+						return false;
+					}
+					if(n.type == 'favourite' && !n.status) {
+						return false;
+					}
+					if(n.type == 'follow' && !n.account) {
 						return false;
 					}
 					return true;
@@ -167,19 +184,24 @@ export default {
 			}
 			axios.get('/api/pixelfed/v1/notifications', {
 				params: {
-					pg: true,
-					page: this.notificationCursor
+					max_id: this.notificationMaxId
 				}
 			}).then(res => {
 				if(res.data.length) {
 					let data = res.data.filter(n => {
-						if(n.type == 'share' && !status) {
+						if(n.type == 'share' && !n.status) {
 							return false;
 						}
-						if(n.type == 'comment' && !status) {
+						if(n.type == 'comment' && !n.status) {
 							return false;
 						}
-						if(n.type == 'mention' && !status) {
+						if(n.type == 'mention' && !n.status) {
+							return false;
+						}
+						if(n.type == 'favourite' && !n.status) {
+							return false;
+						}
+						if(n.type == 'follow' && !n.account) {
 							return false;
 						}
 						if(_.find(this.notifications, {id: n.id})) {

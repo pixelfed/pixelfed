@@ -59,7 +59,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'like' => 'favourite',
 			'comment' => 'comment',
 			'admin.user.modlog.comment' => 'modlog',
-			'tagged' => 'tagged'
+			'tagged' => 'tagged',
+			'group:comment' => 'group:comment',
+			'story:react' => 'story:react',
+			'story:comment' => 'story:comment'
 		];
 		return $verbs[$verb];
 	}
@@ -89,7 +92,6 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			return null;
 		}
 	}
-
 
 	public function includeTagged(Notification $notification)
 	{

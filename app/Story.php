@@ -3,8 +3,10 @@
 namespace App;
 
 use Auth;
+use Storage;
 use Illuminate\Database\Eloquent\Model;
-use Pixelfed\Snowflake\HasSnowflakePrimary;
+use App\HasSnowflakePrimary;
+use App\Util\Lexer\Bearcap;
 
 class Story extends Model
 {
@@ -19,14 +21,11 @@ class Story extends Model
      */
     public $incrementing = false;
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = ['published_at', 'expires_at'];
+    protected $casts = [
+    	'expires_at' => 'datetime'
+    ];
 
-    protected $fillable = ['profile_id'];
+    protected $fillable = ['profile_id', 'view_count'];
 
 	protected $visible = ['id'];
 
@@ -51,6 +50,42 @@ class Story extends Model
 
 	public function permalink()
 	{
-		return url("/story/$this->id");
+		$username = $this->profile->username;
+		return url("/stories/{$username}/{$this->id}/activity");
+	}
+
+	public function url()
+	{
+		$username = $this->profile->username;
+		return url("/stories/{$username}/{$this->id}");
+	}
+
+	public function mediaUrl()
+	{
+		return url(Storage::url($this->path));
+	}
+
+	public function bearcapUrl()
+	{
+		return Bearcap::encode($this->url(), $this->bearcap_token);
+	}
+
+	public function scopeToAudience($scope)
+	{
+		$res = [];
+
+		switch ($scope) {
+			case 'to':
+				$res = [
+					$this->profile->permalink('/followers')
+				];
+				break;
+
+			default:
+				$res = [];
+				break;
+		}
+
+		return $res;
 	}
 }

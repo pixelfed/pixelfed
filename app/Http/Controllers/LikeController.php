@@ -29,8 +29,7 @@ class LikeController extends Controller
 		$profile = $user->profile;
 		$status = Status::findOrFail($request->input('item'));
 
-
-		if ($status->likes()->whereProfileId($profile->id)->count() !== 0) {
+		if (Like::whereStatusId($status->id)->whereProfileId($profile->id)->exists()) {
 			$like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
 			UnlikePipeline::dispatch($like);
 		} else {

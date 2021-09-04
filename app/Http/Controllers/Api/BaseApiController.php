@@ -15,7 +15,8 @@ use App\{
     Media,
     Notification,
     Profile,
-    Status
+    Status,
+    StatusArchived
 };
 use App\Transformer\Api\{
     AccountTransformer,
@@ -36,9 +37,11 @@ use App\Jobs\VideoPipeline\{
     VideoPostProcess,
     VideoThumbnail
 };
+use App\Services\AccountService;
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
+use App\Services\StatusService;
 
 class BaseApiController extends Controller
 {
@@ -54,26 +57,40 @@ class BaseApiController extends Controller
     public function notifications(Request $request)
     {
         abort_if(!$request->user(), 403);
-        $pid = $request->user()->profile_id;
-        $pg = $request->input('pg');
-        if($pg == true) {
-            $timeago = Carbon::now()->subMonths(6);
-            $notifications = Notification::whereProfileId($pid)
-                ->whereDate('created_at', '>', $timeago)
-                ->latest()
-                ->simplePaginate(10);
-            $resource = new Fractal\Resource\Collection($notifications, new NotificationTransformer());
-            $res = $this->fractal->createData($resource)->toArray();
-        } else {
-            $this->validate($request, [
-                'page' => 'nullable|integer|min:1|max:10',
-                'limit' => 'nullable|integer|min:1|max:40'
-            ]);
-            $limit = $request->input('limit') ?? 10;
-            $page = $request->input('page') ?? 1;
-            $end = (int) $page * $limit;
-            $start = (int) $end - $limit;
-            $res = NotificationService::get($pid, $start, $end);
+
+		$pid = $request->user()->profile_id;
+		$limit = $request->input('limit', 20);
+
+		$since = $request->input('since_id');
+		$min = $request->input('min_id');
+		$max = $request->input('max_id');
+
+		if(!$since && !$min && !$max) {
+			$min = 1;
+		}
+
+		$maxId = null;
+		$minId = null;
+
+		if($max) {
+			$res = NotificationService::getMax($pid, $max, $limit);
+			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
+			if(!empty($ids)) {
+				$maxId = max($ids);
+				$minId = min($ids);
+			}
+		} else {
+			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
+			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
+			if(!empty($ids)) {
+				$maxId = max($ids);
+				$minId = min($ids);
+			}
+		}
+
+        if(empty($res) && !Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+        	Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+        	NotificationService::warmCache($pid, 400, true);
         }
 
         return response()->json($res);
@@ -271,5 +288,75 @@ class BaseApiController extends Controller
         $res = $this->fractal->createData($resource)->toArray();
 
         return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope === 'archived') {
+            return [200];
+        }
+
+        $archive = new StatusArchived;
+        $archive->status_id = $status->id;
+        $archive->profile_id = $status->profile_id;
+        $archive->original_scope = $status->scope;
+        $archive->save();
+
+        $status->scope = 'archived';
+        $status->visibility = 'draft';
+        $status->save();
+        StatusService::del($status->id);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+    public function unarchive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope !== 'archived') {
+            return [200];
+        }
+
+        $archive = StatusArchived::whereStatusId($status->id)
+            ->whereProfileId($status->profile_id)
+            ->firstOrFail();
+
+        $status->scope = $archive->original_scope;
+        $status->visibility = $archive->original_scope;
+        $status->save();
+        $archive->delete();
+        StatusService::del($status->id);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+    public function archivedPosts(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $statuses = Status::whereProfileId($request->user()->profile_id)
+            ->whereScope('archived')
+            ->orderByDesc('id')
+            ->simplePaginate(10);
+
+        $fractal = new Fractal\Manager();
+        $fractal->setSerializer(new ArraySerializer());
+        $resource = new Fractal\Resource\Collection($statuses, new StatusStatelessTransformer());
+        return $fractal->createData($resource)->toArray();
     }
 }

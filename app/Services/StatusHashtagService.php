@@ -6,6 +6,7 @@ use Cache;
 use Illuminate\Support\Facades\Redis;
 use App\{Status, StatusHashtag};
 use App\Transformer\Api\StatusHashtagTransformer;
+use App\Transformer\Api\HashtagTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
@@ -77,5 +78,22 @@ class StatusHashtagService {
 	public static function getStatus($statusId, $hashtagId)
 	{
 		return ['status' => StatusService::get($statusId)];
+	}
+
+	public static function statusTags($statusId)
+	{
+		$key = 'pf:services:sh:id:' . $statusId;
+
+		return Cache::remember($key, 604800, function() use($statusId) {
+			$status = Status::find($statusId);
+			if(!$status) {
+				return [];
+			}
+
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer());
+			return $fractal->createData($resource)->toArray();
+		});
 	}
 }

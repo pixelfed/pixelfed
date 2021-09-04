@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Config {
 
-	const CACHE_KEY = 'api:site:configuration:_v0.3';
+	const CACHE_KEY = 'api:site:configuration:_v0.4';
 
 	public static function get() {
 		return Cache::remember(self::CACHE_KEY, now()->addMinutes(5), function() {
@@ -37,7 +37,8 @@ class Config {
 					'lc' => config('exp.lc'),
 					'rec' => config('exp.rec'),
 					'loops' => config('exp.loops'),
-					'top' => config('exp.top')
+					'top' => config('exp.top'),
+					'polls' => config('exp.polls')
 				],
 
 				'site' => [

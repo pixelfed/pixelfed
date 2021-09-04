@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Observers\{
 	AvatarObserver,
+	FollowerObserver,
 	LikeObserver,
 	NotificationObserver,
 	ModLogObserver,
@@ -14,6 +15,7 @@ use App\Observers\{
 };
 use App\{
 	Avatar,
+	Follower,
 	Like,
 	Notification,
 	ModLog,
@@ -48,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
 		StatusHashtag::observe(StatusHashtagObserver::class);
 		User::observe(UserObserver::class);
 		UserFilter::observe(UserFilterObserver::class);
+		Follower::observe(FollowerObserver::class);
 		Horizon::auth(function ($request) {
 			return Auth::check() && $request->user()->is_admin;
 		});

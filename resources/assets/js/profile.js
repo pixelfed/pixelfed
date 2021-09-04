@@ -29,11 +29,6 @@ Vue.component(
 );
 
 Vue.component(
-    'story-viewer',
-    require('./components/StoryViewer.vue').default
-);
-
-Vue.component(
     'profile',
     require('./components/Profile.vue').default
 );

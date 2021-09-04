@@ -80,4 +80,9 @@ class LikeService {
 
 		return $res;
 	}
+
+	public static function count($id)
+	{
+		return Like::whereStatusId($id)->count();
+	}
 }

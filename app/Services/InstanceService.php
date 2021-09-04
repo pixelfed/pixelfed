@@ -27,4 +27,16 @@ class InstanceService
 			return Instance::whereAutoCw(true)->pluck('domain')->toArray();
 		});
 	}
+
+	public static function software($domain)
+	{
+		$key = 'instances:software:' . strtolower($domain);
+		return Cache::remember($key, 86400, function() use($domain) {
+			$instance = Instance::whereDomain($domain)->first();
+			if(!$instance) {
+				return;
+			}
+			return $instance->software;
+		});
+	}
 }
