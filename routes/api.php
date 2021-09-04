@@ -9,6 +9,7 @@ Route::post('/users/{username}/inbox', 'FederationController@userInbox');
 Route::get('i/actor', 'InstanceActorController@profile');
 Route::post('i/actor/inbox', 'InstanceActorController@inbox');
 Route::get('i/actor/outbox', 'InstanceActorController@outbox');
+Route::get('/stories/{username}/{id}', 'StoryController@getActivityObject');
 
 Route::group(['prefix' => 'api'], function() use($middleware) {
 
