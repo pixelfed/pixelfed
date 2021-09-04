@@ -104,6 +104,7 @@
 - Updated snowflake id generation to improve randomness. ([e5aea490](https://github.com/pixelfed/pixelfed/commit/e5aea490))
 - Updated Timeline, remove recent posts. ([7641b731](https://github.com/pixelfed/pixelfed/commit/7641b731))
 - Updated InstanceCrawlPipeline, remove unused variable. ([e73cf531](https://github.com/pixelfed/pixelfed/commit/e73cf531))
+- Updated StoryComposeController, fix expiry bug. ([7dee8f58](https://github.com/pixelfed/pixelfed/commit/7dee8f58))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
