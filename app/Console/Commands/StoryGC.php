@@ -51,7 +51,7 @@ class StoryGC extends Command
 	protected function archiveExpiredStories()
 	{
 		$stories = Story::whereActive(true)
-		->where('expires_at', '<', now())
+		->where('created_at', '<', now()->subHours(24))
 		->get();
 
 		foreach($stories as $story) {

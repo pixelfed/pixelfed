@@ -68,6 +68,7 @@ class StoryComposeController extends Controller
 		$story->local = true;
 		$story->size = $photo->getSize();
 		$story->bearcap_token = str_random(64);
+		$story->expires_at = now()->addMinutes(1440);
 		$story->save();
 
 		$url = $story->path;
@@ -179,7 +180,6 @@ class StoryComposeController extends Controller
 			->findOrFail($id);
 
 		$story->active = true;
-		$story->expires_at = now()->addMinutes(1440);
 		$story->duration = $request->input('duration', 10);
 		$story->can_reply = $request->input('can_reply');
 		$story->can_react = $request->input('can_react');
