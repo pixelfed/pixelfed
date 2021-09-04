@@ -47,6 +47,10 @@ return [
 		]
 	],
 
+	'polls' => [
+		'enabled' => false
+	],
+
 	'stories' => [
 		'enabled' => env('STORIES_ENABLED', false),
 	],

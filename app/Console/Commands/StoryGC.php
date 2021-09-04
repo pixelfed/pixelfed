@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Story;
 use App\StoryView;
+use App\Jobs\StoryPipeline\StoryExpire;
+use App\Jobs\StoryPipeline\StoryRotateMedia;
+use App\Services\StoryService;
 
 class StoryGC extends Command
 {
@@ -41,89 +44,41 @@ class StoryGC extends Command
 	*/
 	public function handle()
 	{
-		$this->directoryScan();
-		$this->deleteViews();
-		$this->deleteStories();
+		$this->archiveExpiredStories();
+		$this->rotateMedia();
 	}
 
-	protected function directoryScan()
+	protected function archiveExpiredStories()
 	{
-		$day = now()->day;
+		$stories = Story::whereActive(true)
+		->where('created_at', '<', now()->subHours(24))
+		->get();
 
-		if($day !== 3) {
+		foreach($stories as $story) {
+			StoryExpire::dispatch($story)->onQueue('story');
+		}
+	}
+
+	protected function rotateMedia()
+	{
+		$queue = StoryService::rotateQueue();
+
+		if(!$queue || count($queue) == 0) {
 			return;
 		}
 
-		$monthHash = substr(hash('sha1', date('Y').date('m')), 0, 12);
-
-		$t1 = Storage::directories('public/_esm.t1');
-		$t2 = Storage::directories('public/_esm.t2');
-
-		$dirs = array_merge($t1, $t2);
-
-		foreach($dirs as $dir) {
-			$hash = last(explode('/', $dir));
-			if($hash != $monthHash) {
-				$this->info('Found directory to delete: ' . $dir);
-				$this->deleteDirectory($dir);
-			}
-		}
-
-		$mh = hash('sha256', date('Y').'-.-'.date('m'));
-		$monthHash = date('Y').date('m').substr($mh, 0, 6).substr($mh, 58, 6);
-		$dirs = Storage::directories('public/_esm.t3');
-
-		foreach($dirs as $dir) {
-			$hash = last(explode('/', $dir));
-			if($hash != $monthHash) {
-				$this->info('Found directory to delete: ' . $dir);
-				$this->deleteDirectory($dir);
-			}
-		}
-	}
-
-	protected function deleteDirectory($path)
-	{
-		Storage::deleteDirectory($path);
-	}
-
-	protected function deleteViews()
-	{
-		StoryView::where('created_at', '<', now()->subMinutes(1441))->delete();
-	}
-
-	protected function deleteStories()
-	{
-		$stories = Story::where('created_at', '>', now()->subMinutes(30))
-		->whereNull('active')
-		->get();
-
-		foreach($stories as $story) {
-			if(Storage::exists($story->path) == true) {
-				Storage::delete($story->path);
-			}
-			DB::transaction(function() use($story) {
-				StoryView::whereStoryId($story->id)->delete();
-				$story->delete();
+		collect($queue)
+			->each(function($id) {
+				$story = StoryService::getById($id);
+				if(!$story) {
+					StoryService::removeRotateQueue($id);
+					return;
+				}
+				if($story->created_at->gt(now()->subMinutes(20))) {
+					return;
+				}
+				StoryRotateMedia::dispatch($story)->onQueue('story');
+				StoryService::removeRotateQueue($id);
 			});
-		}
-
-		$stories = Story::where('created_at', '<', now()
-			->subMinutes(1441))
-		->get();
-
-		if($stories->count() == 0) {
-			exit;
-		}
-
-		foreach($stories as $story) {
-			if(Storage::exists($story->path) == true) {
-				Storage::delete($story->path);
-			}
-			DB::transaction(function() use($story) {
-				StoryView::whereStoryId($story->id)->delete();
-				$story->delete();
-			});
-		}
 	}
 }

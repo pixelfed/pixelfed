@@ -1,8 +1,18 @@
 <?php
 
 return [
+	'logo'				=> 'ロゴ',
 	'search'			=> '検索',
+	'userMenu'			=> 'ユーザーメニュー',
+	'myFeed'			=> 'マイフィード',
+	'publicFeed'		=> 'パブリックフィード',
+	'networkFeed'		=> 'ネットワークフィード',
+	'homeTitle'			=> 'ホーム',
+	'directTitle'		=> 'ダイレクトメッセージ',
+	'notificationsTitle'=> '通知',
+	'composeTitle'		=> '新規投稿',
 	'home'				=> 'ホーム',
+	'direct'			=> 'ダイレクトメッセージ',
 	'local'				=> 'ローカル',
 	'public'			=> 'パブリック',
 	'network'			=> 'ネットワーク',

@@ -18,6 +18,10 @@ class Media extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $casts = [
+    	'srcset' => 'array'
+    ];
+
     public function status()
     {
         return $this->belongsTo(Status::class);

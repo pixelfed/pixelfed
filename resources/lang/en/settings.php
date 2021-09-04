@@ -4,6 +4,7 @@ return [
     'sidebarAccount'        => 'Account',
     'sidebarAccessibility'  => 'Accessibility',
     'sidebarEmail'          => 'Email',
+    'sidebarMedia'          => 'Media',
     'sidebarInvites'        => 'Invites',
     'sidebarNotifications'  => 'Notifications',
     'sidebarPassword'       => 'Password',
@@ -51,6 +52,14 @@ return [
     'addEmail'              => 'Email Address',
     'verified'              => 'Verified',
     'unverified'            => 'Unverified',
+
+    'media'                 => 'Media',
+    'defaultLicense'        => 'Default License',
+    'defaultLicenseDiscription'=> 'Set a default license for new posts.',
+    'syncLicenses'          => 'Sync Licenses',
+    'syncLicensesDiscription'=> 'Update existing posts with your new default license. You can sync twice every 24 hours.<br />License changes may not be reflected on remote servers.',
+    'requireDescriptions'   => 'Require Media Descriptions',
+    'requireDescriptionsDescription'=> 'Briefly describe your media to improve accessibility for vision impaired people. <br /><span class="font-weight-bold">Not available for mobile or 3rd party apps at this time.</span>',
 
     'notificationSettings'  => 'Notification Settings',
 

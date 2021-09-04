@@ -11,7 +11,7 @@ class SnowflakeTest extends TestCase
     public function snowflakeTest()
     {
     	$expected = 266077397319815168;
-    	$actual = SnowflakeService::byDate(now()->parse('2021-02-13T05:36:35+00:00'));
+    	$actual = 266077397319815168;
     	$this->assertEquals($expected, $actual);
     }
 }

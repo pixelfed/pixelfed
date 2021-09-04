@@ -19,6 +19,14 @@
 							:recommended="false"
 							v-on:comment-focus="commentFocus" />
 
+							<comment-feed :status="status" class="mt-3" />
+
+			</div>
+
+			<div v-if="status.pf_type === 'poll'" class="col-12 col-md-6 offset-md-3">
+					<poll-card :status="status" :profile="profile" :fetch-state="true"/>
+
+					<comment-feed :status="status" class="mt-3" />
 
 			</div>
 
@@ -224,13 +232,15 @@
 									<h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.bookmarked ? 'fas fa-bookmark text-warning m-0 mr-3 cursor-pointer' : 'far fa-bookmark m-0 mr-3 cursor-pointer']" title="Bookmark" v-on:click="bookmarkStatus"></h3>
 									<h3 v-if="status.visibility == 'public'" v-bind:class="[reactions.shared ? 'fas fa-retweet m-0 text-primary cursor-pointer' : 'fas fa-retweet m-0 share-btn cursor-pointer']" title="Share" v-on:click="shareStatus"></h3>
 								</div>
-								<div class="reaction-counts font-weight-bold mb-0">
-									<span style="cursor:pointer;" v-on:click="likesModal">
-										<span class="like-count">{{status.favourites_count || 0}}</span> likes
-									</span>
-									<span v-if="status.visibility == 'public'" class="float-right" style="cursor:pointer;" v-on:click="sharesModal">
-										<span class="share-count pl-4">{{status.reblogs_count || 0}}</span> shares
-									</span>
+								<div class="reaction-counts mb-0">
+									<div v-if="status.liked_by.username && status.liked_by.username !== user.username" class="likes mb-1">
+										<span class="like-count">Liked by
+											<a class="font-weight-bold text-dark" :href="status.liked_by.url">{{status.liked_by.username}}</a>
+											<span v-if="status.liked_by.others == true">
+												and <span class="font-weight-bold text-dark cursor-pointer" @click="likesModal"><span v-if="status.liked_by.total_count_pretty">{{status.liked_by.total_count_pretty}}</span> others</span>
+											</span>
+										</span>
+									</div>
 								</div>
 								<div class="timestamp pt-2 d-flex align-items-bottom justify-content-between">
 									<a v-bind:href="statusUrl" class="small text-muted" :title="status.created_at">
@@ -543,6 +553,8 @@ pixelfed.postComponent = {};
 
 import StatusCard from './partials/StatusCard.vue';
 import CommentCard from './partials/CommentCard.vue';
+import PollCard from './partials/PollCard.vue';
+import CommentFeed from './partials/CommentFeed.vue';
 
 export default {
 		props: [
@@ -558,7 +570,9 @@ export default {
 
 		components: {
 			StatusCard,
-			CommentCard
+			CommentCard,
+			CommentFeed,
+			PollCard
 		},
 
 		data() {
@@ -641,7 +655,7 @@ export default {
 
 			timestampFormat() {
 					let ts = new Date(this.status.created_at);
-					return ts.toDateString();
+					return ts.toDateString() + ' · ' + ts.toLocaleTimeString();
 			},
 
 			fetchData() {
@@ -690,9 +704,6 @@ export default {
 			likesModal() {
 				if($('body').hasClass('loggedIn') == false) {
 					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
-					return;
-				}
-				if(this.status.favourites_count == 0) {
 					return;
 				}
 				if(this.likes.length) {

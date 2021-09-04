@@ -11,14 +11,16 @@
 			<div class="list-group text-center">
 				<!-- <div v-if="status && status.account.id != profile.id && ctxMenuRelationship && ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
 				<div v-if="status && status.account.id != profile.id && ctxMenuRelationship && !ctxMenuRelationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
-				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">View Post</div>
-				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToProfile()">View Profile</div>
+				<div v-if="status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToPost()">View Post</div>
+				<div v-if="status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxMenuGoToProfile()">View Profile</div>
 				<!-- <div v-if="status && status.local == true && !status.in_reply_to_id" class="list-group-item rounded cursor-pointer" @click="ctxMenuEmbed()">Embed</div>
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div> -->
-				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div>
-				<div v-if="status && profile && profile.is_admin == true" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
+				<div v-if="status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxMenuShare()">Share</div>
+				<div v-if="status && profile && profile.is_admin == true && status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer" @click="ctxModMenuShow()">Moderation Tools</div>
 				<div v-if="status && status.account.id != profile.id" class="list-group-item rounded cursor-pointer text-danger" @click="ctxMenuReportPost()">Report</div>
-				<div v-if="status && (profile.is_admin || profile.id == status.account.id)" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(status)">Delete</div>
+				<div v-if="status && profile.id == status.account.id && status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="archivePost(status)">Archive</div>
+				<div v-if="status && profile.id == status.account.id && status.visibility == 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="unarchivePost(status)">Unarchive</div>
+				<div v-if="status && (profile.is_admin || profile.id == status.account.id) && status.visibility !== 'archived'" class="list-group-item rounded cursor-pointer text-danger" @click="deletePost(status)">Delete</div>
 				<div class="list-group-item rounded cursor-pointer text-lighter" @click="closeCtxMenu()">Cancel</div>
 			</div>
 		</b-modal>
@@ -680,6 +682,29 @@
 			ownerOrAdmin(status) {
 				return this.owner(status) || this.admin();
 			},
+
+			archivePost(status) {
+				if(window.confirm('Are you sure you want to archive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/archive')
+				.then(res => {
+					this.$emit('status-delete', status.id);
+					this.closeModals();
+				});
+			},
+
+			unarchivePost(status) {
+				if(window.confirm('Are you sure you want to unarchive this post?') == false) {
+					return;
+				}
+
+				axios.post('/api/pixelfed/v2/status/' + status.id + '/unarchive')
+				.then(res => {
+					this.closeModals();
+				});
+			}
 		}
 	}
 </script>

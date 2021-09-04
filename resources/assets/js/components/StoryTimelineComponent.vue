@@ -1,27 +1,46 @@
 <template>
 	<div>
 		<div v-if="show" class="card card-body p-0 border mt-md-4 mb-md-3 shadow-none">
-			<div id="storyContainer" :class="[list == true ? 'mt-1 mr-3 mb-0 ml-1':'mx-3 mt-3 mb-0 pb-0']"></div>
+			<div v-if="loading" class="w-100 h-100 d-flex align-items-center justify-content-center">
+				<div class="spinner-border spinner-border-sm text-lighter" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
+			<div v-else class="d-flex align-items-center justify-content-start scrolly">
+				<div
+					v-for="(story, index) in stories"
+					class="px-3 pt-3 text-center cursor-pointer"
+					:class="{ seen: story.seen }"
+					@click="showStory(index)">
+					<span
+						:class="[
+							story.seen ? 'not-seen' : '',
+							story.local ? '' : 'remote'
+						]"
+						class="mb-1 ring">
+						<img :src="story.avatar" width="60" height="60" class="rounded-circle border" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=2'">
+					</span>
+					<p
+						class="small font-weight-bold text-truncate"
+						:class="{ 'text-lighter': story.seen }"
+						style="max-width: 69px"
+						:title="story.username"
+						>
+						{{story.username}}
+					</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 
-<style type="text/css" scoped>
-	#storyContainer > .story {
-		margin-right: 3rem;
-	}
-</style>
-
 <script type="text/javascript">
-	import 'zuck.js/dist/zuck.css';
-	import 'zuck.js/dist/skins/snapgram.css';
-	let Zuck = require('zuck.js');
-
 	export default {
-		props: ['list'],
+		props: ['list', 'scope'],
 		data() {
 			return {
-				show: false,
+				loading: true,
+				show: true,
 				stories: {},
 			}
 		},
@@ -32,71 +51,82 @@
 
 		methods: {
 			fetchStories() {
-				axios.get('/api/stories/v0/recent')
+				axios.get('/api/web/stories/v1/recent')
 				.then(res => {
 					let data = res.data;
 					if(!res.data.length) {
 						this.show = false;
 						return;
 					}
-					let stories = new Zuck('storyContainer', {
-						list: this.list == true ? true : false,
-						stories: data,
-						localStorage: true,
-						callbacks:  {
-							onOpen (storyId, callback) {
-								document.body.style.overflow = "hidden";
-								callback()
-							},
-
-							onEnd (storyId, callback) {
-								axios.post('/i/stories/viewed', {
-									id: storyId
-								});
-								callback();
-							},
-
-							onClose (storyId, callback) {
-								document.body.style.overflow = "auto";
-								callback();
-							},
-						}
+					this.stories = res.data;
+					this.loading = false;
+				}).catch(err => {
+					this.loading = false;
+					this.$bvToast.toast('Cannot load stories. Please try again later.', {
+						title: 'Error',
+						variant: 'danger',
+						autoHideDelay: 5000
 					});
-
-					data.forEach(d => {
-						let url = '/api/stories/v0/fetch/' + d.pid;
-						axios.get(url)
-						.then(res => {
-							res.data.forEach(item => {
-								let img = new Image();
-								img.src = item.src;
-								stories.addItem(d.id, item);
-							});
-						});
-					});
+					this.show = false;
 				});
-				this.show = true;
+			},
+
+			showStory(index) {
+				let suffix;
+
+				switch(this.scope) {
+					case 'home':
+						suffix = '/?t=1';
+					break;
+					case 'local':
+						suffix = '/?t=2';
+					break;
+					case 'network':
+						suffix = '/?t=3';
+					break;
+
+				}
+				window.location.href = this.stories[index].url + suffix;
 			}
 		}
 	}
 </script>
 
-<style type="text/css">
-	#storyContainer .story {
-		margin-right: 2rem;
-		width: 100%;
-		max-width: 60px;
+<style lang="scss" scoped>
+	.card {
+		height: 122px;
 	}
-	.stories.carousel .story > .item-link > .item-preview {
-		height: 60px;
+
+	.ring {
+		display: block;
+		width: 66px;
+		height: 66px;
+		border-radius: 50%;
+		padding: 3px;
+		background: radial-gradient(ellipse at 70% 70%, #ee583f 8%, #d92d77 42%, #bd3381 58%);
+
+		&.remote {
+			background: radial-gradient(ellipse at 70% 70%, #f64f59 8%, #c471ed 42%, #12c2e9 58%);
+		}
+
+		&.not-seen {
+			opacity: 0.55;
+			background: #ccc;
+		}
+
+		img {
+			background: #fff;
+			padding: 3px;
+		}
 	}
-	#zuck-modal.with-effects {
-		width: 100%;
-	}
-	.stories.carousel .story > .item-link > .info .name {
-		font-weight: 500;
-		font-size: 11px;
-	}
-	.stories.carousel .story > .item-link > .info {
+
+	.scrolly {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+		overflow-y: scroll;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 	}
 </style>

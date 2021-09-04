@@ -4,6 +4,7 @@ return [
     'sidebarAccount'        => 'アカウント',
     'sidebarAccessibility'  => 'アクセシビリティ',
     'sidebarEmail'          => 'メールアドレス',
+    'sidebarMedia'          => 'メディア',
     'sidebarInvites'        => '招待',
     'sidebarNotifications'  => '通知',
     'sidebarPassword'       => 'パスワード',
@@ -51,6 +52,14 @@ return [
     'addEmail'              => 'メールアドレス',
     'verified'              => '確認済み',
     'unverified'            => '未確認',
+
+    'media'                 => 'メディア',
+    'defaultLicense'        => 'デフォルトの著作権ライセンス',
+    'defaultLicenseDiscription'=> '新規投稿にデフォルトの著作権ライセンスが適用されます。',
+    'syncLicenses'          => '著作権ライセンスを同期',
+    'syncLicensesDiscription'=> '既存の投稿にデフォルトに設定した著作権ライセンスを反映します。24時間のうちに2回反映されます。<br />ライセンスの変更は、リモートサーバーに反映されない場合があります。',
+    'requireDescriptions'   => 'メディアの説明を必須にする',
+    'requireDescriptionsDescription'=> '視覚障がい者のアクセシビリティを向上させるために、メディアについての説明の追加を必須にします。<br /><span class="font-weight-bold">この機能は現在モバイルとサードパーティー製アプリケーションではご利用いただけません。</span>',
 
     'notificationSettings'  => '通知設定',
     

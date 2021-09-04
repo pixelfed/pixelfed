@@ -14,7 +14,7 @@
 						<img class="rounded-circle p-1 border mt-n4 bg-white shadow" src="{{$profile->avatarUrl()}}" width="90px" height="90px;">
 					</div>
 					<p class="text-center lead font-weight-bold mb-1">{{$profile->username}}</p>
-					<p class="text-center text-muted small text-uppercase mb-4">{{$profile->followers->count()}} followers</p>
+					<p class="text-center text-muted small text-uppercase mb-4">{{$profile->followerCount()}} followers</p>
 					<div class="d-flex justify-content-center">
 					@if($following == true)
 						<form class="d-inline-block" action="/i/follow" method="post">

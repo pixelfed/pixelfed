@@ -1,34 +1,34 @@
 Vue.component(
-    'photo-presenter',
-    require('./components/presenter/PhotoPresenter.vue').default
+	'photo-presenter',
+	require('./components/presenter/PhotoPresenter.vue').default
 );
 
 Vue.component(
-    'video-presenter',
-    require('./components/presenter/VideoPresenter.vue').default
+	'video-presenter',
+	require('./components/presenter/VideoPresenter.vue').default
 );
 
 Vue.component(
-    'photo-album-presenter',
-    require('./components/presenter/PhotoAlbumPresenter.vue').default
+	'photo-album-presenter',
+	require('./components/presenter/PhotoAlbumPresenter.vue').default
 );
 
 Vue.component(
-    'video-album-presenter',
-    require('./components/presenter/VideoAlbumPresenter.vue').default
+	'video-album-presenter',
+	require('./components/presenter/VideoAlbumPresenter.vue').default
 );
 
 Vue.component(
-    'mixed-album-presenter',
-    require('./components/presenter/MixedAlbumPresenter.vue').default
+	'mixed-album-presenter',
+	require('./components/presenter/MixedAlbumPresenter.vue').default
 );
 
 Vue.component(
-    'post-menu',
-    require('./components/PostMenu.vue').default
+	'post-menu',
+	require('./components/PostMenu.vue').default
 );
 
 Vue.component(
-    'post-component',
-    require('./components/PostComponent.vue').default
+	'post-component',
+	require('./components/PostComponent.vue').default
 );

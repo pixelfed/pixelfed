@@ -44,6 +44,97 @@
 			</div>
 		</div>
 
+		<div v-else-if="page == 'poll'">
+			<div class="card status-card card-md-rounded-0" style="display:flex;">
+				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
+					<span class="pr-3">
+						<i class="fas fa-info-circle fa-lg text-primary"></i>
+					</span>
+					<span class="font-weight-bold">
+						New Poll
+					</span>
+					<span v-if="postingPoll">
+						<div class="spinner-border spinner-border-sm" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
+					</span>
+					<button v-else-if="!postingPoll && pollOptions.length > 1 && composeText.length" class="btn btn-primary btn-sm font-weight-bold" @click="postNewPoll">
+						<span>Create Poll</span>
+					</button>
+					<span v-else class="font-weight-bold text-lighter">
+						Create Poll
+					</span>
+				</div>
+				<div class="h-100 card-body p-0 border-top" style="width:100%; min-height: 400px;">
+					<div class="border-bottom mt-2">
+						<div class="media px-3">
+							<img :src="profile.avatar" width="42px" height="42px" class="rounded-circle">
+							<div class="media-body">
+								<div class="form-group">
+									<label class="font-weight-bold text-muted small d-none">Caption</label>
+									<vue-tribute :options="tributeSettings">
+										<textarea class="form-control border-0 rounded-0 no-focus" rows="3" placeholder="Write a poll question..." style="" v-model="composeText" v-on:keyup="composeTextLength = composeText.length"></textarea>
+									</vue-tribute>
+									<p class="help-text small text-right text-muted mb-0">{{composeTextLength}}/{{config.uploader.max_caption_length}}</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="p-3">
+						<p class="font-weight-bold text-muted small">
+							Poll Options
+						</p>
+
+						<div v-if="pollOptions.length < 4" class="form-group mb-4">
+							<input type="text" class="form-control rounded-pill" placeholder="Add a poll option, press enter to save" v-model="pollOptionModel" @keyup.enter="savePollOption">
+						</div>
+
+						<div v-for="(option, index) in pollOptions" class="form-group mb-4 d-flex align-items-center" style="max-width:400px;position: relative;">
+							<span class="font-weight-bold mr-2" style="position: absolute;left: 10px;">{{ index + 1 }}.</span>
+							<input v-if="pollOptions[index].length < 50" type="text" class="form-control rounded-pill" placeholder="Add a poll option, press enter to save" v-model="pollOptions[index]" style="padding-left: 30px;padding-right: 90px;">
+							<textarea v-else class="form-control" v-model="pollOptions[index]" placeholder="Add a poll option, press enter to save" rows="3" style="padding-left: 30px;padding-right:90px;"></textarea>
+							<button class="btn btn-danger btn-sm rounded-pill font-weight-bold" style="position: absolute;right: 5px;" @click="deletePollOption(index)">
+								<i class="fas fa-trash"></i> Delete
+							</button>
+						</div>
+
+						<hr>
+
+						<div class="d-flex justify-content-between">
+							<div>
+								<p class="font-weight-bold text-muted small">
+									Poll Expiry
+								</p>
+
+								<div class="form-group">
+									<select class="form-control rounded-pill" style="width: 200px;" v-model="pollExpiry">
+										<option value="60">1 hour</option>
+										<option value="360">6 hours</option>
+										<option value="1440" selected>24 hours</option>
+										<option value="10080">7 days</option>
+									</select>
+								</div>
+							</div>
+
+							<div>
+								<p class="font-weight-bold text-muted small">
+									Poll Visibility
+								</p>
+
+								<div class="form-group">
+									<select class="form-control rounded-pill" style="max-width: 200px;" v-model="visibility">
+										<option value="public">Public</option>
+										<option value="private">Followers Only</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div v-else>
 			<div class="card status-card card-md-rounded-0 w-100 h-100" style="display:flex;">
 				<div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
@@ -100,10 +191,10 @@
 								v-for="(item, index) in availableLicenses"
 								class="list-group-item cursor-pointer"
 								:class="{
-									'text-primary': licenseIndex === index,
-									'font-weight-bold': licenseIndex === index
+									'text-primary': licenseId === item.id,
+									'font-weight-bold': licenseId === item.id
 								}"
-								@click="toggleLicense(index)">
+								@click="toggleLicense(item)">
 								{{item.name}}
 							</div>
 						</div>
@@ -147,10 +238,10 @@
 					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
 						<div class="text-center">
 							<div v-if="media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
-								<div @click.prevent="addMedia" class="card-body">
+								<div @click.prevent="addMedia" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
-											<i class="fas fa-bolt text-white fa-lg"></i>
+											<i class="fal fa-bolt text-white fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
@@ -162,8 +253,8 @@
 								</div>
 							</div>
 
-							<div v-if="config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
-								<div @click.prevent="addText" class="card-body">
+							<div v-if="1==0 && config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
+								<div @click.prevent="addText" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
 											<i class="far fa-edit text-primary fa-lg"></i>
@@ -182,9 +273,9 @@
 							</div>
 
 							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
-								<div class="card-body">
+								<div class="card-body py-2">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
 											<i class="fas fa-history text-primary fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
@@ -194,17 +285,36 @@
 													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
 												</sup>
 											</p>
-											<p class="mb-0 text-muted">Add Photo to Story</p>
+											<p class="mb-0 text-muted">Add to your story</p>
+										</div>
+									</div>
+								</div>
+							</a>
+
+							<a v-if="1==0 && config.ab.polls == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
+								<div class="card-body py-2">
+									<div class="media">
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
+											<i class="fas fa-poll-h text-primary fa-lg"></i>
+										</div>
+										<div class="media-body text-left">
+											<p class="mb-0">
+												<span class="h5 mt-0 font-weight-bold text-primary">New Poll</span>
+												<sup class="float-right mt-2">
+													<span class="btn btn-outline-lighter p-1 btn-sm font-weight-bold py-0" style="font-size:10px;line-height: 0.6">BETA</span>
+												</sup>
+											</p>
+											<p class="mb-0 text-muted">Create a poll</p>
 										</div>
 									</div>
 								</div>
 							</a>
 
 							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
-								<div class="card-body">
+								<div class="card-body py-2">
 									<div class="media">
-										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
-											<i class="fas fa-images text-primary fa-lg"></i>
+										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
+											<i class="fal fa-images text-primary fa-lg"></i>
 										</div>
 										<div class="media-body text-left">
 											<p class="mb-0">
@@ -218,7 +328,6 @@
 									</div>
 								</div>
 							</a>
-
 
 							<p class="py-3">
 								<a class="font-weight-bold" href="/site/help">Help</a>
@@ -336,7 +445,13 @@
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showTagCard()">Tag people</p>
 						</div>
 						<div class="border-bottom">
-							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">Add license <span class="ml-2 badge badge-primary">NEW</span></p>
+							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLicenseCard()">
+								<span>Add license <span class="ml-2 badge badge-primary">NEW</span></span>
+								<span class="float-right">
+									<a v-if="licenseTitle" href="#" @click.prevent="showLicenseCard()" class="btn btn-outline-secondary btn-sm small mr-3 mt-n1 disabled" style="font-size:10px;padding:3px;text-transform: uppercase" disabled>{{licenseTitle}}</a>
+									<a href="#" @click.prevent="showLicenseCard()" class="text-decoration-none"><i class="fas fa-chevron-right fa-lg text-lighter"></i></a>
+								</span>
+							</p>
 						</div>
 						<div class="border-bottom">
 							<p class="px-4 mb-0 py-2 cursor-pointer" @click="showLocationCard()" v-if="!place">Add location</p>
@@ -530,8 +645,8 @@
 							<div class="media">
 								<img :src="m.preview_url" class="mr-3" width="50px" height="50px">
 								<div class="media-body">
-									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..." maxlength="140"></textarea>
-									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/140</p>
+									<textarea class="form-control" v-model="m.alt" placeholder="Add a media description here..." :maxlength="maxAltTextLength" rows="4"></textarea>
+									<p class="help-text small text-right text-muted mb-0">{{m.alt ? m.alt.length : 0}}/{{maxAltTextLength}}</p>
 								</div>
 							</div>
 							<hr>
@@ -591,11 +706,11 @@
 										<span></span>
 										<span>{{media[carouselCursor].license ? media[carouselCursor].license.length : 0}}/140</span>
 									</p> -->
-									<select class="form-control" v-model="licenseIndex">
+									<select class="form-control" v-model="licenseId">
 										<option
 											v-for="(item, index) in availableLicenses"
-											:value="index"
-											:selected="index === licenseIndex">
+											:value="item.id"
+											:selected="item.id == licenseId">
 											{{item.name}}
 										</option>
 									</select>
@@ -845,52 +960,85 @@ export default {
 			availableLicenses: [
 				{
 					id: 1,
-					name: "All Rights Reserved"
+					name: "All Rights Reserved",
+					title: ""
 				},
 				{
 					id: 5,
-					name: "Public Domain Work"
+					name: "Public Domain Work",
+					title: ""
 				},
 				{
 					id: 6,
-					name: "Public Domain Dedication (CC0)"
+					name: "Public Domain Dedication (CC0)",
+					title: "CC0"
 				},
 				{
 					id: 11,
-					name: "Attribution"
+					name: "Attribution",
+					title: "CC BY"
 				},
 				{
 					id: 12,
-					name: "Attribution-ShareAlike"
+					name: "Attribution-ShareAlike",
+					title: "CC BY-SA"
 				},
 				{
 					id: 13,
-					name: "Attribution-NonCommercial"
+					name: "Attribution-NonCommercial",
+					title: "CC BY-NC"
 				},
 				{
 					id: 14,
-					name: "Attribution-NonCommercial-ShareAlike"
+					name: "Attribution-NonCommercial-ShareAlike",
+					title: "CC BY-NC-SA"
 				},
 				{
 					id: 15,
-					name: "Attribution-NoDerivs"
+					name: "Attribution-NoDerivs",
+					title: "CC BY-ND"
 				},
 				{
 					id: 16,
-					name: "Attribution-NonCommercial-NoDerivs"
+					name: "Attribution-NonCommercial-NoDerivs",
+					title: "CC BY-NC-ND"
 				}
 			],
 			licenseIndex: 0,
 			video: {
 				title: '',
 				description: ''
-			}
+			},
+			composeSettings: {
+				default_license: null,
+				media_descriptions: false
+			},
+			licenseId: 1,
+			licenseTitle: null,
+			maxAltTextLength: 140,
+			pollOptionModel: null,
+			pollOptions: [],
+			pollExpiry: 1440,
+			postingPoll: false
 		}
 	},
 
 	beforeMount() {
 		this.fetchProfile();
 		this.filters = window.App.util.filters;
+		axios.get('/api/compose/v0/settings')
+		.then(res => {
+			this.composeSettings = res.data;
+			this.licenseId = this.composeSettings.default_license;
+			this.maxAltTextLength = res.data.max_altext_length;
+			if(this.licenseId > 10) {
+				this.licenseTitle = this.availableLicenses.filter(l => {
+					return l.id == this.licenseId;
+				}).map(l => {
+					return l.title;
+				})[0];
+			}
+		});
 	},
 
 	mounted() {
@@ -1064,6 +1212,16 @@ export default {
 
 			switch(state) {
 				case 'publish' :
+					if(this.composeSettings.media_descriptions === true) {
+						let count = this.media.filter(m => {
+							return !m.hasOwnProperty('alt') || m.alt.length < 2;
+						});
+
+						if(count.length) {
+							swal('Missing media descriptions', 'You have enabled mandatory media descriptions. Please add media descriptions under Advanced settings to proceed. For more information, please see the media settings page.', 'warning');
+							return;
+						}
+					}
 					if(this.media.length == 0) {
 						swal('Whoops!', 'You need to add media before you can save this!', 'warning');
 						return;
@@ -1080,7 +1238,7 @@ export default {
 						place: this.place,
 						tagged: this.taggedUsernames,
 						optimize_media: this.optimizeMedia,
-						license: this.availableLicenses[this.licenseIndex].id,
+						license: this.licenseId,
 						video: this.video
 					};
 					axios.post('/api/compose/v0/publish', data)
@@ -1515,8 +1673,18 @@ export default {
 			this.page = 'licensePicker';
 		},
 
-		toggleLicense(index) {
-			this.licenseIndex = index;
+		toggleLicense(license) {
+			this.licenseId = license.id;
+
+			if(this.licenseId > 10) {
+				this.licenseTitle = this.availableLicenses.filter(l => {
+					return l.id == this.licenseId;
+				}).map(l => {
+					return l.title;
+				})[0];
+			} else {
+				this.licenseTitle = null;
+			}
 
 			switch(this.mode) {
 				case 'photo':
@@ -1535,6 +1703,53 @@ export default {
 				break;
 			}
 		},
+
+		newPoll() {
+			this.page = 'poll';
+		},
+
+		savePollOption() {
+			if(this.pollOptions.indexOf(this.pollOptionModel) != -1) {
+				this.pollOptionModel = null;
+				return;
+			}
+			this.pollOptions.push(this.pollOptionModel);
+			this.pollOptionModel = null;
+		},
+
+		deletePollOption(index) {
+			this.pollOptions.splice(index, 1);
+		},
+
+		postNewPoll() {
+			this.postingPoll = true;
+			axios.post('/api/compose/v0/poll', {
+				caption: this.composeText,
+				cw: false,
+				visibility: this.visibility,
+				comments_disabled: false,
+				expiry: this.pollExpiry,
+				pollOptions: this.pollOptions
+			}).then(res => {
+				if(!res.data.hasOwnProperty('url')) {
+					swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+					this.postingPoll = false;
+					return;
+				}
+				window.location.href = res.data.url;
+			}).catch(err => {
+				console.log(err.response.data.error);
+				if(err.response.data.hasOwnProperty('error')) {
+					if(err.response.data.error == 'Duplicate detected.') {
+						this.postingPoll = false;
+						swal('Oops!', 'The poll you are trying to create is similar to an existing poll you created. Please make the poll question (caption) unique.', 'error');
+						return;
+					}
+				}
+				this.postingPoll = false;
+				swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+			})
+		}
 	}
 }
 </script>

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel shadow-none border-bottom sticky-top py-1">
 	<div class="container">
-			<a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
+			<a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="{{__('navmenu.logo')}}">
 				<img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
 				<span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config_cache('app.name') }}</span>
 			</a>
@@ -9,7 +9,7 @@
 			@auth
 				<div class="navbar-nav d-none d-md-block mx-auto">
 				  <form class="form-inline search-bar" method="get" action="/i/results">
-					<input class="form-control form-control-sm" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required style="line-height: 0.6;width:200px" role="search">
+					<input class="form-control form-control-sm rounded-pill bg-light" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required style="line-height: 0.6;width:200px" role="search">
 				  </form>
 				</div>
 			@endauth
@@ -18,13 +18,13 @@
 
 				<ul class="navbar-nav ml-auto">
 					<li>
-						<a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
+						<a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="{{__('navmenu.login')}}">
 							{{__('navmenu.login')}}
 						</a>
 					</li>
 				@if(config_cache('pixelfed.open_registration') && in_array(config_cache('system.user_mode'), ['default', 'admin']))
 					<li>
-						<a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
+						<a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="{{__('navmenu.register')}}">
 							{{__('navmenu.register')}}
 						</a>
 					</li>
@@ -33,85 +33,120 @@
 				<div class="ml-auto">
 					<ul class="navbar-nav align-items-center">
 						<li class="nav-item px-md-2 d-none d-md-block">
-							<a class="nav-link font-weight-bold text-dark" href="/" title="Home" data-toggle="tooltip" data-placement="bottom">
-								<i class="fas fa-home fa-lg"></i>
+							<a class="nav-link font-weight-bold text-dark" href="/" title="{{__('navmenu.homeTitle')}}" data-toggle="tooltip" data-placement="bottom">
+								<i class="fal fa-home fa-lg" style="font-size: 22px;"></i>
 								<span class="sr-only">{{__('navmenu.home')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2">
-							<a class="nav-link font-weight-bold text-dark" href="/account/direct" title="Direct" data-toggle="tooltip" data-placement="bottom">
-								<i class="far fa-comment-dots fa-lg"></i>
+							<a class="nav-link font-weight-bold text-dark" href="/account/direct" title="{{__('navmenu.directTitle')}}" data-toggle="tooltip" data-placement="bottom">
+								<i class="fal fa-location-circle fa-lg" style="font-size: 22px;"></i>
 								<span class="sr-only">{{__('navmenu.direct')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
-							<a class="nav-link font-weight-bold text-dark" href="/account/activity" title="Notifications" data-toggle="tooltip" data-placement="bottom">
-								<i class="far fa-bell fa-lg"></i>
+							<a class="nav-link font-weight-bold text-dark" href="/account/activity" title="{{__('navmenu.notificationsTitle')}}" data-toggle="tooltip" data-placement="bottom">
+								<i class="fal fa-bell fa-lg" style="font-size: 22px;"></i>
 								<span class="sr-only">{{__('navmenu.notifications')}}</span>
 							</a>
 						</li>
 						<li class="nav-item px-md-2 d-none d-md-block">
-							<div class="nav-link btn btn-primary btn-sm py-1 font-weight-bold text-white" title="Compose" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
-								<span>{{__('navmenu.newPost')}}</span>
+							<div class="nav-link btn btn-primary lead btn-sm px-3 py-1 text-white shadow rounded-pill d-flex align-items-center" title="{{__('navmenu.composeTitle')}}" data-toggle="tooltip" data-placement="bottom" onclick="App.util.compose.post()">
+								<i class="fal fa-plus-circle" style="font-size:14px;margin-right:6px;"></i>
+								{{__('navmenu.newPost')}}
 							</div>
 						</li>
 						<li class="nav-item dropdown ml-2">
-							<a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="User Menu" data-toggle="tooltip" data-placement="bottom">
+							<a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{__('navmenu.userMenu')}}" data-toggle="tooltip" data-placement="bottom">
 								<i class="far fa-user fa-lg text-dark"></i>
-								<span class="sr-only">User Menu</span>
-								<img class="d-none" src="/storage/avatars/default.png?v=0" class="rounded-circle border shadow" width="34" height="34" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
+								<span class="sr-only">{{__('navmenu.userMenu')}}</span>
+								<img class="d-none" src="/storage/avatars/default.png?v=0" class="rounded-circle border shadow" width="38" height="38" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 							</a>
 
-							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+							<div class="dropdown-menu dropdown-menu-right px-0 shadow" aria-labelledby="navbarDropdown" style="min-width: 220px;">
 								@if(config('federation.network_timeline'))
-								<a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
-									<span class="fas fa-stream pr-2 text-lighter"></span>
-									{{__('navmenu.public')}}
+								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-home text-lighter fa-lg"></span>
+									</span>
+									{{__('navmenu.myFeed')}}
 								</a>
-								<a class="dropdown-item font-weight-bold" href="{{route('timeline.network')}}">
-									<span class="fas fa-globe pr-2 text-lighter"></span>
-									{{__('navmenu.network')}}
+								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-stream text-lighter fa-lg"></span>
+									</span>
+									{{__('navmenu.publicFeed')}}
+								</a>
+								<a class="dropdown-item lead" href="{{route('timeline.network')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-globe text-lighter fa-lg"></span>
+									</span>
+									{{__('navmenu.networkFeed')}}
 								</a>
 								@else
-								<a class="dropdown-item font-weight-bold" href="/">
-									<span class="fas fa-home pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="/">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-home text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.home')}}
 								</a>
-								<a class="dropdown-item font-weight-bold" href="{{route('timeline.public')}}">
-									<span class="fas fa-stream pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fas fa-stream text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.public')}}
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item font-weight-bold" href="{{route('discover')}}">
-									<span class="far fa-compass pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="{{route('discover')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-compass text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.discover')}}
 								</a>
-								<a class="dropdown-item font-weight-bold" href="/i/stories/new">
-									<span class="fas fa-history text-lighter pr-2"></span>
+								{{-- <a class="dropdown-item lead" href="/groups">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-user-friends text-lighter"></span>
+									</span>
+									Groups
+								</a> --}}
+								@if(config_cache('instance.stories.enabled'))
+								<a class="dropdown-item lead" href="/i/stories/new">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-history text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.stories')}}
 								</a>
+								@endif
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item font-weight-bold" href="/i/me">
-									<span class="far fa-user pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="/i/me">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-user text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.myProfile')}}
 								</a>
-								<a class="dropdown-item font-weight-bold" href="{{route('settings')}}">
-									<span class="fas fa-cog pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="{{route('settings')}}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-cog text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.settings')}}
 								</a>
 								@if(Auth::user()->is_admin == true)
-								<a class="dropdown-item font-weight-bold" href="{{ route('admin.home') }}">
-									<span class="fas fa-shield-alt fa-sm pr-2 text-lighter"></span>
+								<a class="dropdown-item lead" href="{{ route('admin.home') }}">
+									<span style="width: 50px;margin-right:14px;">
+										<span class="fal fa-shield-alt text-lighter fa-lg"></span>
+									</span>
 									{{__('navmenu.admin')}}
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item font-weight-bold" href="{{ route('logout') }}"
+								<a class="dropdown-item lead" href="{{ route('logout') }}"
 								   onclick="event.preventDefault();
 												 document.getElementById('logout-form').submit();">
-									<span class="fas fa-sign-out-alt pr-2"></span>
-									{{ __('navmenu.logout') }}
+									<span style="width: 50px;margin-right:14px;" class="text-lighter">
+										<span class="fal fa-sign-out-alt fa-lg"></span>
+									</span>
+									<span class="text-lighter">{{ __('navmenu.logout') }}</span>
 								</a>
 
 								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

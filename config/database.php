@@ -1,7 +1,8 @@
 <?php
 
-return [
+use Illuminate\Database\DBAL\TimestampType;
 
+return [
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -119,4 +120,9 @@ return [
 
     ],
 
+	'dbal' => [
+	    'types' => [
+	        'timestamp' => TimestampType::class,
+	    ],
+	],
 ];

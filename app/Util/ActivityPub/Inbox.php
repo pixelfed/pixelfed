@@ -2,7 +2,7 @@
 
 namespace App\Util\ActivityPub;
 
-use Cache, DB, Log, Purify, Redis, Validator;
+use Cache, DB, Log, Purify, Redis, Storage, Validator;
 use App\{
 	Activity,
 	DirectMessage,
@@ -14,6 +14,8 @@ use App\{
 	Profile,
 	Status,
 	StatusHashtag,
+	Story,
+	StoryView,
 	UserFilter
 };
 use Carbon\Carbon;
@@ -22,6 +24,8 @@ use Illuminate\Support\Str;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use App\Jobs\StoryPipeline\StoryExpire;
+use App\Jobs\StoryPipeline\StoryFetch;
 
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
 use App\Util\ActivityPub\Validator\Add as AddValidator;
@@ -29,6 +33,9 @@ use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
 use App\Util\ActivityPub\Validator\Follow as FollowValidator;
 use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
+
+use App\Services\PollService;
+use App\Services\FollowerService;
 
 class Inbox
 {
@@ -47,16 +54,7 @@ class Inbox
 	public function handle()
 	{
 		$this->handleVerb();
-
-		// if(!Activity::where('data->id', $this->payload['id'])->exists()) {
-		//     (new Activity())->create([
-		//         'to_id' => $this->profile->id,
-		//         'data' => json_encode($this->payload)
-		//     ]);
-		// }
-
 		return;
-
 	}
 
 	public function handleVerb()
@@ -65,7 +63,6 @@ class Inbox
 		switch ($verb) {
 
 			case 'Add':
-				if(AddValidator::validate($this->payload) == false) { return; }
 				$this->handleAddActivity();
 				break;
 
@@ -105,6 +102,18 @@ class Inbox
 				$this->handleUndoActivity();
 				break;
 
+			case 'View':
+				$this->handleViewActivity();
+				break;
+
+			case 'Story:Reaction':
+				$this->handleStoryReactionActivity();
+				break;
+
+			case 'Story:Reply':
+				$this->handleStoryReplyActivity();
+				break;
+
 			default:
 				// TODO: decide how to handle invalid verbs.
 				break;
@@ -136,6 +145,30 @@ class Inbox
 	public function handleAddActivity()
 	{
 		// stories ;)
+
+		if(!isset(
+			$this->payload['actor'],
+			$this->payload['object']
+		)) {
+			return;
+		}
+
+		$actor = $this->payload['actor'];
+		$obj = $this->payload['object'];
+
+		if(!Helpers::validateUrl($actor)) {
+			return;
+		}
+
+		if(!isset($obj['type'])) {
+			return;
+		}
+
+		switch($obj['type']) {
+			case 'Story':
+				StoryFetch::dispatchNow($this->payload);
+			break;
+		}
 	}
 
 	public function handleCreateActivity()
@@ -147,6 +180,12 @@ class Inbox
 		}
 		$to = $activity['to'];
 		$cc = isset($activity['cc']) ? $activity['cc'] : [];
+
+		if($activity['type'] == 'Question') {
+			$this->handlePollCreate();
+			return;
+		}
+
 		if(count($to) == 1 &&
 			count($cc) == 0 &&
 			parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
@@ -154,10 +193,11 @@ class Inbox
 			$this->handleDirectMessage();
 			return;
 		}
+
 		if($activity['type'] == 'Note' && !empty($activity['inReplyTo'])) {
 			$this->handleNoteReply();
 
-		} elseif($activity['type'] == 'Note' && !empty($activity['attachment'])) {
+		} elseif ($activity['type'] == 'Note' && !empty($activity['attachment'])) {
 			if(!$this->verifyNoteAttachment()) {
 				return;
 			}
@@ -180,11 +220,33 @@ class Inbox
 		return;
 	}
 
+	public function handlePollCreate()
+	{
+		$activity = $this->payload['object'];
+		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+		if(!$actor || $actor->domain == null) {
+			return;
+		}
+		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
+		Helpers::statusFirstOrFetch($url);
+		return;
+	}
+
 	public function handleNoteCreate()
 	{
 		$activity = $this->payload['object'];
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
 		if(!$actor || $actor->domain == null) {
+			return;
+		}
+
+		if( isset($activity['inReplyTo']) &&
+			isset($activity['name']) &&
+			!isset($activity['content']) &&
+			!isset($activity['attachment']) &&
+			Helpers::validateLocalUrl($activity['inReplyTo'])
+		) {
+			$this->handlePollVote();
 			return;
 		}
 
@@ -197,6 +259,51 @@ class Inbox
 			return;
 		}
 		Helpers::statusFetch($url);
+		return;
+	}
+
+	public function handlePollVote()
+	{
+		$activity = $this->payload['object'];
+		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+		$status = Helpers::statusFetch($activity['inReplyTo']);
+		$poll = $status->poll;
+
+		if(!$status || !$poll) {
+			return;
+		}
+
+		if(now()->gt($poll->expires_at)) {
+			return;
+		}
+
+		$choices = $poll->poll_options;
+		$choice = array_search($activity['name'], $choices);
+
+		if($choice === false) {
+			return;
+		}
+
+		if(PollVote::whereStatusId($status->id)->whereProfileId($actor->id)->exists()) {
+			return;
+		}
+
+		$vote = new PollVote;
+		$vote->status_id = $status->id;
+		$vote->profile_id = $actor->id;
+		$vote->poll_id = $poll->id;
+		$vote->choice = $choice;
+		$vote->uri = isset($activity['id']) ? $activity['id'] : null;
+		$vote->save();
+
+		$tallies = $poll->cached_tallies;
+		$tallies[$choice] = $tallies[$choice] + 1;
+		$poll->cached_tallies = $tallies;
+		$poll->votes_count = array_sum($tallies);
+		$poll->save();
+
+		PollService::del($status->id);
+
 		return;
 	}
 
@@ -420,7 +527,6 @@ class Inbox
 
 	public function handleAcceptActivity()
 	{
-
 		$actor = $this->payload['object']['actor'];
 		$obj = $this->payload['object']['object'];
 		$type = $this->payload['object']['type'];
@@ -480,7 +586,7 @@ class Inbox
 			return;
 		} else {
 			$type = $this->payload['object']['type'];
-			$typeCheck = in_array($type, ['Person', 'Tombstone']);
+			$typeCheck = in_array($type, ['Person', 'Tombstone', 'Story']);
 			if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
 				return;
 			}
@@ -520,6 +626,13 @@ class Inbox
 						return;
 					break;
 
+				case 'Story':
+					$story = Story::whereObjectId($id)
+						->first();
+					if($story) {
+						StoryExpire::dispatch($story)->onQueue('story');
+					}
+
 				default:
 					return;
 					break;
@@ -558,10 +671,8 @@ class Inbox
 		return;
 	}
 
-
 	public function handleRejectActivity()
 	{
-
 	}
 
 	public function handleUndoActivity()
@@ -630,5 +741,251 @@ class Inbox
 				break;
 		}
 		return;
+	}
+
+	public function handleViewActivity()
+	{
+		if(!isset(
+			$this->payload['actor'],
+			$this->payload['object']
+		)) {
+			return;
+		}
+
+		$actor = $this->payload['actor'];
+		$obj = $this->payload['object'];
+
+		if(!Helpers::validateUrl($actor)) {
+			return;
+		}
+
+		if(!$obj || !is_array($obj)) {
+			return;
+		}
+
+		if(!isset($obj['type']) || !isset($obj['object']) || $obj['type'] != 'Story') {
+			return;
+		}
+
+		if(!Helpers::validateLocalUrl($obj['object'])) {
+			return;
+		}
+
+		$profile = Helpers::profileFetch($actor);
+		$storyId = Str::of($obj['object'])->explode('/')->last();
+
+		$story = Story::whereActive(true)
+			->whereLocal(true)
+			->find($storyId);
+
+		if(!$story) {
+			return;
+		}
+
+		if(!FollowerService::follows($profile->id, $story->profile_id)) {
+			return;
+		}
+
+		$view = StoryView::firstOrCreate([
+			'story_id' => $story->id,
+			'profile_id' => $profile->id
+		]);
+
+		if($view->wasRecentlyCreated == true) {
+			$story->view_count++;
+			$story->save();
+		}
+	}
+
+	public function handleStoryReactionActivity()
+	{
+		if(!isset(
+			$this->payload['actor'],
+			$this->payload['id'],
+			$this->payload['inReplyTo'],
+			$this->payload['content']
+		)) {
+			return;
+		}
+
+		$id = $this->payload['id'];
+		$actor = $this->payload['actor'];
+		$storyUrl = $this->payload['inReplyTo'];
+		$to = $this->payload['to'];
+		$text = Purify::clean($this->payload['content']);
+
+		if(parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
+			return;
+		}
+
+		if(!Helpers::validateUrl($id) || !Helpers::validateUrl($actor)) {
+			return;
+		}
+
+		if(!Helpers::validateLocalUrl($storyUrl)) {
+			return;
+		}
+
+		if(!Helpers::validateLocalUrl($to)) {
+			return;
+		}
+
+		if(Status::whereObjectUrl($id)->exists()) {
+			return;
+		}
+
+		$storyId = Str::of($storyUrl)->explode('/')->last();
+		$targetProfile = Helpers::profileFetch($to);
+
+		$story = Story::whereProfileId($targetProfile->id)
+			->find($storyId);
+
+		if(!$story) {
+			return;
+		}
+
+		if($story->can_react == false) {
+			return;
+		}
+
+		$actorProfile = Helpers::profileFetch($actor);
+
+		if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
+			return;
+		}
+
+		$status = new Status;
+		$status->profile_id = $actorProfile->id;
+		$status->type = 'story:reaction';
+		$status->caption = $text;
+		$status->rendered = $text;
+		$status->scope = 'direct';
+		$status->visibility = 'direct';
+		$status->in_reply_to_profile_id = $story->profile_id;
+		$status->entities = json_encode([
+			'story_id' => $story->id,
+			'reaction' => $text
+		]);
+		$status->save();
+
+		$dm = new DirectMessage;
+		$dm->to_id = $story->profile_id;
+		$dm->from_id = $actorProfile->id;
+		$dm->type = 'story:react';
+		$dm->status_id = $status->id;
+		$dm->meta = json_encode([
+			'story_username' => $targetProfile->username,
+			'story_actor_username' => $actorProfile->username,
+			'story_id' => $story->id,
+			'story_media_url' => url(Storage::url($story->path)),
+			'reaction' => $text
+		]);
+		$dm->save();
+
+		$n = new Notification;
+		$n->profile_id = $dm->to_id;
+		$n->actor_id = $dm->from_id;
+		$n->item_id = $dm->id;
+		$n->item_type = 'App\DirectMessage';
+		$n->action = 'story:react';
+		$n->message = "{$actorProfile->username} reacted to your story";
+		$n->rendered = "{$actorProfile->username} reacted to your story";
+		$n->save();
+	}
+
+	public function handleStoryReplyActivity()
+	{
+		if(!isset(
+			$this->payload['actor'],
+			$this->payload['id'],
+			$this->payload['inReplyTo'],
+			$this->payload['content']
+		)) {
+			return;
+		}
+
+		$id = $this->payload['id'];
+		$actor = $this->payload['actor'];
+		$storyUrl = $this->payload['inReplyTo'];
+		$to = $this->payload['to'];
+		$text = Purify::clean($this->payload['content']);
+
+		if(parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
+			return;
+		}
+
+		if(!Helpers::validateUrl($id) || !Helpers::validateUrl($actor)) {
+			return;
+		}
+
+		if(!Helpers::validateLocalUrl($storyUrl)) {
+			return;
+		}
+
+		if(!Helpers::validateLocalUrl($to)) {
+			return;
+		}
+
+		if(Status::whereObjectUrl($id)->exists()) {
+			return;
+		}
+
+		$storyId = Str::of($storyUrl)->explode('/')->last();
+		$targetProfile = Helpers::profileFetch($to);
+
+		$story = Story::whereProfileId($targetProfile->id)
+			->find($storyId);
+
+		if(!$story) {
+			return;
+		}
+
+		if($story->can_react == false) {
+			return;
+		}
+
+		$actorProfile = Helpers::profileFetch($actor);
+
+		if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
+			return;
+		}
+
+		$status = new Status;
+		$status->profile_id = $actorProfile->id;
+		$status->type = 'story:reply';
+		$status->caption = $text;
+		$status->rendered = $text;
+		$status->scope = 'direct';
+		$status->visibility = 'direct';
+		$status->in_reply_to_profile_id = $story->profile_id;
+		$status->entities = json_encode([
+			'story_id' => $story->id,
+			'caption' => $text
+		]);
+		$status->save();
+
+		$dm = new DirectMessage;
+		$dm->to_id = $story->profile_id;
+		$dm->from_id = $actorProfile->id;
+		$dm->type = 'story:comment';
+		$dm->status_id = $status->id;
+		$dm->meta = json_encode([
+			'story_username' => $targetProfile->username,
+			'story_actor_username' => $actorProfile->username,
+			'story_id' => $story->id,
+			'story_media_url' => url(Storage::url($story->path)),
+			'caption' => $text
+		]);
+		$dm->save();
+
+		$n = new Notification;
+		$n->profile_id = $dm->to_id;
+		$n->actor_id = $dm->from_id;
+		$n->item_id = $dm->id;
+		$n->item_type = 'App\DirectMessage';
+		$n->action = 'story:comment';
+		$n->message = "{$actorProfile->username} commented on story";
+		$n->rendered = "{$actorProfile->username} commented on story";
+		$n->save();
 	}
 }
