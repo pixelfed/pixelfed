@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center">
       <div></div>
       <a href="/account/activity" class="cursor-pointer font-weight-bold text-dark">{{__('account.notifications')}}</a>
-      <a href="/account/follow-requests" class="cursor-pointer font-weight-bold text-primary">{{__('account.followReqests')}}</a>
+      <a href="/account/follow-requests" class="cursor-pointer font-weight-bold text-primary">{{__('account.followRequests')}}</a>
       <div></div>
     </div>
   </div>

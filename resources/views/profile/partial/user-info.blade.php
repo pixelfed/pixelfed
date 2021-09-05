@@ -24,7 +24,7 @@
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
                 @csrf
                 <input type="hidden" name="item" value="{{$user->id}}">
-                <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
+                <button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">{{__('account.unfollow')}}</button>
               </form>
             </span>
             @elseif (Auth::check() && $is_following == false)
@@ -32,7 +32,7 @@
               <form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
                 @csrf
                 <input type="hidden" name="item" value="{{$user->id}}">
-                <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
+                <button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">{{__('account.follow')}}</button>
               </form>
             </span>
             @endif
@@ -42,12 +42,12 @@
                 <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item font-weight-bold" href="#">Report User</a>
+                  <a class="dropdown-item font-weight-bold" href="#">{{__('account.reportUser')}}</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item font-weight-bold" href="#">Mute User</a>
-                  <a class="dropdown-item font-weight-bold" href="#">Block User</a>
-                  <a class="dropdown-item font-weight-bold mute-users" href="#">Mute User & User Followers</a>
-                  <a class="dropdown-item font-weight-bold" href="#">Block User & User Followers</a>
+                  <a class="dropdown-item font-weight-bold" href="#">{{__('account.muteUser')}}</a>
+                  <a class="dropdown-item font-weight-bold" href="#">{{__('account.blockUser')}}</a>
+                  <a class="dropdown-item font-weight-bold mute-users" href="#">{{__('account.muteUserAndFollowers')}}</a>
+                  <a class="dropdown-item font-weight-bold" href="#">{{__('account.blockUserAndFollowers')}}</a>
                 </div>
               </div>
             </span>
@@ -57,14 +57,14 @@
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url()}}">
               <span class="font-weight-bold">{{$user->statusCount()}}</span> 
-              Posts
+              {{__('account.postsCount')}}
               </a>
             </div>
             @if($settings->show_profile_follower_count)
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url('/followers')}}">
               <span class="font-weight-bold">{{$user->followerCount(true)}}</span> 
-              Followers
+              {{__('account.followersCount')}}
               </a>
             </div>
             @endif
@@ -72,7 +72,7 @@
             <div class="font-weight-light pr-5">
               <a class="text-dark" href="{{$user->url('/following')}}">
               <span class="font-weight-bold">{{$user->followingCount(true)}}</span> 
-              Following
+              {{__('account.followingCount')}}
               </a>
             </div>
             @endif
@@ -80,7 +80,7 @@
           <p class="lead mb-0 d-flex align-items-center">
             <span class="font-weight-bold pr-3">{{$user->name}}</span> 
             @if($user->remote_url)
-            <span class="btn btn-outline-secondary btn-sm py-0">REMOTE PROFILE</span>
+            <span class="btn btn-outline-secondary btn-sm py-0">{{__('account.remoteProfile')}}</span>
             @endif
           </p>
           <div class="mb-0 lead" v-pre>{!!str_limit($user->bio, 127)!!}</div>
