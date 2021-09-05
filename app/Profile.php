@@ -65,11 +65,11 @@ class Profile extends Model
 
 	public function followingCount($short = false)
 	{
-		$count = Cache::remember('profile:following_count:'.$this->id, now()->addMonths(1), function() {
+		$count = Cache::remember('profile:following_count:v1:'.$this->id, now()->addMonths(1), function() {
 			if($this->domain == null && $this->user->settings->show_profile_following_count == false) {
 				return 0;
 			}
-			$count = DB::table('followers')->select('following_id')->where('following_id', $this->id)->count();
+			$count = DB::table('followers')->where('profile_id', $this->id)->count();
 			if($this->following_count != $count) {
 				$this->following_count = $count;
 				$this->save();
@@ -82,11 +82,11 @@ class Profile extends Model
 
 	public function followerCount($short = false)
 	{
-		$count = Cache::remember('profile:follower_count:'.$this->id, now()->addMonths(1), function() {
+		$count = Cache::remember('profile:follower_count:v1:'.$this->id, now()->addMonths(1), function() {
 			if($this->domain == null && $this->user->settings->show_profile_follower_count == false) {
 				return 0;
 			}
-			$count = $this->followers()->count();
+			$count = DB::table('followers')->where('following_id', $this->id)->count();
 			if($this->followers_count != $count) {
 				$this->followers_count = $count;
 				$this->save();
