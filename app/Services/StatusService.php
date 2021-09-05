@@ -18,7 +18,7 @@ class StatusService {
 
 	public static function key($id, $publicOnly = true)
 	{
-		$p = $publicOnly ? '' : 'all:';
+		$p = $publicOnly ? 'pub:' : 'all:';
 		return self::CACHE_KEY . $p . $id;
 	}
 
