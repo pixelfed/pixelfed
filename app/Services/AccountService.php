@@ -25,7 +25,7 @@ class AccountService
 		return Cache::remember($key, $ttl, function() use($id) {
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
-			$profile = Profile::whereNull('status')->findOrFail($id);
+			$profile = Profile::findOrFail($id);
 			$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
 			return $fractal->createData($resource)->toArray();
 		});	
