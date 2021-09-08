@@ -36,13 +36,28 @@ class StoryController extends StoryComposeController
 		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
 		$pid = $request->user()->profile_id;
 
-		$s = Story::select('stories.*', 'followers.following_id')
-			->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
-			->where('followers.profile_id', $pid)
-			->where('stories.active', true)
-			->groupBy('followers.following_id')
-			->orderByDesc('id')
-			->get();
+		if(config('database.default') == 'pgsql') {
+			$s = Story::select('stories.*', 'followers.following_id')
+				->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
+				->where('followers.profile_id', $pid)
+				->where('stories.active', true)
+				->get()
+				->map(function($s) {
+					$r  = new \StdClass;
+					$r->id = $s->id;
+					$r->profile_id = $s->profile_id;
+					return $r;
+				})
+				->unique('profile_id');
+		} else {
+			$s = Story::select('stories.*', 'followers.following_id')
+				->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
+				->where('followers.profile_id', $pid)
+				->where('stories.active', true)
+				->groupBy('followers.following_id')
+				->orderByDesc('id')
+				->get();
+		}
 
 		$res = $s->map(function($s) use($pid) {
 			$profile = AccountService::get($s->profile_id);
