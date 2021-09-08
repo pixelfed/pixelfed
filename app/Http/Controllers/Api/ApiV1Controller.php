@@ -1486,9 +1486,11 @@ class ApiV1Controller extends Controller
 		$limit = $request->input('limit') ?? 3;
 		$user = $request->user();
 
-		if(PublicTimelineService::count() == 0) {
-        	PublicTimelineService::warmCache(true, 400);
-        }
+		Cache::remember('api:v1:timelines:public:cache_check', 3600, function() {
+			if(PublicTimelineService::count() == 0) {
+	        	PublicTimelineService::warmCache(true, 400);
+	        }
+		});
 
         if ($max) {
 			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
