@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.0...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.1...dev)
+
+## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
 ### Added
 - WebP Support ([069a0e4a](https://github.com/pixelfed/pixelfed/commit/069a0e4a))
 - Auto Following support for admins ([68aa2540](https://github.com/pixelfed/pixelfed/commit/68aa2540))
@@ -11,6 +13,7 @@
 - Federate Media Licenses ([14a1367a](https://github.com/pixelfed/pixelfed/commit/14a1367a))
 - Archive Posts ([e9ef0c88](https://github.com/pixelfed/pixelfed/commit/e9ef0c88))
 - Polls ([77092200](https://github.com/pixelfed/pixelfed/commit/77092200))
+- Federated Stories (#2895)
 
 ### Updated
 - Updated PrettyNumber, fix deprecated warning. ([20ec870b](https://github.com/pixelfed/pixelfed/commit/20ec870b))
