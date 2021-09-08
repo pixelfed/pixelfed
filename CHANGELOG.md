@@ -108,6 +108,7 @@
 - Updated Profile, fix following count bug. ([ee9f0795](https://github.com/pixelfed/pixelfed/commit/ee9f0795))
 - Updated DirectMessageController, fix autocomplete bug. ([0f00be4d](https://github.com/pixelfed/pixelfed/commit/0f00be4d))
 - Updated StoryService, fix division by zero bug. ([6ae1ba0a](https://github.com/pixelfed/pixelfed/commit/6ae1ba0a))
+- Updated ApiV1Controller, fix empty public timeline bug. ([0584f9ee](https://github.com/pixelfed/pixelfed/commit/0584f9ee))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.0 (2021-06-01)](https://github.com/pixelfed/pixelfed/compare/v0.10.10...v0.11.0)
