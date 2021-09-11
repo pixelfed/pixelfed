@@ -15,5 +15,5 @@ return [
     'admin'          => 'Administration',
     'logout'         => 'Abmelden',
     'directMessages' => 'Privatnachrichten',
-	'composePost'	 => 'Neuen Post erstellen',
+    'composePost'	 => 'Neu',
 ];
