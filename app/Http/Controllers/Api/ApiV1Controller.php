@@ -21,7 +21,7 @@ use App\{
 	Status,
 	StatusHashtag,
 	User,
-    UserSetting,
+	UserSetting,
 	UserFilter,
 };
 use League\Fractal;
