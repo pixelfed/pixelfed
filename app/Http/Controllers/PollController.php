@@ -11,14 +11,10 @@ use App\Services\FollowerService;
 
 class PollController extends Controller
 {
-
-	public function __construct()
-	{
-		abort_if(!config_cache('instance.polls.enabled'), 404);
-	}
-
 	public function getPoll(Request $request, $id)
 	{
+		abort_if(!config_cache('instance.polls.enabled'), 404);
+
 		$poll = Poll::findOrFail($id);
 		$status = Status::findOrFail($poll->status_id);
 		if($status->scope != 'public') {
@@ -34,6 +30,8 @@ class PollController extends Controller
 
     public function vote(Request $request, $id)
     {
+		abort_if(!config_cache('instance.polls.enabled'), 404);
+
     	abort_unless($request->user(), 403);
 
     	$this->validate($request, [

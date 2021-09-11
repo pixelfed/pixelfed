@@ -15,10 +15,13 @@ use App\Jobs\ImportPipeline\ImportInstagram;
 
 trait Instagram
 {
-    public function instagram()
-    {
-      return view('settings.import.instagram.home');
-    }
+	public function instagram()
+	{
+		if(config_cache('pixelfed.import.instagram.enabled') != true) {
+			abort(404, 'Feature not enabled');
+		}
+		return view('settings.import.instagram.home');
+	}
 
     public function instagramStart(Request $request)
     {	
