@@ -70,7 +70,7 @@
 
                     <p class="text-center small font-weight-bold mb-0">
                         <a href="{{ route('password.request') }}">
-                            {{ __('auth.forgotPasswoord') }}
+                            {{ __('auth.forgotPassword') }}
                         </a>
                     </p>
                 </div>
