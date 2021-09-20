@@ -27,7 +27,10 @@ class NotificationService {
 			$ids = self::coldGet($id, $start, $stop);
 		}
 		foreach($ids as $id) {
-			$res->push(self::getNotification($id));
+			$n = self::getNotification($id);
+			if($n != null) {
+				$res->push($n);
+			}
 		}
 		return $res;
 	}
@@ -56,7 +59,10 @@ class NotificationService {
 
 		$res = collect([]);
 		foreach($ids as $id) {
-			$res->push(self::getNotification($id));
+			$n = self::getNotification($id);
+			if($n != null) {
+				$res->push($n);
+			}
 		}
 		return $res->toArray();
 	}
@@ -71,7 +77,10 @@ class NotificationService {
 
 		$res = collect([]);
 		foreach($ids as $id) {
-			$res->push(self::getNotification($id));
+			$n = self::getNotification($id);
+			if($n != null) {
+				$res->push($n);
+			}
 		}
 		return $res->toArray();
 	}
@@ -129,7 +138,12 @@ class NotificationService {
 	public static function getNotification($id)
 	{
 		return Cache::remember('service:notification:'.$id, now()->addDays(3), function() use($id) {
-			$n = Notification::with('item')->findOrFail($id);
+			$n = Notification::with('item')->find($id);
+
+			if(!$n) {
+				return null;
+			}
+
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$resource = new Fractal\Resource\Item($n, new NotificationTransformer());
