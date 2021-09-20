@@ -4,6 +4,7 @@
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
+- Update HttpSignatures, update instance actor headers. Fixes #2935. ([a900de21](https://github.com/pixelfed/pixelfed/commit/a900de21))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)

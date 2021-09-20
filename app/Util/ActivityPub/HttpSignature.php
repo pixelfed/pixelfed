@@ -43,7 +43,7 @@ class HttpSignature {
       $digest = self::_digest($body);
     }
     $headers = self::_headersToSign($url, $body ? $digest : false);
-    $headers = array_unique(array_merge($headers, $addlHeaders));
+    $headers = array_merge($headers, $addlHeaders);
     $stringToSign = self::_headersToSigningString($headers);
     $signedHeaders = implode(' ', array_map('strtolower', array_keys($headers)));
     $key = openssl_pkey_get_private($privateKey);
@@ -133,7 +133,6 @@ class HttpSignature {
       'Date' => $date->format('D, d M Y H:i:s \G\M\T'),
       'Host' => parse_url($url, PHP_URL_HOST),
       'Accept' => 'application/activity+json, application/json',
-      'Content-Type' => 'application/activity+json'
     ];
 
     if($digest) {
