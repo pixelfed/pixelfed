@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Zttp\Zttp;
+use Illuminate\Support\Facades\Http;
 use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
@@ -15,12 +15,11 @@ class ActivityPubFetchService
 			return 0;
 		}
 
-		$headers = HttpSignature::instanceActorSign($url, false, [
-			'Accept'		=> 'application/activity+json, application/json',
-			'User-Agent'	=> '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')'
-		]);
+		$headers = HttpSignature::instanceActorSign($url, false);
+		$headers['Accept'] = 'application/activity+json, application/json';
+		$headers['User-Agent'] = '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
 
-		return Zttp::withHeaders($headers)
+		return Http::withHeaders($headers)
 			->timeout(30)
 			->get($url)
 			->body();
