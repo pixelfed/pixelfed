@@ -1,6 +1,7 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.1...dev)
+
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
