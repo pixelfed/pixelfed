@@ -1,7 +1,6 @@
 <?php
 
 return [
-
 	'about'			=> 'O nás',
 	'help'			=> 'Nápověda',
 	'language'		=> 'Jazyk',
@@ -12,5 +11,8 @@ return [
 	'l10nWip'		=> 'Stále pracujeme na podpoře lokalizací',
 	'currentLocale' => 'Aktuální jazyk',
 	'selectLocale'  => 'Vyberte si jeden z podporovaných jazyků',
-
+	'contact'		=> 'Kontakt',
+	'contact-us'	=> 'Kontaktujte nás',
+	'places'		=> 'Místa',
+	'profiles'		=> 'Profily',
 ];
