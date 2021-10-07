@@ -35,14 +35,14 @@ class FederationController extends Controller
 	public function nodeinfoWellKnown()
 	{
 		abort_if(!config('federation.nodeinfo.enabled'), 404);
-		return response()->json(Nodeinfo::wellKnown())
+		return response()->json(Nodeinfo::wellKnown(), 200, [], JSON_UNESCAPED_SLASHES)
 			->header('Access-Control-Allow-Origin','*');
 	}
 
 	public function nodeinfo()
 	{
 		abort_if(!config('federation.nodeinfo.enabled'), 404);
-		return response()->json(Nodeinfo::get())
+		return response()->json(Nodeinfo::get(), 200, [], JSON_UNESCAPED_SLASHES)
 			->header('Access-Control-Allow-Origin','*');
 	}
 
@@ -53,6 +53,11 @@ class FederationController extends Controller
 		abort_if(!$request->filled('resource'), 400);
 
 		$resource = $request->input('resource');
+		$hash = hash('sha256', $resource);
+		$key = 'federation:webfinger:sha256:' . $hash;
+		if($cached = Cache::get($key)) {
+			return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
+		}
 		$parsed = Nickname::normalizeProfileUrl($resource);
 		if(empty($parsed) || $parsed['domain'] !== config('pixelfed.domain.app')) {
 			abort(404);
@@ -63,8 +68,9 @@ class FederationController extends Controller
 			return ProfileController::accountCheck($profile);
 		}
 		$webfinger = (new Webfinger($profile))->generate();
+		Cache::put($key, $webfinger, 43200);
 
-		return response()->json($webfinger, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+		return response()->json($webfinger, 200, [], JSON_UNESCAPED_SLASHES)
 			->header('Access-Control-Allow-Origin','*');
 	}
 

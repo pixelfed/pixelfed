@@ -90,11 +90,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 	Auth::routes();
 
-	Route::get('.well-known/webfinger', 'FederationController@webfinger')->name('well-known.webfinger');
-	Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->name('well-known.nodeinfo');
-	Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
-	Route::redirect('.well-known/change-password', '/settings/password');
-
 	Route::get('/home', 'HomeController@index')->name('home');
 
 	Route::get('discover/c/{slug}', 'DiscoverController@showCategory');
@@ -105,7 +100,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 	Route::group(['prefix' => 'api'], function () {
 		Route::get('search', 'SearchController@searchAPI');
-		Route::get('nodeinfo/2.0.json', 'FederationController@nodeinfo');
 		Route::post('status/view', 'StatusController@storeView');
 		Route::get('v1/polls/{id}', 'PollController@getPoll');
 		Route::post('v1/polls/{id}/votes', 'PollController@vote');
@@ -251,7 +245,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::post('v1/publish', 'StoryController@publishStory');
 			Route::delete('v1/delete/{id}', 'StoryController@apiV1Delete');
 		});
-
 	});
 
 	Route::get('discover/tags/{hashtag}', 'DiscoverController@showTags');
