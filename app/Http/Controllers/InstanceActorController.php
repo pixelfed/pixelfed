@@ -12,7 +12,7 @@ class InstanceActorController extends Controller
 	{
 		$res = Cache::rememberForever(InstanceActor::PROFILE_KEY, function() {
 			$res = (new InstanceActor())->first()->getActor();
-			return json_encode($res);
+			return json_encode($res, JSON_UNESCAPED_SLASHES);
 		});
 		return response($res)->header('Content-Type', 'application/json');
 	}
