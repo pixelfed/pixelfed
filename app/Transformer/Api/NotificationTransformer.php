@@ -2,50 +2,65 @@
 
 namespace App\Transformer\Api;
 
-use App\{
-	Notification,
-	Status
-};
+use App\Notification;
+use App\Services\AccountService;
 use App\Services\HashidService;
+use App\Services\StatusService;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
 {
 	protected $defaultIncludes = [
-		'account',
-		'status',
-		'relationship',
-		'modlog',
-		'tagged'
+		// 'relationship',
 	];
 
 	public function transform(Notification $notification)
 	{
-		return [
+		$res = [
 			'id'       		=> (string) $notification->id,
 			'type'       	=> $this->replaceTypeVerb($notification->action),
 			'created_at' 	=> (string) $notification->created_at->format('c'),
 		];
-	}
 
-	public function includeAccount(Notification $notification)
-	{
-		return $this->item($notification->actor, new AccountTransformer());
-	}
+		$n = $notification;
+		if($n->item_id && $n->item_type == 'App\Status' && in_array($n->action, ['group:comment'])) {
+			$status = $n->status;
+			$res['group_id'] = $status->group_id;
 
-	public function includeStatus(Notification $notification)
-	{
-		$item = $notification;
-		if($item->item_id && $item->item_type == 'App\Status') {
-			$status = Status::with('media')->find($item->item_id);
-			if($status) {
-				return $this->item($status, new StatusTransformer());
-			} else {
-				return null;
+			if($n->action == 'group:comment') {
+				$res['group_post_url'] = GroupPost::whereStatusId($status->id)->first()->url();
 			}
-		} else {
-			return null;
 		}
+
+		if(in_array($n->action, ['group.join.approved', 'group.join.rejected', 'group.like'])) {
+			$res['group'] = GroupService::get($n->item_id);
+		}
+
+		if($n->actor_id) {
+			$res['account'] = AccountService::get($n->actor_id);
+		}
+
+		if($n->item_id && $n->item_type == 'App\Status') {
+			$res['status'] = StatusService::get($n->item_id, false);
+		}
+
+		if($n->item_id && $n->item_type == 'App\ModLog') {
+			$ml = $n->item;
+			$res['modlog'] = [
+				'id' => $ml->object_uid,
+				'url' => url('/i/admin/users/modlogs/' . $ml->object_uid)
+			];
+		}
+
+		if($n->item_id && $n->item_type == 'App\MediaTag') {
+			$ml = $n->item;
+			$res['tagged'] = [
+				'username' => $ml->tagged_username,
+				'post_url' => '/p/'.HashidService::encode($ml->status_id)
+			];
+		}
+
+		return $res;
 	}
 
 	public function replaceTypeVerb($verb)
@@ -57,56 +72,26 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'reblog' => 'share',
 			'share' => 'share',
 			'like' => 'favourite',
+			'group:like' => 'favourite',
 			'comment' => 'comment',
 			'admin.user.modlog.comment' => 'modlog',
 			'tagged' => 'tagged',
 			'group:comment' => 'group:comment',
 			'story:react' => 'story:react',
-			'story:comment' => 'story:comment'
+			'story:comment' => 'story:comment',
+			'group:join:approved' => 'group:join:approved',
+			'group:join:rejected' => 'group:join:rejected'
 		];
+
+		if(!isset($verbs[$verb])) {
+			return $verb;
+		}
+
 		return $verbs[$verb];
 	}
 
 	public function includeRelationship(Notification $notification)
 	{
 		return $this->item($notification->actor, new RelationshipTransformer());
-	}
-
-	public function includeModlog(Notification $notification)
-	{
-		$n = $notification;
-		if($n->item_id && $n->item_type == 'App\ModLog') {
-			$ml = $n->item;
-			if(!empty($ml)) {
-				$res = $this->item($ml, function($ml) {
-					return [
-						'id' => $ml->object_uid,
-						'url' => url('/i/admin/users/modlogs/' . $ml->object_uid)
-					];
-				});
-				return $res;
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	public function includeTagged(Notification $notification)
-	{
-		$n = $notification;
-		if($n->item_id && $n->item_type == 'App\MediaTag') {
-			$ml = $n->item;
-			$res = $this->item($ml, function($ml) {
-				return [
-					'username' => $ml->tagged_username,
-					'post_url' => '/p/'.HashidService::encode($ml->status_id)
-				];
-			});
-			return $res;
-		} else {
-			return null;
-		}
 	}
 }
