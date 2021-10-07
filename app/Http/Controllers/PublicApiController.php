@@ -309,7 +309,7 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get()
                       ->map(function($s) use ($user) {
-                           $status = StatusService::get($s->id);
+                           $status = StatusService::getFull($s->id, $user->profile_id);
                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                            return $status;
                       });
@@ -341,10 +341,15 @@ class PublicApiController extends Controller
                       ->whereLocal(true)
                       ->whereScope('public')
                       ->orderBy('id', 'desc')
-                      ->simplePaginate($limit);
+                      ->limit($limit)
+                      ->get()
+                      ->map(function($s) use ($user) {
+                           $status = StatusService::getFull($s->id, $user->profile_id);
+                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                           return $status;
+                      });
 
-            $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-            $res = $this->fractal->createData($fractal)->toArray();
+            $res = $timeline->toArray();
         }
 
         return response()->json($res);
