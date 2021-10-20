@@ -84,7 +84,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::post('diagnostics/decrypt', 'AdminController@diagnosticsDecrypt')->name('admin.diagnostics.decrypt');
 });
 
-Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization','interstitial'])->group(function () {
+Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
 	Route::get('/', 'SiteController@home')->name('timeline.personal');
 	Route::post('/', 'StatusController@store');
 

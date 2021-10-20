@@ -16,6 +16,7 @@
 - Updated StatusCard component, add relationship state button. ([0436b124](https://github.com/pixelfed/pixelfed/commit/0436b124))
 - Updated Timeline component, cascade relationship state change. ([f4bd5672](https://github.com/pixelfed/pixelfed/commit/f4bd5672))
 - Updated Activity component, only show context button for actionable activities. ([7886fd59](https://github.com/pixelfed/pixelfed/commit/7886fd59))
+- Updated Autospam service, use silent classification for better user experience. ([f0d4c172](https://github.com/pixelfed/pixelfed/commit/f0d4c172))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)

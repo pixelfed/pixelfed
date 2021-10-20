@@ -83,7 +83,9 @@ return [
 		'redis:default' => 30,
 		'redis:low' => 30,
 		'redis:high' => 30,
-		'redis:delete' => 30
+		'redis:delete' => 30,
+		'redis:story' => 30,
+		'redis:mmo' => 30,
 	],
 
 	/*
@@ -167,7 +169,7 @@ return [
 		'production' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete', 'mmo'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
@@ -179,7 +181,7 @@ return [
 		'local' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete'],
+				'queue'         => ['high', 'default', 'feed', 'low', 'story', 'delete', 'mmo'],
 				'balance'       => 'auto',
 				'maxProcesses'  => 20,
 				'memory'        => 128,
