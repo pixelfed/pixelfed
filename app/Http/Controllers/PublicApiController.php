@@ -30,6 +30,7 @@ use App\Services\{
     LikeService,
     PublicTimelineService,
     ProfileService,
+    RelationshipService,
     StatusService,
     SnowflakeService,
     UserFilterService
@@ -288,69 +289,30 @@ class PublicApiController extends Controller
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
 
-        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+        Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+			if(PublicTimelineService::count() == 0) {
+				PublicTimelineService::warmCache(true, 400);
+			}
+		});
 
-        if($min || $max) {
-            $dir = $min ? '>' : '<';
-            $id = $min ?? $max;
-            $timeline = Status::select(
-                        'id',
-                        'profile_id',
-                        'type',
-                        'scope',
-                        'local'
-                      )
-                      ->where('id', $dir, $id)
-                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                      ->whereNotIn('profile_id', $filtered)
-                      ->whereLocal(true)
-                      ->whereScope('public')
-                      ->orderBy('id', 'desc')
-                      ->limit($limit)
-                      ->get()
-                      ->map(function($s) use ($user) {
-                           $status = StatusService::getFull($s->id, $user->profile_id);
-                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                           return $status;
-                      });
-            $res = $timeline->toArray();
-        } else {
-            $timeline = Status::select(
-                        'id',
-                        'uri',
-                        'caption',
-                        'rendered',
-                        'profile_id',
-                        'type',
-                        'in_reply_to_id',
-                        'reblog_of_id',
-                        'is_nsfw',
-                        'scope',
-                        'local',
-                        'reply_count',
-                        'comments_disabled',
-                        'created_at',
-                        'place_id',
-                        'likes_count',
-                        'reblogs_count',
-                        'updated_at'
-                      )
-                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                      ->whereNotIn('profile_id', $filtered)
-                      ->with('profile', 'hashtags', 'mentions')
-                      ->whereLocal(true)
-                      ->whereScope('public')
-                      ->orderBy('id', 'desc')
-                      ->limit($limit)
-                      ->get()
-                      ->map(function($s) use ($user) {
-                           $status = StatusService::getFull($s->id, $user->profile_id);
-                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
-                           return $status;
-                      });
+		if ($max) {
+			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
+		} else if ($min) {
+			$feed = PublicTimelineService::getRankedMinId($min, $limit);
+		} else {
+			$feed = PublicTimelineService::get(0, $limit);
+		}
 
-            $res = $timeline->toArray();
-        }
+		$res = collect($feed)
+		->map(function($k) use($user) {
+			$status = StatusService::get($k);
+			if($user) {
+				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
+			}
+			return $status;
+		})
+		->toArray();
 
         return response()->json($res);
     }
@@ -580,17 +542,20 @@ class PublicApiController extends Controller
             return response()->json([]);
         }
 
+        $pid = $request->user()->profile_id;
+
         $this->validate($request, [
             'id'    => 'required|array|min:1|max:20',
             'id.*'  => 'required|integer'
         ]);
         $ids = collect($request->input('id'));
-        $filtered = $ids->filter(function($v) {
-            return $v != Auth::user()->profile->id;
+        $res = $ids->filter(function($v) use($pid) {
+            return $v != $pid;
+        })
+        ->map(function($id) use($pid) {
+        	return RelationshipService::get($pid, $id);
         });
-        $relations = Profile::whereNull('status')->findOrFail($filtered->all());
-        $fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
-        $res = $this->fractal->createData($fractal)->toArray();
+
         return response()->json($res);
     }
 
@@ -741,5 +706,4 @@ class PublicApiController extends Controller
 
         return response()->json($res);
     }
-
 }

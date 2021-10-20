@@ -98,4 +98,14 @@ class UserFilterService {
 		}
 		return $exists;
 	}
+
+	public static function blockCount(int $profile_id)
+	{
+		return Redis::zcard(self::USER_BLOCKS_KEY . $profile_id);
+	}
+
+	public static function muteCount(int $profile_id)
+	{
+		return Redis::zcard(self::USER_MUTES_KEY . $profile_id);
+	}
 }
