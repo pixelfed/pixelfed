@@ -5,6 +5,6 @@
 @endsection
 
 @push('scripts')
-<script type="text/javascript" src="{{mix('js/stories.js')}}"></script>
+<script type="text/javascript" src="/js/stories.js?v={{ time() }}"></script>
 <script type="text/javascript">App.boot();</script>
 @endpush
