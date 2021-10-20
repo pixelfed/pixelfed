@@ -12,7 +12,7 @@
 					<div style="margin-top:-2px;">
 						<story-component v-if="config.features.stories" :scope="scope"></story-component>
 					</div>
-					<div>
+					<div class="pt-4">
 						<div v-if="loading" class="text-center" style="padding-top:10px;">
 							<div class="spinner-border" role="status">
 								<span class="sr-only">Loading...</span>
@@ -106,6 +106,8 @@
 								size="small"
 								v-on:status-delete="deleteStatus"
 								v-on:comment-focus="commentFocus"
+								v-on:followed="followedAccount"
+								v-on:unfollowed="unfollowedAccount"
 							/>
 						</div>
 
@@ -1067,7 +1069,29 @@
 				this.feed = this.feed.filter(s => {
 					return s.id != status;
 				});
-			}
+			},
+
+			followedAccount(id) {
+				this.feed = this.feed.map(s => {
+					if(s.account.id == id) {
+						if(s.hasOwnProperty('relationship') && s.relationship.following == false) {
+							s.relationship.following = true;
+						}
+					}
+					return s;
+				});
+			},
+
+			unfollowedAccount(id) {
+				this.feed = this.feed.map(s => {
+					if(s.account.id == id) {
+						if(s.hasOwnProperty('relationship') && s.relationship.following == true) {
+							s.relationship.following = false;
+						}
+					}
+					return s;
+				});
+			},
 		},
 
 		beforeDestroy () {

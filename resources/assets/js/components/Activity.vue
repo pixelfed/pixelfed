@@ -22,56 +22,60 @@
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> liked your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'comment'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'group:comment'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="n.group_post_url">group post</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'story:react'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'story:comment'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'mention'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> <a class="font-weight-bold" v-bind:href="mentionUrl(n.status)">mentioned</a> you.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'follow'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> followed you.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'share'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" data-placement="bottom" data-toggle="tooltip" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'modlog'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{truncate(n.account.username)}}</a> updated a <a class="font-weight-bold" v-bind:href="n.modlog.url">modlog</a>.
 								</p>
 							</div>
+
 							<div v-else-if="n.type == 'tagged'">
 								<p class="my-0">
 									<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> tagged you in a <a class="font-weight-bold" v-bind:href="n.tagged.post_url">post</a>.
 								</p>
 							</div>
-							<div v-else-if="n.type == 'direct'">
-							<p class="my-0">
-								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> sent a <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">dm</a>.
-							</p>
-						</div>
 							<div class="align-items-center">
 								<span class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</span>
 							</div>
@@ -105,7 +109,7 @@
 								</a>
 							</div> -->
 							<div v-else>
-								<a class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">View</a>
+								<a v-if="viewContext(n) != '/'" class="btn btn-outline-primary py-0 font-weight-bold" :href="viewContext(n)">View</a>
 							</div>
 						</div>
 					</div>
@@ -209,6 +213,9 @@ export default {
 						}
 						return true;
 					});
+
+					let ids = data.map(n => n.id);
+					this.notificationMaxId = Math.max(...ids);
 					this.notifications.push(...data);
 					this.notificationCursor++;
 					$state.loaded();

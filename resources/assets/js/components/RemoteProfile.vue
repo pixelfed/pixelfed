@@ -19,7 +19,7 @@
 					</div>
 					<div class="card-body pb-0">
 						<div class="mt-n5 mb-3">
-							<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.avatar" width="90px" height="90px;">
+							<img class="rounded-circle p-1 border mt-n4 bg-white shadow" :src="profile.avatar" width="90px" height="90px;" onerror="this.onerror=null;this.src='/storage/avatars/default.jpg?v=0';">
 							<span class="float-right mt-n1">
 								<span>
 									<button v-if="relationship && relationship.following == false" class="btn btn-outline-light py-0 px-3 mt-n1" style="font-size:13px; font-weight: 500;" @click="followProfile();">Follow</button>

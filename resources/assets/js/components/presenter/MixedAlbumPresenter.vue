@@ -14,7 +14,7 @@
 			>
 				<b-carousel-slide v-for="(media, index) in status.media_attachments" :key="media.id + '-media'">
 
-					<video v-if="media.type == 'Video'" slot="img" class="embed-responsive-item" preload="none" controls loop :alt="media.description" width="100%" height="100%" :poster="media.preview_url">
+					<video v-if="media.type == 'Video'" slot="img" class="embed-responsive-item" preload="none" controls playsinline loop :alt="media.description" width="100%" height="100%" :poster="media.preview_url">
 						<source :src="media.url" :type="media.mime">
 					</video>
 

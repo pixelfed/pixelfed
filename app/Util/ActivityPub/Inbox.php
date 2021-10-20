@@ -455,6 +455,7 @@ class Inbox
 			Cache::forget('profile:follower_count:'.$actor->id);
 			Cache::forget('profile:following_count:'.$target->id);
 			Cache::forget('profile:following_count:'.$actor->id);
+			FollowerService::add($actor->id, $target->id);
 
 		} else {
 			$follower = new Follower;
@@ -464,6 +465,7 @@ class Inbox
 			$follower->save();
 
 			FollowPipeline::dispatch($follower);
+			FollowerService::add($actor->id, $target->id);
 
 			// send Accept to remote profile
 			$accept = [
@@ -722,6 +724,7 @@ class Inbox
 					->whereItemId($following->id)
 					->whereItemType('App\Profile')
 					->forceDelete();
+				FollowerService::remove($profile->id, $following->id);
 				break;
 
 			case 'Like':

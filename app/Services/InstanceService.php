@@ -7,6 +7,13 @@ use App\Instance;
 
 class InstanceService
 {
+	public static function getByDomain($domain)
+	{
+		return Cache::remember('pf:services:instance:by_domain:'.$domain, 3600, function() use($domain) {
+			return Instance::whereDomain($domain)->first();
+		});
+	}
+
 	public static function getBannedDomains()
 	{
 		return Cache::remember('instances:banned:domains', now()->addHours(12), function() {
