@@ -132,7 +132,7 @@ class Bouncer {
 
 		$status->scope = 'unlisted';
 		$status->visibility = 'unlisted';
-		$status->is_nsfw = true;
+		// $status->is_nsfw = true;
 		$status->save();
 
 		Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $status->profile_id);
