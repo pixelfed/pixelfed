@@ -1078,7 +1078,11 @@
 					this.$refs.visitorContextMenu.hide();
 					swal('Success', 'You have successfully muted ' + this.profile.acct, 'success');
 				}).catch(err => {
-					swal('Error', 'Something went wrong. Please try again later.', 'error');
+					if(err.response.status == 422) {
+						swal('Error', err.response.data.error, 'error');
+					} else {
+						swal('Error', 'Something went wrong. Please try again later.', 'error');
+					}
 				});
 			},
 
@@ -1113,7 +1117,11 @@
 					this.$refs.visitorContextMenu.hide();
 					swal('Success', 'You have successfully blocked ' + this.profile.acct, 'success');
 				}).catch(err => {
-					swal('Error', 'Something went wrong. Please try again later.', 'error');
+					if(err.response.status == 422) {
+						swal('Error', err.response.data.error, 'error');
+					} else {
+						swal('Error', 'Something went wrong. Please try again later.', 'error');
+					}
 				});
 			},
 
