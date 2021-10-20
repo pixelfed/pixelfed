@@ -9,12 +9,12 @@
     {
       "src": "img/favicon.png",
       "type": "image/png",
-      "sizes": "153x152"
+      "sizes": "256x256"
     },
     {
       "src": "img/pixelfed-icon-color.svg",
       "type": "image/svg",
-      "sizes": "50x50"
+      "sizes": "128x128"
     }
   ]
 }
