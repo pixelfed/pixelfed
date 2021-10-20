@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'about'             => 'O nás',
     'help'              => 'Nápověda',
     'language'          => 'Jazyk',
@@ -16,5 +15,4 @@ return [
     'contact-us'        => 'Kontaktujte nás',
     'places'            => 'Místa',
     'profiles'          => 'Profily',
-
 ];

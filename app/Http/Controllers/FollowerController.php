@@ -12,6 +12,7 @@ use Auth, Cache;
 use Illuminate\Http\Request;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Util\ActivityPub\Helpers;
+use App\Services\FollowerService;
 
 class FollowerController extends Controller
 {
@@ -70,7 +71,9 @@ class FollowerController extends Controller
             ]);
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
                 $this->sendFollow($user, $target);
-            } 
+            }
+
+            FollowerService::add($user->id, $target->id);
         } elseif ($private == false && $isFollowing == 0) {
             if($user->following()->count() >= Follower::MAX_FOLLOWING) {
                 abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
@@ -87,6 +90,7 @@ class FollowerController extends Controller
             if($remote == true && config('federation.activitypub.remoteFollow') == true) {
                 $this->sendFollow($user, $target);
             } 
+            FollowerService::add($user->id, $target->id);
             FollowPipeline::dispatch($follower);
         } else {
             if($force == true) {
@@ -101,6 +105,7 @@ class FollowerController extends Controller
                 Follower::whereProfileId($user->id)
                     ->whereFollowingId($target->id)
                     ->delete();
+                FollowerService::remove($user->id, $target->id);
             }
         }
 

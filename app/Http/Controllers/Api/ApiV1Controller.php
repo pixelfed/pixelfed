@@ -55,6 +55,7 @@ use App\Services\{
 	MediaPathService,
 	PublicTimelineService,
 	ProfileService,
+	RelationshipService,
 	SearchApiV2Service,
 	StatusService,
 	MediaBlocklistService
@@ -551,7 +552,7 @@ class ApiV1Controller extends Controller
 	 *
 	 * @param  array|integer  $id
 	 *
-	 * @return \App\Transformer\Api\RelationshipTransformer
+	 * @return \App\Services\RelationshipService
 	 */
 	public function accountRelationshipsById(Request $request)
 	{
@@ -563,12 +564,9 @@ class ApiV1Controller extends Controller
 		]);
 		$pid = $request->user()->profile_id ?? $request->user()->profile->id;
 		$ids = collect($request->input('id'));
-		$filtered = $ids->filter(function($v) use($pid) {
-			return $v != $pid;
+		$res = $ids->map(function($id) use($pid) {
+			return RelationshipService::get($pid, $id);
 		});
-		$relations = Profile::whereNull('status')->findOrFail($filtered->values());
-		$fractal = new Fractal\Resource\Collection($relations, new RelationshipTransformer());
-		$res = $this->fractal->createData($fractal)->toArray();
 		return response()->json($res);
 	}
 

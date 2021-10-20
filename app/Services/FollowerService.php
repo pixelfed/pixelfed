@@ -17,12 +17,14 @@ class FollowerService
 
 	public static function add($actor, $target)
 	{
+		RelationshipService::refresh($actor, $target);
 		Redis::zadd(self::FOLLOWING_KEY . $actor, $target, $target);
 		Redis::zadd(self::FOLLOWERS_KEY . $target, $actor, $actor);
 	}
 
 	public static function remove($actor, $target)
 	{
+		RelationshipService::refresh($actor, $target);
 		Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
 		Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
 		Cache::forget('pf:services:follow:audience:' . $actor);

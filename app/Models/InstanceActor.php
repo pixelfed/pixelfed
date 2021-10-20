@@ -11,7 +11,7 @@ class InstanceActor extends Model
 
 	const PROFILE_BASE = '/i/actor';
 	const KEY_ID = '/i/actor#main-key';
-	const PROFILE_KEY = 'federation:_v2:instance:actor:profile';
+	const PROFILE_KEY = 'federation:_v3:instance:actor:profile';
 	const PKI_PUBLIC = 'federation:_v1:instance:actor:profile:pki_public';
 	const PKI_PRIVATE = 'federation:_v1:instance:actor:profile:pki_private';
 

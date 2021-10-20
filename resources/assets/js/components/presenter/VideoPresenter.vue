@@ -22,7 +22,7 @@
 			:alt="altText(status)"/>
 	</div>
 	<div v-else class="embed-responsive embed-responsive-16by9">
-		<video class="video" controls preload="metadata" loop :poster="status.media_attachments[0].preview_url" :data-id="status.id">
+		<video class="video" controls playsinline preload="metadata" loop :poster="status.media_attachments[0].preview_url" :data-id="status.id">
 			<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
 		</video>
 	</div>

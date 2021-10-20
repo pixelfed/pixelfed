@@ -10,34 +10,29 @@ class Nodeinfo {
 
 	public static function get()
 	{
-		$res = Cache::remember('api:nodeinfo', now()->addMinutes(15), function () {
-			$activeHalfYear = Cache::remember('api:nodeinfo:ahy', now()->addHours(12), function() {
-				// todo: replace with last_active_at after July 9, 2021 (96afc3e781)
-				$count = collect([]);
-				$likes = Like::select('profile_id')->with('actor')->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->get()->filter(function($like) {return $like->actor && $like->actor->domain == null;})->pluck('profile_id')->toArray();
-				$count = $count->merge($likes);
-				$statuses = Status::select('profile_id')->whereLocal(true)->where('created_at', '>', now()->subMonths(6)->toDateTimeString())->groupBy('profile_id')->pluck('profile_id')->toArray();
-				$count = $count->merge($statuses);
-				$profiles = User::select('profile_id', 'last_active_at')
-					->whereNotNull('last_active_at')
+		$res = Cache::remember('api:nodeinfo', 300, function () {
+			$activeHalfYear = Cache::remember('api:nodeinfo:ahy', 172800, function() {
+				return User::select('last_active_at')
 					->where('last_active_at', '>', now()->subMonths(6))
-					->pluck('profile_id')
-					->toArray();
-				$newProfiles = User::select('profile_id', 'last_active_at', 'created_at')
-					->whereNull('last_active_at')
-					->where('created_at', '>', now()->subMonths(6))
-					->pluck('profile_id')
-					->toArray();
-				$count = $count->merge($newProfiles);
-				$count = $count->merge($profiles);
-				return $count->unique()->count();
+					->orWhere('created_at', '>', now()->subMonths(6))
+					->count();
 			});
-			$activeMonth = Cache::remember('api:nodeinfo:am', now()->addHours(2), function() {
+
+			$activeMonth = Cache::remember('api:nodeinfo:am', 172800, function() {
 				return User::select('last_active_at')
 					->where('last_active_at', '>', now()->subMonths(1))
 					->orWhere('created_at', '>', now()->subMonths(1))
 					->count();
 			});
+
+			$users = Cache::remember('api:nodeinfo:users', 43200, function() {
+				return User::count();
+			});
+
+			$statuses = Cache::remember('api:nodeinfo:statuses', 21600, function() {
+				return Status::whereLocal(true)->count();
+			});
+
 			return [
 				'metadata' => [
 					'nodeName' => config_cache('app.name'),
@@ -59,10 +54,10 @@ class Nodeinfo {
 					'version'       => config('pixelfed.version'),
 				],
 				'usage' => [
-					'localPosts'    => Status::whereLocal(true)->count(),
+					'localPosts'    => $statuses,
 					'localComments' => 0,
 					'users'         => [
-						'total'          => User::count(),
+						'total'          => $users,
 						'activeHalfyear' => (int) $activeHalfYear,
 						'activeMonth'    => (int) $activeMonth,
 					],

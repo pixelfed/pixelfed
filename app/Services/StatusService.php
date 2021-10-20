@@ -40,6 +40,13 @@ class StatusService {
 		});
 	}
 
+	public static function getFull($id, $pid, $publicOnly = true)
+	{
+		$res = self::get($id, $publicOnly);
+		$res['relationship'] = RelationshipService::get($pid, $res['account']['id']);
+		return $res;
+	}
+
 	public static function del($id)
 	{
 		$status = self::get($id);

@@ -11,6 +11,12 @@ Route::post('i/actor/inbox', 'InstanceActorController@inbox');
 Route::get('i/actor/outbox', 'InstanceActorController@outbox');
 Route::get('/stories/{username}/{id}', 'StoryController@getActivityObject');
 
+Route::get('.well-known/webfinger', 'FederationController@webfinger')->name('well-known.webfinger');
+Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->name('well-known.nodeinfo');
+Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
+Route::redirect('.well-known/change-password', '/settings/password');
+Route::get('api/nodeinfo/2.0.json', 'FederationController@nodeinfo');
+
 Route::group(['prefix' => 'api'], function() use($middleware) {
 
 	Route::group(['prefix' => 'v1'], function() use($middleware) {
