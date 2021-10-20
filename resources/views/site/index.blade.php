@@ -116,7 +116,7 @@
 										@endif
 										<div class="form-group row mb-0">
 											<div class="col-md-12">
-												<button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold text-uppercase">
+												<button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold text-uppercase">
 													{{ __('Login') }}
 												</button>
 
@@ -127,7 +127,7 @@
 							</div>
 						</div>
 						<div class="card shadow-none border card-body">
-							<p class="text-center mb-0 font-weight-bold small">
+							<p class="text-center mb-0 font-weight-bold">
 								@if(config_cache('pixelfed.open_registration'))
 								<a href="/register">Register</a>
 								<span class="px-1">·</span>
