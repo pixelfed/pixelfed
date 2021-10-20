@@ -5,15 +5,12 @@ namespace App\Transformer\Api;
 use App\Notification;
 use App\Services\AccountService;
 use App\Services\HashidService;
+use App\Services\RelationshipService;
 use App\Services\StatusService;
 use League\Fractal;
 
 class NotificationTransformer extends Fractal\TransformerAbstract
 {
-	protected $defaultIncludes = [
-		// 'relationship',
-	];
-
 	public function transform(Notification $notification)
 	{
 		$res = [
@@ -23,21 +20,10 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		];
 
 		$n = $notification;
-		if($n->item_id && $n->item_type == 'App\Status' && in_array($n->action, ['group:comment'])) {
-			$status = $n->status;
-			$res['group_id'] = $status->group_id;
-
-			if($n->action == 'group:comment') {
-				$res['group_post_url'] = GroupPost::whereStatusId($status->id)->first()->url();
-			}
-		}
-
-		if(in_array($n->action, ['group.join.approved', 'group.join.rejected', 'group.like'])) {
-			$res['group'] = GroupService::get($n->item_id);
-		}
 
 		if($n->actor_id) {
 			$res['account'] = AccountService::get($n->actor_id);
+			$res['relationship'] = RelationshipService::get($n->actor_id, $n->profile_id);
 		}
 
 		if($n->item_id && $n->item_type == 'App\Status') {
@@ -88,10 +74,5 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 		}
 
 		return $verbs[$verb];
-	}
-
-	public function includeRelationship(Notification $notification)
-	{
-		return $this->item($notification->actor, new RelationshipTransformer());
 	}
 }
