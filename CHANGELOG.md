@@ -4,7 +4,18 @@
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
-- Update HttpSignatures, update instance actor headers. Fixes #2935. ([a900de21](https://github.com/pixelfed/pixelfed/commit/a900de21))
+- Updated HttpSignatures, update instance actor headers. Fixes #2935. ([a900de21](https://github.com/pixelfed/pixelfed/commit/a900de21))
+- Updated NoteTransformer, fix tag array. ([7b3e672d](https://github.com/pixelfed/pixelfed/commit/7b3e672d))
+- Updated video presenters, add playsinline attribute to video tags. ([0299aa5b](https://github.com/pixelfed/pixelfed/commit/0299aa5b))
+- Updated RemotePost, RemoteProfile components, add fallback avatars. ([754151dc](https://github.com/pixelfed/pixelfed/commit/754151dc))
+- Updated FederationController, move well-known to api middleware and cache webfinger lookups. ([4505d1f0](https://github.com/pixelfed/pixelfed/commit/4505d1f0))
+- Updated InstanceActorController, improve json seralization by not escaping slashes. ([0a8eb81b](https://github.com/pixelfed/pixelfed/commit/0a8eb81b))
+- Refactor following & relationship logic. Replace FollowerObserver with FollowerService and added RelationshipService to cache results. Removed NotificationTransformer includes and replaced with cached services to improve performance and reduce database queries. ([80d9b939](https://github.com/pixelfed/pixelfed/commit/80d9b939))
+- Updated PublicApiController, use AccountService in accountStatuses method. ([bef959f4](https://github.com/pixelfed/pixelfed/commit/bef959f4))
+- Updated auth config, add throttle limit to password resets. ([2609c86a](https://github.com/pixelfed/pixelfed/commit/2609c86a))
+- Updated StatusCard component, add relationship state button. ([0436b124](https://github.com/pixelfed/pixelfed/commit/0436b124))
+- Updated Timeline component, cascade relationship state change. ([f4bd5672](https://github.com/pixelfed/pixelfed/commit/f4bd5672))
+- Updated Activity component, only show context button for actionable activities. ([7886fd59](https://github.com/pixelfed/pixelfed/commit/7886fd59))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
