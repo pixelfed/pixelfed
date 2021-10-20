@@ -76,7 +76,7 @@ class RegisterController extends Controller
 					return $fail('Username is invalid. Can only contain one dash (-), period (.) or underscore (_).');
 				}
 
-				if (!ctype_alpha($value[0])) {
+				if (!ctype_alnum($value[0])) {
 					return $fail('Username is invalid. Must start with a letter or number.');
 				}
 

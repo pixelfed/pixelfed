@@ -23,4 +23,6 @@ return [
 	'reportSomething' => 'Nahlašování',
 	'dataPolicy' => 'Politika dat'
 
+	'taggingPeople' => 'Označování lidí'
+
 ];
