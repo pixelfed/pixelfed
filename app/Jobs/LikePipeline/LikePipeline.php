@@ -59,7 +59,7 @@ class LikePipeline implements ShouldQueue
             return;
         }
 
-        StatusService::del($status->id);
+        StatusService::refresh($status->id);
 
         if($status->url && $actor->domain == null) {
             return $this->remoteLikeDeliver();

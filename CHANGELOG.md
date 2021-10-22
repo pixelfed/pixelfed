@@ -17,6 +17,11 @@
 - Updated Timeline component, cascade relationship state change. ([f4bd5672](https://github.com/pixelfed/pixelfed/commit/f4bd5672))
 - Updated Activity component, only show context button for actionable activities. ([7886fd59](https://github.com/pixelfed/pixelfed/commit/7886fd59))
 - Updated Autospam service, use silent classification for better user experience. ([f0d4c172](https://github.com/pixelfed/pixelfed/commit/f0d4c172))
+- Updated Profile component, improve error messages when block/mute limit reached. ([02237845](https://github.com/pixelfed/pixelfed/commit/02237845))
+- Updated Activity component, fix missing types. ([5167c68d](https://github.com/pixelfed/pixelfed/commit/5167c68d))
+- Updated Timeline component, apply block/mute filters client side for local and network timelines. ([be194b8a](https://github.com/pixelfed/pixelfed/commit/be194b8a))
+- Updated public timeline api, use cached sorted set and client side block/mute filtering. ([37abcf38](https://github.com/pixelfed/pixelfed/commit/37abcf38))
+- Updated public timeline api, add experimental cache. ([192553ff](https://github.com/pixelfed/pixelfed/commit/192553ff))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)

@@ -202,6 +202,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::post('status/{id}/archive', 'ApiController@archive');
 				Route::post('status/{id}/unarchive', 'ApiController@unarchive');
 				Route::get('statuses/archives', 'ApiController@archivedPosts');
+				Route::get('mutes', 'AccountController@accountMutesV2');
+				Route::get('blocks', 'AccountController@accountBlocksV2');
+				Route::get('filters', 'AccountController@accountFiltersV2');
 			});
 		});
 

@@ -8,6 +8,8 @@ use App\Status;
 use App\Transformer\Api\AccountTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AccountService
 {
@@ -61,5 +63,23 @@ class AccountService
 
 		Cache::put($key, 1, 900);
 		return true;
+	}
+
+	public static function usernameToId($username)
+	{
+		$key = self::CACHE_KEY . 'u2id:' . hash('sha256', $username);
+		return Cache::remember($key, 900, function() use($username) {
+			$s = Str::of($username);
+			if($s->contains('@') && !$s->startsWith('@')) {
+				$username = "@{$username}";
+			}
+			$profile = DB::table('profiles')
+				->whereUsername($username)
+				->first();
+			if(!$profile) {
+				return null;
+			}
+			return (string) $profile->id;
+		});
 	}
 }

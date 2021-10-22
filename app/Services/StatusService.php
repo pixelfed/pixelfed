@@ -62,4 +62,12 @@ class StatusService {
 		Cache::forget(self::key($id, false));
 		return Cache::forget(self::key($id));
 	}
+
+	public static function refresh($id)
+	{
+		Cache::forget(self::key($id, false));
+		Cache::forget(self::key($id, true));
+		self::get($id, false);
+		self::get($id, true);
+	}
 }

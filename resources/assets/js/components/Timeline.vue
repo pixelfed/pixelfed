@@ -508,7 +508,8 @@
 				recentFeedMin: null,
 				recentFeedMax: null,
 				reactionBar: true,
-				emptyFeed: false
+				emptyFeed: false,
+				filters: []
 			}
 		},
 
@@ -567,7 +568,16 @@
 						break;
 					}
 				}
-				this.fetchTimelineApi();
+
+				if(this.scope != 'home') {
+					axios.get('/api/pixelfed/v2/filters')
+					.then(res => {
+						this.filters = res.data;
+						this.fetchTimelineApi();
+					});
+				} else {
+					this.fetchTimelineApi();
+				}
 			});
 		},
 
@@ -627,6 +637,12 @@
 						this.loading = false;
 						this.emptyFeed = true;
 						return;
+					}
+
+					if(this.filters.length) {
+						data = data.filter(d => {
+							return this.filters.includes(d.account.id) == false;
+						});
 					}
 
 					this.feed.push(...data);

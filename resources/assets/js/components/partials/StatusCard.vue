@@ -401,7 +401,7 @@
 					return false;
 				}
 
-				if(status.account.id === this.profile.id) {
+				if(status.account.id == this.profile.id) {
 					return false;
 				}
 
