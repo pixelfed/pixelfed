@@ -65,7 +65,7 @@
 
 							<div class="dropdown-menu dropdown-menu-right px-0 shadow" aria-labelledby="navbarDropdown" style="min-width: 220px;">
 								@if(config('federation.network_timeline'))
-								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+								<a class="dropdown-item lead" href="/">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-home text-lighter fa-lg"></span>
 									</span>
@@ -104,12 +104,6 @@
 									</span>
 									{{__('navmenu.discover')}}
 								</a>
-								{{-- <a class="dropdown-item lead" href="/groups">
-									<span style="width: 50px;margin-right:14px;">
-										<span class="fal fa-user-friends text-lighter"></span>
-									</span>
-									Groups
-								</a> --}}
 								@if(config_cache('instance.stories.enabled'))
 								<a class="dropdown-item lead" href="/i/stories/new">
 									<span style="width: 50px;margin-right:14px;">
