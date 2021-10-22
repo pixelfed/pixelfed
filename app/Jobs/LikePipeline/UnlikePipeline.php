@@ -63,7 +63,7 @@ class UnlikePipeline implements ShouldQueue
 		$status->likes_count = $count - 1;
 		$status->save();
 
-		StatusService::del($status->id);
+		StatusService::refresh($status->id);
 
 		if($actor->id !== $status->profile_id && $status->url && $actor->domain == null) {
 			$this->remoteLikeDeliver();

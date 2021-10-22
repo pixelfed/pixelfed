@@ -58,7 +58,8 @@ use App\Services\{
 	RelationshipService,
 	SearchApiV2Service,
 	StatusService,
-	MediaBlocklistService
+	MediaBlocklistService,
+	UserFilterService
 };
 use App\Util\Lexer\Autolink;
 
@@ -1487,6 +1488,7 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 3;
 		$user = $request->user();
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
 		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
 			if(PublicTimelineService::count() == 0) {
@@ -1510,6 +1512,9 @@ class ApiV1Controller extends Controller
 				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
 			}
 			return $status;
+		})
+		->filter(function($s) use($filtered) {
+			return in_array($s['account']['id'], $filtered) == false;
 		})
 		->toArray();
 		return response()->json($res);

@@ -39,7 +39,6 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 
-
 class PublicApiController extends Controller
 {
     protected $fractal;
@@ -288,31 +287,103 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
-			if(PublicTimelineService::count() == 0) {
-				PublicTimelineService::warmCache(true, 400);
+        if(config('exp.cached_public_timeline') == false) {
+	        if($min || $max) {
+	            $dir = $min ? '>' : '<';
+	            $id = $min ?? $max;
+	            $timeline = Status::select(
+	                        'id',
+	                        'profile_id',
+	                        'type',
+	                        'scope',
+	                        'local'
+	                      )
+	                      ->where('id', $dir, $id)
+	                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+	                      ->whereLocal(true)
+	                      ->whereScope('public')
+	                      ->orderBy('id', 'desc')
+	                      ->limit($limit)
+	                      ->get()
+	                      ->map(function($s) use ($user) {
+	                           $status = StatusService::getFull($s->id, $user->profile_id);
+	                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+	                           return $status;
+	                      })
+	                      ->filter(function($s) use($filtered) {
+	                      		return in_array($s['account']['id'], $filtered) == false;
+	                      });
+	            $res = $timeline->toArray();
+	        } else {
+	            $timeline = Status::select(
+	                        'id',
+	                        'uri',
+	                        'caption',
+	                        'rendered',
+	                        'profile_id',
+	                        'type',
+	                        'in_reply_to_id',
+	                        'reblog_of_id',
+	                        'is_nsfw',
+	                        'scope',
+	                        'local',
+	                        'reply_count',
+	                        'comments_disabled',
+	                        'created_at',
+	                        'place_id',
+	                        'likes_count',
+	                        'reblogs_count',
+	                        'updated_at'
+	                      )
+	                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+	                      ->with('profile', 'hashtags', 'mentions')
+	                      ->whereLocal(true)
+	                      ->whereScope('public')
+	                      ->orderBy('id', 'desc')
+	                      ->limit($limit)
+	                      ->get()
+	                      ->map(function($s) use ($user) {
+	                           $status = StatusService::getFull($s->id, $user->profile_id);
+	                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+	                           return $status;
+	                      })
+	                      ->filter(function($s) use($filtered) {
+	                      		return in_array($s['account']['id'], $filtered) == false;
+	                      });
+
+	            $res = $timeline->toArray();
+	        }
+        } else {
+	  		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+				if(PublicTimelineService::count() == 0) {
+					PublicTimelineService::warmCache(true, 400);
+				}
+			});
+
+			if ($max) {
+				$feed = PublicTimelineService::getRankedMaxId($max, $limit);
+			} else if ($min) {
+				$feed = PublicTimelineService::getRankedMinId($min, $limit);
+			} else {
+				$feed = PublicTimelineService::get(0, $limit);
 			}
-		});
 
-		if ($max) {
-			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
-		} else if ($min) {
-			$feed = PublicTimelineService::getRankedMinId($min, $limit);
-		} else {
-			$feed = PublicTimelineService::get(0, $limit);
-		}
-
-		$res = collect($feed)
-		->map(function($k) use($user) {
-			$status = StatusService::get($k);
-			if($user) {
-				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
-				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
-			}
-			return $status;
-		})
-		->toArray();
+			$res = collect($feed)
+			->map(function($k) use($user) {
+				$status = StatusService::get($k);
+				if($user) {
+					$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+					$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
+				}
+				return $status;
+			})
+			->filter(function($s) use($filtered) {
+				return in_array($s['account']['id'], $filtered) == false;
+			})
+			->toArray();
+        }
 
         return response()->json($res);
     }
