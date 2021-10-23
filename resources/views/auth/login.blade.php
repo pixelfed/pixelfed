@@ -8,7 +8,7 @@
                 <div class="card-header bg-transparent p-3 text-center font-weight-bold">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}" class="px-5">
+                    <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="form-group row">
@@ -42,7 +42,7 @@
                                 <div class="checkbox">
                                     <label>
                                         <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
-                                        <span class="font-weight-bold small ml-1 text-muted">
+                                        <span class="ml-1 text-muted">
                                             {{ __('Remember Me') }}
                                         </span>
                                     </label>
@@ -58,7 +58,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold">
                                     {{ __('Login') }}
                                 </button>
 
@@ -68,7 +68,7 @@
 
                     <hr>
 
-                    <p class="text-center small font-weight-bold mb-0">
+                    <p class="text-center">
                         <a href="{{ route('password.request') }}">
                             {{ __('Forgot Password') }}
                         </a>
