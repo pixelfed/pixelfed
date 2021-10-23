@@ -22,6 +22,7 @@
 - Updated Timeline component, apply block/mute filters client side for local and network timelines. ([be194b8a](https://github.com/pixelfed/pixelfed/commit/be194b8a))
 - Updated public timeline api, use cached sorted set and client side block/mute filtering. ([37abcf38](https://github.com/pixelfed/pixelfed/commit/37abcf38))
 - Updated public timeline api, add experimental cache. ([192553ff](https://github.com/pixelfed/pixelfed/commit/192553ff))
+- Updated dark mode styles, fix black box on stories. Closes #2982. ([3169f68e](https://github.com/pixelfed/pixelfed/commit/3169f68e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
