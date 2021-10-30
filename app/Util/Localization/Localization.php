@@ -11,7 +11,7 @@ class Localization {
 	{
 		return Cache::remember('core:localization:languages', now()->addDays(1), function() {
 			$dir = resource_path('lang');
-			return Arr::flatten(array_diff(scandir($dir), array('..', '.', 'vendor')));
+			return Arr::flatten(array_diff(scandir($dir), array('..', '.', 'vendor', '.DS_Store')));
 		});
 	}
 
