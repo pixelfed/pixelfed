@@ -236,17 +236,9 @@ class BaseApiController extends Controller
         abort_if(!$user, 403);
         if($user->status != null) {
             Auth::logout();
-            return redirect('/login');
+            abort(403);
         }
-        $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(5);
-        Cache::remember($key, $ttl, function() use($user) {
-            $user->last_active_at = now();
-            $user->save();
-            return;
-        });
-        $resource = new Fractal\Resource\Item($user->profile, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
+        $res = AccountService::get($user->profile_id);
         return response()->json($res);
     }
 
