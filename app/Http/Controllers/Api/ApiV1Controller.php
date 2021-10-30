@@ -122,6 +122,9 @@ class ApiV1Controller extends Controller
 	public function verifyCredentials(Request $request)
 	{
 		abort_if(!$request->user(), 403);
+
+		abort_if($request->user()->status != null, 403);
+
 		$id = $request->user()->profile_id;
 
 		$res = ProfileService::get($id);
