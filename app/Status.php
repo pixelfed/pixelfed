@@ -8,6 +8,7 @@ use App\HasSnowflakePrimary;
 use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Poll;
+use App\Services\AccountService;
 
 class Status extends Model
 {
@@ -108,8 +109,11 @@ class Status extends Model
 			return $forceLocal ? "/i/web/post/_/{$this->profile_id}/{$this->id}" : $this->uri;
 		} else {
 			$id = $this->id;
-			$username = $this->profile->username;
-			$path = url(config('app.url')."/p/{$username}/{$id}");
+			$account = AccountService::get($this->profile_id, true);
+			if(!$account || !isset($account['username'])) {
+				return '/404';
+			}
+			$path = url(config('app.url')."/p/{$account['username']}/{$id}");
 			return $path;
 		}
 	}

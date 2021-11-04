@@ -15,7 +15,7 @@ class AccountService
 {
 	const CACHE_KEY = 'pf:services:account:';
 
-	public static function get($id)
+	public static function get($id, $softFail = false)
 	{
 		if($id > PHP_INT_MAX || $id < 1) {
 			return [];
@@ -24,10 +24,16 @@ class AccountService
 		$key = self::CACHE_KEY . $id;
 		$ttl = now()->addHours(12);
 
-		return Cache::remember($key, $ttl, function() use($id) {
+		return Cache::remember($key, $ttl, function() use($id, $softFail) {
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
-			$profile = Profile::findOrFail($id);
+			$profile = Profile::find($id);
+			if(!$profile) {
+				if($softFail) {
+					return null;
+				}
+				abort(404);
+			}
 			$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
 			return $fractal->createData($resource)->toArray();
 		});	
