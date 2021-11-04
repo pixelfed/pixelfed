@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 
-$middleware = ['auth:api','twofactor','validemail'];
+$middleware = ['auth:api','validemail'];
 
 Route::post('/f/inbox', 'FederationController@sharedInbox');
 Route::post('/users/{username}/inbox', 'FederationController@userInbox');
@@ -76,7 +76,6 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::delete('statuses/{id}', 'Api\ApiV1Controller@statusDelete')->middleware($middleware);
 		Route::get('statuses/{id}', 'Api\ApiV1Controller@statusById')->middleware($middleware);
 		Route::post('statuses', 'Api\ApiV1Controller@statusCreate')->middleware($middleware);
-
 
 		Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
 		Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic')->middleware($middleware);
