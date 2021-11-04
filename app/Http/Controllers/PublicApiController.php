@@ -382,6 +382,7 @@ class PublicApiController extends Controller
 			->filter(function($s) use($filtered) {
 				return in_array($s['account']['id'], $filtered) == false;
 			})
+			->values()
 			->toArray();
         }
 
@@ -734,7 +735,7 @@ class PublicApiController extends Controller
                 $following = Follower::whereProfileId($pid)->pluck('following_id');
                 return $following->push($pid)->toArray();
             });
-            $visibility = true == in_array($profile->id, $following) ? ['public', 'unlisted', 'private'] : [];
+            $visibility = true == in_array($profile['id'], $following) ? ['public', 'unlisted', 'private'] : [];
         } else {
             if($user) {
                 $pid = $user->profile_id;

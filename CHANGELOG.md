@@ -24,6 +24,8 @@
 - Updated public timeline api, add experimental cache. ([192553ff](https://github.com/pixelfed/pixelfed/commit/192553ff))
 - Updated dark mode styles, fix black box on stories. Closes #2982. ([3169f68e](https://github.com/pixelfed/pixelfed/commit/3169f68e))
 - Updated verify_credentials api endpoint to improve performance. ([7df3540b](https://github.com/pixelfed/pixelfed/commit/7df3540b))
+- Updated Localization util, filter out .DS_Store. ([0107e8fd](https://github.com/pixelfed/pixelfed/commit/0107e8fd))
+- Updated PublicApiController, fix private account statuses api. Closes #2995. ([aa2dd26c](https://github.com/pixelfed/pixelfed/commit/aa2dd26c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
