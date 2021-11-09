@@ -15,11 +15,14 @@
 			@endif
 		</div>
 	</div>
-	@php($ai = App\AccountInterstitial::whereNotNull('appeal_requested_at')->whereNull('appeal_handled_at')->count())
-	@php($spam = App\AccountInterstitial::whereType('post.autospam')->whereNull('appeal_handled_at')->count())
-	@if($ai || $spam)
+
+	@if($ai || $spam || $mailVerifications)
 	<div class="col-12 col-md-8 offset-md-2">
 		<div class="mb-4">
+			<a class="btn btn-outline-primary px-5 py-3 mr-3" href="/i/admin/reports/email-verifications">
+				<p class="font-weight-bold h4 mb-0">{{$mailVerifications}}</p>
+				Email Verify {{$mailVerifications == 1 ? 'Request' : 'Requests'}}
+			</a>
 			<a class="btn btn-outline-primary px-5 py-3 mr-3" href="/i/admin/reports/appeals">
 				<p class="font-weight-bold h4 mb-0">{{$ai}}</p>
 				Appeal {{$ai == 1 ? 'Request' : 'Requests'}}

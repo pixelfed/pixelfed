@@ -14,6 +14,10 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::get('reports/appeals', 'AdminController@appeals');
 	Route::get('reports/appeal/{id}', 'AdminController@showAppeal');
 	Route::post('reports/appeal/{id}', 'AdminController@updateAppeal');
+	Route::get('reports/email-verifications', 'AdminController@reportMailVerifications');
+	Route::post('reports/email-verifications/ignore', 'AdminController@reportMailVerifyIgnore');
+	Route::post('reports/email-verifications/approve', 'AdminController@reportMailVerifyApprove');
+	Route::post('reports/email-verifications/clear-ignored', 'AdminController@reportMailVerifyClearIgnored');
 	Route::redirect('stories', '/stories/list');
 	Route::get('stories/list', 'AdminController@stories')->name('admin.stories');
 	Route::redirect('statuses', '/statuses/list');
@@ -273,6 +277,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 		Route::get('verify-email', 'AccountController@verifyEmail');
 		Route::post('verify-email', 'AccountController@sendVerifyEmail');
+		Route::get('verify-email/request', 'InternalApiController@requestEmailVerification');
+		Route::post('verify-email/request', 'InternalApiController@requestEmailVerificationStore');
 		Route::get('confirm-email/{userToken}/{randomToken}', 'AccountController@confirmVerifyEmail');
 
 		Route::get('auth/sudo', 'AccountController@sudoMode');
