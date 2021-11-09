@@ -21,7 +21,7 @@ class EmailVerificationCheck
 			is_null($request->user()->email_verified_at) &&
 			!$request->is(
 				'i/auth/*',
-				'i/verify-email',
+				'i/verify-email*',
 				'log*',
 				'site*',
 				'i/confirm-email/*',
