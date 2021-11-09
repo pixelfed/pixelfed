@@ -17,6 +17,7 @@ use App\{
 use DB, Cache;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Admin\{
 	AdminDiscoverController,
 	AdminInstanceController,
@@ -28,12 +29,13 @@ use App\Http\Controllers\Admin\{
 };
 use Illuminate\Validation\Rule;
 use App\Services\AdminStatsService;
+use App\Services\StatusService;
 use App\Services\StoryService;
 
 class AdminController extends Controller
 {
 	use AdminReportController, 
-	AdminDiscoverController, 
+	AdminDiscoverController,
 	AdminMediaController, 
 	AdminSettingsController, 
 	AdminInstanceController,
@@ -54,9 +56,15 @@ class AdminController extends Controller
 
 	public function statuses(Request $request)
 	{
-		$statuses = Status::orderBy('id', 'desc')->simplePaginate(10);
-
-		return view('admin.statuses.home', compact('statuses'));
+		$statuses = Status::orderBy('id', 'desc')->cursorPaginate(10);
+		$data = $statuses->map(function($status) {
+			return StatusService::get($status->id, false);
+		})
+		->filter(function($s) {
+			return $s;
+		})
+		->toArray();
+		return view('admin.statuses.home', compact('statuses', 'data'));
 	}
 
 	public function showStatus(Request $request, $id)
@@ -69,17 +77,45 @@ class AdminController extends Controller
 	public function reports(Request $request)
 	{
 		$filter = $request->input('filter') == 'closed' ? 'closed' : 'open';
-		$reports = Report::whereHas('status')
-		->whereHas('reportedUser')
-		->whereHas('reporter')
-		->orderBy('created_at','desc')
-		->when($filter, function($q, $filter) {
-			return $filter == 'open' ? 
-			$q->whereNull('admin_seen') :
-			$q->whereNotNull('admin_seen');
-		})
-		->paginate(6);
-		return view('admin.reports.home', compact('reports'));
+		$page = $request->input('page') ?? 1;
+
+		$ai = Cache::remember('admin-dash:reports:ai-count', 3600, function() {
+			return AccountInterstitial::whereNotNull('appeal_requested_at')->whereNull('appeal_handled_at')->count();
+		});
+
+		$spam = Cache::remember('admin-dash:reports:spam-count', 3600, function() {
+			return AccountInterstitial::whereType('post.autospam')->whereNull('appeal_handled_at')->count();
+		});
+
+		$mailVerifications = Redis::scard('email:manual');
+
+		if($filter == 'open' && $page == 1) {
+			$reports = Cache::remember('admin-dash:reports:list-cache', 300, function() use($page, $filter) {
+				return Report::whereHas('status')
+					->whereHas('reportedUser')
+					->whereHas('reporter')
+					->orderBy('created_at','desc')
+					->when($filter, function($q, $filter) {
+						return $filter == 'open' ?
+						$q->whereNull('admin_seen') :
+						$q->whereNotNull('admin_seen');
+					})
+					->paginate(6);
+			});
+		} else {
+			$reports = Report::whereHas('status')
+			->whereHas('reportedUser')
+			->whereHas('reporter')
+			->orderBy('created_at','desc')
+			->when($filter, function($q, $filter) {
+				return $filter == 'open' ?
+				$q->whereNull('admin_seen') :
+				$q->whereNotNull('admin_seen');
+			})
+			->paginate(6);
+		}
+
+		return view('admin.reports.home', compact('reports', 'ai', 'spam', 'mailVerifications'));
 	}
 
 	public function showReport(Request $request, $id)
@@ -143,7 +179,7 @@ class AdminController extends Controller
 
 			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
 			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
-
+			Cache::forget('admin-dash:reports:spam-count');
 			return redirect('/i/admin/reports/autospam');
 		}
 
@@ -156,8 +192,11 @@ class AdminController extends Controller
 		$appeal->appeal_handled_at = now();
 		$appeal->save();
 
+		StatusService::del($status->id);
+
 		Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
 		Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
+		Cache::forget('admin-dash:reports:spam-count');
 
 		return redirect('/i/admin/reports/autospam');
 	}
@@ -176,7 +215,7 @@ class AdminController extends Controller
 		if($action == 'dismiss') {
 			$appeal->appeal_handled_at = now();
 			$appeal->save();
-
+			Cache::forget('admin-dash:reports:ai-count');
 			return redirect('/i/admin/reports/appeals');
 		}
 
@@ -201,6 +240,8 @@ class AdminController extends Controller
 
 		$appeal->appeal_handled_at = now();
 		$appeal->save();
+		StatusService::del($status->id);
+		Cache::forget('admin-dash:reports:ai-count');
 
 		return redirect('/i/admin/reports/appeals');
 	}

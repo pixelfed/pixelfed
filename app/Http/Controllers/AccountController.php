@@ -75,7 +75,10 @@ class AccountController extends Controller
 
 	public function verifyEmail(Request $request)
 	{
-		return view('account.verify_email');
+		$recentSent = EmailVerification::whereUserId(Auth::id())
+		->whereDate('created_at', '>', now()->subHours(12))->count();
+
+		return view('account.verify_email', compact('recentSent'));
 	}
 
 	public function sendVerifyEmail(Request $request)

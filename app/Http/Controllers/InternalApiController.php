@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\{
 	AccountInterstitial,
+	Bookmark,
 	DirectMessage,
 	DiscoverCategory,
 	Hashtag,
@@ -19,6 +20,7 @@ use App\{
 	UserFilter,
 };
 use Auth,Cache;
+use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use League\Fractal;
 use App\Transformer\Api\{
@@ -345,14 +347,18 @@ class InternalApiController extends Controller
 
 	public function bookmarks(Request $request)
 	{
-		$statuses = Auth::user()->profile
-			->bookmarks()
-			->withCount(['likes','comments'])
-			->orderBy('created_at', 'desc')
-			->simplePaginate(10);
-
-		$resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = Bookmark::whereProfileId($request->user()->profile_id)
+			->orderByDesc('created_at')
+			->simplePaginate(10)
+			->map(function($bookmark) {
+				$status = StatusService::get($bookmark->status_id);
+				$status['bookmarked_at'] = $bookmark->created_at->format('c');
+				return $status;
+			})
+			->filter(function($bookmark) {
+				return isset($bookmark['id']);
+			})
+			->values();
 
 		return response()->json($res);
 	}
@@ -455,5 +461,19 @@ class InternalApiController extends Controller
 						->findOrFail($statusId);
 		$template = $status->in_reply_to_id ? 'status.reply' : 'status.remote';
 		return view($template, compact('user', 'status'));
+	}
+
+	public function requestEmailVerification(Request $request)
+	{
+		$pid = $request->user()->profile_id;
+		$exists = Redis::sismember('email:manual', $pid);
+		return view('account.email.request_verification', compact('exists'));
+	}
+
+	public function requestEmailVerificationStore(Request $request)
+	{
+		$pid = $request->user()->profile_id;
+		Redis::sadd('email:manual', $pid);
+		return redirect('/i/verify-email')->with(['status' => 'Successfully sent manual verification request!']);
 	}
 }

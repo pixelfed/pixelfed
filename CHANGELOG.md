@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.1...dev)
 
+### Added
+- Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
+
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
 - Updated HttpSignatures, update instance actor headers. Fixes #2935. ([a900de21](https://github.com/pixelfed/pixelfed/commit/a900de21))

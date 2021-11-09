@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use Cache;
 use App\Report;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
+use App\Services\AccountService;
+use App\Services\StatusService;
 
 trait AdminReportController
 {
@@ -33,6 +37,7 @@ trait AdminReportController
         $report = Report::findOrFail($id);
 
         $this->handleReportAction($report, $action);
+        Cache::forget('admin-dash:reports:list-cache');
 
         return response()->json(['msg'=> 'Success']);
     }
@@ -52,17 +57,20 @@ trait AdminReportController
                 $item->is_nsfw = true;
                 $item->save();
                 $report->nsfw = true;
+                StatusService::del($item->id);
                 break;
 
             case 'unlist':
                 $item->visibility = 'unlisted';
                 $item->save();
                 Cache::forget('profiles:private');
+                StatusService::del($item->id);
                 break;
 
             case 'delete':
                 // Todo: fire delete job
                 $report->admin_seen = null;
+                StatusService::del($item->id);
                 break;
 
             case 'shadowban':
@@ -114,5 +122,56 @@ trait AdminReportController
             'code'    => 200
         ];
         return response()->json($res);
+    }
+
+    public function reportMailVerifications(Request $request)
+    {
+    	$ids = Redis::smembers('email:manual');
+    	$ignored = Redis::smembers('email:manual-ignored');
+    	$reports = [];
+    	if($ids) {
+			$reports = collect($ids)
+				->filter(function($id) use($ignored) {
+					return !in_array($id, $ignored);
+				})
+				->map(function($id) {
+					$account = AccountService::get($id);
+					$user = User::whereProfileId($id)->first();
+					if(!$user) {
+						return [];
+					}
+					$account['email'] = $user->email;
+					return $account;
+				})
+				->filter(function($res) {
+					return isset($res['id']);
+				})
+				->values();
+    	}
+    	return view('admin.reports.mail_verification', compact('reports', 'ignored'));
+    }
+
+    public function reportMailVerifyIgnore(Request $request)
+    {
+    	$id = $request->input('id');
+    	Redis::sadd('email:manual-ignored', $id);
+    	return redirect('/i/admin/reports');
+    }
+
+    public function reportMailVerifyApprove(Request $request)
+    {
+    	$id = $request->input('id');
+    	$user = User::whereProfileId($id)->firstOrFail();
+    	Redis::srem('email:manual', $id);
+    	Redis::srem('email:manual-ignored', $id);
+    	$user->email_verified_at = now();
+    	$user->save();
+    	return redirect('/i/admin/reports');
+    }
+
+    public function reportMailVerifyClearIgnored(Request $request)
+    {
+    	Redis::del('email:manual-ignored');
+    	return [200];
     }
 }
