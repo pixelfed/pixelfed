@@ -95,26 +95,155 @@ trait AdminReportController
 
 	public function spam(Request $request)
 	{
-		$appeals = AccountInterstitial::whereType('post.autospam')
-			->whereNull('appeal_handled_at')
-			->latest()
-			->paginate(6);
-		return view('admin.reports.spam', compact('appeals'));
+		$this->validate($request, [
+			'tab' => 'sometimes|in:home,not-spam,spam,settings,custom,exemptions'
+		]);
+
+		$tab = $request->input('tab', 'home');
+
+		$openCount = Cache::remember('admin-dash:reports:spam-count', 3600, function() {
+			return AccountInterstitial::whereType('post.autospam')
+				->whereNull('appeal_handled_at')
+				->count();
+		});
+
+		$monthlyCount = Cache::remember('admin-dash:reports:spam-count:30d', 43200, function() {
+			return AccountInterstitial::whereType('post.autospam')
+				->where('created_at', '>', now()->subMonth())
+				->count();
+		});
+
+		$totalCount = Cache::remember('admin-dash:reports:spam-count:total', 43200, function() {
+			return AccountInterstitial::whereType('post.autospam')->count();
+		});
+
+		$uncategorized = Cache::remember('admin-dash:reports:spam-sync', 3600, function() {
+			return AccountInterstitial::whereType('post.autospam')
+				->whereIsSpam(null)
+				->whereNotNull('appeal_handled_at')
+				->exists();
+		});
+
+		$avg = Cache::remember('admin-dash:reports:spam-count:avg', 43200, function() {
+			if(config('database.default') != 'mysql') {
+				return 0;
+			}
+			return AccountInterstitial::selectRaw('*, count(id) as counter')
+				->whereType('post.autospam')
+				->groupBy('user_id')
+				->get()
+				->avg('counter');
+		});
+
+		$avgOpen = Cache::remember('admin-dash:reports:spam-count:avgopen', 43200, function() {
+			if(config('database.default') != 'mysql') {
+				return "0";
+			}
+			$seconds = AccountInterstitial::selectRaw('DATE(created_at) AS start_date, AVG(TIME_TO_SEC(TIMEDIFF(appeal_handled_at, created_at))) AS timediff')->whereType('post.autospam')->whereNotNull('appeal_handled_at')->where('created_at', '>', now()->subMonth())->get();
+			if(!$seconds) {
+				return "0";
+			}
+			$mins = floor($seconds->avg('timediff') / 60);
+
+			if($mins < 60) {
+				return $mins . ' min(s)';
+			}
+
+			if($mins < 2880) {
+				return floor($mins / 60) . ' hour(s)';
+			}
+
+			return floor($mins / 60 / 24) . ' day(s)';
+		});
+		$avgCount = $totalCount && $avg ? floor($totalCount / $avg) : "0";
+
+		if(in_array($tab, ['home', 'spam', 'not-spam'])) {
+			$appeals = AccountInterstitial::whereType('post.autospam')
+				->when($tab, function($q, $tab) {
+					switch($tab) {
+						case 'home':
+							return $q->whereNull('appeal_handled_at');
+						break;
+						case 'spam':
+							return $q->whereIsSpam(true);
+						break;
+						case 'not-spam':
+							return $q->whereIsSpam(false);
+						break;
+					}
+				})
+				->latest()
+				->paginate(6);
+
+			if($tab !== 'home') {
+				$appeals = $appeals->appends(['tab' => $tab]);
+			}
+		} else {
+			$appeals = new class {
+				public function count() {
+					return 0;
+				}
+
+				public function render() {
+					return;
+				}
+			};
+		}
+
+
+		return view('admin.reports.spam', compact('tab', 'appeals', 'openCount', 'monthlyCount', 'totalCount', 'avgCount', 'avgOpen', 'uncategorized'));
 	}
 
 	public function showSpam(Request $request, $id)
 	{
 		$appeal = AccountInterstitial::whereType('post.autospam')
-			->whereNull('appeal_handled_at')
 			->findOrFail($id);
 		$meta = json_decode($appeal->meta);
 		return view('admin.reports.show_spam', compact('appeal', 'meta'));
 	}
 
+	public function fixUncategorizedSpam(Request $request)
+	{
+		if(Cache::get('admin-dash:reports:spam-sync-active')) {
+			return redirect('/i/admin/reports/autospam');
+		}
+
+		Cache::put('admin-dash:reports:spam-sync-active', 1, 900);
+
+		AccountInterstitial::chunk(500, function($reports) {
+			foreach($reports as $report) {
+				if($report->item_type != 'App\Status') {
+					continue;
+				}
+
+				if($report->type != 'post.autospam') {
+					continue;
+				}
+
+				if($report->is_spam != null) {
+					continue;
+				}
+
+				$status = StatusService::get($report->item_id, false);
+				if(!$status) {
+					return;
+				}
+				$scope = $status['visibility'];
+				$report->is_spam = $scope == 'unlisted';
+				$report->in_violation = $report->is_spam;
+				$report->severity_index = 1;
+				$report->save();
+			}
+		});
+
+		Cache::forget('admin-dash:reports:spam-sync');
+		return redirect('/i/admin/reports/autospam');
+	}
+
 	public function updateSpam(Request $request, $id)
 	{
 		$this->validate($request, [
-			'action' => 'required|in:dismiss,approve'
+			'action' => 'required|in:dismiss,approve,dismiss-all,approve-all'
 		]);
 
 		$action = $request->input('action');
@@ -123,15 +252,57 @@ trait AdminReportController
 			->findOrFail($id);
 
 		$meta = json_decode($appeal->meta);
+		$res = ['status' => 'success'];
+		$now = now();
+		Cache::forget('admin-dash:reports:spam-count:total');
+		Cache::forget('admin-dash:reports:spam-count:30d');
 
 		if($action == 'dismiss') {
-			$appeal->appeal_handled_at = now();
+			$appeal->is_spam = true;
+			$appeal->appeal_handled_at = $now;
 			$appeal->save();
 
 			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
 			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
 			Cache::forget('admin-dash:reports:spam-count');
-			return redirect('/i/admin/reports/autospam');
+			return $res;
+		}
+
+		if($action == 'dismiss-all') {
+			AccountInterstitial::whereType('post.autospam')
+				->whereItemType('App\Status')
+				->whereNull('appeal_handled_at')
+				->whereUserId($appeal->user_id)
+				->update(['appeal_handled_at' => $now, 'is_spam' => true]);
+			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('admin-dash:reports:spam-count');
+			return $res;
+		}
+
+		if($action == 'approve-all') {
+			AccountInterstitial::whereType('post.autospam')
+				->whereItemType('App\Status')
+				->whereNull('appeal_handled_at')
+				->whereUserId($appeal->user_id)
+				->get()
+				->each(function($report) use($meta) {
+					$report->is_spam = false;
+					$report->appeal_handled_at = now();
+					$report->save();
+					$status = Status::find($report->item_id);
+					if($status) {
+						$status->is_nsfw = $meta->is_nsfw;
+						$status->scope = 'public';
+						$status->visibility = 'public';
+						$status->save();
+						StatusService::del($status->id);
+					}
+				});
+			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('admin-dash:reports:spam-count');
+			return $res;
 		}
 
 		$status = $appeal->status;
@@ -140,6 +311,7 @@ trait AdminReportController
 		$status->visibility = 'public';
 		$status->save();
 
+		$appeal->is_spam = false;
 		$appeal->appeal_handled_at = now();
 		$appeal->save();
 
@@ -149,7 +321,7 @@ trait AdminReportController
 		Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
 		Cache::forget('admin-dash:reports:spam-count');
 
-		return redirect('/i/admin/reports/autospam');
+		return $res;
 	}
 
 	public function updateAppeal(Request $request, $id)

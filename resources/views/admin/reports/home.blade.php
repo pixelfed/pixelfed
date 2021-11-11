@@ -16,7 +16,6 @@
 		</div>
 	</div>
 
-	@if($ai || $spam || $mailVerifications)
 	<div class="col-12 col-md-8 offset-md-2">
 		<div class="mb-4">
 			<a class="btn btn-outline-primary px-5 py-3 mr-3" href="/i/admin/reports/email-verifications">
@@ -33,7 +32,6 @@
 			</a>
 		</div>
 	</div>
-	@endif
 	@if($reports->count())
 	<div class="col-12 col-md-8 offset-md-2">
 		<div class="card shadow-none border">
@@ -43,7 +41,7 @@
 					<div class="p-0">
 						<div class="media d-flex align-items-center">
 							<a class="text-decoration-none" href="{{$report->url()}}">
-								<img src="{{$report->status->media->count() ? $report->status->thumb(true) : '/storage/no-preview.png'}}" width="64" height="64" class="rounded border shadow mr-3" style="object-fit: cover">
+								<img src="{{$report->status->media && $report->status->media->count() ? $report->status->thumb(true) : '/storage/no-preview.png'}}" width="64" height="64" class="rounded border shadow mr-3" style="object-fit: cover">
 							</a>
 							<div class="media-body">
 								<p class="mb-1 small"><span class="font-weight-bold text-uppercase text-danger">{{$report->type}}</span></p>
