@@ -8,8 +8,8 @@
 			<div class="collapse navbar-collapse">
 			@auth
 				<div class="navbar-nav d-none d-md-block mx-auto">
-				  <form class="form-inline search-bar" method="get" action="/i/results">
-					<input class="form-control form-control-sm rounded-pill bg-light" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required style="line-height: 0.6;width:200px" role="search">
+				  <form class="form-inline search-bar" method="get" action="/i/results" role="search">
+					<input class="form-control form-control-sm rounded-pill bg-light" name="q" placeholder="{{__('navmenu.search')}}" aria-label="search" autocomplete="off" required style="line-height: 0.6;width:200px">
 				  </form>
 				</div>
 			@endauth
