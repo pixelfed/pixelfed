@@ -10,6 +10,7 @@
 namespace App\Util\Lexer;
 
 use Illuminate\Support\Str;
+use App\Services\AutolinkService;
 
 /**
  * Twitter Autolink Class.
@@ -141,6 +142,12 @@ class Autolink extends Regex
     protected $extractor = null;
 
     /**
+     * @var autolinkActiveUsersOnly
+     */
+    protected $autolinkActiveUsersOnly = false;
+
+
+    /**
      * Provides fluent method chaining.
      *
      * @param string $tweet       The tweet to be converted.
@@ -183,6 +190,30 @@ class Autolink extends Regex
         $this->url_base_list = config('app.url').'/';
         $this->url_base_hash = config('app.url').'/discover/tags/';
         $this->url_base_cash = config('app.url').'/search?q=%24';
+    }
+
+    public function setBaseUserPath($path = '/')
+    {
+        $this->url_base_user = config('app.url') . $path;
+        $this->target = null;
+        $this->external = null;
+        return $this;
+    }
+
+    public function setBaseHashPath($path = '/discover/tags/')
+    {
+        $this->url_base_hash = config('app.url') . $path;
+        $this->target = null;
+        $this->external = null;
+        return $this;
+    }
+
+    public function setAutolinkActiveUsersOnly($active)
+    {
+    	$this->autolinkActiveUsersOnly = $active;
+    	$this->target = null;
+        $this->external = null;
+    	return $this;
     }
 
     /**
@@ -529,6 +560,14 @@ class Autolink extends Regex
         }
         $entities = $this->extractor->extractMentionsOrListsWithIndices($tweet);
 
+        if($this->autolinkActiveUsersOnly == true) {
+        	$entities = collect($entities)
+        		->filter(function($entity) {
+        			return AutolinkService::mentionedUsernameExists($entity['screen_name']);
+        		})
+        		->toArray();
+        }
+
         return $this->autoLinkEntities($tweet, $entities);
     }
 
@@ -707,8 +746,14 @@ class Autolink extends Regex
     public function linkToMentionAndList($entity)
     {
         $attributes = [];
-
         $screen_name = $entity['screen_name'];
+
+        if($this->autolinkActiveUsersOnly == true) {
+        	if(!AutolinkService::mentionedUsernameExists($screen_name)) {
+        		return Str::of($screen_name)->startsWith('@') ? $screen_name : "@{$screen_name}";
+        	}
+        }
+
         if (!empty($entity['list_slug'])) {
             // Replace the list and username
             $linkText = Str::startsWith($screen_name, '@') ? $screen_name : '@'.$screen_name;

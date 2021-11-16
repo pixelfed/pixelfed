@@ -5,7 +5,7 @@
 	"license": "AGPL-3.0-only",
 	"type": "project",
 	"require": {
-		"php": "^7.3",
+		"php": "^7.3|^7.4|^8.0",
 		"ext-bcmath": "*",
 		"ext-ctype": "*",
 		"ext-curl": "*",
@@ -13,7 +13,7 @@
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"ext-openssl": "*",
-		"beyondcode/laravel-self-diagnosis": "^1.0.2",
+		"beyondcode/laravel-self-diagnosis": "^1.0",
 		"brick/math": "^0.8",
 		"buzz/laravel-h-captcha": "1.0.2",
 		"doctrine/dbal": "^2.7",

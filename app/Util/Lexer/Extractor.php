@@ -11,6 +11,7 @@ namespace App\Util\Lexer;
 
 use Illuminate\Support\Str;
 use App\Status;
+use App\Services\AutolinkService;
 
 /**
  * Twitter Extractor Class.
@@ -33,6 +34,7 @@ class Extractor extends Regex
      * @var bool
      */
     protected $extractURLWithoutProtocol = true;
+    protected $activeUsersOnly = false;
 
     /**
      * Provides fluent method chaining.
@@ -46,6 +48,12 @@ class Extractor extends Regex
     public static function create($tweet = null)
     {
         return new self($tweet);
+    }
+
+    public function setActiveUsersOnly($active)
+    {
+    	$this->activeUsersOnly = $active;
+    	return $this;
     }
 
     /**
@@ -172,6 +180,12 @@ class Extractor extends Regex
         $mentionsWithIndices = $this->extractMentionsOrListsWithIndices($tweet);
 
         foreach ($mentionsWithIndices as $mentionWithIndex) {
+        	if($this->activeUsersOnly == true) {
+        		if(!AutolinkService::mentionedUsernameExists($mentionWithIndex['screen_name'])) {
+        			continue;
+        		}
+        	}
+
             $screen_name = mb_strtolower($mentionWithIndex['screen_name']);
             if (empty($screen_name) or in_array($screen_name, $usernamesOnly)) {
                 continue;
@@ -452,9 +466,13 @@ class Extractor extends Regex
             $start_position = $at[1] > 0 ? StringUtils::strlen(substr($tweet, 0, $at[1])) : $at[1];
             $end_position = $start_position + StringUtils::strlen($at[0]) + StringUtils::strlen($username[0]);
             $screenname = trim($all[0]) == '@'.$username[0] ? $username[0] : trim($all[0]);
-            if(config('app.env') == 'production' && \App\Profile::whereUsername($screenname)->exists() == false) {
-                continue;
-            }
+
+            if($this->activeUsersOnly == true) {
+        		if(!AutolinkService::mentionedUsernameExists($screenname)) {
+        			continue;
+        		}
+        	}
+
             $entity = [
                 'screen_name' => $screenname,
                 'list_slug'   => $list_slug[0],
