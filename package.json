@@ -22,9 +22,13 @@
         "sass-loader": "^7.3.1",
         "vue": "^2.6.11",
         "vue-masonry-css": "^1.0.3",
-        "vue-template-compiler": "^2.6.11"
+        "vue-router": "^3.5.1",
+        "vue-template-compiler": "^2.6.11",
+        "vuex": "^3.6.2",
+        "vuex-router-sync": "^5.0.0"
     },
     "dependencies": {
+        "@fancyapps/fancybox": "^3.5.7",
         "@trevoreyre/autocomplete-vue": "^2.2.0",
         "animate.css": "^4.1.0",
         "blurhash": "^1.1.3",
