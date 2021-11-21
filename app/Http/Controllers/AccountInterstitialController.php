@@ -50,7 +50,7 @@ class AccountInterstitialController extends Controller
 
         $ai = AccountInterstitial::whereUserId($user->id)
             ->whereType($request->input('type'))
-            ->findOrFail($id);
+            ->findOrFail((int)$id);
 
         if($action == 'appeal') {
             $ai->appeal_requested_at = now();

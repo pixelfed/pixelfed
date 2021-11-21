@@ -60,7 +60,7 @@ class CollectionController extends Controller
         ]);
 
         $profile = Auth::user()->profile;   
-        $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
+        $collection = Collection::whereProfileId($profile->id)->findOrFail((int)$id);
         $collection->title = e($request->input('title'));
         $collection->description = e($request->input('description'));
         $collection->visibility = e($request->input('visibility'));
@@ -78,7 +78,7 @@ class CollectionController extends Controller
             'visibility'    => 'required|alpha|in:public,private'
         ]);
         $profile = Auth::user()->profile;   
-        $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
+        $collection = Collection::whereProfileId($profile->id)->findOrFail((int)$id);
         if($collection->items()->count() == 0) {
             abort(404);
         }
@@ -96,7 +96,7 @@ class CollectionController extends Controller
         abort_if(!Auth::check(), 403);
         $user = Auth::user();
 
-        $collection = Collection::whereProfileId($user->profile_id)->findOrFail($id);
+        $collection = Collection::whereProfileId($user->profile_id)->findOrFail((int)$id);
         $collection->items()->delete();
         $collection->delete();
 
@@ -145,7 +145,7 @@ class CollectionController extends Controller
     {
         $profile = Auth::check() ? Auth::user()->profile : [];
 
-        $collection = Collection::whereVisibility('public')->findOrFail($id);
+        $collection = Collection::whereVisibility('public')->findOrFail((int)$id);
         if($collection->published_at == null) {
             if(!Auth::check() || $profile->id !== $collection->profile_id) {
                 abort(404);
@@ -180,7 +180,7 @@ class CollectionController extends Controller
     {
         $profile = Profile::whereNull('status')
             ->whereNull('domain')
-            ->findOrFail($id);
+            ->findOrFail((int)$id);
 
         if($profile->is_private) {
             abort_if(!Auth::check(), 404);

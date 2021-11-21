@@ -191,7 +191,7 @@ class ComposeController extends Controller
 		$media = Media::whereUserId($user->id)
 		->whereProfileId($user->profile_id)
 		->whereNull('status_id')
-		->findOrFail($id);
+		->findOrFail((int)$id);
 
 		$media->save();
 

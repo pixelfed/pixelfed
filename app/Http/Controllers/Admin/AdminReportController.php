@@ -88,7 +88,7 @@ trait AdminReportController
 	{
 		$appeal = AccountInterstitial::whereNotNull('appeal_requested_at')
 			->whereNull('appeal_handled_at')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 		$meta = json_decode($appeal->meta);
 		return view('admin.reports.show_appeal', compact('appeal', 'meta'));
 	}
@@ -197,7 +197,7 @@ trait AdminReportController
 	public function showSpam(Request $request, $id)
 	{
 		$appeal = AccountInterstitial::whereType('post.autospam')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 		$meta = json_decode($appeal->meta);
 		return view('admin.reports.show_spam', compact('appeal', 'meta'));
 	}
@@ -249,7 +249,7 @@ trait AdminReportController
 		$action = $request->input('action');
 		$appeal = AccountInterstitial::whereType('post.autospam')
 			->whereNull('appeal_handled_at')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		$meta = json_decode($appeal->meta);
 		$res = ['status' => 'success'];
@@ -333,7 +333,7 @@ trait AdminReportController
 		$action = $request->input('action');
 		$appeal = AccountInterstitial::whereNotNull('appeal_requested_at')
 			->whereNull('appeal_handled_at')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		if($action == 'dismiss') {
 			$appeal->appeal_handled_at = now();

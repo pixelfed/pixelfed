@@ -135,7 +135,7 @@ class AccountController extends Controller
 	{
 		$profile = Profile::where('id', '!=', $request->user()->profile_id)
 			// ->whereNull('domain')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 		return view('account.directmessage', compact('id'));
 	}
 
@@ -380,7 +380,7 @@ class AccountController extends Controller
 		$pid = Auth::user()->profile->id;
 		$action = $request->input('action') === 'accept' ? 'accept' : 'reject';
 		$id = $request->input('id');
-		$followRequest = FollowRequest::whereFollowingId($pid)->findOrFail($id);
+		$followRequest = FollowRequest::whereFollowingId($pid)->findOrFail((int)$id);
 		$follower = $followRequest->follower;
 
 		switch ($action) {

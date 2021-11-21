@@ -145,7 +145,7 @@ class StoryController extends StoryComposeController
 		$authed = $request->user()->profile;
 
 		$story = Story::with('profile')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 		$exp = $story->expires_at;
 
 		$profile = $story->profile;
@@ -262,7 +262,7 @@ class StoryController extends StoryComposeController
 		abort_if(!$request->hasHeader('Authorization'), 404);
 
 		$profile = Profile::whereUsername($username)->whereNull('domain')->firstOrFail();
-		$story = Story::whereActive(true)->whereProfileId($profile->id)->findOrFail($id);
+		$story = Story::whereActive(true)->whereProfileId($profile->id)->findOrFail((int)$id);
 
 		abort_if($story->bearcap_token == null, 404);
 		abort_if(now()->gt($story->expires_at), 404);

@@ -219,7 +219,7 @@ class PublicApiController extends Controller
     {
         abort_if(!$request->user(), 404);
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
-        $status = Status::whereProfileId($profile->id)->findOrFail($id);
+        $status = Status::whereProfileId($profile->id)->findOrFail((int)$id);
         $this->scopeCheck($profile, $status);
         $page = $request->input('page');
         if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
@@ -640,7 +640,7 @@ class PublicApiController extends Controller
     public function accountFollowers(Request $request, $id)
     {
         abort_unless(Auth::check(), 403);
-        $profile = Profile::with('user')->whereNull('status')->findOrFail($id);
+        $profile = Profile::with('user')->whereNull('status')->findOrFail((int)$id);
         $owner = Auth::id() == $profile->user_id;
 
         if(Auth::id() != $profile->user_id && $profile->is_private) {
@@ -671,7 +671,7 @@ class PublicApiController extends Controller
 
         $profile = Profile::with('user')
             ->whereNull('status')
-            ->findOrFail($id);
+            ->findOrFail((int)$id);
 
         // filter by username
         $search = $request->input('fbu');

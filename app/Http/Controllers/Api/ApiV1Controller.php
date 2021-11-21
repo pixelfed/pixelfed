@@ -149,7 +149,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountById(Request $request, $id)
 	{
-		$profile = Profile::whereNull('status')->findOrFail($id);
+		$profile = Profile::whereNull('status')->findOrFail((int)$id);
 		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 
@@ -223,7 +223,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
-		$profile = Profile::whereNull('status')->findOrFail($id);
+		$profile = Profile::whereNull('status')->findOrFail((int)$id);
 		$limit = $request->input('limit') ?? 40;
 
 		if($profile->domain) {
@@ -264,7 +264,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
-		$profile = Profile::whereNull('status')->findOrFail($id);
+		$profile = Profile::whereNull('status')->findOrFail((int)$id);
 		$limit = $request->input('limit') ?? 40;
 
 		if($profile->domain) {
@@ -316,7 +316,7 @@ class ApiV1Controller extends Controller
 			'limit' => 'nullable|integer|min:1|max:80'
 		]);
 
-		$profile = Profile::whereNull('status')->findOrFail($id);
+		$profile = Profile::whereNull('status')->findOrFail((int)$id);
 
 		$limit = $request->limit ?? 20;
 		$max_id = $request->max_id;
@@ -415,7 +415,7 @@ class ApiV1Controller extends Controller
 
 		$target = Profile::where('id', '!=', $user->profile_id)
 			->whereNull('status')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		$private = (bool) $target->is_private;
 		$remote = (bool) $target->domain;
@@ -504,7 +504,7 @@ class ApiV1Controller extends Controller
 
 		$target = Profile::where('id', '!=', $user->profile_id)
 			->whereNull('status')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		$private = (bool) $target->is_private;
 		$remote = (bool) $target->domain;
@@ -1167,7 +1167,7 @@ class ApiV1Controller extends Controller
 
 		$media = Media::whereUserId($user->id)
 			->whereNull('status_id')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		$media->caption = $request->input('description');
 		$media->save();
@@ -1860,7 +1860,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$status = Status::whereProfileId($request->user()->profile->id)
-		->findOrFail($id);
+		->findOrFail((int)$id);
 
 		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
 
@@ -2066,7 +2066,7 @@ class ApiV1Controller extends Controller
 
 		$status = Status::whereNull('uri')
 			->whereScope('public')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		Bookmark::firstOrCreate([
 			'status_id' => $status->id,
@@ -2090,7 +2090,7 @@ class ApiV1Controller extends Controller
 
 		$status = Status::whereNull('uri')
 			->whereScope('public')
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		Bookmark::firstOrCreate([
 			'status_id' => $status->id,

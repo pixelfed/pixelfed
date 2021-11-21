@@ -146,8 +146,8 @@ class BaseApiController extends Controller
         $since_id = $request->since_id ?? false;
         $only_media = $request->only_media ?? false;
         $user = Auth::user();
-        $account = Profile::whereNull('status')->findOrFail($id);
-        $statuses = $account->statuses()->getQuery(); 
+        $account = Profile::whereNull('status')->findOrFail((int)$id);
+        $statuses = $account->statuses()->getQuery();
         if($only_media == true) {
             $statuses = $statuses
                 ->whereIn('scope', ['public','unlisted'])
@@ -289,7 +289,7 @@ class BaseApiController extends Controller
         $status = Status::whereNull('in_reply_to_id')
             ->whereNull('reblog_of_id')
             ->whereProfileId($request->user()->profile_id)
-            ->findOrFail($id);
+            ->findOrFail((int)$id);
 
         if($status->scope === 'archived') {
             return [200];
@@ -317,7 +317,7 @@ class BaseApiController extends Controller
         $status = Status::whereNull('in_reply_to_id')
             ->whereNull('reblog_of_id')
             ->whereProfileId($request->user()->profile_id)
-            ->findOrFail($id);
+            ->findOrFail((int)$id);
 
         if($status->scope !== 'archived') {
             return [200];

@@ -140,7 +140,7 @@ class StoryComposeController extends Controller
 		$x = round($request->input('x'));
 		$y = round($request->input('y'));
 
-		$story = Story::whereProfileId($user->profile_id)->findOrFail($id);
+		$story = Story::whereProfileId($user->profile_id)->findOrFail((int)$id);
 
 		$path = storage_path('app/' . $story->path);
 
@@ -177,7 +177,7 @@ class StoryComposeController extends Controller
 		$id = $request->input('media_id');
 		$user = $request->user();
 		$story = Story::whereProfileId($user->profile_id)
-			->findOrFail($id);
+			->findOrFail((int)$id);
 
 		$story->active = true;
 		$story->duration = $request->input('duration', 10);
@@ -202,7 +202,7 @@ class StoryComposeController extends Controller
 		$user = $request->user();
 
 		$story = Story::whereProfileId($user->profile_id)
-			->findOrFail($id);
+			->findOrFail((int)$id);
 		$story->active = false;
 		$story->save();
 

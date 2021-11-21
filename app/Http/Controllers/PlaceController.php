@@ -12,7 +12,7 @@ class PlaceController extends Controller
 {
     public function show(Request $request, $id, $slug)
     {
-    	$place = Place::whereSlug($slug)->findOrFail($id);
+    	$place = Place::whereSlug($slug)->findOrFail((int)$id);
     	$posts = Status::wherePlaceId($place->id)
             ->whereNull('uri')
     		->whereScope('public')
