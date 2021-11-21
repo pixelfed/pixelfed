@@ -14,6 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
+            \Illuminate\Support\Facades\DB::statement('SET SESSION sql_require_primary_key=0');
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->string('username')->nullable()->unique()->index();
