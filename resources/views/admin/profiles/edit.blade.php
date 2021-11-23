@@ -174,6 +174,7 @@
           <form method="post" action="/i/admin/users/moderation/update" class="pb-3">
             @csrf
             <input type="hidden" name="profile_id" value="{{$profile->id}}">
+            <input type="hidden" name="action" value="cw">
             <button class="btn btn-outline-primary py-0 font-weight-bold">Enforce CW</button>
             <p class="help-text text-muted font-weight-bold small">Adds a CW to every post made by this account.</p>
           </form>
@@ -182,6 +183,7 @@
           <form method="post" action="/i/admin/users/moderation/update" class="pb-3">
             @csrf
             <input type="hidden" name="profile_id" value="{{$profile->id}}">
+            <input type="hidden" name="action" value="unlisted" />
             <button class="btn btn-outline-primary py-0 font-weight-bold">Unlisted Posts</button>
             <p class="help-text text-muted font-weight-bold small">Removes account from public/network timelines.</p>
           </form>
@@ -190,6 +192,7 @@
           <form method="post" action="/i/admin/users/moderation/update" class="pb-3">
             @csrf
             <input type="hidden" name="profile_id" value="{{$profile->id}}">
+            <input type="hidden" name="action" value="no_autolink" />
             <button class="btn btn-outline-primary py-0 font-weight-bold">No Autolinking</button>
             <p class="help-text text-muted font-weight-bold small">Do not transform mentions, hashtags or urls into HTML.</p>
           </form>
