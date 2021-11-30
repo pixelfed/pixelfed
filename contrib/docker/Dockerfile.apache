@@ -1,10 +1,10 @@
-FROM php:7.4-apache-buster
+FROM php:7.4-apache-bullseye
 
 # Use the default production configuration
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # Install Composer
-ENV COMPOSER_VERSION=1.10.11 \
+ENV COMPOSER_VERSION=2.1.14 \
     COMPOSER_HOME=/var/www/.composer \
     COMPOSER_MEMORY_LIMIT=-1 \
     PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
