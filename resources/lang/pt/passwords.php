@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'As senhas devem ter no mínimo 6 caracteres e serem idênticas à confirmação.',
-    'reset'    => 'Sua senha foi redefinida!',
-    'sent'     => 'Se seu email existe em nossa base de dados, você receberá um link para prosseguir com a recuperação de sua senha em alguns minutos. Verifique sua caixa de spam se não receber o email.',
-    'token'    => 'O token de redefinição de senha é inválido.',
-    'user'     => 'Se seu email existe em nossa base de dados, você receberá um link para prosseguir com a recuperação de sua senha em alguns minutos. Verifique sua caixa de spam se não receber o email.',
+    'password' => 'As palavras-passe devem ter pelo menos seis caracteres e corresponder à confirmação.',
+    'reset'    => 'A sua palavra-passe foi redefinida!',
+    'sent'     => 'Se o teu endereço de e-mail existir na nossa base de dados, receberás um link de recuperação da palavras-passe no teu endereço de e-mail dentro de alguns minutos. Por favor veja na sua pasta de spam e verifique se não recebeu este e-mail.',
+    'token'    => 'Este link de recuperação da palavras-passe é inválido.',
+    'user'     => 'Se o teu endereço de e-mail existir na nossa base de dados, receberás um link de recuperação da palavras-passe no teu endereço de e-mail dentro de alguns minutos. Por favor veja na sua pasta de spam e verifique se não recebeu este e-mail.',
 
 ];
