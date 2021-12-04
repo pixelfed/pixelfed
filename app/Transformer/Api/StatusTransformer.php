@@ -12,6 +12,7 @@ use App\Services\MediaService;
 use App\Services\MediaTagService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusLabelService;
+use App\Services\StatusMentionService;
 use App\Services\ProfileService;
 use Illuminate\Support\Str;
 use App\Services\PollService;
@@ -37,7 +38,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'created_at'                => $status->created_at->format('c'),
 			'emojis'                    => [],
 			'reblogs_count'             => 0,
-			'favourites_count'          => 0,
+			'favourites_count'          => $status->likes_count ?? 0,
 			'reblogged'                 => $status->shared(),
 			'favourited'                => $status->liked(),
 			'muted'                     => null,
@@ -50,7 +51,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			 ],
 			'language'                  => null,
 			'pinned'                    => null,
-			'mentions'                  => [],
+			'mentions'                  => StatusMentionService::get($status->id),
 			'tags'                      => [],
 			'pf_type'                   => $status->type ?? $status->setType(),
 			'reply_count'               => (int) $status->reply_count,
