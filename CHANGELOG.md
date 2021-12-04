@@ -4,6 +4,7 @@
 
 ### Added
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
+- Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
