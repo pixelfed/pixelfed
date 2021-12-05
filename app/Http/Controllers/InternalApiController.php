@@ -17,6 +17,7 @@ use App\{
 	Profile,
 	StatusHashtag,
 	Status,
+	User,
 	UserFilter,
 };
 use Auth,Cache;
@@ -194,9 +195,12 @@ class InternalApiController extends Controller
 		$item_id = $request->input('item_id');
 		$item_type = $request->input('item_type');
 
+		$status = Status::findOrFail($item_id);
+		$author = User::whereProfileId($status->profile_id)->first();
+		abort_if($author && $author->is_admin, 422, 'Cannot moderate administrator accounts');
+
 		switch($action) {
 			case 'addcw':
-				$status = Status::findOrFail($item_id);
 				$status->is_nsfw = true;
 				$status->save();
 				ModLogService::boot()
@@ -211,7 +215,6 @@ class InternalApiController extends Controller
 					])
 					->accessLevel('admin')
 					->save();
-
 
 				if($status->uri == null) {
 					$media = $status->media;
@@ -243,7 +246,6 @@ class InternalApiController extends Controller
 			break;
 
 			case 'remcw':
-				$status = Status::findOrFail($item_id);
 				$status->is_nsfw = false;
 				$status->save();
 				ModLogService::boot()
@@ -269,7 +271,6 @@ class InternalApiController extends Controller
 			break;
 
 			case 'unlist':
-				$status = Status::whereScope('public')->findOrFail($item_id);
 				$status->scope = $status->visibility = 'unlisted';
 				$status->save();
 				PublicTimelineService::del($status->id);
@@ -316,7 +317,6 @@ class InternalApiController extends Controller
 			break;
 
 			case 'spammer':
-				$status = Status::findOrFail($item_id);
 				HandleSpammerPipeline::dispatch($status->profile);
 				ModLogService::boot()
 					->user(Auth::user())
@@ -333,10 +333,7 @@ class InternalApiController extends Controller
 			break;
 		}
 
-		Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
-		Cache::forget('profile:embed:' . $status->profile_id);
 		StatusService::del($status->id);
-
 		return ['msg' => 200];
 	}
 
