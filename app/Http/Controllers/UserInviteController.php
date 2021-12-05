@@ -9,19 +9,16 @@ use Illuminate\Support\Str;
 
 class UserInviteController extends Controller
 {
-	public function __construct()
-	{
-		abort_if(!config('pixelfed.user_invites.enabled'), 404);
-	}
-
 	public function create(Request $request)
 	{
+		abort_if(!config('pixelfed.user_invites.enabled'), 404);
 		abort_unless(Auth::check(), 403);
 		return view('settings.invites.create');
 	}
 
 	public function show(Request $request)
 	{
+		abort_if(!config('pixelfed.user_invites.enabled'), 404);
 		abort_unless(Auth::check(), 403);
 		$invites = UserInvite::whereUserId(Auth::id())->paginate(10);
 		$limit = config('pixelfed.user_invites.limit.total');
@@ -31,6 +28,7 @@ class UserInviteController extends Controller
 
 	public function store(Request $request)
 	{
+		abort_if(!config('pixelfed.user_invites.enabled'), 404);
 		abort_unless(Auth::check(), 403);
 		$this->validate($request, [
 			'email' => 'required|email|unique:users|unique:user_invites',

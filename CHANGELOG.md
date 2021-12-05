@@ -4,6 +4,7 @@
 
 ### Added
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
+- Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
@@ -31,6 +32,7 @@
 - Updated PublicApiController, fix private account statuses api. Closes #2995. ([aa2dd26c](https://github.com/pixelfed/pixelfed/commit/aa2dd26c))
 - Updated Status model, use AccountService to generate urls instead of loading profile relation. ([2ae527c0](https://github.com/pixelfed/pixelfed/commit/2ae527c0))
 - Updated Autospam service, add mark all as read and mark all as not spam options and filter active, spam and not spam reports. ([ae8c7517](https://github.com/pixelfed/pixelfed/commit/ae8c7517))
+- Updated UserInviteController, fixes #3017. ([b8e9056e](https://github.com/pixelfed/pixelfed/commit/b8e9056e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
