@@ -12,6 +12,9 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Str;
+use App\Services\AccountService;
+use App\Services\HashtagService;
+use App\Services\StatusService;
 
 class SearchApiV2Service
 {
@@ -86,19 +89,27 @@ class SearchApiV2Service
 
 	protected function accounts()
 	{
+		$user = request()->user();
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
 		$query = '%' . $this->query->input('q') . '%';
-		$results = Profile::whereNull('status')
+		$results = Profile::select('profiles.*', 'followers.profile_id', 'followers.created_at')
+			->whereNull('status')
+			->leftJoin('followers', function($join) use($user) {
+				return $join->on('profiles.id', '=', 'followers.following_id')
+					->where('followers.profile_id', $user->profile_id);
+			})
 			->where('username', 'like', $query)
+			->orderByDesc('profiles.followers_count')
+			->orderByDesc('followers.created_at')
 			->offset($offset)
 			->limit($limit)
-			->get();
+			->get()
+			->map(function($res) {
+				return AccountService::get($res['id']);
+			});
 
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Collection($results, new AccountTransformer());
-		return $fractal->createData($resource)->toArray();
+		return $results;
 	}
 
 	protected function hashtags()
@@ -115,6 +126,7 @@ class SearchApiV2Service
 				return [
 					'name' => $tag->name,
 					'url'  => $tag->url(),
+					'count' => HashtagService::count($tag->id),
 					'history' => []
 				];
 			});
@@ -134,12 +146,11 @@ class SearchApiV2Service
 		$results = Status::where('caption', 'like', $query)
 			->whereProfileId($accountId)
 			->limit($limit)
-			->get();
-
-		$fractal = new Fractal\Manager();
-		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Collection($results, new StatusTransformer());
-		return $fractal->createData($resource)->toArray();
+			->get()
+			->map(function($status) {
+				return StatusService::get($status->id);
+			});
+		return $results;
 	}
 
 	protected function resolveQuery()
