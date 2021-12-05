@@ -55,7 +55,6 @@ class Bouncer {
 		}
 
 		if( $status->profile->created_at->gt(now()->subMonths(6)) &&
-			$status->profile->status_count < 2 &&
 			$status->profile->bio &&
 			$status->profile->website
 		) {
