@@ -47,6 +47,20 @@ class StatusService {
 		return $res;
 	}
 
+	public static function getDirectMessage($id)
+	{
+		$status = Status::whereScope('direct')->find($id);
+
+		if(!$status) {
+			return null;
+		}
+
+		$fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
+		return $fractal->createData($resource)->toArray();
+	}
+
 	public static function del($id)
 	{
 		$status = self::get($id);
