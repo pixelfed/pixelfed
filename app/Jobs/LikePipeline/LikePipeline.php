@@ -2,7 +2,7 @@
 
 namespace App\Jobs\LikePipeline;
 
-use Cache, Log;
+use Cache, DB, Log;
 use Illuminate\Support\Facades\Redis;
 use App\{Like, Notification};
 use Illuminate\Bus\Queueable;
@@ -58,6 +58,9 @@ class LikePipeline implements ShouldQueue
             // Ignore notifications to deleted statuses
             return;
         }
+
+        $status->likes_count = DB::table('likes')->whereStatusId($status->id)->count();
+        $status->save();
 
         StatusService::refresh($status->id);
 
