@@ -33,6 +33,12 @@
 - Updated Status model, use AccountService to generate urls instead of loading profile relation. ([2ae527c0](https://github.com/pixelfed/pixelfed/commit/2ae527c0))
 - Updated Autospam service, add mark all as read and mark all as not spam options and filter active, spam and not spam reports. ([ae8c7517](https://github.com/pixelfed/pixelfed/commit/ae8c7517))
 - Updated UserInviteController, fixes #3017. ([b8e9056e](https://github.com/pixelfed/pixelfed/commit/b8e9056e))
+- Updated AccountService, add dynamic user settings methods. ([2aa73c1f](https://github.com/pixelfed/pixelfed/commit/2aa73c1f))
+- Updated MediaStorageService, improve header parsing. ([9d9e9ce7](https://github.com/pixelfed/pixelfed/commit/9d9e9ce7))
+- Updated SearchApiV2Service, improve performance and include hashtag post counts when applicable ([fbaed93e](https://github.com/pixelfed/pixelfed/commit/fbaed93e))
+- Updated AccountTransformer, add note_text and location fields. ([98f76abb](https://github.com/pixelfed/pixelfed/commit/98f76abb))
+- Updated UserSetting model, cast compose_settings and other as json. ([03420278](https://github.com/pixelfed/pixelfed/commit/03420278))
+- Updated ApiV1Controller, improve settings and add discoverPosts endpoint. ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
