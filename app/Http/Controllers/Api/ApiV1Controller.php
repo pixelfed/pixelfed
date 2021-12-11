@@ -42,6 +42,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Http\Controllers\StatusController;
 
 use App\Jobs\AvatarPipeline\AvatarOptimize;
+use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -1799,9 +1800,9 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-
+		$res = StatusService::get($status->id);
+		$res['favourited'] = LikeService::liked($user->profile_id, $status->id);
+		$res['reblogged'] = false;
 		return response()->json($res);
 	}
 
@@ -2114,6 +2115,9 @@ class ApiV1Controller extends Controller
 		}
 
 		NewStatusPipeline::dispatch($status);
+		if($status->in_reply_to_id) {
+        	CommentPipeline::dispatch($parent, $status);
+		}
 		Cache::forget('user:account:id:'.$user->id);
 		Cache::forget('_api:statuses:recent_9:'.$user->profile_id);
 		Cache::forget('profile:status_count:'.$user->profile_id);
