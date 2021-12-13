@@ -333,7 +333,7 @@ class InternalApiController extends Controller
 			break;
 		}
 
-		StatusService::del($status->id);
+		StatusService::del($status->id, true);
 		return ['msg' => 200];
 	}
 

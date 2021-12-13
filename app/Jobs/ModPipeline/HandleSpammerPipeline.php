@@ -41,7 +41,7 @@ class HandleSpammerPipeline implements ShouldQueue
 					$status->scope = $status->scope === 'public' ? 'unlisted' : $status->scope;
 					$status->visibility = $status->scope;
 					$status->save();
-					StatusService::del($status->id);
+					StatusService::del($status->id, true);
 				}
 		});
 
