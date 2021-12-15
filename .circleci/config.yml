@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # Specify the version you desire here
-      - image: circleci/php:7.3-cli-stretch-node
+      - image: cimg/php:7.4.26
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
