@@ -1024,7 +1024,6 @@ export default {
 	},
 
 	beforeMount() {
-		this.fetchProfile();
 		this.filters = window.App.util.filters;
 		axios.get('/api/compose/v0/settings')
 		.then(res => {
@@ -1038,6 +1037,7 @@ export default {
 					return l.title;
 				})[0];
 			}
+			this.fetchProfile();
 		});
 	},
 
@@ -1047,8 +1047,18 @@ export default {
 
 	methods: {
 		fetchProfile() {
+			let tags = {
+				public: 'Public',
+				private: 'Followers Only',
+				unlisted: 'Unlisted'
+			}
 			if(window._sharedData.curUser.id) {
 				this.profile = window._sharedData.curUser;
+				if(this.composeSettings && this.composeSettings.hasOwnProperty('default_scope') && this.composeSettings.default_scope) {
+					let ds = this.composeSettings.default_scope;
+					this.visibility = ds;
+					this.visibilityTag = tags[ds];
+				}
 				if(this.profile.locked == true) {
 					this.visibility = 'private';
 					this.visibilityTag = 'Followers Only';
@@ -1057,6 +1067,11 @@ export default {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					window._sharedData.currentUser = res.data;
 					this.profile = res.data;
+					if(this.composeSettings && this.composeSettings.hasOwnProperty('default_scope') && this.composeSettings.default_scope) {
+						let ds = this.composeSettings.default_scope;
+						this.visibility = ds;
+						this.visibilityTag = tags[ds];
+					}
 					if(this.profile.locked == true) {
 						this.visibility = 'private';
 						this.visibilityTag = 'Followers Only';
