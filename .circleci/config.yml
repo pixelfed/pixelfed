@@ -22,7 +22,6 @@ jobs:
       - checkout
 
       - run: sudo apt update && sudo apt install zlib1g-dev libsqlite3-dev
-      - run: sudo -E docker-php-ext-install bcmath pcntl zip
 
       # Download and cache dependencies
 
