@@ -46,6 +46,11 @@
 - Updated ApiV1Controller, improve statusesById perf and dispatch CommentPipeline job when applicable. ([466286af](https://github.com/pixelfed/pixelfed/commit/466286af))
 - Updated MediaService, return empty array if cant find status. ([c2910e5d](https://github.com/pixelfed/pixelfed/commit/c2910e5d))
 - Updated StatusService, improve cache invalidation. ([83b48b56](https://github.com/pixelfed/pixelfed/commit/83b48b56))
+- Updated Hashtag component, fix spinner. ([fefbc44a](https://github.com/pixelfed/pixelfed/commit/fefbc44a))
+- Updated NotificationCard, update api endpoint and add group notification types. ([e09a14d8](https://github.com/pixelfed/pixelfed/commit/e09a14d8))
+- Updated ContextMenu component, fix account url paths. ([01ca1edd](https://github.com/pixelfed/pixelfed/commit/01ca1edd))
+- Updated PollCard component, add showBorder prop. ([0c8fffbd](https://github.com/pixelfed/pixelfed/commit/0c8fffbd))
+- Updated PhotoPresenter component, add lightbox toggle. ([0cc1365f](https://github.com/pixelfed/pixelfed/commit/0cc1365f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
