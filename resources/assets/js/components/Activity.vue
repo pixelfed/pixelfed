@@ -89,6 +89,18 @@
 								</p>
 							</div>
 
+							<div v-else-if="n.type == 'group.join.approved'">
+								<p class="my-0">
+									Your application to join <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> was approved!
+								</p>
+							</div>
+
+							<div v-else-if="n.type == 'group.join.rejected'">
+								<p class="my-0">
+									Your application to join <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> was rejected. You can re-apply to join in 6 months.
+								</p>
+							</div>
+
 							<div class="align-items-center">
 								<span class="small text-muted" data-toggle="tooltip" data-placement="bottom" :title="n.created_at">{{timeAgo(n.created_at)}}</span>
 							</div>

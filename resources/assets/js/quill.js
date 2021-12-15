@@ -1,1 +1,0 @@
-window.Quill = require('quill');

@@ -636,7 +636,7 @@
 			},
 
 			statusUrl(status) {
-				if(status.local == true) {
+				if(status.account.local == true) {
 					return status.url;
 				}
 
@@ -644,7 +644,7 @@
 			},
 
 			profileUrl(status) {
-				if(status.local == true) {
+				if(status.account.local == true) {
 					return status.account.url;
 				}
 
