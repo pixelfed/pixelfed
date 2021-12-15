@@ -77,7 +77,7 @@ class SharePipeline implements ShouldQueue
 
 		$parent->reblogs_count = $parent->shares()->count();
 		$parent->save();
-		StatusService::del($parent);
+		StatusService::del($parent->id);
 
 		try {
 			$notification = new Notification;
