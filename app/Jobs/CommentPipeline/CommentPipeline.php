@@ -91,7 +91,7 @@ class CommentPipeline implements ShouldQueue
 
             NotificationService::setNotification($notification);
             NotificationService::set($notification->profile_id, $notification->id);
-            StatusService::del($status->id);
+            StatusService::del($comment->id);
         });
     }
 }
