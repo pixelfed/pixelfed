@@ -1,6 +1,4 @@
-@extends('admin.partial.template')
-
-@include('admin.settings.sidebar')
+@extends('admin.partial.template-full')
 
 @section('section')
   <div class="title">
@@ -20,7 +18,7 @@
             <span>Slug</span>
           </th>
           <th scope="col" class="border-0" width="15%">
-            <span>Active</span>
+            <span>State</span>
           </th>
           <th scope="col" class="border-0" width="30%">
             <span>Updated</span>
@@ -34,7 +32,11 @@
             <a href="{{$page->editUrl()}}">{{$page->id}}</a>
           </th>
           <td>{{$page->slug}}</td>
-          <td>{{$page->active ? 'active':'inactive'}}</td>
+          @if($page->active)
+          <td class="text-success font-weight-bold">Live</td>
+          @else
+          <td class="text-muted">Draft</td>
+          @endif
           <td>{{$page->updated_at->diffForHumans(null, true, true, true)}}</td>
         </tr>
         @endforeach
