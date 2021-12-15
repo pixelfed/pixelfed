@@ -56,7 +56,7 @@ class UndoSharePipeline implements ShouldQueue
 			StatusService::del($parent->id);
 		}
 
-		$status->delete();
+		$status->forceDelete();
 
 		return 1;
 	}

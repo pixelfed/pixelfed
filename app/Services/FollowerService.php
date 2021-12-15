@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Redis;
 use Cache;
+use DB;
 use App\{
 	Follower,
 	Profile,
@@ -12,6 +13,7 @@ use App\{
 
 class FollowerService
 {
+	const CACHE_KEY = 'pf:services:followers:';
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
 	const FOLLOWERS_KEY = 'pf:services:follow:followers:id:';
 
@@ -83,6 +85,31 @@ class FollowerService
 				})
 				->unique()
 				->values()
+				->toArray();
+		});
+	}
+
+	public static function mutualCount($pid, $mid)
+	{
+		return Cache::remember(self::CACHE_KEY . ':mutualcount:' . $pid . ':' . $mid, 3600, function() use($pid, $mid) {
+			return DB::table('followers as u')
+				->join('followers as s', 'u.following_id', '=', 's.following_id')
+				->where('s.profile_id', $mid)
+				->where('u.profile_id', $pid)
+				->count();
+		});
+	}
+
+	public static function mutualIds($pid, $mid, $limit = 3)
+	{
+		$key = self::CACHE_KEY . ':mutualids:' . $pid . ':' . $mid . ':limit_' . $limit;
+		return Cache::remember($key, 3600, function() use($pid, $mid, $limit) {
+			return DB::table('followers as u')
+				->join('followers as s', 'u.following_id', '=', 's.following_id')
+				->where('s.profile_id', $mid)
+				->where('u.profile_id', $pid)
+				->limit($limit)
+				->pluck('s.following_id')
 				->toArray();
 		});
 	}

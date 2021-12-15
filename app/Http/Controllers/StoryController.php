@@ -68,6 +68,11 @@ class StoryController extends StoryComposeController
 				'avatar' => $profile['avatar'],
 				'local' => $profile['local'],
 				'username'	=> $profile['acct'],
+				'latest' => [
+					'id' => $s->id,
+					'type' => $s->type,
+					'preview_url' => url(Storage::url($s->path))
+				],
 				'url' => $url,
 				'seen' => StoryService::hasSeen($pid, StoryService::latest($s->profile_id)),
 				'sid' => $s->id
