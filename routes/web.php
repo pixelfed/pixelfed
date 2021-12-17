@@ -47,9 +47,6 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::get('media/show/{id}', 'AdminController@mediaShow');
 	Route::get('settings', 'AdminController@settings')->name('admin.settings');
 	Route::post('settings', 'AdminController@settingsHomeStore');
-	Route::get('settings/config', 'AdminController@settingsConfig')->name('admin.settings.config');
-	Route::post('settings/config', 'AdminController@settingsConfigStore');
-	Route::post('settings/config/restore', 'AdminController@settingsConfigRestore');
 	Route::get('settings/features', 'AdminController@settingsFeatures')->name('admin.settings.features');
 	Route::get('settings/pages', 'AdminController@settingsPages')->name('admin.settings.pages');
 	Route::get('settings/pages/edit', 'PageController@edit')->name('admin.settings.pages.edit');

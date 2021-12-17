@@ -11,9 +11,11 @@ use App\AccountInterstitial;
 use App\Media;
 use App\Profile;
 use App\Status;
+use App\StatusArchived;
 use App\StatusView;
 use App\Transformer\ActivityPub\StatusTransformer;
 use App\Transformer\ActivityPub\Verb\Note;
+use App\Transformer\ActivityPub\Verb\Question;
 use App\User;
 use Auth, DB, Cache;
 use Illuminate\Http\Request;
@@ -81,16 +83,7 @@ class StatusController extends Controller
 
 	public function shortcodeRedirect(Request $request, $id)
 	{
-		abort_if(strlen($id) < 5, 404);
-		if(!Auth::check()) {
-			return redirect('/login?next='.urlencode('/' . $request->path()));
-		}
-		$id = HashidService::decode($id);
-		$status = Status::find($id);
-		if(!$status) {
-			return redirect('/404');
-		}
-		return redirect($status->url());
+		abort(404);
 	}
 
 	public function showId(int $id)
@@ -215,7 +208,7 @@ class StatusController extends Controller
 		Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
 		Cache::forget('profile:status_count:' . $status->profile_id);
 		Cache::forget('profile:embed:' . $status->profile_id);
-		StatusService::del($status->id);
+		StatusService::del($status->id, true);
 		if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
 			Cache::forget('profile:status_count:'.$status->profile_id);
 			StatusDelete::dispatch($status);
@@ -278,8 +271,9 @@ class StatusController extends Controller
 
 	public function showActivityPub(Request $request, $status)
 	{
+		$object = $status->type == 'poll' ? new Question() : new Note();
 		$fractal = new Fractal\Manager();
-		$resource = new Fractal\Resource\Item($status, new Note());
+		$resource = new Fractal\Resource\Item($status, $object);
 		$res = $fractal->createData($resource)->toArray();
 
 		return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);

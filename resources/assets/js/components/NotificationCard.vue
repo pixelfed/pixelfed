@@ -11,7 +11,7 @@
 				<div v-if="profile.locked" class="media align-items-center mt-n2 px-3 py-2 border-bottom border-lighter bg-light cursor-pointer" @click="redirect('/account/follow-requests')">
 					<div class="media-body font-weight-light pt-2 small d-flex align-items-center justify-content-between">
 						<p class="mb-0 text-lighter"><i class="fas fa-cog text-light"></i></p>
-						<p class="text-center pt-1 mb-1 text-dark font-weight-bold"><strong>{{followRequests.count}}</strong> Follow Requests</p>
+						<p class="text-center pt-1 mb-1 text-dark font-weight-bold"><strong>{{ followRequests && followRequests.hasOwnProperty('count') ? followRequests.count : 0 }}</strong> Follow Requests</p>
 						<p class="mb-0 text-lighter"><i class="fas fa-chevron-right"></i></p>
 					</div>
 				</div>
@@ -82,6 +82,25 @@
 								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> sent a <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">dm</a>.
 							</p>
 						</div>
+
+						<div v-else-if="n.type == 'group.join.approved'">
+							<p class="my-0">
+								Your application to join the <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> group was approved!
+							</p>
+						</div>
+
+						<div v-else-if="n.type == 'group.join.rejected'">
+							<p class="my-0">
+								Your application to join <a :href="n.group.url" class="font-weight-bold text-dark word-break" :title="n.group.name">{{truncate(n.group.name)}}</a> was rejected.
+							</p>
+						</div>
+
+						<div v-else-if="n.type == 'group:invite'">
+							<p class="my-0">
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> invited you to join <a :href="n.group.url + '/invite/claim'" class="font-weight-bold text-dark word-break" :title="n.group.name">{{n.group.name}}</a>.
+							</p>
+						</div>
+
 						<div v-else>
 							<p class="my-0">
 								We cannot display this notification at this time.
@@ -146,7 +165,7 @@
 
 		methods: {
 			fetchNotifications() {
-				axios.get('/api/pixelfed/v1/notifications?pg=true')
+				axios.get('/api/v1/notifications?pg=true')
 				.then(res => {
 					let data = res.data.filter(n => {
 						if(n.type == 'share' && !n.status) {

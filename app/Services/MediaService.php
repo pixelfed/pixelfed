@@ -19,6 +19,9 @@ class MediaService
 	public static function get($statusId)
 	{
 		$status = Status::find($statusId);
+		if(!$status) {
+			return [];
+		}
 		$ttl = $status->created_at->lt(now()->subMinutes(30)) ? 129600 : 30;
 		return Cache::remember(self::CACHE_KEY.$statusId, $ttl, function() use($status) {
 			if(!$status) {

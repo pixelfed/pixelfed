@@ -82,7 +82,7 @@ return [
         ],
 
         'backup' => [
-            'driver' => env('PF_BACKUP_DRIVER', 'local'),
+            'driver' => env('PF_BACKUP_DRIVER', 's3'),
             'visibility' => 'private',
             'root' => env('PF_BACKUP_DRIVER', 'local') == 'local' ?
                 storage_path('app/backups/') :

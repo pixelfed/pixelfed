@@ -109,8 +109,8 @@
 			<p class="text-center lead font-weight-bold">No public posts found.</p>
 		</div>
 	</div>
-	<div v-else class="container text-center">
-		<div class="col-12 mt-5 spinner-border" role="status">
+	<div v-else class="mt-5 text-center">
+		<div class="spinner-border" role="status">
 			<span class="sr-only">Loading...</span>
 		</div>
 	</div>

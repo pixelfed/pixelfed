@@ -73,14 +73,11 @@ class CommentController extends Controller
             $reply->visibility = $scope;
             $reply->save();
 
-            $status->reply_count++;
-            $status->save();
-
             return $reply;
         });
 
         StatusService::del($status->id);
-        NewStatusPipeline::dispatch($reply, false);
+        NewStatusPipeline::dispatch($reply);
         CommentPipeline::dispatch($status, $reply);
 
         if ($request->ajax()) {
@@ -89,11 +86,11 @@ class CommentController extends Controller
             $entity = new Fractal\Resource\Item($reply, new StatusTransformer());
             $entity = $fractal->createData($entity)->toArray();
             $response = [
-                'code' => 200, 
-                'msg' => 'Comment saved', 
-                'username' => $profile->username, 
-                'url' => $reply->url(), 
-                'profile' => $profile->url(), 
+                'code' => 200,
+                'msg' => 'Comment saved',
+                'username' => $profile->username,
+                'url' => $reply->url(),
+                'profile' => $profile->url(),
                 'comment' => $reply->caption,
                 'entity' => $entity,
             ];

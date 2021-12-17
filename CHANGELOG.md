@@ -2,8 +2,13 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.1...dev)
 
+### Breaking
+- Dropped support for PHP 7.3 [#3041](https://github.com/pixelfed/pixelfed/pull/3041)
+
 ### Added
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
+- Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
+- Cloud Backups, a command to store backups on S3 or compatible filesystems. [#3037](https://github.com/pixelfed/pixelfed/pull/3037) ([3515a98e](https://github.com/pixelfed/pixelfed/commit/3515a98e))
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
@@ -31,6 +36,24 @@
 - Updated PublicApiController, fix private account statuses api. Closes #2995. ([aa2dd26c](https://github.com/pixelfed/pixelfed/commit/aa2dd26c))
 - Updated Status model, use AccountService to generate urls instead of loading profile relation. ([2ae527c0](https://github.com/pixelfed/pixelfed/commit/2ae527c0))
 - Updated Autospam service, add mark all as read and mark all as not spam options and filter active, spam and not spam reports. ([ae8c7517](https://github.com/pixelfed/pixelfed/commit/ae8c7517))
+- Updated UserInviteController, fixes #3017. ([b8e9056e](https://github.com/pixelfed/pixelfed/commit/b8e9056e))
+- Updated AccountService, add dynamic user settings methods. ([2aa73c1f](https://github.com/pixelfed/pixelfed/commit/2aa73c1f))
+- Updated MediaStorageService, improve header parsing. ([9d9e9ce7](https://github.com/pixelfed/pixelfed/commit/9d9e9ce7))
+- Updated SearchApiV2Service, improve performance and include hashtag post counts when applicable ([fbaed93e](https://github.com/pixelfed/pixelfed/commit/fbaed93e))
+- Updated AccountTransformer, add note_text and location fields. ([98f76abb](https://github.com/pixelfed/pixelfed/commit/98f76abb))
+- Updated UserSetting model, cast compose_settings and other as json. ([03420278](https://github.com/pixelfed/pixelfed/commit/03420278))
+- Updated ApiV1Controller, improve settings and add discoverPosts endpoint. ([079804e6](https://github.com/pixelfed/pixelfed/commit/079804e6))
+- Updated LikePipeline jobs, fix likes_count calculation. ([fe64e187](https://github.com/pixelfed/pixelfed/commit/fe64e187))
+- Updated InternalApiController, prevent moderation actions against admin accounts. ([945a7e49](https://github.com/pixelfed/pixelfed/commit/945a7e49))
+- Updated CommentPipeline, move reply_count calculation to comment pipeline job and improve count calculation. ([b6b0837f](https://github.com/pixelfed/pixelfed/commit/b6b0837f))
+- Updated ApiV1Controller, improve statusesById perf and dispatch CommentPipeline job when applicable. ([466286af](https://github.com/pixelfed/pixelfed/commit/466286af))
+- Updated MediaService, return empty array if cant find status. ([c2910e5d](https://github.com/pixelfed/pixelfed/commit/c2910e5d))
+- Updated StatusService, improve cache invalidation. ([83b48b56](https://github.com/pixelfed/pixelfed/commit/83b48b56))
+- Updated Hashtag component, fix spinner. ([fefbc44a](https://github.com/pixelfed/pixelfed/commit/fefbc44a))
+- Updated NotificationCard, update api endpoint and add group notification types. ([e09a14d8](https://github.com/pixelfed/pixelfed/commit/e09a14d8))
+- Updated ContextMenu component, fix account url paths. ([01ca1edd](https://github.com/pixelfed/pixelfed/commit/01ca1edd))
+- Updated PollCard component, add showBorder prop. ([0c8fffbd](https://github.com/pixelfed/pixelfed/commit/0c8fffbd))
+- Updated PhotoPresenter component, add lightbox toggle. ([0cc1365f](https://github.com/pixelfed/pixelfed/commit/0cc1365f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)

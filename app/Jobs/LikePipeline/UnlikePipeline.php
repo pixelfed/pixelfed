@@ -2,7 +2,7 @@
 
 namespace App\Jobs\LikePipeline;
 
-use Cache, Log;
+use Cache, DB, Log;
 use Illuminate\Support\Facades\Redis;
 use App\{Like, Notification};
 use Illuminate\Bus\Queueable;
@@ -59,9 +59,8 @@ class UnlikePipeline implements ShouldQueue
 			return;
 		}
 
-		$count = $status->likes_count > 1 ? $status->likes_count : $status->likes()->count();
-		$status->likes_count = $count - 1;
-		$status->save();
+		$status->likes_count = DB::table('likes')->whereStatusId($status->id)->count();
+        $status->save();
 
 		StatusService::refresh($status->id);
 

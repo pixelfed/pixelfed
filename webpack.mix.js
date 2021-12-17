@@ -3,8 +3,7 @@ let mix = require('laravel-mix');
 mix.sass('resources/assets/sass/app.scss', 'public/css')
 .sass('resources/assets/sass/appdark.scss', 'public/css')
 .sass('resources/assets/sass/admin.scss', 'public/css')
-.sass('resources/assets/sass/landing.scss', 'public/css')
-.sass('resources/assets/sass/quill.scss', 'public/css').version();
+.sass('resources/assets/sass/landing.scss', 'public/css').version();
 
 mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/activity.js', 'public/js')
@@ -18,10 +17,6 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/search.js', 'public/js')
 .js('resources/assets/js/developers.js', 'public/js')
 .js('resources/assets/js/loops.js', 'public/js')
-.js('resources/assets/js/quill.js', 'public/js')
-.js('resources/assets/js/lib/ace/ace.js', 'public/js')
-.js('resources/assets/js/lib/ace/mode-dot.js', 'public/js')
-.js('resources/assets/js/lib/ace/theme-monokai.js', 'public/js')
 .js('resources/assets/js/hashtag.js', 'public/js')
 .js('resources/assets/js/collectioncompose.js', 'public/js')
 .js('resources/assets/js/collections.js', 'public/js')

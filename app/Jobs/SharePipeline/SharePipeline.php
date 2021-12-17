@@ -15,6 +15,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\Announce;
 use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\StatusService;
 
 class SharePipeline implements ShouldQueue
 {
@@ -76,6 +77,7 @@ class SharePipeline implements ShouldQueue
 
 		$parent->reblogs_count = $parent->shares()->count();
 		$parent->save();
+		StatusService::del($parent->id);
 
 		try {
 			$notification = new Notification;

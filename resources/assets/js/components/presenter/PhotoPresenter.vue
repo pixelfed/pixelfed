@@ -29,7 +29,8 @@
 				:alt="altText(status)"
 				:width="width()"
 				:height="height()"
-				onerror="this.onerror=null;this.src='/storage/no-preview.png'">
+				onerror="this.onerror=null;this.src='/storage/no-preview.png'"
+				@click.prevent="toggleLightbox">
 
 				<p v-if="!status.sensitive && sensitive"
 					@click="status.sensitive = true"
@@ -114,6 +115,10 @@
 
 			toggleContentWarning(status) {
 				this.$emit('togglecw');
+			},
+
+			toggleLightbox() {
+				this.$emit('lightbox');
 			},
 
 			width() {

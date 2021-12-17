@@ -296,7 +296,7 @@ trait AdminReportController
 						$status->scope = 'public';
 						$status->visibility = 'public';
 						$status->save();
-						StatusService::del($status->id);
+						StatusService::del($status->id, true);
 					}
 				});
 			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
@@ -363,7 +363,7 @@ trait AdminReportController
 
 		$appeal->appeal_handled_at = now();
 		$appeal->save();
-		StatusService::del($status->id);
+		StatusService::del($status->id, true);
 		Cache::forget('admin-dash:reports:ai-count');
 
 		return redirect('/i/admin/reports/appeals');
@@ -413,20 +413,20 @@ trait AdminReportController
                 $item->is_nsfw = true;
                 $item->save();
                 $report->nsfw = true;
-                StatusService::del($item->id);
+                StatusService::del($item->id, true);
                 break;
 
             case 'unlist':
                 $item->visibility = 'unlisted';
                 $item->save();
                 Cache::forget('profiles:private');
-                StatusService::del($item->id);
+                StatusService::del($item->id, true);
                 break;
 
             case 'delete':
                 // Todo: fire delete job
                 $report->admin_seen = null;
-                StatusService::del($item->id);
+                StatusService::del($item->id, true);
                 break;
 
             case 'shadowban':

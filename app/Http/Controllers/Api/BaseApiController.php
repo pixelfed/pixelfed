@@ -304,7 +304,7 @@ class BaseApiController extends Controller
         $status->scope = 'archived';
         $status->visibility = 'draft';
         $status->save();
-        StatusService::del($status->id);
+        StatusService::del($status->id, true);
         AccountService::syncPostCount($status->profile_id);
 
         return [200];
@@ -331,7 +331,7 @@ class BaseApiController extends Controller
         $status->visibility = $archive->original_scope;
         $status->save();
         $archive->delete();
-        StatusService::del($status->id);
+        StatusService::del($status->id, true);
         AccountService::syncPostCount($status->profile_id);
 
         return [200];

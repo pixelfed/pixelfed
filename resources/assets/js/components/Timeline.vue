@@ -450,7 +450,7 @@
 				replyStatus: {},
 				replyText: '',
 				replyNsfw: false,
-				emoji: window.App.util.emoji,
+				emoji: [],
 				showHashtagPosts: false,
 				hashtagPosts: [],
 				hashtagPostsName: '',
@@ -514,21 +514,6 @@
 		},
 
 		beforeMount() {
-			// let avop = window.localStorage.getItem('pf.feed:avop') === 'always';
-			// let u = new URLSearchParams(window.location.search);
-			// if(u.has('a')) {
-			// 	switch(u.get('a')) {
-			// 		case 'recent_feed':
-			// 			if(this.scope === 'home') {
-			// 				this.recentFeed = true;
-			// 			}
-			// 		break;
-			// 		case 'vop':
-			// 			this.recentFeed = false;
-			// 		break;
-			// 	}
-			// }
-			// this.recentFeed = avop ? false : this.recentFeed;
 			this.fetchProfile();
 		},
 
@@ -589,17 +574,13 @@
 
 		methods: {
 			fetchProfile() {
-				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
+				axios.get('/api/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;
 					if(this.profile.is_admin == true) {
 						this.modes.mod = true;
 					}
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
-					// this.$nextTick(() => {
-					// 	this.hasStory();
-					// });
-					// this.expRec();
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -633,7 +614,7 @@
 				}).then(res => {
 					let data = res.data;
 
-					if(!data.length) {
+					if(!data || !data.length) {
 						this.loading = false;
 						this.emptyFeed = true;
 						return;
@@ -651,32 +632,15 @@
 					this.min_id = Math.max(...ids).toString();
 					this.max_id = Math.min(...ids).toString();
 					this.loading = false;
-					// $('.timeline .pagination').removeClass('d-none');
-
-					// if(this.hashtagPosts.length == 0) {
-					// 	this.fetchHashtagPosts();
-					// }
 					this.$nextTick(() => {
 						this.hasStory();
 					});
-					// this.fetchStories();
-					// this.rtw();
 
 					setTimeout(function() {
 						document.querySelectorAll('.timeline .card-body .comments .comment-body a').forEach(function(i, e) {
 							i.href = App.util.format.rewriteLinks(i);
 						});
 					}, 500);
-
-					// axios.get('/api/pixelfed/v2/discover/posts/trending', {
-					// 	params: {
-					// 		range: 'daily'
-					// 	}
-					// }).then(res => {
-					// 	let data = res.data.filter(post => this.ids.indexOf(post.id) === -1);
-					// 	this.discover_feed = data;
-					// });
-
 				}).catch(err => {
 					swal(
 						'Oops, something went wrong',
@@ -733,8 +697,8 @@
 								self.feed.push(d);
 								self.ids.push(d.id);
 								// vids.push({
-								// 	sid: d.id,
-								// 	pid: d.account.id
+								//  sid: d.id,
+								//  pid: d.account.id
 								// });
 							}
 						});
@@ -744,7 +708,7 @@
 						$state.loaded();
 						this.loading = false;
 						// axios.post('/api/status/view', {
-						// 	'_v': vids,
+						//  '_v': vids,
 						// });
 					} else {
 						$state.complete();
@@ -915,11 +879,6 @@
 					}
 					$('.postCommentsLoader').addClass('d-none');
 					$('.postCommentsContainer').removeClass('d-none');
-					// setTimeout(function() {
-					// 	document.querySelectorAll('.status-comment .postCommentsContainer .comment-body a').forEach(function(i, e) {
-					// 		i.href = App.util.format.rewriteLinks(i);
-					// 	});
-					// }, 500);
 				}).catch(error => {
 					if(!error.response) {
 						$('.postCommentsLoader .lds-ring')

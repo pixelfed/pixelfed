@@ -257,10 +257,6 @@ return [
 
 	'oauth_enabled' => env('OAUTH_ENABLED', false),
 
-	'admin' => [
-		'env_editor' => env('ADMIN_ENV_EDITOR', false)
-	],
-
 	'bouncer' => [
 		'enabled' => env('PF_BOUNCER_ENABLED', false),
 	],

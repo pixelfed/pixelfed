@@ -1,6 +1,6 @@
 <template>
 <div>
-	<div class="card shadow-none border rounded-0" :class="{'border-top-0': !showBorderTop}">
+	<div class="card shadow-none rounded-0" :class="{ border: showBorder, 'border-top-0': !showBorderTop}">
 		<div class="card-body">
 			<div class="media">
 				<img class="rounded-circle box-shadow mr-2" :src="status.account.avatar" width="32px" height="32px" alt="avatar">
@@ -147,6 +147,11 @@
 
 			profile: {
 				type: Object
+			},
+
+			showBorder: {
+				type: Boolean,
+				default: true
 			},
 
 			showBorderTop: {
