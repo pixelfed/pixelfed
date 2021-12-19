@@ -38,6 +38,7 @@ use App\Jobs\VideoPipeline\{
 	VideoPostProcess,
 	VideoThumbnail
 };
+use App\Services\AccountService;
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
@@ -116,6 +117,7 @@ class ComposeController extends Controller
 		$storagePath = MediaPathService::get($user, 2);
 		$path = $photo->store($storagePath);
 		$hash = \hash_file('sha256', $photo);
+		$mime = $photo->getMimeType();
 
 		abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
@@ -126,7 +128,7 @@ class ComposeController extends Controller
 		$media->media_path = $path;
 		$media->original_sha256 = $hash;
 		$media->size = $photo->getSize();
-		$media->mime = $photo->getMimeType();
+		$media->mime = $mime;
 		$media->filter_class = $filterClass;
 		$media->filter_name = $filterName;
 		$media->version = 3;
@@ -672,16 +674,14 @@ class ComposeController extends Controller
 			'media_descriptions' => false,
 			'max_altext_length' => config_cache('pixelfed.max_altext_length')
 		];
+		$settings = AccountService::settings($uid);
+		if(isset($settings['other']) && isset($settings['other']['scope'])) {
+			$s = $settings['compose_settings'];
+			$s['default_scope'] = $settings['other']['scope'];
+			$settings['compose_settings'] = $s;
+		}
 
-		return array_merge($default, Cache::remember('profile:compose:settings:' . $uid, now()->addHours(12), function() use($uid) {
-			$res = UserSetting::whereUserId($uid)->first();
-
-			if(!$res || empty($res->compose_settings)) {
-				return [];
-			}
-
-			return json_decode($res->compose_settings, true);
-		}));
+		return array_merge($default, $settings['compose_settings']);
 	}
 
 	public function createPoll(Request $request)
