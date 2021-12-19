@@ -31,6 +31,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('story:gc')->everyFiveMinutes();
         $schedule->command('gc:failedjobs')->dailyAt(3);
         $schedule->command('gc:passwordreset')->dailyAt('09:41');
+        $schedule->command('gc:sessions')->twiceDaily(13, 23);
     }
 
     /**
