@@ -72,7 +72,7 @@ class InternalApiController extends Controller
 		$pid = $request->user()->profile_id;
 		$filters = UserFilterService::filters($pid);
 		$forYou = DiscoverService::getForYou();
-		$posts = $forYou->random(50)->map(function($post) {
+		$posts = $forYou->take(50)->map(function($post) {
 			return StatusService::get($post);
 		})
 		->filter(function($post) use($filters) {
