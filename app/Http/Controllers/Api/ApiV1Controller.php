@@ -45,6 +45,7 @@ use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\SharePipeline\SharePipeline;
+use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
@@ -57,8 +58,9 @@ use App\Jobs\VideoPipeline\{
 
 use App\Services\{
 	AccountService,
-	LikeService,
+	FollowerService,
 	InstanceService,
+	LikeService,
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
@@ -74,6 +76,7 @@ use App\Util\Lexer\Autolink;
 use App\Util\Localization\Localization;
 use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\Services\DiscoverService;
 
 class ApiV1Controller extends Controller
 {
@@ -1317,7 +1320,7 @@ class ApiV1Controller extends Controller
 		$settings = UserSetting::whereUserId($user->id)->first();
 
 		if($settings && !empty($settings->compose_settings)) {
-			$compose = json_decode($settings->compose_settings, true);
+			$compose = $settings->compose_settings;
 
 			if(isset($compose['default_license']) && $compose['default_license'] != 1) {
 				$license = $compose['default_license'];
@@ -1790,18 +1793,23 @@ class ApiV1Controller extends Controller
 
 		$user = $request->user();
 
-		$status = Status::findOrFail($id);
+		$res = StatusService::get($id, false);
+		if(!$res || !isset($res['visibility'])) {
+			abort(404);
+		}
 
-		if($status->profile_id !== $user->profile_id) {
-			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+		$scope = $res['visibility'];
+		if(!in_array($scope, ['public', 'unlisted'])) {
+			if($scope === 'private') {
+				if($res['account']['id'] != $user->profile_id) {
+					abort_unless(FollowerService::follows($user->profile_id, $res['account']['id']), 403);
+				}
 			} else {
-				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
+				abort(400, 'Invalid request');
 			}
 		}
 
-		$res = StatusService::get($status->id);
-		$res['favourited'] = LikeService::liked($user->profile_id, $status->id);
+		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
 		$res['reblogged'] = false;
 		return response()->json($res);
 	}
@@ -2069,7 +2077,9 @@ class ApiV1Controller extends Controller
 			$status->in_reply_to_profile_id = $parent->profile_id;
 			$status->save();
 			StatusService::del($parent->id);
-		} else if($ids) {
+		}
+
+		if($ids) {
 			if(Media::whereUserId($user->id)
 				->whereNull('status_id')
 				->find($ids)
@@ -2077,12 +2087,15 @@ class ApiV1Controller extends Controller
 			) {
 				abort(400, 'Invalid media_ids');
 			}
-			$status = new Status;
-			$status->caption = strip_tags($request->input('status'));
-			$status->profile_id = $user->profile_id;
-			$status->scope = 'draft';
-			$status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
-			$status->save();
+
+			if(!$in_reply_to_id) {
+				$status = new Status;
+				$status->caption = strip_tags($request->input('status'));
+				$status->profile_id = $user->profile_id;
+				$status->scope = 'draft';
+				$status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+				$status->save();
+			}
 
 			$mimes = [];
 
@@ -2230,6 +2243,7 @@ class ApiV1Controller extends Controller
 		UndoSharePipeline::dispatch($reblog);
 		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
+		$res['reblogged'] = false;
 		return response()->json($res);
 	}
 
@@ -2429,55 +2443,20 @@ class ApiV1Controller extends Controller
 		]);
 
 		$limit = $request->input('limit', 40);
-		$profile = Auth::user()->profile;
-		$pid = $profile->id;
-
-		$following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(15), function() use ($pid) {
-			return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
-		});
-
-		$filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(15), function() use($pid) {
-			$private = Profile::whereIsPrivate(true)
-				->orWhere('unlisted', true)
-				->orWhere('status', '!=', null)
-				->pluck('id')
-				->toArray();
-			$filters = UserFilter::whereUserId($pid)
-				->whereFilterableType('App\Profile')
-				->whereIn('filter_type', ['mute', 'block'])
-				->pluck('filterable_id')
-				->toArray();
-			return array_merge($private, $filters);
-		});
-		$following = array_merge($following, $filters);
-
-		$sql = config('database.default') !== 'pgsql';
-		$min_id = SnowflakeService::byDate(now()->subMonths(3));
-		$res = Status::select(
-			'id',
-			'is_nsfw',
-			'profile_id',
-			'type',
-			'uri',
-		)
-		->whereNull('uri')
-		->whereIn('type', ['photo','photo:album', 'video'])
-		->whereIsNsfw(false)
-		->whereVisibility('public')
-		->whereNotIn('profile_id', $following)
-		->where('id', '>', $min_id)
-		->inRandomOrder()
-		->take($limit)
-		->pluck('id')
-		->map(function($post) {
+		$pid = $request->user()->profile_id;
+		$filters = UserFilterService::filters($pid);
+		$forYou = DiscoverService::getForYou();
+		$posts = $forYou->random(50)->map(function($post) {
 			return StatusService::get($post);
 		})
-		->filter(function($post) {
-			return $post && isset($post['id']);
+		->filter(function($post) use($filters) {
+			return $post &&
+				isset($post['account']) &&
+				isset($post['account']['id']) &&
+				!in_array($post['account']['id'], $filters);
 		})
-		->values()
-		->toArray();
-
-		return response()->json($res);
+		->take(12)
+		->values();
+		return response()->json(compact('posts'));
 	}
 }
