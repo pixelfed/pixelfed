@@ -41,6 +41,8 @@ use App\Services\ModLogService;
 use App\Services\PublicTimelineService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
+use App\Services\UserFilterService;
+use App\Services\DiscoverService;
 
 class InternalApiController extends Controller
 {
@@ -67,51 +69,21 @@ class InternalApiController extends Controller
 
 	public function discoverPosts(Request $request)
 	{
-		$profile = Auth::user()->profile;
-		$pid = $profile->id;
-		$following = Cache::remember('feature:discover:following:'.$pid, now()->addMinutes(15), function() use ($pid) {
-			return Follower::whereProfileId($pid)->pluck('following_id')->toArray();
-		});
-		$filters = Cache::remember("user:filter:list:$pid", now()->addMinutes(15), function() use($pid) {
-			$private = Profile::whereIsPrivate(true)
-				->orWhere('unlisted', true)
-				->orWhere('status', '!=', null)
-				->pluck('id')
-				->toArray();
-			$filters = UserFilter::whereUserId($pid)
-				->whereFilterableType('App\Profile')
-				->whereIn('filter_type', ['mute', 'block'])
-				->pluck('filterable_id')
-				->toArray();
-			return array_merge($private, $filters);
-		});
-		$following = array_merge($following, $filters);
-
-		$sql = config('database.default') !== 'pgsql';
-		$min_id = SnowflakeService::byDate(now()->subMonths(3));
-		$posts = Status::select(
-				'id',
-				'is_nsfw',
-				'profile_id',
-				'type',
-				'uri',
-			  )
-			  ->whereNull('uri')
-			  ->whereIn('type', ['photo','photo:album', 'video'])
-			  ->whereIsNsfw(false)
-			  ->whereVisibility('public')
-			  ->whereNotIn('profile_id', $following)
-			  ->where('id', '>', $min_id)
-			  ->inRandomOrder()
-			  ->take(39)
-			  ->pluck('id');
-
-		$res = [
-			'posts' => $posts->map(function($post) {
-				return StatusService::get($post);
-			})
-		];
-		return response()->json($res);
+		$pid = $request->user()->profile_id;
+		$filters = UserFilterService::filters($pid);
+		$forYou = DiscoverService::getForYou();
+		$posts = $forYou->random(50)->map(function($post) {
+			return StatusService::get($post);
+		})
+		->filter(function($post) use($filters) {
+			return $post &&
+				isset($post['account']) &&
+				isset($post['account']['id']) &&
+				!in_array($post['account']['id'], $filters);
+		})
+		->take(12)
+		->values();
+		return response()->json(compact('posts'));
 	}
 
 	public function directMessage(Request $request, $profileId, $threadId)
