@@ -55,6 +55,7 @@
 - Updated PollCard component, add showBorder prop. ([0c8fffbd](https://github.com/pixelfed/pixelfed/commit/0c8fffbd))
 - Updated PhotoPresenter component, add lightbox toggle. ([0cc1365f](https://github.com/pixelfed/pixelfed/commit/0cc1365f))
 - Updated console kernel, add db session garbage collector that runs twice daily. ([03b0a62a](https://github.com/pixelfed/pixelfed/commit/03b0a62a))
+- Updated ComposeController, refactor compose_settings. ([edc2958b](https://github.com/pixelfed/pixelfed/commit/edc2958b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
