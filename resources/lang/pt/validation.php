@@ -14,13 +14,13 @@ return [
     */
 
     'accepted'             => ':attribute deve ser aceito.',
-    'active_url'           => ':attribute não é uma URL válida.',
+    'active_url'           => ':attribute não é uma URL válido.',
     'after'                => ':attribute deve ser uma data após :date.',
     'after_or_equal'       => ':attribute deve ser uma data igual ou posterior a :date.',
     'alpha'                => ':attribute só pode conter letras.',
-    'alpha_dash'           => ':attribute só pode conter letras, números e barras.',
+    'alpha_dash'           => ':attribute só pode conter letras, números e traços.',
     'alpha_num'            => ':attribute só pode conter letras e números.',
-    'array'                => ':attribute deve ser uma array.',
+    'array'                => ':attribute deve ser uma matriz.',
     'before'               => ':attribute deve ser uma data antes de :date.',
     'before_or_equal'      => ':attribute deve ser uma data igual ou anterior a :date.',
     'between'              => [

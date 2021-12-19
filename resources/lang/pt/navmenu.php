@@ -7,7 +7,7 @@ return [
 	'local'				=> 'Local',
 	'network'			=> 'Rede',
 	'discover'			=> 'Descobrir',
-	'viewMyProfile'		=> 'Ver meu perfil',
+	'viewMyProfile'		=> 'Ver o meu perfil',
 	'myTimeline'		=> 'Minha linha do tempo',
 	'publicTimeline'	=> 'Linha do tempo pública',
 	'remoteFollow'		=> 'Seguir remotamente',
