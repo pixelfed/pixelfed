@@ -178,7 +178,7 @@
 				if(!this.recommendedLoading) {
 					return;
 				}
-				axios.get('/api/pixelfed/v2/discover/posts')
+				axios.get('/api/v1/discover/posts')
 				.then((res) => {
 					this.posts = res.data.posts.filter(r => r != null);
 					this.recommendedLoading = false;
