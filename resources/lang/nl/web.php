@@ -74,7 +74,7 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'leuk gevonden',
+		'liked' => 'vond leuk je',
 		'commented' => 'reageerde op je',
 		'reacted' => 'heeft gereageerd op je',
 		'shared' => 'deelde je',
@@ -85,14 +85,14 @@ return [
 
 		'followed' => 'volgde',
 		'mentioned' => 'noemde',
-		'you' => 'jij',
+		'you' => 'jou',
 
 		'yourApplication' => 'Uw aanvraag om toe te treden',
 		'applicationApproved' => 'werd goedgekeurd!',
-		'applicationRejected' => 'werd afgekeurd. U kunt opnieuw aanvragen over 6 maanden.',
+		'applicationRejected' => 'werd afgekeurd. Je kunt over 6 maanden opnieuw aanmelden.',
 
 		'dm' => 'dm',
-		'groupPost' => 'groep post',
+		'groupPost' => 'groepspost',
 		'modlog' => 'modlogboek',
 		'post' => 'post',
 		'story' => 'verhaal',
@@ -100,7 +100,7 @@ return [
 
 	'post' => [
 		'shareToFollowers' => 'Deel met volgers',
-		'shareToOther' => 'Delen met anderen',
+		'shareToOther' => 'Deel met anderen',
 		'noLikes' => 'Nog geen leuks',
 		'uploading' => 'Uploaden',
 	],
@@ -121,7 +121,7 @@ return [
 	'menu' => [
 		'viewPost' => 'Post bekijken',
 		'viewProfile' => 'Profiel bekijken',
-		'moderationTools' => 'Moderatietools',
+		'moderationTools' => 'Moderatiegereedschappen',
 		'report' => 'Rapporteren',
 		'archive' => 'Archief',
 		'unarchive' => 'Dearchiveren',
