@@ -3,29 +3,29 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'Beachd',
 		'commented' => 'Commented',
 		'comments' => 'Comments',
 		'like' => 'Like',
 		'liked' => 'Liked',
 		'likes' => 'Likes',
-		'share' => 'Share',
+		'share' => 'Co-roinn',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
+		'cancel' => 'Sguir dheth',
+		'copyLink' => 'Dèan lethbhreac dhen cheangal',
+		'delete' => 'Sguab às',
+		'error' => 'Mearachd',
 		'errorMsg' => 'Something went wrong. Please try again later.',
 		'oops' => 'Oops!',
 		'other' => 'Other',
 		'readMore' => 'Read more',
 		'success' => 'Success',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
+		'sensitive' => 'Frionasach',
+		'sensitiveContent' => 'Susbaint fhrionasach',
 		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
@@ -35,42 +35,42 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
+		'search' => 'Lorg',
 		'admin' => 'Admin Dashboard',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
+		'homeFeed' => 'Inbhir na dachaigh',
+		'localFeed' => 'Inbhir ionadail',
 		'globalFeed' => 'Global Feed',
 
 		// Core features
 		'discover' => 'Discover',
 		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'notifications' => 'Brathan',
+		'groups' => 'Buidhnean',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Pròifil',
+		'drive' => 'Draibh',
+		'settings' => 'Roghainnean',
+		'compose' => 'Cruthaich fear ùr',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Mu dhèidhinn',
+		'help' => 'Cobhair',
+		'language' => 'Cànan',
+		'privacy' => 'Prìobhaideachd',
+		'terms' => 'Teirmichean',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
+		'inbox' => 'Am bogsa a-steach',
 		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'requests' => 'Iarrtasan'
 	],
 
 	'notifications' => [
@@ -95,7 +95,7 @@ return [
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
-		'story' => 'story',
+		'story' => 'sgeul',
 	],
 
 	'post' => [
@@ -111,39 +111,39 @@ return [
 		'following' => 'Following',
 		'admin' => 'Admin',
 		'collections' => 'Collections',
-		'follow' => 'Follow',
+		'follow' => 'Lean air',
 		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
+		'editProfile' => 'Deasaich a’ phròifil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
+		'viewPost' => 'Seall am post',
+		'viewProfile' => 'Seall a’ phròifil',
+		'moderationTools' => 'Innealan na maorsainneachd',
 		'report' => 'Report',
 		'archive' => 'Archive',
 		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'embed' => 'Leabaich',
 
-		'selectOneOption' => 'Select one of the following options',
+		'selectOneOption' => 'Tagh tè dhe na roghainnean seo',
 		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
+		'addCW' => 'Cuir rabhadh susbainte ris',
+		'removeCW' => 'Thoir air falbh an rabhadh susbainte',
+		'markAsSpammer' => 'Cuir comharra gur e spamair a th’ ann',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'spam' => 'Spama',
+		'sensitive' => 'Susbaint fhrionasach',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
+		'confirmReport' => 'Dearbh an gearan',
 		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
+		'reportSent' => 'Chaidh an gearan a chur!',
+		'reportSentText' => 'Fhuair sinn do ghearan.',
 		'reportSentError' => 'There was an issue reporting this post.',
 
 		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
@@ -157,18 +157,18 @@ return [
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Seall am fo-thiotal',
 		'showLikes' => 'Show Likes',
 		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
+		'deletePostConfirm' => 'A bheil thu cinnteach gu bheil thu airson am post seo a sguabadh às?',
+		'archivePostConfirm' => 'A bheil thu cinnteach gu bheil thu airson am post seo a chur dhan tasg-lann?',
 		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Cuir sgeul ris'
 	],
 
 	'timeline' => [
