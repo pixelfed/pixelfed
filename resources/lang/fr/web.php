@@ -44,7 +44,7 @@ return [
 		'globalFeed' => 'Fil global',
 
 		// Core features
-		'discover' => 'Explorer',
+		'discover' => 'Découvrir',
 		'directMessages' => 'Messages Privés',
 		'notifications' => 'Notifications',
 		'groups' => 'Groupes',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Stockage',
+		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
 		'compose' => 'Publier',
 
@@ -64,7 +64,7 @@ return [
 		'terms' => 'Conditions ',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Revenir à la conception précédente'
+		'backToPreviousDesign' => 'Revenir au design précédent'
 	],
 
 	'directMessages' => [
@@ -150,10 +150,10 @@ return [
 		'modCWSuccess' => 'Avertissement de contenu ajouté avec succès',
 		'modRemoveCWConfirm' => 'Êtes-vous sûr de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
 		'modRemoveCWSuccess' => 'Avertissement de contenu supprimé avec succès',
-		'modUnlistConfirm' => 'Êtes-vous sûr de vouloir retirer cette publication des fils ?',
+		'modUnlistConfirm' => 'Êtes-vous sûr de vouloir retirer cette publication des flux ?',
 		'modUnlistSuccess' => 'Publication retirée des fils avec succès',
-		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr de vouloir marquer cet utilisateur·rice comme polluposteur·euse ? Toutes les publications existantes et futures seront retirées des fils et un avertissement de contenu sera appliqué.',
-		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme polluposteur',
+		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr de vouloir marquer cet utilisateur·rice comme spammeur·euse ? Toutes les publications existantes et futures seront retirées des flux et un avertissement de contenu sera appliqué.',
+		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme spammeur',
 
 		'toFollowers' => 'aux abonné·e·s',
 
@@ -172,7 +172,7 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Personnes que vous connaissez peut-être'
+		'peopleYouMayKnow' => 'Connaissances possibles'
 	]
 
 ];
