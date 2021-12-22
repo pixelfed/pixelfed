@@ -138,18 +138,18 @@ return [
 		'abusive' => 'مُسيء أو ضار',
 		'underageAccount' => 'حِساب دونَ السِّن',
 		'copyrightInfringement' => 'انتهاك حقوق',
-		'impersonation' => 'Impersonation',
+		'impersonation' => 'انتحال شخصية',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
+		'confirmReport' => 'تأكيد التقرير',
+		'confirmReportText' => 'هل أنت متأكد من أنك تريد الإبلاغ عن هذا المنشور؟',
+		'reportSent' => 'تم ارسال التقرير!',
+		'reportSentText' => 'لقد تلقينا تقريركم بنجاح.',
 		'reportSentError' => 'There was an issue reporting this post.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modAddCWConfirm' => 'هل أنت متأكد من أنك تريد إضافة تحذير محتوى إلى هذا المنشور؟',
 		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modRemoveCWConfirm' => 'هل أنت متأكد من أنك تريد إزالة تحذير المحتوى على هذا المنشور؟',
+		'modRemoveCWSuccess' => 'تم حذف تحذير المحتوى بنجاح',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
@@ -159,20 +159,20 @@ return [
 
 		'showCaption' => 'إظهار التعليق التوضيحي',
 		'showLikes' => 'إظهار الإعجابات',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'compactMode' => 'الوضع المضغوط',
+		'embedConfirmText' => 'باستخدامك هذه الدمج، فإنك توافق على',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
+		'deletePostConfirm' => 'هل أنت متأكد من رغبتك في حذف هذا المنشور؟',
+		'archivePostConfirm' => 'هل أنت متأكد من أنك تريد أرشفة هذا المنشور؟',
 		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'أضف قصة'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'أشخاص قد تعرفهم'
 	]
 
 ];
