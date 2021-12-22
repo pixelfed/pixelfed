@@ -4,10 +4,10 @@ return [
 
 	'common' => [
 		'comment' => 'تَعليق',
-		'commented' => 'تعليق',
+		'commented' => 'علَّقتَ عليه',
 		'comments' => 'التعليقات',
 		'like' => 'إعجاب',
-		'liked' => 'مُعجَب بِها',
+		'liked' => 'أُعجِبتَ بِه',
 		'likes' => 'الإعجابات',
 		'share' => 'مُشارَكَة',
 		'shared' => 'تمَّ مُشارَكَتُه',
@@ -19,7 +19,7 @@ return [
 		'delete' => 'حَذف',
 		'error' => 'خطأ',
 		'errorMsg' => 'حدث خطأٌ ما. يُرجى المُحاولة مرةً أُخرى لاحِقًا.',
-		'oops' => 'المعذرة !',
+		'oops' => 'المَعذِرَة!',
 		'other' => 'اُخرى',
 		'readMore' => 'قراءة المزيد',
 		'success' => 'نَجاح',
@@ -40,15 +40,15 @@ return [
 
 		// Timelines
 		'homeFeed' => 'التَّغذيَة الرئيسَة',
-		'localFeed' => 'الصفحة المحلية',
-		'globalFeed' => 'الصفحة العالمية',
+		'localFeed' => 'التَّغذيَة المحليَّة',
+		'globalFeed' => 'التَّغذيَة الشّامِلة',
 
 		// Core features
-		'discover' => 'الإكتشاف',
-		'directMessages' => 'الرسائل الخاصة',
+		'discover' => 'الاِستِكشاف',
+		'directMessages' => 'الرسائِل المُباشِرَة',
 		'notifications' => 'الإشعارات',
-		'groups' => 'المجموعات',
-		'stories' => 'القصص',
+		'groups' => 'المَجمُوعات',
+		'stories' => 'القَصَص',
 
 		// Self links
 		'profile' => 'الملف الشخصي',
@@ -58,79 +58,79 @@ return [
 
 		// Nav footer
 		'about' => 'حول',
-		'help' => 'المساعدة',
-		'language' => 'اللغة',
-		'privacy' => 'الخصوصية',
-		'terms' => 'الشروط',
+		'help' => 'المُساعَدَة',
+		'language' => 'اللُّغَة',
+		'privacy' => 'الخُصوصيَّة',
+		'terms' => 'الشُّرُوط',
 
 		// Temporary links
 		'backToPreviousDesign' => 'العودة إلى التصميم السابق'
 	],
 
 	'directMessages' => [
-		'inbox' => 'صندوق الوارد',
-		'sent' => 'الإرسال',
-		'requests' => 'الطلبات'
+		'inbox' => 'صندوق الوارِد',
+		'sent' => 'أُرسِلَت',
+		'requests' => 'الطَّلبات'
 	],
 
 	'notifications' => [
-		'liked' => 'إعجاب لك',
-		'commented' => 'تعليق لك',
-		'reacted' => 'رد لك',
-		'shared' => 'مشاركة لك',
-		'tagged' => 'وضع علامة عليك في',
+		'liked' => 'أُعجِبَ بِك',
+		'commented' => 'علَّقَ عليك',
+		'reacted' => 'تَفاعَلَ مَعك',
+		'shared' => 'شَارَكَ لك',
+		'tagged' => 'أشارَ لَكَ فِي',
 
-		'updatedA' => 'تحديث',
-		'sentA' => 'sent a',
+		'updatedA' => 'حَدَّث',
+		'sentA' => 'أرسَلَ',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'متاَبَع',
+		'mentioned' => 'مشار',
+		'you' => 'أنت',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'طلبك للإنضمام إلى التطبيق',
+		'applicationApproved' => 'تمت الموافقة !',
+		'applicationRejected' => 'تم الرفض . يمكنك إعادة التقدم بطلب للإنضمام في ٦ أشهر .',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
-		'modlog' => 'modlog',
-		'post' => 'post',
-		'story' => 'story',
+		'dm' => 'الرسائل الخاصة',
+		'groupPost' => 'منشور المجموعة',
+		'modlog' => 'سجلات المُشرِف',
+		'post' => 'منشور',
+		'story' => 'قصة',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'مشاركة إلى المتَابِعين',
+		'shareToOther' => 'مشاركة إلى آخر',
+		'noLikes' => 'لا إعجابات بعد',
+		'uploading' => 'تحميل',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'posts' => 'المنشورات',
+		'followers' => 'المتَابِعين',
+		'following' => 'المتَابَعين',
+		'admin' => 'المشرف',
+		'collections' => 'تحصيلات',
+		'follow' => 'متَابَعة',
+		'unfollow' => 'إلغاء المتَابَعة',
+		'editProfile' => 'تحرير الملف الشخصي',
+		'followRequested' => 'طلب المتَابَعة',
+		'joined' => 'إنضم',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
+		'viewPost' => 'مشاهدة المنشور',
+		'viewProfile' => 'مشاهدة الملف الشخصي',
+		'moderationTools' => 'أدوات الإعتدال',
 		'report' => 'إبلاغ',
 		'archive' => 'أرشَفَة',
 		'unarchive' => 'إلغاء الأرشَفَة',
 		'embed' => 'تضمين',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'selectOneOption' => 'حدد أحد الخيارات التالية',
+		'unlistFromTimelines' => 'إلغاء القائمة من الجداول الزمنية',
+		'addCW' => 'إضافة تحذير المحتوى',
+		'removeCW' => 'حذف تحذير المحتوى',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'غير مرغوب بها',
@@ -155,10 +155,10 @@ return [
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
 		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'إلى المتَابِعين',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
+		'showCaption' => 'إظهار التعليق التوضيحي',
+		'showLikes' => 'إظهار الإعجابات',
 		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
