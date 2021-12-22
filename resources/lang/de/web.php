@@ -16,7 +16,7 @@ return [
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
-		'delete' => 'Delete',
+		'delete' => 'Löschen',
 		'error' => 'Fehler',
 		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
 		'oops' => 'Hoppla!',
@@ -57,14 +57,14 @@ return [
 		'compose' => 'Neu erstellen',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
+		'about' => 'Über uns',
+		'help' => 'Hilfe',
+		'language' => 'Sprache',
+		'privacy' => 'Privatsphäre',
 		'terms' => 'Terms',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Zurück zum vorherigen Design'
 	],
 
 	'directMessages' => [
@@ -94,13 +94,13 @@ return [
 		'dm' => 'dm',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'Beitrag',
 		'story' => 'story',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
+		'shareToOther' => 'Mit anderen teilen',
 		'noLikes' => 'No likes yet',
 		'uploading' => 'Lädt hoch',
 	],
@@ -136,7 +136,7 @@ return [
 		'spam' => 'Spam',
 		'sensitive' => 'Sensitiver Inhalt',
 		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
+		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
