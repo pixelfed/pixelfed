@@ -41,6 +41,25 @@ class StatusService
 		});
 	}
 
+	public static function getState($id, $pid)
+	{
+		$status = self::get($id, false);
+
+		if(!$status) {
+			return [
+				'liked' => false,
+				'shared' => false,
+				'bookmarked' => false
+			];
+		}
+
+		return [
+			'liked' => LikeService::liked($pid, $id),
+			'shared' => self::isShared($id, $pid),
+			'bookmarked' => self::isBookmarked($id, $pid)
+		];
+	}
+
 	public static function getFull($id, $pid, $publicOnly = true)
 	{
 		$res = self::get($id, $publicOnly);
@@ -88,5 +107,25 @@ class StatusService
 		Cache::forget(self::key($id, true));
 		self::get($id, false);
 		self::get($id, true);
+	}
+
+	public static function isShared($id, $pid = null)
+	{
+		return $pid ?
+			DB::table('statuses')
+				->where('reblog_of_id', $id)
+				->where('profile_id', $pid)
+				->exists() :
+			false;
+	}
+
+	public static function isBookmarked($id, $pid = null)
+	{
+		return $pid ?
+			DB::table('bookmarks')
+				->where('status_id', $id)
+				->where('profile_id', $pid)
+				->exists() :
+			false;
 	}
 }
