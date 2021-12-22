@@ -56,6 +56,13 @@ return [
 		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
 
+		// Nav footer
+		'about' => 'About',
+		'help' => 'Help',
+		'language' => 'Language',
+		'privacy' => 'Privacy',
+		'terms' => 'Terms',
+
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
