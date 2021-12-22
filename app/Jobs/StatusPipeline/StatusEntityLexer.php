@@ -162,7 +162,12 @@ class StatusEntityLexer implements ShouldQueue
 			Bouncer::get($status);
 		}
 
-		if($status->uri == null && $status->scope == 'public' && in_array($status->type, $types)) {
+		if( $status->uri == null &&
+			$status->scope == 'public' &&
+			in_array($status->type, $types) &&
+			$status->in_reply_to_id === null &&
+			$status->reblog_of_id === null
+		) {
 			PublicTimelineService::add($status->id);
 		}
 
