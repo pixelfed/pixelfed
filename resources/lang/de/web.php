@@ -83,7 +83,7 @@ return [
 		'updatedA' => 'aktualisierte ein',
 		'sentA' => 'sendete ein',
 
-		'followed' => 'followed',
+		'followed' => 'gefolgt',
 		'mentioned' => 'erwähnt',
 		'you' => 'du',
 
@@ -95,7 +95,7 @@ return [
 		'groupPost' => 'Gruppen-Post',
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
-		'story' => 'story',
+		'story' => 'Story',
 	],
 
 	'post' => [
@@ -135,7 +135,7 @@ return [
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
 		'sensitive' => 'Sensitiver Inhalt',
-		'abusive' => 'Abusive or Harmful',
+		'abusive' => 'missbräuchlich oder schädigend',
 		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
 		'impersonation' => 'Nachahmen',
