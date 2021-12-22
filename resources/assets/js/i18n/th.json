@@ -42,11 +42,6 @@
         "drive": "Drive",
         "settings": "Settings",
         "compose": "Create New",
-        "about": "About",
-        "help": "Help",
-        "language": "Language",
-        "privacy": "Privacy",
-        "terms": "Terms",
         "backToPreviousDesign": "Go back to previous design"
     },
     "directMessages": {
