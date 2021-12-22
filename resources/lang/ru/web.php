@@ -3,74 +3,74 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
+		'comment' => 'Комментарий',
+		'commented' => 'Прокомментировано',
+		'comments' => 'Комментарии',
+		'like' => 'Мне нравится',
+		'liked' => 'Вы лайкнули',
+		'likes' => 'Лайки',
+		'share' => 'Поделиться',
+		'shared' => 'Поделились',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Отмена',
+		'copyLink' => 'Скопировать ссылку',
+		'delete' => 'Удалить',
+		'error' => 'Ошибка',
+		'errorMsg' => 'Что-то пошло не так. Пожалуйста, попробуйте еще раз позже.',
+		'oops' => 'Упс!',
+		'other' => 'Прочее',
+		'readMore' => 'Читать далее',
+		'success' => 'Успешно',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Чувствительный',
+		'sensitiveContent' => 'Чувствительный контент',
+		'sensitiveContentWarning' => 'Этот пост может содержать чувствительный контент',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Условия использования',
+		'privacy' => 'Политика конфиденциальности',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Поиск',
+		'admin' => 'Панель администратора',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Домашняя лента',
+		'localFeed' => 'Локальная лента',
+		'globalFeed' => 'Глобальная лента',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Общее',
+		'directMessages' => 'Личные Сообщения',
+		'notifications' => 'Уведомления',
+		'groups' => 'Группы',
+		'stories' => 'Истории',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Профиль',
+		'drive' => 'Диск',
+		'settings' => 'Настройки',
+		'compose' => 'Создать новый пост',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'О нас',
+		'help' => 'Помощь',
+		'language' => 'Язык',
+		'privacy' => 'Конфиденциальность',
+		'terms' => 'Условия использования',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Вернуться к предыдущему дизайну'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Входящие',
+		'sent' => 'Отправленные',
+		'requests' => 'Запросы'
 	],
 
 	'notifications' => [
@@ -85,16 +85,16 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'вы',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Ваше заявка на вступление',
+		'applicationApproved' => 'было одобрено!',
+		'applicationRejected' => 'было отклонено. Вы можете повторно подать заявку на регистрацию в течение 6 месяцев.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'сообщения группы',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'пост',
 		'story' => 'story',
 	],
 
@@ -111,20 +111,20 @@ return [
 		'following' => 'Following',
 		'admin' => 'Admin',
 		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
+		'follow' => 'Подписаться',
+		'unfollow' => 'Отписаться',
+		'editProfile' => 'Редактировать профиль',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
 	],
 
 	'menu' => [
 		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
+		'viewProfile' => 'Посмотреть профиль',
 		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
+		'report' => 'Пожаловаться',
+		'archive' => 'Архив',
+		'unarchive' => 'Вернуть из архива',
 		'embed' => 'Embed',
 
 		'selectOneOption' => 'Select one of the following options',
@@ -133,7 +133,7 @@ return [
 		'removeCW' => 'Remove Content Warning',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
+		'spam' => 'Спам',
 		'sensitive' => 'Sensitive Content',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
