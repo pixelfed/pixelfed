@@ -85,7 +85,7 @@ return [
 
 		'followed' => 'te siguió',
 		'mentioned' => 'te mencionó',
-		'you' => 'you',
+		'you' => '.',
 
 		'yourApplication' => 'Tu solicitud para unirse',
 		'applicationApproved' => 'ha sido aprobada!',
