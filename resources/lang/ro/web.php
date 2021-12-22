@@ -4,34 +4,34 @@ return [
 
 	'common' => [
 		'comment' => 'Comment',
-		'commented' => 'Kommentiert',
-		'comments' => 'Kommentare',
+		'commented' => 'Commented',
+		'comments' => 'Comments',
 		'like' => 'Like',
 		'liked' => 'Liked',
 		'likes' => 'Likes',
-		'share' => 'Teilen',
-		'shared' => 'Geteilt',
+		'share' => 'Share',
+		'shared' => 'Shared',
 		'shares' => 'Shares',
-		'unshare' => 'Teilen rückgängig',
+		'unshare' => 'Unshare',
 
-		'cancel' => 'Abbrechen',
-		'copyLink' => 'Link kopieren',
+		'cancel' => 'Cancel',
+		'copyLink' => 'Copy Link',
 		'delete' => 'Delete',
-		'error' => 'Fehler',
-		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
-		'oops' => 'Hoppla!',
+		'error' => 'Error',
+		'errorMsg' => 'Something went wrong. Please try again later.',
+		'oops' => 'Oops!',
 		'other' => 'Other',
-		'readMore' => 'Mehr lesen',
-		'success' => 'Erfolgreich',
+		'readMore' => 'Read more',
+		'success' => 'Success',
 
-		'sensitive' => 'Sensibel',
-		'sensitiveContent' => 'Sensibler Inhalt',
-		'sensitiveContentWarning' => 'Dieser Beitrag kann sensible Inhalte enthalten',
+		'sensitive' => 'Sensitive',
+		'sensitiveContent' => 'Sensitive Content',
+		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
 	'site' => [
-		'terms' => 'Nutzungsbedingungen',
-		'privacy' => 'Datenschutzrichtlinien',
+		'terms' => 'Terms of Use',
+		'privacy' => 'Privacy Policy',
 	],
 
 	'navmenu' => [
@@ -39,42 +39,42 @@ return [
 		'admin' => 'Admin Dashboard',
 
 		// Timelines
-		'homeFeed' => 'Startseite',
-		'localFeed' => 'Lokaler Feed',
-		'globalFeed' => 'Globaler Feed',
+		'homeFeed' => 'Home Feed',
+		'localFeed' => 'Local Feed',
+		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Entdecken',
-		'directMessages' => 'Direktnachrichten',
-		'notifications' => 'Benachrichtigungen',
-		'groups' => 'Gruppen',
+		'discover' => 'Discover',
+		'directMessages' => 'Direct Messages',
+		'notifications' => 'Notifications',
+		'groups' => 'Groups',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profil',
+		'profile' => 'Profile',
 		'drive' => 'Drive',
 		'settings' => 'Settings',
-		'compose' => 'Neu erstellen',
+		'compose' => 'Create New',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Posteingang',
-		'sent' => 'Gesendet',
-		'requests' => 'Anfragen'
+		'inbox' => 'Inbox',
+		'sent' => 'Sent',
+		'requests' => 'Requests'
 	],
 
 	'notifications' => [
-		'liked' => 'gefällt dein',
-		'commented' => 'kommentierte dein',
-		'reacted' => 'reagierte auf dein',
+		'liked' => 'liked your',
+		'commented' => 'commented on your',
+		'reacted' => 'reacted to your',
 		'shared' => 'shared your',
-		'tagged' => 'markierte dich in einem',
+		'tagged' => 'tagged you in a',
 
-		'updatedA' => 'aktualisierte ein',
-		'sentA' => 'sendete ein',
+		'updatedA' => 'updated a',
+		'sentA' => 'sent a',
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
@@ -124,18 +124,18 @@ return [
 		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Add Content Warning',
 		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Als Spammer markieren',
+		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
 		'sensitive' => 'Sensitive Content',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Urheberrechtsverletzung',
+		'copyrightInfringement' => 'Copyright Infringement',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Meldung bestätigen',
-		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
-		'reportSent' => 'Meldung gesendet!',
+		'confirmReport' => 'Confirm Report',
+		'confirmReportText' => 'Are you sure you want to report this post?',
+		'reportSent' => 'Report Sent!',
 		'reportSentText' => 'We have successfully received your report.',
 		'reportSentError' => 'There was an issue reporting this post.',
 
