@@ -12,7 +12,7 @@
         "unshare": "Teilen r\u00fcckg\u00e4ngig",
         "cancel": "Abbrechen",
         "copyLink": "Link kopieren",
-        "delete": "Delete",
+        "delete": "L\u00f6schen",
         "error": "Fehler",
         "errorMsg": "Etwas ist schief gelaufen. Bitter versuch es sp\u00e4ter nochmal.",
         "oops": "Hoppla!",
@@ -42,12 +42,12 @@
         "drive": "Drive",
         "settings": "Einstellungen",
         "compose": "Neu erstellen",
-        "about": "About",
-        "help": "Help",
-        "language": "Language",
-        "privacy": "Privacy",
+        "about": "\u00dcber uns",
+        "help": "Hilfe",
+        "language": "Sprache",
+        "privacy": "Privatsph\u00e4re",
         "terms": "Terms",
-        "backToPreviousDesign": "Go back to previous design"
+        "backToPreviousDesign": "Zur\u00fcck zum vorherigen Design"
     },
     "directMessages": {
         "inbox": "Posteingang",
@@ -71,12 +71,12 @@
         "dm": "dm",
         "groupPost": "group post",
         "modlog": "modlog",
-        "post": "post",
+        "post": "Beitrag",
         "story": "story"
     },
     "post": {
         "shareToFollowers": "Share to followers",
-        "shareToOther": "Share to other",
+        "shareToOther": "Mit anderen teilen",
         "noLikes": "No likes yet",
         "uploading": "L\u00e4dt hoch"
     },
@@ -109,7 +109,7 @@
         "spam": "Spam",
         "sensitive": "Sensitiver Inhalt",
         "abusive": "Abusive or Harmful",
-        "underageAccount": "Underage Account",
+        "underageAccount": "Minderj\u00e4hrigen-Konto",
         "copyrightInfringement": "Urheberrechtsverletzung",
         "impersonation": "Impersonation",
         "scamOrFraud": "Scam or Fraud",
