@@ -9,6 +9,7 @@
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
 - Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
 - Cloud Backups, a command to store backups on S3 or compatible filesystems. [#3037](https://github.com/pixelfed/pixelfed/pull/3037) ([3515a98e](https://github.com/pixelfed/pixelfed/commit/3515a98e))
+- Web UI Localizations + Crowdin integration. ([f7d9b40b](https://github.com/pixelfed/pixelfed/commit/f7d9b40b)) ([7ff120c9](https://github.com/pixelfed/pixelfed/commit/7ff120c9))
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
@@ -56,6 +57,7 @@
 - Updated PhotoPresenter component, add lightbox toggle. ([0cc1365f](https://github.com/pixelfed/pixelfed/commit/0cc1365f))
 - Updated console kernel, add db session garbage collector that runs twice daily. ([03b0a62a](https://github.com/pixelfed/pixelfed/commit/03b0a62a))
 - Updated ComposeController, refactor compose_settings. ([edc2958b](https://github.com/pixelfed/pixelfed/commit/edc2958b))
+- Updated StatusEntityLexer, prevent boosts and replies from being added to PublicTimelineService. ([32707372](https://github.com/pixelfed/pixelfed/commit/32707372))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
