@@ -3,44 +3,44 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'Σχόλιο',
 		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
+		'comments' => 'Σχόλια',
+		'like' => 'Μου αρέσει',
+		'liked' => 'Μου άρεσε',
+		'likes' => 'Αρέσει',
+		'share' => 'Κοινοποίηση',
+		'shared' => 'Κοινοποιήθηκε',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Ακύρωση',
+		'copyLink' => 'Αντιγραφή Συνδέσμου',
+		'delete' => 'Διαγραφή',
+		'error' => 'Σφάλμα',
+		'errorMsg' => 'Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε αργότερα.',
+		'oops' => 'Ουπς!',
+		'other' => 'Άλλο',
+		'readMore' => 'Διαβάστε περισσότερα',
+		'success' => 'Επιτυχής',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Ευαίσθητο',
+		'sensitiveContent' => 'Ευαίσθητο περιεχόμενο',
+		'sensitiveContentWarning' => 'Αυτή η δημοσίευση μπορεί να περιέχει ευαίσθητο περιεχόμενο',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Όροι Χρήσης',
+		'privacy' => 'Πολιτική Απορρήτου',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Αναζήτηση',
+		'admin' => 'Πίνακας εργαλείων διαχειριστή',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
+		'homeFeed' => 'Αρχική ροή',
+		'localFeed' => 'Τοπική Ροή',
 		'globalFeed' => 'Global Feed',
 
 		// Core features
