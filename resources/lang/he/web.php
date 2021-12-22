@@ -36,7 +36,7 @@ return [
 
 	'navmenu' => [
 		'search' => 'חיפוש',
-		'admin' => 'לוח בקרה לאדמיניסטרציה',
+		'admin' => 'לוח בקרה למנהל',
 
 		// Timelines
 		'homeFeed' => 'פיד ביתי',
