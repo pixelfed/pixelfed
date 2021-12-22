@@ -11,7 +11,7 @@ return [
 		'likes' => 'Suka',
 		'share' => 'Bagikan',
 		'shared' => 'Dibagikan',
-		'shares' => 'Bagi',
+		'shares' => 'Dibagikan',
 		'unshare' => 'Batalkan berbagi',
 
 		'cancel' => 'Batal',
