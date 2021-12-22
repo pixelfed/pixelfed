@@ -106,7 +106,7 @@ class PublicApiController extends Controller
         return response()->json($res);
     }
 
-    public function statusState(Request $request, $username, int $postid)
+    public function statusState(Request $request, $username, $postid)
     {
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
@@ -294,6 +294,7 @@ class PublicApiController extends Controller
                             'local'
                           )
                           ->where('id', $dir, $id)
+                          ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
                           ->whereScope('public')
@@ -306,8 +307,9 @@ class PublicApiController extends Controller
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
-                                return in_array($s['account']['id'], $filtered) == false;
-                          });
+                                return $s && in_array($s['account']['id'], $filtered) == false;
+                          })
+                          ->values();
                 $res = $timeline->toArray();
             } else {
                 $timeline = Status::select(
@@ -330,6 +332,7 @@ class PublicApiController extends Controller
                             'reblogs_count',
                             'updated_at'
                           )
+                          ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->with('profile', 'hashtags', 'mentions')
                           ->whereLocal(true)
@@ -343,8 +346,9 @@ class PublicApiController extends Controller
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
-                                return in_array($s['account']['id'], $filtered) == false;
-                          });
+                                return $s && in_array($s['account']['id'], $filtered) == false;
+                          })
+                          ->values();
 
                 $res = $timeline->toArray();
             }
@@ -538,15 +542,7 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
-        $amin = SnowflakeService::byDate(now()->subDays(90));
-
-        $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(5);
-        Cache::remember($key, $ttl, function() use($user) {
-            $user->last_active_at = now();
-            $user->save();
-            return;
-        });
+        $amin = SnowflakeService::byDate(now()->subDays(490));
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
@@ -561,6 +557,7 @@ class PublicApiController extends Controller
                         'created_at',
                       )
                       ->where('id', $dir, $id)
+                      ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                       ->whereNotIn('profile_id', $filtered)
                       ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                       ->whereNotNull('uri')
@@ -583,6 +580,7 @@ class PublicApiController extends Controller
                             'scope',
                             'created_at',
                           )
+                      	  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereNotIn('profile_id', $filtered)
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereNotNull('uri')
