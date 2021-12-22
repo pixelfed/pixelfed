@@ -83,7 +83,7 @@ return [
 		'updatedA' => 'mis à jour un·e',
 		'sentA' => 'a envoyé un·e',
 
-		'followed' => 'suit',
+		'followed' => 's\'est abonné·e à',
 		'mentioned' => 'a mentionné',
 		'you' => 'vous',
 
@@ -128,11 +128,11 @@ return [
 		'embed' => 'Intégrer',
 
 		'selectOneOption' => 'Sélectionnez l\'une des options suivantes',
-		'unlistFromTimelines' => 'Retirer des fils',
+		'unlistFromTimelines' => 'Retirer des flux',
 		'addCW' => 'Ajouter un avertissement de contenu',
 		'removeCW' => 'Enlever l’avertissement de contenu',
 		'markAsSpammer' => 'Marquer comme spammeur·euse',
-		'markAsSpammerText' => 'Retirer des fils + ajouter un avertissement de contenu pour les publications existantes et futures',
+		'markAsSpammerText' => 'Retirer + avertissements pour les contenus existants et futurs',
 		'spam' => 'Indésirable',
 		'sensitive' => 'Contenu sensible',
 		'abusive' => 'Abusif ou préjudiciable',
@@ -150,9 +150,9 @@ return [
 		'modCWSuccess' => 'Avertissement de contenu ajouté avec succès',
 		'modRemoveCWConfirm' => 'Êtes-vous sûr de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
 		'modRemoveCWSuccess' => 'Avertissement de contenu supprimé avec succès',
-		'modUnlistConfirm' => 'Êtes-vous sûr de vouloir retirer cette publication des flux ?',
+		'modUnlistConfirm' => 'Êtes-vous sûr·e de vouloir retirer cette publication des flux ?',
 		'modUnlistSuccess' => 'Publication retirée des fils avec succès',
-		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr de vouloir marquer cet utilisateur·rice comme spammeur·euse ? Toutes les publications existantes et futures seront retirées des flux et un avertissement de contenu sera appliqué.',
+		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr·e de vouloir marquer cet utilisateur·rice comme spammeur·euse ? Toutes les publications existantes et futures seront retirées des flux et un avertissement de contenu sera appliqué.',
 		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme spammeur',
 
 		'toFollowers' => 'aux abonné·e·s',
