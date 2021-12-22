@@ -1,4 +1,5 @@
+translation: /resources/assets/js/i18n/%two_letters_code%.json
 commit_message: '[ci skip]'
 files:
-	- source: /resources/lang/%two_letters_code%/web.php
-		translation: /resources/assets/js/i18n/%two_letters_code%.json
+  - source: /resources/lang/en/web.php
+    translation: /resources/assets/js/i18n/%two_letters_code%.json
