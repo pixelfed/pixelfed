@@ -7,7 +7,7 @@ return [
 		'commented' => 'Kommentiert',
 		'comments' => 'Kommentare',
 		'like' => 'Gefällt',
-		'liked' => 'Liked',
+		'liked' => 'Gefällt',
 		'likes' => 'Gefällt',
 		'share' => 'Teilen',
 		'shared' => 'Geteilt',
@@ -92,14 +92,14 @@ return [
 		'applicationRejected' => 'wurde abgelehnt. Du kannst dich in 6 Monaten erneut für den Beitritt bewerben.',
 
 		'dm' => 'PN',
-		'groupPost' => 'group post',
+		'groupPost' => 'Gruppen-Post',
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
+		'shareToFollowers' => 'Mit Folgenden teilen',
 		'shareToOther' => 'Mit anderen teilen',
 		'noLikes' => 'Noch keine Gefällt mir',
 		'uploading' => 'Lädt hoch',
@@ -124,7 +124,7 @@ return [
 		'moderationTools' => 'Moderationswerkzeuge',
 		'report' => 'Melden',
 		'archive' => 'Archiv',
-		'unarchive' => 'Unarchive',
+		'unarchive' => 'Entarchivieren',
 		'embed' => 'Einbetten',
 
 		'selectOneOption' => 'Wähle eine der folgenden Möglichkeiten',
@@ -139,7 +139,7 @@ return [
 		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
 		'impersonation' => 'Nachahmen',
-		'scamOrFraud' => 'Scam or Fraud',
+		'scamOrFraud' => 'Betrug oder Missbrauch',
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
 		'reportSent' => 'Meldung gesendet!',
@@ -152,10 +152,10 @@ return [
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
 		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
 		'modUnlistSuccess' => 'Beitrag erfolgreich nicht gelistet',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
+		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spam markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
 		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'an die Folgenden',
 
 		'showCaption' => 'Bildunterschrift anzeigen',
 		'showLikes' => '"Gefällt mir" anzeigen',
@@ -164,7 +164,7 @@ return [
 
 		'deletePostConfirm' => 'Bist du sicher, dass du diesen Beitrag löschen möchtest?',
 		'archivePostConfirm' => 'Bist du sicher, dass du diesen Beitrag archivieren möchtest?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'unarchivePostConfirm' => 'Möchten Sie dieses Element wirklich aus dem Archiv zurückholen?',
 	],
 
 	'story' => [
