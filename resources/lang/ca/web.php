@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Comentar',
+		'commented' => 'Comentari',
+		'comments' => 'Comentaris',
+		'like' => 'M\'agrada',
+		'liked' => 'M\'ha agradat',
+		'likes' => '"M\'agrada"',
+		'share' => 'Comparteix',
+		'shared' => 'S\'han compartit',
+		'shares' => 'S\'han compartit',
+		'unshare' => 'Deixa de compartir',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
+		'cancel' => 'Cancel·la',
+		'copyLink' => 'Copia l\'enllaç',
+		'delete' => 'Esborra',
 		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'errorMsg' => 'Alguna cosa ha anat malament. Siusplau, intenta-ho més tard.',
+		'oops' => 'Uix!',
+		'other' => 'Altres',
+		'readMore' => 'Llegiu-ne més',
+		'success' => 'Completat amb èxit',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensible',
+		'sensitiveContent' => 'Contingut sensible',
+		'sensitiveContentWarning' => 'Aquest article pot contenir contingut sensible',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Condicions d\'ús',
+		'privacy' => 'Política de Privacitat',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Cercar',
+		'admin' => 'Tauler d\'Administració',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Línia de temps principal',
+		'localFeed' => 'Línia de temps local',
+		'globalFeed' => 'Línia de temps global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Descobrir',
+		'directMessages' => 'Missatges directes',
+		'notifications' => 'Notificacions',
+		'groups' => 'Grups',
+		'stories' => 'Històries',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Perfil',
+		'drive' => 'Unitat',
+		'settings' => 'Paràmetres',
+		'compose' => 'Crea un nou',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Quant a',
+		'help' => 'Ajuda',
+		'language' => 'Idioma',
+		'privacy' => 'Privacitat',
+		'terms' => 'Termes',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Tornar al disseny anterior'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Safata d\'entrada',
+		'sent' => 'Enviat',
+		'requests' => 'Sol·licitud'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'li agrada la teva',
+		'commented' => 'comentat el teu',
+		'reacted' => 'ha reaccionat al teu',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -141,15 +141,15 @@ return [
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReportText' => 'Esteu segur que voleu informar d\'aquesta publicació?',
+		'reportSent' => 'Informe enviat!',
+		'reportSentText' => 'Hem rebut correctament el vostre informe.',
+		'reportSentError' => 'Hi ha hagut un problema en informar d\'aquesta publicació.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modAddCWConfirm' => 'Confirmes que vols afegir un avís de contingut a aquesta publicació?',
+		'modCWSuccess' => 'Avís de contingut afegit correctament',
+		'modRemoveCWConfirm' => 'Confirmes que vols esborrar un avís de contingut d\'aquesta publicació?',
+		'modRemoveCWSuccess' => 'Avís de contingut esborrat correctament',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
