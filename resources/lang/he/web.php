@@ -3,7 +3,7 @@
 return [
 
 	'common' => [
-		'comment' => 'הערה',
+		'comment' => 'העירו',
 		'commented' => 'העיר\ה',
 		'comments' => 'הערות',
 		'like' => 'אוהב',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'פרופיל',
-		'drive' => 'Drive',
+		'drive' => 'כונן (דרייב)',
 		'settings' => 'הגדרות',
 		'compose' => 'צרו חדש',
 
@@ -85,16 +85,16 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'אתכם',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'בקשתכם להצטרפות',
+		'applicationApproved' => 'אושרה!',
+		'applicationRejected' => 'נדחתה. ניתן לשלוח בקשה חוזרת לאחר 6 חודשים.',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'dm' => 'הודעה אישית',
+		'groupPost' => 'פוסט קבוצתי',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'פוסט',
 		'story' => 'story',
 	],
 
@@ -140,16 +140,16 @@ return [
 		'copyrightInfringement' => 'Copyright Infringement',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReport' => 'אישור דיווח',
+		'confirmReportText' => 'האם אתם בטוחים שברצונכם לדווח על פוסט זה?',
+		'reportSent' => 'דיווח נשלח!',
+		'reportSentText' => 'התקבלה הדיווח.',
+		'reportSentError' => 'הייתה תקלה בדיווח פוסט זה.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modAddCWConfirm' => 'אתם בטוחים שברצונכם להוסיף אזהרת תוכן לפוסט זה?',
+		'modCWSuccess' => 'אזהרת תוכן נוספה בהצלחה',
+		'modRemoveCWConfirm' => 'אתם בטוחים שברצונכם להסיר את אזהרת התוכן מפוסט זה?',
+		'modRemoveCWSuccess' => 'אזהרת תוכן הוסרה בהצלחה',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
