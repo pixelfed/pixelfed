@@ -50,14 +50,14 @@
         "backToPreviousDesign": "Go back to previous design"
     },
     "directMessages": {
-        "inbox": "Inbox",
-        "sent": "Sent",
-        "requests": "Requests"
+        "inbox": "Wiadomo\u015bci",
+        "sent": "Wys\u0142ane",
+        "requests": "Pro\u015bby o kontakt"
     },
     "notifications": {
-        "liked": "liked your",
-        "commented": "commented on your",
-        "reacted": "reacted to your",
+        "liked": "polubi\u0142(a) twoje",
+        "commented": "skomentowa\u0142(a) twoje",
+        "reacted": "zareagowa\u0142(a) na twoje",
         "shared": "shared your",
         "tagged": "tagged you in a",
         "updatedA": "updated a",

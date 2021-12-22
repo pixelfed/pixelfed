@@ -3,74 +3,74 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Комментарий',
+		'commented' => 'Прокомментировано',
+		'comments' => 'Комментарии',
+		'like' => 'Мне нравится',
+		'liked' => 'Вы лайкнули',
+		'likes' => 'Лайки',
+		'share' => 'Поделиться',
+		'shared' => 'Поделились',
+		'shares' => 'Поделились',
+		'unshare' => 'Не делиться',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Отмена',
+		'copyLink' => 'Скопировать ссылку',
+		'delete' => 'Удалить',
+		'error' => 'Ошибка',
+		'errorMsg' => 'Что-то пошло не так. Пожалуйста, попробуйте еще раз позже.',
+		'oops' => 'Упс!',
+		'other' => 'Прочее',
+		'readMore' => 'Читать далее',
+		'success' => 'Успешно',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Чувствительный',
+		'sensitiveContent' => 'Чувствительный контент',
+		'sensitiveContentWarning' => 'Этот пост может содержать чувствительный контент',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Условия использования',
+		'privacy' => 'Политика конфиденциальности',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Поиск',
+		'admin' => 'Панель администратора',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Домашняя лента',
+		'localFeed' => 'Локальная лента',
+		'globalFeed' => 'Глобальная лента',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Общее',
+		'directMessages' => 'Личные Сообщения',
+		'notifications' => 'Уведомления',
+		'groups' => 'Группы',
+		'stories' => 'Истории',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Профиль',
+		'drive' => 'Диск',
+		'settings' => 'Настройки',
+		'compose' => 'Создать новый пост',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'О нас',
+		'help' => 'Помощь',
+		'language' => 'Язык',
+		'privacy' => 'Конфиденциальность',
+		'terms' => 'Условия использования',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Вернуться к предыдущему дизайну'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Входящие',
+		'sent' => 'Отправленные',
+		'requests' => 'Запросы'
 	],
 
 	'notifications' => [
@@ -85,94 +85,94 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'вы',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Ваше заявка на вступление',
+		'applicationApproved' => 'было одобрено!',
+		'applicationRejected' => 'было отклонено. Вы можете повторно подать заявку на регистрацию в течение 6 месяцев.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'сообщения группы',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'пост',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
+		'shareToFollowers' => 'Поделиться с подписчиками',
 		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'noLikes' => 'Пока никому не понравилось',
+		'uploading' => 'Загружается',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'posts' => 'Посты',
+		'followers' => 'Подписчики',
+		'following' => 'Подписки',
+		'admin' => 'Администратор',
+		'collections' => 'Коллекции',
+		'follow' => 'Подписаться',
+		'unfollow' => 'Отписаться',
+		'editProfile' => 'Редактировать профиль',
+		'followRequested' => 'Хочет на Вас подписаться',
+		'joined' => 'Регистрация',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'viewPost' => 'Показать пост',
+		'viewProfile' => 'Посмотреть профиль',
+		'moderationTools' => 'Инструменты модерации',
+		'report' => 'Пожаловаться',
+		'archive' => 'Архив',
+		'unarchive' => 'Вернуть из архива',
+		'embed' => 'Встроить',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
+		'selectOneOption' => 'Выберите один из вариантов',
+		'unlistFromTimelines' => 'Скрыть из лент',
+		'addCW' => 'Добавить предупреждение о контенте',
+		'removeCW' => 'Удалить предупреждение о контенте',
+		'markAsSpammer' => 'Пометить как спамера',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'spam' => 'Спам',
+		'sensitive' => 'Деликатный контент',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'copyrightInfringement' => 'Нарушение авторских прав',
+		'impersonation' => 'Представление себя за другого человека',
+		'scamOrFraud' => 'Обман или мошенничество',
+		'confirmReport' => 'Подтвердить жалобу',
+		'confirmReportText' => 'Вы действительно хотите пожаловаться на этот пост?',
+		'reportSent' => 'Жалоба отправлена!',
+		'reportSentText' => 'Мы успешно получили Вашу жалобу.',
+		'reportSentError' => 'При отправке жалобы на этот пост произошла ошибка.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
+		'modAddCWConfirm' => 'Вы действительно хотите добавить предупреждение о контенте на этот пост?',
+		'modCWSuccess' => 'Предупреждение о контенте успешно добавлено',
+		'modRemoveCWConfirm' => 'Вы действительно хотите удалить предупреждение о контенте с этого поста?',
+		'modRemoveCWSuccess' => 'Предупреждение о контенте успешно удалено',
+		'modUnlistConfirm' => 'Вы действительно хотите скрыть этот пост из лент?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
 		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
+		'showCaption' => 'Показать подпись',
+		'showLikes' => 'Показать отметки "мне нравится"',
+		'compactMode' => 'Компактный режим',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Вы действительно хотите удалить этот пост?',
+		'archivePostConfirm' => 'Вы действительно хотите архивировать этот пост?',
+		'unarchivePostConfirm' => 'Вы действительно хотите убрать этот пост из архива?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Добавить историю'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Возможные друзья'
 	]
 
 ];

@@ -3,89 +3,96 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Komentar',
+		'commented' => 'Dikomentari',
+		'comments' => 'Komentar',
+		'like' => 'Menyukai',
+		'liked' => 'Disukai',
+		'likes' => 'Suka',
+		'share' => 'Bagikan',
+		'shared' => 'Dibagikan',
+		'shares' => 'Bagi',
+		'unshare' => 'Batalkan berbagi',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
+		'cancel' => 'Batal',
+		'copyLink' => 'Salin tautan',
+		'delete' => 'Hapus',
+		'error' => 'Kesalahan',
+		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'other' => 'Lainnya',
+		'readMore' => 'Baca selengkapnya',
+		'success' => 'Berhasil',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensitif',
+		'sensitiveContent' => 'Konten Sensitif',
+		'sensitiveContentWarning' => 'Postingan ini mengandung konten sensitif',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Ketentuan Penggunaan',
+		'privacy' => 'Kebijakan Privasi',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Cari',
+		'admin' => 'Dasbor Admin',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Beranda',
+		'localFeed' => 'Umpan lokal',
+		'globalFeed' => 'Umpan global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Jelajahi',
+		'directMessages' => 'Pesan Langsung',
+		'notifications' => 'Notifikasi',
+		'groups' => 'Grup',
+		'stories' => 'Cerita',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Profil',
+		'drive' => 'Perangkat Keras',
+		'settings' => 'Pengaturan',
+		'compose' => 'Membuat baru',
+
+		// Nav footer
+		'about' => 'Tentang',
+		'help' => 'Bantuan',
+		'language' => 'Bahasa',
+		'privacy' => 'Privasi',
+		'terms' => 'Ketentuan',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Kembali ke desain sebelumnya'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Kotak Masuk',
+		'sent' => 'Terkirim',
+		'requests' => 'Permintaan'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'menyukai',
+		'commented' => 'mengomentari',
 		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'membagikan',
+		'tagged' => 'menandai Anda pada sebuah',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'mengupdate sebuah',
+		'sentA' => 'mengirim sebuah',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'diikuti',
+		'mentioned' => 'disebut',
+		'you' => 'anda',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Aplikasi anda untuk mengikuti',
+		'applicationApproved' => 'telah disetujui!',
+		'applicationRejected' => 'telah ditolak. Anda dapat kembali mengajukan untuk bergabung dalam 6 bulan.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'postingan grup',
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',

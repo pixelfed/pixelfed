@@ -68,15 +68,15 @@ return [
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Wiadomości',
+		'sent' => 'Wysłane',
+		'requests' => 'Prośby o kontakt'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'polubił(a) twoje',
+		'commented' => 'skomentował(a) twoje',
+		'reacted' => 'zareagował(a) na twoje',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
