@@ -3,43 +3,43 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
+		'comment' => 'Komentar',
+		'commented' => 'Mengomentari',
+		'comments' => 'Komentar',
+		'like' => 'Menyukai',
+		'liked' => 'Menyukai',
+		'likes' => 'Suka',
+		'share' => 'Bagikan',
+		'shared' => 'Dibagikan',
 		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'unshare' => 'Batalkan berbagi',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
+		'cancel' => 'Batal',
+		'copyLink' => 'Salin tautan',
+		'delete' => 'Hapus',
+		'error' => 'Kesalahan',
+		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'other' => 'Lainnya',
+		'readMore' => 'Baca lebih lanjut',
+		'success' => 'Berhasil',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensitif',
+		'sensitiveContent' => 'Konten Sensitif',
+		'sensitiveContentWarning' => 'Postingan ini mengandung konten sensitif',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Ketentuan Penggunaan',
+		'privacy' => 'Kebijakan Privasi',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Cari',
+		'admin' => 'Dasbor Admin',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
+		'homeFeed' => 'Beranda',
 		'localFeed' => 'Local Feed',
 		'globalFeed' => 'Global Feed',
 
@@ -55,6 +55,13 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Settings',
 		'compose' => 'Create New',
+
+		// Nav footer
+		'about' => 'About',
+		'help' => 'Help',
+		'language' => 'Language',
+		'privacy' => 'Privacy',
+		'terms' => 'Terms',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'

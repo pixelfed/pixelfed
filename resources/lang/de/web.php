@@ -3,15 +3,15 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'Kommentar',
 		'commented' => 'Kommentiert',
 		'comments' => 'Kommentare',
-		'like' => 'Like',
+		'like' => 'Gefällt',
 		'liked' => 'Liked',
-		'likes' => 'Likes',
+		'likes' => 'Gefällt',
 		'share' => 'Teilen',
 		'shared' => 'Geteilt',
-		'shares' => 'Shares',
+		'shares' => 'Geteilt',
 		'unshare' => 'Teilen rückgängig',
 
 		'cancel' => 'Abbrechen',
@@ -20,7 +20,7 @@ return [
 		'error' => 'Fehler',
 		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
 		'oops' => 'Hoppla!',
-		'other' => 'Other',
+		'other' => 'Anderes',
 		'readMore' => 'Mehr lesen',
 		'success' => 'Erfolgreich',
 
@@ -36,7 +36,7 @@ return [
 
 	'navmenu' => [
 		'search' => 'Suche',
-		'admin' => 'Admin Dashboard',
+		'admin' => 'Administrator-Dashboard',
 
 		// Timelines
 		'homeFeed' => 'Startseite',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Festplatte',
 		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
 
@@ -61,7 +61,7 @@ return [
 		'help' => 'Hilfe',
 		'language' => 'Sprache',
 		'privacy' => 'Privatsphäre',
-		'terms' => 'Terms',
+		'terms' => 'AGB',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Zurück zum vorherigen Design'
@@ -91,7 +91,7 @@ return [
 		'applicationApproved' => 'wurde genehmigt!',
 		'applicationRejected' => 'wurde abgelehnt. Du kannst dich in 6 Monaten erneut für den Beitritt bewerben.',
 
-		'dm' => 'dm',
+		'dm' => 'PN',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
@@ -101,7 +101,7 @@ return [
 	'post' => [
 		'shareToFollowers' => 'Share to followers',
 		'shareToOther' => 'Mit anderen teilen',
-		'noLikes' => 'No likes yet',
+		'noLikes' => 'Noch keine Gefällt mir',
 		'uploading' => 'Lädt hoch',
 	],
 
@@ -158,7 +158,7 @@ return [
 		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Bildunterschrift anzeigen',
-		'showLikes' => 'Show Likes',
+		'showLikes' => '"Gefällt mir" anzeigen',
 		'compactMode' => 'Kompaktmodus',
 		'embedConfirmText' => 'Mit der Nutzung dieser Einbettung erklärst du dich mit unseren',
 
