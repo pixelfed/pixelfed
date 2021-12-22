@@ -6,13 +6,13 @@ return [
 		'comment' => 'Comentar',
 		'commented' => 'Comentou',
 		'comments' => 'Comentarios',
-		'like' => 'Like',
-		'liked' => 'Liked',
+		'like' => 'Agrádame',
+		'liked' => 'Gustoulle',
 		'likes' => 'Gustoulle',
 		'share' => 'Compartir',
 		'shared' => 'Compartiu',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'shares' => 'Compartido',
+		'unshare' => 'Non compartir',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar ligazón',
@@ -22,9 +22,9 @@ return [
 		'oops' => 'Vaites!',
 		'other' => 'Outro',
 		'readMore' => 'Ler máis',
-		'success' => 'Success',
+		'success' => 'Éxito',
 
-		'sensitive' => 'Sensitive',
+		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contido sensible',
 		'sensitiveContentWarning' => 'Esta publicación pode conter contido sensible',
 	],
@@ -94,14 +94,14 @@ return [
 		'dm' => 'md',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
-		'post' => 'post',
-		'story' => 'story',
+		'post' => 'publicación',
+		'story' => 'historia',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
+		'shareToFollowers' => 'Compartir a seguidores',
+		'shareToOther' => 'Compartir a outros',
+		'noLikes' => 'Sen gústame por agora',
 		'uploading' => 'Subindo',
 	],
 
@@ -128,11 +128,11 @@ return [
 		'embed' => 'Incrustar',
 
 		'selectOneOption' => 'Elixe unha das seguintes opcións',
-		'unlistFromTimelines' => 'Non listar en cronoloxías',
+		'unlistFromTimelines' => 'Desalistar das cronoloxías',
 		'addCW' => 'Engadir aviso sobre o contido',
 		'removeCW' => 'Retirar o aviso sobre o contido',
 		'markAsSpammer' => 'Marcar como Spammer',
-		'markAsSpammerText' => 'Non listar + aviso sobre o contido en publicacións existentes e futuras',
+		'markAsSpammerText' => 'Desalistar + aviso sobre o contido en publicacións existentes e futuras',
 		'spam' => 'Spam',
 		'sensitive' => 'Contido sensible',
 		'abusive' => 'Abusivo ou daniño',
@@ -150,21 +150,21 @@ return [
 		'modCWSuccess' => 'Aviso de contido engadido correctamente',
 		'modRemoveCWConfirm' => 'Seguro que queres eliminar o aviso de contido sobre esta publicación?',
 		'modRemoveCWSuccess' => 'Aviso de contido eliminado correctamente',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Seguro que queres marcar a este usuario como spam? Todas as publicacións existentes e futuras serán quitadas das cronoloxías e un aviso de contido será aplicado.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modUnlistConfirm' => 'Seguro que queres desalistar esta publicación?',
+		'modUnlistSuccess' => 'Publicación desalistada correctamente',
+		'modMarkAsSpammerConfirm' => 'Seguro que queres marcar a este usuario como spam? Todas as publicacións existentes e futuras serán desalistadas das cronoloxías e un aviso de contido será aplicado.',
+		'modMarkAsSpammerSuccess' => 'Conta marcada como spam correctamente',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'para Seguidores',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Mostrar descrición',
+		'showLikes' => 'Mostrar os gústame',
+		'compactMode' => 'Modo compacto',
+		'embedConfirmText' => 'Utilizando ese incrustado, aceptas',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Seguro que queres eliminar esta publicación?',
+		'archivePostConfirm' => 'Seguro que queres arquivar esta publicación?',
+		'unarchivePostConfirm' => 'Seguro que queres desarquivar esta publicación?',
 	],
 
 	'story' => [
@@ -172,7 +172,7 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Xente que podes coñecer'
 	]
 
 ];
