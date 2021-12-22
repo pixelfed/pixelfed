@@ -93,7 +93,7 @@ return [
 
 		'dm' => 'PN',
 		'groupPost' => 'Gruppen-Post',
-		'modlog' => 'modlog',
+		'modlog' => 'לוג מנהל',
 		'post' => 'Beitrag',
 		'story' => 'Story',
 	],
@@ -132,7 +132,7 @@ return [
 		'addCW' => 'Inhaltswarnung hinzufügen',
 		'removeCW' => 'Inhaltswarnung entfernen',
 		'markAsSpammer' => 'Als Spammer markieren',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'העלם והוסף אזהרת תוכן לפוסטים קיימים ועתידיים',
 		'spam' => 'Spam',
 		'sensitive' => 'Sensitiver Inhalt',
 		'abusive' => 'missbräuchlich oder schädigend',
