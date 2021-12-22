@@ -35,7 +35,7 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
+		'search' => 'Suche',
 		'admin' => 'Admin Dashboard',
 
 		// Timelines
@@ -48,12 +48,12 @@ return [
 		'directMessages' => 'Direktnachrichten',
 		'notifications' => 'Benachrichtigungen',
 		'groups' => 'Gruppen',
-		'stories' => 'Stories',
+		'stories' => 'Storys',
 
 		// Self links
 		'profile' => 'Profil',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
+		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
 
 		// Temporary links
@@ -70,19 +70,19 @@ return [
 		'liked' => 'gefällt dein',
 		'commented' => 'kommentierte dein',
 		'reacted' => 'reagierte auf dein',
-		'shared' => 'shared your',
+		'shared' => 'teilte deine',
 		'tagged' => 'markierte dich in einem',
 
 		'updatedA' => 'aktualisierte ein',
 		'sentA' => 'sendete ein',
 
 		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'mentioned' => 'erwähnt',
+		'you' => 'du',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Deine Bewerbung um beizutreten',
+		'applicationApproved' => 'wurde genehmigt!',
+		'applicationRejected' => 'wurde abgelehnt. Du kannst dich in 6 Monaten erneut für den Beitritt bewerben.',
 
 		'dm' => 'dm',
 		'groupPost' => 'group post',
@@ -95,39 +95,39 @@ return [
 		'shareToFollowers' => 'Share to followers',
 		'shareToOther' => 'Share to other',
 		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'uploading' => 'Lädt hoch',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
+		'posts' => 'Beiträge',
+		'followers' => 'Folgende',
+		'following' => 'Folgend',
 		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'collections' => 'Sammlungen',
+		'follow' => 'Folgen',
+		'unfollow' => 'Entfolgen',
+		'editProfile' => 'Profil bearbeiten',
+		'followRequested' => 'Folgeanfragen',
+		'joined' => 'Beigetreten',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
+		'viewPost' => 'Beitrag anzeigen',
+		'viewProfile' => 'Profil anzeigen',
+		'moderationTools' => 'Moderationswerkzeuge',
+		'report' => 'Melden',
+		'archive' => 'Archiv',
 		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'embed' => 'Einbetten',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'selectOneOption' => 'Wähle eine der folgenden Möglichkeiten',
+		'unlistFromTimelines' => 'Nicht in Timelines listen',
+		'addCW' => 'Inhaltswarnung hinzufügen',
+		'removeCW' => 'Inhaltswarnung entfernen',
 		'markAsSpammer' => 'Als Spammer markieren',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'sensitive' => 'Sensitiver Inhalt',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
@@ -136,36 +136,36 @@ return [
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
 		'reportSent' => 'Meldung gesendet!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'reportSentText' => 'Wir haben deinen Bericht erfolgreich erhalten.',
+		'reportSentError' => 'Es gab ein Problem beim Melden dieses Beitrags.',
 
 		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modCWSuccess' => 'Inhaltswarnung erfolgreich hinzugefügt',
+		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?',
+		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
+		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
+		'modUnlistSuccess' => 'Beitrag erfolgreich nicht gelistet',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Bildunterschrift anzeigen',
 		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'compactMode' => 'Kompaktmodus',
+		'embedConfirmText' => 'Mit der Nutzung dieser Einbettung erklärst du dich mit unseren',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
+		'deletePostConfirm' => 'Bist du sicher, dass du diesen Beitrag löschen möchtest?',
+		'archivePostConfirm' => 'Bist du sicher, dass du diesen Beitrag archivieren möchtest?',
 		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Story hinzufügen'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
 	]
 
 ];
