@@ -4,7 +4,7 @@ return [
 
 	'common' => [
 		'comment' => 'Commenter',
-		'commented' => 'Commenté',
+		'commented' => 'Commenté·e',
 		'comments' => 'Commentaires',
 		'like' => 'J\'aime',
 		'liked' => 'Aimé·e',
@@ -19,32 +19,32 @@ return [
 		'delete' => 'Supprimer',
 		'error' => 'Erreur',
 		'errorMsg' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
-		'oops' => 'Oups !',
+		'oops' => 'Zut !',
 		'other' => 'Autre',
-		'readMore' => 'Lire plus',
-		'success' => 'Succès',
+		'readMore' => 'En savoir plus',
+		'success' => 'Opération réussie',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
-		'sensitiveContentWarning' => 'Ce message peut contenir du contenu sensible',
+		'sensitiveContentWarning' => 'Le contenu de ce message peut être sensible',
 	],
 
 	'site' => [
 		'terms' => 'Conditions d\'utilisation',
-		'privacy' => 'Politique de confidentialité',
+		'privacy' => 'Règles de confidentialité',
 	],
 
 	'navmenu' => [
-		'search' => 'Rechercher',
-		'admin' => 'Tableau de bord admin',
+		'search' => 'Chercher',
+		'admin' => 'Tableau de bord d\'administration',
 
 		// Timelines
-		'homeFeed' => 'Flux principal',
-		'localFeed' => 'Flux local',
-		'globalFeed' => 'Flux global',
+		'homeFeed' => 'Fil principal',
+		'localFeed' => 'Fil local',
+		'globalFeed' => 'Fil global',
 
 		// Core features
-		'discover' => 'Découvrir',
+		'discover' => 'Explorer',
 		'directMessages' => 'Messages Privés',
 		'notifications' => 'Notifications',
 		'groups' => 'Groupes',
@@ -52,39 +52,39 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Stockage',
 		'settings' => 'Paramètres',
-		'compose' => 'Créer nouveau',
+		'compose' => 'Composer',
 
 		// Nav footer
 		'about' => 'À propos',
 		'help' => 'Aide',
 		'language' => 'Langue',
-		'privacy' => 'Confidentialité',
+		'privacy' => 'Vie privée',
 		'terms' => 'Conditions ',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Revenir au design précédent'
+		'backToPreviousDesign' => 'Revenir à la conception précédente'
 	],
 
 	'directMessages' => [
 		'inbox' => 'Boîte de réception',
-		'sent' => 'Envoyé',
+		'sent' => 'Boîte d\'envois',
 		'requests' => 'Demandes'
 	],
 
 	'notifications' => [
-		'liked' => 'a aimé·e votre',
+		'liked' => 'a aimé votre',
 		'commented' => 'a commenté votre',
 		'reacted' => 'a réagi à votre',
-		'shared' => 'a partagé·e votre',
+		'shared' => 'a partagé votre',
 		'tagged' => 'vous a tagué·e dans un',
 
-		'updatedA' => 'mis à jour un',
-		'sentA' => 'a envoyé·e un',
+		'updatedA' => 'mis à jour un·e',
+		'sentA' => 'a envoyé un·e',
 
-		'followed' => 'abonné·e',
-		'mentioned' => 'mentionné·e',
+		'followed' => 'suit',
+		'mentioned' => 'a mentionné',
 		'you' => 'vous',
 
 		'yourApplication' => 'Votre candidature à rejoindre',
@@ -141,7 +141,7 @@ return [
 		'impersonation' => 'Usurpation d\'identité',
 		'scamOrFraud' => 'Arnaque ou fraude',
 		'confirmReport' => 'Confirmer le signalement',
-		'confirmReportText' => 'Êtes-vous sûr de vouloir signaler ce post?',
+		'confirmReportText' => 'Êtes-vous sûr de vouloir signaler ce post ?',
 		'reportSent' => 'Signalement envoyé !',
 		'reportSentText' => 'Nous avons bien reçu votre signalement.',
 		'reportSentError' => 'Une erreur s\'est produite lors du signalement de ce post.',
