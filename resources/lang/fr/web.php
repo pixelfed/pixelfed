@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Commenter',
+		'commented' => 'Commenté',
+		'comments' => 'Commentaires',
+		'like' => 'J\'aime',
+		'liked' => 'Aimé·e',
+		'likes' => 'J\'aime',
+		'share' => 'Partager',
+		'shared' => 'Partagé',
+		'shares' => 'Partages',
+		'unshare' => 'Ne plus partager',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Annuler',
+		'copyLink' => 'Copier le lien',
+		'delete' => 'Supprimer',
+		'error' => 'Erreur',
+		'errorMsg' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
+		'oops' => 'Oups !',
+		'other' => 'Autre',
+		'readMore' => 'Lire plus',
+		'success' => 'Succès',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensible',
+		'sensitiveContent' => 'Contenu sensible',
+		'sensitiveContentWarning' => 'Ce message peut contenir du contenu sensible',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Conditions d\'utilisation',
+		'privacy' => 'Politique de confidentialité',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Rechercher',
+		'admin' => 'Tableau de bord administrateur',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Flux principal',
+		'localFeed' => 'Flux local',
+		'globalFeed' => 'Flux global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
+		'discover' => 'Découvrir',
+		'directMessages' => 'Messages Privés',
 		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'groups' => 'Groupes',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'Profil',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
+		'settings' => 'Paramètres',
 		'compose' => 'Create New',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
+		'about' => 'À propos',
+		'help' => 'Aide',
+		'language' => 'Langue',
 		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'terms' => 'Conditions ',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Revenir au design précédent'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
+		'inbox' => 'Boîte de réception',
 		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'requests' => 'Demandes'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'a aimé·e votre',
+		'commented' => 'a commenté·e votre',
+		'reacted' => 'a réagi à votre',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -138,9 +138,9 @@ return [
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
+		'impersonation' => 'Usurpation d\'identité',
+		'scamOrFraud' => 'Arnaque ou fraude',
+		'confirmReport' => 'Confirmer le signalement',
 		'confirmReportText' => 'Are you sure you want to report this post?',
 		'reportSent' => 'Report Sent!',
 		'reportSentText' => 'We have successfully received your report.',

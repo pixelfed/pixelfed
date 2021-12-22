@@ -138,7 +138,7 @@ return [
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
-		'impersonation' => 'Impersonation',
+		'impersonation' => 'Nachahmen',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
@@ -146,7 +146,7 @@ return [
 		'reportSentText' => 'Wir haben deinen Bericht erfolgreich erhalten.',
 		'reportSentError' => 'Es gab ein Problem beim Melden dieses Beitrags.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modAddCWConfirm' => 'Bist du sicher, dass du diesem Beitrag eine Inhaltswarnung hinzufügen möchtest?',
 		'modCWSuccess' => 'Inhaltswarnung erfolgreich hinzugefügt',
 		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?',
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',

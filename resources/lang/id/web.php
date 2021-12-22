@@ -4,14 +4,14 @@ return [
 
 	'common' => [
 		'comment' => 'Komentar',
-		'commented' => 'Mengomentari',
+		'commented' => 'Dikomentari',
 		'comments' => 'Komentar',
 		'like' => 'Menyukai',
-		'liked' => 'Menyukai',
+		'liked' => 'Disukai',
 		'likes' => 'Suka',
 		'share' => 'Bagikan',
 		'shared' => 'Dibagikan',
-		'shares' => 'Shares',
+		'shares' => 'Bagi',
 		'unshare' => 'Batalkan berbagi',
 
 		'cancel' => 'Batal',
@@ -21,7 +21,7 @@ return [
 		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
 		'other' => 'Lainnya',
-		'readMore' => 'Baca lebih lanjut',
+		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
 
 		'sensitive' => 'Sensitif',
@@ -40,59 +40,59 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Beranda',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'localFeed' => 'Umpan lokal',
+		'globalFeed' => 'Umpan global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Jelajahi',
+		'directMessages' => 'Pesan Langsung',
+		'notifications' => 'Notifikasi',
+		'groups' => 'Grup',
+		'stories' => 'Cerita',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Profil',
+		'drive' => 'Perangkat Keras',
+		'settings' => 'Pengaturan',
+		'compose' => 'Membuat baru',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Tentang',
+		'help' => 'Bantuan',
+		'language' => 'Bahasa',
+		'privacy' => 'Privasi',
+		'terms' => 'Ketentuan',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Kembali ke desain sebelumnya'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Kotak Masuk',
+		'sent' => 'Terkirim',
+		'requests' => 'Permintaan'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'menyukai',
+		'commented' => 'mengomentari',
 		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'membagikan',
+		'tagged' => 'menandai Anda pada sebuah',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'mengupdate sebuah',
+		'sentA' => 'mengirim sebuah',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'diikuti',
+		'mentioned' => 'disebut',
+		'you' => 'anda',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Aplikasi anda untuk mengikuti',
+		'applicationApproved' => 'telah disetujui!',
+		'applicationRejected' => 'telah ditolak. Anda dapat kembali mengajukan untuk bergabung dalam 6 bulan.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'postingan grup',
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
