@@ -2459,4 +2459,126 @@ class ApiV1Controller extends Controller
 		->values();
 		return response()->json(compact('posts'));
 	}
+
+	/**
+	* GET /api/v2/statuses/{id}/replies
+	*
+	*
+	* @return array
+	*/
+	public function statusReplies(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'limit' => 'int|min:1|max:10',
+			'sort' => 'in:all,newest,popular'
+		]);
+
+		$limit = $request->input('limit', 3);
+		$pid = $request->user()->profile_id;
+		$status = StatusService::get($id);
+
+		abort_if(!in_array($status['visibility'], ['public', 'unlisted']), 404);
+
+		$sortBy = $request->input('sort', 'all');
+
+		if($sortBy == 'all' && !$request->has('cursor')) {
+			$ids = Cache::remember('status:replies:all:' . $id, 900, function() use($id) {
+				return DB::table('statuses')
+					->where('in_reply_to_id', $id)
+					->orderBy('id')
+					->cursorPaginate(3);
+			});
+		} else {
+			$ids = DB::table('statuses')
+				->where('in_reply_to_id', $id)
+				->when($sortBy, function($q, $sortBy) {
+					if($sortBy === 'all') {
+						return $q->orderBy('id');
+					}
+
+					if($sortBy === 'newest') {
+						return $q->orderByDesc('created_at');
+					}
+
+					if($sortBy === 'popular') {
+						return $q->orderByDesc('likes_count');
+					}
+				})
+				->cursorPaginate($limit);
+		}
+
+		$data = $ids->map(function($post) use($pid) {
+			$status = StatusService::get($post->id);
+
+			if(!$status || !isset($status['id'])) {
+				return false;
+			}
+
+			$status['favourited'] = LikeService::liked($pid, $post->id);
+			return $status;
+		})
+		->filter(function($post) {
+			return $post && isset($post['id']);
+		})
+		->values();
+
+		$res = [
+			'data' => $data,
+			'next' => $ids->nextPageUrl()
+		];
+
+		return $res;
+	}
+
+	/**
+	* GET /api/v2/statuses/{id}/state
+	*
+	*
+	* @return array
+	*/
+	public function statusState(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		$status = Status::findOrFail($id);
+		$pid = $request->user()->profile_id;
+		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+
+		return StatusService::getState($status->id, $pid);
+	}
+
+   /**
+	* GET /api/v1/discover/accounts/popular
+	*
+	*
+	* @return array
+	*/
+	public function discoverAccountsPopular(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+
+		$ids = DB::table('profiles')
+			->where('is_private', false)
+			->whereNull('status')
+			->orderByDesc('profiles.followers_count')
+			->limit(20)
+			->get();
+
+		$ids = $ids->map(function($profile) {
+				return AccountService::get($profile->id);
+			})
+			->filter(function($profile) use($pid) {
+				return $profile &&
+					isset($profile['id']) &&
+					!FollowerService::follows($pid, $profile['id']) &&
+					$profile['id'] != $pid;
+			})
+			->take(6)
+			->values();
+
+		return response()->json($ids, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+	}
 }
