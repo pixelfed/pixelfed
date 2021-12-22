@@ -54,7 +54,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Drive',
 		'settings' => 'Paramètres',
-		'compose' => 'Create New',
+		'compose' => 'Créer nouveau',
 
 		// Nav footer
 		'about' => 'À propos',
@@ -69,7 +69,7 @@ return [
 
 	'directMessages' => [
 		'inbox' => 'Boîte de réception',
-		'sent' => 'Sent',
+		'sent' => 'Envoyé',
 		'requests' => 'Demandes'
 	],
 
@@ -77,22 +77,22 @@ return [
 		'liked' => 'a aimé·e votre',
 		'commented' => 'a commenté·e votre',
 		'reacted' => 'a réagi à votre',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'a partagé ton',
+		'tagged' => 'a tagué toi dans un',
 
 		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'sentA' => 'a envoyé un',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'abonné',
+		'mentioned' => 'mentionné',
+		'you' => 'toi',
 
 		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'applicationApproved' => 'a été approuvé!',
+		'applicationRejected' => 'a été rejeté. Vous pouvez postuler à nouveau pour rejoindre le site dans 6 mois.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'message dans un groupe',
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
@@ -133,20 +133,20 @@ return [
 		'removeCW' => 'Remove Content Warning',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'spam' => 'Indésirable',
+		'sensitive' => 'Contenu sensible',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
+		'copyrightInfringement' => 'Violation des droits d’auteur',
 		'impersonation' => 'Usurpation d\'identité',
 		'scamOrFraud' => 'Arnaque ou fraude',
 		'confirmReport' => 'Confirmer le signalement',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReportText' => 'Êtes-vous sur de vouloir signaler ce post?',
+		'reportSent' => 'Signalement envoyé !',
+		'reportSentText' => 'Nous avons bien reçu votre signalement.',
+		'reportSentError' => 'Une erreur s\'est produite lors du signalement de ce post.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modAddCWConfirm' => 'Êtes-vous sûr de vouloir ajouter un avertissement de contenu à ce message ?',
 		'modCWSuccess' => 'Successfully added content warning',
 		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
 		'modRemoveCWSuccess' => 'Successfully removed content warning',
