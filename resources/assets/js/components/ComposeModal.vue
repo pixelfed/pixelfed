@@ -1259,7 +1259,11 @@ export default {
 					axios.post('/api/compose/v0/publish', data)
 					.then(res => {
 						let data = res.data;
-						window.location.href = data;
+						if(location.pathname === '/i/web/compose') {
+							location.href = '/i/web/post/' + data.split('/').at(-1);
+						} else {
+							location.href = data;
+						}
 					}).catch(err => {
 						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
 						swal('Oops, something went wrong!', msg, 'error');

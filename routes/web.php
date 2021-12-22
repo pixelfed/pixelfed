@@ -208,6 +208,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('blocks', 'AccountController@accountBlocksV2');
 				Route::get('filters', 'AccountController@accountFiltersV2');
 			});
+
+			Route::get('discover/accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular');
 		});
 
 		Route::group(['prefix' => 'local'], function () {
