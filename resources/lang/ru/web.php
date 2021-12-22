@@ -74,8 +74,8 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'понравился ваш',
+		'commented' => 'прокомментировал ваш',
 		'reacted' => 'отреагировал на ваш',
 		'shared' => 'поделился вашим',
 		'tagged' => 'отметил вас в публикации',
