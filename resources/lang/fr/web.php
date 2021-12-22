@@ -4,10 +4,10 @@ return [
 
 	'common' => [
 		'comment' => 'Commenter',
-		'commented' => 'Commenté·e',
+		'commented' => 'Commenté',
 		'comments' => 'Commentaires',
 		'like' => 'J\'aime',
-		'liked' => 'Aimé·e',
+		'liked' => 'Aimé',
 		'likes' => 'J\'aime',
 		'share' => 'Partager',
 		'shared' => 'Partagé',
@@ -31,7 +31,7 @@ return [
 
 	'site' => [
 		'terms' => 'Conditions d\'utilisation',
-		'privacy' => 'Règles de confidentialité',
+		'privacy' => 'Politique de confidentialité',
 	],
 
 	'navmenu' => [
@@ -54,13 +54,13 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Stockage',
 		'settings' => 'Paramètres',
-		'compose' => 'Composer',
+		'compose' => 'Publier',
 
 		// Nav footer
 		'about' => 'À propos',
 		'help' => 'Aide',
 		'language' => 'Langue',
-		'privacy' => 'Vie privée',
+		'privacy' => 'Confidentialité',
 		'terms' => 'Conditions ',
 
 		// Temporary links
@@ -89,27 +89,27 @@ return [
 
 		'yourApplication' => 'Votre candidature à rejoindre',
 		'applicationApproved' => 'a été approuvée !',
-		'applicationRejected' => 'a été rejetée. Vous pouvez postuler à nouveau pour rejoindre dans 6 mois.',
+		'applicationRejected' => 'a été rejetée. Vous pouvez refaire une demande dans 6 mois.',
 
 		'dm' => 'mp',
-		'groupPost' => 'post de groupe',
+		'groupPost' => 'publication de groupe',
 		'modlog' => 'journal de modération',
-		'post' => 'post',
+		'post' => 'publication',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Partager aux abonné·e·s',
-		'shareToOther' => 'Partager à d\'autres',
+		'shareToFollowers' => 'Partager avec ses abonné·e·s',
+		'shareToOther' => 'Partager avec d\'autres',
 		'noLikes' => 'Aucun J\'aime pour le moment',
 		'uploading' => 'Envoi en cours',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
+		'posts' => 'Publications',
 		'followers' => 'Abonné·e·s',
 		'following' => 'Abonnements',
-		'admin' => 'Admin',
+		'admin' => 'Administrateur·rice',
 		'collections' => 'Collections',
 		'follow' => 'S\'abonner',
 		'unfollow' => 'Se désabonner',
@@ -119,7 +119,7 @@ return [
 	],
 
 	'menu' => [
-		'viewPost' => 'Voir le post',
+		'viewPost' => 'Voir la publication',
 		'viewProfile' => 'Voir le profil',
 		'moderationTools' => 'Outils de modération',
 		'report' => 'Signaler',
@@ -128,12 +128,12 @@ return [
 		'embed' => 'Intégrer',
 
 		'selectOneOption' => 'Sélectionnez l\'une des options suivantes',
-		'unlistFromTimelines' => 'Retirer des flux',
+		'unlistFromTimelines' => 'Retirer des fils',
 		'addCW' => 'Ajouter un avertissement de contenu',
 		'removeCW' => 'Enlever l’avertissement de contenu',
 		'markAsSpammer' => 'Marquer comme spammeur·euse',
-		'markAsSpammerText' => 'Retirer des flux + ajouter un avertissement de contenu pour les publications existantes et futures',
-		'spam' => 'Spam',
+		'markAsSpammerText' => 'Retirer des fils + ajouter un avertissement de contenu pour les publications existantes et futures',
+		'spam' => 'Indésirable',
 		'sensitive' => 'Contenu sensible',
 		'abusive' => 'Abusif ou préjudiciable',
 		'underageAccount' => 'Compte d\'un·e mineur·e',
@@ -141,19 +141,19 @@ return [
 		'impersonation' => 'Usurpation d\'identité',
 		'scamOrFraud' => 'Arnaque ou fraude',
 		'confirmReport' => 'Confirmer le signalement',
-		'confirmReportText' => 'Êtes-vous sûr de vouloir signaler ce post ?',
+		'confirmReportText' => 'Êtes-vous sûr de vouloir signaler cette publication ?',
 		'reportSent' => 'Signalement envoyé !',
 		'reportSentText' => 'Nous avons bien reçu votre signalement.',
-		'reportSentError' => 'Une erreur s\'est produite lors du signalement de ce post.',
+		'reportSentError' => 'Une erreur s\'est produite lors du signalement de cette publication.',
 
-		'modAddCWConfirm' => 'Êtes-vous sûr de vouloir ajouter un avertissement de contenu à ce message ?',
+		'modAddCWConfirm' => 'Êtes-vous sûr de vouloir ajouter un avertissement de contenu à cette publication ?',
 		'modCWSuccess' => 'Avertissement de contenu ajouté avec succès',
-		'modRemoveCWConfirm' => 'Êtes-vous sûr de vouloir supprimer l\'avertissement de contenu sur ce post ?',
+		'modRemoveCWConfirm' => 'Êtes-vous sûr de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
 		'modRemoveCWSuccess' => 'Avertissement de contenu supprimé avec succès',
-		'modUnlistConfirm' => 'Êtes-vous sûr de vouloir retirer des flux ce post ?',
-		'modUnlistSuccess' => 'Publication retirée des flux avec succès',
-		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr de vouloir marquer cet utilisateur·rice comme spammeur·euse ? Tous les posts existants et futurs seront retirés des flux et une avertissement de contenu sera appliquée.',
-		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme spammeur',
+		'modUnlistConfirm' => 'Êtes-vous sûr de vouloir retirer cette publication des fils ?',
+		'modUnlistSuccess' => 'Publication retirée des fils avec succès',
+		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr de vouloir marquer cet utilisateur·rice comme polluposteur·euse ? Toutes les publications existantes et futures seront retirées des fils et un avertissement de contenu sera appliqué.',
+		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme polluposteur',
 
 		'toFollowers' => 'aux abonné·e·s',
 
@@ -162,9 +162,9 @@ return [
 		'compactMode' => 'Mode compact',
 		'embedConfirmText' => 'En utilisant ce module, vous acceptez nos',
 
-		'deletePostConfirm' => 'Êtes-vous sûr de vouloir supprimer ce post ?',
-		'archivePostConfirm' => 'Êtes-vous sûr de vouloir archiver ce post ?',
-		'unarchivePostConfirm' => 'Êtes-vous sûr de vouloir désarchiver ce post ?',
+		'deletePostConfirm' => 'Êtes-vous sûr de vouloir supprimer cette publication ?',
+		'archivePostConfirm' => 'Êtes-vous sûr de vouloir archiver cette publication ?',
+		'unarchivePostConfirm' => 'Êtes-vous sûr de vouloir désarchiver cette publication ?',
 	],
 
 	'story' => [
