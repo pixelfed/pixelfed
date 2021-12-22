@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'הערה',
+		'commented' => 'העיר\ה',
+		'comments' => 'הערות',
+		'like' => 'אוהב',
+		'liked' => 'אהבתי',
+		'likes' => 'אהבות',
+		'share' => 'שיתוף',
+		'shared' => 'שיתפו',
+		'shares' => 'שיתופים',
+		'unshare' => 'ביטול-שיתוף',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'ביטול',
+		'copyLink' => 'העתק קישור',
+		'delete' => 'מחק',
+		'error' => 'שגיאה',
+		'errorMsg' => 'משהו השתבש. אנא נסו שוב מאוחר יותר.',
+		'oops' => 'אופס!',
+		'other' => 'אחר',
+		'readMore' => 'קרא עוד',
+		'success' => 'הצלחה',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'רגיש',
+		'sensitiveContent' => 'תוכן רגיש',
+		'sensitiveContentWarning' => 'פוסט זה עלול להכיל תוכן רגיש',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'תנאי שימוש',
+		'privacy' => 'מדיניות פרטיות',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'חיפוש',
+		'admin' => 'לוח בקרה לאדמיניסטרציה',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'פיד ביתי',
+		'localFeed' => 'פיד מקומי',
+		'globalFeed' => 'פיד גלובאלי',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'גלו',
+		'directMessages' => 'הודעות אישיות',
+		'notifications' => 'התראות',
+		'groups' => 'קבוצות',
+		'stories' => 'סיפורים',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'פרופיל',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'settings' => 'הגדרות',
+		'compose' => 'צרו חדש',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'אודות',
+		'help' => 'עזרה',
+		'language' => 'שפה',
+		'privacy' => 'פרטיות',
+		'terms' => 'תנאים',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'חזרה לעיצוב הקודם'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'הודעות נכנסות',
+		'sent' => 'הודעות יוצאות',
+		'requests' => 'בקשות'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'אהבו לך',
+		'commented' => 'העירו לך על',
+		'reacted' => 'הגיבו לך על',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
