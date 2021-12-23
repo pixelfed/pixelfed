@@ -16,16 +16,16 @@ return [
 
 		'cancel' => 'Cancel',
 		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'delete' => 'Sil',
+		'error' => 'Hata',
+		'errorMsg' => 'Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyiniz.',
+		'oops' => 'Hay aksi!',
+		'other' => 'Diğer',
+		'readMore' => 'Daha fazlasını oku',
+		'success' => 'Başarılı',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
+		'sensitive' => 'Hassasiyet',
+		'sensitiveContent' => 'Hassas içerik',
 		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
@@ -35,8 +35,8 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Arama',
+		'admin' => 'Yönetici Paneli',
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
