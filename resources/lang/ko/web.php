@@ -3,74 +3,74 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => '댓글',
 		'commented' => 'Commented',
 		'comments' => 'Comments',
-		'like' => 'Like',
+		'like' => '좋아요',
 		'liked' => 'Liked',
 		'likes' => 'Likes',
-		'share' => 'Share',
+		'share' => '공유',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Cancel',
+		'cancel' => '취소',
 		'copyLink' => 'Copy Link',
 		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'error' => '오류',
+		'errorMsg' => '문제가 발생했습니다. 나중에 다시 시도하세요.',
+		'oops' => '이런!',
+		'other' => '기타',
+		'readMore' => '더보기',
+		'success' => '성공',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => '민감함 ',
+		'sensitiveContent' => '민감한 내용',
+		'sensitiveContentWarning' => '이 게시물은 민감한 내용을 포함합니다',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => '이용약관',
+		'privacy' => '개인정보 취급방침',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => '검색',
+		'admin' => '관리자 대시보드',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => '홈 피드',
+		'localFeed' => '로컬 피드',
+		'globalFeed' => '글로벌 피드',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => '발견하기',
+		'directMessages' => '쪽지',
+		'notifications' => '알림',
+		'groups' => '그룹',
+		'stories' => '스토리',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => '프로필',
+		'drive' => '드라이브',
+		'settings' => '설정',
+		'compose' => '새로 만들기',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => '정보',
+		'help' => '도움말',
+		'language' => '언어',
+		'privacy' => '개인정보',
+		'terms' => '약관',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => '이전 디자인으로 돌아가기'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => '받은 편지함',
+		'sent' => '보냄',
+		'requests' => '요청 내역'
 	],
 
 	'notifications' => [
@@ -133,8 +133,8 @@ return [
 		'removeCW' => 'Remove Content Warning',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'spam' => '스팸',
+		'sensitive' => '민감한 내용',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
