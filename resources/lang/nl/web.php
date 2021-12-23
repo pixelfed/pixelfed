@@ -45,7 +45,7 @@ return [
 
 		// Core features
 		'discover' => 'Ontdekken',
-		'directMessages' => 'Privé Berichten',
+		'directMessages' => 'Directe berichten',
 		'notifications' => 'Notificaties',
 		'groups' => 'Groepen',
 		'stories' => 'Verhalen',
