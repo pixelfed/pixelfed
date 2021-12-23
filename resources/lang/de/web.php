@@ -18,7 +18,7 @@ return [
 		'copyLink' => 'Link kopieren',
 		'delete' => 'Löschen',
 		'error' => 'Fehler',
-		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuche es später nochmal.',
+		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
 		'oops' => 'Hoppla!',
 		'other' => 'Anderes',
 		'readMore' => 'Mehr lesen',
