@@ -92,7 +92,7 @@ return [
 		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'グループの投稿',
 		'modlog' => 'モデレーションログ',
 		'post' => '投稿',
 		'story' => 'ストーリー',
@@ -158,7 +158,7 @@ return [
 		'toFollowers' => 'to Followers',
 
 		'showCaption' => '説明を表示',
-		'showLikes' => 'Show Likes',
+		'showLikes' => 'いいねを表示',
 		'compactMode' => 'コンパクトモード',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
