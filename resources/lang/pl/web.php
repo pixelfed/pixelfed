@@ -64,7 +64,7 @@ return [
 		'terms' => 'Regulamin',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Wróć do poprzedniego wyglądu'
 	],
 
 	'directMessages' => [
@@ -83,24 +83,24 @@ return [
 		'updatedA' => 'zaktualizowano',
 		'sentA' => 'wysłano',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'zaobserwował(-a)',
+		'mentioned' => 'wspominał(-a)',
 		'you' => 'ciebie',
 
 		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'applicationApproved' => 'została zatwierdzona!',
+		'applicationRejected' => 'została odrzucona. Możesz ponownie ubiegać się o dołączenie za 6 miesięcy.',
 
 		'dm' => 'dm',
 		'groupPost' => 'group post',
-		'modlog' => 'modlog',
+		'modlog' => 'logi',
 		'post' => 'post',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
+		'shareToFollowers' => 'Udostępnij obserwującym',
+		'shareToOther' => 'Udostępnij innym',
 		'noLikes' => 'Brak polubień',
 		'uploading' => 'Przesyłanie',
 	],
@@ -108,14 +108,14 @@ return [
 	'profile' => [
 		'posts' => 'Posty',
 		'followers' => 'Obserwujący',
-		'following' => 'Following',
+		'following' => 'Obserwowane',
 		'admin' => 'Administrator',
 		'collections' => 'Kolekcje',
 		'follow' => 'Obserwuj',
 		'unfollow' => 'Przestań obserwować',
 		'editProfile' => 'Edytuj profil',
 		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'joined' => 'Dołączono',
 	],
 
 	'menu' => [
