@@ -83,13 +83,13 @@ return [
 		'updatedA' => '-(e)k eguneratu egin du',
 		'sentA' => '-(e)k bidali egin du',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'honi jarraitzen hasi da:',
+		'mentioned' => '-(e)k aipatu zaitu',
 		'you' => 'zu',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Elkartzeko zure eskaera',
+		'applicationApproved' => 'onartu da!',
+		'applicationRejected' => 'ez da onartu. Berriz eska dezakezu 6 hilabete barru.',
 
 		'dm' => 'dm',
 		'groupPost' => 'talde bidalketa',
