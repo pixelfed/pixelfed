@@ -8,7 +8,7 @@ return [
 		'comments' => 'Iruzkinak',
 		'like' => 'Datsegit',
 		'liked' => 'Datsegite',
-		'likes' => 'Atsegute',
+		'likes' => 'Atsegite',
 		'share' => 'Partekatu',
 		'shared' => 'Partekatua',
 		'shares' => 'Partekatze',
@@ -76,7 +76,7 @@ return [
 	'notifications' => [
 		'liked' => 'datsegi zure',
 		'commented' => 'iruzkindu du zure',
-		'reacted' => 'reacted to your',
+		'reacted' => '-(e)k erantzun egin du zure',
 		'shared' => 'partekatu du zure',
 		'tagged' => 'etiketatu zaitu hemen',
 
@@ -92,9 +92,9 @@ return [
 		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'talde bidalketa',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'bidalketa',
 		'story' => 'story',
 	],
 
@@ -108,7 +108,7 @@ return [
 	'profile' => [
 		'posts' => 'Bidalketak',
 		'followers' => 'Jarraitzaileak',
-		'following' => 'Following',
+		'following' => 'Jarraitzen',
 		'admin' => 'Admin',
 		'collections' => 'Bildumak',
 		'follow' => 'Jarraitu',
@@ -155,10 +155,10 @@ return [
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
 		'modMarkAsSpammerSuccess' => 'Kontua zabor-bidaltzaile gisa markatu da',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'jarraitzaileei',
 
 		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
+		'showLikes' => 'Erakutsi atsegiteak',
 		'compactMode' => 'Modu trinkoa',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
