@@ -61,7 +61,7 @@ return [
 		'help' => 'Aide',
 		'language' => 'Langue',
 		'privacy' => 'Confidentialité',
-		'terms' => 'Conditions ',
+		'terms' => 'Conditions',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Revenir au design précédent'
