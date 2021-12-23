@@ -7,7 +7,7 @@ return [
 		'commented' => 'Iruzkindu',
 		'comments' => 'Iruzkinak',
 		'like' => 'Datsegit',
-		'liked' => 'Datsegite',
+		'liked' => 'Datsegit',
 		'likes' => 'Atsegite',
 		'share' => 'Partekatu',
 		'shared' => 'Partekatua',
