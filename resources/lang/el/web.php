@@ -11,8 +11,8 @@ return [
 		'likes' => 'Αρέσει',
 		'share' => 'Κοινοποίηση',
 		'shared' => 'Κοινοποιήθηκε',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'shares' => 'Κοινοποιήσεις',
+		'unshare' => 'Αναίρεση κοινοποίησης',
 
 		'cancel' => 'Ακύρωση',
 		'copyLink' => 'Αντιγραφή Συνδέσμου',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Προφίλ',
-		'drive' => 'Drive',
+		'drive' => 'Χώρος αποθήκευσης',
 		'settings' => 'Ρυθμίσεις',
 		'compose' => 'Δημιουργία νέου',
 
