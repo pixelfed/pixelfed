@@ -78,10 +78,10 @@ return [
 		'commented' => 'iruzkindu du zure',
 		'reacted' => '-(e)k erantzun egin du zure',
 		'shared' => 'partekatu du zure',
-		'tagged' => 'etiketatu zaitu hemen',
+		'tagged' => 'etiketatu zaitu hemen:',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => '-(e)k eguneratu egin du',
+		'sentA' => '-(e)k bidali egin du',
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
