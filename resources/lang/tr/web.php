@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Depolama',
 		'settings' => 'Ayarlar',
 		'compose' => 'Yeni oluştur',
 
@@ -95,14 +95,14 @@ return [
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
-		'story' => 'story',
+		'story' => 'hikaye',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
+		'shareToFollowers' => 'Takipçileri paylaş',
 		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'noLikes' => 'Henüz beğenilmedi',
+		'uploading' => 'Yükleniyor',
 	],
 
 	'profile' => [
@@ -110,7 +110,7 @@ return [
 		'followers' => 'Takipçiler',
 		'following' => 'Takip ediliyor',
 		'admin' => 'Yönetici',
-		'collections' => 'Collections',
+		'collections' => 'Koleksiyonlar',
 		'follow' => 'Takip et',
 		'unfollow' => 'Takibi bırak',
 		'editProfile' => 'Profili Düzenle',
@@ -134,7 +134,7 @@ return [
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'sensitive' => 'Hassas içerik',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
@@ -149,7 +149,7 @@ return [
 		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
 		'modCWSuccess' => 'İçerik uyarısı başarıyla eklendi',
 		'modRemoveCWConfirm' => 'Bu gönderiden içerik uyarısını kaldırmak istediğinize emin misiniz?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modRemoveCWSuccess' => 'İçerik uyarısı başarıyla kaldırıldı',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
@@ -157,7 +157,7 @@ return [
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Açıklamayı göster',
 		'showLikes' => 'Beğenileri Göster',
 		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
