@@ -141,14 +141,14 @@ return [
 		'impersonation' => 'Usurpation d\'identité',
 		'scamOrFraud' => 'Arnaque ou fraude',
 		'confirmReport' => 'Confirmer le signalement',
-		'confirmReportText' => 'Êtes-vous sûr de vouloir signaler cette publication ?',
+		'confirmReportText' => 'Êtes-vous sûr·e de vouloir signaler cette publication ?',
 		'reportSent' => 'Signalement envoyé !',
 		'reportSentText' => 'Nous avons bien reçu votre signalement.',
 		'reportSentError' => 'Une erreur s\'est produite lors du signalement de cette publication.',
 
-		'modAddCWConfirm' => 'Êtes-vous sûr de vouloir ajouter un avertissement de contenu à cette publication ?',
+		'modAddCWConfirm' => 'Êtes-vous sûr·e de vouloir ajouter un avertissement de contenu à cette publication ?',
 		'modCWSuccess' => 'Avertissement de contenu ajouté avec succès',
-		'modRemoveCWConfirm' => 'Êtes-vous sûr de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
+		'modRemoveCWConfirm' => 'Êtes-vous sûr·e de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
 		'modRemoveCWSuccess' => 'Avertissement de contenu supprimé avec succès',
 		'modUnlistConfirm' => 'Êtes-vous sûr·e de vouloir retirer cette publication des flux ?',
 		'modUnlistSuccess' => 'Publication retirée des fils avec succès',
@@ -162,9 +162,9 @@ return [
 		'compactMode' => 'Mode compact',
 		'embedConfirmText' => 'En utilisant ce module, vous acceptez nos',
 
-		'deletePostConfirm' => 'Êtes-vous sûr de vouloir supprimer cette publication ?',
-		'archivePostConfirm' => 'Êtes-vous sûr de vouloir archiver cette publication ?',
-		'unarchivePostConfirm' => 'Êtes-vous sûr de vouloir désarchiver cette publication ?',
+		'deletePostConfirm' => 'Êtes-vous sûr·e de vouloir supprimer cette publication ?',
+		'archivePostConfirm' => 'Êtes-vous sûr·e de vouloir archiver cette publication ?',
+		'unarchivePostConfirm' => 'Êtes-vous sûr·e de vouloir désarchiver cette publication ?',
 	],
 
 	'story' => [
