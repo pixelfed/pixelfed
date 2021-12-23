@@ -3,19 +3,19 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Yorum',
+		'commented' => 'Yorumlar',
+		'comments' => 'Yorumlar',
+		'like' => 'Beğen',
+		'liked' => 'Beğenildi',
+		'likes' => 'Beğeniler',
+		'share' => 'Paylaş',
+		'shared' => 'Paylaşılan',
+		'shares' => 'Paylaşılanlar',
+		'unshare' => 'Paylaşımı kaldır',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
+		'cancel' => 'İptal',
+		'copyLink' => 'Bağlantıyı Kopyala',
 		'delete' => 'Sil',
 		'error' => 'Hata',
 		'errorMsg' => 'Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyiniz.',
@@ -26,12 +26,12 @@ return [
 
 		'sensitive' => 'Hassasiyet',
 		'sensitiveContent' => 'Hassas içerik',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitiveContentWarning' => 'Bu ileti hassas içerik içeriyor olabilir',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Kullanım Koşulları',
+		'privacy' => 'Gizlilik Politikası',
 	],
 
 	'navmenu' => [
@@ -44,33 +44,33 @@ return [
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Keşfet',
+		'directMessages' => 'Direkt Mesajlar',
+		'notifications' => 'Bildirimler',
+		'groups' => 'Gruplar',
+		'stories' => 'Hikayeler',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'Profil',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'settings' => 'Ayarlar',
+		'compose' => 'Yeni oluştur',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Hakkında',
+		'help' => 'Yardım',
+		'language' => 'Dil',
+		'privacy' => 'Gizlilik',
+		'terms' => 'Koşullar',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Gelen Kutusu',
+		'sent' => 'Gönder',
+		'requests' => 'İstekler'
 	],
 
 	'notifications' => [
@@ -106,25 +106,25 @@ return [
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
+		'posts' => 'Gönderiler',
+		'followers' => 'Takipçiler',
+		'following' => 'Takip ediliyor',
+		'admin' => 'Yönetici',
 		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'follow' => 'Takip et',
+		'unfollow' => 'Takibi bırak',
+		'editProfile' => 'Profili Düzenle',
+		'followRequested' => 'Takip İsteği',
+		'joined' => 'Katıldı',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
+		'viewPost' => 'Gönderiyi görüntüle',
+		'viewProfile' => 'Profili Görüntüle',
 		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
+		'report' => 'Bildir',
 		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
+		'unarchive' => 'Arşivden çıkar',
 		'embed' => 'Embed',
 
 		'selectOneOption' => 'Select one of the following options',
@@ -147,8 +147,8 @@ return [
 		'reportSentError' => 'There was an issue reporting this post.',
 
 		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
+		'modCWSuccess' => 'İçerik uyarısı başarıyla eklendi',
+		'modRemoveCWConfirm' => 'Bu gönderiden içerik uyarısını kaldırmak istediğinize emin misiniz?',
 		'modRemoveCWSuccess' => 'Successfully removed content warning',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
@@ -158,21 +158,21 @@ return [
 		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
+		'showLikes' => 'Beğenileri Göster',
 		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Bu gönderiyi silmek istediğinizden emin misiniz?',
+		'archivePostConfirm' => 'Bu gönderiyi arşivlemek istediğinizden emin misiniz?',
+		'unarchivePostConfirm' => 'Bu gönderiyi arşivden çıkarmak istediğinize emin misiniz?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Hikaye ekle'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler'
 	]
 
 ];
