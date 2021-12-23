@@ -5,7 +5,7 @@ return [
 	'common' => [
 		'comment' => 'تَعليق',
 		'commented' => 'علَّقتَ عليه',
-		'comments' => 'التعليقات',
+		'comments' => 'تَعليقات',
 		'like' => 'إعجاب',
 		'liked' => 'أُعجِبتَ بِه',
 		'likes' => 'الإعجابات',
@@ -164,7 +164,7 @@ return [
 
 		'deletePostConfirm' => 'هل أنت متأكد من رغبتك في حذف هذا المنشور؟',
 		'archivePostConfirm' => 'هل أنت متأكد من أنك تريد أرشفة هذا المنشور؟',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'unarchivePostConfirm' => 'هل أنت متأكدٌ من رغبتك في إلغاء أرشَفَة هذا المَنشور؟',
 	],
 
 	'story' => [
