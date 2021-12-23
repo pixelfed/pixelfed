@@ -3,74 +3,74 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'コメント',
+		'commented' => 'コメントされました',
+		'comments' => 'コメント',
+		'like' => 'お気に入り',
+		'liked' => 'お気に入りしました',
+		'likes' => 'お気に入り',
+		'share' => '共有',
+		'shared' => '共有されました',
+		'shares' => '共有',
+		'unshare' => '共有解除',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'キャンセル',
+		'copyLink' => 'リンクをコピー',
+		'delete' => '削除',
+		'error' => 'エラー',
+		'errorMsg' => '何かが間違っています。しばらくしてからやり直してください。',
+		'oops' => 'おおっと！',
+		'other' => 'その他',
+		'readMore' => 'もっと読む',
+		'success' => '成功しました',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'センシティブ',
+		'sensitiveContent' => 'センシティブなコンテンツ',
+		'sensitiveContentWarning' => 'この投稿にはセンシティブなコンテンツが含まれている可能性があります',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => '利用規約',
+		'privacy' => 'プライバシーポリシー',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => '検索',
+		'admin' => '管理者ダッシュボード',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'ホームフィード',
+		'localFeed' => 'ローカルフィード',
+		'globalFeed' => 'グローバルフィード',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => '発見',
+		'directMessages' => 'ダイレクトメッセージ',
+		'notifications' => '通知',
+		'groups' => 'グループ',
+		'stories' => 'ストーリーズ',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'プロフィール',
+		'drive' => 'ドライブ',
+		'settings' => '設定',
+		'compose' => '新規投稿',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'このサーバーについて',
+		'help' => 'ヘルプ',
+		'language' => '言語',
+		'privacy' => 'プライバシー',
+		'terms' => '利用規約',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => '以前のデザインに戻す'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => '受信トレイ',
+		'sent' => '送信済み',
+		'requests' => 'リクエスト'
 	],
 
 	'notifications' => [
@@ -85,7 +85,7 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'あなた',
 
 		'yourApplication' => 'Your application to join',
 		'applicationApproved' => 'was approved!',
@@ -93,67 +93,67 @@ return [
 
 		'dm' => 'dm',
 		'groupPost' => 'group post',
-		'modlog' => 'modlog',
-		'post' => 'post',
-		'story' => 'story',
+		'modlog' => 'モデレーションログ',
+		'post' => '投稿',
+		'story' => 'ストーリー',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'フォロワーに共有',
+		'shareToOther' => 'その他に共有',
+		'noLikes' => 'まだお気に入りされていません',
+		'uploading' => 'アップロード中',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'posts' => '投稿',
+		'followers' => 'フォロワー',
+		'following' => 'フォロー中',
+		'admin' => '管理者',
+		'collections' => 'コレクション',
+		'follow' => 'フォロー',
+		'unfollow' => 'フォロー解除',
+		'editProfile' => 'プロフィールを編集',
+		'followRequested' => 'フォロー承認待ち',
+		'joined' => '参加しました',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
+		'viewPost' => '投稿を見る',
+		'viewProfile' => 'プロフィールを見る',
+		'moderationTools' => 'モデレーションツール',
+		'report' => '報告',
+		'archive' => 'アーカイブ',
+		'unarchive' => 'アーカイブを解除',
 		'embed' => 'Embed',
 
 		'selectOneOption' => 'Select one of the following options',
 		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Add Content Warning',
 		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
+		'markAsSpammer' => 'スパムとしてマーク',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
+		'spam' => 'スパム',
+		'sensitive' => 'センシティブなコンテンツ',
+		'abusive' => '虐待または有害',
+		'underageAccount' => '未成年のアカウント',
+		'copyrightInfringement' => '著作権侵害',
+		'impersonation' => 'なりすまし',
+		'scamOrFraud' => '詐欺または不正な行為',
+		'confirmReport' => '報告を送信',
+		'confirmReportText' => '本当にこの投稿を報告しますか？',
+		'reportSent' => '報告が送信されました！',
+		'reportSentText' => 'あなたの報告を受け取りました。',
 		'reportSentError' => 'There was an issue reporting this post.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modAddCWConfirm' => 'この投稿にコンテンツ警告を追加してもよろしいですか？',
+		'modCWSuccess' => 'コンテンツ警告が追加されました',
+		'modRemoveCWConfirm' => '本当にこの投稿からコンテンツ警告を削除しますか？',
+		'modRemoveCWSuccess' => 'コンテンツ警告が削除されました',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modMarkAsSpammerConfirm' => 'このユーザーをスパムとして登録していいですか？既存のまた、今後の投稿はすべてタイムラインに表示されず、コンテンツ警告が適用されます。',
+		'modMarkAsSpammerSuccess' => 'アカウントをスパムとしてマークしました',
 
 		'toFollowers' => 'to Followers',
 
@@ -168,11 +168,11 @@ return [
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'ストーリーを追加'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => '知り合いかも'
 	]
 
 ];
