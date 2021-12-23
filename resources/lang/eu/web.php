@@ -4,14 +4,14 @@ return [
 
 	'common' => [
 		'comment' => 'Iruzkindu',
-		'commented' => 'Commented',
+		'commented' => 'Iruzkindu',
 		'comments' => 'Iruzkinak',
 		'like' => 'Datsegit',
-		'liked' => 'Liked',
+		'liked' => 'Datsegite',
 		'likes' => 'Atsegute',
 		'share' => 'Partekatu',
 		'shared' => 'Partekatua',
-		'shares' => 'Shares',
+		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
 
 		'cancel' => 'Utzi',
@@ -22,10 +22,10 @@ return [
 		'oops' => 'Ene!',
 		'other' => 'Bestelakoa',
 		'readMore' => 'Gehiago irakurri',
-		'success' => 'Success',
+		'success' => 'Burutu da',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
+		'sensitive' => 'Sentibera',
+		'sensitiveContent' => 'Kontuz edukiarekin',
 		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
