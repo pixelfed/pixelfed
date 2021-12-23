@@ -74,10 +74,10 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
+		'liked' => 'se líbí váš',
+		'commented' => 'komentoval/a váš',
+		'reacted' => 'reagoval/a na váš',
+		'shared' => 'sdílel/a váš',
 		'tagged' => 'tagged you in a',
 
 		'updatedA' => 'updated a',
