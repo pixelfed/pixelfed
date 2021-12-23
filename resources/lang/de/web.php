@@ -6,13 +6,13 @@ return [
 		'comment' => 'Kommentar',
 		'commented' => 'Kommentiert',
 		'comments' => 'Kommentare',
-		'like' => 'Gefällt',
+		'like' => 'Gefällt mir',
 		'liked' => 'Gefällt',
 		'likes' => 'Gefällt',
 		'share' => 'Teilen',
 		'shared' => 'Geteilt',
 		'shares' => 'Geteilt',
-		'unshare' => 'Teilen rückgängig',
+		'unshare' => 'Teilen rückgängig machen',
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
@@ -21,7 +21,7 @@ return [
 		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
 		'oops' => 'Hoppla!',
 		'other' => 'Anderes',
-		'readMore' => 'Mehr lesen',
+		'readMore' => 'Weiterlesen',
 		'success' => 'Erfolgreich',
 
 		'sensitive' => 'Sensibel',
@@ -48,7 +48,7 @@ return [
 		'directMessages' => 'Direktnachrichten',
 		'notifications' => 'Benachrichtigungen',
 		'groups' => 'Gruppen',
-		'stories' => 'Storys',
+		'stories' => 'Stories',
 
 		// Self links
 		'profile' => 'Profil',
@@ -93,7 +93,7 @@ return [
 
 		'dm' => 'PN',
 		'groupPost' => 'Gruppen-Post',
-		'modlog' => 'לוג מנהל',
+		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
 	],
@@ -101,7 +101,7 @@ return [
 	'post' => [
 		'shareToFollowers' => 'Mit Folgenden teilen',
 		'shareToOther' => 'Mit anderen teilen',
-		'noLikes' => 'Gefällt bisher noch niemandem',
+		'noLikes' => 'Noch keine Gefällt mir',
 		'uploading' => 'Lädt hoch',
 	],
 
@@ -134,7 +134,7 @@ return [
 		'markAsSpammer' => 'Als Spammer markieren',
 		'markAsSpammerText' => 'Aus der Zeitleiste entfernen und bisherige und zukünftige Beiträge mit einer Inhaltswarnung versehen',
 		'spam' => 'Spam',
-		'sensitive' => 'Sensitiver Inhalt',
+		'sensitive' => 'Sensibler Inhalt',
 		'abusive' => 'missbräuchlich oder schädigend',
 		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
