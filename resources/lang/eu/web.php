@@ -157,7 +157,7 @@ return [
 
 		'toFollowers' => 'jarraitzaileei',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Irudiaren azalpena erakutsi',
 		'showLikes' => 'Erakutsi atsegiteak',
 		'compactMode' => 'Modu trinkoa',
 		'embedConfirmText' => 'By using this embed, you agree to our',
