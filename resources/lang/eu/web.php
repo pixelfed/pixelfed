@@ -26,7 +26,7 @@ return [
 
 		'sensitive' => 'Sentibera',
 		'sensitiveContent' => 'Kontuz edukiarekin',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitiveContentWarning' => 'Argitalpen honen edukia mingarria izan daiteke',
 	],
 
 	'site' => [
@@ -35,16 +35,16 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Bilatu',
+		'admin' => 'Adminaren panela',
 
 		// Timelines
 		'homeFeed' => 'Hasierako jarioa',
 		'localFeed' => 'Tokiko jarioa',
-		'globalFeed' => 'Global Feed',
+		'globalFeed' => 'Iturri globala',
 
 		// Core features
-		'discover' => 'Discover',
+		'discover' => 'Aurkitu',
 		'directMessages' => 'Mezu zuzenak',
 		'notifications' => 'Jakinarazpenak',
 		'groups' => 'Taldeak',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Profila',
-		'drive' => 'Drive',
+		'drive' => 'Gida',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Argitaratu',
 
@@ -64,28 +64,28 @@ return [
 		'terms' => 'Baldintzak',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Itzuli aurreko itxurara'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
+		'inbox' => 'Sarrera ontzia',
+		'sent' => 'Bidalita',
 		'requests' => 'Eskaerak'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'datsegi zure',
+		'commented' => 'iruzkindu du zure',
 		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'partekatu du zure',
+		'tagged' => 'etiketatu zaitu hemen',
 
 		'updatedA' => 'updated a',
 		'sentA' => 'sent a',
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'zu',
 
 		'yourApplication' => 'Your application to join',
 		'applicationApproved' => 'was approved!',
@@ -100,7 +100,7 @@ return [
 
 	'post' => [
 		'shareToFollowers' => 'Partekatu jarraitzaileekin',
-		'shareToOther' => 'Share to other',
+		'shareToOther' => 'Partekatu besteekin',
 		'noLikes' => 'Atsegiterik ez oraindik',
 		'uploading' => 'Igotzen',
 	],
@@ -110,7 +110,7 @@ return [
 		'followers' => 'Jarraitzaileak',
 		'following' => 'Following',
 		'admin' => 'Admin',
-		'collections' => 'Collections',
+		'collections' => 'Bildumak',
 		'follow' => 'Jarraitu',
 		'unfollow' => 'Utzi jarraitzeari',
 		'editProfile' => 'Editatu profila',
