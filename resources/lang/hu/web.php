@@ -78,7 +78,7 @@ return [
 		'commented' => 'hozzászólt a %-hez',
 		'reacted' => 'reagált a %-re',
 		'shared' => 'megosztotta a %-t',
-		'tagged' => 'megjelölt egy %-ben',
+		'tagged' => 'megjelölt ebben',
 
 		'updatedA' => 'frissítette a %-t',
 		'sentA' => 'küldött egy %-t',
