@@ -3,74 +3,74 @@
 return [
 
 	'common' => [
-		'comment' => '댓글',
+		'comment' => 'Beachd',
 		'commented' => 'Commented',
 		'comments' => 'Comments',
-		'like' => '좋아요',
+		'like' => 'Like',
 		'liked' => 'Liked',
 		'likes' => 'Likes',
-		'share' => '공유',
+		'share' => 'Co-roinn',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => '취소',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => '오류',
-		'errorMsg' => '문제가 발생했습니다. 나중에 다시 시도하세요.',
-		'oops' => '이런!',
-		'other' => '기타',
-		'readMore' => '더보기',
-		'success' => '성공',
+		'cancel' => 'Sguir dheth',
+		'copyLink' => 'Dèan lethbhreac dhen cheangal',
+		'delete' => 'Sguab às',
+		'error' => 'Mearachd',
+		'errorMsg' => 'Something went wrong. Please try again later.',
+		'oops' => 'Oops!',
+		'other' => 'Other',
+		'readMore' => 'Read more',
+		'success' => 'Success',
 
-		'sensitive' => '민감함 ',
-		'sensitiveContent' => '민감한 내용',
-		'sensitiveContentWarning' => '이 게시물은 민감한 내용을 포함합니다',
+		'sensitive' => 'Frionasach',
+		'sensitiveContent' => 'Susbaint fhrionasach',
+		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
 	'site' => [
-		'terms' => '이용약관',
-		'privacy' => '개인정보 취급방침',
+		'terms' => 'Terms of Use',
+		'privacy' => 'Privacy Policy',
 	],
 
 	'navmenu' => [
-		'search' => '검색',
-		'admin' => '관리자 대시보드',
+		'search' => 'Lorg',
+		'admin' => 'Admin Dashboard',
 
 		// Timelines
-		'homeFeed' => '홈 피드',
-		'localFeed' => '로컬 피드',
-		'globalFeed' => '글로벌 피드',
+		'homeFeed' => 'Inbhir na dachaigh',
+		'localFeed' => 'Inbhir ionadail',
+		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => '발견하기',
-		'directMessages' => '쪽지',
-		'notifications' => '알림',
-		'groups' => '그룹',
-		'stories' => '스토리',
+		'discover' => 'Discover',
+		'directMessages' => 'Direct Messages',
+		'notifications' => 'Brathan',
+		'groups' => 'Buidhnean',
+		'stories' => 'Stories',
 
 		// Self links
-		'profile' => '프로필',
-		'drive' => '드라이브',
-		'settings' => '설정',
-		'compose' => '새로 만들기',
+		'profile' => 'Pròifil',
+		'drive' => 'Draibh',
+		'settings' => 'Roghainnean',
+		'compose' => 'Cruthaich fear ùr',
 
 		// Nav footer
-		'about' => '정보',
-		'help' => '도움말',
-		'language' => '언어',
-		'privacy' => '개인정보',
-		'terms' => '약관',
+		'about' => 'Mu dhèidhinn',
+		'help' => 'Cobhair',
+		'language' => 'Cànan',
+		'privacy' => 'Prìobhaideachd',
+		'terms' => 'Teirmichean',
 
 		// Temporary links
-		'backToPreviousDesign' => '이전 디자인으로 돌아가기'
+		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => '받은 편지함',
-		'sent' => '보냄',
-		'requests' => '요청 내역'
+		'inbox' => 'Am bogsa a-steach',
+		'sent' => 'Sent',
+		'requests' => 'Iarrtasan'
 	],
 
 	'notifications' => [
@@ -95,7 +95,7 @@ return [
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
-		'story' => 'story',
+		'story' => 'sgeul',
 	],
 
 	'post' => [
@@ -111,39 +111,39 @@ return [
 		'following' => 'Following',
 		'admin' => 'Admin',
 		'collections' => 'Collections',
-		'follow' => 'Follow',
+		'follow' => 'Lean air',
 		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
+		'editProfile' => 'Deasaich a’ phròifil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
+		'viewPost' => 'Seall am post',
+		'viewProfile' => 'Seall a’ phròifil',
+		'moderationTools' => 'Innealan na maorsainneachd',
 		'report' => 'Report',
 		'archive' => 'Archive',
 		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'embed' => 'Leabaich',
 
-		'selectOneOption' => 'Select one of the following options',
+		'selectOneOption' => 'Tagh tè dhe na roghainnean seo',
 		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
+		'addCW' => 'Cuir rabhadh susbainte ris',
+		'removeCW' => 'Thoir air falbh an rabhadh susbainte',
+		'markAsSpammer' => 'Cuir comharra gur e spamair a th’ ann',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => '스팸',
-		'sensitive' => '민감한 내용',
+		'spam' => 'Spama',
+		'sensitive' => 'Susbaint fhrionasach',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
+		'confirmReport' => 'Dearbh an gearan',
 		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
+		'reportSent' => 'Chaidh an gearan a chur!',
+		'reportSentText' => 'Fhuair sinn do ghearan.',
 		'reportSentError' => 'There was an issue reporting this post.',
 
 		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
@@ -157,18 +157,18 @@ return [
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Seall am fo-thiotal',
 		'showLikes' => 'Show Likes',
 		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
+		'deletePostConfirm' => 'A bheil thu cinnteach gu bheil thu airson am post seo a sguabadh às?',
+		'archivePostConfirm' => 'A bheil thu cinnteach gu bheil thu airson am post seo a chur dhan tasg-lann?',
 		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Cuir sgeul ris'
 	],
 
 	'timeline' => [

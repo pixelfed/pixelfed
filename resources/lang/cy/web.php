@@ -3,73 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Gwneud Sylw',
+		'commented' => 'Sylwadau ar',
+		'comments' => 'Sylwadau',
+		'like' => 'Hoffi',
+		'liked' => 'Hoffi',
+		'likes' => 'Hoffi',
+		'share' => 'Rhannu',
+		'shared' => 'Rhannu',
+		'shares' => 'Rhannu',
+		'unshare' => 'Dad-rannu',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Canslo',
+		'copyLink' => 'Copïo\'r ddolen',
+		'delete' => 'Dileu',
+		'error' => 'Gwall',
+		'errorMsg' => 'Aeth rhywbeth o\'i le. Rhowch gynnig arall arni yn nes ymlaen.',
+		'oops' => 'Wps!',
+		'other' => 'Arall',
+		'readMore' => 'Darllen mwy',
+		'success' => 'Llwyddiant',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensitif',
+		'sensitiveContent' => 'Cynnwys sensitif',
+		'sensitiveContentWarning' => 'Gall y post hon gynnwys cynnwys sensitif',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Telerau defnyddio',
+		'privacy' => 'Polisi preifatrwydd',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Chwilio',
+		'admin' => 'Dangosfwrdd gweinyddol',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Ffrwd gatref',
+		'localFeed' => 'Ffrwd lleol',
+		'globalFeed' => 'Ffrwd byd-eang',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Darganfod',
+		'directMessages' => 'Negeseuon preifat',
+		'notifications' => 'Hysbysiadau',
+		'groups' => 'Grwpiau',
+		'stories' => 'Straeon',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Proffil',
+		'drive' => 'Gyriant storio',
+		'settings' => 'Gosodiadau',
+		'compose' => 'Creu newydd',
+
+		// Nav footer
+		'about' => 'Amdano',
+		'help' => 'Cymorth',
+		'language' => 'Iaith',
+		'privacy' => 'Preifatrwydd',
+		'terms' => 'Telerau',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Ewch yn ôl at ddyluniad blaenorol'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Mewnflwch',
+		'sent' => 'Anfonwyd',
+		'requests' => 'Ceisiadau'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'wedi hoffi eich',
+		'commented' => 'gwnaeth sylwadau ar eich',
+		'reacted' => 'adweithio i\'ch',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -134,7 +141,7 @@ return [
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
+		'confirmReportText' => 'Ydych chi\'n siŵr eich bod chi am adroddi\'r post hon?',
 		'reportSent' => 'Report Sent!',
 		'reportSentText' => 'We have successfully received your report.',
 		'reportSentError' => 'There was an issue reporting this post.',

@@ -74,16 +74,16 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'понравился ваш',
+		'commented' => 'прокомментировал ваш',
+		'reacted' => 'отреагировал на ваш',
+		'shared' => 'поделился вашим',
+		'tagged' => 'отметил вас в публикации',
 
 		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'sentA' => 'отправил',
 
-		'followed' => 'followed',
+		'followed' => 'подписался',
 		'mentioned' => 'mentioned',
 		'you' => 'вы',
 
@@ -95,12 +95,12 @@ return [
 		'groupPost' => 'сообщения группы',
 		'modlog' => 'modlog',
 		'post' => 'пост',
-		'story' => 'story',
+		'story' => 'история',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Поделиться с подписчиками',
-		'shareToOther' => 'Share to other',
+		'shareToOther' => 'Поделиться с другими',
 		'noLikes' => 'Пока никому не понравилось',
 		'uploading' => 'Загружается',
 	],
@@ -135,8 +135,8 @@ return [
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Спам',
 		'sensitive' => 'Деликатный контент',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
+		'abusive' => 'Жестокое обращение или причинение вреда',
+		'underageAccount' => 'Несовершеннолетний аккаунт',
 		'copyrightInfringement' => 'Нарушение авторских прав',
 		'impersonation' => 'Представление себя за другого человека',
 		'scamOrFraud' => 'Обман или мошенничество',
@@ -152,8 +152,8 @@ return [
 		'modRemoveCWSuccess' => 'Предупреждение о контенте успешно удалено',
 		'modUnlistConfirm' => 'Вы действительно хотите скрыть этот пост из лент?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modMarkAsSpammerConfirm' => 'Вы уверены, что хотите отметить этого пользователя спамом? Все существующие и будущие сообщения будут исключены из списка в сроки, и будет применяться предупреждение о содержании.',
+		'modMarkAsSpammerSuccess' => 'Аккаунт успешно помечен как спаммер',
 
 		'toFollowers' => 'to Followers',
 
