@@ -12,31 +12,31 @@ return [
 		'share' => 'هم‌رسانی',
 		'shared' => 'Shared',
 		'shares' => 'هم‌رسانی',
-		'unshare' => 'Unshare',
+		'unshare' => 'لغو هم‌رسانی',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'لغو',
+		'copyLink' => 'روگرفت پیوند',
+		'delete' => 'حذف',
+		'error' => 'خطا',
+		'errorMsg' => 'مشکلی رخ داده است. لطفا بعدا امتحان کنید.',
+		'oops' => 'اوه!',
+		'other' => 'سایر',
+		'readMore' => 'بیشتر بخوانید',
+		'success' => 'موفق',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'حساس',
+		'sensitiveContent' => 'محتوای حساس',
+		'sensitiveContentWarning' => 'این فرسته ممکن است دارای محتوای حساس باشد',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'شرایط استفاده',
+		'privacy' => 'سیاست حریم خصوصی',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'جستجو',
+		'admin' => 'پیشخوان مدیریتی',
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
@@ -44,9 +44,9 @@ return [
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
+		'discover' => 'اکتشاف',
+		'directMessages' => 'پیام‌های مستقیم',
+		'notifications' => 'اعلان‌ها',
 		'groups' => 'Groups',
 		'stories' => 'Stories',
 
