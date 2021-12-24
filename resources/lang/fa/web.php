@@ -3,15 +3,15 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'دیدگاه',
 		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
+		'comments' => 'دیدگاه‌ها',
+		'like' => 'پسند',
 		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
+		'likes' => 'پسند',
+		'share' => 'هم‌رسانی',
 		'shared' => 'Shared',
-		'shares' => 'Shares',
+		'shares' => 'هم‌رسانی',
 		'unshare' => 'Unshare',
 
 		'cancel' => 'Cancel',
