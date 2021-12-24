@@ -40,8 +40,8 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'localFeed' => 'Yerel Akış',
+		'globalFeed' => 'Evrensel Akış',
 
 		// Core features
 		'discover' => 'Keşfet',
@@ -64,7 +64,7 @@ return [
 		'terms' => 'Koşullar',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Önceki tasarıma geri dön'
 	],
 
 	'directMessages' => [
@@ -87,9 +87,9 @@ return [
 		'mentioned' => 'mentioned',
 		'you' => 'sen',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Katılma isteğiniz',
+		'applicationApproved' => 'onaylandı!',
+		'applicationRejected' => 'reddedildi. 6 ay sonra, tekrar katılma isteğinde bulunabilirsiniz.',
 
 		'dm' => 'özel mesaj',
 		'groupPost' => 'group post',
@@ -121,27 +121,27 @@ return [
 	'menu' => [
 		'viewPost' => 'Gönderiyi görüntüle',
 		'viewProfile' => 'Profili Görüntüle',
-		'moderationTools' => 'Moderation Tools',
+		'moderationTools' => 'Denetim Ayarları',
 		'report' => 'Bildir',
 		'archive' => 'Archive',
 		'unarchive' => 'Arşivden çıkar',
 		'embed' => 'Embed',
 
 		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'unlistFromTimelines' => 'Akışlardan kaldır',
+		'addCW' => 'İçerik Uyarısını Ekle',
+		'removeCW' => 'İçerik Uyarısını Kaldır',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'İstenmeyen',
 		'sensitive' => 'Hassas içerik',
-		'abusive' => 'Abusive or Harmful',
+		'abusive' => 'İstismarcı veya Zararlı',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
+		'copyrightInfringement' => 'Telif hakkı ihlali',
+		'impersonation' => 'Taklit Hesap',
+		'scamOrFraud' => 'Dolandırıcılık',
+		'confirmReport' => 'Bildirimi onayla',
+		'confirmReportText' => 'Bu paylaşımı bildirmek istediğinizden emin misiniz?',
 		'reportSent' => 'Rapor Gönderildi!',
 		'reportSentText' => 'Raporunuzu başarıyla aldık.',
 		'reportSentError' => 'Bu gönderi bildirilirken bir sorun oluştu.',
@@ -155,11 +155,11 @@ return [
 		'modMarkAsSpammerConfirm' => 'Bu kullanıcıyı spam gönderici olarak işaretlemek istediğinizden emin misiniz? Mevcut ve gelecekteki tüm gönderiler zaman çizelgelerinde liste dışı bırakılacak ve bir içerik uyarısı uygulanacaktır.',
 		'modMarkAsSpammerSuccess' => 'Hesap başarıyla spam gönderici olarak işaretlendi',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'Takipçilere',
 
 		'showCaption' => 'Açıklamayı göster',
 		'showLikes' => 'Beğenileri Göster',
-		'compactMode' => 'Compact Mode',
+		'compactMode' => 'Kompakt Mod',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
 		'deletePostConfirm' => 'Bu gönderiyi silmek istediğinizden emin misiniz?',
