@@ -9,6 +9,7 @@ use League\CommonMark\CommonMarkConverter;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\SnowflakeService;
+use App\Util\Localization\Localization;
 
 class SpaController extends Controller
 {
@@ -66,6 +67,25 @@ class SpaController extends Controller
 		}
 
 		return redirect('404');
+	}
+
+	public function updateLanguage(Request $request)
+	{
+		$this->validate($request, [
+			'v' => 'required|in:0.1,0.2',
+			'l' => 'required|alpha_dash|max:5'
+		]);
+
+		$lang = $request->input('l');
+		$user = $request->user();
+
+		abort_if(!in_array($lang, Localization::languages()), 400);
+
+		$user->language = $lang;
+		$user->save();
+		session()->put('locale', $lang);
+
+		return ['language' => $lang];
 	}
 
 	public function getPrivacy()
