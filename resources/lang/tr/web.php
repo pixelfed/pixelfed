@@ -85,13 +85,13 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'sen',
 
 		'yourApplication' => 'Your application to join',
 		'applicationApproved' => 'was approved!',
 		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
 
-		'dm' => 'dm',
+		'dm' => 'özel mesaj',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
@@ -127,7 +127,7 @@ return [
 		'unarchive' => 'Arşivden çıkar',
 		'embed' => 'Embed',
 
-		'selectOneOption' => 'Select one of the following options',
+		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
 		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Add Content Warning',
 		'removeCW' => 'Remove Content Warning',
