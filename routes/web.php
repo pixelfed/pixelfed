@@ -210,6 +210,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			});
 
 			Route::get('discover/accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular');
+			Route::post('web/change-language.json', 'SpaController@updateLanguage');
 		});
 
 		Route::group(['prefix' => 'local'], function () {

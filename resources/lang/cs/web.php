@@ -3,81 +3,81 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
+		'comment' => 'Komentář',
+		'commented' => 'Okomentováno',
+		'comments' => 'Komentáře',
+		'like' => 'Líbí se mi',
 		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'likes' => 'To se mi líbí',
+		'share' => 'Sdílet',
+		'shared' => 'Sdíleno',
+		'shares' => 'Sdílení',
+		'unshare' => 'Zrušit sdílení',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
+		'cancel' => 'Zrušit',
+		'copyLink' => 'Kopírovat odkaz',
+		'delete' => 'Smazat',
+		'error' => 'Chyba',
+		'errorMsg' => 'Něco se pokazilo. Zkuste to prosím později.',
+		'oops' => 'Jejda!',
 		'other' => 'Other',
-		'readMore' => 'Read more',
+		'readMore' => 'Číst více',
 		'success' => 'Success',
 
 		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitiveContent' => 'Citlivý obsah',
+		'sensitiveContentWarning' => 'Tento příspěvek může obsahovat citlivý obsah',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Podmínky použití',
+		'privacy' => 'Zásady ochrany osobních údajů',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Hledat',
+		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
+		'localFeed' => 'Místní časová osa',
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Objevovat',
+		'directMessages' => 'Přímé zprávy',
+		'notifications' => 'Oznámení',
+		'groups' => 'Skupiny',
+		'stories' => 'Příběhy',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'Profil',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
+		'settings' => 'Nastavení',
 		'compose' => 'Create New',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'O aplikaci',
+		'help' => 'Nápověda',
+		'language' => 'Jazyk',
+		'privacy' => 'Soukromí',
+		'terms' => 'Podmínky',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Vrátit se k předchozímu vzhledu'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Přijaté zprávy',
+		'sent' => 'Odeslané',
+		'requests' => 'Požadavky'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
+		'liked' => 'se líbí váš',
+		'commented' => 'komentoval/a váš',
+		'reacted' => 'reagoval/a na váš',
+		'shared' => 'sdílel/a váš',
 		'tagged' => 'tagged you in a',
 
 		'updatedA' => 'updated a',
@@ -93,86 +93,86 @@ return [
 
 		'dm' => 'dm',
 		'groupPost' => 'group post',
-		'modlog' => 'modlog',
-		'post' => 'post',
-		'story' => 'story',
+		'modlog' => 'moderátorský záznam',
+		'post' => 'příspěvek',
+		'story' => 'příbeh',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
+		'shareToFollowers' => 'Sdílet se sledujícími',
+		'shareToOther' => 'Sdílet s ostatními',
 		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'uploading' => 'Nahrávání',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
+		'posts' => 'Příspěvky',
+		'followers' => 'Sledující',
+		'following' => 'Sledovaní',
+		'admin' => 'Administrátor',
+		'collections' => 'Sbírky',
+		'follow' => 'Sledovat',
+		'unfollow' => 'Přestat sledovat',
+		'editProfile' => 'Upravit profil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
+		'viewPost' => 'Zobrazit příspěvek',
+		'viewProfile' => 'Zobrazit profil',
+		'moderationTools' => 'Nástroje pro moderátory',
 		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
+		'archive' => 'Archivovat',
+		'unarchive' => 'Vyjmout z archivu',
 		'embed' => 'Embed',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
+		'selectOneOption' => 'Vyberte jednu z následujících možností',
+		'unlistFromTimelines' => 'Odebrat z časové osy',
+		'addCW' => 'Přidat varování o obsahu',
+		'removeCW' => 'Odstranit varování o obsahu',
+		'markAsSpammer' => 'Označit za spammera',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
-		'abusive' => 'Abusive or Harmful',
+		'sensitive' => 'Citlivý obsah',
+		'abusive' => 'Urážlivé nebo škodlivé',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReport' => 'Potvrdit hlášení',
+		'confirmReportText' => 'Jste si jisti, že chcete nahlásit tento příspěvek?',
+		'reportSent' => 'Hlášení odesláno!',
+		'reportSentText' => 'Úspěšně jsme obdrželi vaše hlášení.',
+		'reportSentError' => 'Při nahlášení tohoto příspěvku došlo k chybě.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Jste si jisti, že chcete k tomuto příspěvku přidat varování o obsahu?',
+		'modCWSuccess' => 'Varování o obsahu bylo úspěšně přidáno',
+		'modRemoveCWConfirm' => 'Jste si jisti, že chcete odebrat upozornění na obsah tohoto příspěvku?',
+		'modRemoveCWSuccess' => 'Varování o obsahu bylo úspěšně odebráno',
+		'modUnlistConfirm' => 'Opravdu chcete odebrat tento příspěvek?',
+		'modUnlistSuccess' => 'Příspěvek byl odebrán z časové osy',
+		'modMarkAsSpammerConfirm' => 'Jste si jisti, že chcete tohoto uživatele označit jako spammer? Všechny existující a budoucí příspěvky budou vyřazeny z časových os a bude na ně aplikováno varování o obsahu.',
+		'modMarkAsSpammerSuccess' => 'Účet byl označen jako spammer',
 
 		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
+		'showLikes' => 'Zobrazit To se mi líbí',
+		'compactMode' => 'Kompaktní režim',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Opravdu chcete smazat tento příspěvek?',
+		'archivePostConfirm' => 'Opravdu chcete archivovat tento příspěvek?',
+		'unarchivePostConfirm' => 'Opravdu chcete zrušit archivaci tohoto příspěvku?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Přidat příběh'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Lidé, které možná znáte'
 	]
 
 ];

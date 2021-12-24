@@ -3,68 +3,68 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Skomentuj',
+		'commented' => 'Skomentowane',
+		'comments' => 'Komentarze',
+		'like' => 'Polub',
+		'liked' => 'Polubione',
+		'likes' => 'Polubienia',
+		'share' => 'Udostępnij',
+		'shared' => 'Udostępnione',
+		'shares' => 'Udostępnione',
+		'unshare' => 'Anuluj udostępnianie',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Anuluj',
+		'copyLink' => 'Kopiuj Link',
+		'delete' => 'Usuń',
+		'error' => 'Błąd',
+		'errorMsg' => 'Coś poszło nie tak. Spróbuj ponownie później.',
+		'oops' => 'Ups!',
+		'other' => 'Inne',
+		'readMore' => 'Czytaj więcej',
+		'success' => 'Sukces',
 
 		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitiveContent' => 'Treść wrażliwa',
+		'sensitiveContentWarning' => 'Ten post może zawierać wrażliwe treści',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Warunki Użytkowania',
+		'privacy' => 'Polityka Prywatności',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Szukaj',
+		'admin' => 'Panel administracyjny',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Główny kanał',
+		'localFeed' => 'Lokalny kanał',
+		'globalFeed' => 'Globalny kanał',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'discover' => 'Odkrywaj',
+		'directMessages' => 'Wiadomości bezpośrednie',
+		'notifications' => 'Powiadomienia',
+		'groups' => 'Grupy',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Profil',
+		'drive' => 'Dysk',
+		'settings' => 'Ustawienia',
+		'compose' => 'Utwórz nowy',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'O nas',
+		'help' => 'Pomoc',
+		'language' => 'Język',
+		'privacy' => 'Prywatność',
+		'terms' => 'Regulamin',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Wróć do poprzedniego wyglądu'
 	],
 
 	'directMessages' => [
@@ -78,75 +78,75 @@ return [
 		'commented' => 'skomentował(a) twoje',
 		'reacted' => 'zareagował(a) na twoje',
 		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'tagged' => 'oznaczono cię w',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'zaktualizowano',
+		'sentA' => 'wysłano',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'zaobserwował(-a)',
+		'mentioned' => 'wspominał(-a)',
+		'you' => 'ciebie',
 
 		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'applicationApproved' => 'została zatwierdzona!',
+		'applicationRejected' => 'została odrzucona. Możesz ponownie ubiegać się o dołączenie za 6 miesięcy.',
 
 		'dm' => 'dm',
 		'groupPost' => 'group post',
-		'modlog' => 'modlog',
+		'modlog' => 'logi',
 		'post' => 'post',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'Udostępnij obserwującym',
+		'shareToOther' => 'Udostępnij innym',
+		'noLikes' => 'Brak polubień',
+		'uploading' => 'Przesyłanie',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
+		'posts' => 'Posty',
+		'followers' => 'Obserwujący',
+		'following' => 'Obserwowane',
+		'admin' => 'Administrator',
+		'collections' => 'Kolekcje',
+		'follow' => 'Obserwuj',
+		'unfollow' => 'Przestań obserwować',
+		'editProfile' => 'Edytuj profil',
 		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'joined' => 'Dołączono',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'viewPost' => 'Zobacz post',
+		'viewProfile' => 'Zobacz profil',
+		'moderationTools' => 'Narzędzia moderacyjne',
+		'report' => 'Zgłoś',
+		'archive' => 'Przenieś do archiwum',
+		'unarchive' => 'Usuń z archiwum',
+		'embed' => 'Osadź',
 
 		'selectOneOption' => 'Select one of the following options',
 		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'addCW' => 'Dodaj ostrzeżenie o treści',
+		'removeCW' => 'Usuń ostrzeżenie o treści',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
+		'sensitive' => 'Treść wrażliwa',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
+		'copyrightInfringement' => 'Naruszenie praw autorskich',
+		'impersonation' => 'Podszywanie się pod inne osoby',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Confirm Report',
 		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'reportSent' => 'Zgłoszenie wysłane!',
+		'reportSentText' => 'Otrzymaliśmy Twój raport.',
+		'reportSentError' => 'Wystąpił błąd podczas zgłaszania tego posta.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modAddCWConfirm' => 'Czy na pewno chcesz dodać ostrzeżenie o treści do tego wpisu?',
 		'modCWSuccess' => 'Successfully added content warning',
 		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
 		'modRemoveCWSuccess' => 'Successfully removed content warning',
@@ -158,13 +158,13 @@ return [
 		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
+		'showLikes' => 'Pokaż polubienia',
+		'compactMode' => 'Tryb kompaktowy',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Czy na pewno chcesz usunąć ten post?',
+		'archivePostConfirm' => 'Czy na pewno chcesz zarchiwizować ten post?',
+		'unarchivePostConfirm' => 'Czy na pewno chcesz cofnąć archiwizację tego wpisu?',
 	],
 
 	'story' => [
@@ -172,7 +172,7 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Ludzie, których możesz znać'
 	]
 
 ];

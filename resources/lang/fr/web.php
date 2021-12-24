@@ -7,7 +7,7 @@ return [
 		'commented' => 'Commenté',
 		'comments' => 'Commentaires',
 		'like' => 'J\'aime',
-		'liked' => 'Aimé·e',
+		'liked' => 'Aimé',
 		'likes' => 'J\'aime',
 		'share' => 'Partager',
 		'shared' => 'Partagé',
@@ -19,14 +19,14 @@ return [
 		'delete' => 'Supprimer',
 		'error' => 'Erreur',
 		'errorMsg' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
-		'oops' => 'Oups !',
+		'oops' => 'Zut !',
 		'other' => 'Autre',
-		'readMore' => 'Lire plus',
-		'success' => 'Succès',
+		'readMore' => 'En savoir plus',
+		'success' => 'Opération réussie',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
-		'sensitiveContentWarning' => 'Ce message peut contenir du contenu sensible',
+		'sensitiveContentWarning' => 'Le contenu de ce message peut être sensible',
 	],
 
 	'site' => [
@@ -35,13 +35,13 @@ return [
 	],
 
 	'navmenu' => [
-		'search' => 'Rechercher',
-		'admin' => 'Tableau de bord administrateur',
+		'search' => 'Chercher',
+		'admin' => 'Tableau de bord d\'administration',
 
 		// Timelines
-		'homeFeed' => 'Flux principal',
-		'localFeed' => 'Flux local',
-		'globalFeed' => 'Flux global',
+		'homeFeed' => 'Fil principal',
+		'localFeed' => 'Fil local',
+		'globalFeed' => 'Fil global',
 
 		// Core features
 		'discover' => 'Découvrir',
@@ -52,16 +52,16 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
-		'compose' => 'Create New',
+		'compose' => 'Publier',
 
 		// Nav footer
 		'about' => 'À propos',
 		'help' => 'Aide',
 		'language' => 'Langue',
-		'privacy' => 'Privacy',
-		'terms' => 'Conditions ',
+		'privacy' => 'Confidentialité',
+		'terms' => 'Conditions',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Revenir au design précédent'
@@ -69,110 +69,110 @@ return [
 
 	'directMessages' => [
 		'inbox' => 'Boîte de réception',
-		'sent' => 'Sent',
+		'sent' => 'Boîte d\'envois',
 		'requests' => 'Demandes'
 	],
 
 	'notifications' => [
-		'liked' => 'a aimé·e votre',
-		'commented' => 'a commenté·e votre',
+		'liked' => 'a aimé votre',
+		'commented' => 'a commenté votre',
 		'reacted' => 'a réagi à votre',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'a partagé votre',
+		'tagged' => 'vous a tagué·e dans un',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'mis à jour un·e',
+		'sentA' => 'a envoyé un·e',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 's\'est abonné·e à',
+		'mentioned' => 'a mentionné',
+		'you' => 'vous',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Votre candidature à rejoindre',
+		'applicationApproved' => 'a été approuvée !',
+		'applicationRejected' => 'a été rejetée. Vous pouvez refaire une demande dans 6 mois.',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
-		'modlog' => 'modlog',
-		'post' => 'post',
+		'dm' => 'mp',
+		'groupPost' => 'publication de groupe',
+		'modlog' => 'journal de modération',
+		'post' => 'publication',
 		'story' => 'story',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'Partager avec ses abonné·e·s',
+		'shareToOther' => 'Partager avec d\'autres',
+		'noLikes' => 'Aucun J\'aime pour le moment',
+		'uploading' => 'Envoi en cours',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
+		'posts' => 'Publications',
+		'followers' => 'Abonné·e·s',
+		'following' => 'Abonnements',
+		'admin' => 'Administrateur·rice',
 		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'follow' => 'S\'abonner',
+		'unfollow' => 'Se désabonner',
+		'editProfile' => 'Modifier votre profil',
+		'followRequested' => 'Demande d\'abonnement',
+		'joined' => 'A rejoint',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'viewPost' => 'Voir la publication',
+		'viewProfile' => 'Voir le profil',
+		'moderationTools' => 'Outils de modération',
+		'report' => 'Signaler',
+		'archive' => 'Archiver',
+		'unarchive' => 'Désarchiver',
+		'embed' => 'Intégrer',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
+		'selectOneOption' => 'Sélectionnez l\'une des options suivantes',
+		'unlistFromTimelines' => 'Retirer des flux',
+		'addCW' => 'Ajouter un avertissement de contenu',
+		'removeCW' => 'Enlever l’avertissement de contenu',
+		'markAsSpammer' => 'Marquer comme spammeur·euse',
+		'markAsSpammerText' => 'Retirer + avertissements pour les contenus existants et futurs',
+		'spam' => 'Indésirable',
+		'sensitive' => 'Contenu sensible',
+		'abusive' => 'Abusif ou préjudiciable',
+		'underageAccount' => 'Compte d\'un·e mineur·e',
+		'copyrightInfringement' => 'Violation des droits d’auteur',
 		'impersonation' => 'Usurpation d\'identité',
 		'scamOrFraud' => 'Arnaque ou fraude',
 		'confirmReport' => 'Confirmer le signalement',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReportText' => 'Êtes-vous sûr·e de vouloir signaler cette publication ?',
+		'reportSent' => 'Signalement envoyé !',
+		'reportSentText' => 'Nous avons bien reçu votre signalement.',
+		'reportSentError' => 'Une erreur s\'est produite lors du signalement de cette publication.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Êtes-vous sûr·e de vouloir ajouter un avertissement de contenu à cette publication ?',
+		'modCWSuccess' => 'Avertissement de contenu ajouté avec succès',
+		'modRemoveCWConfirm' => 'Êtes-vous sûr·e de vouloir supprimer l\'avertissement de contenu sur cette publication ?',
+		'modRemoveCWSuccess' => 'Avertissement de contenu supprimé avec succès',
+		'modUnlistConfirm' => 'Êtes-vous sûr·e de vouloir retirer cette publication des flux ?',
+		'modUnlistSuccess' => 'Publication retirée des fils avec succès',
+		'modMarkAsSpammerConfirm' => 'Êtes-vous sûr·e de vouloir marquer cet utilisateur·rice comme spammeur·euse ? Toutes les publications existantes et futures seront retirées des flux et un avertissement de contenu sera appliqué.',
+		'modMarkAsSpammerSuccess' => 'Compte marqué avec succès comme spammeur',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'aux abonné·e·s',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Afficher la légende',
+		'showLikes' => 'Afficher les J\'aime',
+		'compactMode' => 'Mode compact',
+		'embedConfirmText' => 'En utilisant ce module, vous acceptez nos',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Êtes-vous sûr·e de vouloir supprimer cette publication ?',
+		'archivePostConfirm' => 'Êtes-vous sûr·e de vouloir archiver cette publication ?',
+		'unarchivePostConfirm' => 'Êtes-vous sûr·e de vouloir désarchiver cette publication ?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Ajouter une story'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Connaissances possibles'
 	]
 
 ];

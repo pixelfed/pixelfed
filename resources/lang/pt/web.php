@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Comentar',
+		'commented' => 'Comentado',
+		'comments' => 'Comentários',
+		'like' => 'Gosto',
+		'liked' => 'Gostei',
+		'likes' => 'Gostos',
+		'share' => 'Partilhar',
+		'shared' => 'Partilhado',
+		'shares' => 'Partilhas',
+		'unshare' => 'Despartilhar',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
+		'cancel' => 'Cancelar',
+		'copyLink' => 'Copiar link',
+		'delete' => 'Eliminar',
+		'error' => 'Erro',
+		'errorMsg' => 'Algo correu mal. Por favor, tente novamente mais tarde.',
 		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'other' => 'Outro',
+		'readMore' => 'Ler mais',
+		'success' => 'Sucesso',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensível',
+		'sensitiveContent' => 'Conteúdo sensível',
+		'sensitiveContentWarning' => 'Este post pode conter conteúdo sensível',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Termos de Uso',
+		'privacy' => 'Política de Privacidade',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Pesquisa',
+		'admin' => 'Painel de Administração',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Inicio',
+		'localFeed' => 'Feed local',
+		'globalFeed' => 'Feed global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'discover' => 'Descobrir',
+		'directMessages' => 'Mensagens Diretas',
+		'notifications' => 'Notificações',
+		'groups' => 'Grupos',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Perfil',
+		'drive' => 'Disco',
+		'settings' => 'Definições',
+		'compose' => 'Criar novo',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Sobre',
+		'help' => 'Ajuda',
+		'language' => 'Idioma',
+		'privacy' => 'Privacidade',
+		'terms' => 'Termos',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Voltar ao design antigo'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Caixa de Entrada',
+		'sent' => 'Enviadas',
+		'requests' => 'Pedidos'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'gostou do seu',
+		'commented' => 'comentou no seu',
+		'reacted' => 'reagiu ao seu',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -141,38 +141,38 @@ return [
 		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReportText' => 'Tem a certeza que deseja denunciar esta mensagem?',
+		'reportSent' => 'Denúncia enviada!',
+		'reportSentText' => 'Recebemos com sucesso a sua denúncia.',
+		'reportSentError' => 'Ocorreu um erro ao denunciar este conteúdo.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Tem a certeza que pretende adicionar um alerta de conteúdo ao post?',
+		'modCWSuccess' => 'Adicionou com sucesso um alerta de conteúdo',
+		'modRemoveCWConfirm' => 'Tem a certeza que pretende remover um alerta de conteúdo deste post?',
+		'modRemoveCWSuccess' => 'Removeu com sucesso o alerta de conteúdo',
+		'modUnlistConfirm' => 'Tem a certeza que pretende deslistar este post?',
+		'modUnlistSuccess' => 'Deslistou com sucesso este post',
+		'modMarkAsSpammerConfirm' => 'Tem a certeza que deseja marcar este utilizador como spammer? Todos os posts existentes e futuros serão deslistados da timeline e o alerta de conteúdo será aplicado.',
+		'modMarkAsSpammerSuccess' => 'Marcou com sucesso esta conta como spammer',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'para Seguidores',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Mostar legenda',
+		'showLikes' => 'Mostrar Gostos',
+		'compactMode' => 'Modo compacto',
+		'embedConfirmText' => 'Ao utilizar este conteúdo, encontra-se a aceitar os nossos',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Tem a certeza que pretende remover este post?',
+		'archivePostConfirm' => 'Tem a certeza que pretende arquivar este post?',
+		'unarchivePostConfirm' => 'Tem a certeza que pretende desarquivar este post?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Adicionar Storie'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Pessoas que talvez conheça'
 	]
 
 ];

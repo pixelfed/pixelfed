@@ -36,7 +36,7 @@ return [
 
 	'navmenu' => [
 		'search' => 'חיפוש',
-		'admin' => 'לוח בקרה לאדמיניסטרציה',
+		'admin' => 'לוח בקרה למנהל',
 
 		// Timelines
 		'homeFeed' => 'פיד ביתי',
@@ -77,14 +77,14 @@ return [
 		'liked' => 'אהבו לך',
 		'commented' => 'העירו לך על',
 		'reacted' => 'הגיבו לך על',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'shared' => 'שיתפו לך',
+		'tagged' => 'תייגו אותך בתוך',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'עדכנו',
+		'sentA' => 'שלחו',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'עוקבים',
+		'mentioned' => 'ציינו',
 		'you' => 'אתכם',
 
 		'yourApplication' => 'בקשתכם להצטרפות',
@@ -93,53 +93,53 @@ return [
 
 		'dm' => 'הודעה אישית',
 		'groupPost' => 'פוסט קבוצתי',
-		'modlog' => 'modlog',
+		'modlog' => 'לוג מנהלים',
 		'post' => 'פוסט',
-		'story' => 'story',
+		'story' => 'סטורי',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'שתף לעוקבים',
+		'shareToOther' => 'שתף ל-אחר',
+		'noLikes' => 'אין עדיין סימוני "אהבתי"',
+		'uploading' => 'מעלה',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'posts' => 'פוסטים',
+		'followers' => 'עוקבים',
+		'following' => 'עוקב/ת',
+		'admin' => 'מנהל מערכת',
+		'collections' => 'אוספים',
+		'follow' => 'עקוב',
+		'unfollow' => 'הפסק מעקב',
+		'editProfile' => 'ערוך פרופיל',
+		'followRequested' => 'בקשת עקיבה',
+		'joined' => 'הצטרפויות',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
-		'archive' => 'Archive',
-		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'viewPost' => 'הצג פוסט',
+		'viewProfile' => 'הצג פרופיל',
+		'moderationTools' => 'כלי ניהול',
+		'report' => 'דווח',
+		'archive' => 'ארכיון',
+		'unarchive' => 'הסר מהארכיון',
+		'embed' => 'הטמע',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
+		'selectOneOption' => 'בחר באחד מהאפשרויות הבאות',
+		'unlistFromTimelines' => 'העלם מטיימליינים',
+		'addCW' => 'הוסף אזהרת תוכן',
+		'removeCW' => 'הסר אזהרת תוכן',
+		'markAsSpammer' => 'סמן בתור ספאמר (מציף)',
+		'markAsSpammerText' => 'העלם והפעל אזהרת תוכן לפוסטים קיימים ועתידיים',
+		'spam' => 'ספאם',
+		'sensitive' => 'תוכן רגיש',
+		'abusive' => 'תוכן מטריד או מזיק',
+		'underageAccount' => 'תוכן עם קטינים',
+		'copyrightInfringement' => 'הפרת זכויות יוצרים',
+		'impersonation' => 'התחזות',
+		'scamOrFraud' => 'הונאה',
 		'confirmReport' => 'אישור דיווח',
 		'confirmReportText' => 'האם אתם בטוחים שברצונכם לדווח על פוסט זה?',
 		'reportSent' => 'דיווח נשלח!',
@@ -150,29 +150,29 @@ return [
 		'modCWSuccess' => 'אזהרת תוכן נוספה בהצלחה',
 		'modRemoveCWConfirm' => 'אתם בטוחים שברצונכם להסיר את אזהרת התוכן מפוסט זה?',
 		'modRemoveCWSuccess' => 'אזהרת תוכן הוסרה בהצלחה',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modUnlistConfirm' => 'האם אתם בטוחים שברצונכם להעלים פוסט זה?',
+		'modUnlistSuccess' => 'פוסט הועלם בהצלחה',
+		'modMarkAsSpammerConfirm' => 'האם אתם בטוחים שברצונכם לסמן משתמש זה בתור ספאמר (מציף)? כל הפוסטים הקיימים ועתידיים יועלמו ואזהרת תוכן תופעל.',
+		'modMarkAsSpammerSuccess' => 'חשבון סומן בתור ספאמר בהצלחה',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'עבור עוקבים',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'הצג תיאור',
+		'showLikes' => 'הצג כמות ״אהבתי״',
+		'compactMode' => 'מצב מוקטן',
+		'embedConfirmText' => 'בעט שימוש בהמטעה זו, הנכם מסכימים אל',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'האם אתם בטוחים שברצונכם למחוק פוסט זה?',
+		'archivePostConfirm' => 'האם אתם בטוחים שברצונכם להעביר פוסט זה לארכיון?',
+		'unarchivePostConfirm' => 'האם אתם בטוחים שברצונכם להוציא פוסט זה מהארכיון?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'הוסף סטורי'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים'
 	]
 
 ];
