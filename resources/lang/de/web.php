@@ -101,7 +101,7 @@ return [
 	'post' => [
 		'shareToFollowers' => 'Mit Folgenden teilen',
 		'shareToOther' => 'Mit anderen teilen',
-		'noLikes' => 'Noch keine Gefällt mir',
+		'noLikes' => 'Gefällt bisher noch niemandem',
 		'uploading' => 'Lädt hoch',
 	],
 
