@@ -147,9 +147,9 @@ return [
 		'reportSentError' => 'Arazo bat egon da bidalketa hau salatzerakoan.',
 
 		'modAddCWConfirm' => 'Ziur al zaude edukiaren abisua jarri nahi duzula argitalpen honetarako?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modCWSuccess' => 'Ongi gehitu da kontuzko edukiaren oharra',
+		'modRemoveCWConfirm' => 'Ziur al zaude edukiaren oharra kendu nahi duzula argitalpen honetarako?',
+		'modRemoveCWSuccess' => 'Kontuzko oharra ongi kendu da',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
