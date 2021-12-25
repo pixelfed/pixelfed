@@ -54,7 +54,7 @@ return [
 		'profile' => 'نمایه',
 		'drive' => 'Drive',
 		'settings' => 'تنظیمات',
-		'compose' => 'Create New',
+		'compose' => 'فرستهٔ جدید',
 
 		// Nav footer
 		'about' => 'درباره',
@@ -157,14 +157,14 @@ return [
 
 		'toFollowers' => 'به دنبال‌کنندگان',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'نمایش توضیحات',
 		'showLikes' => 'نمایش پسندها',
 		'compactMode' => 'حالت فشرده',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'مطمئنید که می‌خواهید این فرسته را پاک کنید؟',
+		'archivePostConfirm' => 'مطمئنید که می‌خواهید این فرسته را بایگانی کنید؟',
+		'unarchivePostConfirm' => 'مطمئنید که می‌خواهید این فرسته را از بایگانی خارج کنید؟',
 	],
 
 	'story' => [
