@@ -3,7 +3,7 @@
 return [
 
 	'common' => [
-		'comment' => 'Comentar',
+		'comment' => 'Comment',
 		'commented' => 'Commented',
 		'comments' => 'Comments',
 		'like' => 'Like',
@@ -14,7 +14,7 @@ return [
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Anullar',
+		'cancel' => 'Cancel',
 		'copyLink' => 'Copy Link',
 		'delete' => 'Delete',
 		'error' => 'Error',
