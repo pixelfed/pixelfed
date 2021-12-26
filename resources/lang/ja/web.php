@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'プロフィールを編集',
 		'followRequested' => 'フォロー承認待ち',
 		'joined' => '参加しました',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
