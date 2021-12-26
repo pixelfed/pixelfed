@@ -15,11 +15,11 @@ return [
 		'unshare' => 'Unshare',
 
 		'cancel' => 'Cancel',
-		'copyLink' => '复制链接',
-		'delete' => '删除',
-		'error' => '错误',
-		'errorMsg' => '出错了。请稍后再试。',
-		'oops' => '哎呀！',
+		'copyLink' => 'Copy Link',
+		'delete' => 'Delete',
+		'error' => 'Error',
+		'errorMsg' => 'Something went wrong. Please try again later.',
+		'oops' => 'Oops!',
 		'other' => 'Other',
 		'readMore' => 'Read more',
 		'success' => 'Success',
@@ -59,7 +59,7 @@ return [
 		// Nav footer
 		'about' => 'About',
 		'help' => 'Help',
-		'language' => '语言',
+		'language' => 'Language',
 		'privacy' => 'Privacy',
 		'terms' => 'Terms',
 
@@ -176,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'People you may know'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
