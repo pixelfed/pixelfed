@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Edytuj profil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Dołączono',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
