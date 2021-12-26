@@ -116,4 +116,13 @@ class SpaController extends Controller
 				return (string) $converter->convertToHtml($file);
 		});
 	}
+
+	public function usernameRedirect(Request $request, $username)
+	{
+		$id = AccountService::usernameToId($username);
+		if(!$id) {
+			return redirect('/i/web/404');
+		}
+		return redirect('/i/web/profile/' . $id);
+	}
 }
