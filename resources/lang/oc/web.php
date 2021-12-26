@@ -171,11 +171,11 @@ return [
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Apondre Story'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Personas que coneissètz benlèu'
 	],
 
 	'hashtags' => [
