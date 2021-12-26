@@ -74,27 +74,27 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'sa páči váš',
+		'commented' => 'komentoval na vašom',
+		'reacted' => 'reagoval na váš',
+		'shared' => 'zdieľal váš',
+		'tagged' => 'označil vás v',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'aktualizoval',
+		'sentA' => 'poslal',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'začal sledovať',
+		'mentioned' => 'spomenul',
+		'you' => 'vy',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Vaša žiadosť o pripojenie',
+		'applicationApproved' => 'bola schválená!',
+		'applicationRejected' => 'bola odmietnutá. Môžete znova požiadať o pripojenie za 6 mesiacov.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'skupinový príspevok',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'príspevok',
 		'story' => 'story',
 	],
 
@@ -176,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'People you may know'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
