@@ -3,98 +3,98 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
+		'comment' => 'Komentovať',
 		'commented' => 'Commented',
-		'comments' => 'Comments',
+		'comments' => 'Komentáre',
 		'like' => 'Like',
-		'liked' => 'Liked',
+		'liked' => 'Páči sa mi',
 		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'share' => 'Zdielať',
+		'shared' => 'Zdieľané',
+		'shares' => 'Zdiaľané',
+		'unshare' => 'Zrušiť zdieľanie',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Zrušiť',
+		'copyLink' => 'Skopírovať odkaz',
+		'delete' => 'Vymazať',
+		'error' => 'Chyba',
+		'errorMsg' => 'Niečo sa pokazilo. Prosím, skúste to znova neskôr.',
+		'oops' => 'Ups!',
+		'other' => 'Iné',
+		'readMore' => 'Zobraziť viac',
+		'success' => 'Hotovo',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Citlivý',
+		'sensitiveContent' => 'Citlivý obsah',
+		'sensitiveContentWarning' => 'Tento príspevok môže obsahovať citlivý obsah',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Podmienky používania',
+		'privacy' => 'Zásady ochrany osobných údajov',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Hľadať',
+		'admin' => 'Panel správcu',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Domovský kanál',
+		'localFeed' => 'Miestny kanál',
+		'globalFeed' => 'Globálny kanál',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'discover' => 'Objavte',
+		'directMessages' => 'Priame Správy',
+		'notifications' => 'Notifikácie',
+		'groups' => 'Skupiny',
 		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Profil',
+		'drive' => 'Úložisko',
+		'settings' => 'Nastavenia',
+		'compose' => 'Vytvoriť nový',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'O aplikácii',
+		'help' => 'Pomocník',
+		'language' => 'Jazyk',
+		'privacy' => 'Ochrana osobných údajov',
+		'terms' => 'Podmienky',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Vrátiť sa späť k predošlému dizajnu'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Prijaté',
+		'sent' => 'Odoslané',
+		'requests' => 'Žiadosti'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'sa páči váš',
+		'commented' => 'komentoval na vašom',
+		'reacted' => 'reagoval na váš',
+		'shared' => 'zdieľal váš',
+		'tagged' => 'označil vás v',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'aktualizoval',
+		'sentA' => 'poslal',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'začal sledovať',
+		'mentioned' => 'spomenul',
+		'you' => 'vy',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Vaša žiadosť o pripojenie',
+		'applicationApproved' => 'bola schválená!',
+		'applicationRejected' => 'bola odmietnutá. Môžete znova požiadať o pripojenie za 6 mesiacov.',
 
 		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'groupPost' => 'skupinový príspevok',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'príspevok',
 		'story' => 'story',
 	],
 
@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Edit Profile',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'People you may know'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];

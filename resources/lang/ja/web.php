@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'プロフィールを編集',
 		'followRequested' => 'フォロー承認待ち',
 		'joined' => '参加しました',
+
+		'emptyCollections' => 'コレクションを見つかりませんでした',
+		'emptyPosts' => '投稿が見つかりませんでした',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => '知り合いかも'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];

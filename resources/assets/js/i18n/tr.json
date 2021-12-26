@@ -90,7 +90,9 @@
         "unfollow": "Takibi b\u0131rak",
         "editProfile": "Profili D\u00fczenle",
         "followRequested": "Takip \u0130ste\u011fi",
-        "joined": "Kat\u0131ld\u0131"
+        "joined": "Kat\u0131ld\u0131",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "G\u00f6nderiyi g\u00f6r\u00fcnt\u00fcle",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Tan\u0131yor olabilece\u011fin ki\u015filer"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

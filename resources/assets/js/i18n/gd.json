@@ -90,7 +90,9 @@
         "unfollow": "Unfollow",
         "editProfile": "Deasaich a\u2019 phr\u00f2ifil",
         "followRequested": "Follow Requested",
-        "joined": "Joined"
+        "joined": "Joined",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Seall am post",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "People you may know"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

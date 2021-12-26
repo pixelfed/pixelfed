@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'ویرایش نمایه',
 		'followRequested' => 'درخواست دنبال کردن فرستاده شد',
 		'joined' => 'پیوست',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'افرادی که ممکن است بشناسید'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];

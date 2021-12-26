@@ -90,7 +90,9 @@
         "unfollow": "P\u0159estat sledovat",
         "editProfile": "Upravit profil",
         "followRequested": "Follow Requested",
-        "joined": "Joined"
+        "joined": "Joined",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Zobrazit p\u0159\u00edsp\u011bvek",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Lid\u00e9, kter\u00e9 mo\u017en\u00e1 zn\u00e1te"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

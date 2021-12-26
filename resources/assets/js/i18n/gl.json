@@ -90,7 +90,9 @@
         "unfollow": "Deixar de seguir",
         "editProfile": "Editar perfil",
         "followRequested": "Seguimento pedido",
-        "joined": "Uniuse"
+        "joined": "Uniuse",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Ver publicaci\u00f3n",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Xente que podes co\u00f1ecer"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

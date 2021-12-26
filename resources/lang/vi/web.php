@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Bình luận',
+		'commented' => 'Đã bình luận',
+		'comments' => 'Bình luận',
+		'like' => 'Thích',
+		'liked' => 'Đã thích',
+		'likes' => 'Lượt thích',
+		'share' => 'Chia sẻ',
+		'shared' => 'Đã chia sẻ',
+		'shares' => 'Lượt chia sẻ',
+		'unshare' => 'Hủy chia sẻ',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Hủy',
+		'copyLink' => 'Chép link',
+		'delete' => 'Xóa',
+		'error' => 'Lỗi',
+		'errorMsg' => 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
+		'oops' => 'Rất tiếc!',
+		'other' => 'Khác',
+		'readMore' => 'Xem thêm',
+		'success' => 'Hoàn tất',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Nhạy cảm',
+		'sensitiveContent' => 'Nội dung nhạy cảm',
+		'sensitiveContentWarning' => 'Ảnh này có thể chứa nội dung nhạy cảm',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Điều khoản sử dụng',
+		'privacy' => 'Chính sách bảo mật',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Tìm kiếm',
+		'admin' => 'Trang quản trị',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Trang chính',
+		'localFeed' => 'Máy chủ',
+		'globalFeed' => 'Liên hợp',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Khám phá',
+		'directMessages' => 'Nhắn riêng',
+		'notifications' => 'Thông báo',
+		'groups' => 'Nhóm',
+		'stories' => 'Khoảnh khắc',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Trang cá nhân',
+		'drive' => 'Lưu trữ',
+		'settings' => 'Thiết lập',
+		'compose' => 'Ảnh mới',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Giới thiệu',
+		'help' => 'Trợ giúp',
+		'language' => 'Ngôn ngữ',
+		'privacy' => 'Bảo mật',
+		'terms' => 'Quy tắc',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Dùng giao diện cũ'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Hộp thư',
+		'sent' => 'Đã gửi',
+		'requests' => 'Yêu cầu'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'đã thích ảnh',
+		'commented' => 'bình luận về ảnh',
+		'reacted' => 'xem ảnh',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Edit Profile',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'People you may know'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];

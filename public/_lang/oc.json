@@ -90,7 +90,9 @@
         "unfollow": "Unfollow",
         "editProfile": "Edit Profile",
         "followRequested": "Follow Requested",
-        "joined": "Joined"
+        "joined": "Joined",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "View Post",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "People you may know"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

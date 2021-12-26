@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Modifier votre profil',
 		'followRequested' => 'Demande d\'abonnement',
 		'joined' => 'A rejoint',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'Connaissances possibles'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];

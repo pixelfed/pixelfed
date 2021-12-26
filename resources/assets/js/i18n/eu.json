@@ -90,7 +90,9 @@
         "unfollow": "Utzi jarraitzeari",
         "editProfile": "Editatu profila",
         "followRequested": "Eskaera bidalita",
-        "joined": "Elkartu da"
+        "joined": "Elkartu da",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Ikusi bidalketa",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Agian ezagutzen duzun jendea"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

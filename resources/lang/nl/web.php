@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Profiel bewerken',
 		'followRequested' => 'Volgen verzocht',
 		'joined' => 'Lid geworden',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -173,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'Mensen die u misschien kent'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
