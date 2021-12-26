@@ -11,7 +11,7 @@ class WebfingerUrl
         $url = Nickname::normalizeProfileUrl($url);
         $domain = $url['domain'];
         $username = $url['username'];
-        $path = "https://{$domain}/.well-known/webfinger?resource={$username}@{$domain}";
+        $path = "https://{$domain}/.well-known/webfinger?resource=acct:{$username}@{$domain}";
 
         return $path;
     }
