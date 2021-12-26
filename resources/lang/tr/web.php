@@ -176,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
