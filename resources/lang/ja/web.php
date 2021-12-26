@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'プロフィールを編集',
 		'followRequested' => 'フォロー承認待ち',
 		'joined' => '参加しました',
+
+		'emptyCollections' => 'コレクションを見つかりませんでした',
+		'emptyPosts' => '投稿が見つかりませんでした',
 	],
 
 	'menu' => [

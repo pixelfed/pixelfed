@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Golygu proffil',
 		'followRequested' => 'Dilyn gofynnwyd',
 		'joined' => 'Wedi ymuno',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [

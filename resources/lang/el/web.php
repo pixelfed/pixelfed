@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Επεξεργασία Προφίλ',
 		'followRequested' => 'Ακολουθήστε Το Αίτημα',
 		'joined' => 'Joined',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [

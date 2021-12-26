@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Editar perfil',
 		'followRequested' => 'Seguimento pedido',
 		'joined' => 'Uniuse',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [

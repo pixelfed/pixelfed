@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Edita el teu perfil',
 		'followRequested' => 'Sol·licitud de seguidor',
 		'joined' => 'S\'ha unit',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [

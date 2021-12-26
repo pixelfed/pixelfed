@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Modifica profilo',
 		'followRequested' => 'Richiesta in attesa',
 		'joined' => 'Iscritto',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
