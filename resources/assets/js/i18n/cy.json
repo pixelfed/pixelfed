@@ -90,7 +90,9 @@
         "unfollow": "Dad-ddilyn",
         "editProfile": "Golygu proffil",
         "followRequested": "Dilyn gofynnwyd",
-        "joined": "Wedi ymuno"
+        "joined": "Wedi ymuno",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Gweld Post",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "People you may know"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

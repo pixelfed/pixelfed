@@ -90,7 +90,9 @@
         "unfollow": "K\u00f6vet\u00e9s visszavon\u00e1sa",
         "editProfile": "Profil szerkeszt\u00e9se",
         "followRequested": "K\u00f6vet\u00e9si k\u00e9relmek",
-        "joined": "Csatlakozott"
+        "joined": "Csatlakozott",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Bejegyz\u00e9s megtekint\u00e9se",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "People you may know"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

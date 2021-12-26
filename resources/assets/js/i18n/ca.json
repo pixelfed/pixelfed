@@ -90,7 +90,9 @@
         "unfollow": "Deixeu de seguir",
         "editProfile": "Edita el teu perfil",
         "followRequested": "Sol\u00b7licitud de seguidor",
-        "joined": "S'ha unit"
+        "joined": "S'ha unit",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Veure publicaci\u00f3",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Gent que potser coneixes"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

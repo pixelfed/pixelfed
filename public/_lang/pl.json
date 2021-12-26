@@ -90,7 +90,9 @@
         "unfollow": "Przesta\u0144 obserwowa\u0107",
         "editProfile": "Edytuj profil",
         "followRequested": "Follow Requested",
-        "joined": "Do\u0142\u0105czono"
+        "joined": "Do\u0142\u0105czono",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Zobacz post",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Ludzie, kt\u00f3rych mo\u017cesz zna\u0107"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

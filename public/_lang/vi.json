@@ -1,63 +1,63 @@
 {
     "common": {
-        "comment": "Comment",
-        "commented": "Commented",
-        "comments": "Comments",
-        "like": "Like",
-        "liked": "Liked",
-        "likes": "Likes",
-        "share": "Share",
-        "shared": "Shared",
-        "shares": "Shares",
-        "unshare": "Unshare",
-        "cancel": "Cancel",
-        "copyLink": "Copy Link",
-        "delete": "Delete",
-        "error": "Error",
-        "errorMsg": "Something went wrong. Please try again later.",
-        "oops": "Oops!",
-        "other": "Other",
-        "readMore": "Read more",
-        "success": "Success",
-        "sensitive": "Sensitive",
-        "sensitiveContent": "Sensitive Content",
-        "sensitiveContentWarning": "This post may contain sensitive content"
+        "comment": "B\u00ecnh lu\u1eadn",
+        "commented": "\u0110\u00e3 b\u00ecnh lu\u1eadn",
+        "comments": "B\u00ecnh lu\u1eadn",
+        "like": "Th\u00edch",
+        "liked": "\u0110\u00e3 th\u00edch",
+        "likes": "L\u01b0\u1ee3t th\u00edch",
+        "share": "Chia s\u1ebb",
+        "shared": "\u0110\u00e3 chia s\u1ebb",
+        "shares": "L\u01b0\u1ee3t chia s\u1ebb",
+        "unshare": "H\u1ee7y chia s\u1ebb",
+        "cancel": "H\u1ee7y",
+        "copyLink": "Ch\u00e9p link",
+        "delete": "X\u00f3a",
+        "error": "L\u1ed7i",
+        "errorMsg": "\u0110\u00e3 x\u1ea3y ra l\u1ed7i. Vui l\u00f2ng th\u1eed l\u1ea1i sau.",
+        "oops": "R\u1ea5t ti\u1ebfc!",
+        "other": "Kh\u00e1c",
+        "readMore": "Xem th\u00eam",
+        "success": "Ho\u00e0n t\u1ea5t",
+        "sensitive": "Nh\u1ea1y c\u1ea3m",
+        "sensitiveContent": "N\u1ed9i dung nh\u1ea1y c\u1ea3m",
+        "sensitiveContentWarning": "\u1ea2nh n\u00e0y c\u00f3 th\u1ec3 ch\u1ee9a n\u1ed9i dung nh\u1ea1y c\u1ea3m"
     },
     "site": {
-        "terms": "Terms of Use",
-        "privacy": "Privacy Policy"
+        "terms": "\u0110i\u1ec1u kho\u1ea3n s\u1eed d\u1ee5ng",
+        "privacy": "Ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt"
     },
     "navmenu": {
-        "search": "Search",
-        "admin": "Admin Dashboard",
-        "homeFeed": "Home Feed",
-        "localFeed": "Local Feed",
-        "globalFeed": "Global Feed",
-        "discover": "Discover",
-        "directMessages": "Direct Messages",
-        "notifications": "Notifications",
-        "groups": "Groups",
-        "stories": "Stories",
-        "profile": "Profile",
-        "drive": "Drive",
-        "settings": "Settings",
-        "compose": "Create New",
-        "about": "About",
-        "help": "Help",
-        "language": "Language",
-        "privacy": "Privacy",
-        "terms": "Terms",
-        "backToPreviousDesign": "Go back to previous design"
+        "search": "T\u00ecm ki\u1ebfm",
+        "admin": "Trang qu\u1ea3n tr\u1ecb",
+        "homeFeed": "Trang ch\u00ednh",
+        "localFeed": "M\u00e1y ch\u1ee7",
+        "globalFeed": "Li\u00ean h\u1ee3p",
+        "discover": "Kh\u00e1m ph\u00e1",
+        "directMessages": "Nh\u1eafn ri\u00eang",
+        "notifications": "Th\u00f4ng b\u00e1o",
+        "groups": "Nh\u00f3m",
+        "stories": "Kho\u1ea3nh kh\u1eafc",
+        "profile": "Trang c\u00e1 nh\u00e2n",
+        "drive": "L\u01b0u tr\u1eef",
+        "settings": "Thi\u1ebft l\u1eadp",
+        "compose": "\u1ea2nh m\u1edbi",
+        "about": "Gi\u1edbi thi\u1ec7u",
+        "help": "Tr\u1ee3 gi\u00fap",
+        "language": "Ng\u00f4n ng\u1eef",
+        "privacy": "B\u1ea3o m\u1eadt",
+        "terms": "Quy t\u1eafc",
+        "backToPreviousDesign": "D\u00f9ng giao di\u1ec7n c\u0169"
     },
     "directMessages": {
-        "inbox": "Inbox",
-        "sent": "Sent",
-        "requests": "Requests"
+        "inbox": "H\u1ed9p th\u01b0",
+        "sent": "\u0110\u00e3 g\u1eedi",
+        "requests": "Y\u00eau c\u1ea7u"
     },
     "notifications": {
-        "liked": "liked your",
-        "commented": "commented on your",
-        "reacted": "reacted to your",
+        "liked": "\u0111\u00e3 th\u00edch \u1ea3nh",
+        "commented": "b\u00ecnh lu\u1eadn v\u1ec1 \u1ea3nh",
+        "reacted": "xem \u1ea3nh",
         "shared": "shared your",
         "tagged": "tagged you in a",
         "updatedA": "updated a",
@@ -90,7 +90,9 @@
         "unfollow": "Unfollow",
         "editProfile": "Edit Profile",
         "followRequested": "Follow Requested",
-        "joined": "Joined"
+        "joined": "Joined",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "View Post",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "People you may know"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

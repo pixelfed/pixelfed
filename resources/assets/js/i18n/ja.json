@@ -90,7 +90,9 @@
         "unfollow": "\u30d5\u30a9\u30ed\u30fc\u89e3\u9664",
         "editProfile": "\u30d7\u30ed\u30d5\u30a3\u30fc\u30eb\u3092\u7de8\u96c6",
         "followRequested": "\u30d5\u30a9\u30ed\u30fc\u627f\u8a8d\u5f85\u3061",
-        "joined": "\u53c2\u52a0\u3057\u307e\u3057\u305f"
+        "joined": "\u53c2\u52a0\u3057\u307e\u3057\u305f",
+        "emptyCollections": "\u30b3\u30ec\u30af\u30b7\u30e7\u30f3\u3092\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f",
+        "emptyPosts": "\u6295\u7a3f\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f"
     },
     "menu": {
         "viewPost": "\u6295\u7a3f\u3092\u898b\u308b",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "\u77e5\u308a\u5408\u3044\u304b\u3082"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }

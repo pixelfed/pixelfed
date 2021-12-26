@@ -90,7 +90,9 @@
         "unfollow": "Se d\u00e9sabonner",
         "editProfile": "Modifier votre profil",
         "followRequested": "Demande d'abonnement",
-        "joined": "A rejoint"
+        "joined": "A rejoint",
+        "emptyCollections": "We can't seem to find any collections",
+        "emptyPosts": "We can't seem to find any posts"
     },
     "menu": {
         "viewPost": "Voir la publication",
@@ -140,5 +142,8 @@
     },
     "timeline": {
         "peopleYouMayKnow": "Connaissances possibles"
+    },
+    "hashtags": {
+        "emptyFeed": "We can't seem to find any posts for this hashtag"
     }
 }
