@@ -19,7 +19,7 @@ return [
 		'delete' => 'Sguab às',
 		'error' => 'Mearachd',
 		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
+		'oops' => 'Ìoc!',
 		'other' => 'Other',
 		'readMore' => 'Read more',
 		'success' => 'Success',
@@ -48,7 +48,7 @@ return [
 		'directMessages' => 'Direct Messages',
 		'notifications' => 'Brathan',
 		'groups' => 'Buidhnean',
-		'stories' => 'Stories',
+		'stories' => 'Sgeulan',
 
 		// Self links
 		'profile' => 'Pròifil',
@@ -110,7 +110,7 @@ return [
 		'followers' => 'Followers',
 		'following' => 'Following',
 		'admin' => 'Admin',
-		'collections' => 'Collections',
+		'collections' => 'Cruinneachaidhean',
 		'follow' => 'Lean air',
 		'unfollow' => 'Unfollow',
 		'editProfile' => 'Deasaich a’ phròifil',
