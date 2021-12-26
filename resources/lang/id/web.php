@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Ubah Profil',
 		'followRequested' => 'Meminta Permintaan Mengikuti',
 		'joined' => 'Bergabung',
+
+		'emptyCollections' => 'Sepertinya kami tidak dapat menemukan koleksi apapun',
+		'emptyPosts' => 'Sepertinya kami tidak dapat menemukan postingan apapun',
 	],
 
 	'menu' => [
