@@ -40,8 +40,8 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'localFeed' => 'Yerel Akış',
+		'globalFeed' => 'Evrensel Akış',
 
 		// Core features
 		'discover' => 'Keşfet',
@@ -64,7 +64,7 @@ return [
 		'terms' => 'Koşullar',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Önceki tasarıma geri dön'
 	],
 
 	'directMessages' => [
@@ -85,13 +85,13 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => 'sen',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Katılma isteğiniz',
+		'applicationApproved' => 'onaylandı!',
+		'applicationRejected' => 'reddedildi. 6 ay sonra, tekrar katılma isteğinde bulunabilirsiniz.',
 
-		'dm' => 'dm',
+		'dm' => 'özel mesaj',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'post',
@@ -121,45 +121,45 @@ return [
 	'menu' => [
 		'viewPost' => 'Gönderiyi görüntüle',
 		'viewProfile' => 'Profili Görüntüle',
-		'moderationTools' => 'Moderation Tools',
+		'moderationTools' => 'Denetim Ayarları',
 		'report' => 'Bildir',
 		'archive' => 'Archive',
 		'unarchive' => 'Arşivden çıkar',
 		'embed' => 'Embed',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
+		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
+		'unlistFromTimelines' => 'Akışlardan kaldır',
+		'addCW' => 'İçerik Uyarısını Ekle',
+		'removeCW' => 'İçerik Uyarısını Kaldır',
 		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
+		'spam' => 'İstenmeyen',
 		'sensitive' => 'Hassas içerik',
-		'abusive' => 'Abusive or Harmful',
+		'abusive' => 'İstismarcı veya Zararlı',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'copyrightInfringement' => 'Telif hakkı ihlali',
+		'impersonation' => 'Taklit Hesap',
+		'scamOrFraud' => 'Dolandırıcılık',
+		'confirmReport' => 'Bildirimi onayla',
+		'confirmReportText' => 'Bu paylaşımı bildirmek istediğinizden emin misiniz?',
+		'reportSent' => 'Rapor Gönderildi!',
+		'reportSentText' => 'Raporunuzu başarıyla aldık.',
+		'reportSentError' => 'Bu gönderi bildirilirken bir sorun oluştu.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modAddCWConfirm' => 'Bu gönderiye bir içerik uyarısı eklemek istediğinizden emin misiniz?',
 		'modCWSuccess' => 'İçerik uyarısı başarıyla eklendi',
 		'modRemoveCWConfirm' => 'Bu gönderiden içerik uyarısını kaldırmak istediğinize emin misiniz?',
 		'modRemoveCWSuccess' => 'İçerik uyarısı başarıyla kaldırıldı',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modUnlistConfirm' => 'Bu gönderiyi listeden kaldırmak istediğinizden emin misiniz?',
+		'modUnlistSuccess' => 'Başarıyla listeden kaldırıldı',
+		'modMarkAsSpammerConfirm' => 'Bu kullanıcıyı spam gönderici olarak işaretlemek istediğinizden emin misiniz? Mevcut ve gelecekteki tüm gönderiler zaman çizelgelerinde liste dışı bırakılacak ve bir içerik uyarısı uygulanacaktır.',
+		'modMarkAsSpammerSuccess' => 'Hesap başarıyla spam gönderici olarak işaretlendi',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'Takipçilere',
 
 		'showCaption' => 'Açıklamayı göster',
 		'showLikes' => 'Beğenileri Göster',
-		'compactMode' => 'Compact Mode',
+		'compactMode' => 'Kompakt Mod',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
 		'deletePostConfirm' => 'Bu gönderiyi silmek istediğinizden emin misiniz?',
