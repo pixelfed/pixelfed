@@ -26,57 +26,57 @@ return [
 
 		'sensitive' => 'Nhạy cảm',
 		'sensitiveContent' => 'Nội dung nhạy cảm',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitiveContentWarning' => 'Ảnh này có thể chứa nội dung nhạy cảm',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Điều khoản sử dụng',
+		'privacy' => 'Chính sách bảo mật',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Tìm kiếm',
+		'admin' => 'Trang quản trị',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Trang chính',
+		'localFeed' => 'Máy chủ',
+		'globalFeed' => 'Liên hợp',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Khám phá',
+		'directMessages' => 'Nhắn riêng',
+		'notifications' => 'Thông báo',
+		'groups' => 'Nhóm',
+		'stories' => 'Khoảnh khắc',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
+		'profile' => 'Trang cá nhân',
+		'drive' => 'Lưu trữ',
+		'settings' => 'Thiết lập',
+		'compose' => 'Ảnh mới',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Giới thiệu',
+		'help' => 'Trợ giúp',
+		'language' => 'Ngôn ngữ',
+		'privacy' => 'Bảo mật',
+		'terms' => 'Quy tắc',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Dùng giao diện cũ'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Hộp thư',
+		'sent' => 'Đã gửi',
+		'requests' => 'Yêu cầu'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
+		'liked' => 'đã thích ảnh',
+		'commented' => 'bình luận về ảnh',
+		'reacted' => 'xem ảnh',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
@@ -176,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'People you may know'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
