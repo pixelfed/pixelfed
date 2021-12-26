@@ -117,8 +117,8 @@ return [
 		'followRequested' => 'Eskaera bidalita',
 		'joined' => 'Elkartu da',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Ez dugu topatu bildumarik',
+		'emptyPosts' => 'Ez dugu topatu bidalketarik',
 	],
 
 	'menu' => [
@@ -179,7 +179,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Ez dugu topatu traola hau duen bidalketarik'
 	],
 
 ];
