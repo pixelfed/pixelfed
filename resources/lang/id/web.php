@@ -179,7 +179,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Sepertinya kami tidak dapat menemukan postingan untuk tagar ini'
 	],
 
 ];
