@@ -118,7 +118,7 @@ return [
 		'joined' => 'A rejoint',
 
 		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyPosts' => 'Aucune publication ne semble exister',
 	],
 
 	'menu' => [
