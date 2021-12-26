@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'تحرير المِلَف التَّعريفي',
 		'followRequested' => 'طُلِبَت المُتابَعَة',
 		'joined' => 'انضَم',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
