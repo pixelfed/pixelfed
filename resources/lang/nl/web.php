@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Profiel bewerken',
 		'followRequested' => 'Volgen verzocht',
 		'joined' => 'Lid geworden',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
