@@ -117,8 +117,8 @@ return [
 		'followRequested' => 'フォロー承認待ち',
 		'joined' => '参加しました',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'コレクションを見つかりませんでした',
+		'emptyPosts' => '投稿が見つかりませんでした',
 	],
 
 	'menu' => [
