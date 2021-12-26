@@ -3,7 +3,7 @@
 return [
 
 	'common' => [
-		'comment' => 'Comentário',
+		'comment' => 'Comentar',
 		'commented' => 'Comentado',
 		'comments' => 'Comentários',
 		'like' => 'Curtir',
@@ -144,18 +144,18 @@ return [
 		'impersonation' => 'Roubo de identidade',
 		'scamOrFraud' => 'Golpe ou Fraude',
 		'confirmReport' => 'Confirmar denúncia',
-		'confirmReportText' => 'Tem certeza de que deseja denunciar esta publicação?',
+		'confirmReportText' => 'Você realmente quer denunciar esta publicação?',
 		'reportSent' => 'Denúncia enviada!',
 		'reportSentText' => 'Nós recebemos sua denúncia com sucesso.',
-		'reportSentError' => 'Houve um problema ao denunciar esse post.',
+		'reportSentError' => 'Houve um problema ao denunciar esta publicação.',
 
-		'modAddCWConfirm' => 'Você tem certeza que deseja adicionar um aviso de conteúdo sensível nesse post?',
+		'modAddCWConfirm' => 'Você realmente quer adicionar um aviso de conteúdo a esta publicação?',
 		'modCWSuccess' => 'Aviso de conteúdo sensível adicionado com sucesso',
-		'modRemoveCWConfirm' => 'Você tem certeza que deseja remover o aviso de conteúdo sensível nesse post?',
+		'modRemoveCWConfirm' => 'Você realmente quer remover o aviso de conteúdo desta publicação?',
 		'modRemoveCWSuccess' => 'Aviso de conteúdo sensível removido com sucesso',
-		'modUnlistConfirm' => 'Você tem certeza que deseja remover esse post da listagem?',
-		'modUnlistSuccess' => 'Postagem removida da listagem com sucesso',
-		'modMarkAsSpammerConfirm' => 'Você tem certeza que deseja denunciar esse usuário? Todas as postagens existentes e futuras serão removidas das linhas do tempo, e um aviso de conteúdo sensível será aplicado.',
+		'modUnlistConfirm' => 'Você realmente quer definir esta publicação como não listada?',
+		'modUnlistSuccess' => 'A publicação foi definida como não listada com sucesso',
+		'modMarkAsSpammerConfirm' => 'Você realmente quer denunciar este usuário por spam? Todas as suas publicações anteriores e futuras serão marcadas com um aviso de conteúdo e removidas das linhas do tempo.',
 		'modMarkAsSpammerSuccess' => 'Perfil denunciado com sucesso',
 
 		'toFollowers' => 'para seguidores',
