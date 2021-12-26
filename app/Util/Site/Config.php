@@ -7,10 +7,10 @@ use Illuminate\Support\Str;
 
 class Config {
 
-	const CACHE_KEY = 'api:site:configuration:_v0.4';
+	const CACHE_KEY = 'api:site:configuration:_v0.5';
 
 	public static function get() {
-		return Cache::remember(self::CACHE_KEY, now()->addMinutes(5), function() {
+		return Cache::remember(self::CACHE_KEY, 86400, function() {
 			return [
 				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
@@ -33,13 +33,7 @@ class Config {
 					'remote_follow' => config('federation.activitypub.remoteFollow')
 				],
 
-				'ab' => [
-					'lc' => config('exp.lc'),
-					'rec' => config('exp.rec'),
-					'loops' => config('exp.loops'),
-					'top' => config('exp.top'),
-					'polls' => config('exp.polls')
-				],
+				'ab' => config('exp'),
 
 				'site' => [
 					'name' => config_cache('app.name'),
