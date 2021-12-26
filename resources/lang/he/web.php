@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'ערוך פרופיל',
 		'followRequested' => 'בקשת עקיבה',
 		'joined' => 'הצטרפויות',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
