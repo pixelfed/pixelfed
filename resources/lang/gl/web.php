@@ -176,6 +176,10 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'Xente que podes coñecer'
-	]
+	],
+
+	'hashtags' => [
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
 
 ];
