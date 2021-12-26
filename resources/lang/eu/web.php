@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Editatu profila',
 		'followRequested' => 'Eskaera bidalita',
 		'joined' => 'Elkartu da',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
