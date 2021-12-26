@@ -117,8 +117,8 @@ return [
 		'followRequested' => 'Хочет на Вас подписаться',
 		'joined' => 'Регистрация',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Похоже, мы не можем найти ни одной коллекции',
+		'emptyPosts' => 'Похоже, мы не можем найти ни одной записи',
 	],
 
 	'menu' => [
@@ -179,7 +179,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Похоже, мы не можем найти записи для этого хэштега'
 	],
 
 ];
