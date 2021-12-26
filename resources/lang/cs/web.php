@@ -116,6 +116,9 @@ return [
 		'editProfile' => 'Upravit profil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Joined',
+
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
