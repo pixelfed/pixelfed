@@ -4,13 +4,13 @@ return [
 
 	'common' => [
 		'comment' => 'Iruzkindu',
-		'commented' => 'Iruzkindu',
+		'commented' => 'Iruzkinduta',
 		'comments' => 'Iruzkinak',
 		'like' => 'Datsegit',
 		'liked' => 'Datsegit',
 		'likes' => 'Atsegite',
 		'share' => 'Partekatu',
-		'shared' => 'Partekatua',
+		'shared' => 'Partekatuta',
 		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
 
@@ -19,19 +19,19 @@ return [
 		'delete' => 'Ezabatu',
 		'error' => 'Errorea',
 		'errorMsg' => 'Zerbait oker joan da. Saiatu berriro beranduago.',
-		'oops' => 'Arranopola!',
+		'oops' => 'Ene!',
 		'other' => 'Bestelakoa',
-		'readMore' => 'Gehiago irakurri',
+		'readMore' => 'Irakurri gehiago',
 		'success' => 'Burutu da',
 
-		'sensitive' => 'Sentibera',
-		'sensitiveContent' => 'Kontuz edukiarekin',
-		'sensitiveContentWarning' => 'Argitalpen honen edukia mingarria izan daiteke',
+		'sensitive' => 'Hunkigarria',
+		'sensitiveContent' => 'Eduki hunkigarria',
+		'sensitiveContentWarning' => 'Bidalketa honek eduki hunkigarria izan dezake',
 	],
 
 	'site' => [
 		'terms' => 'Erabilera-baldintzak',
-		'privacy' => 'Pribatutasun-gidalerroak',
+		'privacy' => 'Pribatutasun politika',
 	],
 
 	'navmenu' => [
@@ -39,9 +39,9 @@ return [
 		'admin' => 'Adminaren panela',
 
 		// Timelines
-		'homeFeed' => 'Hasierako jarioa',
-		'localFeed' => 'Tokiko jarioa',
-		'globalFeed' => 'Iturri globala',
+		'homeFeed' => 'Etxeko jarioa',
+		'localFeed' => 'Jario lokala',
+		'globalFeed' => 'Jario globala',
 
 		// Core features
 		'discover' => 'Aurkitu',
@@ -52,7 +52,7 @@ return [
 
 		// Self links
 		'profile' => 'Profila',
-		'drive' => 'Gida',
+		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
 
@@ -64,7 +64,7 @@ return [
 		'terms' => 'Baldintzak',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Itzuli aurreko itxurara'
+		'backToPreviousDesign' => 'Itzuli aurreko diseinura'
 	],
 
 	'directMessages' => [
@@ -99,7 +99,7 @@ return [
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Partekatu jarraitzaileekin',
+		'shareToFollowers' => 'Partekatu jarraitzaileei',
 		'shareToOther' => 'Partekatu besteekin',
 		'noLikes' => 'Atsegiterik ez oraindik',
 		'uploading' => 'Igotzen',
@@ -114,7 +114,7 @@ return [
 		'follow' => 'Jarraitu',
 		'unfollow' => 'Utzi jarraitzeari',
 		'editProfile' => 'Editatu profila',
-		'followRequested' => 'Eskaera bidalita',
+		'followRequested' => 'Jarraitzea eskatuta',
 		'joined' => 'Elkartu da',
 
 		'emptyCollections' => 'Ez dugu topatu bildumarik',
@@ -126,14 +126,14 @@ return [
 		'viewProfile' => 'Ikusi profila',
 		'moderationTools' => 'Moderazio tresnak',
 		'report' => 'Salatu',
-		'archive' => 'Artxibatu',
+		'archive' => 'Artxiboa',
 		'unarchive' => 'Desartxibatu',
 		'embed' => 'Kapsulatu',
 
 		'selectOneOption' => 'Hautatu aukera hauetako bat',
 		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Edukia kontuz ibiltzekoa dela aipatu',
-		'removeCW' => 'Edukia kontuz ibiltzekoa denaren aipamena kendu',
+		'addCW' => 'Gehitu edukiaren abisua',
+		'removeCW' => 'Kendu edukiaren abisua',
 		'markAsSpammer' => 'Markatu zabor-bidaltzaile gisa',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Zaborra',
@@ -143,20 +143,20 @@ return [
 		'copyrightInfringement' => 'Copyrightaren urraketa',
 		'impersonation' => 'Nortasunaren iruzurra',
 		'scamOrFraud' => 'Iruzur edo lapurreta',
-		'confirmReport' => 'Salaketa berretsi',
-		'confirmReportText' => 'Ziur bidalketa hau salatu nahi duzula?',
+		'confirmReport' => 'Berretsi salaketa',
+		'confirmReportText' => 'Ziur al zaude bidalketa hau salatu nahi duzula?',
 		'reportSent' => 'Salaketa bidali da',
-		'reportSentText' => 'Zure salaketa jaso dugu.',
-		'reportSentError' => 'Arazo bat egon da bidalketa hau salatzerakoan.',
+		'reportSentText' => 'Zure salaketa ondo jaso dugu.',
+		'reportSentError' => 'Arazo bat egon da bidalketa hau salatzean.',
 
-		'modAddCWConfirm' => 'Ziur al zaude edukiaren abisua jarri nahi duzula argitalpen honetarako?',
-		'modCWSuccess' => 'Ongi gehitu da kontuzko edukiaren oharra',
-		'modRemoveCWConfirm' => 'Ziur al zaude edukiaren oharra kendu nahi duzula argitalpen honetarako?',
-		'modRemoveCWSuccess' => 'Kontuzko oharra ongi kendu da',
+		'modAddCWConfirm' => 'Ziur al zaude edukiaren abisua jarri nahi duzula bidalketa honetan?',
+		'modCWSuccess' => 'Edukiaren abisua ondo gehitu da',
+		'modRemoveCWConfirm' => 'Ziur al zaude edukiaren abisua kendu nahi duzula bidalketa honetarako?',
+		'modRemoveCWSuccess' => 'Edukiaren abisua ondo kendu da',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Kontua zabor-bidaltzaile gisa markatu da',
+		'modMarkAsSpammerSuccess' => 'Kontua zabor-bidaltzaile gisa ondo markatu da',
 
 		'toFollowers' => 'jarraitzaileei',
 
@@ -165,17 +165,17 @@ return [
 		'compactMode' => 'Modu trinkoa',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Ziur bidalketa hau ezabatu nahi duzula?',
-		'archivePostConfirm' => 'Ziur bidalketa hau artxibatu nahi duzula?',
+		'deletePostConfirm' => 'Ziur al zaude bidalketa hau ezabatu nahi duzula?',
+		'archivePostConfirm' => 'Ziur al zaude bidalketa hau artxibatu nahi duzula?',
 		'unarchivePostConfirm' => 'Ziur bidalketa hau desartxibatu nahi duzula?',
 	],
 
 	'story' => [
-		'add' => 'Gehitu Istorioa'
+		'add' => 'Gehitu istorioa'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Agian ezagutzen duzun jendea'
+		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea'
 	],
 
 	'hashtags' => [
