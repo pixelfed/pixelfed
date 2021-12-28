@@ -117,7 +117,7 @@ return [
 		'followRequested' => 'Demande d\'abonnement',
 		'joined' => 'A rejoint',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyCollections' => 'Aucune collection ne semble exister',
 		'emptyPosts' => 'Aucune publication ne semble exister',
 	],
 
@@ -179,7 +179,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Aucune publication ne semble exister pour ce hashtag'
 	],
 
 ];
