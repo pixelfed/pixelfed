@@ -54,7 +54,7 @@ return [
 		'profile' => 'Profila',
 		'drive' => 'Gida',
 		'settings' => 'Ezarpenak',
-		'compose' => 'Argitaratu',
+		'compose' => 'Sortu berria',
 
 		// Nav footer
 		'about' => 'Honi buruz',
