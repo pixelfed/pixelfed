@@ -131,11 +131,11 @@ return [
 		'embed' => 'Nhúng',
 
 		'selectOneOption' => 'Vui lòng chọn một trong các tùy chọn sau',
-		'unlistFromTimelines' => 'Unlist from Timelines',
+		'unlistFromTimelines' => 'Ẩn khỏi trang chung',
 		'addCW' => 'Thêm cảnh báo nội dung',
 		'removeCW' => 'Xóa cảnh báo nội dung',
 		'markAsSpammer' => 'Đánh dấu spam',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'Ẩn khỏi trang chung và chèn cảnh báo nội dung cho tất cả ảnh',
 		'spam' => 'Spam',
 		'sensitive' => 'Nội dung nhạy cảm',
 		'abusive' => 'Lạm dụng hoặc Gây hại',
@@ -143,43 +143,43 @@ return [
 		'copyrightInfringement' => 'Vi phạm bản quyền',
 		'impersonation' => 'Giả mạo',
 		'scamOrFraud' => 'Lừa đảo hoặc Gian lận',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'confirmReport' => 'Xác nhận báo cáo',
+		'confirmReportText' => 'Bạn có chắc muốn báo cáo ảnh này?',
+		'reportSent' => 'Đã gửi báo cáo!',
+		'reportSentText' => 'Quản trị viên đã nhận báo cáo của bạn.',
+		'reportSentError' => 'Xảy ra lỗi khi báo cáo ảnh này.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Bạn có chắc muốn chèn cảnh báo nội dung ảnh này?',
+		'modCWSuccess' => 'Đã chèn cảnh báo nội dung',
+		'modRemoveCWConfirm' => 'Bạn có chắc muốn gỡ cảnh báo nội dung ảnh này?',
+		'modRemoveCWSuccess' => 'Đã gỡ cảnh báo nội dung',
+		'modUnlistConfirm' => 'Bạn có chắc muốn ẩn ảnh này khỏi trang chung?',
+		'modUnlistSuccess' => 'Đã ẩn khỏi trang chung',
+		'modMarkAsSpammerConfirm' => 'Bạn có chắc muốn đánh dấu người này là spam? Những ảnh của người này sẽ biến mất trong trang chung và cảnh báo nội dung sẽ được áp dụng.',
+		'modMarkAsSpammerSuccess' => 'Đã đánh dấu người này là spam',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'tới Người theo dõi',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Hiện chú thích',
+		'showLikes' => 'Hiện lượt thích',
+		'compactMode' => 'Chế độ đơn giản',
+		'embedConfirmText' => 'Sử dụng mã nhúng này nghĩa là bạn đồng ý với',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Bạn có chắc muốn xóa ảnh này?',
+		'archivePostConfirm' => 'Bạn có chắc muốn lưu trữ ảnh này?',
+		'unarchivePostConfirm' => 'Bạn có chắc muốn bỏ lưu trữ ảnh này?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Thêm khoảnh khắc'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Những người bạn có thể biết'
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Không tìm thấy ảnh nào với hashtag này'
 	],
 
 ];
