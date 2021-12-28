@@ -7,7 +7,7 @@ return [
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
 		'like' => 'Líbí se mi',
-		'liked' => 'Liked',
+		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
 		'shared' => 'Sdíleno',
@@ -22,7 +22,7 @@ return [
 		'oops' => 'Jejda!',
 		'other' => 'Other',
 		'readMore' => 'Číst více',
-		'success' => 'Success',
+		'success' => 'Úspěch',
 
 		'sensitive' => 'Sensitive',
 		'sensitiveContent' => 'Citlivý obsah',
