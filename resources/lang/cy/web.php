@@ -117,8 +117,8 @@ return [
 		'followRequested' => 'Dilyn gofynnwyd',
 		'joined' => 'Wedi ymuno',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Ni allwn dod o hyd i unrhyw gasgliadau',
+		'emptyPosts' => 'Ni allwn dod o hyd i unrhyw bostiadau',
 	],
 
 	'menu' => [
@@ -150,7 +150,7 @@ return [
 		'reportSentError' => 'Roedd mater yn cywno am y post hon.',
 
 		'modAddCWConfirm' => 'Ydych chi\'n siŵr eich bod chi am ychwanegu rhybudd cynnwys i\'r post hon?',
-		'modCWSuccess' => 'Successfully added content warning',
+		'modCWSuccess' => 'Rhybudd cynnwys wedi\'i ychwanegu\'n llwyddiannus',
 		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
 		'modRemoveCWSuccess' => 'Successfully removed content warning',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
