@@ -55,6 +55,7 @@ return [
 		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
 		'compose' => 'Publier',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'À propos',
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'Demande d\'abonnement',
 		'joined' => 'A rejoint',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Aucune collection ne semble exister',
+		'emptyPosts' => 'Aucune publication ne semble exister',
 	],
 
 	'menu' => [
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Aucune publication ne semble exister pour ce hashtag'
 	],
 
 ];

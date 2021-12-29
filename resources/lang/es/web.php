@@ -55,6 +55,7 @@ return [
 		'drive' => 'Multimedia',
 		'settings' => 'Ajustes',
 		'compose' => 'Crear Nuevo',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Acerca de',

@@ -55,6 +55,7 @@ return [
 		'drive' => 'Gyriant storio',
 		'settings' => 'Gosodiadau',
 		'compose' => 'Creu newydd',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Amdano',
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'Dilyn gofynnwyd',
 		'joined' => 'Wedi ymuno',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Ni allwn dod o hyd i unrhyw gasgliadau',
+		'emptyPosts' => 'Ni allwn dod o hyd i unrhyw bostiadau',
 	],
 
 	'menu' => [
@@ -150,36 +151,36 @@ return [
 		'reportSentError' => 'Roedd mater yn cywno am y post hon.',
 
 		'modAddCWConfirm' => 'Ydych chi\'n siŵr eich bod chi am ychwanegu rhybudd cynnwys i\'r post hon?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modCWSuccess' => 'Rhybudd cynnwys wedi\'i ychwanegu\'n llwyddiannus',
+		'modRemoveCWConfirm' => 'Ydych chi\'n siŵr eich bod chi am gael gwared ar y rhybudd cynnwys ar y post hon?',
+		'modRemoveCWSuccess' => 'Rhybudd cynnwys wedi\'i dynnu\'n llwyddiannus',
+		'modUnlistConfirm' => 'Ydych chi\'n siŵr eich bod chi am ddad-restru\'r post hon?',
+		'modUnlistSuccess' => 'Post wedi ddad-restru\'n llwyddianus',
+		'modMarkAsSpammerConfirm' => 'Ydych chi\'n siŵr eich bod chi am farcio\'r defnyddiwr hwn fel sbamiwr? Bydd pob post bresennol ac yn y dyfodol yn cael ei rhestru ar linellau amser a rhoddir rhybudd cynnwys.',
+		'modMarkAsSpammerSuccess' => 'Cyfrif wedi\'i farcio\'n llwyddiannus fel sbamiwr',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'i Ddilynwyr',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Dangos Capsiwn',
+		'showLikes' => 'Dangos Hoff',
+		'compactMode' => 'Modd Cryno',
+		'embedConfirmText' => 'Trwy ddefnyddio\'r ymgorfforiad hwn, rydych chi\'n cytuno i\'n',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Ydych chi\'n siŵr eich bod chi am dileu\'r post hon?',
+		'archivePostConfirm' => 'Ydych chi\'n siŵr eich bod eisiau archifo\'r post hwn?',
+		'unarchivePostConfirm' => 'Ydych chi\'n siŵr eich bod eisiau dad-archifo\'r post hwn?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Ychwanegu Stori'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod'
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Ni allwn dod o hyd i unrhyw bostiadau ar gyfer yr hashnod hwn'
 	],
 
 ];

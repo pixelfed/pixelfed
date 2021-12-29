@@ -55,6 +55,7 @@ return [
 		'drive' => 'Χώρος αποθήκευσης',
 		'settings' => 'Ρυθμίσεις',
 		'compose' => 'Δημιουργία νέου',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Σχετικά με',

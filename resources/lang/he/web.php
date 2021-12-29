@@ -3,9 +3,9 @@
 return [
 
 	'common' => [
-		'comment' => 'העירו',
-		'commented' => 'העיר\ה',
-		'comments' => 'הערות',
+		'comment' => 'תגובה',
+		'commented' => 'הגיבו',
+		'comments' => 'תגובות',
 		'like' => 'אוהב',
 		'liked' => 'אהבתי',
 		'likes' => 'אהבות',
@@ -55,6 +55,7 @@ return [
 		'drive' => 'כונן (דרייב)',
 		'settings' => 'הגדרות',
 		'compose' => 'צרו חדש',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'אודות',
@@ -75,7 +76,7 @@ return [
 
 	'notifications' => [
 		'liked' => 'אהבו לך',
-		'commented' => 'העירו לך על',
+		'commented' => 'הגיבו לך על',
 		'reacted' => 'הגיבו לך על',
 		'shared' => 'שיתפו לך',
 		'tagged' => 'תייגו אותך בתוך',
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'בקשת עקיבה',
 		'joined' => 'הצטרפויות',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'לא נמצאו אוספים',
+		'emptyPosts' => 'לא נמצאו פוסטים',
 	],
 
 	'menu' => [
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'לא נמצאו פוסטים עבור תיוג זה'
 	],
 
 ];

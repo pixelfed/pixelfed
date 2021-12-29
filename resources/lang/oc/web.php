@@ -55,6 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Settings',
 		'compose' => 'Create New',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'About',
@@ -171,11 +172,11 @@ return [
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Apondre Story'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Personas que coneissètz benlèu'
 	],
 
 	'hashtags' => [

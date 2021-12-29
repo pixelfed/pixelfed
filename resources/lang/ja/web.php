@@ -55,6 +55,7 @@ return [
 		'drive' => 'ドライブ',
 		'settings' => '設定',
 		'compose' => '新規投稿',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'このサーバーについて',
@@ -117,7 +118,7 @@ return [
 		'followRequested' => 'フォロー承認待ち',
 		'joined' => '参加しました',
 
-		'emptyCollections' => 'コレクションを見つかりませんでした',
+		'emptyCollections' => 'コレクションが見つかりませんでした',
 		'emptyPosts' => '投稿が見つかりませんでした',
 	],
 
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'このハッシュタグの投稿が見つかりませんでした'
 	],
 
 ];

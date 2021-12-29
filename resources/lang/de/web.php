@@ -55,6 +55,7 @@ return [
 		'drive' => 'Festplatte',
 		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Über uns',
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'Folgeanfragen',
 		'joined' => 'Beigetreten',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Wir können keine Sammlungen finden',
+		'emptyPosts' => 'Wir können keine Beiträge finden',
 	],
 
 	'menu' => [
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
 	],
 
 ];
