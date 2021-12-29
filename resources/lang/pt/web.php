@@ -55,7 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Configurações',
 		'compose' => 'Criar novo',
-		'logout' => 'Logout',
+		'logout' => 'Sair',
 
 		// Nav footer
 		'about' => 'Sobre',
