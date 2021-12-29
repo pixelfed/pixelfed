@@ -55,6 +55,7 @@ return [
 		'drive' => 'Диск',
 		'settings' => 'Настройки',
 		'compose' => 'Создать новый пост',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'О нас',
