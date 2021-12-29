@@ -55,6 +55,7 @@ return [
 		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
 		'compose' => 'Publier',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'À propos',
