@@ -55,6 +55,7 @@ return [
 		'drive' => 'Depolama',
 		'settings' => 'Ayarlar',
 		'compose' => 'Yeni oluştur',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Hakkında',
