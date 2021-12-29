@@ -3,51 +3,51 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
+		'comment' => 'Kommentti',
+		'commented' => 'Kommentoitu',
 		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'like' => 'Tykkää',
+		'liked' => 'Tykätty',
+		'likes' => 'Tykkäykset',
+		'share' => 'Jaa',
+		'shared' => 'Jaettu',
+		'shares' => 'Jaot',
+		'unshare' => 'Peru jakaminen',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Peruuta',
+		'copyLink' => 'Kopioi linkki',
+		'delete' => 'Poista',
+		'error' => 'Virhe',
+		'errorMsg' => 'Jokin meni pieleen. Yritä myöhemmin uudelleen.',
+		'oops' => 'Oho!',
+		'other' => 'Muu',
+		'readMore' => 'Lue lisää',
+		'success' => 'Onnistui',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensitiivinen',
+		'sensitiveContent' => 'Sensitiivinen sisältö',
+		'sensitiveContentWarning' => 'Tämä julkaisu saattaa sisältää sensitiivistä sisältöä',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Käyttöehdot',
+		'privacy' => 'Tietosuojakäytäntö',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Hae',
+		'admin' => 'Ylläpitäjän hallintapaneeli',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Kotisyöte',
+		'localFeed' => 'Paikallinen syöte',
+		'globalFeed' => 'Maailmanlaajuinen syöte',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
+		'discover' => 'Tutustu',
+		'directMessages' => 'Yksityisviestit',
+		'notifications' => 'Ilmoitukset',
+		'groups' => 'Ryhmät',
 		'stories' => 'Stories',
 
 		// Self links
