@@ -55,6 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'تنظیمات',
 		'compose' => 'فرستهٔ جدید',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'درباره',
