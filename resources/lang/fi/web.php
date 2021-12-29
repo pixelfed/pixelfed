@@ -5,7 +5,7 @@ return [
 	'common' => [
 		'comment' => 'Kommentti',
 		'commented' => 'Kommentoitu',
-		'comments' => 'Comments',
+		'comments' => 'Kommentit',
 		'like' => 'Tykkää',
 		'liked' => 'Tykätty',
 		'likes' => 'Tykkäykset',
@@ -48,35 +48,35 @@ return [
 		'directMessages' => 'Yksityisviestit',
 		'notifications' => 'Ilmoitukset',
 		'groups' => 'Ryhmät',
-		'stories' => 'Stories',
+		'stories' => 'Tarinat',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
-		'logout' => 'Logout',
+		'profile' => 'Profiili',
+		'drive' => 'Asema',
+		'settings' => 'Asetukset',
+		'compose' => 'Luo uusi',
+		'logout' => 'Kirjaudu ulos',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Tietoja',
+		'help' => 'Ohje',
+		'language' => 'Kieli',
+		'privacy' => 'Yksityisyys',
+		'terms' => 'Ehdot',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Palaa aiempaan ulkoasuun'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Saapuneet',
+		'sent' => 'Lähetetty',
+		'requests' => 'Pyynnöt'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'tykkäsi sinun',
+		'commented' => 'kommentoi sinun',
 		'reacted' => 'reacted to your',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
@@ -141,38 +141,38 @@ return [
 		'sensitive' => 'Sensitive Content',
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
-		'reportSent' => 'Report Sent!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'copyrightInfringement' => 'Tekijänoikeusloukkaus',
+		'impersonation' => 'Väärennetty henkilöllisyys',
+		'scamOrFraud' => 'Huijaus tai petos',
+		'confirmReport' => 'Vahvista ilmianto',
+		'confirmReportText' => 'Oletko varma, että haluat ilmiantaa tämän viestin?',
+		'reportSent' => 'Ilmoitus lähetetty!',
+		'reportSentText' => 'Saimme ilmoituksesi.',
+		'reportSentError' => 'Julkaisun ilmianto epäonnistui.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Haluatko varmasti lisätä sisältövaroituksen tähän julkaisuun?',
+		'modCWSuccess' => 'Sisältövaroitus lisätty onnistuneesti',
+		'modRemoveCWConfirm' => 'Haluatko varmasti poistaa julkaisun sisältövaroituksen?',
+		'modRemoveCWSuccess' => 'Sisältövaroitus poistettu',
+		'modUnlistConfirm' => 'Haluatko varmasti piilottaa julkaisun?',
+		'modUnlistSuccess' => 'Julkaisu piilotettu onnistuneesti',
+		'modMarkAsSpammerConfirm' => 'Haluatko varmasti merkitä käyttäjän roskapostittajaksi? Kaikki nykyiset ja tulevat julkaisut saavat sisältövaroituksen ja julkaisut piilotetaan julkisilta aikajanoilta.',
+		'modMarkAsSpammerSuccess' => 'Tili merkitty roskapostittajaksi',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'seuraajille',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Näytä kuvaus',
+		'showLikes' => 'Näytä tykkäykset',
+		'compactMode' => 'Kompakti tila',
+		'embedConfirmText' => 'Käyttämällä upotusta, hyväksyt',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Haluatko varmasti poistaa julkaisun?',
+		'archivePostConfirm' => 'Haluatko varmasti arkistoida julkaisun?',
+		'unarchivePostConfirm' => 'Haluatko varmasti peruuttaa julkaisun arkistoinnin?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Lisää tarina'
 	],
 
 	'timeline' => [
