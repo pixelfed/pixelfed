@@ -42,6 +42,7 @@
         "drive": "M\u00e9diath\u00e8que",
         "settings": "Param\u00e8tres",
         "compose": "Publier",
+        "logout": "Logout",
         "about": "\u00c0 propos",
         "help": "Aide",
         "language": "Langue",
@@ -91,8 +92,8 @@
         "editProfile": "Modifier votre profil",
         "followRequested": "Demande d'abonnement",
         "joined": "A rejoint",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Aucune collection ne semble exister",
+        "emptyPosts": "Aucune publication ne semble exister"
     },
     "menu": {
         "viewPost": "Voir la publication",
@@ -144,6 +145,6 @@
         "peopleYouMayKnow": "Connaissances possibles"
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Aucune publication ne semble exister pour ce hashtag"
     }
 }

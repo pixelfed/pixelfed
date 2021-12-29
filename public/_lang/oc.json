@@ -42,6 +42,7 @@
         "drive": "Drive",
         "settings": "Settings",
         "compose": "Create New",
+        "logout": "Logout",
         "about": "About",
         "help": "Help",
         "language": "Language",
@@ -138,10 +139,10 @@
         "unarchivePostConfirm": "Are you sure you want to unarchive this post?"
     },
     "story": {
-        "add": "Add Story"
+        "add": "Apondre Story"
     },
     "timeline": {
-        "peopleYouMayKnow": "People you may know"
+        "peopleYouMayKnow": "Personas que coneiss\u00e8tz benl\u00e8u"
     },
     "hashtags": {
         "emptyFeed": "We can't seem to find any posts for this hashtag"
