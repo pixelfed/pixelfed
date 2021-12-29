@@ -55,6 +55,7 @@ return [
 		'drive' => 'Draibh',
 		'settings' => 'Roghainnean',
 		'compose' => 'Cruthaich fear ùr',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Mu dhèidhinn',
