@@ -39,9 +39,9 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Domovská časová osa',
-		'localFeed' => 'Místní časová osa',
-		'globalFeed' => 'Globalní časová osa',
+		'homeFeed' => 'Domů',
+		'localFeed' => 'Místní kanál',
+		'globalFeed' => 'Globální kanál',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -55,7 +55,7 @@ return [
 		'drive' => 'Úložiště',
 		'settings' => 'Nastavení',
 		'compose' => 'Vytvořit nový',
-		'logout' => 'Logout',
+		'logout' => 'Odhlásit',
 
 		// Nav footer
 		'about' => 'O aplikaci',
@@ -109,7 +109,7 @@ return [
 	'profile' => [
 		'posts' => 'Příspěvky',
 		'followers' => 'Sledující',
-		'following' => 'Sledovaní',
+		'following' => 'Sleduje',
 		'admin' => 'Administrátor',
 		'collections' => 'Sbírky',
 		'follow' => 'Sledovat',
