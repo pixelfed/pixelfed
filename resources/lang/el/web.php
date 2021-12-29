@@ -55,7 +55,7 @@ return [
 		'drive' => 'Χώρος αποθήκευσης',
 		'settings' => 'Ρυθμίσεις',
 		'compose' => 'Δημιουργία νέου',
-		'logout' => 'Logout',
+		'logout' => 'Αποσύνδεση',
 
 		// Nav footer
 		'about' => 'Σχετικά με',
@@ -118,8 +118,8 @@ return [
 		'followRequested' => 'Ακολουθήστε Το Αίτημα',
 		'joined' => 'Joined',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Δεν μπορούμε να βρούμε συλλογές',
+		'emptyPosts' => 'Δεν μπορούμε να βρούμε δημοσιεύσεις',
 	],
 
 	'menu' => [
@@ -180,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Δεν μπορούμε να βρούμε δημοσιεύσεις για αυτό το hashtag'
 	],
 
 ];
