@@ -63,6 +63,7 @@
 - Updated SPA, rewrite autolink urls to SPA when applicable. ([0837b410](https://github.com/pixelfed/pixelfed/commit/0837b410))
 - Updated site config, increase ttl and enable SPA by default. ([469d49d8](https://github.com/pixelfed/pixelfed/commit/469d49d8))
 - Updated Webfinger, fixes #3050. ([ff7ee3bd](https://github.com/pixelfed/pixelfed/commit/ff7ee3bd))
+- Updated status api, autolink caption before returning response. ([b00a453b](https://github.com/pixelfed/pixelfed/commit/b00a453b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
