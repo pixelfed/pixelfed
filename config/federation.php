@@ -40,6 +40,6 @@ return [
 		'enabled' => env('WEBFINGER', true)
 	],
 
-	'network_timeline' => env('PF_NETWORK_TIMELINE', false)
+	'network_timeline' => env('PF_NETWORK_TIMELINE', true)
 
 ];
