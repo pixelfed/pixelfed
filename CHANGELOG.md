@@ -9,6 +9,9 @@
 - Added UI Settings modal and fixed height media previews setting ([f2467e71](https://github.com/pixelfed/pixelfed/commit/f2467e71))
 - Set max-width of 1440px for larger screens ([af68872a](https://github.com/pixelfed/pixelfed/commit/af68872a))
 
+### Configuration
+- Enable network timeline by default ([b95aec12](https://github.com/pixelfed/pixelfed/commit/b95aec12))
+
 ### Added
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
 - Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
