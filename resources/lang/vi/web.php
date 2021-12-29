@@ -55,6 +55,7 @@ return [
 		'drive' => 'Lưu trữ',
 		'settings' => 'Thiết lập',
 		'compose' => 'Ảnh mới',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Giới thiệu',
