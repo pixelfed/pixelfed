@@ -55,6 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Settings',
 		'compose' => 'Create New',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'About',
