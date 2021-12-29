@@ -55,6 +55,7 @@ return [
 		'drive' => 'وِحدَةُ التَّخزين',
 		'settings' => 'الإعدَادَات',
 		'compose' => 'إنشاءُ جَديد',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'حَول',
