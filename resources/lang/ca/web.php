@@ -55,6 +55,7 @@ return [
 		'drive' => 'Unitat',
 		'settings' => 'Paràmetres',
 		'compose' => 'Crea un nou',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Quant a',
