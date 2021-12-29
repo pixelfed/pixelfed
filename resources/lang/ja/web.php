@@ -55,7 +55,7 @@ return [
 		'drive' => 'ドライブ',
 		'settings' => '設定',
 		'compose' => '新規投稿',
-		'logout' => 'Logout',
+		'logout' => 'ログアウト',
 
 		// Nav footer
 		'about' => 'このサーバーについて',
