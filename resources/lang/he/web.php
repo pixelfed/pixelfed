@@ -55,6 +55,7 @@ return [
 		'drive' => 'כונן (דרייב)',
 		'settings' => 'הגדרות',
 		'compose' => 'צרו חדש',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'אודות',
