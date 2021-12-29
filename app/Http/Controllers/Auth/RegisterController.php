@@ -44,6 +44,13 @@ class RegisterController extends Controller
 		$this->middleware('guest');
 	}
 
+	public function getRegisterToken()
+	{
+		return \Cache::remember('pf:register:rt', 900, function() {
+			return str_random(40);
+		});
+	}
+
 	/**
 	 * Get a validator for an incoming registration request.
 	 *
@@ -110,8 +117,18 @@ class RegisterController extends Controller
 			},
 		];
 
+		$rt = [
+			'required',
+			function ($attribute, $value, $fail) {
+				if($value !== $this->getRegisterToken()) {
+					return $fail('Something went wrong');
+				}
+			}
+		];
+
 		$rules = [
 			'agecheck' => 'required|accepted',
+			'rt' 	   => $rt,
 			'name'     => 'nullable|string|max:'.config('pixelfed.max_name_length'),
 			'username' => $usernameRules,
 			'email'    => $emailRules,
