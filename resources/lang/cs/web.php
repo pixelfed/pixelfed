@@ -7,7 +7,7 @@ return [
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
 		'like' => 'Líbí se mi',
-		'liked' => 'Liked',
+		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
 		'shared' => 'Sdíleno',
@@ -20,11 +20,11 @@ return [
 		'error' => 'Chyba',
 		'errorMsg' => 'Něco se pokazilo. Zkuste to prosím později.',
 		'oops' => 'Jejda!',
-		'other' => 'Other',
+		'other' => 'Další',
 		'readMore' => 'Číst více',
-		'success' => 'Success',
+		'success' => 'Úspěch',
 
-		'sensitive' => 'Sensitive',
+		'sensitive' => 'Citlivé',
 		'sensitiveContent' => 'Citlivý obsah',
 		'sensitiveContentWarning' => 'Tento příspěvek může obsahovat citlivý obsah',
 	],
@@ -39,22 +39,23 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
+		'homeFeed' => 'Domovská časová osa',
 		'localFeed' => 'Místní časová osa',
-		'globalFeed' => 'Global Feed',
+		'globalFeed' => 'Globalní časová osa',
 
 		// Core features
 		'discover' => 'Objevovat',
-		'directMessages' => 'Přímé zprávy',
+		'directMessages' => 'Soukromé zprávy',
 		'notifications' => 'Oznámení',
 		'groups' => 'Skupiny',
 		'stories' => 'Příběhy',
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Drive',
+		'drive' => 'Úložiště',
 		'settings' => 'Nastavení',
-		'compose' => 'Create New',
+		'compose' => 'Vytvořit nový',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O aplikaci',
@@ -78,21 +79,21 @@ return [
 		'commented' => 'komentoval/a váš',
 		'reacted' => 'reagoval/a na váš',
 		'shared' => 'sdílel/a váš',
-		'tagged' => 'tagged you in a',
+		'tagged' => 'vás označil/a v',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'aktualizoval/a',
+		'sentA' => 'odesláno',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'sleduje',
+		'mentioned' => 'zmínil/a',
+		'you' => 'vás',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'Vaše žádost o přijetí',
+		'applicationApproved' => 'byla schválena!',
+		'applicationRejected' => 'byla zamítnuta. Můžete to znovu zkusit za 6 měsíců.',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'dm' => 'sz',
+		'groupPost' => 'skupinový příspěvek',
 		'modlog' => 'moderátorský záznam',
 		'post' => 'příspěvek',
 		'story' => 'příbeh',
@@ -101,7 +102,7 @@ return [
 	'post' => [
 		'shareToFollowers' => 'Sdílet se sledujícími',
 		'shareToOther' => 'Sdílet s ostatními',
-		'noLikes' => 'No likes yet',
+		'noLikes' => 'Žádné To se mi líbí',
 		'uploading' => 'Nahrávání',
 	],
 
@@ -114,7 +115,7 @@ return [
 		'follow' => 'Sledovat',
 		'unfollow' => 'Přestat sledovat',
 		'editProfile' => 'Upravit profil',
-		'followRequested' => 'Follow Requested',
+		'followRequested' => 'Sledování vyžádáno',
 		'joined' => 'Joined',
 
 		'emptyCollections' => 'We can\'t seem to find any collections',
@@ -125,24 +126,24 @@ return [
 		'viewPost' => 'Zobrazit příspěvek',
 		'viewProfile' => 'Zobrazit profil',
 		'moderationTools' => 'Nástroje pro moderátory',
-		'report' => 'Report',
+		'report' => 'Nahlásit',
 		'archive' => 'Archivovat',
 		'unarchive' => 'Vyjmout z archivu',
-		'embed' => 'Embed',
+		'embed' => 'Vložit',
 
 		'selectOneOption' => 'Vyberte jednu z následujících možností',
 		'unlistFromTimelines' => 'Odebrat z časové osy',
 		'addCW' => 'Přidat varování o obsahu',
 		'removeCW' => 'Odstranit varování o obsahu',
 		'markAsSpammer' => 'Označit za spammera',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'Odebrat + varování o obsahu k existujícím i budoucím příspěvkům',
 		'spam' => 'Spam',
 		'sensitive' => 'Citlivý obsah',
 		'abusive' => 'Urážlivé nebo škodlivé',
-		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
+		'underageAccount' => 'Účet nezletilých',
+		'copyrightInfringement' => 'Porušení autorských práv',
 		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
+		'scamOrFraud' => 'Podvod',
 		'confirmReport' => 'Potvrdit hlášení',
 		'confirmReportText' => 'Jste si jisti, že chcete nahlásit tento příspěvek?',
 		'reportSent' => 'Hlášení odesláno!',
@@ -160,10 +161,10 @@ return [
 
 		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Ukázat popisek',
 		'showLikes' => 'Zobrazit To se mi líbí',
 		'compactMode' => 'Kompaktní režim',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'embedConfirmText' => 'Použitím vložení souhlasíte s našimi',
 
 		'deletePostConfirm' => 'Opravdu chcete smazat tento příspěvek?',
 		'archivePostConfirm' => 'Opravdu chcete archivovat tento příspěvek?',
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Zdá se, že pro tento štítek nelze najít žádné příspěvky'
 	],
 
 ];

@@ -55,6 +55,7 @@ return [
 		'drive' => 'وِحدَةُ التَّخزين',
 		'settings' => 'الإعدَادَات',
 		'compose' => 'إنشاءُ جَديد',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'حَول',
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'طُلِبَت المُتابَعَة',
 		'joined' => 'انضَم',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'على ما يَبدوا، لا يُمكِنُنا العُثور على أي تَجميعات',
+		'emptyPosts' => 'على ما يَبدوا، لا يُمكِنُنا العُثور على أي مَنشور',
 	],
 
 	'menu' => [
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'على ما يَبدوا، لا يُمكِنُنا العُثور على أي مَنشور يَحتَوي على هذا الوَسم'
 	],
 
 ];

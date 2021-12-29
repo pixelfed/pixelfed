@@ -55,6 +55,7 @@ return [
 		'drive' => '드라이브',
 		'settings' => '설정',
 		'compose' => '새로 만들기',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => '정보',

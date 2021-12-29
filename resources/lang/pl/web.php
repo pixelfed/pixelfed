@@ -24,7 +24,7 @@ return [
 		'readMore' => 'Czytaj więcej',
 		'success' => 'Sukces',
 
-		'sensitive' => 'Sensitive',
+		'sensitive' => 'Wrażliwe',
 		'sensitiveContent' => 'Treść wrażliwa',
 		'sensitiveContentWarning' => 'Ten post może zawierać wrażliwe treści',
 	],
@@ -48,13 +48,14 @@ return [
 		'directMessages' => 'Wiadomości bezpośrednie',
 		'notifications' => 'Powiadomienia',
 		'groups' => 'Grupy',
-		'stories' => 'Stories',
+		'stories' => 'Opowieści',
 
 		// Self links
 		'profile' => 'Profil',
 		'drive' => 'Dysk',
 		'settings' => 'Ustawienia',
 		'compose' => 'Utwórz nowy',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O nas',
@@ -77,7 +78,7 @@ return [
 		'liked' => 'polubił(a) twoje',
 		'commented' => 'skomentował(a) twoje',
 		'reacted' => 'zareagował(a) na twoje',
-		'shared' => 'shared your',
+		'shared' => 'udostępnił(-a) twój',
 		'tagged' => 'oznaczono cię w',
 
 		'updatedA' => 'zaktualizowano',
@@ -87,15 +88,15 @@ return [
 		'mentioned' => 'wspominał(-a)',
 		'you' => 'ciebie',
 
-		'yourApplication' => 'Your application to join',
+		'yourApplication' => 'Twoja prośba o dołączenie',
 		'applicationApproved' => 'została zatwierdzona!',
 		'applicationRejected' => 'została odrzucona. Możesz ponownie ubiegać się o dołączenie za 6 miesięcy.',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'dm' => 'Wiadomość prywatna',
+		'groupPost' => 'post grupowy',
 		'modlog' => 'logi',
 		'post' => 'post',
-		'story' => 'story',
+		'story' => 'opowieść',
 	],
 
 	'post' => [
@@ -114,11 +115,11 @@ return [
 		'follow' => 'Obserwuj',
 		'unfollow' => 'Przestań obserwować',
 		'editProfile' => 'Edytuj profil',
-		'followRequested' => 'Follow Requested',
+		'followRequested' => 'Prośba o zaobserwowanie',
 		'joined' => 'Dołączono',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Nie możemy znaleźć żadnych kolekcji',
+		'emptyPosts' => 'Nie możemy znaleźć żadnych postów',
 	],
 
 	'menu' => [
@@ -130,40 +131,40 @@ return [
 		'unarchive' => 'Usuń z archiwum',
 		'embed' => 'Osadź',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
+		'selectOneOption' => 'Wybierz jedną z następujących opcji',
+		'unlistFromTimelines' => 'Usuń z osi czasu',
 		'addCW' => 'Dodaj ostrzeżenie o treści',
 		'removeCW' => 'Usuń ostrzeżenie o treści',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammer' => 'Oznacz jako Spamer',
+		'markAsSpammerText' => 'Usuń z listy i dodaj ostrzeżenia o treści do istniejących i przyszłych postów',
 		'spam' => 'Spam',
 		'sensitive' => 'Treść wrażliwa',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
+		'abusive' => 'Obraźliwe lub krzywdzące',
+		'underageAccount' => 'Konto dla niepełnoletnich',
 		'copyrightInfringement' => 'Naruszenie praw autorskich',
 		'impersonation' => 'Podszywanie się pod inne osoby',
-		'scamOrFraud' => 'Scam or Fraud',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Are you sure you want to report this post?',
+		'scamOrFraud' => 'Oszustwo lub próba wyłudzenia',
+		'confirmReport' => 'Potwierdź zgłoszenie',
+		'confirmReportText' => 'Czy na pewno chcesz zgłosić ten post?',
 		'reportSent' => 'Zgłoszenie wysłane!',
 		'reportSentText' => 'Otrzymaliśmy Twój raport.',
 		'reportSentError' => 'Wystąpił błąd podczas zgłaszania tego posta.',
 
 		'modAddCWConfirm' => 'Czy na pewno chcesz dodać ostrzeżenie o treści do tego wpisu?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modCWSuccess' => 'Pomyślnie dodano ostrzeżenie o treści',
+		'modRemoveCWConfirm' => 'Czy na pewno chcesz usunąć ostrzeżenie o treści tego wpisu?',
+		'modRemoveCWSuccess' => 'Pomyślnie usunięto ostrzeżenie o treści',
+		'modUnlistConfirm' => 'Czy na pewno chcesz usunąć z listy ten wpis?',
+		'modUnlistSuccess' => 'Pomyślnie usunięto post z listy',
+		'modMarkAsSpammerConfirm' => 'Czy na pewno chcesz oznaczyć tego użytkownika jako spamera? Wszystkie istniejące i przyszłe posty nie będą wyświetlane na osi czasu i zostaną zastosowane ostrzeżenia o treści.',
+		'modMarkAsSpammerSuccess' => 'Pomyślnie oznaczono konto jako spamer',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'do obserwujących',
 
-		'showCaption' => 'Show Caption',
+		'showCaption' => 'Pokaż podpis',
 		'showLikes' => 'Pokaż polubienia',
 		'compactMode' => 'Tryb kompaktowy',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'embedConfirmText' => 'Korzystając z tego osadzenia akceptujesz naszą',
 
 		'deletePostConfirm' => 'Czy na pewno chcesz usunąć ten post?',
 		'archivePostConfirm' => 'Czy na pewno chcesz zarchiwizować ten post?',
@@ -171,7 +172,7 @@ return [
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Dodaj Opowieść'
 	],
 
 	'timeline' => [
@@ -179,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Nie możemy znaleźć żadnych postów dla tego hasztaga'
 	],
 
 ];

@@ -2064,11 +2064,15 @@ class ApiV1Controller extends Controller
 			return [];
 		}
 
+		$content = strip_tags($request->input('status'));
+		$rendered = Autolink::create()->autolink($content);
+
 		if($in_reply_to_id) {
 			$parent = Status::findOrFail($in_reply_to_id);
 
 			$status = new Status;
-			$status->caption = strip_tags($request->input('status'));
+			$status->caption = $content;
+			$status->rendered = $rendered;
 			$status->scope = $visibility;
 			$status->visibility = $visibility;
 			$status->profile_id = $user->profile_id;
@@ -2090,7 +2094,8 @@ class ApiV1Controller extends Controller
 
 			if(!$in_reply_to_id) {
 				$status = new Status;
-				$status->caption = strip_tags($request->input('status'));
+				$status->caption = $content;
+				$status->rendered = $rendered;
 				$status->profile_id = $user->profile_id;
 				$status->scope = 'draft';
 				$status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
@@ -2479,7 +2484,7 @@ class ApiV1Controller extends Controller
 		$pid = $request->user()->profile_id;
 		$status = StatusService::get($id);
 
-		abort_if(!in_array($status['visibility'], ['public', 'unlisted']), 404);
+		abort_if(!$status || !in_array($status['visibility'], ['public', 'unlisted']), 404);
 
 		$sortBy = $request->input('sort', 'all');
 

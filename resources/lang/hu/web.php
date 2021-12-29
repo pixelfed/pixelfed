@@ -21,7 +21,7 @@ return [
 		'errorMsg' => 'Valami hiba történt. Próbáld újra később.',
 		'oops' => 'Hoppá!',
 		'other' => 'Egyéb',
-		'readMore' => 'Tudj meg többet',
+		'readMore' => 'Tovább',
 		'success' => 'Siker',
 
 		'sensitive' => 'Érzékeny',
@@ -30,7 +30,7 @@ return [
 	],
 
 	'site' => [
-		'terms' => 'Használati feltételek',
+		'terms' => 'Felhasználási feltételek',
 		'privacy' => 'Adatvédelmi irányelvek',
 	],
 
@@ -39,9 +39,9 @@ return [
 		'admin' => 'Admin irányítópult',
 
 		// Timelines
-		'homeFeed' => 'Kezdőlap',
+		'homeFeed' => 'Saját idővonal',
 		'localFeed' => 'Helyi idővonal',
-		'globalFeed' => 'Föderációs idővonal',
+		'globalFeed' => 'Globális idővonal',
 
 		// Core features
 		'discover' => 'Felfedezés',
@@ -55,6 +55,7 @@ return [
 		'drive' => 'Meghajtó',
 		'settings' => 'Beállítások',
 		'compose' => 'Új létrehozása',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Rólunk',
@@ -83,17 +84,17 @@ return [
 		'updatedA' => 'frissítette a %-t',
 		'sentA' => 'küldött egy %-t',
 
-		'followed' => 'followed',
+		'followed' => 'követés',
 		'mentioned' => 'megemlített',
 		'you' => 'te',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'A csatlakozási kérelmed',
+		'applicationApproved' => 'elfogadva!',
+		'applicationRejected' => 'elutasítva. A csatlakozást 6 hónap múlva újra kérelmezheted.',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
-		'modlog' => 'modlog',
+		'dm' => 'közvetlen üzenet',
+		'groupPost' => 'csoportos poszt',
+		'modlog' => 'mod napló',
 		'post' => 'bejegyzés',
 		'story' => 'történet',
 	],
@@ -117,8 +118,8 @@ return [
 		'followRequested' => 'Követési kérelmek',
 		'joined' => 'Csatlakozott',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Úgy fest, nem található egy kollekció se',
+		'emptyPosts' => 'Úgy fest, nem található egy bejegyzés se',
 	],
 
 	'menu' => [
@@ -131,55 +132,55 @@ return [
 		'embed' => 'Beágyazás',
 
 		'selectOneOption' => 'Kérjük, válassz egyet az alábbi lehetőségek közül',
-		'unlistFromTimelines' => 'Unlist from Timelines',
+		'unlistFromTimelines' => 'A bejegyzések ne jelenjenek meg az idővonalon',
 		'addCW' => 'Tartalmi figyelmeztetés hozzádása',
 		'removeCW' => 'Tartalmi figyelmeztetés törlése',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammer' => 'Megjelölés spammerként',
+		'markAsSpammerText' => 'Összes jelenlegi és jövőbeli bejegyzés elrejtése és tartalom figyelmeztetéssel ellátása',
 		'spam' => 'Spam',
 		'sensitive' => 'Érzékeny tartalom',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
+		'abusive' => 'Bántalmazó vagy káros',
+		'underageAccount' => 'Kiskorú fiók',
 		'copyrightInfringement' => 'Szerzői jogok megsértése',
 		'impersonation' => 'Megszemélyesítés',
 		'scamOrFraud' => 'Átverés vagy visszaélés',
-		'confirmReport' => 'Confirm Report',
-		'confirmReportText' => 'Biztos vagy benne, hogy jelenteni akarod ezt a bejegyzést?',
+		'confirmReport' => 'Bejelentés megerősítése',
+		'confirmReportText' => 'Biztosan jelenteni akarod ezt a bejegyzést?',
 		'reportSent' => 'Jelentés elküldve!',
-		'reportSentText' => 'We have successfully received your report.',
-		'reportSentError' => 'There was an issue reporting this post.',
+		'reportSentText' => 'A bejelentést sikeresen fogadtuk.',
+		'reportSentError' => 'Probléma lépett fel a bejegyzés jelentése közben.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Biztosan tartalom figyelmeztetést akarsz erre a bejegyzésre alkalmazni?',
+		'modCWSuccess' => 'Tartalom figyelmeztetés alkalmazása sikeres',
+		'modRemoveCWConfirm' => 'Biztosan eltávolítod a tartalom figyelmeztetést erről a bejegyzésről?',
+		'modRemoveCWSuccess' => 'Tartalom figyelmeztetés eltávolítása sikeres',
+		'modUnlistConfirm' => 'Biztosan el akarod rejteni ezt a bejegyzést?',
+		'modUnlistSuccess' => 'Bejegyzés elrejtése sikeres',
+		'modMarkAsSpammerConfirm' => 'Biztosan spammernek jelölöd ezt a felhasználót? Az összes jelenlegi és jövőbeli bejegyzése elrejtésre kerül az idővonalon és tartalom figyelmeztetés kerül alkalmazásra.',
+		'modMarkAsSpammerSuccess' => 'A fiók sikeresen spammerként jelölve',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'követők',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Képaláírás mutatása',
+		'showLikes' => 'Lájkok mutatása',
+		'compactMode' => 'Kompakt mód',
+		'embedConfirmText' => 'A beillesztés használatával hozzájárulsz a mi',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Biztosan törölni akarod ezt a bejegyzést?',
+		'archivePostConfirm' => 'Biztosan archiválni akarod ezt a bejegyzést?',
+		'unarchivePostConfirm' => 'Biztosan vissza akarod vonni ennek a bejegyzésnek az archiválását?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Történet hozzáadása'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'Emberek akiket ismerhetsz'
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Úgy tűnik nem található egy bejegyzés sem ehhez a hashtag-hez'
 	],
 
 ];

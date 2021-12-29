@@ -42,6 +42,7 @@
         "drive": "Festplatte",
         "settings": "Einstellungen",
         "compose": "Neu erstellen",
+        "logout": "Logout",
         "about": "\u00dcber uns",
         "help": "Hilfe",
         "language": "Sprache",
@@ -91,8 +92,8 @@
         "editProfile": "Profil bearbeiten",
         "followRequested": "Folgeanfragen",
         "joined": "Beigetreten",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Wir k\u00f6nnen keine Sammlungen finden",
+        "emptyPosts": "Wir k\u00f6nnen keine Beitr\u00e4ge finden"
     },
     "menu": {
         "viewPost": "Beitrag anzeigen",
@@ -144,6 +145,6 @@
         "peopleYouMayKnow": "Leute, die du vielleicht kennst"
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Wir k\u00f6nnen keine Beitr\u00e4ge mit diesem Hashtag finden"
     }
 }

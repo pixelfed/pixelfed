@@ -55,6 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Axustes',
 		'compose' => 'Crear Nova',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Acerca de',
