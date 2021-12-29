@@ -500,7 +500,7 @@ trait AdminReportController
 					return $account;
 				})
 				->filter(function($res) {
-					return isset($res['id']);
+					return $res && isset($res['id']);
 				})
 				->values();
     	}

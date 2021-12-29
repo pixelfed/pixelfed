@@ -58,17 +58,17 @@ class FederationController extends Controller
 		if($cached = Cache::get($key)) {
 			return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
 		}
+		$domain = config('pixelfed.domain.app');
+		abort_if(strpos($resource, $domain) == false, 404);
 		$parsed = Nickname::normalizeProfileUrl($resource);
-		if(empty($parsed) || $parsed['domain'] !== config('pixelfed.domain.app')) {
+		if(empty($parsed) || $parsed['domain'] !== $domain) {
 			abort(404);
 		}
 		$username = $parsed['username'];
 		$profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-		if($profile->status != null) {
-			return ProfileController::accountCheck($profile);
-		}
+		abort_if($profile->status != null, 404);
 		$webfinger = (new Webfinger($profile))->generate();
-		Cache::put($key, $webfinger, 43200);
+		Cache::put($key, $webfinger, 1209600);
 
 		return response()->json($webfinger, 200, [], JSON_UNESCAPED_SLASHES)
 			->header('Access-Control-Allow-Origin','*');

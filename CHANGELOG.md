@@ -68,6 +68,7 @@
 - Updated Webfinger, fixes #3050. ([ff7ee3bd](https://github.com/pixelfed/pixelfed/commit/ff7ee3bd))
 - Updated status api, autolink caption before returning response. ([b00a453b](https://github.com/pixelfed/pixelfed/commit/b00a453b))
 - Updated Timeline, add new ui promo in timelines that can be hidden using localstorage. ([e13959ae](https://github.com/pixelfed/pixelfed/commit/e13959ae))
+- Update FederationController, increase webfinger cache ttl from 12 hours to 14 days. ([745c3580](https://github.com/pixelfed/pixelfed/commit/745c3580))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
