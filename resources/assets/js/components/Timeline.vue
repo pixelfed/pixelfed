@@ -20,6 +20,18 @@
 						</div>
 
 						<div :data-status-id="status.id" v-for="(status, index) in feed" :key="`feed-${index}-${status.id}`">
+							<div v-if="index == 1 && !loading && showPromo" class="">
+								<div class="card rounded-0 shadow-none border border-top-0 py-5">
+									<div class="card-body p-5 my-5">
+										<h1>A New Experience Awaits</h1>
+										<p class="lead">Try out an early release of our upcoming design</p>
+										<p class="mb-0 d-flex align-items-center">
+											<a class="btn btn-primary font-weight-bold py-1 px-4 rounded-pill mr-4" href="/i/web">Try new UI</a>
+											<a class="font-weight-bold text-muted" href="/" @click.prevent="hidePromo()">Hide</a>
+										</p>
+									</div>
+								</div>
+							</div>
 							<!-- <div v-if="index == 0 && showTips && !loading" class="my-4 card-tips">
 								<announcements-card v-on:show-tips="showTips = $event"></announcements-card>
 							</div> -->
@@ -509,7 +521,8 @@
 				recentFeedMax: null,
 				reactionBar: true,
 				emptyFeed: false,
-				filters: []
+				filters: [],
+				showPromo: false,
 			}
 		},
 
@@ -526,6 +539,10 @@
 				el.setAttribute('href', '/css/appdark.css?id=' + Date.now());
 				el.setAttribute('data-stylesheet', 'dark');
 			}*/
+
+			if(this.config.ab.spa === true) {
+				this.showPromo = localStorage.getItem('pf_metro_ui.exp.spa') == 'false' ? false : true;
+			}
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
 				this.showSuggestions = false;
@@ -1067,6 +1084,11 @@
 					return s;
 				});
 			},
+
+			hidePromo() {
+				localStorage.setItem('pf_metro_ui.exp.spa', 'false');
+				this.showPromo = false;
+			}
 		},
 
 		beforeDestroy () {
