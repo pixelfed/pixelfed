@@ -24,7 +24,7 @@
 								<div class="card rounded-0 shadow-none border border-top-0 py-5">
 									<div class="card-body p-5 my-5">
 										<h1>A New Experience Awaits</h1>
-										<p class="lead">Try out an early release of our upcoming design</p>
+										<p class="lead">Try out an early release of our new design</p>
 										<p class="mb-0 d-flex align-items-center">
 											<a class="btn btn-primary font-weight-bold py-1 px-4 rounded-pill mr-4" href="/i/web">Try new UI</a>
 											<a class="font-weight-bold text-muted" href="/" @click.prevent="hidePromo()">Hide</a>
