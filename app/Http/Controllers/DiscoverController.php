@@ -117,18 +117,22 @@ class DiscoverController extends Controller
 			abort_if(config('instance.discover.public') == false && !Auth::check(), 403);
 
 			$this->validate($request, [
-				'range' => 'nullable|string|in:daily,monthly'
+				'range' => 'nullable|string|in:daily,monthly,yearly',
 			]);
 
-			$range = $request->input('range') == 'monthly' ? 31 : 1;
+			$range = $request->input('range');
+			$days = $range == 'monthly' ? 31 : ($range == 'daily' ? 1 : 365);
+			$ttls = [
+				1 => 1500,
+				31 => 14400,
+				365 => 86400
+			];
+			$key = ':api:discover:trending:v2.12:range:' . $days;
 
-			$key = ':api:discover:trending:v2.8:range:' . $range;
-			$ttl = now()->addMinutes(15);
-
-			$ids = Cache::remember($key, $ttl, function() use($range) {
-				$days = $range == 1 ? 2 : 31;
+			$ids = Cache::remember($key, $ttls[$days], function() use($days) {
 				$min_id = SnowflakeService::byDate(now()->subDays($days));
-				return Status::select(
+				return DB::table('statuses')
+					->select(
 						'id',
 						'scope',
 						'type',
@@ -146,7 +150,7 @@ class DiscoverController extends Controller
 					])
 					->whereIsNsfw(false)
 					->orderBy('likes_count','desc')
-					->take(15)
+					->take(30)
 					->pluck('id');
 			});
 
@@ -155,7 +159,10 @@ class DiscoverController extends Controller
 			$res = $ids->map(function($s) {
 				return StatusService::get($s);
 			})->filter(function($s) use($filtered) {
-				return $s && !in_array($s['account']['id'], $filtered);
+				return
+					$s &&
+					!in_array($s['account']['id'], $filtered) &&
+					isset($s['account']);
 			})->values();
 
 			return response()->json($res);
