@@ -55,6 +55,7 @@ return [
 		'drive' => 'Úložisko',
 		'settings' => 'Nastavenia',
 		'compose' => 'Vytvoriť nový',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O aplikácii',
