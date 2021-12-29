@@ -55,6 +55,7 @@ return [
 		'drive' => 'Perangkat Keras',
 		'settings' => 'Pengaturan',
 		'compose' => 'Membuat baru',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Tentang',
