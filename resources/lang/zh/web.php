@@ -39,9 +39,9 @@ return [
 		'admin' => '管理面板',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => '主页',
+		'localFeed' => '本站',
+		'globalFeed' => '全球',
 
 		// Core features
 		'discover' => '探索',
@@ -86,7 +86,7 @@ return [
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'you' => '你',
 
 		'yourApplication' => 'Your application to join',
 		'applicationApproved' => 'was approved!',
