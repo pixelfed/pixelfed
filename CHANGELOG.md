@@ -8,6 +8,7 @@
 ### Metro 2.0 UI
 - Added UI Settings modal and fixed height media previews setting ([f2467e71](https://github.com/pixelfed/pixelfed/commit/f2467e71))
 - Set max-width of 1440px for larger screens ([af68872a](https://github.com/pixelfed/pixelfed/commit/af68872a))
+- Add link to sidebar profile card ([85964510](https://github.com/pixelfed/pixelfed/commit/85964510))
 
 ### Configuration
 - Enable network timeline by default ([b95aec12](https://github.com/pixelfed/pixelfed/commit/b95aec12))
