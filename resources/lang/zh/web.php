@@ -3,13 +3,13 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
+		'comment' => '评论',
+		'commented' => '已评论',
+		'comments' => '评论',
+		'like' => '赞',
+		'liked' => '已赞',
+		'likes' => '赞',
+		'share' => '分享',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
