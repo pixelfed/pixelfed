@@ -9,34 +9,34 @@ return [
 		'like' => '赞',
 		'liked' => '已赞',
 		'likes' => '赞',
-		'share' => '分享',
+		'share' => 'Share',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => 'Cancel',
+		'cancel' => '取消',
 		'copyLink' => '复制链接',
 		'delete' => '删除',
 		'error' => '错误',
 		'errorMsg' => '出错了。请稍后再试。',
 		'oops' => '哎呀！',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'other' => '其它',
+		'readMore' => '阅读更多',
+		'success' => '成功',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => '敏感的',
+		'sensitiveContent' => '敏感内容',
+		'sensitiveContentWarning' => '此帖子可能包含敏感内容',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => '使用条款',
+		'privacy' => '隐私政策',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => '搜索',
+		'admin' => '管理面板',
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
@@ -44,45 +44,45 @@ return [
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
+		'discover' => '探索',
 		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'notifications' => '通知',
+		'groups' => '群組',
+		'stories' => '故事',
 
 		// Self links
 		'profile' => 'Profile',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
-		'logout' => 'Logout',
+		'settings' => '设置',
+		'compose' => '创建',
+		'logout' => '退出登录',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
+		'about' => '关于',
+		'help' => '帮助',
 		'language' => '语言',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'privacy' => '隐私',
+		'terms' => '条款',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
+		'inbox' => '收件箱',
 		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'requests' => '申请'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => '赞了你的',
+		'commented' => '评论了你的',
 		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
+		'shared' => '转发了你的',
 		'tagged' => 'tagged you in a',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => '更新了一个',
+		'sentA' => '发送了一个',
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
