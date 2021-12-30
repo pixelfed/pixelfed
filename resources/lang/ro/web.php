@@ -3,80 +3,80 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'Comentariu',
+		'commented' => 'Comentariu',
+		'comments' => 'Comentarii',
+		'like' => 'Îmi place',
+		'liked' => 'Apreciate',
+		'likes' => 'Aprecieri',
+		'share' => 'Partajează',
+		'shared' => 'Partajat',
+		'shares' => 'Partajează',
+		'unshare' => 'Anularea partajării',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'Anulează',
+		'copyLink' => 'Copiere legătură',
+		'delete' => 'Șterge',
+		'error' => 'Eroare',
+		'errorMsg' => 'A apărut o problemă. Te rugăm să încerci din nou mai târziu.',
+		'oops' => 'Ups!',
+		'other' => 'Altele',
+		'readMore' => 'Citește mai mult',
+		'success' => 'Succes',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'Sensibil',
+		'sensitiveContent' => 'Conținut sensibil',
+		'sensitiveContentWarning' => 'Această postare poate conține conținut sensibil',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'Condiții de utilizare',
+		'privacy' => 'Politica de confidenţialitate',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'Caută',
+		'admin' => 'Panou de administrare',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'Flux Acasă',
+		'localFeed' => 'Flux local',
+		'globalFeed' => 'Flux Global',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'Descoperă',
+		'directMessages' => 'Mesaje directe',
+		'notifications' => 'Notificări',
+		'groups' => 'Grupuri',
+		'stories' => 'Poveşti',
 
 		// Self links
-		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
-		'logout' => 'Logout',
+		'profile' => 'Profil',
+		'drive' => 'Unitate',
+		'settings' => 'Setări',
+		'compose' => 'Crează nou',
+		'logout' => 'Deconectare',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'Despre',
+		'help' => 'Ajutor',
+		'language' => 'Limbă',
+		'privacy' => 'Confidențialitate',
+		'terms' => 'Termeni',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'Înapoi la design-ul anterior'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'inbox' => 'Mesaje',
+		'sent' => 'Trimis',
+		'requests' => 'Cereri'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
+		'liked' => 'ți-a plăcut',
+		'commented' => 'a comentat la',
 		'reacted' => 'reacted to your',
 		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
@@ -142,8 +142,8 @@ return [
 		'abusive' => 'Abusive or Harmful',
 		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
-		'scamOrFraud' => 'Scam or Fraud',
+		'impersonation' => 'Furt de identitate',
+		'scamOrFraud' => 'Înșelătorie sau fraudă',
 		'confirmReport' => 'Confirm Report',
 		'confirmReportText' => 'Are you sure you want to report this post?',
 		'reportSent' => 'Report Sent!',
