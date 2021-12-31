@@ -55,7 +55,7 @@ return [
 		'drive' => 'Multimedia',
 		'settings' => 'Ajustes',
 		'compose' => 'Crear Nuevo',
-		'logout' => 'Cerrar sesión',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Acerca de',
@@ -118,8 +118,8 @@ return [
 		'followRequested' => 'Seguimiento Solicitado',
 		'joined' => 'Se unió',
 
-		'emptyCollections' => 'Parece que no podemos encontrar ninguna colección',
-		'emptyPosts' => 'Parece que no podemos encontrar ningún post',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -180,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'Parece que no podemos encontrar posts para este hashtag'
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
 	],
 
 ];
