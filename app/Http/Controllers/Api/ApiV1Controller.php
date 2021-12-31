@@ -514,6 +514,11 @@ class ApiV1Controller extends Controller
 		$limit = $request->limit ?? 20;
 		$max_id = $request->max_id;
 		$min_id = $request->min_id;
+
+		if(!$max_id && !$min_id) {
+			$min_id = 1;
+		}
+
 		$pid = $request->user()->profile_id;
 		$scope = $request->only_media == true ?
 			['photo', 'photo:album', 'video', 'video:album'] :
