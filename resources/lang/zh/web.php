@@ -3,90 +3,90 @@
 return [
 
 	'common' => [
-		'comment' => '评论',
-		'commented' => '已评论',
-		'comments' => '评论',
-		'like' => '赞',
-		'liked' => '已赞',
-		'likes' => '赞',
+		'comment' => 'Comment',
+		'commented' => 'Commented',
+		'comments' => 'Comments',
+		'like' => 'Like',
+		'liked' => 'Liked',
+		'likes' => 'Likes',
 		'share' => 'Share',
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
 
-		'cancel' => '取消',
+		'cancel' => 'Cancel',
 		'copyLink' => '复制链接',
 		'delete' => '删除',
 		'error' => '错误',
 		'errorMsg' => '出错了。请稍后再试。',
 		'oops' => '哎呀！',
-		'other' => '其它',
-		'readMore' => '阅读更多',
-		'success' => '成功',
+		'other' => 'Other',
+		'readMore' => 'Read more',
+		'success' => 'Success',
 
-		'sensitive' => '敏感的',
-		'sensitiveContent' => '敏感内容',
-		'sensitiveContentWarning' => '此帖子可能包含敏感内容',
+		'sensitive' => 'Sensitive',
+		'sensitiveContent' => 'Sensitive Content',
+		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
 	'site' => [
-		'terms' => '使用条款',
-		'privacy' => '隐私政策',
+		'terms' => 'Terms of Use',
+		'privacy' => 'Privacy Policy',
 	],
 
 	'navmenu' => [
-		'search' => '搜索',
-		'admin' => '管理面板',
+		'search' => 'Search',
+		'admin' => 'Admin Dashboard',
 
 		// Timelines
-		'homeFeed' => '主页',
-		'localFeed' => '本站',
-		'globalFeed' => '全球',
+		'homeFeed' => 'Home Feed',
+		'localFeed' => 'Local Feed',
+		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => '探索',
+		'discover' => 'Discover',
 		'directMessages' => 'Direct Messages',
-		'notifications' => '通知',
-		'groups' => '群組',
-		'stories' => '故事',
+		'notifications' => 'Notifications',
+		'groups' => 'Groups',
+		'stories' => 'Stories',
 
 		// Self links
 		'profile' => 'Profile',
 		'drive' => 'Drive',
-		'settings' => '设置',
-		'compose' => '创建',
-		'logout' => '退出登录',
+		'settings' => 'Settings',
+		'compose' => 'Create New',
+		'logout' => 'Logout',
 
 		// Nav footer
-		'about' => '关于',
-		'help' => '帮助',
+		'about' => 'About',
+		'help' => 'Help',
 		'language' => '语言',
-		'privacy' => '隐私',
-		'terms' => '条款',
+		'privacy' => 'Privacy',
+		'terms' => 'Terms',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => '收件箱',
+		'inbox' => 'Inbox',
 		'sent' => 'Sent',
-		'requests' => '申请'
+		'requests' => 'Requests'
 	],
 
 	'notifications' => [
-		'liked' => '赞了你的',
-		'commented' => '评论了你的',
+		'liked' => 'liked your',
+		'commented' => 'commented on your',
 		'reacted' => 'reacted to your',
-		'shared' => '转发了你的',
+		'shared' => 'shared your',
 		'tagged' => 'tagged you in a',
 
-		'updatedA' => '更新了一个',
-		'sentA' => '发送了一个',
+		'updatedA' => 'updated a',
+		'sentA' => 'sent a',
 
 		'followed' => 'followed',
 		'mentioned' => 'mentioned',
-		'you' => '你',
+		'you' => 'you',
 
 		'yourApplication' => 'Your application to join',
 		'applicationApproved' => 'was approved!',
