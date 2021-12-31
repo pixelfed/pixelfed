@@ -6,7 +6,7 @@ return [
 		'comment' => 'Komentář',
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
-		'like' => 'To se mi líbí',
+		'like' => 'Líbí se mi',
 		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
@@ -39,9 +39,9 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Domů',
-		'localFeed' => 'Místní kanál',
-		'globalFeed' => 'Globální kanál',
+		'homeFeed' => 'Domovská časová osa',
+		'localFeed' => 'Místní časová osa',
+		'globalFeed' => 'Globalní časová osa',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -55,7 +55,7 @@ return [
 		'drive' => 'Úložiště',
 		'settings' => 'Nastavení',
 		'compose' => 'Vytvořit nový',
-		'logout' => 'Odhlásit se',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O aplikaci',
@@ -71,7 +71,7 @@ return [
 	'directMessages' => [
 		'inbox' => 'Přijaté zprávy',
 		'sent' => 'Odeslané',
-		'requests' => 'Žádosti'
+		'requests' => 'Požadavky'
 	],
 
 	'notifications' => [
@@ -109,17 +109,17 @@ return [
 	'profile' => [
 		'posts' => 'Příspěvky',
 		'followers' => 'Sledující',
-		'following' => 'Sleduje',
+		'following' => 'Sledovaní',
 		'admin' => 'Administrátor',
 		'collections' => 'Sbírky',
 		'follow' => 'Sledovat',
 		'unfollow' => 'Přestat sledovat',
 		'editProfile' => 'Upravit profil',
 		'followRequested' => 'Sledování vyžádáno',
-		'joined' => 'Připojen/a',
+		'joined' => 'Joined',
 
-		'emptyCollections' => 'Zdá se, že nelze najít žádné kolekce',
-		'emptyPosts' => 'Zdá se, že nelze najít žádné příspěvky',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -142,7 +142,7 @@ return [
 		'abusive' => 'Urážlivé nebo škodlivé',
 		'underageAccount' => 'Účet nezletilých',
 		'copyrightInfringement' => 'Porušení autorských práv',
-		'impersonation' => 'Předstírání identity',
+		'impersonation' => 'Impersonation',
 		'scamOrFraud' => 'Podvod',
 		'confirmReport' => 'Potvrdit hlášení',
 		'confirmReportText' => 'Jste si jisti, že chcete nahlásit tento příspěvek?',
@@ -159,7 +159,7 @@ return [
 		'modMarkAsSpammerConfirm' => 'Jste si jisti, že chcete tohoto uživatele označit jako spammer? Všechny existující a budoucí příspěvky budou vyřazeny z časových os a bude na ně aplikováno varování o obsahu.',
 		'modMarkAsSpammerSuccess' => 'Účet byl označen jako spammer',
 
-		'toFollowers' => 'sledujícím',
+		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Ukázat popisek',
 		'showLikes' => 'Zobrazit To se mi líbí',
