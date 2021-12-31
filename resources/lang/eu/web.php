@@ -55,7 +55,7 @@ return [
 		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
-		'logout' => 'Itxi saioa',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Honi buruz',
@@ -132,11 +132,11 @@ return [
 		'embed' => 'Kapsulatu',
 
 		'selectOneOption' => 'Hautatu aukera hauetako bat',
-		'unlistFromTimelines' => 'Denbora-lerroetatik ezkutatu',
+		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Gehitu edukiaren abisua',
 		'removeCW' => 'Kendu edukiaren abisua',
 		'markAsSpammer' => 'Markatu zabor-bidaltzaile gisa',
-		'markAsSpammerText' => 'Ezkutatu + edukiaren abisua jarri etorkizuneko bidalketei',
+		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Zaborra',
 		'sensitive' => 'Eduki hunkigarria',
 		'abusive' => 'Bortxazko edo Mingarria',
@@ -154,9 +154,9 @@ return [
 		'modCWSuccess' => 'Edukiaren abisua ondo gehitu da',
 		'modRemoveCWConfirm' => 'Ziur al zaude edukiaren abisua kendu nahi duzula bidalketa honetarako?',
 		'modRemoveCWSuccess' => 'Edukiaren abisua ondo kendu da',
-		'modUnlistConfirm' => 'Ziur al zaude bidalketa hau ezkutatu nahi duzula?',
-		'modUnlistSuccess' => 'Bidalketa ondo ezkutatu da',
-		'modMarkAsSpammerConfirm' => 'Ziur al zaude erabiltzaile hau zabor-bidaltzaile bezala markatu nahi duzula? Dagoeneko bidali dituen eta etorkizunean bidaliko dituen bidalketak denbora-lerroetatik ezkutatuko dira eta edukiaren abisua ezarriko zaie.',
+		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
+		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
 		'modMarkAsSpammerSuccess' => 'Kontua zabor-bidaltzaile gisa ondo markatu da',
 
 		'toFollowers' => 'jarraitzaileei',
@@ -164,7 +164,7 @@ return [
 		'showCaption' => 'Irudiaren azalpena erakutsi',
 		'showLikes' => 'Erakutsi atsegiteak',
 		'compactMode' => 'Modu trinkoa',
-		'embedConfirmText' => 'Kapsulatze hau erabiliz, onartzen dituzu gure',
+		'embedConfirmText' => 'By using this embed, you agree to our',
 
 		'deletePostConfirm' => 'Ziur al zaude bidalketa hau ezabatu nahi duzula?',
 		'archivePostConfirm' => 'Ziur al zaude bidalketa hau artxibatu nahi duzula?',
