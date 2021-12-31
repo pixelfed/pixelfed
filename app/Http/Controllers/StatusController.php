@@ -28,7 +28,7 @@ use App\Util\Media\License;
 
 class StatusController extends Controller
 {
-	public function show(Request $request, $username, int $id)
+	public function show(Request $request, $username, $id)
 	{
 		$user = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
 
