@@ -55,7 +55,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Axustes',
 		'compose' => 'Crear Nova',
-		'logout' => 'Saír',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Acerca de',
@@ -84,16 +84,16 @@ return [
 		'updatedA' => 'actualizou unha',
 		'sentA' => 'enviou unha',
 
-		'followed' => 'seguiute',
-		'mentioned' => 'mencionoute',
-		'you' => '.',
+		'followed' => 'seguiu',
+		'mentioned' => 'mencionou',
+		'you' => 'you',
 
 		'yourApplication' => 'A túa solicitude para unirte',
 		'applicationApproved' => 'foi aprobada!',
 		'applicationRejected' => 'for rexeitada. Podes volver a solicitar unirte en 6 meses.',
 
 		'dm' => 'md',
-		'groupPost' => 'publicación grupal',
+		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
@@ -118,8 +118,8 @@ return [
 		'followRequested' => 'Seguimento pedido',
 		'joined' => 'Uniuse',
 
-		'emptyCollections' => 'Non podemos atopar ningunha colección',
-		'emptyPosts' => 'Non podemos atopar ningunha publicación',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -180,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'Non podemos atopar ningunha publicación con este cancelo'
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
 	],
 
 ];
