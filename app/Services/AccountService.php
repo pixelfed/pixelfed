@@ -51,12 +51,14 @@ class AccountService
 		->map(function($item, $key) {
 			if($key == 'compose_settings') {
 				$cs = self::defaultSettings()['compose_settings'];
-				return array_merge($cs, $item ?? []);
+				$ms = is_array($item) ? $item : [];
+				return array_merge($cs, $ms);
 			}
 
 			if($key == 'other') {
 				$other =  self::defaultSettings()['other'];
-				return array_merge($other, $item ?? []);
+				$mo = is_array($item) ? $item : [];
+				return array_merge($other, $mo);
 			}
 			return $item;
 		});
