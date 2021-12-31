@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use Zttp\ConnectionException;
+use
 
 class Handler extends ExceptionHandler
 {
@@ -16,7 +16,9 @@ class Handler extends ExceptionHandler
 	 */
 	protected $dontReport = [
 		OAuthServerException::class,
-		ConnectionException::class
+		\Zttp\ConnectionException::class,
+		\GuzzleHttp\Exception\ConnectException::class,
+		\Illuminate\Http\Client\ConnectionException::class
 	];
 
 	/**
@@ -49,6 +51,10 @@ class Handler extends ExceptionHandler
 	public function register()
 	{
 		$this->reportable(function (\BadMethodCallException $e) {
+			return app()->environment() !== 'production';
+		});
+
+		$this->reportable(function (\Illuminate\Http\Client\ConnectionException $e) {
 			return app()->environment() !== 'production';
 		});
 	}
