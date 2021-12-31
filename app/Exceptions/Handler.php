@@ -42,6 +42,18 @@ class Handler extends ExceptionHandler
 	}
 
 	/**
+	* Register the exception handling callbacks for the application.
+	*
+	* @return void
+	*/
+	public function register()
+	{
+		$this->reportable(function (\BadMethodCallException $e) {
+			return app()->environment() !== 'production';
+		});
+	}
+
+	/**
 	 * Render an exception into an HTTP response.
 	 *
 	 * @param \Illuminate\Http\Request $request
