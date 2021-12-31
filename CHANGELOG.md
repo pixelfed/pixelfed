@@ -75,6 +75,8 @@
 - Updated Timeline, add new ui promo in timelines that can be hidden using localstorage. ([e13959ae](https://github.com/pixelfed/pixelfed/commit/e13959ae))
 - Updated FederationController, increase webfinger cache ttl from 12 hours to 14 days. ([745c3580](https://github.com/pixelfed/pixelfed/commit/745c3580))
 - Updated DiscoverController, add yearly option and increase limit from 15 to 30 posts. ([10b6058c](https://github.com/pixelfed/pixelfed/commit/10b6058c))
+- Updated RemoteAvatarFetch job, fixed bug preventing new avatars from being stored. ([92bc2845](https://github.com/pixelfed/pixelfed/commit/92bc2845))
+- Updated AccountService, fix json casting ([e5f8f344](https://github.com/pixelfed/pixelfed/commit/e5f8f344))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
