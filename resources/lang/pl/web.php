@@ -55,7 +55,7 @@ return [
 		'drive' => 'Dysk',
 		'settings' => 'Ustawienia',
 		'compose' => 'Utwórz nowy',
-		'logout' => 'Wyloguj się',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O nas',
