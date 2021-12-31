@@ -55,7 +55,7 @@ return [
 		'drive' => 'Gyriant storio',
 		'settings' => 'Gosodiadau',
 		'compose' => 'Creu newydd',
-		'logout' => 'Allgofnodi',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Amdano',
