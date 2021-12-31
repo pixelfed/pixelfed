@@ -55,7 +55,7 @@ return [
 		'drive' => 'Диск',
 		'settings' => 'Настройки',
 		'compose' => 'Создать новый пост',
-		'logout' => 'Выйти',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'О нас',
@@ -159,12 +159,12 @@ return [
 		'modMarkAsSpammerConfirm' => 'Вы уверены, что хотите отметить этого пользователя спамом? Все существующие и будущие сообщения будут исключены из списка в сроки, и будет применяться предупреждение о содержании.',
 		'modMarkAsSpammerSuccess' => 'Аккаунт успешно помечен как спаммер',
 
-		'toFollowers' => 'подписчикам',
+		'toFollowers' => 'to Followers',
 
 		'showCaption' => 'Показать подпись',
 		'showLikes' => 'Показать отметки "мне нравится"',
 		'compactMode' => 'Компактный режим',
-		'embedConfirmText' => 'Используя этот инстант, вы соглашаетесь с нашими',
+		'embedConfirmText' => 'By using this embed, you agree to our',
 
 		'deletePostConfirm' => 'Вы действительно хотите удалить этот пост?',
 		'archivePostConfirm' => 'Вы действительно хотите архивировать этот пост?',
