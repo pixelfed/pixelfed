@@ -55,7 +55,7 @@ return [
 		'drive' => 'Meghajtó',
 		'settings' => 'Beállítások',
 		'compose' => 'Új létrehozása',
-		'logout' => 'Kijelentkezés',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'Rólunk',
