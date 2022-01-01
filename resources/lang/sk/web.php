@@ -55,7 +55,7 @@ return [
 		'drive' => 'Úložisko',
 		'settings' => 'Nastavenia',
 		'compose' => 'Vytvoriť nový',
-		'logout' => 'Logout',
+		'logout' => 'Odhlásiť sa',
 
 		// Nav footer
 		'about' => 'O aplikácii',
@@ -116,7 +116,7 @@ return [
 		'unfollow' => 'Prestať sledovať',
 		'editProfile' => 'Upraviť Profil',
 		'followRequested' => 'Žiadosť o sledovanie bola odoslaná',
-		'joined' => 'Joined',
+		'joined' => 'Pripojené',
 
 		'emptyCollections' => 'Zdá sa, že nemôžeme nájsť žiadne kolekcie',
 		'emptyPosts' => 'Zdá sa, že nemôžeme nájsť žiadne príspevky',
