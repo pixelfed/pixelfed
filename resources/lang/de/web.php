@@ -55,7 +55,7 @@ return [
 		'drive' => 'Festplatte',
 		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
-		'logout' => 'Logout',
+		'logout' => 'Ausloggen',
 
 		// Nav footer
 		'about' => 'Über uns',
