@@ -55,7 +55,7 @@ return [
 		'drive' => 'Úložiště',
 		'settings' => 'Nastavení',
 		'compose' => 'Vytvořit nový',
-		'logout' => 'Logout',
+		'logout' => 'Odhlásit se',
 
 		// Nav footer
 		'about' => 'O aplikaci',
@@ -116,10 +116,10 @@ return [
 		'unfollow' => 'Přestat sledovat',
 		'editProfile' => 'Upravit profil',
 		'followRequested' => 'Sledování vyžádáno',
-		'joined' => 'Joined',
+		'joined' => 'Připojen/a',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Zdá se, že nelze najít žádné kolekce',
+		'emptyPosts' => 'Zdá se, že nelze najít žádné příspěvky',
 	],
 
 	'menu' => [
@@ -142,7 +142,7 @@ return [
 		'abusive' => 'Urážlivé nebo škodlivé',
 		'underageAccount' => 'Účet nezletilých',
 		'copyrightInfringement' => 'Porušení autorských práv',
-		'impersonation' => 'Impersonation',
+		'impersonation' => 'Předstírání identity',
 		'scamOrFraud' => 'Podvod',
 		'confirmReport' => 'Potvrdit hlášení',
 		'confirmReportText' => 'Jste si jisti, že chcete nahlásit tento příspěvek?',
@@ -159,7 +159,7 @@ return [
 		'modMarkAsSpammerConfirm' => 'Jste si jisti, že chcete tohoto uživatele označit jako spammer? Všechny existující a budoucí příspěvky budou vyřazeny z časových os a bude na ně aplikováno varování o obsahu.',
 		'modMarkAsSpammerSuccess' => 'Účet byl označen jako spammer',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'sledujícím',
 
 		'showCaption' => 'Ukázat popisek',
 		'showLikes' => 'Zobrazit To se mi líbí',
