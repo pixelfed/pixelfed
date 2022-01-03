@@ -18,24 +18,46 @@ class MediaService
 
 	public static function get($statusId)
 	{
-		$status = Status::find($statusId);
-		if(!$status) {
-			return [];
-		}
-		$ttl = $status->created_at->lt(now()->subMinutes(30)) ? 129600 : 30;
-		return Cache::remember(self::CACHE_KEY.$statusId, $ttl, function() use($status) {
-			if(!$status) {
+		return Cache::remember(self::CACHE_KEY.$statusId, 86400, function() use($statusId) {
+			$media = Media::whereStatusId($statusId)->orderBy('order')->get();
+			if(!$media) {
 				return [];
 			}
-			if(in_array($status->type, ['group:post', 'photo', 'video', 'video:album', 'photo:album', 'loop', 'photo:video:album'])) {
-				$media = Media::whereStatusId($status->id)->orderBy('order')->get();
-				$fractal = new Fractal\Manager();
-				$fractal->setSerializer(new ArraySerializer());
-				$resource = new Fractal\Resource\Collection($media, new MediaTransformer());
-				return $fractal->createData($resource)->toArray();
-			}
-			return [];
+			$fractal = new Fractal\Manager();
+			$fractal->setSerializer(new ArraySerializer());
+			$resource = new Fractal\Resource\Collection($media, new MediaTransformer());
+			return $fractal->createData($resource)->toArray();
 		});
+	}
+
+	public static function getMastodon($id)
+	{
+		$media = self::get($id);
+		if(!$media) {
+			return [];
+		}
+		$medias = collect($media)
+		->map(function($media) {
+			$mime = $media['mime'] ? explode('/', $media['mime']) : false;
+			unset(
+				$media['optimized_url'],
+				$media['license'],
+				$media['is_nsfw'],
+				$media['orientation'],
+				$media['filter_name'],
+				$media['filter_class'],
+				$media['mime']
+			);
+
+			$media['type'] = $mime ? strtolower($mime[0]) : 'unknown';
+			return $media;
+		})
+		->filter(function($m) {
+			return $m && isset($m['url']);
+		})
+		->values();
+
+		return $medias->toArray();
 	}
 
 	public static function del($statusId)
