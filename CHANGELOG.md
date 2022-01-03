@@ -18,6 +18,7 @@
 - Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
 - Cloud Backups, a command to store backups on S3 or compatible filesystems. [#3037](https://github.com/pixelfed/pixelfed/pull/3037) ([3515a98e](https://github.com/pixelfed/pixelfed/commit/3515a98e))
 - Web UI Localizations + Crowdin integration. ([f7d9b40b](https://github.com/pixelfed/pixelfed/commit/f7d9b40b)) ([7ff120c9](https://github.com/pixelfed/pixelfed/commit/7ff120c9))
+- Store remote avatars locally if S3 not enabled. ([b4bd0400](https://github.com/pixelfed/pixelfed/commit/b4bd0400))
 
 ### Updated
 - Updated NotificationService, fix 500 bug. ([4a609dc3](https://github.com/pixelfed/pixelfed/commit/4a609dc3))
