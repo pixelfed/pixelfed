@@ -21,7 +21,8 @@ class Profile extends Model
 
 	protected $dates = [
 		'deleted_at',
-		'last_fetched_at'
+		'last_fetched_at',
+		'last_status_at'
 	];
 	protected $hidden = ['private_key'];
 	protected $visible = ['id', 'user_id', 'username', 'name'];
