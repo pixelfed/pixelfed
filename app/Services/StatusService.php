@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use DB;
 use App\Status;
-//use App\Transformer\Api\v3\StatusTransformer;
 use App\Transformer\Api\StatusStatelessTransformer;
 use App\Transformer\Api\StatusTransformer;
 use League\Fractal;
@@ -39,6 +38,49 @@ class StatusService
 			$resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
+	}
+
+	public static function getMastodon($id, $publicOnly = true)
+	{
+		$status = self::get($id, $publicOnly);
+		if(!$status) {
+			return null;
+		}
+		$status['replies_count'] = $status['reply_count'];
+		unset(
+			$status['_v'],
+			$status['comments_disabled'],
+			$status['content_text'],
+			$status['gid'],
+			$status['label'],
+			$status['liked_by'],
+			$status['local'],
+			$status['parent'],
+			$status['pf_type'],
+			$status['place'],
+			$status['replies'],
+			$status['reply_count'],
+			$status['shortcode'],
+			$status['taggedPeople'],
+			$status['thread'],
+			$status['account']['header_bg'],
+			$status['account']['is_admin'],
+			$status['account']['last_fetched_at'],
+			$status['account']['local'],
+			$status['account']['location'],
+			$status['account']['note_text'],
+			$status['account']['pronouns'],
+			$status['account']['website'],
+		);
+		$status['account']['avatar_static'] = $status['account']['avatar'];
+		$status['account']['bot'] = false;
+		$status['account']['emojis'] = [];
+		$status['account']['fields'] = [];
+		$status['account']['header'] = url('/storage/headers/missing.png');
+		$status['account']['header_static'] = url('/storage/headers/missing.png');
+		$status['account']['last_status_at'] = null;
+
+		return $status;
 	}
 
 	public static function getState($id, $pid)
