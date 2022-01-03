@@ -11,7 +11,6 @@ class AccountTransformer extends Fractal\TransformerAbstract
 	public function transform(Profile $profile)
 	{
 		$local = $profile->domain == null;
-		$is_admin = !$local ? false : $profile->user->is_admin;
 		$username = $local ? $profile->username : explode('@', substr($profile->username, 1))[0];
 		return [
 			'id' => (string) $profile->id,
@@ -19,22 +18,21 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'acct' => $username,
 			'display_name' => $profile->name,
 			'locked' => (bool) $profile->is_private,
+			'bot' => false,
 			'created_at' => $profile->created_at->toJSON(),
-			'followers_count' => $profile->followerCount(),
-			'following_count' => $profile->followingCount(),
-			'statuses_count' => (int) $profile->statusCount(),
 			'note' => $profile->bio ?? '',
 			'url' => $profile->url(),
 			'avatar' => $profile->avatarUrl(),
 			'avatar_static' => $profile->avatarUrl(),
 			'header' => '',
 			'header_static' => '',
+			'followers_count' => (int) $profile->followerCount(),
+			'following_count' => (int) $profile->followingCount(),
+			'statuses_count' => (int) $profile->statusCount(),
+			'last_status_at' => optional($profile->last_status_at)->toJSON(),
 			'emojis' => [],
 			'moved' => null,
-			'fields' => null,
-			'bot' => false,
-			'software' => 'pixelfed',
-			'is_admin' => (bool) $is_admin,
+			'fields' => [],
 		];
 	}
 }
