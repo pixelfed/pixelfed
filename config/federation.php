@@ -33,7 +33,7 @@ return [
 	],
 
 	'avatars' => [
-		'store_local' => false
+		'store_local' => env('REMOTE_AVATARS', true),
 	],
 
 	'nodeinfo' => [

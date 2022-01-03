@@ -586,9 +586,7 @@ class Helpers {
 						$profile->webfinger = Purify::clean($webfinger);
 						$profile->last_fetched_at = now();
 						$profile->save();
-						if(config_cache('pixelfed.cloud_storage') == true) {
-							RemoteAvatarFetch::dispatch($profile);
-						}
+						RemoteAvatarFetch::dispatch($profile);
 						return $profile;
 					});
 				});
@@ -603,9 +601,7 @@ class Helpers {
 					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 					$profile->save();
 				}
-				if(config_cache('pixelfed.cloud_storage') == true) {
-					RemoteAvatarFetch::dispatch($profile);
-				}
+				RemoteAvatarFetch::dispatch($profile);
 			}
 			return $profile;
 		});
