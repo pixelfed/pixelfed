@@ -33,6 +33,35 @@ class AccountService
 		});	
 	}
 
+	public static function getMastodon($id, $softFail = false)
+	{
+		$account = self::get($id, $softFail);
+		if(!$account) {
+			return null;
+		}
+
+		unset(
+			$account['header_bg'],
+			$account['is_admin'],
+			$account['last_fetched_at'],
+			$account['local'],
+			$account['location'],
+			$account['note_text'],
+			$account['pronouns'],
+			$account['website']
+		);
+
+		$account['avatar_static'] = $account['avatar'];
+		$account['bot'] = false;
+		$account['emojis'] = [];
+		$account['fields'] = [];
+		$account['header'] = url('/storage/headers/missing.png');
+		$account['header_static'] = url('/storage/headers/missing.png');
+		$account['last_status_at'] = null;
+
+		return $account;
+	}
+
 	public static function del($id)
 	{
 		return Cache::forget(self::CACHE_KEY . $id);
