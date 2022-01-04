@@ -55,7 +55,7 @@ return [
 		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
-		'logout' => 'Logout',
+		'logout' => 'Saioa itxi',
 
 		// Nav footer
 		'about' => 'Honi buruz',
