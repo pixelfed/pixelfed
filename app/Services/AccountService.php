@@ -40,6 +40,10 @@ class AccountService
 			return null;
 		}
 
+		if(config('exp.emc') == false) {
+			return $account;
+		}
+
 		unset(
 			$account['header_bg'],
 			$account['is_admin'],
