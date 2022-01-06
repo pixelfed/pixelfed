@@ -3,7 +3,7 @@
         "comment": "Commenta",
         "commented": "Commentato",
         "comments": "Commenti",
-        "like": "Mi piace",
+        "like": "Like",
         "liked": "Like aggiunto",
         "likes": "Tutti i Like",
         "share": "Condividi",
@@ -25,7 +25,7 @@
     },
     "site": {
         "terms": "Termini di Utilizzo",
-        "privacy": "Informativa sulla Privacy"
+        "privacy": "Informativa Privacy"
     },
     "navmenu": {
         "search": "Cerca",
@@ -42,9 +42,9 @@
         "drive": "Drive",
         "settings": "Impostazioni",
         "compose": "Crea Nuovo",
-        "logout": "Logout",
+        "logout": "Esci",
         "about": "Info",
-        "help": "Aiuto",
+        "help": "Supporto",
         "language": "Lingua",
         "privacy": "Privacy",
         "terms": "Condizioni",
@@ -92,8 +92,8 @@
         "editProfile": "Modifica profilo",
         "followRequested": "Richiesta in attesa",
         "joined": "Iscritto",
-        "emptyCollections": "We can't seem to find any collections",
-        "emptyPosts": "We can't seem to find any posts"
+        "emptyCollections": "Non riusciamo a trovare alcuna collezione",
+        "emptyPosts": "Non riusciamo a trovare alcun post"
     },
     "menu": {
         "viewPost": "Mostra Post",
@@ -145,6 +145,6 @@
         "peopleYouMayKnow": "Persone che potresti conoscere"
     },
     "hashtags": {
-        "emptyFeed": "We can't seem to find any posts for this hashtag"
+        "emptyFeed": "Non riusciamo a trovare alcun post con questo hashtag"
     }
 }

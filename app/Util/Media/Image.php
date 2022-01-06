@@ -72,6 +72,8 @@ class Image
 		return [
 			'dimensions'  => $this->orientations()[$orientation],
 			'orientation' => $orientation,
+			'width_original' => $width,
+			'height_original' => $height,
 		];
 	}
 
@@ -157,9 +159,14 @@ class Image
 					$media->metadata = json_encode($meta);
 				}
 
-				$img->resize($aspect['width'], $aspect['height'], function ($constraint) {
-					$constraint->aspectRatio();
-				});
+				if (
+				    ($ratio['width_original'] > $aspect['width'])
+				    || ($ratio['height_original'] > $aspect['height'])
+				) {
+					$img->resize($aspect['width'], $aspect['height'], function ($constraint) {
+						$constraint->aspectRatio();
+					});
+				}
 			}
 			$converted = $this->setBaseName($path, $thumbnail, $img->extension);
 			$newPath = storage_path('app/'.$converted['path']);
