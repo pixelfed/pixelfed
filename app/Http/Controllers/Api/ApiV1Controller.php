@@ -143,13 +143,13 @@ class ApiV1Controller extends Controller
 
 		$res = AccountService::getMastodon($id);
 
-		$res['source'] = [
-			'privacy' => $res['locked'] ? 'private' : 'public',
-			'sensitive' => false,
-			'language' => null,
-			'note' => '',
-			'fields' => []
-		];
+		// $res['source'] = [
+		// 	'privacy' => $res['locked'] ? 'private' : 'public',
+		// 	'sensitive' => false,
+		// 	'language' => null,
+		// 	'note' => '',
+		// 	'fields' => []
+		// ];
 
 		return response()->json($res);
 	}
