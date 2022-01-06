@@ -1701,16 +1701,29 @@ class ApiV1Controller extends Controller
 		$scope = $request->input('scope', 'inbox');
 		$pid = $request->user()->profile_id;
 
-		$dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
-				return $q->whereIsHidden(false)->whereToId($pid)->orWhere('from_id', $pid)->groupBy('to_id');
-			})
-			->when($scope === 'sent', function($q, $scope) use($pid) {
-				return $q->whereFromId($pid)->groupBy('to_id');
-			})
-			->when($scope === 'requests', function($q, $scope) use($pid) {
-				return $q->whereToId($pid)->whereIsHidden(true);
-			})
-			->latest()
+		if(config('database.default') == 'pgsql') {
+			$dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
+					return $q->whereIsHidden(false)->whereToId($pid)->orWhere('from_id', $pid);
+				})
+				->when($scope === 'sent', function($q, $scope) use($pid) {
+					return $q->whereFromId($pid);
+				})
+				->when($scope === 'requests', function($q, $scope) use($pid) {
+					return $q->whereToId($pid)->whereIsHidden(true);
+				});
+		} else {
+			$dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
+					return $q->whereIsHidden(false)->whereToId($pid)->orWhere('from_id', $pid)->groupBy('to_id');
+				})
+				->when($scope === 'sent', function($q, $scope) use($pid) {
+					return $q->whereFromId($pid)->groupBy('to_id');
+				})
+				->when($scope === 'requests', function($q, $scope) use($pid) {
+					return $q->whereToId($pid)->whereIsHidden(true);
+				});
+		}
+
+		$dms = $dms->latest()
 			->simplePaginate($limit)
 			->map(function($dm) use($pid) {
 				$from = $pid == $dm->to_id ? $dm->from_id : $dm->to_id;

@@ -71,6 +71,7 @@ class StatusService
 			$status['account']['note_text'],
 			$status['account']['pronouns'],
 			$status['account']['website'],
+			$status['media_attachments'],
 		);
 		$status['account']['avatar_static'] = $status['account']['avatar'];
 		$status['account']['bot'] = false;
@@ -79,6 +80,8 @@ class StatusService
 		$status['account']['header'] = url('/storage/headers/missing.png');
 		$status['account']['header_static'] = url('/storage/headers/missing.png');
 		$status['account']['last_status_at'] = null;
+
+		$status['media_attachments'] = array_values(MediaService::getMastodon($status['id']));
 
 		return $status;
 	}

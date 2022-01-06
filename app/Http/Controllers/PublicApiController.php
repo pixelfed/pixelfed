@@ -738,6 +738,10 @@ class PublicApiController extends Controller
         $min_id = $request->min_id;
         $scope = ['photo', 'photo:album', 'video', 'video:album'];
 
+        if(!$min_id && !$max_id) {
+        	$min_id = 1;
+        }
+
         if($profile['locked']) {
             if(!$user) {
                 return response()->json([]);
