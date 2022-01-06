@@ -737,6 +737,7 @@ class PublicApiController extends Controller
         $max_id = $request->max_id;
         $min_id = $request->min_id;
         $scope = ['photo', 'photo:album', 'video', 'video:album'];
+        $onlyMedia = $request->input('only_media', true);
 
         if(!$min_id && !$max_id) {
         	$min_id = 1;
@@ -787,7 +788,16 @@ class PublicApiController extends Controller
             }
             return $status;
         })
-        ->filter(function($s) {
+        ->filter(function($s) use($onlyMedia) {
+        	if($onlyMedia) {
+        		if(
+        			!isset($s['media_attachments']) ||
+        			!is_array($s['media_attachments']) ||
+        			empty($s['media_attachments'])
+        		) {
+        			return false;
+        		}
+        	}
             return $s;
         })
         ->values();
