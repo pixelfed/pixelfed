@@ -87,6 +87,7 @@
 - Updated PublicApiController, fix accountStatuses pagination operator. ([85fc9dd0](https://github.com/pixelfed/pixelfed/commit/85fc9dd0))
 - Updated PublicApiController, enforce only_media on accountStatuses method. Fixes #3105. ([861a2d36](https://github.com/pixelfed/pixelfed/commit/861a2d36))
 - Updated ApiV1Controller, add mastoapi strict mode. ([46485426](https://github.com/pixelfed/pixelfed/commit/46485426))
+- Updated AccountController, refresh RelationshipService on mute/block. ([6f1b0245](https://github.com/pixelfed/pixelfed/commit/6f1b0245))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
