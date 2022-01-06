@@ -6,7 +6,7 @@ return [
 		'comment' => 'Commenta',
 		'commented' => 'Commentato',
 		'comments' => 'Commenti',
-		'like' => 'Mi piace',
+		'like' => 'Like',
 		'liked' => 'Like aggiunto',
 		'likes' => 'Tutti i Like',
 		'share' => 'Condividi',
@@ -31,7 +31,7 @@ return [
 
 	'site' => [
 		'terms' => 'Termini di Utilizzo',
-		'privacy' => 'Informativa sulla Privacy',
+		'privacy' => 'Informativa Privacy',
 	],
 
 	'navmenu' => [
@@ -55,11 +55,11 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Impostazioni',
 		'compose' => 'Crea Nuovo',
-		'logout' => 'Logout',
+		'logout' => 'Esci',
 
 		// Nav footer
 		'about' => 'Info',
-		'help' => 'Aiuto',
+		'help' => 'Supporto',
 		'language' => 'Lingua',
 		'privacy' => 'Privacy',
 		'terms' => 'Condizioni',
@@ -118,8 +118,8 @@ return [
 		'followRequested' => 'Richiesta in attesa',
 		'joined' => 'Iscritto',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Non riusciamo a trovare alcuna collezione',
+		'emptyPosts' => 'Non riusciamo a trovare alcun post',
 	],
 
 	'menu' => [
@@ -180,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Non riusciamo a trovare alcun post con questo hashtag'
 	],
 
 ];

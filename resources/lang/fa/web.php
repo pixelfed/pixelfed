@@ -118,8 +118,8 @@ return [
 		'followRequested' => 'درخواست دنبال کردن فرستاده شد',
 		'joined' => 'پیوست',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'به نظر می‌رسد که نمی‌توانیم هیچ مجموعه‌ای پیدا کنیم',
+		'emptyPosts' => 'به نظر می‌رسد که نمی‌توانیم هیچ فرسته‌ای پیدا کنیم',
 	],
 
 	'menu' => [
@@ -140,7 +140,7 @@ return [
 		'spam' => 'هرزنامه',
 		'sensitive' => 'محتوای حساس',
 		'abusive' => 'توهین‌آمیز و مضر',
-		'underageAccount' => 'Underage Account',
+		'underageAccount' => 'حساب زیر سن قانونی',
 		'copyrightInfringement' => 'نقض قوانین حق تکثیر',
 		'impersonation' => 'جعل هویت',
 		'scamOrFraud' => 'Scam or Fraud',
@@ -180,7 +180,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'به نظر می‌رسد که نمی‌توانیم چیزی برای این هشتگ پیدا کنیم'
 	],
 
 ];

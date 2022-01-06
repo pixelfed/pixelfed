@@ -48,14 +48,14 @@ return [
 		'directMessages' => 'Mensagens privadas',
 		'notifications' => 'Notificações',
 		'groups' => 'Grupos',
-		'stories' => 'Stories',
+		'stories' => 'Histórias',
 
 		// Self links
 		'profile' => 'Perfil',
-		'drive' => 'Drive',
+		'drive' => 'Mídias',
 		'settings' => 'Configurações',
 		'compose' => 'Criar novo',
-		'logout' => 'Logout',
+		'logout' => 'Sair',
 
 		// Nav footer
 		'about' => 'Sobre',
