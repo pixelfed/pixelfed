@@ -46,6 +46,8 @@ class StoryController extends StoryComposeController
 					$r  = new \StdClass;
 					$r->id = $s->id;
 					$r->profile_id = $s->profile_id;
+					$r->type = $s->type;
+					$r->path = $s->path;
 					return $r;
 				})
 				->unique('profile_id');
