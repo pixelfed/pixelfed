@@ -16,6 +16,7 @@ use App\{
 	Follower,
 	FollowRequest,
 	Hashtag,
+	Instance,
 	Like,
 	Media,
 	Notification,
@@ -1166,49 +1167,53 @@ class ApiV1Controller extends Controller
 	 */
 	public function instance(Request $request)
 	{
-		$res = Cache::remember('api:v1:instance-data', now()->addMinutes(15), function () {
-			$rules = config_cache('app.rules') ? collect(json_decode(config_cache('app.rules'), true))
-				->map(function($rule, $key) {
-					$id = $key + 1;
-					return [
-						'id' => "{$id}",
-						'text' => $rule
-					];
-				})
-				->toArray() : [];
-			$res = [
-				'approval_required' => false,
-				'contact_account' => null,
-				'description' => config_cache('app.description'),
-				'email' => config('instance.email'),
-				'invites_enabled' => false,
-				'rules' => $rules,
-				'short_description' => 'Pixelfed - Photo sharing for everyone',
-				'languages' => ['en'],
-				'max_toot_chars' => (int) config('pixelfed.max_caption_length'),
-				'registrations' => (bool) config_cache('pixelfed.open_registration'),
-				'stats' => [
-					'user_count' => 0,
-					'status_count' => 0,
-					'domain_count' => 0
-				],
-				'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.png',
-				'title' => config_cache('app.name'),
-				'uri' => config('pixelfed.domain.app'),
-				'urls' => [],
-				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
-				'environment' => [
-					'max_photo_size' => (int) config_cache('pixelfed.max_photo_size'),
-					'max_avatar_size' => (int) config('pixelfed.max_avatar_size'),
-					'max_caption_length' => (int) config('pixelfed.max_caption_length'),
-					'max_bio_length' => (int) config('pixelfed.max_bio_length'),
-					'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
-					'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled')
+		$res = Cache::remember('api:v1:instance-data-response', 900, function () {
+			$contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
+				$admin = User::whereIsAdmin(true)->first();
+				return $admin && isset($admin->profile_id) ?
+					AccountService::getMastodon($admin->profile_id, true) :
+					null;
+			});
 
-				]
+			$stats = Cache::remember('api:v1:instance-data:stats', 43200, function () {
+				return [
+					'user_count' => User::count(),
+					'status_count' => Status::whereNull('uri')->count(),
+					'domain_count' => Instance::count(),
+				];
+			});
+
+			$rules = Cache::remember('api:v1:instance-data:rules', 604800, function () {
+				return config_cache('app.rules') ?
+					collect(json_decode(config_cache('app.rules'), true))
+					->map(function($rule, $key) {
+						$id = $key + 1;
+						return [
+							'id' => "{$id}",
+							'text' => $rule
+						];
+					})
+					->toArray() : [];
+			});
+
+			return [
+				'uri' => config('pixelfed.domain.app'),
+				'title' => config('app.name'),
+				'short_description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
+				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
+				'email' => config('instance.email'),
+				'version' => config('pixelfed.version'),
+				'urls' => [],
+				'stats' => $stats,
+				'thumbnail' => url('headers/default.jpg'),
+				'languages' => ['en'],
+				'registrations' => (bool) config('pixelfed.open_registration'),
+				'approval_required' => false,
+				'contact_account' => $contact,
+				'rules' => $rules
 			];
-			return $res;
 		});
+
 		return response()->json($res);
 	}
 

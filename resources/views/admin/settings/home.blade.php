@@ -1,6 +1,4 @@
-@extends('admin.partial.template')
-
-@include('admin.settings.sidebar')
+@extends('admin.partial.template-full')
 
 @section('section')
 <div class="title mb-4">
