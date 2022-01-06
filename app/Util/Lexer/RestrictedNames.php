@@ -178,6 +178,8 @@ class RestrictedNames
 		'group',
 		'groups',
 		'h',
+		'header',
+		'headers',
 		'home',
 		'help',
 		'helpcenter',

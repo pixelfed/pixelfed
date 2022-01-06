@@ -16,6 +16,7 @@ use App\{
 	Follower,
 	FollowRequest,
 	Hashtag,
+	Instance,
 	Like,
 	Media,
 	Notification,
@@ -64,7 +65,6 @@ use App\Services\{
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
-	ProfileService,
 	RelationshipService,
 	SearchApiV2Service,
 	StatusService,
@@ -142,15 +142,15 @@ class ApiV1Controller extends Controller
 
 		$id = $request->user()->profile_id;
 
-		$res = ProfileService::get($id);
+		$res = AccountService::getMastodon($id);
 
-		$res['source'] = [
-			'privacy' => $res['locked'] ? 'private' : 'public',
-			'sensitive' => false,
-			'language' => null,
-			'note' => '',
-			'fields' => []
-		];
+		// $res['source'] = [
+		// 	'privacy' => $res['locked'] ? 'private' : 'public',
+		// 	'sensitive' => false,
+		// 	'language' => null,
+		// 	'note' => '',
+		// 	'fields' => []
+		// ];
 
 		return response()->json($res);
 	}
@@ -164,10 +164,10 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountById(Request $request, $id)
 	{
-		$profile = Profile::whereNull('status')->findOrFail($id);
-		$resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-
+		$res = AccountService::getMastodon($id, true);
+		if(!$res) {
+			return response()->json(['error' => 'Record not found'], 404);
+		}
 		return response()->json($res);
 	}
 
@@ -394,7 +394,7 @@ class ApiV1Controller extends Controller
 			MediaSyncLicensePipeline::dispatch($user->id, $request->input('license'));
 		}
 
-		$res = AccountService::get($user->profile_id);
+		$res = AccountService::getMastodon($user->profile_id);
 		$res['bio'] = strip_tags($res['note']);
 		$res = array_merge($res, $other);
 
@@ -508,7 +508,7 @@ class ApiV1Controller extends Controller
 			'limit' => 'nullable|integer|min:1|max:80'
 		]);
 
-		$profile = AccountService::get($id);
+		$profile = AccountService::getMastodon($id);
         abort_if(!$profile, 404);
 
 		$limit = $request->limit ?? 20;
@@ -534,17 +534,12 @@ class ApiV1Controller extends Controller
 		if($pid == $profile['id']) {
 			$visibility = ['public', 'unlisted', 'private'];
 		} else if($profile['locked']) {
-			$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
-				$following = Follower::whereProfileId($pid)->pluck('following_id');
-				return $following->push($pid)->toArray();
-			});
-			$visibility = true == in_array($profile['id'], $following) ? ['public', 'unlisted', 'private'] : [];
+			$following = FollowerService::follows($pid, $profile['id']);
+			abort_unless($following, 403);
+			$visibility = ['public', 'unlisted', 'private'];
 		} else {
-			$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
-				$following = Follower::whereProfileId($pid)->pluck('following_id');
-				return $following->push($pid)->toArray();
-			});
-			$visibility = true == in_array($profile['id'], $following) ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
+			$following = FollowerService::follows($pid, $profile['id']);
+			$visibility = $following ? ['public', 'unlisted', 'private'] : ['public', 'unlisted'];
 		}
 
 		$dir = $min_id ? '>' : '<';
@@ -560,7 +555,7 @@ class ApiV1Controller extends Controller
 		->get()
 		->map(function($s) use($user) {
 			try {
-				$status = StatusService::get($s->id, false);
+				$status = StatusService::getMastodon($s->id, false);
 			} catch (\Exception $e) {
 				$status = false;
 			}
@@ -968,7 +963,7 @@ class ApiV1Controller extends Controller
 			->limit($limit)
 			->get()
 			->map(function($like) {
-				$status =  StatusService::get($like['status_id'], false);
+				$status =  StatusService::getMastodon($like['status_id'], false);
 				$status['like_id'] = $like->id;
 				$status['liked_at'] = $like->created_at->format('c');
 				return $status;
@@ -1172,49 +1167,53 @@ class ApiV1Controller extends Controller
 	 */
 	public function instance(Request $request)
 	{
-		$res = Cache::remember('api:v1:instance-data', now()->addMinutes(15), function () {
-			$rules = config_cache('app.rules') ? collect(json_decode(config_cache('app.rules'), true))
-				->map(function($rule, $key) {
-					$id = $key + 1;
-					return [
-						'id' => "{$id}",
-						'text' => $rule
-					];
-				})
-				->toArray() : [];
-			$res = [
-				'approval_required' => false,
-				'contact_account' => null,
-				'description' => config_cache('app.description'),
-				'email' => config('instance.email'),
-				'invites_enabled' => false,
-				'rules' => $rules,
-				'short_description' => 'Pixelfed - Photo sharing for everyone',
-				'languages' => ['en'],
-				'max_toot_chars' => (int) config('pixelfed.max_caption_length'),
-				'registrations' => (bool) config_cache('pixelfed.open_registration'),
-				'stats' => [
-					'user_count' => 0,
-					'status_count' => 0,
-					'domain_count' => 0
-				],
-				'thumbnail' => config('app.url') . '/img/pixelfed-icon-color.png',
-				'title' => config_cache('app.name'),
-				'uri' => config('pixelfed.domain.app'),
-				'urls' => [],
-				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') . ')',
-				'environment' => [
-					'max_photo_size' => (int) config_cache('pixelfed.max_photo_size'),
-					'max_avatar_size' => (int) config('pixelfed.max_avatar_size'),
-					'max_caption_length' => (int) config('pixelfed.max_caption_length'),
-					'max_bio_length' => (int) config('pixelfed.max_bio_length'),
-					'max_album_length' => (int) config_cache('pixelfed.max_album_length'),
-					'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled')
+		$res = Cache::remember('api:v1:instance-data-response', 900, function () {
+			$contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
+				$admin = User::whereIsAdmin(true)->first();
+				return $admin && isset($admin->profile_id) ?
+					AccountService::getMastodon($admin->profile_id, true) :
+					null;
+			});
 
-				]
+			$stats = Cache::remember('api:v1:instance-data:stats', 43200, function () {
+				return [
+					'user_count' => User::count(),
+					'status_count' => Status::whereNull('uri')->count(),
+					'domain_count' => Instance::count(),
+				];
+			});
+
+			$rules = Cache::remember('api:v1:instance-data:rules', 604800, function () {
+				return config_cache('app.rules') ?
+					collect(json_decode(config_cache('app.rules'), true))
+					->map(function($rule, $key) {
+						$id = $key + 1;
+						return [
+							'id' => "{$id}",
+							'text' => $rule
+						];
+					})
+					->toArray() : [];
+			});
+
+			return [
+				'uri' => config('pixelfed.domain.app'),
+				'title' => config('app.name'),
+				'short_description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
+				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
+				'email' => config('instance.email'),
+				'version' => config('pixelfed.version'),
+				'urls' => [],
+				'stats' => $stats,
+				'thumbnail' => url('headers/default.jpg'),
+				'languages' => ['en'],
+				'registrations' => (bool) config('pixelfed.open_registration'),
+				'approval_required' => false,
+				'contact_account' => $contact,
+				'rules' => $rules
 			];
-			return $res;
 		});
+
 		return response()->json($res);
 	}
 
@@ -1731,7 +1730,7 @@ class ApiV1Controller extends Controller
 					'id' => $dm->id,
 					'unread' => false,
 					'accounts' => [
-						AccountService::get($from)
+						AccountService::getMastodon($from)
 					],
 					'last_status' => StatusService::getDirectMessage($dm->status_id)
 				];
@@ -1784,7 +1783,7 @@ class ApiV1Controller extends Controller
 
 		$res = collect($feed)
 		->map(function($k) use($user) {
-			$status = StatusService::get($k);
+			$status = StatusService::getMastodon($k);
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
 				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
@@ -1811,7 +1810,7 @@ class ApiV1Controller extends Controller
 
 		$user = $request->user();
 
-		$res = StatusService::get($id, false);
+		$res = StatusService::getMastodon($id, false);
 		if(!$res || !isset($res['visibility'])) {
 			abort(404);
 		}
@@ -2000,7 +1999,7 @@ class ApiV1Controller extends Controller
 			->limit($limit)
 			->get()
 			->map(function($like) {
-				$account = AccountService::get($like->profile_id);
+				$account = AccountService::getMastodon($like->profile_id);
 				$account['follows'] = isset($like->created_at);
 				return $account;
 			})
@@ -2314,10 +2313,10 @@ class ApiV1Controller extends Controller
 			->limit($limit)
 			->pluck('status_id')
 			->filter(function($i) {
-				return StatusService::get($i);
+				return StatusService::getMastodon($i);
 			})
 			->map(function ($i) {
-				return StatusService::get($i);
+				return StatusService::getMastodon($i);
 			})
 			->filter()
 			->values()
@@ -2367,7 +2366,7 @@ class ApiV1Controller extends Controller
 
 		$res = [];
 		foreach($bookmarks as $id) {
-			$res[] = \App\Services\StatusService::get($id);
+			$res[] = \App\Services\StatusService::getMastodon($id);
 		}
 		return $res;
 	}
@@ -2470,7 +2469,7 @@ class ApiV1Controller extends Controller
 		$filters = UserFilterService::filters($pid);
 		$forYou = DiscoverService::getForYou();
 		$posts = $forYou->take(50)->map(function($post) {
-			return StatusService::get($post);
+			return StatusService::getMastodon($post);
 		})
 		->filter(function($post) use($filters) {
 			return $post &&
@@ -2500,7 +2499,7 @@ class ApiV1Controller extends Controller
 
 		$limit = $request->input('limit', 3);
 		$pid = $request->user()->profile_id;
-		$status = StatusService::get($id);
+		$status = StatusService::getMastodon($id);
 
 		abort_if(!$status || !in_array($status['visibility'], ['public', 'unlisted']), 404);
 
@@ -2533,7 +2532,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$data = $ids->map(function($post) use($pid) {
-			$status = StatusService::get($post->id);
+			$status = StatusService::getMastodon($post->id);
 
 			if(!$status || !isset($status['id'])) {
 				return false;
@@ -2591,7 +2590,7 @@ class ApiV1Controller extends Controller
 			->get();
 
 		$ids = $ids->map(function($profile) {
-				return AccountService::get($profile->id);
+				return AccountService::getMastodon($profile->id);
 			})
 			->filter(function($profile) use($pid) {
 				return $profile &&

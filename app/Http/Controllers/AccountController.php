@@ -28,6 +28,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Services\AccountService;
 use App\Services\UserFilterService;
+use App\Services\RelationshipService;
 
 class AccountController extends Controller
 {
@@ -184,6 +185,7 @@ class AccountController extends Controller
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $profile->id);
 
 		return redirect()->back();
 	}
@@ -234,6 +236,7 @@ class AccountController extends Controller
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $profile->id);
 
 		if($request->wantsJson()) {
 			return response()->json([200]);
@@ -288,6 +291,7 @@ class AccountController extends Controller
 		$pid = $user->id;
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $profile->id);
 
 		return redirect()->back();
 	}
@@ -338,6 +342,7 @@ class AccountController extends Controller
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $profile->id);
 
 		return redirect()->back();
 	}

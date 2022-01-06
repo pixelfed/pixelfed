@@ -170,6 +170,8 @@ trait AdminSettingsController
 				$json[] = $val;
 				ConfigCacheService::put('app.rules', json_encode(array_values($json)));
 			}
+			Cache::forget('api:v1:instance-data:rules');
+			Cache::forget('api:v1:instance-data-response');
 		}
 
 		if($request->filled('account_autofollow_usernames')) {
