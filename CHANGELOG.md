@@ -13,6 +13,10 @@
 ### Configuration
 - Enable network timeline by default ([b95aec12](https://github.com/pixelfed/pixelfed/commit/b95aec12))
 
+### Postgres Compatibility
+- Fix Story recent endpoint on postgres instances ([ddf41dc3](https://github.com/pixelfed/pixelfed/commit/ddf41dc3))
+- Fix Direct Message conversations endpoint on postgres instances ([fcabc9be](https://github.com/pixelfed/pixelfed/commit/fcabc9be))
+
 ### Added
 - Manual email verification requests. ([bc659387](https://github.com/pixelfed/pixelfed/commit/bc659387))
 - Added StatusMentionService, fixes #3026. ([e5387d67](https://github.com/pixelfed/pixelfed/commit/e5387d67))
@@ -80,6 +84,7 @@
 - Updated AccountService, fix json casting. ([e5f8f344](https://github.com/pixelfed/pixelfed/commit/e5f8f344))
 - Updated ApiV1Controller, fix illegal operator bug by setting default min_id. ([415826f2](https://github.com/pixelfed/pixelfed/commit/415826f2))
 - Updated StatusService, add getMastodon method for mastoapi compatibility. ([36a129fe](https://github.com/pixelfed/pixelfed/commit/36a129fe))
+- Updated PublicApiController, fix accountStatuses pagination operator. ([85fc9dd0](https://github.com/pixelfed/pixelfed/commit/85fc9dd0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
