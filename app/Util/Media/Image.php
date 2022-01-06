@@ -159,7 +159,10 @@ class Image
 					$media->metadata = json_encode($meta);
 				}
 
-				if ( ($ratio['width_original'] > $aspect['width']) || ($ratio['height_original'] > $aspect['height']) ) {
+				if (
+				    ($ratio['width_original'] > $aspect['width'])
+				    || ($ratio['height_original'] > $aspect['height'])
+				) {
 					$img->resize($aspect['width'], $aspect['height'], function ($constraint) {
 						$constraint->aspectRatio();
 					});
