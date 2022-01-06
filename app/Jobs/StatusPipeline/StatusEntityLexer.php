@@ -107,9 +107,13 @@ class StatusEntityLexer implements ShouldQueue
 			}
 			DB::transaction(function () use ($status, $tag) {
 				$slug = str_slug($tag, '-', false);
-				$hashtag = Hashtag::firstOrCreate(
-					['name' => $tag, 'slug' => $slug]
-				);
+				$hashtag = Hashtag::where('slug', $slug)->first();
+				if (!$hashtag) {
+					$hashtag = Hashtag::create(
+						['name' => $tag, 'slug' => $slug]
+					);
+				}
+
 				StatusHashtag::firstOrCreate(
 					[
 						'status_id' => $status->id,
