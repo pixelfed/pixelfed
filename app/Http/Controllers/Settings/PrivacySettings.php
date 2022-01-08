@@ -77,6 +77,8 @@ trait PrivacySettings
         Cache::forget('profile:follower_count:' . $profile->id);
         Cache::forget('profile:following_count:' . $profile->id);
         Cache::forget('profile:embed:' . $profile->id);
+        Cache::forget('pf:acct:settings:hidden-followers:' . $profile->id);
+        Cache::forget('pf:acct:settings:hidden-following:' . $profile->id);
         return redirect(route('settings.privacy'))->with('status', 'Settings successfully updated!');
     }
 

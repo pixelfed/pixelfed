@@ -411,34 +411,40 @@ class ApiV1Controller extends Controller
 	public function accountFollowersById(Request $request, $id)
 	{
 		abort_if(!$request->user(), 403);
+		$account = AccountService::get($id);
+		abort_if(!$account, 404);
+		$pid = $request->user()->profile_id;
 
-		$user = $request->user();
-		$profile = Profile::whereNull('status')->findOrFail($id);
-		$limit = $request->input('limit') ?? 40;
-
-		if($profile->domain) {
-			$res = [];
-		} else {
-			if($profile->id == $user->profile_id) {
-				$followers = $profile->followers()->paginate($limit);
-				$resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
-				$res = $this->fractal->createData($resource)->toArray();
-			} else {
-				if($profile->is_private) {
-					abort_if(!$profile->followedBy($user->profile), 403);
-				}
-				$settings = $profile->user->settings;
-				if( in_array($user->profile_id, $profile->blockedIds()->toArray()) ||
-					$settings->show_profile_followers == false
-				) {
-					$res = [];
-				} else {
-					$followers = $profile->followers()->paginate($limit);
-					$resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
-					$res = $this->fractal->createData($resource)->toArray();
+		if($pid != $account['id']) {
+			if($account['locked']) {
+				if(FollowerService::follows($pid, $account['id'])) {
+					return [];
 				}
 			}
+
+			if(AccountService::hiddenFollowers($id)) {
+				return [];
+			}
+
+			if($request->has('page') && $request->page >= 5) {
+				return [];
+			}
 		}
+
+		$res = DB::table('followers')
+			->select('id', 'profile_id', 'following_id')
+			->whereFollowingId($account['id'])
+			->orderByDesc('id')
+			->simplePaginate(10)
+			->map(function($follower) {
+				return AccountService::getMastodon($follower->profile_id);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values()
+			->toArray();
+
 		return response()->json($res);
 	}
 
@@ -451,36 +457,40 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountFollowingById(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
+	abort_if(!$request->user(), 403);
+		$account = AccountService::get($id);
+		abort_if(!$account, 404);
+		$pid = $request->user()->profile_id;
 
-		$user = $request->user();
-		$profile = Profile::whereNull('status')->findOrFail($id);
-		$limit = $request->input('limit') ?? 40;
+		if($pid != $account['id']) {
+			if($account['locked']) {
+				if(FollowerService::follows($pid, $account['id'])) {
+					return [];
+				}
+			}
 
-		if($profile->domain) {
-			$res = [];
-		} else {
-			if($profile->id == $user->profile_id) {
-				$following = $profile->following()->paginate($limit);
-				$resource = new Fractal\Resource\Collection($following, new AccountTransformer());
-				$res = $this->fractal->createData($resource)->toArray();
-			} else {
-				if($profile->is_private) {
-					abort_if(!$profile->followedBy($user->profile), 403);
-				}
-				$settings = $profile->user->settings;
-				if( in_array($user->profile_id, $profile->blockedIds()->toArray()) ||
-					$settings->show_profile_following == false
-				) {
-					$res = [];
-				} else {
-					$following = $profile->following()->paginate($limit);
-					$resource = new Fractal\Resource\Collection($following, new AccountTransformer());
-					$res = $this->fractal->createData($resource)->toArray();
-				}
+			if(AccountService::hiddenFollowing($id)) {
+				return [];
+			}
+
+			if($request->has('page') && $request->page >= 5) {
+				return [];
 			}
 		}
 
+		$res = DB::table('followers')
+			->select('id', 'profile_id', 'following_id')
+			->whereProfileId($account['id'])
+			->orderByDesc('id')
+			->simplePaginate(10)
+			->map(function($follower) {
+				return AccountService::get($follower->following_id);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values()
+			->toArray();
 
 		return response()->json($res);
 	}

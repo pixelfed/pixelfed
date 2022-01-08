@@ -15,7 +15,7 @@ use App\{
     StatusView,
     UserFilter
 };
-use Auth, Cache;
+use Auth, Cache, DB;
 use Illuminate\Support\Facades\Redis;
 use Carbon\Carbon;
 use League\Fractal;
@@ -651,70 +651,82 @@ class PublicApiController extends Controller
 
     public function accountFollowers(Request $request, $id)
     {
-        abort_unless(Auth::check(), 403);
-        $profile = Profile::with('user')->whereNull('status')->findOrFail($id);
-        $owner = Auth::id() == $profile->user_id;
+		abort_if(!$request->user(), 403);
+		$account = AccountService::get($id);
+		abort_if(!$account, 404);
+		$pid = $request->user()->profile_id;
 
-        if(Auth::id() != $profile->user_id && $profile->is_private) {
-            return response()->json([]);
-        }
-        if(!$profile->domain && !$profile->user->settings->show_profile_followers) {
-            return response()->json([]);
-        }
-        if(!$owner && $request->page > 5) {
-            return [];
-        }
+		if($pid != $account['id']) {
+			if($account['locked']) {
+				if(FollowerService::follows($pid, $account['id'])) {
+					return [];
+				}
+			}
 
-        $res = Follower::select('id', 'profile_id', 'following_id')
-            ->whereFollowingId($profile->id)
-            ->orderByDesc('id')
-            ->simplePaginate(10)
-            ->map(function($follower) {
-                return ProfileService::get($follower['profile_id']);
-            })
-            ->toArray();
+			if(AccountService::hiddenFollowers($id)) {
+				return [];
+			}
 
-        return response()->json($res);
+			if($request->has('page') && $request->page >= 5) {
+				return [];
+			}
+		}
+
+		$res = DB::table('followers')
+			->select('id', 'profile_id', 'following_id')
+			->whereFollowingId($account['id'])
+			->orderByDesc('id')
+			->simplePaginate(10)
+			->map(function($follower) {
+				return AccountService::get($follower->profile_id);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values()
+			->toArray();
+
+		return response()->json($res);
     }
 
     public function accountFollowing(Request $request, $id)
     {
-        abort_unless(Auth::check(), 403);
+    	abort_if(!$request->user(), 403);
+		$account = AccountService::get($id);
+		abort_if(!$account, 404);
+		$pid = $request->user()->profile_id;
 
-        $profile = Profile::with('user')
-            ->whereNull('status')
-            ->findOrFail($id);
+		if($pid != $account['id']) {
+			if($account['locked']) {
+				if(FollowerService::follows($pid, $account['id'])) {
+					return [];
+				}
+			}
 
-        // filter by username
-        $search = $request->input('fbu');
-        $owner = Auth::id() == $profile->user_id;
-        $filter = ($owner == true) && ($search != null);
+			if(AccountService::hiddenFollowing($id)) {
+				return [];
+			}
 
-        abort_if($owner == false && $profile->is_private == true && !$profile->followedBy(Auth::user()->profile), 404);
+			if($request->has('page') && $request->page >= 5) {
+				return [];
+			}
+		}
 
-        if(!$profile->domain) {
-            abort_if($profile->user->settings->show_profile_following == false && $owner == false, 404);
-        }
+		$res = DB::table('followers')
+			->select('id', 'profile_id', 'following_id')
+			->whereProfileId($account['id'])
+			->orderByDesc('id')
+			->simplePaginate(10)
+			->map(function($follower) {
+				return AccountService::get($follower->following_id);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values()
+			->toArray();
 
-        if(!$owner && $request->page > 5) {
-            return [];
-        }
-
-        if($search) {
-            abort_if(!$owner, 404);
-            $following = $profile->following()
-                    ->where('profiles.username', 'like', '%'.$search.'%')
-                    ->orderByDesc('followers.created_at')
-                    ->paginate(10);
-        } else {
-            $following = $profile->following()
-                ->orderByDesc('followers.created_at')
-                ->paginate(10);
-        }
-        $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
+		return response()->json($res);
     }
 
     public function accountStatuses(Request $request, $id)
