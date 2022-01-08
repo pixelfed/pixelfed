@@ -691,7 +691,7 @@ class PublicApiController extends Controller
 
     public function accountFollowing(Request $request, $id)
     {
-    	abort_if(!$request->user(), 403);
+		abort_if(!$request->user(), 403);
 		$account = AccountService::get($id);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
