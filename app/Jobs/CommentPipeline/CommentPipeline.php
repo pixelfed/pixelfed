@@ -93,5 +93,14 @@ class CommentPipeline implements ShouldQueue
             NotificationService::set($notification->profile_id, $notification->id);
             StatusService::del($comment->id);
         });
+
+        if($exists = Cache::get('status:replies:all:' . $status->id)) {
+        	if($exists && $exists->count() == 3) {
+        	} else {
+        		Cache::forget('status:replies:all:' . $status->id);
+        	}
+        } else {
+        	Cache::forget('status:replies:all:' . $status->id);
+        }
     }
 }
