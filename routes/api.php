@@ -85,8 +85,6 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {
 		Route::get('search', 'Api\ApiV1Controller@searchV2')->middleware($middleware);
-		Route::get('statuses/{id}/replies', 'Api\ApiV1Controller@statusReplies')->middleware($middleware);
-		Route::get('statuses/{id}/state', 'Api\ApiV1Controller@statusState')->middleware($middleware);
 	});
 
 });

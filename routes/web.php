@@ -151,6 +151,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('loops', 'DiscoverController@loopsApi');
 			Route::post('loops/watch', 'DiscoverController@loopWatch');
 			Route::get('discover/tag', 'DiscoverController@getHashtags');
+			Route::get('statuses/{id}/replies', 'Api\ApiV1Controller@statusReplies');
+			Route::get('statuses/{id}/state', 'Api\ApiV1Controller@statusState');
 		});
 
 		Route::group(['prefix' => 'pixelfed'], function() {
@@ -190,24 +192,24 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
 				Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
 				Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
-				Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
 				Route::post('moderator/action', 'InternalApiController@modAction');
 				Route::get('discover/categories', 'InternalApiController@discoverCategories');
 				Route::get('loops', 'DiscoverController@loopsApi');
 				Route::post('loops/watch', 'DiscoverController@loopWatch');
 				Route::get('discover/tag', 'DiscoverController@getHashtags');
-				Route::post('status/compose', 'InternalApiController@composePost');
 				Route::get('discover/posts/trending', 'DiscoverController@trendingApi');
 				Route::get('discover/posts/hashtags', 'DiscoverController@trendingHashtags');
 				Route::get('discover/posts/places', 'DiscoverController@trendingPlaces');
 				Route::get('seasonal/yir', 'SeasonalController@getData');
 				Route::post('seasonal/yir', 'SeasonalController@store');
-				Route::post('status/{id}/archive', 'ApiController@archive');
-				Route::post('status/{id}/unarchive', 'ApiController@unarchive');
-				Route::get('statuses/archives', 'ApiController@archivedPosts');
 				Route::get('mutes', 'AccountController@accountMutesV2');
 				Route::get('blocks', 'AccountController@accountBlocksV2');
 				Route::get('filters', 'AccountController@accountFiltersV2');
+				Route::post('status/compose', 'InternalApiController@composePost');
+				Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
+				Route::post('status/{id}/archive', 'ApiController@archive');
+				Route::post('status/{id}/unarchive', 'ApiController@unarchive');
+				Route::get('statuses/archives', 'ApiController@archivedPosts');
 			});
 
 			Route::get('discover/accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular');
