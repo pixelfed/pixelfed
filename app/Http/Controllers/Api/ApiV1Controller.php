@@ -2532,7 +2532,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$data = $ids->map(function($post) use($pid) {
-			$status = StatusService::getMastodon($post->id);
+			$status = StatusService::get($post->id);
 
 			if(!$status || !isset($status['id'])) {
 				return false;
@@ -2542,7 +2542,7 @@ class ApiV1Controller extends Controller
 			return $status;
 		})
 		->filter(function($post) {
-			return $post && isset($post['id']);
+			return $post && isset($post['id']) && isset($post['account']);
 		})
 		->values();
 
