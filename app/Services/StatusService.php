@@ -68,6 +68,7 @@ class StatusService
 			$status['shortcode'],
 			$status['taggedPeople'],
 			$status['thread'],
+			$status['pinned'],
 			$status['account']['header_bg'],
 			$status['account']['is_admin'],
 			$status['account']['last_fetched_at'],
@@ -87,6 +88,8 @@ class StatusService
 		$status['account']['last_status_at'] = null;
 
 		$status['media_attachments'] = array_values(MediaService::getMastodon($status['id']));
+		$status['muted'] = false;
+		$status['reblogged'] = false;
 
 		return $status;
 	}
