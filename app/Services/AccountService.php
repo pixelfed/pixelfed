@@ -5,6 +5,7 @@ namespace App\Services;
 use Cache;
 use App\Profile;
 use App\Status;
+use App\User;
 use App\UserSetting;
 use App\Transformer\Api\AccountTransformer;
 use League\Fractal;
@@ -172,6 +173,46 @@ class AccountService
 				return null;
 			}
 			return (string) $profile->id;
+		});
+	}
+
+	public static function hiddenFollowers($id)
+	{
+		$account = self::get($id, true);
+		if(!$account || !isset($account['local']) || $account['local'] == false) {
+			return false;
+		}
+
+		return Cache::remember('pf:acct:settings:hidden-followers:' . $id, 43200, function() use($id) {
+			$user = User::whereProfileId($id)->first();
+			if(!$user) {
+				return false;
+			}
+			$settings = UserSetting::whereUserId($user->id)->first();
+			if($settings) {
+				return $settings->show_profile_follower_count == false;
+			}
+			return false;
+		});
+	}
+
+	public static function hiddenFollowing($id)
+	{
+		$account = self::get($id, true);
+		if(!$account || !isset($account['local']) || $account['local'] == false) {
+			return false;
+		}
+
+		return Cache::remember('pf:acct:settings:hidden-following:' . $id, 43200, function() use($id) {
+			$user = User::whereProfileId($id)->first();
+			if(!$user) {
+				return false;
+			}
+			$settings = UserSetting::whereUserId($user->id)->first();
+			if($settings) {
+				return $settings->show_profile_following_count == false;
+			}
+			return false;
 		});
 	}
 }
