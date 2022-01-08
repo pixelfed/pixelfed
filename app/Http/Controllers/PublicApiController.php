@@ -327,7 +327,7 @@ class PublicApiController extends Controller
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
-                                return $s && in_array($s['account']['id'], $filtered) == false;
+                                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
                           })
                           ->values();
                 $res = $timeline->toArray();
@@ -397,7 +397,7 @@ class PublicApiController extends Controller
                 return $status;
             })
             ->filter(function($s) use($filtered) {
-                return in_array($s['account']['id'], $filtered) == false;
+                return isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
             })
             ->values()
             ->toArray();
