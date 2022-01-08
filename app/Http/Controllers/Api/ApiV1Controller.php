@@ -2516,7 +2516,7 @@ class ApiV1Controller extends Controller
 		$sortBy = $request->input('sort', 'all');
 
 		if($sortBy == 'all' && !$request->has('cursor')) {
-			$ids = Cache::remember('status:replies:all:' . $id, 900, function() use($id) {
+			$ids = Cache::remember('status:replies:all:' . $id, 86400, function() use($id) {
 				return DB::table('statuses')
 					->where('in_reply_to_id', $id)
 					->orderBy('id')
