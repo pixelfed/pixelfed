@@ -1177,7 +1177,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function instance(Request $request)
 	{
-		$res = Cache::remember('api:v1:instance-data-response', 900, function () {
+		$res = Cache::remember('api:v1:instance-data-response-v0', 1800, function () {
 			$contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
 				$admin = User::whereIsAdmin(true)->first();
 				return $admin && isset($admin->profile_id) ?
@@ -1212,7 +1212,7 @@ class ApiV1Controller extends Controller
 				'short_description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
 				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
 				'email' => config('instance.email'),
-				'version' => config('pixelfed.version'),
+				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') .')',
 				'urls' => [],
 				'stats' => $stats,
 				'thumbnail' => url('headers/default.jpg'),
