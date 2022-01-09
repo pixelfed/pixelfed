@@ -50,7 +50,7 @@ class FederationController extends Controller
 	{
 		abort_if(!config('federation.webfinger.enabled'), 400);
 
-		abort_if(!$request->filled('resource'), 400);
+		abort_if(!$request->has('resource') || !$request->filled('resource'), 400);
 
 		$resource = $request->input('resource');
 		$hash = hash('sha256', $resource);
@@ -59,14 +59,14 @@ class FederationController extends Controller
 			return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
 		}
 		$domain = config('pixelfed.domain.app');
-		abort_if(strpos($resource, $domain) == false, 404);
+		abort_if(strpos($resource, $domain) == false, 400);
 		$parsed = Nickname::normalizeProfileUrl($resource);
 		if(empty($parsed) || $parsed['domain'] !== $domain) {
-			abort(404);
+			abort(400);
 		}
 		$username = $parsed['username'];
 		$profile = Profile::whereNull('domain')->whereUsername($username)->firstOrFail();
-		abort_if($profile->status != null, 404);
+		abort_if($profile->status != null, 400);
 		$webfinger = (new Webfinger($profile))->generate();
 		Cache::put($key, $webfinger, 1209600);
 
