@@ -323,6 +323,9 @@ class PublicApiController extends Controller
                           ->get()
                           ->map(function($s) use ($user) {
                                $status = StatusService::getFull($s->id, $user->profile_id);
+                               if(!$status) {
+                               		return false;
+                               }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                                return $status;
                           })
@@ -362,6 +365,9 @@ class PublicApiController extends Controller
                           ->get()
                           ->map(function($s) use ($user) {
                                $status = StatusService::getFull($s->id, $user->profile_id);
+                               if(!$status) {
+                               		return false;
+                               }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                                return $status;
                           })
@@ -777,7 +783,6 @@ class PublicApiController extends Controller
                 $visibility = ['public', 'unlisted'];
             }
         }
-
         $dir = $min_id ? '>' : '<';
         $id = $min_id ?? $max_id;
         $res = Status::whereProfileId($profile['id'])
