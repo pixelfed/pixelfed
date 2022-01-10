@@ -90,6 +90,8 @@
 - Updated AccountController, refresh RelationshipService on mute/block. ([6f1b0245](https://github.com/pixelfed/pixelfed/commit/6f1b0245))
 - Updated ApiV1Controller, fix version on instance endpoint. ([a6261221](https://github.com/pixelfed/pixelfed/commit/a6261221))
 - Updated components, fix api endpoints. Fixes #3138. ([e724633e](https://github.com/pixelfed/pixelfed/commit/e724633e))
+- Updated ApiV1Controller, fix public timeline endpoint. ([80c7def3](https://github.com/pixelfed/pixelfed/commit/80c7def3))
+- Updated PublicApiController, fix public timeline endpoint. ([dcb7ba9c](https://github.com/pixelfed/pixelfed/commit/dcb7ba9c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
