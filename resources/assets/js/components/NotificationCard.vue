@@ -165,7 +165,7 @@
 
 		methods: {
 			fetchNotifications() {
-				axios.get('/api/v1/notifications?pg=true')
+				axios.get('/api/pixelfed/v1/notifications?pg=true')
 				.then(res => {
 					let data = res.data.filter(n => {
 						if(n.type == 'share' && !n.status) {

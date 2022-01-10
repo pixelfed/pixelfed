@@ -591,7 +591,7 @@
 
 		methods: {
 			fetchProfile() {
-				axios.get('/api/v1/accounts/verify_credentials').then(res => {
+				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
 					this.profile = res.data;
 					if(this.profile.is_admin == true) {
 						this.modes.mod = true;
