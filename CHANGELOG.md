@@ -9,6 +9,8 @@
 - Added UI Settings modal and fixed height media previews setting ([f2467e71](https://github.com/pixelfed/pixelfed/commit/f2467e71))
 - Set max-width of 1440px for larger screens ([af68872a](https://github.com/pixelfed/pixelfed/commit/af68872a))
 - Add link to sidebar profile card ([85964510](https://github.com/pixelfed/pixelfed/commit/85964510))
+- Improved search bar, now resolves (and imports) remote accounts and posts, including webfinger addresses ([c8a667f2](https://github.com/pixelfed/pixelfed/commit/c8a667f2))
+- Added user facing changelog at `/i/web/whats-new` ([e61dc66a](https://github.com/pixelfed/pixelfed/commit/e61dc66a))
 
 ### Configuration
 - Enable network timeline by default ([b95aec12](https://github.com/pixelfed/pixelfed/commit/b95aec12))
@@ -95,6 +97,7 @@
 - Updated ApiV1Controller, fix home timeline entities. ([6fc0dcb3](https://github.com/pixelfed/pixelfed/commit/6fc0dcb3))
 - Updated ApiV1Controller, fix favourites endpoints ([d6d99385](https://github.com/pixelfed/pixelfed/commit/d6d99385))
 - Updated ApiV1Controller, fix reblogs endpoints ([de42d84c](https://github.com/pixelfed/pixelfed/commit/de42d84c))
+- Updated SearchApiV2Service, resolve remote queries. ([c8a667f2](https://github.com/pixelfed/pixelfed/commit/c8a667f2))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
