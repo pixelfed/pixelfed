@@ -1596,8 +1596,6 @@ class ApiV1Controller extends Controller
 	 */
 	public function timelineHome(Request $request)
 	{
-		abort_if(!$request->user(), 403);
-
 		$this->validate($request,[
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -1609,18 +1607,6 @@ class ApiV1Controller extends Controller
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 3;
-		$user = $request->user();
-
-		if($user->last_active_at) {
-			$key = 'user:last_active_at:id:'.$user->id;
-			$ttl = now()->addMinutes(5);
-			Cache::remember($key, $ttl, function() use($user) {
-				$user->last_active_at = now();
-				$user->save();
-				return;
-			});
-		}
-
 		$pid = $request->user()->profile_id;
 
 		$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
@@ -1631,63 +1617,68 @@ class ApiV1Controller extends Controller
 		if($min || $max) {
 			$dir = $min ? '>' : '<';
 			$id = $min ?? $max;
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'likes_count',
-						'reblogs_count',
-						'comments_disabled',
-						'place_id',
-						'created_at',
-						'updated_at'
-					  )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->where('id', $dir, $id)
-					  ->whereIn('profile_id', $following)
-					  ->whereIn('visibility',['public', 'unlisted', 'private'])
-					  ->latest()
-					  ->limit($limit)
-					  ->get();
+			$res = Status::select(
+				'id',
+				'profile_id',
+				'type',
+				'visibility',
+				'created_at'
+			)
+			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+			->where('id', $dir, $id)
+			->whereIn('profile_id', $following)
+			->whereIn('visibility',['public', 'unlisted', 'private'])
+			->latest()
+			->take($limit)
+			->get()
+			->map(function($s) use($pid) {
+				$status = StatusService::getMastodon($s['id']);
+				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+					return false;
+				}
+
+				if($pid) {
+					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+				}
+				return $status;
+			})
+			->filter(function($status) {
+				return $status && isset($status['account']);
+			})
+			->values()
+			->toArray();
 		} else {
-			$timeline = Status::select(
-						'id',
-						'uri',
-						'caption',
-						'rendered',
-						'profile_id',
-						'type',
-						'in_reply_to_id',
-						'reblog_of_id',
-						'is_nsfw',
-						'scope',
-						'local',
-						'reply_count',
-						'comments_disabled',
-						'likes_count',
-						'reblogs_count',
-						'place_id',
-						'created_at',
-						'updated_at'
-					  )->whereIn('type', ['photo', 'photo:album', 'video', 'video:album'])
-					  ->with('profile', 'hashtags', 'mentions')
-					  ->whereIn('profile_id', $following)
-					  ->whereIn('visibility',['public', 'unlisted', 'private'])
-					  ->latest()
-					  ->simplePaginate($limit);
+			$res = Status::select(
+				'id',
+				'profile_id',
+				'type',
+				'visibility',
+				'created_at'
+			)
+			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+			->whereIn('profile_id', $following)
+			->whereIn('visibility',['public', 'unlisted', 'private'])
+			->latest()
+			->take($limit)
+			->get()
+			->map(function($s) use($pid) {
+				$status = StatusService::getMastodon($s['id']);
+				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+					return false;
+				}
+
+				if($pid) {
+					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+				}
+				return $status;
+			})
+			->filter(function($status) {
+				return $status && isset($status['account']);
+			})
+			->values()
+			->toArray();
 		}
 
-		$fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-		$res = $this->fractal->createData($fractal)->toArray();
 		return response()->json($res);
 	}
 
@@ -1800,7 +1791,6 @@ class ApiV1Controller extends Controller
 
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
-				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
 			}
 			return $status;
 		})
