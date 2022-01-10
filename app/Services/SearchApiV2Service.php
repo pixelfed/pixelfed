@@ -28,12 +28,14 @@ class SearchApiV2Service
 	protected function run($query)
 	{
 		$this->query = $query;
+		$q = urldecode($query->input('q'));
 
 		if($query->has('resolve') && 
 			$query->resolve == true && 
-			Helpers::validateUrl(urldecode($query->input('q')))
+			( Str::startsWith($q, 'https://') ||
+			  Str::substrCount($q, '@') == 2)
 		) {
-			return $this->resolve();
+			return $this->resolveQuery();
 		}
 
 		if($query->has('type')) {
@@ -75,16 +77,6 @@ class SearchApiV2Service
 			'hashtags' => $this->hashtags(),
 			'statuses' => $this->statuses()
 		];
-	}
-
-	protected function resolve()
-	{
-		$query = urldecode($this->query->input('q'));
-		if(Str::startsWith($query, '@') == true) {
-			return WebfingerService::lookup($this->query->input('q'));
-		} else if (Str::startsWith($query, 'https://') == true) {
-			return $this->resolveQuery();
-		}
 	}
 
 	protected function accounts()
@@ -163,11 +155,79 @@ class SearchApiV2Service
 				return $this->resolveLocalProfile();
 			}
 		} else {
-			return [
+			$default =  [
 				'accounts' => [],
 				'hashtags' => [],
-				'statuses' => []
+				'statuses' => [],
 			];
+			if(!Helpers::validateUrl($query) && strpos($query, '@') == -1) {
+				return $default;
+			}
+
+			if(Str::substrCount($query, '@') == 2) {
+				try {
+					$res = WebfingerService::lookup($query);
+				} catch (\Exception $e) {
+					return $default;
+				}
+				if($res && isset($res['id'])) {
+					$default['accounts'][] = $res;
+					return $default;
+				} else {
+					return $default;
+				}
+			}
+
+			try {
+				$res = ActivityPubFetchService::get($query);
+				if($res) {
+					$json = json_decode($res, true);
+
+					if(!$json || !isset($json['@context']) || !isset($json['type']) || !in_array($json['type'], ['Note', 'Person'])) {
+						return [
+							'accounts' => [],
+							'hashtags' => [],
+							'statuses' => [],
+						];
+					}
+
+					switch($json['type']) {
+						case 'Note':
+							$obj = Helpers::statusFetch($query);
+							if(!$obj) {
+								return $default;
+							}
+							$default['statuses'][] = StatusService::get($obj['id']);
+							return $default;
+						break;
+
+						case 'Person':
+							$obj = Helpers::profileFetch($query);
+							if(!$obj) {
+								return $default;
+							}
+							$default['accounts'][] = AccountService::get($obj['id']);
+							return $default;
+						break;
+
+						default:
+							return [
+								'accounts' => [],
+								'hashtags' => [],
+								'statuses' => [],
+							];
+						break;
+					}
+				}
+			} catch (\Exception $e) {
+				return [
+					'accounts' => [],
+					'hashtags' => [],
+					'statuses' => [],
+				];
+			}
+
+			return $default;
 		}
 	}
 
