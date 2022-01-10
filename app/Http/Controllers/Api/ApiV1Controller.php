@@ -1794,6 +1794,10 @@ class ApiV1Controller extends Controller
 		$res = collect($feed)
 		->map(function($k) use($user) {
 			$status = StatusService::getMastodon($k);
+			if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+				return false;
+			}
+
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
 				$status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
@@ -1801,8 +1805,9 @@ class ApiV1Controller extends Controller
 			return $status;
 		})
 		->filter(function($s) use($filtered) {
-			return in_array($s['account']['id'], $filtered) == false;
+			return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
 		})
+		->values()
 		->toArray();
 		return response()->json($res);
 	}
