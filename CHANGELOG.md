@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.1...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.2...dev)
+
+## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
 
 ### Breaking
 - Dropped support for PHP 7.3 [#3041](https://github.com/pixelfed/pixelfed/pull/3041)
@@ -98,7 +100,6 @@
 - Updated ApiV1Controller, fix favourites endpoints ([d6d99385](https://github.com/pixelfed/pixelfed/commit/d6d99385))
 - Updated ApiV1Controller, fix reblogs endpoints ([de42d84c](https://github.com/pixelfed/pixelfed/commit/de42d84c))
 - Updated SearchApiV2Service, resolve remote queries. ([c8a667f2](https://github.com/pixelfed/pixelfed/commit/c8a667f2))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)
 ### Added
