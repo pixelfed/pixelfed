@@ -136,21 +136,20 @@ class ApiV1Controller extends Controller
 	 */
 	public function verifyCredentials(Request $request)
 	{
-		abort_if(!$request->user(), 403);
+		$user = $request->user();
 
-		abort_if($request->user()->status != null, 403);
-
-		$id = $request->user()->profile_id;
+		abort_if(!$user, 403);
+		abort_if($user->status != null, 403);
 
 		$res = AccountService::getMastodon($id);
 
-		// $res['source'] = [
-		// 	'privacy' => $res['locked'] ? 'private' : 'public',
-		// 	'sensitive' => false,
-		// 	'language' => null,
-		// 	'note' => '',
-		// 	'fields' => []
-		// ];
+		$res['source'] = [
+			'privacy' => $res['locked'] ? 'private' : 'public',
+			'sensitive' => false,
+			'language' => $user->language ?? 'en',
+			'note' => '',
+			'fields' => []
+		];
 
 		return response()->json($res);
 	}
@@ -457,7 +456,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountFollowingById(Request $request, $id)
 	{
-	abort_if(!$request->user(), 403);
+		abort_if(!$request->user(), 403);
 		$account = AccountService::get($id);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
@@ -504,7 +503,6 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountStatusesById(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
 		$user = $request->user();
 
 		$this->validate($request, [
@@ -2207,7 +2205,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
-		$status = Status::findOrFail($id);
+		$status = Status::whereScope('public')->findOrFail($id);
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
@@ -2230,8 +2228,10 @@ class ApiV1Controller extends Controller
 		}
 
 		StatusService::del($status->id);
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+
+		$res = StatusService::getMastodon($status->id);
+		$res['reblogged'] = true;
+
 		return response()->json($res);
 	}
 
@@ -2247,7 +2247,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
-		$status = Status::findOrFail($id);
+		$status = Status::whereScope('public')->findOrFail($id);
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
@@ -2268,9 +2268,9 @@ class ApiV1Controller extends Controller
 		}
 
 		UndoSharePipeline::dispatch($reblog);
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		$res['reblogged'] = false;
+
+		$res = StatusService::getMastodon($status->id);
+		$res['reblogged'] = true;
 		return response()->json($res);
 	}
 
