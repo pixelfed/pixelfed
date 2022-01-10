@@ -1039,8 +1039,8 @@ class ApiV1Controller extends Controller
 			LikePipeline::dispatch($like);
 		}
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = StatusService::getMastodon($status->id, false);
+		$res['favourited'] = true;
 		return response()->json($res);
 	}
 
@@ -1079,8 +1079,8 @@ class ApiV1Controller extends Controller
 
 		StatusService::del($status->id);
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = StatusService::getMastodon($status->id, false);
+		$res['favourited'] = false;
 		return response()->json($res);
 	}
 
