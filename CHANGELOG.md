@@ -93,6 +93,8 @@
 - Updated ApiV1Controller, fix public timeline endpoint. ([80c7def3](https://github.com/pixelfed/pixelfed/commit/80c7def3))
 - Updated PublicApiController, fix public timeline endpoint. ([dcb7ba9c](https://github.com/pixelfed/pixelfed/commit/dcb7ba9c))
 - Updated ApiV1Controller, fix home timeline entities. ([6fc0dcb3](https://github.com/pixelfed/pixelfed/commit/6fc0dcb3))
+- Updated ApiV1Controller, fix favourites endpoints ([d6d99385](https://github.com/pixelfed/pixelfed/commit/d6d99385))
+- Updated ApiV1Controller, fix reblogs endpoints ([de42d84c](https://github.com/pixelfed/pixelfed/commit/de42d84c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.1 (2021-09-07)](https://github.com/pixelfed/pixelfed/compare/v0.11.0...v0.11.1)

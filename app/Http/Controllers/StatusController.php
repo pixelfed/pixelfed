@@ -231,7 +231,7 @@ class StatusController extends Controller
 
 		$user = Auth::user();
 		$profile = $user->profile;
-		$status = Status::whereIn('scope', ['public', 'unlisted'])
+		$status = Status::whereScope('public')
 			->findOrFail($request->input('item'));
 
 		$count = $status->reblogs_count;
