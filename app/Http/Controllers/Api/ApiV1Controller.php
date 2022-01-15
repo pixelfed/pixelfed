@@ -141,7 +141,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
-		$res = AccountService::getMastodon($id);
+		$res = AccountService::getMastodon($user->profile_id);
 
 		$res['source'] = [
 			'privacy' => $res['locked'] ? 'private' : 'public',
