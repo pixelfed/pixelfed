@@ -52,16 +52,12 @@ class StatusEntityLexer implements ShouldQueue
 	public function handle()
 	{
 		$profile = $this->status->profile;
+		$status = $this->status;
 
-		$count = $profile->statuses()
-		->getQuery()
-		->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-		->whereNull('in_reply_to_id')
-		->whereNull('reblog_of_id')
-		->count();
-
-		$profile->status_count = $count;
-		$profile->save();
+		if(in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+			$profile->status_count = $profile->status_count + 1;
+			$profile->save();
+		}
 
 		if($profile->no_autolink == false) {
 			$this->parseEntities();
