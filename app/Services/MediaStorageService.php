@@ -43,16 +43,25 @@ class MediaStorageService {
 
 		$h = $r->getHeaders();
 
-		if (isset($h['Content-Length'], $h['Content-Type']) == false) {
-			return false;
+		if (isset($h['content-length']) && isset($h['content-type'])) {
+			if(empty($h['content-length']) || empty($h['content-type'])) {
+				return false;
+			}
+			$len = is_array($h['content-length']) ? $h['content-length'][0] : $h['content-length'];
+			$mime = is_array($h['content-type']) ? $h['content-type'][0] : $h['content-type'];
+		} else {
+			if (isset($h['Content-Length'], $h['Content-Type']) == false) {
+				return false;
+			}
+
+			if(empty($h['Content-Length']) || empty($h['Content-Type']) ) {
+				return false;
+			}
+
+			$len = is_array($h['Content-Length']) ? $h['Content-Length'][0] : $h['Content-Length'];
+			$mime = is_array($h['Content-Type']) ? $h['Content-Type'][0] : $h['Content-Type'];
 		}
 
-		if(empty($h['Content-Length']) || empty($h['Content-Type']) ) {
-			return false;
-		}
-
-		$len = is_array($h['Content-Length']) ? $h['Content-Length'][0] : $h['Content-Length'];
-		$mime = is_array($h['Content-Type']) ? $h['Content-Type'][0] : $h['Content-Type'];
 
 		if($len < 10 || $len > ((config_cache('pixelfed.max_photo_size') * 1000))) {
 			return false;
