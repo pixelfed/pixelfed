@@ -44,7 +44,6 @@ class StatusTagsPipeline implements ShouldQueue
 			// return in_array($tag['type'], ['Emoji', 'Hashtag', 'Mention']);
 			return $tag && $tag['type'] == 'Emoji';
 		})
-		->values()
 		->map(function($tag) {
 			CustomEmojiService::import($tag['id']);
 		});
