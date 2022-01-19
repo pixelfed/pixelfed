@@ -14,6 +14,7 @@ use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
 use App\Services\ProfileService;
 use App\Services\PollService;
+use App\Models\CustomEmoji;
 
 class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
@@ -25,17 +26,18 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 		return [
 			'_v'                        => 1,
 			'id'                        => (string) $status->id,
+			//'gid'						=> $status->group_id ? (string) $status->group_id : null,
 			'shortcode'                 => HashidService::encode($status->id),
 			'uri'                       => $status->url(),
 			'url'                       => $status->url(),
-			'in_reply_to_id'            => (string) $status->in_reply_to_id,
-			'in_reply_to_account_id'    => (string) $status->in_reply_to_profile_id,
+			'in_reply_to_id'            => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
+			'in_reply_to_account_id'    => $status->in_reply_to_profile_id ? (string) $status->in_reply_to_profile_id : null,
 			'reblog'                    => null,
 			'content'                   => $status->rendered ?? $status->caption,
 			'content_text'              => $status->caption,
 			'created_at'                => $status->created_at->format('c'),
-			'emojis'                    => [],
-			'reblogs_count'             => 0,
+			'emojis'                    => CustomEmoji::scan($status->caption),
+			'reblogs_count'             => $status->reblogs_count ?? 0,
 			'favourites_count'          => $status->likes_count ?? 0,
 			'reblogged'                 => null,
 			'favourited'                => null,
