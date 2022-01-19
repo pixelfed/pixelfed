@@ -23,6 +23,7 @@ use App\Jobs\RemoteFollowPipeline\RemoteFollowImportRecent;
 use App\Jobs\ImageOptimizePipeline\{ImageOptimize,ImageThumbnail};
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusReplyPipeline;
+use App\Jobs\StatusPipeline\StatusTagsPipeline;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 use App\Services\ActivityPubFetchService;
@@ -381,19 +382,6 @@ class Helpers {
 				$scope,
 				$id
 		) {
-			if(isset($res['tag']) && is_array($res['tag']) && !empty($res['tag'])) {
-				collect($res['tag'])
-				->filter(function($tag) {
-					// todo: finish hashtag + mention import
-					// return in_array($tag['type'], ['Emoji', 'Hashtag', 'Mention']);
-					return in_array($tag['type'], ['Emoji']);
-				})
-				->each(function($tag) {
-					if(isset($tag['id'])) {
-						CustomEmojiService::import($tag['id']);
-					}
-				});
-			}
 
 			if($res['type'] === 'Question') {
 				$status = self::storePoll(
@@ -429,6 +417,10 @@ class Helpers {
 					self::importNoteAttachment($res, $status);
 				} else {
 					StatusReplyPipeline::dispatch($status);
+				}
+
+				if(isset($res['tag']) && is_array($res['tag']) && !empty($res['tag'])) {
+					StatusTagsPipeline::dispatch($res, $status);
 				}
 				return $status;
 			});

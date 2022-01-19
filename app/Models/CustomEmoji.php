@@ -16,6 +16,10 @@ class CustomEmoji extends Model
 
 	public static function scan($text)
 	{
+		if(config('federation.custom_emoji.enabled') == false) {
+			return [];
+		}
+
 		return Str::of($text)
 		->matchAll(self::SCAN_RE)
 		->map(function($match) {

@@ -2,26 +2,35 @@
 
 namespace App\Services;
 
+use App\Models\CustomEmoji;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Facades\Http;
-use App\Models\CustomEmoji;
+use Illuminate\Support\Facades\Cache;
 
 class CustomEmojiService
 {
 	public static function get($shortcode)
 	{
+		if(config('federation.custom_emoji.enabled') == false) {
+			return;
+		}
+
 		return CustomEmoji::whereShortcode($shortcode)->first();
 	}
 
 	public static function import($url)
 	{
+		if(config('federation.custom_emoji.enabled') == false) {
+			return;
+		}
+
 		if(Helpers::validateUrl($url) == false) {
 			return;
 		}
 
 		$emoji = CustomEmoji::whereUri($url)->first();
 		if($emoji) {
-			return $emoji;
+			return;
 		}
 
 		$res = Http::acceptJson()->get($url);
@@ -47,6 +56,7 @@ class CustomEmojiService
 			if(!self::headCheck($json['icon']['url'])) {
 				return;
 			}
+
 			$emoji = new CustomEmoji;
 			$emoji->shortcode = $json['name'];
 			$emoji->uri = $json['id'];
@@ -60,7 +70,9 @@ class CustomEmojiService
 			$emoji->media_path = 'emoji/' . $emoji->id . $ext;
 			$emoji->save();
 
-			return $emoji;
+			$name = str_replace(':', '', $json['name']);
+			Cache::forget('pf:custom_emoji:' . $name);
+			return;
 		} else {
 			return;
 		}

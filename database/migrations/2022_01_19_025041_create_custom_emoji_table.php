@@ -15,7 +15,7 @@ class CreateCustomEmojiTable extends Migration
 	{
 		Schema::create('custom_emoji', function (Blueprint $table) {
 			$table->id();
-			$table->string('shortcode')->unique()->index();
+			$table->string('shortcode')->index();
 			$table->string('media_path')->nullable();
 			$table->string('domain')->nullable()->index();
 			$table->boolean('disabled')->default(false)->index();
