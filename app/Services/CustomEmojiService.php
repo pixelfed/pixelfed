@@ -8,12 +8,12 @@ use App\Models\CustomEmoji;
 
 class CustomEmojiService
 {
-	public static function getByShortcode($shortcode)
+	public static function get($shortcode)
 	{
 		return CustomEmoji::whereShortcode($shortcode)->first();
 	}
 
-	public static function getByUrl($url)
+	public static function import($url)
 	{
 		if(Helpers::validateUrl($url) == false) {
 			return;

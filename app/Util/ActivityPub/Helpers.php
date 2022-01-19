@@ -27,6 +27,7 @@ use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Support\Str;
 use App\Services\ActivityPubFetchService;
 use App\Services\ActivityPubDeliveryService;
+use App\Services\CustomEmojiService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
@@ -368,7 +369,6 @@ class Helpers {
 			$cw = true;
 		}
 
-
 		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
 		$status = Cache::lock($statusLockKey)
 			->get(function () use(
@@ -381,6 +381,20 @@ class Helpers {
 				$scope,
 				$id
 		) {
+			if(isset($res['tag']) && is_array($res['tag']) && !empty($res['tag'])) {
+				collect($res['tag'])
+				->filter(function($tag) {
+					// todo: finish hashtag + mention import
+					// return in_array($tag['type'], ['Emoji', 'Hashtag', 'Mention']);
+					return in_array($tag['type'], ['Emoji']);
+				})
+				->each(function($tag) {
+					if(isset($tag['id'])) {
+						CustomEmojiService::import($tag['id']);
+					}
+				});
+			}
+
 			if($res['type'] === 'Question') {
 				$status = self::storePoll(
 					$profile,
