@@ -14,7 +14,7 @@ class CustomEmoji extends Model
 	const SCAN_RE = "/(?<=[^[:alnum:]:]|\n|^):([a-zA-Z0-9_]{2,}):(?=[^[:alnum:]:]|$)/x";
 	const CACHE_KEY = "pf:custom_emoji:";
 
-	public static function scan($text)
+	public static function scan($text, $activitypub = false)
 	{
 		if(config('federation.custom_emoji.enabled') == false) {
 			return [];
@@ -22,24 +22,45 @@ class CustomEmoji extends Model
 
 		return Str::of($text)
 		->matchAll(self::SCAN_RE)
-		->map(function($match) {
+		->map(function($match) use($activitypub) {
 			$tag = Cache::remember(self::CACHE_KEY . $match, 14400, function() use($match) {
 				return self::whereShortcode(':' . $match . ':')->first();
 			});
 
 			if($tag) {
 				$url = url('/storage/' . $tag->media_path);
-				return [
-					'shortcode' => $match,
-					'url' => $url,
-					'static_path' => $url,
-					'visible_in_picker' => $tag->disabled == false
-				];
+
+				if($activitypub == true) {
+					$mediaType = Str::endsWith($url, '.png') ? 'image/png' : 'image/jpeg';
+					return [
+						'id' => url('emojis/' . $tag->id),
+						'type' => 'Emoji',
+						'name' => $tag->shortcode,
+						'updated' => $tag->updated_at->toAtomString(),
+						'icon' => [
+							'type' => 'Image',
+							'mediaType' => $mediaType,
+							'url' => $url
+						]
+					];
+				} else {
+					return [
+						'shortcode' => $match,
+						'url' => $url,
+						'static_path' => $url,
+						'visible_in_picker' => $tag->disabled == false
+					];
+				}
 			}
 		})
-		->filter(function($tag) {
-			return $tag && isset($tag['static_path']);
+		->filter(function($tag) use($activitypub) {
+			if($activitypub == true) {
+				return $tag && isset($tag['icon']);
+			} else {
+				return $tag && isset($tag['static_path']);
+			}
 		})
-		->values();
+		->values()
+		->toArray();
 	}
 }
