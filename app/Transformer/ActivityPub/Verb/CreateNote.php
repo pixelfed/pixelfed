@@ -4,13 +4,13 @@ namespace App\Transformer\ActivityPub\Verb;
 
 use App\Status;
 use League\Fractal;
+use App\Models\CustomEmoji;
 use Illuminate\Support\Str;
 
 class CreateNote extends Fractal\TransformerAbstract
 {
 	public function transform(Status $status)
 	{
-
 		$mentions = $status->mentions->map(function ($mention) {
 			$webfinger = $mention->emailUrl();
 			$name = Str::startsWith($webfinger, '@') ? 
@@ -46,7 +46,10 @@ class CreateNote extends Fractal\TransformerAbstract
 				'name' => "#{$hashtag->name}",
 			];
 		})->toArray();
-		$tags = array_merge($mentions, $hashtags);
+
+		$emojis = CustomEmoji::scan($status->caption, true) ?? [];
+		$emoji = array_merge($emojis, $mentions);
+		$tags = array_merge($emoji, $hashtags);
 
 		return [
 			'@context' => [

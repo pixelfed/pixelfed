@@ -1,7 +1,7 @@
 <nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
 	<div class="scrollbar-inner">
 		<div class="sidenav-header  align-items-center">
-			<a class="navbar-brand" href="/">
+			<a class="navbar-brand" href="/i/web">
 				<img src="/img/pixelfed-icon-color.svg" class="navbar-brand-img">
 			</a>
 		</div>
@@ -70,6 +70,13 @@
 					</li>
 
 					<li class="nav-item">
+						<a class="nav-link {{request()->is('*custom-emoji*')?'active':''}}" href="{{route('admin.custom-emoji')}}">
+							<i class="ni ni-bold-right text-primary"></i>
+							<span class="nav-link-text">Custom Emoji <span class="badge badge-primary ml-1">NEW</span></span>
+						</a>
+					</li>
+
+					<li class="nav-item">
 						<a class="nav-link {{request()->is('*diagnostics*')?'active':''}}" href="{{route('admin.diagnostics')}}">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Diagnostics <span class="badge badge-primary ml-1">NEW</span></span>
@@ -119,7 +126,7 @@
 					</li>
 
 					<li class="nav-item">
-						<a class="nav-link {{request()->is('*settings/pages')?'active':''}}" href="/i/admin/settings/pages">
+						<a class="nav-link {{request()->is('*settings/pages*')?'active':''}}" href="/i/admin/settings/pages">
 							<i class="ni ni-bold-right text-primary"></i>
 							<span class="nav-link-text">Pages</span>
 						</a>

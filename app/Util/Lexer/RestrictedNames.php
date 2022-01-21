@@ -157,6 +157,8 @@ class RestrictedNames
 		'embed',
 		'email',
 		'emails',
+		'emoji',
+		'emojis',
 		'error',
 		'explore',
 		'export',

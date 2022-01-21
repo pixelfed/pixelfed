@@ -84,6 +84,12 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 	Route::get('diagnostics/home', 'AdminController@diagnosticsHome')->name('admin.diagnostics');
 	Route::post('diagnostics/decrypt', 'AdminController@diagnosticsDecrypt')->name('admin.diagnostics.decrypt');
+	Route::get('custom-emoji/home', 'AdminController@customEmojiHome')->name('admin.custom-emoji');
+	Route::post('custom-emoji/toggle-active/{id}', 'AdminController@customEmojiToggleActive');
+	Route::get('custom-emoji/new', 'AdminController@customEmojiAdd');
+	Route::post('custom-emoji/new', 'AdminController@customEmojiStore');
+	Route::post('custom-emoji/delete/{id}', 'AdminController@customEmojiDelete');
+	Route::get('custom-emoji/duplicates/{id}', 'AdminController@customEmojiShowDuplicates');
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
