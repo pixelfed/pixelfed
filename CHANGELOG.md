@@ -2,6 +2,13 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.2...dev)
 
+### Added
+- Custom Emoji ([#3166](https://github.com/pixelfed/pixelfed/pull/3166))
+
+### Metro 2.0 UI
+- Added Hovercards ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
+- Fix word-break on statuses ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
+
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
 
