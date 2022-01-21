@@ -37,7 +37,7 @@
 				</div>
 				<div class="col-xl-4 col-md-6">
 					<a
-						class="btn btn-dark btn-lg px-3"
+						class="btn btn-dark btn-lg px-3 mb-1"
 						href="/i/admin/custom-emoji/new">
 						<i class="far fa-plus mr-1"></i>
 						Add Custom Emoji
@@ -55,10 +55,22 @@
 	</div>
 </div>
 <div class="container mt-5">
+
 	<div class="row justify-content-center">
 		<div class="col-12 col-md-6">
+			<form method="get" class="mb-3" id="duplicate-form">
+				<input type="hidden" name="sort" value="search">
+				<input class="form-control rounded-pill" name="q" placeholder="Search by shortcode or domain name" value="{{request()->input('q')}}">
+				@if($sort == 'search')
+				<div class="custom-control custom-checkbox mt-1">
+					<input type="checkbox" class="custom-control-input" id="showDuplicate" name="dups" value="1" onclick="document.getElementById('duplicate-form').submit()" {{ request()->has('dups') ? 'checked' : ''}}>
+					<label class="custom-control-label" for="showDuplicate">Show duplicate results</label>
+				</div>
+				@endif
+			</form>
 
-			<ul class="nav nav-pills mb-3 nav-fill">
+			@if($sort != 'search')
+			<ul class="nav nav-pills my-3 nav-fill">
 				<li class="nav-item">
 					<a class="nav-link {{$sort=='all'?'active':''}}" href="?sort=all">All</a>
 				</li>
@@ -79,6 +91,7 @@
 					<a class="nav-link {{$sort=='disabled'?'active':''}}" href="?sort=disabled">Disabled</a>
 				</li>
 			</ul>
+			@endif
 
 			@if($sort == 'duplicates')
 			<div class="alert alert-warning py-2 mt-4">
@@ -96,7 +109,9 @@
 
 						<div class="media-body">
 							<p class="font-weight-bold mb-0">{{ $emoji->shortcode }}</p>
+							@if($emoji->domain != config('pixelfed.domain.app'))
 							<p class="text-muted small mb-0">{{ $emoji->domain }}</p>
+							@endif
 						</div>
 
 					@if($sort == 'duplicates')

@@ -355,7 +355,7 @@ class AdminController extends Controller
 			return view('admin.custom-emoji.not-enabled');
 		}
 		$this->validate($request, [
-			'sort' => 'sometimes|in:all,local,remote,duplicates,disabled'
+			'sort' => 'sometimes|in:all,local,remote,duplicates,disabled,search'
 		]);
 
 		if($request->has('cc')) {
@@ -364,7 +364,12 @@ class AdminController extends Controller
 		}
 
 		$sort = $request->input('sort') ?? 'all';
-		$emojis = CustomEmoji::when($sort, function($query, $sort) {
+
+		if($sort == 'search' && empty($request->input('q'))) {
+			return redirect(route('admin.custom-emoji'));
+		}
+
+		$emojis = CustomEmoji::when($sort, function($query, $sort) use($request) {
 			if($sort == 'all') {
 				return $query->groupBy('shortcode')->latest();
 			} else if($sort == 'local') {
@@ -375,8 +380,19 @@ class AdminController extends Controller
 				return $query->latest()->groupBy('shortcode')->havingRaw('count(*) > 1');
 			} else if($sort == 'disabled') {
 				return $query->latest()->whereDisabled(true);
+			} else if($sort == 'search') {
+				$q = $query
+					->latest()
+					->where('shortcode', 'like', '%' . $request->input('q') . '%')
+					->orWhere('domain', 'like', '%' . $request->input('q') . '%');
+				if(!$request->has('dups')) {
+					$q = $q->groupBy('shortcode');
+				}
+				return $q;
 			}
-		})->cursorPaginate(10);
+		})
+		->simplePaginate(10)
+		->withQueryString();
 
 		$stats = Cache::remember('pf:admin:custom_emoji:stats', 43200, function() {
 			return [
