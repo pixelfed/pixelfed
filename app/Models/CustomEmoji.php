@@ -31,7 +31,7 @@ class CustomEmoji extends Model
 				$url = url('/storage/' . $tag->media_path);
 
 				if($activitypub == true) {
-					$mediaType = Str::endsWith($url, '.png') ? 'image/png' : 'image/jpeg';
+					$mediaType = Str::endsWith($url, '.png') ? 'image/png' : 'image/jpg';
 					return [
 						'id' => url('emojis/' . $tag->id),
 						'type' => 'Emoji',

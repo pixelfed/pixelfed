@@ -65,7 +65,9 @@ class Note extends Fractal\TransformerAbstract
 						'announce'		=> ['@type' => '@id'],
 						'like'			=> ['@type' => '@id'],
 						'reply'			=> ['@type' => '@id'],
-					]
+					],
+					'toot' 				=> 'http://joinmastodon.org/ns#',
+					'Emoji'				=> 'toot:Emoji'
 				]
 			],
 			'id' 				=> $status->url(),
