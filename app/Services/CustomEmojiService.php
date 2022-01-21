@@ -18,7 +18,7 @@ class CustomEmojiService
 		return CustomEmoji::whereShortcode($shortcode)->first();
 	}
 
-	public static function import($url)
+	public static function import($url, $id = false)
 	{
 		if(config('federation.custom_emoji.enabled') == false) {
 			return;
@@ -72,6 +72,10 @@ class CustomEmojiService
 
 			$name = str_replace(':', '', $json['name']);
 			Cache::forget('pf:custom_emoji:' . $name);
+
+			if($id) {
+				StatusService::del($id);
+			}
 			return;
 		} else {
 			return;
