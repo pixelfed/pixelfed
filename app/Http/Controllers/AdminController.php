@@ -369,9 +369,15 @@ class AdminController extends Controller
 			return redirect(route('admin.custom-emoji'));
 		}
 
-		$emojis = CustomEmoji::when($sort, function($query, $sort) use($request) {
+		$pg = config('database.default') == 'pgsql';
+
+		$emojis = CustomEmoji::when($sort, function($query, $sort) use($request, $pg) {
 			if($sort == 'all') {
-				return $query->groupBy('shortcode')->latest();
+				if($pg) {
+					return $query->latest();
+				} else {
+					return $query->groupBy('shortcode')->latest();
+				}
 			} else if($sort == 'local') {
 				return $query->latest()->where('domain', '=', config('pixelfed.domain.app'));
 			} else if($sort == 'remote') {
@@ -394,13 +400,20 @@ class AdminController extends Controller
 		->simplePaginate(10)
 		->withQueryString();
 
-		$stats = Cache::remember('pf:admin:custom_emoji:stats', 43200, function() {
-			return [
+		$stats = Cache::remember('pf:admin:custom_emoji:stats', 43200, function() use($pg) {
+			$res = [
 				'total' => CustomEmoji::count(),
 				'active' => CustomEmoji::whereDisabled(false)->count(),
 				'remote' => CustomEmoji::where('domain', '!=', config('pixelfed.domain.app'))->count(),
-				'duplicate' => CustomEmoji::groupBy('shortcode')->havingRaw('count(*) > 1')->count()
 			];
+
+			if($pg) {
+				$res['duplicate'] = CustomEmoji::select('shortcode')->groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+			} else {
+				$res['duplicate'] = CustomEmoji::groupBy('shortcode')->havingRaw('count(*) > 1')->count();
+			}
+
+			return $res;
 		});
 
 		return view('admin.custom-emoji.home', compact('emojis', 'sort', 'stats'));
