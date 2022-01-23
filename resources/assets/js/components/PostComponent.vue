@@ -125,7 +125,7 @@
 										<div v-else>
 											<p :class="[status.content.length > 620 ? 'mb-1 read-more' : 'mb-1']" style="overflow: hidden;">
 												<a class="font-weight-bold pr-1 text-dark text-decoration-none" :href="statusProfileUrl">{{statusUsername}}</a>
-												<span class="comment-text" :id="status.id + '-status-readmore'" v-html="status.content"></span>
+												<span class="comment-text" :id="status.id + '-status-readmore'" v-html="content"></span>
 											</p>
 										</div>
 										<hr>
@@ -953,7 +953,8 @@ export default {
 									})
 								}
 							]
-						}
+						},
+						content: undefined
 					}
 		},
 		watch: {
@@ -1027,6 +1028,11 @@ export default {
 								}
 								self.status = response.data.status;
 								self.media = self.status.media_attachments;
+								self.content = response.data.status.content;
+								self.status.emojis.forEach(function(emoji) {
+									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" />`;
+									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
+								});
 								self.likesPage = 2;
 								self.sharesPage = 2;
 								self.showCaption = !response.data.status.sensitive;
