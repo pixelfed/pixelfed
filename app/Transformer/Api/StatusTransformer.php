@@ -16,6 +16,7 @@ use App\Services\StatusMentionService;
 use App\Services\ProfileService;
 use Illuminate\Support\Str;
 use App\Services\PollService;
+use App\Models\CustomEmoji;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
@@ -36,7 +37,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'content'                   => $status->rendered ?? $status->caption,
 			'content_text'              => $status->caption,
 			'created_at'                => $status->created_at->format('c'),
-			'emojis'                    => [],
+			'emojis'                    => CustomEmoji::scan($status->caption),
 			'reblogs_count'             => 0,
 			'favourites_count'          => $status->likes_count ?? 0,
 			'reblogged'                 => $status->shared(),
