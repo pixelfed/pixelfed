@@ -14,6 +14,7 @@
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
 - Updated WebfingerService. Fixes #3167. ([aff74566](https://github.com/pixelfed/pixelfed/commit/aff74566))
 - Updated ComposeModal, add max file size and allowed mime types. Fixes #3162. ([879281cc](https://github.com/pixelfed/pixelfed/commit/879281cc))
+- Updated profile embeds, fix NaN bug and improve performance. ([3bd211d7](https://github.com/pixelfed/pixelfed/commit/3bd211d7))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
 
