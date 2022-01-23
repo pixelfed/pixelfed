@@ -160,7 +160,7 @@
 						<span class="username font-weight-bold">
 							<bdi><a class="text-dark" :href="profileUrl(status)">{{status.account.username}}</a></bdi>
 						</span>
-						<span class="status-content" v-html="status.content"></span>
+						<span class="status-content" v-html="content"></span>
 					</p>
 				</div>
 				<div class="timestamp mt-2">
@@ -241,11 +241,18 @@
 				replyText: '',
 				replyNsfw: false,
 				emoji: window.App.util.emoji,
+				content: undefined
 			}
 		},
 
 		mounted() {
+			let self = this;
 			this.profile = window._sharedData.curUser;
+			this.content = this.status.content;
+			this.status.emojis.forEach(function(emoji) {
+				let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" />`;
+				self.content = self.content.replace(`:${emoji.shortcode}:`, img);
+			});
 		},
 
 		methods: {
