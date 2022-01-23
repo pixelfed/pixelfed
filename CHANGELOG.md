@@ -8,10 +8,12 @@
 ### Metro 2.0 UI
 - Added Hovercards ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
 - Fix word-break on statuses ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
+- Add pronouns to hovercards ([33f863e8](https://github.com/pixelfed/pixelfed/commit/33f863e8))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
 - Updated WebfingerService. Fixes #3167. ([aff74566](https://github.com/pixelfed/pixelfed/commit/aff74566))
+- Updated ComposeModal, add max file size and allowed mime types. Fixes #3162. ([879281cc](https://github.com/pixelfed/pixelfed/commit/879281cc))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
 
