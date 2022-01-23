@@ -12,7 +12,7 @@
     <meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
     <meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="{{$profile->url()}}">
+    <meta property="og:url" content="{{$profile['url']}}">
     <meta name="medium" content="image">
     <meta name="theme-color" content="#10c5f8">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,9 +37,9 @@
   <div class="card status-card-embed card-md-rounded-0 border">
     <div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
       <div>
-        <img src="{{$profile->avatarUrl()}}" width="32px" height="32px" target="_blank" style="border-radius: 32px;">
-        <a class="username font-weight-bold pl-2 text-dark" target="_blank" href="{{$profile->url()}}">
-          {{$profile->username}}
+        <img src="{{$profile['avatar']}}" width="32px" height="32px" target="_blank" style="border-radius: 32px;">
+        <a class="username font-weight-bold pl-2 text-dark" target="_blank" href="{{$profile['url']}}">
+          {{$profile['username']}}
         </a>
       </div>
       <div>
@@ -50,35 +50,22 @@
     <div class="card-body pb-1">
       <div class="d-flex justify-content-between align-items-center">
         <div class="text-center">
-          <p class="mb-0 font-weight-bold prettyCount">{{$profile->statuses()->count()}}</p>
+          <p class="mb-0 font-weight-bold prettyCount" data-count="{{$profile['statuses_count']}}"></p>
           <p class="mb-0 text-muted text-uppercase small font-weight-bold">Posts</p>
         </div>
         <div class="text-center">
-          <p class="mb-0 font-weight-bold prettyCount">{{$profile->followerCount(true)}}</p>
+          <p class="mb-0 font-weight-bold prettyCount" data-count="{{$profile['followers_count']}}"></p>
           <p class="mb-0 text-muted text-uppercase small font-weight-bold">Followers</p>
         </div>
         <div class="text-center">
-          <p class="mb-0"><a href="/i/intent/follow?user={{$profile->username}}" class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" target="_blank">Follow</a></p>
+          <p class="mb-0"><a href="/i/intent/follow?user={{$profile['username']}}" class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" target="_blank">Follow</a></p>
         </div>
       </div>
-      <div class="row mt-4 mb-1">
-        @foreach($profile->statuses()->latest()->whereScope('public')->whereIsNsfw(false)->has('media')->whereType('photo')->take(9)->get() as $post)
-        <div class="col-4 mt-2 px-0">
-              <a class="card info-overlay card-md-border-0 px-1 shadow-none" href="{{$post->url()}}" target="_blank">
-                <div class="square">
-                  <div class="square-content" style="background-image: url('{{$post->thumb()}}')">
-                  </div>
-                  <div class="info-overlay-text">
-                  </div>
-                </div>
-              </a>
-        </div>
-        @endforeach
-      </div>
+      <div class="row mt-4 mb-1 embed-row"></div>
     </div>
     <div class="card-footer bg-white">
       <p class="text-center mb-0">
-        <a href="{{$profile->url()}}" class="font-weight-bold" target="_blank">View More Posts</a>
+        <a href="{{$profile['url']}}" class="font-weight-bold" target="_blank">View More Posts</a>
       </p>
     </div>
   </div>
@@ -90,8 +77,33 @@
   <script type="text/javascript">document.querySelectorAll('.caption-container a').forEach(function(i) {i.setAttribute('target', '_blank');});</script>
   <script type="text/javascript">
     document.querySelectorAll('.prettyCount').forEach(function(i) {
-      i.innerText = App.util.format.count(i.innerText);
+      i.innerText = App.util.format.count(i.getAttribute('data-count'));
     });
+  </script>
+  <script type="text/javascript">
+  	axios.get('/api/pixelfed/v1/accounts/{{$profile['id']}}/statuses', {
+  		params: {
+  			only_media: true,
+  			limit: 20
+  		}
+  	})
+  	.then(res => {
+		let parent = $('.embed-row');
+  		res.data
+  		.filter(res => res.pf_type == 'photo')
+  		.slice(0, 9)
+  		.forEach(post => {
+			let el = `<div class="col-4 mt-2 px-0">
+				<a class="card info-overlay card-md-border-0 px-1 shadow-none" href="${post.url}" target="_blank">
+					<div class="square">
+						<div class="square-content" style="background-image: url('${post.media_attachments[0].url}')">
+						</div>
+					</div>
+				</a>
+			</div>`;
+			parent.append(el);
+  		})
+  	});
   </script>
 </body>
 </html>
