@@ -13,6 +13,7 @@ use App\Story;
 use App\User;
 use App\UserFilter;
 use League\Fractal;
+use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
@@ -55,7 +56,6 @@ class ProfileController extends Controller
 			$owner = false;
 			$is_following = false;
 
-			$is_admin = $user->user->is_admin;
 			$profile = $user;
 			$settings = [
 				'crawlable' => $settings->crawlable,
@@ -227,11 +227,12 @@ class ProfileController extends Controller
 			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 		}
 
-		$content = Cache::remember('profile:embed:'.$profile->id, now()->addHours(12), function() use($profile) {
-			return View::make('profile.embed')->with(compact('profile'))->render();
-		});
+		if(AccountService::canEmbed($profile->user_id) == false) {
+			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		}
 
-		return response($content)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		$profile = AccountService::get($profile->id);
+		return view('profile.embed', compact('profile'))->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 	}
 
 	public function stories(Request $request, $username)
