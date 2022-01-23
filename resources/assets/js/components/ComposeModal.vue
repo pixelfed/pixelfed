@@ -184,6 +184,7 @@
 						</span>
 					</div>
 				</div>
+
 				<div class="card-body p-0 border-top">
 					<div v-if="page == 'licensePicker'" class="w-100 h-100" style="min-height: 280px;">
 						<div class="list-group list-group-flush">
@@ -237,7 +238,7 @@
 
 					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
 						<div class="text-center">
-							<div v-if="media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
+							<div v-if="media.length == 0" class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addMedia" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;background-color: #008DF5">
@@ -248,12 +249,13 @@
 												<span class="h5 mt-0 font-weight-bold text-primary">New Post</span>
 											</p>
 											<p class="mb-0 text-muted">Share up to {{config.uploader.album_limit}} photos or videos</p>
+											<p class="mb-0 text-muted small"><span class="font-weight-bold">{{config.uploader.media_types.split(',').map(v => v.split('/')[1]).join(', ')}}</span> allowed up to <span class="font-weight-bold">{{filesize(config.uploader.max_photo_size)}}</span></p>
 										</div>
 									</div>
 								</div>
 							</div>
 
-							<div v-if="1==0 && config.ab.top == true && media.length == 0" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark">
+							<div v-if="1==0 && config.ab.top == true && media.length == 0" class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addText" class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
@@ -272,7 +274,7 @@
 								</div>
 							</div>
 
-							<a v-if="config.features.stories == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
+							<a v-if="config.features.stories == true" class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/stories/new">
 								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
@@ -291,7 +293,7 @@
 								</div>
 							</a>
 
-							<a v-if="1==0 && config.ab.polls == true" class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
+							<a v-if="1==0 && config.ab.polls == true" class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="#" @click.prevent="newPoll">
 								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 2px solid #008DF5">
@@ -310,7 +312,7 @@
 								</div>
 							</a>
 
-							<a class="card mx-md-5 my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
+							<a class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark" href="/i/collections/create">
 								<div class="card-body py-2">
 									<div class="media">
 										<div class="mr-3 align-items-center justify-content-center" style="display:inline-flex;width:40px;height:40px;border-radius: 100%;border: 1px solid #008DF5">
@@ -1768,6 +1770,10 @@ export default {
 				this.postingPoll = false;
 				swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
 			})
+		},
+
+		filesize(val) {
+			return filesize(val * 1024, {round: 0});
 		}
 	}
 }
