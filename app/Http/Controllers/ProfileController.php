@@ -232,7 +232,8 @@ class ProfileController extends Controller
 		}
 
 		$profile = AccountService::get($profile->id);
-		return view('profile.embed', compact('profile'))->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		$res = view('profile.embed', compact('profile'));
+		return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 	}
 
 	public function stories(Request $request, $username)
