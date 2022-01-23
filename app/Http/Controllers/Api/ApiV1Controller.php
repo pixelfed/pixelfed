@@ -685,7 +685,6 @@ class ApiV1Controller extends Controller
 			->whereNull('status')
 			->findOrFail($id);
 
-		RelationshipService::refresh($user->profile_id, $target->id);
 
 		$private = (bool) $target->is_private;
 		$remote = (bool) $target->domain;
@@ -718,6 +717,7 @@ class ApiV1Controller extends Controller
 			(new FollowerController())->sendUndoFollow($user->profile, $target);
 		}
 
+		RelationshipService::refresh($user->profile_id, $target->id);
 		Cache::forget('profile:following:'.$target->id);
 		Cache::forget('profile:followers:'.$target->id);
 		Cache::forget('profile:following:'.$user->profile_id);
@@ -726,8 +726,7 @@ class ApiV1Controller extends Controller
 		Cache::forget('user:account:id:'.$target->user_id);
 		Cache::forget('user:account:id:'.$user->id);
 
-		$resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = RelationshipService::get($user->profile_id, $target->id);
 
 		return response()->json($res);
 	}
