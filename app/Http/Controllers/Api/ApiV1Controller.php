@@ -662,6 +662,8 @@ class ApiV1Controller extends Controller
 		Cache::forget('profile:follower_count:'.$user->profile_id);
 		Cache::forget('profile:following_count:'.$target->id);
 		Cache::forget('profile:following_count:'.$user->profile_id);
+		AccountService::del($user->profile_id);
+		AccountService::del($target->id);
 
 		$res = RelationshipService::get($user->profile_id, $target->id);
 
@@ -685,7 +687,6 @@ class ApiV1Controller extends Controller
 			->whereNull('status')
 			->findOrFail($id);
 
-
 		$private = (bool) $target->is_private;
 		$remote = (bool) $target->domain;
 
@@ -704,6 +705,8 @@ class ApiV1Controller extends Controller
 		if($user->profile->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
 			abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
 		}
+
+		$user->profile->decrement('following_count');
 
 		FollowRequest::whereFollowerId($user->profile_id)
 			->whereFollowingId($target->id)
@@ -725,6 +728,12 @@ class ApiV1Controller extends Controller
 		Cache::forget('api:local:exp:rec:'.$user->profile_id);
 		Cache::forget('user:account:id:'.$target->user_id);
 		Cache::forget('user:account:id:'.$user->id);
+		Cache::forget('profile:follower_count:'.$target->id);
+		Cache::forget('profile:follower_count:'.$user->profile_id);
+		Cache::forget('profile:following_count:'.$target->id);
+		Cache::forget('profile:following_count:'.$user->profile_id);
+		AccountService::del($user->profile_id);
+		AccountService::del($target->id);
 
 		$res = RelationshipService::get($user->profile_id, $target->id);
 
