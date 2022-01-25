@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use Cache;
+use DB;
 use View;
 use App\Follower;
 use App\FollowRequest;
@@ -15,6 +16,7 @@ use App\UserFilter;
 use League\Fractal;
 use App\Services\AccountService;
 use App\Services\FollowerService;
+use App\Services\StatusService;
 use App\Util\Lexer\Nickname;
 use App\Util\Webfinger\Webfinger;
 use App\Transformer\ActivityPub\ProfileOutbox;
@@ -187,20 +189,36 @@ class ProfileController extends Controller
 	{
 		abort_if(!config('federation.atom.enabled'), 404);
 
-		$profile = $user = Profile::whereNull('status')->whereNull('domain')->whereUsername($user)->whereIsPrivate(false)->firstOrFail();
-		if($profile->status != null) {
-			return $this->accountCheck($profile);
-		}
-		if($profile->is_private || Auth::check()) {
-			$blocked = $this->blockedProfileCheck($profile);
-			$check = $this->privateProfileCheck($profile, null);
-			if($check || $blocked) {
-				return redirect($profile->url());
-			}
-		}
-		$items = $profile->statuses()->whereHas('media')->whereIn('visibility',['public', 'unlisted'])->orderBy('created_at', 'desc')->take(10)->get();
-		return response()->view('atom.user', compact('profile', 'items'))
-		->header('Content-Type', 'application/atom+xml');
+		$pid = AccountService::usernameToId($user);
+
+		abort_if(!$pid, 404);
+
+		$profile = AccountService::get($pid);
+
+		abort_if(!$profile || $profile['locked'] || !$profile['local'], 404);
+
+		$items = DB::table('statuses')
+			->whereProfileId($pid)
+			->whereVisibility('public')
+			->whereType('photo')
+			->latest()
+			->take(10)
+			->get()
+			->map(function($status) {
+				return StatusService::get($status->id);
+			})
+			->filter(function($status) {
+				return $status &&
+					isset($status['account']) &&
+					isset($status['media_attachments']) &&
+					count($status['media_attachments']);
+			})
+			->values();
+		$permalink = config('app.url') . "/users/{$profile['username']}.atom";
+
+		return response()
+			->view('atom.user', compact('profile', 'items', 'permalink'))
+			->header('Content-Type', 'application/atom+xml');
 	}
 
 	public function meRedirect()
