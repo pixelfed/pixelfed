@@ -17,6 +17,8 @@
 - Updated ComposeModal, add max file size and allowed mime types. Fixes #3162. ([879281cc](https://github.com/pixelfed/pixelfed/commit/879281cc))
 - Updated profile embeds, fix NaN bug and improve performance. ([3bd211d7](https://github.com/pixelfed/pixelfed/commit/3bd211d7))
 - Updated ApiV1Controller, improve follow count cache invalidation. ([4b6effb9](https://github.com/pixelfed/pixelfed/commit/4b6effb9))
+- Updated web routes, fix atom feeds for account usernames containing a dot. ([8c54ab57](https://github.com/pixelfed/pixelfed/commit/8c54ab57))
+- Updated atom feeds, include media alt text. Fixes #3184. ([5d9b6863](https://github.com/pixelfed/pixelfed/commit/5d9b6863))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
