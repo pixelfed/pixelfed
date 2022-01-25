@@ -101,6 +101,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -180,7 +181,14 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'People you may know',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [

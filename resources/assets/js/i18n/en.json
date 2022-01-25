@@ -77,7 +77,8 @@
         "groupPost": "group post",
         "modlog": "modlog",
         "post": "post",
-        "story": "story"
+        "story": "story",
+        "noneFound": "No notifications found"
     },
     "post": {
         "shareToFollowers": "Share to followers",
@@ -146,7 +147,13 @@
         "add": "Add Story"
     },
     "timeline": {
-        "peopleYouMayKnow": "People you may know"
+        "peopleYouMayKnow": "People you may know",
+        "onboarding": {
+            "welcome": "Welcome",
+            "thisIsYourHomeFeed": "This is your home feed, a chronological feed of posts from accounts you follow.",
+            "letUsHelpYouFind": "Let us help you find some interesting people to follow",
+            "refreshFeed": "Refresh my feed"
+        }
     },
     "hashtags": {
         "emptyFeed": "We can't seem to find any posts for this hashtag"
