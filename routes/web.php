@@ -516,7 +516,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 	Route::group(['prefix' => 'users'], function () {
 		Route::redirect('/', '/');
-		Route::get('{user}.atom', 'ProfileController@showAtomFeed');
+		Route::get('{user}.atom', 'ProfileController@showAtomFeed')->where('user', '.*');
 		Route::get('{username}/outbox', 'FederationController@userOutbox');
 		Route::get('{username}/followers', 'FederationController@userFollowers');
 		Route::get('{username}/following', 'FederationController@userFollowing');
