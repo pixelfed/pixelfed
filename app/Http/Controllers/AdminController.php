@@ -360,6 +360,7 @@ class AdminController extends Controller
 
 		if($request->has('cc')) {
 			Cache::forget('pf:admin:custom_emoji:stats');
+			Cache::forget('pf:custom_emoji');
 			return redirect(route('admin.custom-emoji'));
 		}
 
@@ -463,6 +464,7 @@ class AdminController extends Controller
 		$request->emoji->storeAs('public/emoji', $fileName);
 		$emoji->media_path = 'emoji/' . $fileName;
 		$emoji->save();
+		Cache::forget('pf:custom_emoji');
 		return redirect(route('admin.custom-emoji'));
 	}
 
@@ -471,6 +473,7 @@ class AdminController extends Controller
 		abort_unless(config('federation.custom_emoji.enabled'), 404);
 		$emoji = CustomEmoji::findOrFail($id);
 		Storage::delete("public/{$emoji->media_path}");
+		Cache::forget('pf:custom_emoji');
 		$emoji->delete();
 		return redirect(route('admin.custom-emoji'));
 	}

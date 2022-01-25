@@ -77,6 +77,7 @@ use App\Util\Localization\Localization;
 use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
+use App\Services\CustomEmojiService;
 
 class ApiV1Controller extends Controller
 {
@@ -920,7 +921,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function customEmojis()
 	{
-		return response()->json([]);
+		return response(CustomEmojiService::all())->header('Content-Type', 'application/json');
 	}
 
 	/**
