@@ -2110,6 +2110,7 @@ class ApiV1Controller extends Controller
 			$status->in_reply_to_profile_id = $parent->profile_id;
 			$status->save();
 			StatusService::del($parent->id);
+			Cache::forget('status:replies:all:' . $parent->id);
 		}
 
 		if($ids) {
@@ -2518,6 +2519,13 @@ class ApiV1Controller extends Controller
 		abort_if(!$status || !in_array($status['visibility'], ['public', 'unlisted']), 404);
 
 		$sortBy = $request->input('sort', 'all');
+
+		if($sortBy == 'all' && $status['replies_count'] && $request->has('refresh_cache')) {
+			if(!Cache::has('status:replies:all-rc:' . $id)) {
+				Cache::forget('status:replies:all:' . $id);
+				Cache::put('status:replies:all-rc:' . $id, true, 300);
+			}
+		}
 
 		if($sortBy == 'all' && !$request->has('cursor')) {
 			$ids = Cache::remember('status:replies:all:' . $id, 86400, function() use($id) {
