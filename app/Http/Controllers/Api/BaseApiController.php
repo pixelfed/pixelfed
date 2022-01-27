@@ -261,7 +261,7 @@ class BaseApiController extends Controller
     {
         abort_if(!$request->user(), 403);
         $this->validate($request, [
-        	'page' => 'sometimes|int|min:1|max:40',
+        	'page' => 'sometimes|int|min:1|max:20',
         	'limit' => 'sometimes|int|min:1|max:10'
         ]);
 
@@ -273,7 +273,9 @@ class BaseApiController extends Controller
         	->latest()
         	->simplePaginate($limit)
         	->map(function($id) {
-        		return StatusService::get($id->status_id, false);
+        		$status = StatusService::get($id->status_id, false);
+        		$status['favourited'] = true;
+        		return $status;
         	})
         	->filter(function($post) {
         		return $post && isset($post['account']);
