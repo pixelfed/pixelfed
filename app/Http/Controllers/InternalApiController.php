@@ -320,12 +320,12 @@ class InternalApiController extends Controller
 			->orderByDesc('created_at')
 			->simplePaginate(10)
 			->map(function($bookmark) {
-				$status = StatusService::get($bookmark->status_id);
+				$status = StatusService::get($bookmark->status_id, false);
 				$status['bookmarked_at'] = $bookmark->created_at->format('c');
 				return $status;
 			})
 			->filter(function($bookmark) {
-				return isset($bookmark['id']);
+				return $bookmark && isset($bookmark['id']);
 			})
 			->values();
 
