@@ -27,6 +27,7 @@ use App\Transformer\Api\{
 };
 use App\Services\{
     AccountService,
+    BookmarkService,
     FollowerService,
     LikeService,
     PublicTimelineService,
@@ -327,6 +328,7 @@ class PublicApiController extends Controller
                                		return false;
                                }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                               $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
@@ -369,6 +371,7 @@ class PublicApiController extends Controller
                                		return false;
                                }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                               $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
@@ -398,6 +401,8 @@ class PublicApiController extends Controller
                 $status = StatusService::get($k);
                 if($user) {
                     $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
+
                     $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
                 }
                 return $status;
