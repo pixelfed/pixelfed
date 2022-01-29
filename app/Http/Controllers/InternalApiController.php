@@ -43,6 +43,7 @@ use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\DiscoverService;
+use App\Services\BookmarkService;
 
 class InternalApiController extends Controller
 {
@@ -316,16 +317,21 @@ class InternalApiController extends Controller
 
 	public function bookmarks(Request $request)
 	{
-		$res = Bookmark::whereProfileId($request->user()->profile_id)
+		$pid = $request->user()->profile_id;
+		$res = Bookmark::whereProfileId($pid)
 			->orderByDesc('created_at')
 			->simplePaginate(10)
-			->map(function($bookmark) {
-				$status = StatusService::get($bookmark->status_id);
+			->map(function($bookmark) use($pid) {
+				$status = StatusService::get($bookmark->status_id, false);
 				$status['bookmarked_at'] = $bookmark->created_at->format('c');
+
+				if($status) {
+					BookmarkService::add($pid, $status['id']);
+				}
 				return $status;
 			})
 			->filter(function($bookmark) {
-				return isset($bookmark['id']);
+				return $bookmark && isset($bookmark['id']);
 			})
 			->values();
 
@@ -410,26 +416,12 @@ class InternalApiController extends Controller
 
 	public function remoteProfile(Request $request, $id)
 	{
-		$profile = Profile::whereNull('status')
-			->whereNotNull('domain')
-			->findOrFail($id);
-		$user = Auth::user();
-
-		return view('profile.remote', compact('profile', 'user'));
+		return redirect('/i/web/profile/' . $id);
 	}
 
 	public function remoteStatus(Request $request, $profileId, $statusId)
 	{
-		$user = Profile::whereNull('status')
-			->whereNotNull('domain')
-			->findOrFail($profileId);
-
-		$status = Status::whereProfileId($user->id)
-						->whereNull('reblog_of_id')
-						->whereIn('visibility', ['public', 'unlisted'])
-						->findOrFail($statusId);
-		$template = $status->in_reply_to_id ? 'status.reply' : 'status.remote';
-		return view($template, compact('user', 'status'));
+		return redirect('/i/web/post/' . $statusId);
 	}
 
 	public function requestEmailVerification(Request $request)

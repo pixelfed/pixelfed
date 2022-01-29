@@ -6,6 +6,7 @@ use App\Bookmark;
 use App\Status;
 use Auth;
 use Illuminate\Http\Request;
+use App\Services\BookmarkService;
 
 class BookmarkController extends Controller
 {
@@ -28,7 +29,10 @@ class BookmarkController extends Controller
         );
 
         if (!$bookmark->wasRecentlyCreated) {
+        	BookmarkService::del($profile->id, $status->id);
             $bookmark->delete();
+        } else {
+        	BookmarkService::add($profile->id, $status->id);
         }
 
         if ($request->ajax()) {

@@ -71,8 +71,8 @@ class CustomEmojiService
 			$emoji->save();
 
 			$name = str_replace(':', '', $json['name']);
+			Cache::forget('pf:custom_emoji');
 			Cache::forget('pf:custom_emoji:' . $name);
-
 			if($id) {
 				StatusService::del($id);
 			}
@@ -103,5 +103,29 @@ class CustomEmojiService
 		}
 
 		return true;
+	}
+
+	public static function all()
+	{
+		return Cache::rememberForever('pf:custom_emoji', function() {
+			$pgsql = config('database.default') === 'pgsql';
+			return CustomEmoji::when(!$pgsql, function($q, $pgsql) {
+					return $q->groupBy('shortcode');
+				})
+				->get()
+				->map(function($emojo) {
+					$url = url('storage/' . $emojo->media_path);
+					return [
+						'shortcode' => str_replace(':', '', $emojo->shortcode),
+						'url' => $url,
+						'static_path' => $url,
+						'visible_in_picker' => $emojo->disabled == false
+					];
+				})
+				->when($pgsql, function($collection) {
+					return $collection->unique('shortcode');
+				})
+				->toJson(JSON_UNESCAPED_SLASHES);
+		});
 	}
 }

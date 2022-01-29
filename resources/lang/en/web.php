@@ -13,6 +13,7 @@ return [
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Cancel',
 		'copyLink' => 'Copy Link',

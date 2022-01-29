@@ -65,6 +65,7 @@ use App\Services\{
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
+	ReblogService,
 	RelationshipService,
 	SearchApiV2Service,
 	StatusService,
@@ -77,6 +78,7 @@ use App\Util\Localization\Localization;
 use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
+use App\Services\CustomEmojiService;
 
 class ApiV1Controller extends Controller
 {
@@ -920,7 +922,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function customEmojis()
 	{
-		return response()->json([]);
+		return response(CustomEmojiService::all())->header('Content-Type', 'application/json');
 	}
 
 	/**
@@ -1645,6 +1647,7 @@ class ApiV1Controller extends Controller
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -1675,6 +1678,7 @@ class ApiV1Controller extends Controller
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -1797,6 +1801,7 @@ class ApiV1Controller extends Controller
 
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+				$status['reblogged'] = (bool) ReblogService::get($user->profile_id, $status['id']);
 			}
 			return $status;
 		})
@@ -1838,7 +1843,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
-		$res['reblogged'] = false;
+		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
 		return response()->json($res);
 	}
 
@@ -2109,6 +2114,7 @@ class ApiV1Controller extends Controller
 			$status->in_reply_to_profile_id = $parent->profile_id;
 			$status->save();
 			StatusService::del($parent->id);
+			Cache::forget('status:replies:all:' . $parent->id);
 		}
 
 		if($ids) {
@@ -2236,7 +2242,7 @@ class ApiV1Controller extends Controller
 		}
 
 		StatusService::del($status->id);
-
+		ReblogService::add($user->profile_id, $status->id);
 		$res = StatusService::getMastodon($status->id);
 		$res['reblogged'] = true;
 
@@ -2276,6 +2282,7 @@ class ApiV1Controller extends Controller
 		}
 
 		UndoSharePipeline::dispatch($reblog);
+		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
 		$res['reblogged'] = true;
@@ -2512,11 +2519,24 @@ class ApiV1Controller extends Controller
 
 		$limit = $request->input('limit', 3);
 		$pid = $request->user()->profile_id;
-		$status = StatusService::getMastodon($id);
+		$status = StatusService::getMastodon($id, false);
 
-		abort_if(!$status || !in_array($status['visibility'], ['public', 'unlisted']), 404);
+		abort_if(!$status, 404);
+
+		if($status['visibility'] == 'private') {
+			if($pid != $status['account']['id']) {
+				abort_unless(FollowerService::follows($pid, $status['account']['id']), 404);
+			}
+		}
 
 		$sortBy = $request->input('sort', 'all');
+
+		if($sortBy == 'all' && $status['replies_count'] && $request->has('refresh_cache')) {
+			if(!Cache::has('status:replies:all-rc:' . $id)) {
+				Cache::forget('status:replies:all:' . $id);
+				Cache::put('status:replies:all-rc:' . $id, true, 300);
+			}
+		}
 
 		if($sortBy == 'all' && !$request->has('cursor')) {
 			$ids = Cache::remember('status:replies:all:' . $id, 86400, function() use($id) {

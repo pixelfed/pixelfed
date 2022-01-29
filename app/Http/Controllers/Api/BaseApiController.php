@@ -259,27 +259,29 @@ class BaseApiController extends Controller
 
     public function accountLikes(Request $request)
     {
-        $user = $request->user();
         abort_if(!$request->user(), 403);
+        $this->validate($request, [
+        	'page' => 'sometimes|int|min:1|max:20',
+        	'limit' => 'sometimes|int|min:1|max:10'
+        ]);
 
-        $limit = 10;
-        $page = (int) $request->input('page', 1);
+        $user = $request->user();
+        $limit = $request->input('limit', 10);
 
-        if($page > 20) {
-            return [];
-        }
-
-        $favourites = $user->profile->likes()
-        ->latest()
-        ->simplePaginate($limit)
-        ->pluck('status_id');
-
-        $statuses = Status::find($favourites)->reverse();
-
-        $resource = new Fractal\Resource\Collection($statuses, new StatusStatelessTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $res = \DB::table('likes')
+        	->whereProfileId($user->profile_id)
+        	->latest()
+        	->simplePaginate($limit)
+        	->map(function($id) {
+        		$status = StatusService::get($id->status_id, false);
+        		$status['favourited'] = true;
+        		return $status;
+        	})
+        	->filter(function($post) {
+        		return $post && isset($post['account']);
+        	})
+        	->values();
+        return response()->json($res);
     }
 
     public function archive(Request $request, $id)

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel shadow-none border-bottom sticky-top py-1">
 	<div class="container">
-			<a class="navbar-brand d-flex align-items-center" href="{{ route('timeline.personal') }}" title="Logo">
+			<a class="navbar-brand d-flex align-items-center" href="/" title="Logo">
 				<img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
 				<span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config_cache('app.name') }}</span>
 			</a>
@@ -18,13 +18,13 @@
 
 				<ul class="navbar-nav ml-auto">
 					<li>
-						<a class="nav-link font-weight-bold text-dark" href="{{ route('login') }}" title="Login">
+						<a class="nav-link font-weight-bold text-dark" href="/login" title="Login">
 							{{ __('Login') }}
 						</a>
 					</li>
 				@if(config_cache('pixelfed.open_registration') && in_array(config_cache('system.user_mode'), ['default', 'admin']))
 					<li>
-						<a class="ml-3 nav-link font-weight-bold text-dark" href="{{ route('register') }}" title="Register">
+						<a class="ml-3 nav-link font-weight-bold text-dark" href="/register" title="Register">
 							{{ __('Register') }}
 						</a>
 					</li>
@@ -71,13 +71,13 @@
 									</span>
 									My Feed
 								</a>
-								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+								<a class="dropdown-item lead" href="/i/web/timeline/local">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-stream text-lighter fa-lg"></span>
 									</span>
 									Public Feed
 								</a>
-								<a class="dropdown-item lead" href="{{route('timeline.network')}}">
+								<a class="dropdown-item lead" href="/i/web/timeline/global">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-globe text-lighter fa-lg"></span>
 									</span>
@@ -90,7 +90,7 @@
 									</span>
 									Home
 								</a>
-								<a class="dropdown-item lead" href="{{route('timeline.public')}}">
+								<a class="dropdown-item lead" href="/i/web/timeline/local">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fas fa-stream text-lighter fa-lg"></span>
 									</span>
@@ -98,12 +98,13 @@
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item lead" href="{{route('discover')}}">
+								<a class="dropdown-item lead" href="/i/web/discover">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-compass text-lighter fa-lg"></span>
 									</span>
 									{{__('navmenu.discover')}}
 								</a>
+
 								@if(config_cache('instance.stories.enabled'))
 								<a class="dropdown-item lead" href="/i/stories/new">
 									<span style="width: 50px;margin-right:14px;">
@@ -119,14 +120,14 @@
 									</span>
 									{{__('navmenu.myProfile')}}
 								</a>
-								<a class="dropdown-item lead" href="{{route('settings')}}">
+								<a class="dropdown-item lead" href="/settings/home">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-cog text-lighter fa-lg"></span>
 									</span>
 									{{__('navmenu.settings')}}
 								</a>
 								@if(Auth::user()->is_admin == true)
-								<a class="dropdown-item lead" href="{{ route('admin.home') }}">
+								<a class="dropdown-item lead" href="/i/admin/dashboard">
 									<span style="width: 50px;margin-right:14px;">
 										<span class="fal fa-shield-alt text-lighter fa-lg"></span>
 									</span>
@@ -134,7 +135,7 @@
 								</a>
 								@endif
 								<div class="dropdown-divider"></div>
-								<a class="dropdown-item lead" href="{{ route('logout') }}"
+								<a class="dropdown-item lead" href="/logout"
 								   onclick="event.preventDefault();
 												 document.getElementById('logout-form').submit();">
 									<span style="width: 50px;margin-right:14px;" class="text-lighter">
@@ -143,7 +144,7 @@
 									<span class="text-lighter">{{ __('navmenu.logout') }}</span>
 								</a>
 
-								<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+								<form id="logout-form" action="/logout" method="POST" style="display: none;">
 									@csrf
 								</form>
 							</div>
