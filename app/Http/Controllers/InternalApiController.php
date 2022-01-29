@@ -323,6 +323,9 @@ class InternalApiController extends Controller
 			->simplePaginate(10)
 			->map(function($bookmark) use($pid) {
 				$status = StatusService::get($bookmark->status_id, false);
+				if(!$status) {
+					return false;
+				}
 				$status['bookmarked_at'] = $bookmark->created_at->format('c');
 
 				if($status) {
