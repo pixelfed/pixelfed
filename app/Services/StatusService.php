@@ -175,10 +175,7 @@ class StatusService
 	public static function isBookmarked($id, $pid = null)
 	{
 		return $pid ?
-			DB::table('bookmarks')
-				->where('status_id', $id)
-				->where('profile_id', $pid)
-				->exists() :
+			BookmarkService::get($pid, $id) :
 			false;
 	}
 }
