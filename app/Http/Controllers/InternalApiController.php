@@ -43,6 +43,7 @@ use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\DiscoverService;
+use App\Services\BookmarkService;
 
 class InternalApiController extends Controller
 {
@@ -316,12 +317,17 @@ class InternalApiController extends Controller
 
 	public function bookmarks(Request $request)
 	{
-		$res = Bookmark::whereProfileId($request->user()->profile_id)
+		$pid = $request->user()->profile_id;
+		$res = Bookmark::whereProfileId($pid)
 			->orderByDesc('created_at')
 			->simplePaginate(10)
-			->map(function($bookmark) {
+			->map(function($bookmark) use($pid) {
 				$status = StatusService::get($bookmark->status_id, false);
 				$status['bookmarked_at'] = $bookmark->created_at->format('c');
+
+				if($status) {
+					BookmarkService::add($pid, $status['id']);
+				}
 				return $status;
 			})
 			->filter(function($bookmark) {
