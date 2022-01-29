@@ -165,10 +165,7 @@ class StatusService
 	public static function isShared($id, $pid = null)
 	{
 		return $pid ?
-			DB::table('statuses')
-				->where('reblog_of_id', $id)
-				->where('profile_id', $pid)
-				->exists() :
+			ReblogService::get($pid, $id) :
 			false;
 	}
 

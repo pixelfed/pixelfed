@@ -32,6 +32,7 @@ use App\Services\{
     LikeService,
     PublicTimelineService,
     ProfileService,
+    ReblogService,
     RelationshipService,
     StatusService,
     SnowflakeService,
@@ -329,6 +330,7 @@ class PublicApiController extends Controller
                                }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                               $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
@@ -372,6 +374,7 @@ class PublicApiController extends Controller
                                }
                                $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                               $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
@@ -402,7 +405,7 @@ class PublicApiController extends Controller
                 if($user) {
                     $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
                     $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
-
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
                     $status['relationship'] = RelationshipService::get($user->profile_id, $status['account']['id']);
                 }
                 return $status;
@@ -524,6 +527,7 @@ class PublicApiController extends Controller
                            }
                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                           $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                            return $status;
                       })
                       ->filter(function($s) use($filtered) {
@@ -569,6 +573,7 @@ class PublicApiController extends Controller
                            }
                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                           $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                            return $status;
                       })
                       ->filter(function($s) use($filtered) {
@@ -623,6 +628,8 @@ class PublicApiController extends Controller
                      ->map(function($s) use ($user) {
                             $status = StatusService::get($s->id);
                             $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                            $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                             return $status;
                       });
             $res = $timeline->toArray();
@@ -646,6 +653,8 @@ class PublicApiController extends Controller
                           ->map(function($s) use ($user) {
                                 $status = StatusService::get($s->id);
                                 $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                                $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
                                 return $status;
                           });
                 $res = $timeline->toArray();

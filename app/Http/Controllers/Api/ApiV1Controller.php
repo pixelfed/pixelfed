@@ -65,6 +65,7 @@ use App\Services\{
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
+	ReblogService,
 	RelationshipService,
 	SearchApiV2Service,
 	StatusService,
@@ -1646,6 +1647,7 @@ class ApiV1Controller extends Controller
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -1676,6 +1678,7 @@ class ApiV1Controller extends Controller
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -1798,6 +1801,7 @@ class ApiV1Controller extends Controller
 
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+				$status['reblogged'] = (bool) ReblogService::get($user->profile_id, $status['id']);
 			}
 			return $status;
 		})
@@ -1839,7 +1843,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
-		$res['reblogged'] = false;
+		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
 		return response()->json($res);
 	}
 
@@ -2238,7 +2242,7 @@ class ApiV1Controller extends Controller
 		}
 
 		StatusService::del($status->id);
-
+		ReblogService::add($user->profile_id, $status->id);
 		$res = StatusService::getMastodon($status->id);
 		$res['reblogged'] = true;
 
@@ -2278,6 +2282,7 @@ class ApiV1Controller extends Controller
 		}
 
 		UndoSharePipeline::dispatch($reblog);
+		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
 		$res['reblogged'] = true;
