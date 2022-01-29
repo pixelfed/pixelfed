@@ -2514,9 +2514,15 @@ class ApiV1Controller extends Controller
 
 		$limit = $request->input('limit', 3);
 		$pid = $request->user()->profile_id;
-		$status = StatusService::getMastodon($id);
+		$status = StatusService::getMastodon($id, false);
 
-		abort_if(!$status || !in_array($status['visibility'], ['public', 'unlisted']), 404);
+		abort_if(!$status, 404);
+
+		if($status['visibility'] == 'private') {
+			if($pid != $status['account']['id']) {
+				abort_unless(FollowerService::follows($pid, $status['account']['id']), 404);
+			}
+		}
 
 		$sortBy = $request->input('sort', 'all');
 
