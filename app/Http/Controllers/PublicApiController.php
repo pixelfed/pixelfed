@@ -486,7 +486,7 @@ class PublicApiController extends Controller
         if($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
-            $timeline = Status::select(
+           	return Status::select(
                         'id',
                         'uri',
                         'caption',
@@ -513,13 +513,26 @@ class PublicApiController extends Controller
                       ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
-                      ->whereNotIn('profile_id', $filtered)
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
                       ->limit($limit)
-                      ->get();
+                      ->get()
+                      ->map(function($s) use ($user) {
+                           $status = StatusService::get($s->id);
+                           if(!$status) {
+                           		return false;
+                           }
+                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                           $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                           return $status;
+                      })
+                      ->filter(function($s) use($filtered) {
+                            return $s && in_array($s['account']['id'], $filtered) == false;
+                      })
+                      ->values()
+                      ->toArray();
         } else {
-            $timeline = Status::select(
+            return Status::select(
                         'id',
                         'uri',
                         'caption',
@@ -545,15 +558,25 @@ class PublicApiController extends Controller
                       })
                       ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
-                      ->whereNotIn('profile_id', $filtered)
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
-                      ->simplePaginate($limit);
+                      ->limit($limit)
+                      ->get()
+                      ->map(function($s) use ($user) {
+                           $status = StatusService::get($s->id);
+                           if(!$status) {
+                           		return false;
+                           }
+                           $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                           $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
+                           return $status;
+                      })
+                      ->filter(function($s) use($filtered) {
+                            return $s && in_array($s['account']['id'], $filtered) == false;
+                      })
+                      ->values()
+                      ->toArray();
         }
-
-        $fractal = new Fractal\Resource\Collection($timeline, new StatusTransformer());
-        $res = $this->fractal->createData($fractal)->toArray();
-        return response()->json($res);
     }
 
     public function networkTimelineApi(Request $request)
