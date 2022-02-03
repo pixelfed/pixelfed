@@ -27,6 +27,7 @@
 - Updated ApiV1Controller, fix private status replies returning 404. ([73226360](https://github.com/pixelfed/pixelfed/commit/73226360))
 - Updated StatusService, use BookmarkService for bookmarked state. ([a7d71551](https://github.com/pixelfed/pixelfed/commit/a7d71551))
 - Updated Apis, added ReblogService to improve reblogged state for api entities ([6cfd6be5](https://github.com/pixelfed/pixelfed/commit/6cfd6be5))
+- Updated InstanceActorController, fix content-type header. ([21792246](https://github.com/pixelfed/pixelfed/commit/21792246))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
