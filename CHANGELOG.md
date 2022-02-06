@@ -15,6 +15,7 @@
 - Easy Avatar updates - update from timelines with drag-n-drop support ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
 - Comment hovercards ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
 - Mod tools button on posts for admins ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
+- Improved Media Previews - disable to restore original preview aspect ratios ([c55eeac8](https://github.com/pixelfed/pixelfed/commit/c55eeac8))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
