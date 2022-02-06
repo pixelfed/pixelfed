@@ -10,6 +10,8 @@
 - Fix word-break on statuses ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
 - Add pronouns to hovercards ([33f863e8](https://github.com/pixelfed/pixelfed/commit/33f863e8))
 - Improved onboarding ([042c5b6c](https://github.com/pixelfed/pixelfed/commit/042c5b6c))
+- Add Hide Counts & Stats setting ([01af7d80](https://github.com/pixelfed/pixelfed/commit/01af7d80))
+- Fix nsfw videos not displaying sensitive warning ([01af7d80](https://github.com/pixelfed/pixelfed/commit/01af7d80))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
@@ -28,6 +30,8 @@
 - Updated StatusService, use BookmarkService for bookmarked state. ([a7d71551](https://github.com/pixelfed/pixelfed/commit/a7d71551))
 - Updated Apis, added ReblogService to improve reblogged state for api entities ([6cfd6be5](https://github.com/pixelfed/pixelfed/commit/6cfd6be5))
 - Updated InstanceActorController, fix content-type header. ([21792246](https://github.com/pixelfed/pixelfed/commit/21792246))
+- Updated Exception handler to report validation message bag errors. ([74905ba1](https://github.com/pixelfed/pixelfed/commit/74905ba1))
+- Updated ApiV1Controller, add validation messages to update_credentials endpoint. ([cd785601](https://github.com/pixelfed/pixelfed/commit/cd785601))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
