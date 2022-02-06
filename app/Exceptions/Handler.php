@@ -68,11 +68,20 @@ class Handler extends ExceptionHandler
 	 */
 	public function render($request, Throwable $exception)
 	{
-		if ($request->wantsJson())
+		if ($exception instanceof \Illuminate\Validation\ValidationException && $request->wantsJson()) {
+			return response()->json(
+				[
+					'message' => $exception->getMessage(),
+					'errors' => $exception->validator->getMessageBag()
+				],
+				method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500
+			);
+		} else if ($request->wantsJson()) {
 			return response()->json(
 				['error' => $exception->getMessage()],
 				method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500
 			);
+		}
 		return parent::render($request, $exception);
 	}
 }
