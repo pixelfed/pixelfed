@@ -74,6 +74,7 @@ use App\Services\{
 	UserFilterService
 };
 use App\Util\Lexer\Autolink;
+use App\Util\Lexer\PrettyNumber;
 use App\Util\Localization\Localization;
 use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
@@ -182,13 +183,17 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'avatar'			=> 'sometimes|mimetypes:image/jpeg,image/png',
+			'avatar'			=> 'sometimes|mimetypes:image/jpeg,image/png|min:10|max:' . config('pixelfed.max_avatar_size'),
 			'display_name'      => 'nullable|string',
 			'note'              => 'nullable|string',
 			'locked'            => 'nullable',
 			'website'			=> 'nullable',
 			// 'source.privacy'    => 'nullable|in:unlisted,public,private',
 			// 'source.sensitive'  => 'nullable|boolean'
+		], [
+			'required' => 'The :attribute field is required.',
+			'avatar.mimetypes' => 'The file must be in jpeg or png format',
+			'avatar.max' => 'The :attribute exceeds the file size limit of ' . PrettyNumber::size(config('pixelfed.max_avatar_size'), true, false),
 		]);
 
 		$user = $request->user();
@@ -200,8 +205,6 @@ class ApiV1Controller extends Controller
 		$syncLicenses = false;
 		$licenseChanged = false;
 		$composeSettings = array_merge(AccountService::defaultSettings()['compose_settings'], $settings->compose_settings ?? []);
-
-		// return $request->input('locked');
 
 		if($request->has('avatar')) {
 			$av = Avatar::whereProfileId($profile->id)->first();
