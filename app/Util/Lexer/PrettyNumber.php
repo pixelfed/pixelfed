@@ -24,14 +24,13 @@ class PrettyNumber
 		return $number;
 	}
 
-	public static function size($expression, $kb = false)
+	public static function size($expression, $kb = false, $short = true)
 	{
 		if ($kb) {
 			$expression = $expression * 1024;
 		}
 		$size = intval($expression);
 		$precision = 0;
-		$short = true;
 		$units = $short ?
 		  ['B', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'] :
 		  ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
