@@ -12,6 +12,9 @@
 - Improved onboarding ([042c5b6c](https://github.com/pixelfed/pixelfed/commit/042c5b6c))
 - Add Hide Counts & Stats setting ([01af7d80](https://github.com/pixelfed/pixelfed/commit/01af7d80))
 - Fix nsfw videos not displaying sensitive warning ([01af7d80](https://github.com/pixelfed/pixelfed/commit/01af7d80))
+- Easy Avatar updates - update from timelines with drag-n-drop support ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
+- Comment hovercards ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
+- Mod tools button on posts for admins ([f37d3798](https://github.com/pixelfed/pixelfed/commit/f37d3798))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
