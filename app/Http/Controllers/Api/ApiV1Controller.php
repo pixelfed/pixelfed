@@ -1280,7 +1280,7 @@ class ApiV1Controller extends Controller
 		  'file.*'      => function() {
 			return [
 				'required',
-				'mimes:' . config_cache('pixelfed.media_types'),
+				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
 			];
 		  },
