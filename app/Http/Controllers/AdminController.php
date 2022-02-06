@@ -452,7 +452,7 @@ class AdminController extends Controller
 					->whereShortcode($request->input('shortcode'));
 				})
 			],
-			'emoji' => 'required|file|mimes:jpg,png|max:' . (config('federation.custom_emoji.max_size') / 1000)
+			'emoji' => 'required|file|mimetypes:jpg,png|max:' . (config('federation.custom_emoji.max_size') / 1000)
 		]);
 
 		$emoji = new CustomEmoji;
