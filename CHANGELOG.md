@@ -37,6 +37,7 @@
 - Updated InstanceActorController, fix content-type header. ([21792246](https://github.com/pixelfed/pixelfed/commit/21792246))
 - Updated Exception handler to report validation message bag errors. ([74905ba1](https://github.com/pixelfed/pixelfed/commit/74905ba1))
 - Updated ApiV1Controller, add validation messages to update_credentials endpoint. ([cd785601](https://github.com/pixelfed/pixelfed/commit/cd785601))
+- Updated ComposeController, improve location search results ordering by use frequency. ([29c4bd25](https://github.com/pixelfed/pixelfed/commit/29c4bd25))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
