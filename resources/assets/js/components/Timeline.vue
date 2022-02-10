@@ -190,6 +190,14 @@
 									<p class="text-center mb-0">
 										<a class="btn btn-link font-weight-bold px-4" href="/discover">Discover new posts and people</a>
 									</p>
+									<hr>
+									<div class="text-center pt-5">
+										<h1>A New Experience Awaits</h1>
+										<p class="lead">Try out an early release of our new design</p>
+										<p class="mb-0 d-flex align-items-center justify-content-center">
+											<a class="btn btn-primary font-weight-bold py-1 px-4 rounded-pill mr-4" href="/i/web">Try new UI</a>
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -541,7 +549,7 @@
 			}*/
 
 			if(this.config.ab.spa === true) {
-				this.showPromo = localStorage.getItem('pf_metro_ui.exp.spa') == 'false' ? false : true;
+				this.showPromo = localStorage.getItem('pf_metro_ui.exp.spa' + new Date().getMonth()) == 'false' ? false : true;
 			}
 
 			if(localStorage.getItem('pf_metro_ui.exp.rec') == 'false') {
@@ -1086,7 +1094,7 @@
 			},
 
 			hidePromo() {
-				localStorage.setItem('pf_metro_ui.exp.spa', 'false');
+				localStorage.setItem('pf_metro_ui.exp.spa' + new Date().getMonth(), 'false');
 				this.showPromo = false;
 			}
 		},

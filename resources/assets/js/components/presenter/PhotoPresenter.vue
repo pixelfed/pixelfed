@@ -32,6 +32,16 @@
 				onerror="this.onerror=null;this.src='/storage/no-preview.png'"
 				@click.prevent="toggleLightbox">
 
+				<!-- <blur-hash-image
+					class="card-img-top"
+					width="32"
+					height="32"
+					:punch="1"
+					:hash="status.media_attachments[0].blurhash"
+					:src="status.media_attachments[0].url"
+					:alt="altText(status)"
+					@click.prevent="toggleLightbox"/> -->
+
 				<p v-if="!status.sensitive && sensitive"
 					@click="status.sensitive = true"
 					style="
@@ -94,6 +104,8 @@
 </style>
 
 <script type="text/javascript">
+	import BigPicture from 'bigpicture';
+
 	export default {
 		props: ['status'],
 
@@ -101,6 +113,9 @@
 			return {
 				sensitive: this.status.sensitive
 			}
+		},
+
+		mounted() {
 		},
 
 		methods: {
@@ -117,8 +132,10 @@
 				this.$emit('togglecw');
 			},
 
-			toggleLightbox() {
-				this.$emit('lightbox');
+			toggleLightbox(e) {
+				BigPicture({
+					el: e.target
+				})
 			},
 
 			width() {
