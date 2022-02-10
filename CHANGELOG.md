@@ -39,6 +39,8 @@
 - Updated ApiV1Controller, add validation messages to update_credentials endpoint. ([cd785601](https://github.com/pixelfed/pixelfed/commit/cd785601))
 - Updated ComposeController, improve location search results ordering by use frequency. ([29c4bd25](https://github.com/pixelfed/pixelfed/commit/29c4bd25))
 - Updated AvatarController, fix mimetype bug. ([7fa9d4dc](https://github.com/pixelfed/pixelfed/commit/7fa9d4dc))
+- Updated PostComponent.vue, filter out non-text comments. ([a7346f21](https://github.com/pixelfed/pixelfed/commit/a7346f21))
+- Update Profile.vue component, fix v-once bug. ([4d003d00](https://github.com/pixelfed/pixelfed/commit/4d003d00))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)

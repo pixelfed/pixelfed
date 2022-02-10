@@ -1030,7 +1030,7 @@ export default {
 								self.media = self.status.media_attachments;
 								self.content = response.data.status.content;
 								self.status.emojis.forEach(function(emoji) {
-									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" />`;
+									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 								});
 								self.likesPage = 2;
@@ -1384,9 +1384,9 @@ export default {
 					axios.get(url)
 						.then(response => {
 								let self = this;
-								this.results = this.layout == 'metro' ?
-									_.reverse(response.data.data) :
-									response.data.data;
+								this.results = response.data.data.filter(p => {
+									return p.pf_type == 'text';
+								});
 								this.pagination = response.data.meta.pagination;
 								if(this.results.length > 0) {
 									$('.load-more-link').removeClass('d-none');

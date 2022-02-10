@@ -250,7 +250,7 @@
 			this.profile = window._sharedData.curUser;
 			this.content = this.status.content;
 			this.status.emojis.forEach(function(emoji) {
-				let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" />`;
+				let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 				self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 			});
 		},

@@ -192,7 +192,7 @@
 					<div v-if="mode == 'grid'">
 						<div class="row">
 							<div class="col-4 p-1 p-md-3" v-for="(s, index) in timeline" :key="'tlob:'+index">
-								<a class="card info-overlay card-md-border-0" :href="statusUrl(s)" v-once>
+								<a class="card info-overlay card-md-border-0" :href="statusUrl(s)">
 									<div class="square">
 										<div v-if="s.sensitive" class="square-content">
 											<div class="info-overlay-text-label">
