@@ -42,7 +42,7 @@
         "js-cookie": "^2.2.0",
         "laravel-echo": "^1.8.1",
         "laravel-mix": "^4.1.4",
-        "node-sass": "^4.14.1",
+        "node-sass": "^7.0.0",
         "promise-polyfill": "8.1.0",
         "readmore-js": "^2.2.1",
         "sweetalert": "^2.1.2",
