@@ -183,7 +183,7 @@ class BaseApiController extends Controller
     {
         abort_if(!$request->user(), 403);
         $this->validate($request, [
-            'upload'   => 'required|mimetypes:jpeg,png,gif|max:'.config('pixelfed.max_avatar_size'),
+            'upload'   => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
 
         try {
