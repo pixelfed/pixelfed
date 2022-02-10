@@ -257,7 +257,9 @@ class SettingsController extends Controller
 	public function mediaSettings(Request $request)
 	{
 		$setting = UserSetting::whereUserId($request->user()->id)->firstOrFail();
-		$compose = $setting->compose_settings ? json_decode($setting->compose_settings, true) : [
+		$compose = $setting->compose_settings ? (
+			is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings
+			) : [
 			'default_license' => null,
 			'media_descriptions' => false
 		];
@@ -278,7 +280,7 @@ class SettingsController extends Controller
 		$uid = $request->user()->id;
 
 		$setting = UserSetting::whereUserId($uid)->firstOrFail();
-		$compose = json_decode($setting->compose_settings, true);
+		$compose = is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings;
 		$changed = false;
 
 		if($sync) {
