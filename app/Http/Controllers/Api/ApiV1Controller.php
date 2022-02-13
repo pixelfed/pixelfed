@@ -1026,33 +1026,45 @@ class ApiV1Controller extends Controller
 
 		$user = $request->user();
 
-		$status = Status::findOrFail($id);
+		$status = StatusService::getMastodon($id, false);
 
-		if($status->profile_id !== $user->profile_id) {
-			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+		abort_unless($status, 400);
+
+		$spid = $status['account']['id'];
+
+		if($spid !== $user->profile_id) {
+			if($status['visibility'] == 'private') {
+				abort_if(!FollowerService::follows($user->profile_id, $spid), 403);
 			} else {
-				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
+				abort_if(!in_array($status['visibility'], ['public','unlisted']), 403);
 			}
 		}
 
+		abort_if(
+			Like::whereProfileId($user->profile_id)
+				->where('created_at', '>', now()->subDay())
+				->count() >= 100,
+			429
+		);
+
 		$like = Like::firstOrCreate([
 			'profile_id' => $user->profile_id,
-			'status_id' => $status->id
+			'status_id' => $status['id']
 		]);
 
 		if($like->wasRecentlyCreated == true) {
-			$like->status_profile_id = $status->profile_id;
-			$like->is_comment = !empty($status->in_reply_to_id);
+			$like->status_profile_id = $spid;
+			$like->is_comment = !empty($status['in_reply_to_id']);
 			$like->save();
-			$status->likes_count = $status->likes()->count();
-			$status->save();
+			Status::findOrFail($status['id'])->update([
+				'favourites_count' => ($status['favourites_count'] ?? 0) + 1
+			]);
 			LikePipeline::dispatch($like);
 		}
 
-		$res = StatusService::getMastodon($status->id, false);
-		$res['favourited'] = true;
-		return response()->json($res);
+		$status['favourited'] = true;
+		$status['favourites_count'] = $status['favourites_count'] + 1;
+		return response()->json($status);
 	}
 
 	/**
