@@ -2247,6 +2247,7 @@ class ApiV1Controller extends Controller
 		$share = Status::firstOrCreate([
 			'profile_id' => $user->profile_id,
 			'reblog_of_id' => $status->id,
+			'type' => 'share',
 			'in_reply_to_profile_id' => $status->profile_id,
 			'scope' => 'public',
 			'visibility' => 'public'

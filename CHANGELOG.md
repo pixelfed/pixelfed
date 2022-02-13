@@ -46,6 +46,7 @@
 - Updated StatusTagsPipeline, process federated hashtags and mentions ([a84b1736](https://github.com/pixelfed/pixelfed/commit/a84b1736))
 - Updated Inbox, fix undo announce. ([cf286fb0](https://github.com/pixelfed/pixelfed/commit/cf286fb0))
 - Updated ApiV1Controller, improve favourites endpoint. ([151dc17c](https://github.com/pixelfed/pixelfed/commit/151dc17c))
+- Updated StatusController, set missing reblog/share type. ([548a12a4](https://github.com/pixelfed/pixelfed/commit/548a12a4))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
