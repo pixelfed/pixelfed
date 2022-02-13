@@ -1040,6 +1040,13 @@ class ApiV1Controller extends Controller
 			}
 		}
 
+		abort_if(
+			Like::whereProfileId($user->profile_id)
+				->where('created_at', '>', now()->subDay())
+				->count() >= 100,
+			429
+		);
+
 		$like = Like::firstOrCreate([
 			'profile_id' => $user->profile_id,
 			'status_id' => $status['id']
