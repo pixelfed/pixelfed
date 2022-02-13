@@ -114,6 +114,10 @@ class Inbox
 				$this->handleStoryReplyActivity();
 				break;
 
+			// case 'Update':
+			// 	(new UpdateActivity($this->payload, $this->profile))->handle();
+			// 	break;
+
 			default:
 				// TODO: decide how to handle invalid verbs.
 				break;
@@ -688,11 +692,13 @@ class Inbox
 				break;
 
 			case 'Announce':
-				$obj = $obj['object'];
-				if(!Helpers::validateLocalUrl($obj)) {
+				if(is_array($obj) && isset($obj['object'])) {
+					$obj = $obj['object'];
+				}
+				if(!is_string($obj) || !Helpers::validateLocalUrl($obj)) {
 					return;
 				}
-				$status = Helpers::statusFetch($obj);
+				$status = Status::whereUri($obj)->exists();
 				if(!$status) {
 					return;
 				}
