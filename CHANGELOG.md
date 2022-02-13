@@ -44,6 +44,7 @@
 - Updated filesystems config, set S3 visibility to public by default. Fixes #2913. ([49a53c27](https://github.com/pixelfed/pixelfed/commit/49a53c27))
 - Updated CommentPipeline, improve parent reply_count calculation. ([ccc94802](https://github.com/pixelfed/pixelfed/commit/ccc94802))
 - Updated StatusTagsPipeline, process federated hashtags and mentions ([a84b1736](https://github.com/pixelfed/pixelfed/commit/a84b1736))
+- Updated Inbox, fix undo announce. ([cf286fb0](https://github.com/pixelfed/pixelfed/commit/cf286fb0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
