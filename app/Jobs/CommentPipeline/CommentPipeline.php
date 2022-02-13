@@ -59,10 +59,13 @@ class CommentPipeline implements ShouldQueue
         $target = $status->profile;
         $actor = $comment->profile;
 
-        DB::transaction(function() use($status) {
-        	$status->reply_count = DB::table('statuses')->whereInReplyToId($status->id)->count();
-        	$status->save();
-        });
+        if(config('database.default') === 'mysql') {
+	        DB::transaction(function() use($status) {
+	        	$count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $status->id]);
+	        	$status->reply_count = count($count);
+	        	$status->save();
+	        });
+        }
 
         if ($actor->id === $target->id || $status->comments_disabled == true) {
             return true;
