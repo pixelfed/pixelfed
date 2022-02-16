@@ -7,6 +7,8 @@ use Auth, Cache, DB, Storage, URL;
 use Carbon\Carbon;
 use App\{
 	Avatar,
+	Collection,
+	CollectionItem,
 	Hashtag,
 	Like,
 	Media,
@@ -449,7 +451,8 @@ class ComposeController extends Controller
 			'place' => 'nullable',
 			'comments_disabled' => 'nullable',
 			'tagged' => 'nullable',
-			'license' => 'nullable|integer|min:1|max:16'
+			'license' => 'nullable|integer|min:1|max:16',
+			'collections' => 'sometimes|array|min:1|max:5',
 			// 'optimize_media' => 'nullable'
 		]);
 
@@ -570,6 +573,20 @@ class ComposeController extends Controller
 			$mt->save();
 			MediaTagService::set($mt->status_id, $mt->profile_id);
 			MediaTagService::sendNotification($mt);
+		}
+
+		if($request->filled('collections')) {
+			$collections = Collection::whereProfileId($profile->id)
+				->find($request->input('collections'))
+				->each(function($collection) use($status) {
+					CollectionItem::firstOrCreate([
+						'collection_id' => $collection->id,
+						'object_type' => 'App\Status',
+						'object_id' => $status->id
+					], [
+						'order' => $collection->items()->count()
+					]);
+				});
 		}
 
 		NewStatusPipeline::dispatch($status);
