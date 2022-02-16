@@ -53,6 +53,7 @@
 - Updated ApiV1Controller, improve favourites endpoint. ([151dc17c](https://github.com/pixelfed/pixelfed/commit/151dc17c))
 - Updated StatusController, set missing reblog/share type. ([548a12a4](https://github.com/pixelfed/pixelfed/commit/548a12a4))
 - Updated index view, remove shortcut from favicon meta tag. Fixes #3196. ([6e2cb3cd](https://github.com/pixelfed/pixelfed/commit/6e2cb3cd))
+- Updated CollectionController, fix broken unauthenticated access. Fixes #3242. ([bd249f0c](https://github.com/pixelfed/pixelfed/commit/bd249f0c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
