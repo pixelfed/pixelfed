@@ -17,6 +17,7 @@ use App\Transformer\Api\{
 };
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\StatusService;
 
 class CollectionController extends Controller
 {
@@ -166,12 +167,16 @@ class CollectionController extends Controller
         if($collection->visibility !== 'public') {
             abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
         }
-        $posts = $collection->posts()->orderBy('order', 'asc')->get();
 
-        $fractal = new Fractal\Manager();
-        $fractal->setSerializer(new ArraySerializer());
-        $resource = new Fractal\Resource\Collection($posts, new StatusTransformer());
-        $res = $fractal->createData($resource)->toArray();
+        $res = CollectionItem::whereCollectionId($id)
+        	->pluck('object_id')
+        	->map(function($id) {
+        		return StatusService::get($id);
+        	})
+        	->filter(function($post) {
+        		return $post && isset($post['account']);
+        	})
+        	->values();
 
         return response()->json($res);
     }
@@ -197,11 +202,12 @@ class CollectionController extends Controller
             ->paginate(9)
             ->map(function($collection) {
                 return [
-                    'id' => $collection->id,
+                    'id' => (string) $collection->id,
                     'title' => $collection->title,
                     'description' => $collection->description,
                     'thumb' => $collection->posts()->first()->thumb(),
                     'url' => $collection->url(),
+                    'post_count' => $collection->posts()->count(),
                     'published_at' => $collection->published_at
                 ];
         });
