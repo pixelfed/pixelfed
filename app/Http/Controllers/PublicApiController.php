@@ -207,7 +207,7 @@ class PublicApiController extends Controller
             ->paginate($limit);
         }
 
-        $resource = new Fractal\Resource\Collection($replies, new StatusTransformer(), 'data');
+        $resource = new Fractal\Resource\Collection($replies, new StatusStatelessTransformer(), 'data');
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
