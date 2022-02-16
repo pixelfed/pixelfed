@@ -20,6 +20,8 @@
 - Mobile app drawer menu ([7b4318fd](https://github.com/pixelfed/pixelfed/commit/7b4318fd))
 - Add Preferred Profile Layout UI setting ([a816ea66](https://github.com/pixelfed/pixelfed/commit/a816ea66))
 - Fix profile masonry layout on mobile. Fixes #3203 ([fdf90f2d](https://github.com/pixelfed/pixelfed/commit/fdf90f2d))
+- Add search bar to mobile breakpoints and adjust avatar size when necessary ([77b9b6bd](https://github.com/pixelfed/pixelfed/commit/77b9b6bd))
+- Improved profile layout on mobile breakpoints ([77b9b6bd](https://github.com/pixelfed/pixelfed/commit/77b9b6bd))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
