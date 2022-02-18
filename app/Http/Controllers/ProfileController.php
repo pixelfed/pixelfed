@@ -26,6 +26,17 @@ class ProfileController extends Controller
 {
 	public function show(Request $request, $username)
 	{
+		// redirect authed users to Metro 2.0
+		if($request->user()) {
+			// unless they force static view
+			if(!$request->has('fs') || $request->input('fs') != '1') {
+				$pid = AccountService::usernameToId($username);
+				if($pid) {
+					return redirect('/i/web/profile/' . $pid);
+				}
+			}
+		}
+
 		$user = Profile::whereNull('domain')
 			->whereNull('status')
 			->whereUsername($username)
