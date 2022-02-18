@@ -33,14 +33,14 @@ class CollectionController extends Controller
         return view('collection.create', compact('collection'));
     }
 
-    public function show(Request $request, int $collection)
+    public function show(Request $request, int $id)
     {
-        $collection = Collection::with('profile')->whereNotNull('published_at')->findOrFail($collection);
-        if($collection->profile->status != null) {
-            abort(404);
-        }
-        if($collection->visibility !== 'public') {
-            abort_if(!Auth::check() || Auth::user()->profile_id != $collection->profile_id, 404);
+        $user = $request->user();
+        $collection = Collection::findOrFail($id);
+        if($collection->published_at == null || $collection->visibility != 'public') {
+            if(!$user || $user->profile_id != $collection->profile_id) {
+                abort_unless($user && $user->is_admin, 404);
+            }
         }
     	return view('collection.show', compact('collection'));
     }
@@ -144,20 +144,23 @@ class CollectionController extends Controller
 
     public function get(Request $request, $id)
     {
-        $profile = Auth::check() ? Auth::user()->profile : [];
-
-        $collection = Collection::whereVisibility('public')->findOrFail($id);
-        if($collection->published_at == null) {
-            if(!Auth::check() || $profile->id !== $collection->profile_id) {
-                abort(404);
+    	$user = $request->user();
+        $collection = Collection::findOrFail($id);
+        if($collection->published_at == null || $collection->visibility != 'public') {
+            if(!$user || $user->profile_id != $collection->profile_id) {
+                abort_unless($user && $user->is_admin, 404);
             }
         }
 
         return [
-            'id'            => $collection->id,
-            'title'         => $collection->title,
-            'description'   => $collection->description,
-            'visibility'    => $collection->visibility
+            'id' => (string) $collection->id,
+            'visibility' => $collection->visibility,
+            'title' => $collection->title,
+            'description' => $collection->description,
+            'thumb' => $collection->posts()->first()->thumb(),
+            'url' => $collection->url(),
+            'post_count' => $collection->posts()->count(),
+            'published_at' => $collection->published_at
         ];
     }
 
@@ -183,26 +186,28 @@ class CollectionController extends Controller
 
     public function getUserCollections(Request $request, int $id)
     {
+    	$user = $request->user();
+    	$pid = $user ? $user->profile_id : null;
+
         $profile = Profile::whereNull('status')
             ->whereNull('domain')
             ->findOrFail($id);
 
         if($profile->is_private) {
-            abort_if(!Auth::check(), 404);
-            abort_if(!$profile->followedBy(Auth::user()->profile) && $profile->id != Auth::user()->profile_id, 404);
+            abort_if(!$pid, 404);
+            abort_if(!$profile->id != $pid, 404);
         }
 
-        return $profile
-            ->collections()
-            ->has('posts')
-            ->with('posts')
-            ->whereVisibility('public')
-            ->whereNotNull('published_at')
-            ->orderByDesc('published_at')
+        $visibility = $pid == $profile->id ? ['public', 'private'] : ['public'];
+
+        return Collection::whereProfileId($profile->id)
+        	->whereIn('visibility', $visibility)
+            ->orderByDesc('id')
             ->paginate(9)
             ->map(function($collection) {
                 return [
                     'id' => (string) $collection->id,
+                    'visibility' => $collection->visibility,
                     'title' => $collection->title,
                     'description' => $collection->description,
                     'thumb' => $collection->posts()->first()->thumb(),

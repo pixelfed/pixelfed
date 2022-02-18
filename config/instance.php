@@ -61,8 +61,8 @@ return [
 	],
 
 	'oauth' => [
-		'token_expiration' => env('OAUTH_TOKEN_DAYS', 15),
-		'refresh_expiration' => env('OAUTH_REFRESH_DAYS', 30),
+		'token_expiration' => env('OAUTH_TOKEN_DAYS', 365),
+		'refresh_expiration' => env('OAUTH_REFRESH_DAYS', 400),
 		'pat' => [
 			'enabled' => env('OAUTH_PAT_ENABLED', false),
 			'id' 	  => env('OAUTH_PAT_ID'),
@@ -77,5 +77,5 @@ return [
 		]
 	],
 
-	'enable_cc' => env('ENABLE_CONFIG_CACHE', false)
+	'enable_cc' => env('ENABLE_CONFIG_CACHE', false),
 ];
