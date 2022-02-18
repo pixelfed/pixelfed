@@ -55,6 +55,8 @@
 - Updated index view, remove shortcut from favicon meta tag. Fixes #3196. ([6e2cb3cd](https://github.com/pixelfed/pixelfed/commit/6e2cb3cd))
 - Updated CollectionController, fix broken unauthenticated access. Fixes #3242. ([bd249f0c](https://github.com/pixelfed/pixelfed/commit/bd249f0c))
 - Updated ComposeController, add collection support to compose endpoint. ([ec2cfaf5](https://github.com/pixelfed/pixelfed/commit/ec2cfaf5))
+- Updated instance config, match default oauth settings in AuthServiceProvider. ([52f25ff1](https://github.com/pixelfed/pixelfed/commit/52f25ff1))
+- Updated ComposeModal.vue, fix redirect after posting. Fixes #3254. ([5db64e94](https://github.com/pixelfed/pixelfed/commit/5db64e94))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
