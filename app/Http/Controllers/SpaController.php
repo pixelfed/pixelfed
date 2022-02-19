@@ -119,7 +119,7 @@ class SpaController extends Controller
 
 	public function usernameRedirect(Request $request, $username)
 	{
-		abort_unless($req->user(), 404);
+		abort_unless($request->user(), 404);
 		$id = AccountService::usernameToId($username);
 		if(!$id) {
 			return redirect('/i/web/404');
