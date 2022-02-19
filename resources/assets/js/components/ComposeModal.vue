@@ -1262,7 +1262,7 @@ export default {
 						if(location.pathname === '/i/web/compose' && res.data && res.data.length) {
 							location.href = '/i/web/post/' + res.data.split('/').slice(-1)[0];
 						} else {
-							location.href = data;
+							location.href = res.data;
 						}
 					}).catch(err => {
 						if(err.response) {
@@ -1330,6 +1330,7 @@ export default {
 
 		closeModal() {
 			$('#composeModal').modal('hide');
+			this.$emit('close');
 		},
 
 		goBack() {
