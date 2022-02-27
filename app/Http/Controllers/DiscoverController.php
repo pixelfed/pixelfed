@@ -7,6 +7,8 @@ use App\{
 	Follower,
 	Hashtag,
 	HashtagFollow,
+	Instance,
+	Like,
 	Profile,
 	Status,
 	StatusHashtag,
@@ -14,13 +16,7 @@ use App\{
 };
 use Auth, DB, Cache;
 use Illuminate\Http\Request;
-use App\Transformer\Api\AccountTransformer;
-use App\Transformer\Api\AccountWithStatusesTransformer;
-use App\Transformer\Api\StatusTransformer;
-use App\Transformer\Api\StatusStatelessTransformer;
-use League\Fractal;
-use League\Fractal\Serializer\ArraySerializer;
-use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\ConfigCacheService;
 use App\Services\StatusHashtagService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
@@ -28,168 +24,322 @@ use App\Services\UserFilterService;
 
 class DiscoverController extends Controller
 {
-		protected $fractal;
+	public function home(Request $request)
+	{
+		abort_if(!Auth::check() && config('instance.discover.public') == false, 403);
+		return view('discover.home');
+	}
 
-		public function __construct()
-		{
-				$this->fractal = new Fractal\Manager();
-				$this->fractal->setSerializer(new ArraySerializer());
-		}
+	public function showTags(Request $request, $hashtag)
+	{
+			abort_if(!config('instance.discover.tags.is_public') && !Auth::check(), 403);
 
-		public function home(Request $request)
-		{
-				abort_if(!Auth::check() && config('instance.discover.public') == false, 403);
-				return view('discover.home');
-		}
+			$tag = Hashtag::whereName($hashtag)
+				->orWhere('slug', $hashtag)
+				->firstOrFail();
+			$tagCount = StatusHashtagService::count($tag->id);
+			return view('discover.tags.show', compact('tag', 'tagCount'));
+	}
 
-		public function showTags(Request $request, $hashtag)
-		{
-				abort_if(!config('instance.discover.tags.is_public') && !Auth::check(), 403);
+	public function showCategory(Request $request, $slug)
+	{
+		abort(404);
+	}
 
-				$tag = Hashtag::whereName($hashtag)
-					->orWhere('slug', $hashtag)
-					->firstOrFail();
-				$tagCount = StatusHashtagService::count($tag->id);
-				return view('discover.tags.show', compact('tag', 'tagCount'));
-		}
-
-		public function showCategory(Request $request, $slug)
-		{
+	public function showLoops(Request $request)
+	{
 			abort(404);
+	}
+
+	public function loopsApi(Request $request)
+	{
+			abort(404);
+	}
+
+	public function loopWatch(Request $request)
+	{
+			return response()->json(200);
+	}
+
+	public function getHashtags(Request $request)
+	{
+		$auth = Auth::check();
+		abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);
+
+		$this->validate($request, [
+			'hashtag' => 'required|string|min:1|max:124',
+			'page' => 'nullable|integer|min:1|max:' . ($auth ? 29 : 10)
+		]);
+
+		$page = $request->input('page') ?? '1';
+		$end = $page > 1 ? $page * 9 : 0;
+		$tag = $request->input('hashtag');
+
+		$hashtag = Hashtag::whereName($tag)->firstOrFail();
+		if($page == 1) {
+			$res['follows'] = HashtagFollow::whereUserId(Auth::id())
+				->whereHashtagId($hashtag->id)
+				->exists();
 		}
+		$res['hashtag'] = [
+			'name' => $hashtag->name,
+			'url' => $hashtag->url()
+		];
+		$res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
+		return $res;
+	}
 
-		public function showLoops(Request $request)
-		{
-				abort(404);
-		}
+	public function profilesDirectory(Request $request)
+	{
+		return redirect('/')->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
+	}
 
-		public function loopsApi(Request $request)
-		{
-				abort(404);
-		}
+	public function profilesDirectoryApi(Request $request)
+	{
+		return ['error' => 'Temporarily unavailable.'];
+	}
 
-		public function loopWatch(Request $request)
-		{
-				return response()->json(200);
-		}
+	public function trendingApi(Request $request)
+	{
+		abort_if(config('instance.discover.public') == false && !Auth::check(), 403);
 
-		public function getHashtags(Request $request)
-		{
-			$auth = Auth::check();
-			abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);
+		$this->validate($request, [
+			'range' => 'nullable|string|in:daily,monthly,yearly',
+		]);
 
-			$this->validate($request, [
-				'hashtag' => 'required|string|min:1|max:124',
-				'page' => 'nullable|integer|min:1|max:' . ($auth ? 29 : 10)
-			]);
+		$range = $request->input('range');
+		$days = $range == 'monthly' ? 31 : ($range == 'daily' ? 1 : 365);
+		$ttls = [
+			1 => 1500,
+			31 => 14400,
+			365 => 86400
+		];
+		$key = ':api:discover:trending:v2.12:range:' . $days;
 
-			$page = $request->input('page') ?? '1';
-			$end = $page > 1 ? $page * 9 : 0;
-			$tag = $request->input('hashtag');
+		$ids = Cache::remember($key, $ttls[$days], function() use($days) {
+			$min_id = SnowflakeService::byDate(now()->subDays($days));
+			return DB::table('statuses')
+				->select(
+					'id',
+					'scope',
+					'type',
+					'is_nsfw',
+					'likes_count',
+					'created_at'
+				)
+				->where('id', '>', $min_id)
+				->whereNull('uri')
+				->whereScope('public')
+				->whereIn('type', [
+					'photo',
+					'photo:album',
+					'video'
+				])
+				->whereIsNsfw(false)
+				->orderBy('likes_count','desc')
+				->take(30)
+				->pluck('id');
+		});
 
-			$hashtag = Hashtag::whereName($tag)->firstOrFail();
-			if($page == 1) {
-				$res['follows'] = HashtagFollow::whereUserId(Auth::id())
-					->whereHashtagId($hashtag->id)
-					->exists();
-			}
-			$res['hashtag'] = [
-				'name' => $hashtag->name,
-				'url' => $hashtag->url()
-			];
-			$res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
-			return $res;
-		}
+		$filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
 
-		public function profilesDirectory(Request $request)
-		{
-			return redirect('/')
-				->with('statusRedirect', 'The Profile Directory is unavailable at this time.');
-		}
+		$res = $ids->map(function($s) {
+			return StatusService::get($s);
+		})->filter(function($s) use($filtered) {
+			return
+				$s &&
+				!in_array($s['account']['id'], $filtered) &&
+				isset($s['account']);
+		})->values();
 
-		public function profilesDirectoryApi(Request $request)
-		{
-			return ['error' => 'Temporarily unavailable.'];
-		}
+		return response()->json($res);
+	}
 
-		public function trendingApi(Request $request)
-		{
-			abort_if(config('instance.discover.public') == false && !Auth::check(), 403);
-
-			$this->validate($request, [
-				'range' => 'nullable|string|in:daily,monthly,yearly',
-			]);
-
-			$range = $request->input('range');
-			$days = $range == 'monthly' ? 31 : ($range == 'daily' ? 1 : 365);
-			$ttls = [
-				1 => 1500,
-				31 => 14400,
-				365 => 86400
-			];
-			$key = ':api:discover:trending:v2.12:range:' . $days;
-
-			$ids = Cache::remember($key, $ttls[$days], function() use($days) {
-				$min_id = SnowflakeService::byDate(now()->subDays($days));
-				return DB::table('statuses')
-					->select(
-						'id',
-						'scope',
-						'type',
-						'is_nsfw',
-						'likes_count',
-						'created_at'
-					)
-					->where('id', '>', $min_id)
-					->whereNull('uri')
-					->whereScope('public')
-					->whereIn('type', [
-						'photo',
-						'photo:album',
-						'video'
-					])
-					->whereIsNsfw(false)
-					->orderBy('likes_count','desc')
-					->take(30)
-					->pluck('id');
+	public function trendingHashtags(Request $request)
+	{
+		$res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
+			->groupBy('hashtag_id')
+			->orderBy('total','desc')
+			->where('created_at', '>', now()->subDays(90))
+			->take(9)
+			->get()
+			->map(function($h) {
+				$hashtag = $h->hashtag;
+				return [
+					'id' => $hashtag->id,
+					'total' => $h->total,
+					'name' => '#'.$hashtag->name,
+					'url' => $hashtag->url('?src=dsh1')
+				];
 			});
+		return $res;
+	}
 
-			$filtered = Auth::check() ? UserFilterService::filters(Auth::user()->profile_id) : [];
+	public function trendingPlaces(Request $request)
+	{
+		return [];
+	}
 
-			$res = $ids->map(function($s) {
-				return StatusService::get($s);
-			})->filter(function($s) use($filtered) {
-				return
-					$s &&
-					!in_array($s['account']['id'], $filtered) &&
-					isset($s['account']);
-			})->values();
+	public function myMemories(Request $request)
+	{
+		abort_if(!$request->user(), 404);
+		$pid = $request->user()->profile_id;
+		abort_if(!$this->config()['memories']['enabled'], 404);
+		$type = $request->input('type') ?? 'posts';
 
-			return response()->json($res);
+		switch($type) {
+			case 'posts':
+				$res = Status::whereProfileId($pid)
+					->whereDay('created_at', date('d'))
+					->whereMonth('created_at', date('m'))
+					->whereYear('created_at', '!=', date('Y'))
+					->whereNull(['reblog_of_id', 'in_reply_to_id'])
+					->limit(20)
+					->pluck('id')
+					->map(function($id) {
+						return StatusService::get($id, false);
+					})
+					->filter(function($post) {
+						return $post && isset($post['account']);
+					})
+					->values();
+			break;
+
+			case 'liked':
+				$res = Like::whereProfileId($pid)
+					->whereDay('created_at', date('d'))
+					->whereMonth('created_at', date('m'))
+					->whereYear('created_at', '!=', date('Y'))
+					->orderByDesc('status_id')
+					->limit(20)
+					->pluck('status_id')
+					->map(function($id) {
+						return StatusService::get($id, false);
+					})
+					->filter(function($post) {
+						return $post && isset($post['account']);
+					})
+					->values();
+			break;
 		}
 
-		public function trendingHashtags(Request $request)
-		{
-			$res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
-				->groupBy('hashtag_id')
-				->orderBy('total','desc')
-				->where('created_at', '>', now()->subDays(90))
-				->take(9)
-				->get()
-				->map(function($h) {
-					$hashtag = $h->hashtag;
-					return [
-						'id' => $hashtag->id,
-						'total' => $h->total,
-						'name' => '#'.$hashtag->name,
-						'url' => $hashtag->url('?src=dsh1')
-					];
-				});
-			return $res;
-		}
+		return $res;
+	}
 
-		public function trendingPlaces(Request $request)
-		{
-			return [];
+	public function accountInsightsPopularPosts(Request $request)
+	{
+		abort_if(!$request->user(), 404);
+		$pid = $request->user()->profile_id;
+		abort_if(!$this->config()['insights']['enabled'], 404);
+		$posts = Cache::remember('pf:discover:metro2:accinsights:popular:' . $pid, 43200, function() use ($pid) {
+			return Status::whereProfileId($pid)
+			->whereNotNull('likes_count')
+			->orderByDesc('likes_count')
+			->limit(12)
+			->pluck('id')
+			->map(function($id) {
+				return StatusService::get($id, false);
+			})
+			->filter(function($post) {
+				return $post && isset($post['account']);
+			})
+			->values();
+		});
+
+		return $posts;
+	}
+
+	public function config()
+	{
+		$cc = ConfigCacheService::get('config.discover.features');
+		if($cc) {
+			return is_string($cc) ? json_decode($cc, true) : $cc;
 		}
+		return [
+			'hashtags' => [
+				'enabled' => false,
+			],
+			'memories' => [
+				'enabled' => false,
+			],
+			'insights' => [
+				'enabled' => false,
+			],
+			'friends' => [
+				'enabled' => false,
+			],
+			'server' => [
+				'enabled' => false,
+				'mode' => 'allowlist',
+				'domains' => []
+			]
+		];
+	}
+
+	public function serverTimeline(Request $request)
+	{
+		abort_if(!$request->user(), 404);
+		abort_if(!$this->config()['server']['enabled'], 404);
+		$pid = $request->user()->profile_id;
+		$domain = $request->input('domain');
+		$config = $this->config();
+		$domains = explode(',', $config['server']['domains']);
+		abort_unless(in_array($domain, $domains), 400);
+
+		$res = Status::whereNotNull('uri')
+			->where('uri', 'like', 'https://' . $domain . '%')
+			->whereNull(['in_reply_to_id', 'reblog_of_id'])
+			->orderByDesc('id')
+			->limit(12)
+			->pluck('id')
+			->map(function($id) {
+				return StatusService::get($id);
+			})
+			->filter(function($post) {
+				return $post && isset($post['account']);
+			})
+			->values();
+		return $res;
+	}
+
+	public function enabledFeatures(Request $request)
+	{
+		abort_if(!$request->user(), 404);
+		return $this->config();
+	}
+
+	public function updateFeatures(Request $request)
+	{
+		abort_if(!$request->user(), 404);
+		abort_if(!$request->user()->is_admin, 404);
+		$pid = $request->user()->profile_id;
+		$this->validate($request, [
+			'features.friends.enabled' => 'boolean',
+			'features.hashtags.enabled' => 'boolean',
+			'features.insights.enabled' => 'boolean',
+			'features.memories.enabled' => 'boolean',
+			'features.server.enabled' => 'boolean',
+		]);
+		$res = $request->input('features');
+		if($res['server'] && isset($res['server']['domains']) && !empty($res['server']['domains'])) {
+			$parts = explode(',', $res['server']['domains']);
+			$parts = array_filter($parts, function($v) {
+				$len = strlen($v);
+				$pos = strpos($v, '.');
+				$domain = trim($v);
+				if($pos == false || $pos == ($len + 1)) {
+					return false;
+				}
+				if(!Instance::whereDomain($domain)->exists()) {
+					return false;
+				}
+				return true;
+			});
+			$parts = array_slice($parts, 0, 10);
+			$d = implode(',', array_map('trim', $parts));
+			$res['server']['domains'] = $d;
+		}
+		ConfigCacheService::put('config.discover.features', json_encode($res));
+		return $res;
+	}
 }

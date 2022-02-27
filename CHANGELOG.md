@@ -22,6 +22,7 @@
 - Fix profile masonry layout on mobile. Fixes #3203 ([fdf90f2d](https://github.com/pixelfed/pixelfed/commit/fdf90f2d))
 - Add search bar to mobile breakpoints and adjust avatar size when necessary ([77b9b6bd](https://github.com/pixelfed/pixelfed/commit/77b9b6bd))
 - Improved profile layout on mobile breakpoints ([77b9b6bd](https://github.com/pixelfed/pixelfed/commit/77b9b6bd))
+- New Discover layout with My Hashtags, My Memories, Account Insights, Find Friends and Server Timelines ([0b680099](https://github.com/pixelfed/pixelfed/commit/0b680099))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
@@ -60,6 +61,8 @@
 - Updated StatusController, redirect status view for authed users to Metro 2.0 UI. ([71dff472](https://github.com/pixelfed/pixelfed/commit/71dff472))
 - Updated ProfileController, redirect profile view for authed users to Metro 2.0 UI. ([7f8129a7](https://github.com/pixelfed/pixelfed/commit/7f8129a7))
 - Updated SpaController, fix variable typo. Fixes #3268. ([8d1af1d6](https://github.com/pixelfed/pixelfed/commit/8d1af1d6))
+- Updated ComposeModal, fix post redirect on old UI. ([160e32a5](https://github.com/pixelfed/pixelfed/commit/160e32a5))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)

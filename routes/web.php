@@ -216,6 +216,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::post('status/{id}/archive', 'ApiController@archive');
 				Route::post('status/{id}/unarchive', 'ApiController@unarchive');
 				Route::get('statuses/archives', 'ApiController@archivedPosts');
+				Route::get('discover/memories', 'DiscoverController@myMemories');
+				Route::get('discover/account-insights', 'DiscoverController@accountInsightsPopularPosts');
+				Route::get('discover/server-timeline', 'DiscoverController@serverTimeline');
+				Route::get('discover/meta', 'DiscoverController@enabledFeatures');
+				Route::post('discover/admin/features', 'DiscoverController@updateFeatures');
 			});
 
 			Route::get('discover/accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular');
