@@ -13,6 +13,7 @@ return [
 		'shared' => 'Compartiu',
 		'shares' => 'Compartido',
 		'unshare' => 'Non compartir',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar ligazón',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Outro',
 		'readMore' => 'Ler máis',
 		'success' => 'Éxito',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contido sensible',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Axustes',
 		'compose' => 'Crear Nova',
-		'logout' => 'Logout',
+		'logout' => 'Saír',
 
 		// Nav footer
 		'about' => 'Acerca de',
@@ -86,17 +91,18 @@ return [
 
 		'followed' => 'seguiu',
 		'mentioned' => 'mencionou',
-		'you' => 'you',
+		'you' => 'ti',
 
 		'yourApplication' => 'A túa solicitude para unirte',
 		'applicationApproved' => 'foi aprobada!',
 		'applicationRejected' => 'for rexeitada. Podes volver a solicitar unirte en 6 meses.',
 
 		'dm' => 'md',
-		'groupPost' => 'group post',
+		'groupPost' => 'publicación grupal',
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'Seguimento pedido',
 		'joined' => 'Uniuse',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Non podemos atopar ningunha colección',
+		'emptyPosts' => 'Non podemos atopar ningunha publicación',
 	],
 
 	'menu' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Xente que podes coñecer'
+		'peopleYouMayKnow' => 'Xente que podes coñecer',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Non podemos atopar ningunha publicación con este cancelo'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
