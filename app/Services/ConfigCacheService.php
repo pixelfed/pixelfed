@@ -48,7 +48,9 @@ class ConfigCacheService
 				'pixelfed.cloud_storage',
 
 				'account.autofollow',
-				'account.autofollow_usernames'
+				'account.autofollow_usernames',
+				'config.discover.features',
+				// 'system.user_mode'
 			];
 
 			if(!config('instance.enable_cc')) {

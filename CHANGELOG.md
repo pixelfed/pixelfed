@@ -64,6 +64,7 @@
 - Updated ComposeModal, fix post redirect on old UI. ([160e32a5](https://github.com/pixelfed/pixelfed/commit/160e32a5))
 - Updated LikeService, improve caching logic and add profile id to likedBy method to fix #3271. ([6af842eb](https://github.com/pixelfed/pixelfed/commit/6af842eb))
 - Updated admin diagnostics, add more configuration data to help diagnose potential issues. ([eab96fc3](https://github.com/pixelfed/pixelfed/commit/eab96fc3))
+- Updated ConfigCacheService, fix discover features. ([ad48521a](https://github.com/pixelfed/pixelfed/commit/ad48521a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
