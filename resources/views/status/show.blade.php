@@ -7,7 +7,7 @@
   </div>
 </noscript>
 <div class="mt-md-4"></div>
-<post-component status-template="{{$status->viewType()}}" status-id="{{$status->id}}" status-username="{{$status->profile->username}}" status-url="{{$status->url()}}" status-profile-url="{{$status->profile->url()}}" status-avatar="{{$status->profile->avatarUrl()}}" status-profile-id="{{$status->profile_id}}" profile-layout="{{$status->profile->profile_layout ?? 'metro'}}"></post-component>
+<post-component status-template="{{$status->viewType()}}" status-id="{{$status->id}}" status-username="{{$status->profile->username}}" status-url="{{$status->url()}}" status-profile-url="{{$status->profile->url()}}" status-avatar="{{$status->profile->avatarUrl()}}" status-profile-id="{{$status->profile_id}}" profile-layout="metro"></post-component>
 
 
 @endsection
