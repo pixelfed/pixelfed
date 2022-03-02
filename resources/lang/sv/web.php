@@ -4,14 +4,14 @@ return [
 
 	'common' => [
 		'comment' => 'Kommentar',
-		'commented' => 'Kommenterade',
+		'commented' => 'Kommenterades',
 		'comments' => 'Kommentarer',
 		'like' => 'Gilla',
-		'liked' => 'Gillade',
+		'liked' => 'Gillad',
 		'likes' => 'Gillanden',
 		'share' => 'Dela',
 		'shared' => 'Utdelad',
-		'shares' => 'Utdelningar',
+		'shares' => 'Utdelade',
 		'unshare' => 'Sluta dela ut',
 		'bookmark' => 'Bookmark',
 
@@ -35,7 +35,7 @@ return [
 	],
 
 	'site' => [
-		'terms' => 'Villkor för användning',
+		'terms' => 'Användarvillkor',
 		'privacy' => 'Integritetspolicy',
 	],
 
@@ -82,26 +82,26 @@ return [
 	'notifications' => [
 		'liked' => 'gillade ditt',
 		'commented' => 'kommenterade på din',
-		'reacted' => 'reagerade på ditt',
-		'shared' => 'delade ditt',
+		'reacted' => 'reagerade på din',
+		'shared' => 'delade din',
 		'tagged' => 'taggade dig i ett',
 
-		'updatedA' => 'uppdaterade ett',
-		'sentA' => 'skickade ett',
+		'updatedA' => 'uppdaterade en',
+		'sentA' => 'skickade en',
 
-		'followed' => 'followed',
-		'mentioned' => 'nämndes',
-		'you' => 'dig',
+		'followed' => 'följde',
+		'mentioned' => 'nämnde',
+		'you' => 'du',
 
 		'yourApplication' => 'Din ansökan för att gå med',
 		'applicationApproved' => 'godkändes!',
-		'applicationRejected' => 'avvisades. Du kan ansöka igen för att gå med om 6 månader.',
+		'applicationRejected' => 'nekades. Du kan söka för att gå med igen om 6 månader.',
 
 		'dm' => 'dm',
-		'groupPost' => 'grupp-inlägg',
-		'modlog' => 'modifieringslogg',
+		'groupPost' => 'gruppinlägg',
+		'modlog' => 'modlog',
 		'post' => 'inlägg',
-		'story' => 'berättelse',
+		'story' => 'historik',
 		'noneFound' => 'No notifications found',
 	],
 
@@ -119,7 +119,7 @@ return [
 		'admin' => 'Administratör',
 		'collections' => 'Samlingar',
 		'follow' => 'Följ',
-		'unfollow' => 'Avfölj',
+		'unfollow' => 'Sluta följa',
 		'editProfile' => 'Redigera profil',
 		'followRequested' => 'Follow Requested',
 		'joined' => 'Gick med',
@@ -137,11 +137,11 @@ return [
 		'unarchive' => 'Avarkivera',
 		'embed' => 'Bädda in',
 
-		'selectOneOption' => 'Välj någon av följande alternativen',
-		'unlistFromTimelines' => 'Avlista från tidslinjer',
+		'selectOneOption' => 'Välj något av följande alternativ',
+		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Lägg till innehållsvarning',
 		'removeCW' => 'Ta bort innehållsvarning',
-		'markAsSpammer' => 'Markera som spammare',
+		'markAsSpammer' => 'Markera som skickare av skräppost',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Skräppost',
 		'sensitive' => 'Känsligt innehåll',
@@ -153,36 +153,36 @@ return [
 		'confirmReport' => 'Bekräfta rapport',
 		'confirmReportText' => 'Är du säker på att du vill rapportera det här inlägget?',
 		'reportSent' => 'Rapporten skickades!',
-		'reportSentText' => 'Vi har lyckats ta emot din rapport.',
+		'reportSentText' => 'Mottagningen av din rapport lyckades.',
 		'reportSentError' => 'Det uppstod ett problem när det här inlägget skulle rapporteras.',
 
-		'modAddCWConfirm' => 'Är du säker på att du vill lägga till en innehållsvarning till det här inlägget?',
-		'modCWSuccess' => 'Tilläggningen av innehållsvarningen lyckades',
-		'modRemoveCWConfirm' => 'Är du säker på att du vill lägga till en innehållsvarning till det här inlägget?',
-		'modRemoveCWSuccess' => 'Borttagningen av innehållsvarningen lyckades',
-		'modUnlistConfirm' => 'Är du säker på att du vill avlista det här inlägget?',
-		'modUnlistSuccess' => 'Avlistningen av inlägget lyckades',
-		'modMarkAsSpammerConfirm' => 'Är du säker på att du vill markera den här användaren som en spammare? Alla befintliga och framtida inlägg kommer att vara onoterade på tidslinjer och en innehållsvarning kommer att tillämpas.',
-		'modMarkAsSpammerSuccess' => 'Markering av kontot som spammare lyckades',
+		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
+		'modCWSuccess' => 'Successfully added content warning',
+		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
+		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
+		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
+		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
 
-		'toFollowers' => 'till Följare',
+		'toFollowers' => 'to Followers',
 
-		'showCaption' => 'Visa bildtext',
-		'showLikes' => 'Visa gillningar',
-		'compactMode' => 'Kompakt läge',
+		'showCaption' => 'Show Caption',
+		'showLikes' => 'Show Likes',
+		'compactMode' => 'Compact Mode',
 		'embedConfirmText' => 'By using this embed, you agree to our',
 
-		'deletePostConfirm' => 'Är du säker på att du vill radera det här inlägget?',
-		'archivePostConfirm' => 'Är du säker på att du vill arkivera det här inlägget?',
-		'unarchivePostConfirm' => 'Är du säker på att du vill av-arkivera det här inlägget?',
+		'deletePostConfirm' => 'Are you sure you want to delete this post?',
+		'archivePostConfirm' => 'Are you sure you want to archive this post?',
+		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
 	],
 
 	'story' => [
-		'add' => 'Lägg till berättelse'
+		'add' => 'Add Story'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Personer som du kanske känner',
+		'peopleYouMayKnow' => 'People you may know',
 
 		'onboarding' => [
 			'welcome' => 'Welcome',
@@ -193,7 +193,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'Vi verkar inte kunna hitta några inlägg för den här hashtaggen'
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
 	],
 
 	'report' => [
