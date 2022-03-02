@@ -13,16 +13,21 @@ return [
 		'shared' => 'Dibagikan',
 		'shares' => 'Dibagikan',
 		'unshare' => 'Batalkan berbagi',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Batal',
 		'copyLink' => 'Salin tautan',
 		'delete' => 'Hapus',
 		'error' => 'Kesalahan',
 		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
-		'oops' => 'Oops!',
+		'oops' => 'Waduh!',
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Konten Sensitif',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'postingan',
 		'story' => 'cerita',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -110,7 +116,7 @@ return [
 		'posts' => 'Postingan',
 		'followers' => 'Pengikut',
 		'following' => 'Mengikuti',
-		'admin' => 'Pengelola',
+		'admin' => 'Pengurus',
 		'collections' => 'Koleksi',
 		'follow' => 'Ikuti',
 		'unfollow' => 'Berhenti Ikuti',
@@ -129,7 +135,7 @@ return [
 		'report' => 'Laporkan',
 		'archive' => 'Arsipkan',
 		'unarchive' => 'Keluarkan dari arsip',
-		'embed' => 'Penyemat',
+		'embed' => 'Sematkan',
 
 		'selectOneOption' => 'Pilih salah satu dari opsi berikut',
 		'unlistFromTimelines' => 'Keluarkan dari Timeline',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal'
+		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Sepertinya kami tidak dapat menemukan postingan untuk tagar ini'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
