@@ -4,13 +4,13 @@ return [
 
 	'common' => [
 		'comment' => 'Yorum',
-		'commented' => 'Yorumlar',
+		'commented' => 'Yorum yaptı',
 		'comments' => 'Yorumlar',
 		'like' => 'Beğen',
 		'liked' => 'Beğenildi',
 		'likes' => 'Beğeniler',
 		'share' => 'Paylaş',
-		'shared' => 'Paylaşılan',
+		'shared' => 'Paylaşıldı',
 		'shares' => 'Paylaşılanlar',
 		'unshare' => 'Paylaşımı kaldır',
 		'bookmark' => 'Bookmark',
@@ -29,7 +29,7 @@ return [
 		'close' => 'Close',
 		'clickHere' => 'click here',
 
-		'sensitive' => 'Hassasiyet',
+		'sensitive' => 'Hassas',
 		'sensitiveContent' => 'Hassas içerik',
 		'sensitiveContentWarning' => 'Bu ileti hassas içerik içeriyor olabilir',
 	],
@@ -50,7 +50,7 @@ return [
 
 		// Core features
 		'discover' => 'Keşfet',
-		'directMessages' => 'Direkt Mesajlar',
+		'directMessages' => 'Doğrudan İletiler',
 		'notifications' => 'Bildirimler',
 		'groups' => 'Gruplar',
 		'stories' => 'Hikayeler',
@@ -90,7 +90,7 @@ return [
 		'sentA' => 'sent a',
 
 		'followed' => 'followed',
-		'mentioned' => 'söz edilmiş',
+		'mentioned' => 'mentioned',
 		'you' => 'sen',
 
 		'yourApplication' => 'Katılma isteğiniz',
@@ -98,7 +98,7 @@ return [
 		'applicationRejected' => 'reddedildi. 6 ay sonra, tekrar katılma isteğinde bulunabilirsiniz.',
 
 		'dm' => 'özel mesaj',
-		'groupPost' => 'grup gönderisi',
+		'groupPost' => 'group post',
 		'modlog' => 'modlog',
 		'post' => 'gönderi',
 		'story' => 'hikaye',
@@ -107,9 +107,9 @@ return [
 
 	'post' => [
 		'shareToFollowers' => 'Takipçileri paylaş',
-		'shareToOther' => 'Başkalarıyla Paylaş',
+		'shareToOther' => 'Share to other',
 		'noLikes' => 'Henüz beğenilmedi',
-		'uploading' => 'Yükleniyor',
+		'uploading' => 'Karşıya Yükleniyor',
 	],
 
 	'profile' => [
@@ -117,36 +117,36 @@ return [
 		'followers' => 'Takipçiler',
 		'following' => 'Takip ediliyor',
 		'admin' => 'Yönetici',
-		'collections' => 'Koleksiyonlar',
+		'collections' => 'Derlemeler',
 		'follow' => 'Takip et',
 		'unfollow' => 'Takibi bırak',
 		'editProfile' => 'Profili Düzenle',
 		'followRequested' => 'Takip İsteği',
 		'joined' => 'Katıldı',
 
-		'emptyCollections' => 'Herhangi bir derleme bulamıyoruz',
-		'emptyPosts' => 'Herhangi bir gönderi bulamıyoruz',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
 		'viewPost' => 'Gönderiyi görüntüle',
 		'viewProfile' => 'Profili Görüntüle',
-		'moderationTools' => 'Denetim Ayarları',
+		'moderationTools' => 'Denetim Araçları',
 		'report' => 'Bildir',
-		'archive' => 'Arşiv',
+		'archive' => 'Archive',
 		'unarchive' => 'Arşivden çıkar',
-		'embed' => 'İliştir',
+		'embed' => 'Embed',
 
 		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
 		'unlistFromTimelines' => 'Akışlardan kaldır',
 		'addCW' => 'İçerik Uyarısını Ekle',
 		'removeCW' => 'İçerik Uyarısını Kaldır',
-		'markAsSpammer' => 'İstenmeyen ileti göndericisi olarak işaretle',
+		'markAsSpammer' => 'Mark as Spammer',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'İstenmeyen',
 		'sensitive' => 'Hassas içerik',
 		'abusive' => 'İstismarcı veya Zararlı',
-		'underageAccount' => 'Yaşı Tutmayan Hesap',
+		'underageAccount' => 'Underage Account',
 		'copyrightInfringement' => 'Telif hakkı ihlali',
 		'impersonation' => 'Taklit Hesap',
 		'scamOrFraud' => 'Dolandırıcılık',
