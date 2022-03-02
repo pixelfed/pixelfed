@@ -13,6 +13,7 @@ return [
 		'shared' => 'Κοινοποιήθηκε',
 		'shares' => 'Κοινοποιήσεις',
 		'unshare' => 'Αναίρεση κοινοποίησης',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Ακύρωση',
 		'copyLink' => 'Αντιγραφή Συνδέσμου',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Άλλο',
 		'readMore' => 'Διαβάστε περισσότερα',
 		'success' => 'Επιτυχής',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Ευαίσθητο',
 		'sensitiveContent' => 'Ευαίσθητο περιεχόμενο',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'δημοσίευση',
 		'story' => 'ιστορία',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Άτομα που μπορεί να ξέρετε'
+		'peopleYouMayKnow' => 'Άτομα που μπορεί να ξέρετε',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Δεν μπορούμε να βρούμε δημοσιεύσεις για αυτό το hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
