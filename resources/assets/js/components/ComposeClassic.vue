@@ -61,7 +61,7 @@
 							</b-carousel-slide>
 						</b-carousel>
 					</div>
-					<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="bg-dark align-items-center">
+					<div v-if="ids.length > 0 && media[carouselCursor].type == 'image'" class="bg-dark align-items-center">
 						<ul class="nav media-drawer-filters text-center">
 							<li class="nav-item">
 								<div class="p-1 pt-3">
@@ -78,7 +78,7 @@
 						</ul>
 					</div>
 				</div>
-				<div v-if="ids.length > 0 && ['Image', 'Video'].indexOf(media[carouselCursor].type) != -1" class="bg-lighter p-2 row">
+				<div v-if="ids.length > 0 && ['image', 'video'].indexOf(media[carouselCursor].type) != -1" class="bg-lighter p-2 row">
 					<div v-if="media[carouselCursor].type == 'Image'" class="col-12">
 						<div class="form-group">
 							<input type="text" class="form-control" v-model="media[carouselCursor].alt" placeholder="Optional image description">

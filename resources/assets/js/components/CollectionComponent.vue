@@ -67,8 +67,37 @@
 				</select>
 			</div>
 			<div class="d-flex justify-content-between align-items-center pt-3">
-				<a class="text-primary font-weight-bold text-decoration-none" href="#" @click.prevent="showEditPhotosModal">Edit Photos</a>
-				<button type="button" class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right" @click.prevent="updateCollection">Save</button>
+				<a
+					class="text-primary font-weight-bold text-decoration-none"
+					href="#"
+					@click.prevent="showEditPhotosModal">
+					Edit Photos
+				</a>
+
+				<div v-if="collection.published_at">
+					<button
+						type="button"
+						class="btn btn-primary btn-sm py-1 font-weight-bold px-3 float-right"
+						@click.prevent="updateCollection">
+						Save
+					</button>
+				</div>
+
+				<div v-else class="float-right">
+					<button
+						type="button"
+						class="btn btn-outline-primary btn-sm py-1 font-weight-bold px-3"
+						@click.prevent="publishCollection">
+						Publish
+					</button>
+
+					<button
+						type="button"
+						class="btn btn-primary btn-sm py-1 font-weight-bold px-3"
+						@click.prevent="updateCollection">
+						Save
+					</button>
+				</div>
 			</div>
 		</form>
 	</b-modal>
@@ -161,6 +190,7 @@ export default {
 
 	data() {
 		return {
+			collection: {},
 			config: window.App.config,
 			loaded: false,
 			posts: [],
@@ -179,14 +209,21 @@ export default {
 	},
 
 	beforeMount() {
-		this.fetchCurrentUser();
-		this.fetchItems();
+		this.fetchCollection();
 	},
 
 	mounted() {
 	},
 
 	methods: {
+		fetchCollection() {
+			axios.get('/api/local/collection/' + this.collectionId)
+			.then(res => {
+				this.collection = res.data;
+				this.fetchCurrentUser();
+			})
+		},
+
 		fetchCurrentUser() {
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
@@ -194,9 +231,13 @@ export default {
 					this.owner = this.currentUser.id == this.profileId;
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
+					this.fetchItems();
 				});
+			} else {
+				this.fetchItems();
 			}
 		},
+
 		fetchItems() {
 			axios.get('/api/local/collection/items/' + this.collectionId)
 			.then(res => {
@@ -288,6 +329,26 @@ export default {
 			let confirmed = window.confirm('Are you sure you want to delete this collection?');
 			if(confirmed) {
 				axios.delete('/api/local/collection/' + this.collectionId)
+				.then(res => {
+					window.location.href = '/';
+				});
+			} else {
+				return;
+			}
+		},
+
+		publishCollection() {
+			if(this.owner == false) {
+				return;
+			}
+
+			let confirmed = window.confirm('Are you sure you want to publish this collection?');
+			if(confirmed) {
+				axios.post('/api/local/collection/' + this.collectionId + '/publish', {
+					title: this.title,
+					description: this.description,
+					visibility: this.visibility
+				})
 				.then(res => {
 					window.location.href = '/';
 				});

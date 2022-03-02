@@ -1,0 +1,49 @@
+@import "lib/ibmplexsans";
+
+body {
+	background: rgba(243,244,246,1);
+	font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.primary {
+	color: #3B82F6;
+}
+
+.web-wrapper {
+	margin-bottom: 10rem;
+}
+
+.jumbotron {
+	border-radius: 18px;
+}
+
+.rounded-px {
+	border-radius: 18px;
+}
+
+.doc-body {
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.sticky-top {
+	z-index: 2;
+}
+
+.container-fluid {
+	max-width: 1440px !important;
+}
+
+.text-lighter {
+	color: #94a3b8 !important;
+}
+
+.badge-primary {
+	background-color: #3B82F6;
+}
+
+.btn-primary.primary {
+	background-color: #3B82F6;
+	color: #fff !important;
+}

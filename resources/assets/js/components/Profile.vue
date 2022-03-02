@@ -1,12 +1,5 @@
 <template>
 <div class="w-100 h-100">
-	<div v-if="owner && layout == 'moment'">
-		<div class="bg-primary shadow">
-			<p class="text-center text-white mb-0 py-3 font-weight-bold border-bottom border-info">
-				<i class="fas fa-exclamation-triangle fa-lg mr-2"></i> The Moment UI layout has been deprecated and will be removed in a future release.
-			</p>
-		</div>
-	</div>
 	<div v-if="isMobile" class="bg-white p-3 border-bottom">
 		<div class="d-flex justify-content-between align-items-center">
 			<div @click="goBack" class="cursor-pointer">
@@ -324,97 +317,6 @@
 								<div slot="no-results"></div>
 							</infinite-loading>
 						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div v-if="layout == 'moment'" class="mt-3">
-			<div :class="momentBackground()" style="width:100%;min-height:274px;">
-			</div>
-			<div class="bg-white border-bottom">
-				<div class="container">
-					<div class="row">
-						<div class="col-12 row mx-0">
-							<div class="col-4 text-left mt-2">
-								<span v-if="relationship && relationship.followed_by">
-									<span class="bg-light border border-secondary font-weight-bold small py-1 px-2 text-muted rounded">FOLLOWS YOU</span>
-								</span>
-								<span v-if="profile.is_admin">
-									<span class="bg-light border border-danger font-weight-bold small py-1 px-2 text-danger rounded">ADMIN</span>
-								</span>
-							</div>
-							<div class="col-4 text-center">
-								<div class="d-block d-md-none">
-									<img class="rounded-circle box-shadow" :src="profile.avatar" width="110px" height="110px" style="margin-top:-60px; border: 5px solid #fff">
-								</div>
-								<div class="d-none d-md-block">
-									<img class="rounded-circle box-shadow" :src="profile.avatar" width="172px" height="172px" style="margin-top:-90px; border: 5px solid #fff">
-								</div>
-							</div>
-							<div class="col-4 text-right mt-2">
-								<span class="d-none d-md-inline-block pl-4">
-									<a :href="'/users/'+profile.username+'.atom'" class="fas fa-rss fa-lg text-muted text-decoration-none"></a>
-								</span>
-								<span class="pl-md-4 pl-sm-2" v-if="owner">
-									<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="/settings/home"></a>
-								</span>
-								<span class="pl-md-4 pl-sm-2" v-if="profile.id != user.id && user.hasOwnProperty('id')">
-									<a class="fas fa-cog fa-lg text-muted text-decoration-none" href="#" @click.prevent="visitorMenu"></a>
-								</span>
-								<span v-if="profile.id != user.id && user.hasOwnProperty('id')">
-									<span class="pl-md-4 pl-sm-2" v-if="relationship.following == true">
-										<button type="button"  class="btn btn-outline-secondary font-weight-bold btn-sm" @click.prevent="followProfile()">Unfollow</button>
-									</span>
-									<span class="pl-md-4 pl-sm-2" v-else>
-										<button type="button" class="btn btn-primary font-weight-bold btn-sm" @click.prevent="followProfile()">Follow</button>
-									</span>
-								</span>
-							</div>
-						</div>
-
-						<div class="col-12 text-center">
-							<div class="profile-details my-3">
-								<p class="font-weight-ultralight h2 text-center">{{profile.username}}</p>
-								<div v-if="profile.note" class="text-center text-muted p-3" v-html="profile.note"></div>
-								<div class="pb-3 text-muted text-center">
-									<a class="text-lighter" :href="profile.url">
-										<span class="font-weight-bold">{{formatCount(profile.statuses_count)}}</span>
-										Posts
-									</a>
-									<a v-if="profileSettings.followers.count" class="text-lighter cursor-pointer px-3" v-on:click="followersModal()">
-										<span class="font-weight-bold">{{formatCount(profile.followers_count)}}</span>
-										Followers
-									</a>
-									<a v-if="profileSettings.following.count" class="text-lighter cursor-pointer" v-on:click="followingModal()">
-										<span class="font-weight-bold">{{formatCount(profile.following_count)}}</span>
-										Following
-									</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="container-fluid">
-				<div class="profile-timeline mt-md-4">
-					<div class="" v-if="mode == 'grid'">
-						<masonry
-						  :cols="{default: 3, 700: 2, 400: 1}"
-						  :gutter="{default: '5px'}"
-						>
-							<div class="p-1" v-for="(s, index) in timeline">
-								<a :class="[s.sensitive ? 'card info-overlay card-md-border-0' : s.media_attachments[0].filter_class + ' card info-overlay card-md-border-0']" :href="statusUrl(s)">
-									<img :src="previewUrl(s)" class="img-fluid w-100">
-								</a>
-							</div>
-						</masonry>
-					</div>
-					<div v-if="timeline.length">
-						<infinite-loading @infinite="infiniteTimeline">
-							<div slot="no-more"></div>
-							<div slot="no-results"></div>
-						</infinite-loading>
 					</div>
 				</div>
 			</div>
@@ -750,15 +652,7 @@
 		beforeMount() {
 			this.fetchProfile();
 			let u = new URLSearchParams(window.location.search);
-			let forceMetro = localStorage.getItem('pf_metro_ui.exp.forceMetro') == 'true';
-
-			if(u.has('ui') && u.get('ui') == 'moment' && this.layout != 'moment') {
-				this.layout = 'moment';
-			}
-
-			if(forceMetro == true || u.has('ui') && u.get('ui') == 'metro' && this.layout != 'metro') {
-				this.layout = 'metro';
-			}
+			this.layout = 'metro';
 
 			if(this.layout == 'metro' && u.has('t')) {
 				if(this.modes.indexOf(u.get('t')) != -1) {
