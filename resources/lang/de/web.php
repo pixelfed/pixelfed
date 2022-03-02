@@ -7,22 +7,27 @@ return [
 		'commented' => 'Kommentiert',
 		'comments' => 'Kommentare',
 		'like' => 'Gefällt mir',
-		'liked' => 'Gefällt',
+		'liked' => 'Gefällt mir',
 		'likes' => 'Gefällt',
 		'share' => 'Teilen',
 		'shared' => 'Geteilt',
 		'shares' => 'Geteilt',
-		'unshare' => 'Teilen rückgängig machen',
+		'unshare' => 'Nicht mehr teilen',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
 		'delete' => 'Löschen',
 		'error' => 'Fehler',
-		'errorMsg' => 'Etwas ist schief gelaufen. Bitter versuch es später nochmal.',
+		'errorMsg' => 'Etwas ist schief gelaufen. Bitte versuch es später nochmal.',
 		'oops' => 'Hoppla!',
-		'other' => 'Anderes',
+		'other' => 'Sonstiges',
 		'readMore' => 'Weiterlesen',
 		'success' => 'Erfolgreich',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensibel',
 		'sensitiveContent' => 'Sensibler Inhalt',
@@ -52,7 +57,7 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Festplatte',
+		'drive' => 'Laufwerk',
 		'settings' => 'Einstellungen',
 		'compose' => 'Neu erstellen',
 		'logout' => 'Ausloggen',
@@ -94,9 +99,10 @@ return [
 
 		'dm' => 'PN',
 		'groupPost' => 'Gruppen-Post',
-		'modlog' => 'modlog',
+		'modlog' => 'Moderatorenlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -128,7 +134,7 @@ return [
 		'moderationTools' => 'Moderationswerkzeuge',
 		'report' => 'Melden',
 		'archive' => 'Archivieren',
-		'unarchive' => 'Entarchivieren',
+		'unarchive' => 'Aus Archiv zurückholen',
 		'embed' => 'Einbetten',
 
 		'selectOneOption' => 'Wähle eine der folgenden Optionen',
@@ -139,7 +145,7 @@ return [
 		'markAsSpammerText' => 'Aus der Zeitleiste entfernen und bisherige und zukünftige Beiträge mit einer Inhaltswarnung versehen',
 		'spam' => 'Spam',
 		'sensitive' => 'Sensibler Inhalt',
-		'abusive' => 'missbräuchlich oder schädigend',
+		'abusive' => 'Missbräuchlich oder Schädigend',
 		'underageAccount' => 'Minderjährigen-Konto',
 		'copyrightInfringement' => 'Urheberrechtsverletzung',
 		'impersonation' => 'Identitätsdiebstahl',
@@ -147,16 +153,16 @@ return [
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
 		'reportSent' => 'Meldung gesendet!',
-		'reportSentText' => 'Wir haben deinen Bericht erfolgreich erhalten.',
+		'reportSentText' => 'Wir haben deine Meldung erfolgreich erhalten.',
 		'reportSentError' => 'Es gab ein Problem beim Melden dieses Beitrags.',
 
 		'modAddCWConfirm' => 'Bist du sicher, dass du diesem Beitrag eine Inhaltswarnung hinzufügen möchtest?',
 		'modCWSuccess' => 'Inhaltswarnung erfolgreich hinzugefügt',
-		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?',
+		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung von diesem Beitrag entfernt werden soll?',
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
-		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
-		'modUnlistSuccess' => 'Beitrag erfolgreich nicht gelistet',
-		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spam markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
+		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht aus den Timelines entfernen möchtest?',
+		'modUnlistSuccess' => 'Beitrag aus Timelines entfernt',
+		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spammer markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
 		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
 		'toFollowers' => 'an die Folgenden',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
+		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
