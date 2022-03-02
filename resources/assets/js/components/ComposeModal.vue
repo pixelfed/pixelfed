@@ -358,7 +358,7 @@
 								<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
 							</div>
 							<hr>
-							<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="align-items-center px-2 pt-2">
+							<div v-if="ids.length > 0 && media[carouselCursor].type == 'image'" class="align-items-center px-2 pt-2">
 								<ul class="nav media-drawer-filters text-center">
 									<li class="nav-item">
 										<div class="p-1 pt-3">
@@ -395,7 +395,7 @@
 								<li class="nav-item mx-md-4">&nbsp;</li>
 							</ul>
 							<hr>
-							<div v-if="ids.length > 0 && media[carouselCursor].type == 'Image'" class="align-items-center px-2 pt-2">
+							<div v-if="ids.length > 0 && media[carouselCursor].type == 'image'" class="align-items-center px-2 pt-2">
 								<ul class="nav media-drawer-filters text-center">
 									<li class="nav-item">
 										<div class="p-1 pt-3">
