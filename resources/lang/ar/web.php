@@ -13,6 +13,7 @@ return [
 		'shared' => 'تمَّ مُشارَكَتُه',
 		'shares' => 'مُشارَكَات',
 		'unshare' => 'إلغاء المُشارَكَة',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'إلغاء',
 		'copyLink' => 'نَسخ الرابِط',
@@ -23,6 +24,10 @@ return [
 		'other' => 'اُخرى',
 		'readMore' => 'قراءةُ المزيد',
 		'success' => 'نَجاح',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'حسَّاس',
 		'sensitiveContent' => 'مُحتَوًى حسَّاس',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'سجلات المُشرِف',
 		'post' => 'مَنشور',
 		'story' => 'قَصَّة',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'أشخاصٌ قَد تَعرِفُهُم'
+		'peopleYouMayKnow' => 'أشخاصٌ قَد تَعرِفُهُم',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'على ما يَبدوا، لا يُمكِنُنا العُثور على أي مَنشور يَحتَوي على هذا الوَسم'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
