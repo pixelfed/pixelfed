@@ -13,6 +13,7 @@ return [
 		'shared' => 'Partagé',
 		'shares' => 'Partages',
 		'unshare' => 'Ne plus partager',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Annuler',
 		'copyLink' => 'Copier le lien',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Autre',
 		'readMore' => 'En savoir plus',
 		'success' => 'Opération réussie',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Médiathèque',
 		'settings' => 'Paramètres',
 		'compose' => 'Publier',
-		'logout' => 'Logout',
+		'logout' => 'Se déconnecter',
 
 		// Nav footer
 		'about' => 'À propos',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'journal de modération',
 		'post' => 'publication',
 		'story' => 'story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Connaissances possibles'
+		'peopleYouMayKnow' => 'Connaissances possibles',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Aucune publication ne semble exister pour ce hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
