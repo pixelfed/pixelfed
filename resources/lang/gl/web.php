@@ -89,8 +89,8 @@ return [
 		'updatedA' => 'actualizou unha',
 		'sentA' => 'enviou unha',
 
-		'followed' => 'seguiu',
-		'mentioned' => 'mencionou',
+		'followed' => 'seguiute',
+		'mentioned' => 'mencionoute',
 		'you' => 'ti',
 
 		'yourApplication' => 'A túa solicitude para unirte',
