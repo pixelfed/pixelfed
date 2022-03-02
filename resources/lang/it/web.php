@@ -13,6 +13,7 @@ return [
 		'shared' => 'Condiviso',
 		'shares' => 'Condivisioni',
 		'unshare' => 'Annulla condivisione',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Annulla',
 		'copyLink' => 'Copia link',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Altro',
 		'readMore' => 'Leggi di più',
 		'success' => 'Riuscito',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensibile',
 		'sensitiveContent' => 'Contenuto Sensibile',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'storia',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Persone che potresti conoscere'
+		'peopleYouMayKnow' => 'Persone che potresti conoscere',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Non riusciamo a trovare alcun post con questo hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
