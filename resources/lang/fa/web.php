@@ -60,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'تنظیمات',
 		'compose' => 'فرستهٔ جدید',
-		'logout' => 'Logout',
+		'logout' => 'خروج',
 
 		// Nav footer
 		'about' => 'درباره',
@@ -124,8 +124,8 @@ return [
 		'followRequested' => 'درخواست دنبال کردن فرستاده شد',
 		'joined' => 'پیوست',
 
-		'emptyCollections' => 'به نظر می‌رسد که نمی‌توانیم هیچ مجموعه‌ای پیدا کنیم',
-		'emptyPosts' => 'به نظر می‌رسد که نمی‌توانیم هیچ فرسته‌ای پیدا کنیم',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -193,7 +193,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'به نظر می‌رسد که نمی‌توانیم چیزی برای این هشتگ پیدا کنیم'
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
 	],
 
 	'report' => [
