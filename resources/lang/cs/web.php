@@ -13,6 +13,7 @@ return [
 		'shared' => 'Sdíleno',
 		'shares' => 'Sdílení',
 		'unshare' => 'Zrušit sdílení',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Zrušit',
 		'copyLink' => 'Kopírovat odkaz',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Další',
 		'readMore' => 'Číst více',
 		'success' => 'Úspěch',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Citlivé',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'moderátorský záznam',
 		'post' => 'příspěvek',
 		'story' => 'příbeh',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Lidé, které možná znáte'
+		'peopleYouMayKnow' => 'Lidé, které možná znáte',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Zdá se, že pro tento štítek nelze najít žádné příspěvky'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
