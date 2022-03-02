@@ -909,6 +909,7 @@ export default {
 			taggedPeopleSearch: null,
 			textMode: false,
 			tributeSettings: {
+				noMatchTemplate: function () { return null; },
 				collection: [
 					{
 						trigger: '@',
