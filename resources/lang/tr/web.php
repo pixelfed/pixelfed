@@ -13,6 +13,7 @@ return [
 		'shared' => 'Paylaşılan',
 		'shares' => 'Paylaşılanlar',
 		'unshare' => 'Paylaşımı kaldır',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'İptal',
 		'copyLink' => 'Bağlantıyı Kopyala',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Diğer',
 		'readMore' => 'Daha fazlasını oku',
 		'success' => 'Başarılı',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Hassasiyet',
 		'sensitiveContent' => 'Hassas içerik',
@@ -39,7 +44,7 @@ return [
 		'admin' => 'Yönetici Paneli',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
+		'homeFeed' => 'Ana Akış',
 		'localFeed' => 'Yerel Akış',
 		'globalFeed' => 'Evrensel Akış',
 
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Depolama',
 		'settings' => 'Ayarlar',
 		'compose' => 'Yeni oluştur',
-		'logout' => 'Logout',
+		'logout' => 'Oturumu kapat',
 
 		// Nav footer
 		'about' => 'Hakkında',
@@ -85,7 +90,7 @@ return [
 		'sentA' => 'sent a',
 
 		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'mentioned' => 'söz edilmiş',
 		'you' => 'sen',
 
 		'yourApplication' => 'Katılma isteğiniz',
@@ -93,15 +98,16 @@ return [
 		'applicationRejected' => 'reddedildi. 6 ay sonra, tekrar katılma isteğinde bulunabilirsiniz.',
 
 		'dm' => 'özel mesaj',
-		'groupPost' => 'group post',
+		'groupPost' => 'grup gönderisi',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'gönderi',
 		'story' => 'hikaye',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Takipçileri paylaş',
-		'shareToOther' => 'Share to other',
+		'shareToOther' => 'Başkalarıyla Paylaş',
 		'noLikes' => 'Henüz beğenilmedi',
 		'uploading' => 'Yükleniyor',
 	],
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'Takip İsteği',
 		'joined' => 'Katıldı',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Herhangi bir derleme bulamıyoruz',
+		'emptyPosts' => 'Herhangi bir gönderi bulamıyoruz',
 	],
 
 	'menu' => [
@@ -127,20 +133,20 @@ return [
 		'viewProfile' => 'Profili Görüntüle',
 		'moderationTools' => 'Denetim Ayarları',
 		'report' => 'Bildir',
-		'archive' => 'Archive',
+		'archive' => 'Arşiv',
 		'unarchive' => 'Arşivden çıkar',
-		'embed' => 'Embed',
+		'embed' => 'İliştir',
 
 		'selectOneOption' => 'Aşağıdaki seçeneklerden birini seçin',
 		'unlistFromTimelines' => 'Akışlardan kaldır',
 		'addCW' => 'İçerik Uyarısını Ekle',
 		'removeCW' => 'İçerik Uyarısını Kaldır',
-		'markAsSpammer' => 'Mark as Spammer',
+		'markAsSpammer' => 'İstenmeyen ileti göndericisi olarak işaretle',
 		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'İstenmeyen',
 		'sensitive' => 'Hassas içerik',
 		'abusive' => 'İstismarcı veya Zararlı',
-		'underageAccount' => 'Underage Account',
+		'underageAccount' => 'Yaşı Tutmayan Hesap',
 		'copyrightInfringement' => 'Telif hakkı ihlali',
 		'impersonation' => 'Taklit Hesap',
 		'scamOrFraud' => 'Dolandırıcılık',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler'
+		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
