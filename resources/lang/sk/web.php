@@ -4,7 +4,7 @@ return [
 
 	'common' => [
 		'comment' => 'Komentovať',
-		'commented' => 'Komentoval',
+		'commented' => 'Commented',
 		'comments' => 'Komentáre',
 		'like' => 'Páči sa mi',
 		'liked' => 'Páči sa mi',
@@ -60,7 +60,7 @@ return [
 		'drive' => 'Úložisko',
 		'settings' => 'Nastavenia',
 		'compose' => 'Vytvoriť nový',
-		'logout' => 'Odhlásiť sa',
+		'logout' => 'Logout',
 
 		// Nav footer
 		'about' => 'O aplikácii',
@@ -122,7 +122,7 @@ return [
 		'unfollow' => 'Prestať sledovať',
 		'editProfile' => 'Upraviť Profil',
 		'followRequested' => 'Žiadosť o sledovanie bola odoslaná',
-		'joined' => 'Pripojené',
+		'joined' => 'Joined',
 
 		'emptyCollections' => 'Zdá sa, že nemôžeme nájsť žiadne kolekcie',
 		'emptyPosts' => 'Zdá sa, že nemôžeme nájsť žiadne príspevky',
@@ -138,11 +138,11 @@ return [
 		'embed' => 'Vložiť',
 
 		'selectOneOption' => 'Prosím, vyberte jednu z nasledujúcich možností',
-		'unlistFromTimelines' => 'Odstrániť z Timelines',
+		'unlistFromTimelines' => 'Unlist from Timelines',
 		'addCW' => 'Pridať upozornenie o obsahu',
 		'removeCW' => 'Odstrániť upozornenie o obsahu',
 		'markAsSpammer' => 'Označiť ako Spammer',
-		'markAsSpammerText' => 'Odstrániť zo zoznamu + upozornenie o obsahu existujúce a budúce príspevky',
+		'markAsSpammerText' => 'Unlist + CW existing and future posts',
 		'spam' => 'Spam',
 		'sensitive' => 'Citlivý obsah',
 		'abusive' => 'Zneužívajúci alebo Škodlivý',
@@ -160,10 +160,10 @@ return [
 		'modCWSuccess' => 'Upozornenie o obsahu bolo úspešne pridané',
 		'modRemoveCWConfirm' => 'Naozaj chcete odstrániť upozornenie o obsahu z tohto príspevku?',
 		'modRemoveCWSuccess' => 'Upozornenie o obsahu bolo úspešne odstránené',
-		'modUnlistConfirm' => 'Naozaj chcete odstrániť zo zoznamu tento príspevok?',
-		'modUnlistSuccess' => 'Príspevok bol úspešne odstránený zo zoznamu',
-		'modMarkAsSpammerConfirm' => 'Naozaj chcete označiť tohto používateľa ako odosielateľa spamu? Všetky existujúce a budúce príspevky budú odstránené z timelines a bude pridané upozornenie o obsahu.',
-		'modMarkAsSpammerSuccess' => 'Účet bol úspešne označený ako odosielateľa spamu',
+		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
+		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
+		'modMarkAsSpammerSuccess' => 'Účet bol úspešne označený ako spammer',
 
 		'toFollowers' => 'pre Sledujúcich',
 
