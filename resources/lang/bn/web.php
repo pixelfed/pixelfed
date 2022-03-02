@@ -23,40 +23,40 @@ return [
 		'oops' => 'ওহো!',
 		'other' => 'অন্যান্য',
 		'readMore' => 'আরো পড়ো',
-		'success' => 'সফল হয়েছে',
+		'success' => 'Success',
 		'proceed' => 'Proceed',
 		'next' => 'Next',
 		'close' => 'Close',
 		'clickHere' => 'click here',
 
-		'sensitive' => 'সংবেদনশীল',
-		'sensitiveContent' => 'সংবেদনশীল জিনিস',
-		'sensitiveContentWarning' => 'এই ছাপায় সংবেদনশীল কিছু থাকতে পারে',
+		'sensitive' => 'Sensitive',
+		'sensitiveContent' => 'Sensitive Content',
+		'sensitiveContentWarning' => 'This post may contain sensitive content',
 	],
 
 	'site' => [
-		'terms' => 'ব্যবহারের শর্তাবলী',
-		'privacy' => 'গোপনীয়তা নীতি',
+		'terms' => 'Terms of Use',
+		'privacy' => 'Privacy Policy',
 	],
 
 	'navmenu' => [
-		'search' => 'অনুসন্ধান',
-		'admin' => 'প্রশাসক ড্যাশবোর্ড',
+		'search' => 'Search',
+		'admin' => 'Admin Dashboard',
 
 		// Timelines
-		'homeFeed' => 'মূল প্রবাহ',
-		'localFeed' => 'স্থানীয় প্রবাহ',
-		'globalFeed' => 'বৈশ্বিক প্রবাহ',
+		'homeFeed' => 'Home Feed',
+		'localFeed' => 'Local Feed',
+		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'আবিষ্কার',
-		'directMessages' => 'সরাসরি বার্তা',
-		'notifications' => 'বিজ্ঞপ্তি',
-		'groups' => 'দল',
-		'stories' => 'গল্প',
+		'discover' => 'Discover',
+		'directMessages' => 'Direct Messages',
+		'notifications' => 'Notifications',
+		'groups' => 'Groups',
+		'stories' => 'Stories',
 
 		// Self links
-		'profile' => 'নিজস্ব তথ্য',
+		'profile' => 'Profile',
 		'drive' => 'Drive',
 		'settings' => 'Settings',
 		'compose' => 'Create New',
