@@ -11,7 +11,7 @@ class MediaTransformer extends Fractal\TransformerAbstract
     {
         $res = [
             'id'            => (string) $media->id,
-            'type'          => $media->activityVerb(),
+            'type'          => strtolower($media->activityVerb()),
             'url'           => $media->url(),
             'remote_url'    => null,
             'preview_url'   => $media->thumbnailUrl(),
