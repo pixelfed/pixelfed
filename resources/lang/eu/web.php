@@ -60,7 +60,7 @@ return [
 		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
-		'logout' => 'Saioa itxi',
+		'logout' => 'Itxi saioa',
 
 		// Nav footer
 		'about' => 'Honi buruz',
