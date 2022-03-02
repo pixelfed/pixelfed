@@ -7,7 +7,7 @@ return [
 		'commented' => 'Hozzászólva',
 		'comments' => 'Hozzászólások',
 		'like' => 'Tetszik',
-		'liked' => 'Tetszik',
+		'liked' => 'Kedvelem',
 		'likes' => 'Kedvelések',
 		'share' => 'Megosztás',
 		'shared' => 'Megosztva',
@@ -44,7 +44,7 @@ return [
 		'admin' => 'Admin irányítópult',
 
 		// Timelines
-		'homeFeed' => 'Saját idővonal',
+		'homeFeed' => 'Kezdőlap',
 		'localFeed' => 'Helyi idővonal',
 		'globalFeed' => 'Globális idővonal',
 
@@ -57,9 +57,9 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Meghajtó',
+		'drive' => 'Tárhely',
 		'settings' => 'Beállítások',
-		'compose' => 'Új létrehozása',
+		'compose' => 'Új bejegyzés létrehozása',
 		'logout' => 'Kijelentkezés',
 
 		// Nav footer
