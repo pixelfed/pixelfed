@@ -13,6 +13,7 @@ return [
 		'shared' => '共有されました',
 		'shares' => '共有',
 		'unshare' => '共有解除',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'キャンセル',
 		'copyLink' => 'リンクをコピー',
@@ -23,6 +24,10 @@ return [
 		'other' => 'その他',
 		'readMore' => 'もっと読む',
 		'success' => '成功しました',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'センシティブ',
 		'sensitiveContent' => 'センシティブなコンテンツ',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'モデレーションログ',
 		'post' => '投稿',
 		'story' => 'ストーリー',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => '知り合いかも'
+		'peopleYouMayKnow' => '知り合いかも',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'このハッシュタグの投稿が見つかりませんでした'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
