@@ -13,7 +13,7 @@ return [
 		'shared' => '共有されました',
 		'shares' => '共有',
 		'unshare' => '共有解除',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'ブックマーク',
 
 		'cancel' => 'キャンセル',
 		'copyLink' => 'リンクをコピー',
@@ -24,10 +24,10 @@ return [
 		'other' => 'その他',
 		'readMore' => 'もっと読む',
 		'success' => '成功しました',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => '続行',
+		'next' => '次へ',
+		'close' => '閉じる',
+		'clickHere' => 'ここをクリック',
 
 		'sensitive' => 'センシティブ',
 		'sensitiveContent' => 'センシティブなコンテンツ',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'モデレーションログ',
 		'post' => '投稿',
 		'story' => 'ストーリー',
-		'noneFound' => 'No notifications found',
+		'noneFound' => '通知はありません',
 	],
 
 	'post' => [
@@ -185,7 +185,7 @@ return [
 		'peopleYouMayKnow' => '知り合いかも',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
+			'welcome' => 'ようこそ',
 			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
 			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
 			'refreshFeed' => 'Refresh my feed',
