@@ -6,11 +6,11 @@ return [
 		'comment' => '评论',
 		'commented' => '已评论',
 		'comments' => '评论',
-		'like' => '喜欢',
-		'liked' => '喜欢了',
-		'likes' => '喜欢',
+		'like' => '赞',
+		'liked' => '已赞',
+		'likes' => '赞',
 		'share' => '分享',
-		'shared' => '已分享',
+		'shared' => '已分享的',
 		'shares' => '分享',
 		'unshare' => '取消分享',
 		'bookmark' => 'Bookmark',
@@ -31,7 +31,7 @@ return [
 
 		'sensitive' => '敏感的',
 		'sensitiveContent' => '敏感内容',
-		'sensitiveContentWarning' => '此帖可能包含敏感内容',
+		'sensitiveContentWarning' => '此帖子可能包含敏感内容',
 	],
 
 	'site' => [
@@ -80,18 +80,18 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => '喜欢了你的',
+		'liked' => '赞了你的',
 		'commented' => '评论了你的',
 		'reacted' => '回应了您的',
-		'shared' => '分享了您的',
-		'tagged' => '将您标记在',
+		'shared' => '转发了你的',
+		'tagged' => '在帖子中标记了你',
 
 		'updatedA' => '更新了一个',
 		'sentA' => '发送了一个',
 
 		'followed' => '已关注',
-		'mentioned' => '已提及',
-		'you' => '您',
+		'mentioned' => '提及了',
+		'you' => '你',
 
 		'yourApplication' => '您想要加入',
 		'applicationApproved' => '的申请被批准了！',
