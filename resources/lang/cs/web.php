@@ -6,7 +6,7 @@ return [
 		'comment' => 'Komentář',
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
-		'like' => 'Líbí se mi',
+		'like' => 'To se mi líbí',
 		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
@@ -44,9 +44,9 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Domovská časová osa',
-		'localFeed' => 'Místní časová osa',
-		'globalFeed' => 'Globalní časová osa',
+		'homeFeed' => 'Domů',
+		'localFeed' => 'Místní kanál',
+		'globalFeed' => 'Globální kanál',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -76,7 +76,7 @@ return [
 	'directMessages' => [
 		'inbox' => 'Přijaté zprávy',
 		'sent' => 'Odeslané',
-		'requests' => 'Požadavky'
+		'requests' => 'Žádosti'
 	],
 
 	'notifications' => [
@@ -115,7 +115,7 @@ return [
 	'profile' => [
 		'posts' => 'Příspěvky',
 		'followers' => 'Sledující',
-		'following' => 'Sledovaní',
+		'following' => 'Sleduje',
 		'admin' => 'Administrátor',
 		'collections' => 'Sbírky',
 		'follow' => 'Sledovat',
