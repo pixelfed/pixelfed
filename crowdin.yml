@@ -1,7 +1,4 @@
 commit_message: '[ci skip]'
-files: [
-	{
-		source: "/resources/lang/en/web.php",
-		translation: /resources/lang/%two_letters_code%/web.php
-	}
-]
+files:
+  - source: /resources/lang/en/web.php
+    translation: /resources/lang/%two_letters_code%/web.php
