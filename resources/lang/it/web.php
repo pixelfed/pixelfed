@@ -6,7 +6,7 @@ return [
 		'comment' => 'Commenta',
 		'commented' => 'Commentato',
 		'comments' => 'Commenti',
-		'like' => 'Like',
+		'like' => 'Mi piace',
 		'liked' => 'Like aggiunto',
 		'likes' => 'Tutti i Like',
 		'share' => 'Condividi',
@@ -36,7 +36,7 @@ return [
 
 	'site' => [
 		'terms' => 'Termini di Utilizzo',
-		'privacy' => 'Informativa Privacy',
+		'privacy' => 'Informativa sulla Privacy',
 	],
 
 	'navmenu' => [
@@ -64,7 +64,7 @@ return [
 
 		// Nav footer
 		'about' => 'Info',
-		'help' => 'Supporto',
+		'help' => 'Aiuto',
 		'language' => 'Lingua',
 		'privacy' => 'Privacy',
 		'terms' => 'Condizioni',
@@ -193,7 +193,7 @@ return [
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'Non riusciamo a trovare alcun post con questo hashtag'
+		'emptyFeed' => 'Non riusciamo a trovare nessun post con questo hashtag'
 	],
 
 	'report' => [
