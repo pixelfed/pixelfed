@@ -13,6 +13,7 @@ return [
 		'shared' => 'Partekatuta',
 		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Utzi',
 		'copyLink' => 'Kopiatu esteka',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Bestelakoa',
 		'readMore' => 'Irakurri gehiago',
 		'success' => 'Burutu da',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Hunkigarria',
 		'sensitiveContent' => 'Eduki hunkigarria',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modloga',
 		'post' => 'bidalketa',
 		'story' => 'istorioa',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea'
+		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Ez dugu topatu traola hau duen bidalketarik'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
