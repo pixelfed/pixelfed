@@ -3,45 +3,45 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'टिप्पणी करें',
+		'commented' => 'टिप्पणी',
+		'comments' => 'टिप्पणियाँ',
+		'like' => 'रुचि',
+		'liked' => 'रुचि',
+		'likes' => 'रुचि',
+		'share' => 'साझा करें',
+		'shared' => 'साझा',
+		'shares' => 'साझा',
+		'unshare' => 'साझा न करें',
 		'bookmark' => 'Bookmark',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'रद्द',
+		'copyLink' => 'लिंक प्रतिलिपि',
+		'delete' => 'विलोपन',
+		'error' => 'त्रुटि',
+		'errorMsg' => 'कुछ दोष है। कृपया पुनः प्रयास करें।',
+		'oops' => 'ओह!',
+		'other' => 'अन्य',
+		'readMore' => 'और पढ़ें',
+		'success' => 'सफल',
 		'proceed' => 'Proceed',
 		'next' => 'Next',
 		'close' => 'Close',
 		'clickHere' => 'click here',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'संवेदनशील',
+		'sensitiveContent' => 'संवेदनशील विषय वस्तु',
+		'sensitiveContentWarning' => 'इसमें प्रकाशित विषय-वस्तु संवेदनशील हो सकती है।',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'उपयोग के अनुबंध',
+		'privacy' => 'गोपनीयता नीति',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'खोजें',
+		'admin' => 'एडमिन डैशबोर्ड',
 
 		// Timelines
 		'homeFeed' => 'Home Feed',
@@ -49,34 +49,34 @@ return [
 		'globalFeed' => 'Global Feed',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'अन्वेषण',
+		'directMessages' => 'संदेश',
+		'notifications' => 'सूचनाएँ',
+		'groups' => 'समूह',
+		'stories' => 'कथाएँ',
 
 		// Self links
 		'profile' => 'Profile',
-		'drive' => 'Drive',
-		'settings' => 'Settings',
-		'compose' => 'Create New',
-		'logout' => 'Logout',
+		'drive' => 'ड्राइव',
+		'settings' => 'समायोजन',
+		'compose' => 'नया बनाएँ',
+		'logout' => 'लॉगआउट',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'परिज्ञान',
+		'help' => 'सहायता',
+		'language' => 'भाषा',
+		'privacy' => 'गोपनीयता',
+		'terms' => 'अनुबंध',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
+		'inbox' => 'सन्देश',
 		'sent' => 'Sent',
-		'requests' => 'Requests'
+		'requests' => 'निवेदन'
 	],
 
 	'notifications' => [
@@ -89,31 +89,31 @@ return [
 		'updatedA' => 'updated a',
 		'sentA' => 'sent a',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
-		'you' => 'you',
+		'followed' => 'अनुगमन किया',
+		'mentioned' => 'उल्लेख किया',
+		'you' => 'आप',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => 'जुड़ने हेतु आपका आवेदन',
+		'applicationApproved' => 'स्वीकृत किया गया',
+		'applicationRejected' => 'अस्वीकृत किया गया। आप ६ मास के उपरांत पुनः आवेदन कर सकते हैं।',
 
-		'dm' => 'dm',
-		'groupPost' => 'group post',
+		'dm' => 'संदेश',
+		'groupPost' => 'सामूहिक प्रकाशन',
 		'modlog' => 'modlog',
-		'post' => 'post',
-		'story' => 'story',
+		'post' => 'प्रकाशन',
+		'story' => 'कथा',
 		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Share to followers',
-		'shareToOther' => 'Share to other',
-		'noLikes' => 'No likes yet',
-		'uploading' => 'Uploading',
+		'shareToFollowers' => 'अनुयायियों से साझा करें',
+		'shareToOther' => 'अन्यों से साझा करें',
+		'noLikes' => 'अभी तक कोई रुचि नहीं',
+		'uploading' => 'अपलोड हो रहा है',
 	],
 
 	'profile' => [
-		'posts' => 'Posts',
+		'posts' => 'प्रकाशन',
 		'followers' => 'Followers',
 		'following' => 'Following',
 		'admin' => 'Admin',
@@ -156,10 +156,10 @@ return [
 		'reportSentText' => 'We have successfully received your report.',
 		'reportSentError' => 'There was an issue reporting this post.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
+		'modAddCWConfirm' => 'क्या यह निश्चित है कि आप प्रकाशित सामग्री के साथ विषय-वस्तु सम्बंधित चेतावनी जोड़ना चाहते हैं?',
+		'modCWSuccess' => 'विषय-वस्तु सम्बंधित चेतावनी सफलता से जोड़ी गयी',
+		'modRemoveCWConfirm' => 'क्या यह निश्चित है कि आप प्रकाशित सामग्री से विषय-वस्तु सम्बंधित चेतावनी हटाना चाहते हैं?',
+		'modRemoveCWSuccess' => 'विषय-वस्तु सम्बंधित चेतावनी सफलता से हटाई गयी',
 		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
 		'modUnlistSuccess' => 'Successfully unlisted post',
 		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
