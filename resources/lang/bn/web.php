@@ -3,55 +3,60 @@
 return [
 
 	'common' => [
-		'comment' => 'Comment',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
-		'like' => 'Like',
-		'liked' => 'Liked',
-		'likes' => 'Likes',
-		'share' => 'Share',
-		'shared' => 'Shared',
-		'shares' => 'Shares',
-		'unshare' => 'Unshare',
+		'comment' => 'মন্তব্য',
+		'commented' => 'মন্তব্য করা হয়েছে',
+		'comments' => 'মন্তব্য',
+		'like' => 'পছন্দ',
+		'liked' => 'পছন্দকৃত',
+		'likes' => 'পছন্দ',
+		'share' => 'ভাগ করো',
+		'shared' => 'ভাগকৃত',
+		'shares' => 'ভাগ করা হয়েছে',
+		'unshare' => 'ভাগ ফিরত নাও',
+		'bookmark' => 'Bookmark',
 
-		'cancel' => 'Cancel',
-		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
-		'error' => 'Error',
-		'errorMsg' => 'Something went wrong. Please try again later.',
-		'oops' => 'Oops!',
-		'other' => 'Other',
-		'readMore' => 'Read more',
-		'success' => 'Success',
+		'cancel' => 'বাতিল',
+		'copyLink' => 'সংযোগ অনুলিপি',
+		'delete' => 'মুছো',
+		'error' => 'ত্রুটি',
+		'errorMsg' => 'কোন সমস্যা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করো।',
+		'oops' => 'ওহো!',
+		'other' => 'অন্যান্য',
+		'readMore' => 'আরো পড়ো',
+		'success' => 'সফল হয়েছে',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
-		'sensitive' => 'Sensitive',
-		'sensitiveContent' => 'Sensitive Content',
-		'sensitiveContentWarning' => 'This post may contain sensitive content',
+		'sensitive' => 'সংবেদনশীল',
+		'sensitiveContent' => 'সংবেদনশীল জিনিস',
+		'sensitiveContentWarning' => 'এই ছাপায় সংবেদনশীল কিছু থাকতে পারে',
 	],
 
 	'site' => [
-		'terms' => 'Terms of Use',
-		'privacy' => 'Privacy Policy',
+		'terms' => 'ব্যবহারের শর্তাবলী',
+		'privacy' => 'গোপনীয়তা নীতি',
 	],
 
 	'navmenu' => [
-		'search' => 'Search',
-		'admin' => 'Admin Dashboard',
+		'search' => 'অনুসন্ধান',
+		'admin' => 'প্রশাসক ড্যাশবোর্ড',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'মূল প্রবাহ',
+		'localFeed' => 'স্থানীয় প্রবাহ',
+		'globalFeed' => 'বৈশ্বিক প্রবাহ',
 
 		// Core features
-		'discover' => 'Discover',
-		'directMessages' => 'Direct Messages',
-		'notifications' => 'Notifications',
-		'groups' => 'Groups',
-		'stories' => 'Stories',
+		'discover' => 'আবিষ্কার',
+		'directMessages' => 'সরাসরি বার্তা',
+		'notifications' => 'বিজ্ঞপ্তি',
+		'groups' => 'দল',
+		'stories' => 'গল্প',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'নিজস্ব তথ্য',
 		'drive' => 'Drive',
 		'settings' => 'Settings',
 		'compose' => 'Create New',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'story',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know'
+		'peopleYouMayKnow' => 'People you may know',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];
