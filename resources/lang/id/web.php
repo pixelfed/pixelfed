@@ -18,9 +18,9 @@ return [
 		'cancel' => 'Batal',
 		'copyLink' => 'Salin tautan',
 		'delete' => 'Hapus',
-		'error' => 'Kesalahan',
+		'error' => 'Galat',
 		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
-		'oops' => 'Waduh!',
+		'oops' => 'Oops!',
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
@@ -59,7 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Perangkat Keras',
 		'settings' => 'Pengaturan',
-		'compose' => 'Membuat baru',
+		'compose' => 'Buat baru',
 		'logout' => 'Keluar',
 
 		// Nav footer
@@ -86,7 +86,7 @@ return [
 		'shared' => 'membagikan',
 		'tagged' => 'menandai Anda pada sebuah',
 
-		'updatedA' => 'mengupdate sebuah',
+		'updatedA' => 'memperbarui sebuah',
 		'sentA' => 'mengirim sebuah',
 
 		'followed' => 'diikuti',
@@ -135,7 +135,7 @@ return [
 		'report' => 'Laporkan',
 		'archive' => 'Arsipkan',
 		'unarchive' => 'Keluarkan dari arsip',
-		'embed' => 'Sematkan',
+		'embed' => 'Penyemat',
 
 		'selectOneOption' => 'Pilih salah satu dari opsi berikut',
 		'unlistFromTimelines' => 'Keluarkan dari Timeline',
