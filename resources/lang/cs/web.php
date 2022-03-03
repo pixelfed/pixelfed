@@ -26,8 +26,8 @@ return [
 		'success' => 'Úspěch',
 		'proceed' => 'Proceed',
 		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'close' => 'Zavřít',
+		'clickHere' => 'klikněte zde',
 
 		'sensitive' => 'Citlivé',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'moderátorský záznam',
 		'post' => 'příspěvek',
 		'story' => 'příbeh',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Nebyla nalezena žádná oznámení',
 	],
 
 	'post' => [
@@ -185,9 +185,9 @@ return [
 		'peopleYouMayKnow' => 'Lidé, které možná znáte',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'welcome' => 'Vítejte',
+			'thisIsYourHomeFeed' => 'Toto je váš domovský kanál, chronologický kanál příspěvků z účtů, které sledujete.',
+			'letUsHelpYouFind' => 'Pomůžeme vám najít nějaké zajímavé lidi ke sledování',
 			'refreshFeed' => 'Refresh my feed',
 		],
 	],
@@ -198,10 +198,10 @@ return [
 
 	'report' => [
 		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'selectReason' => 'Vyberte důvod',
+		'reported' => 'Nahlášeno',
+		'sendingReport' => 'Odesílání hlášení',
+		'thanksMsg' => 'Díky za hlášení, lidé jako jste vy pomáhají udržet naši komunitu bezpečnou!',
 		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
