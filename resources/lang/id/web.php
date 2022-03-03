@@ -13,7 +13,7 @@ return [
 		'shared' => 'Dibagikan',
 		'shares' => 'Dibagikan',
 		'unshare' => 'Batalkan berbagi',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Penanda Buku',
 
 		'cancel' => 'Batal',
 		'copyLink' => 'Salin tautan',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Lanjut',
+		'next' => 'Berikutnya',
+		'close' => 'Tutup',
+		'clickHere' => 'klik di sini',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Konten Sensitif',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'postingan',
 		'story' => 'cerita',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Tak ditemukan pemberitahuan',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
+			'welcome' => 'Selamat Datang',
 			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
 			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'refreshFeed' => 'Segarkan laman umpan',
 		],
 	],
 
@@ -197,11 +197,11 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'report' => 'Laporkan',
+		'selectReason' => 'Pilih alasan',
+		'reported' => 'Terlaporkan',
+		'sendingReport' => 'Mengirim laporan',
+		'thanksMsg' => 'Terima kasih atas laporannya, tindakan Anda amat membantu menjaga komunitas!',
 		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
