@@ -13,7 +13,7 @@ return [
 		'shared' => 'Partekatuta',
 		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Laster-marka',
 
 		'cancel' => 'Utzi',
 		'copyLink' => 'Kopiatu esteka',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Bestelakoa',
 		'readMore' => 'Irakurri gehiago',
 		'success' => 'Burutu da',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Jarraitu',
+		'next' => 'Hurrengoa',
+		'close' => 'Itxi',
+		'clickHere' => 'klikatu hemen',
 
 		'sensitive' => 'Hunkigarria',
 		'sensitiveContent' => 'Eduki hunkigarria',
@@ -44,7 +44,7 @@ return [
 		'admin' => 'Adminaren panela',
 
 		// Timelines
-		'homeFeed' => 'Etxeko jarioa',
+		'homeFeed' => 'Hasierako jarioa',
 		'localFeed' => 'Jario lokala',
 		'globalFeed' => 'Jario globala',
 
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modloga',
 		'post' => 'bidalketa',
 		'story' => 'istorioa',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Ez da jakinarazpenik aurkitu',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Ongi etorri',
+			'thisIsYourHomeFeed' => 'Hau da zure hasierako jarioa, jarraitzen dituzun kontuen bidalketa jario kronologikoa.',
+			'letUsHelpYouFind' => 'Utzi iezaiguzu jarraitzeko moduko jende interesgarria bilatzen laguntzen',
+			'refreshFeed' => 'Berritu nire jarioa',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Salatu',
+		'selectReason' => 'Hautatu arrazoia',
+		'reported' => 'Salatuta',
+		'sendingReport' => 'Txostena bidaltzen',
+		'thanksMsg' => 'Eskerrik asko salaketagatik, zu bezalako jendeak egiten du komunitatea seguruagoa!',
+		'contactAdminMsg' => 'Kudeatzaile batekin kontaktatu edo salaketa egin nahi baduzu bidalketa honen harira',
 	],
 
 ];
