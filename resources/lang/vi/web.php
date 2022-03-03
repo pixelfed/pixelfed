@@ -13,7 +13,7 @@ return [
 		'shared' => 'Đã chia sẻ',
 		'shares' => 'Lượt chia sẻ',
 		'unshare' => 'Hủy chia sẻ',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Lưu',
 
 		'cancel' => 'Hủy',
 		'copyLink' => 'Chép link',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Khác',
 		'readMore' => 'Xem thêm',
 		'success' => 'Hoàn tất',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Tiếp tục',
+		'next' => 'Tiếp theo',
+		'close' => 'Đóng',
+		'clickHere' => 'nhấn vào đây',
 
 		'sensitive' => 'Nhạy cảm',
 		'sensitiveContent' => 'Nội dung nhạy cảm',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'nhật ký kiểm duyệt',
 		'post' => 'bài đăng',
 		'story' => 'khoảnh khắc',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Không có thông báo mới',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Những người bạn có thể biết',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Chào mừng',
+			'thisIsYourHomeFeed' => 'Đây là bảng tin của bạn, được xếp theo thứ tự thời gian với những tài khoản mà bạn theo dõi.',
+			'letUsHelpYouFind' => 'Đây là vài người thú vị mà bạn nên theo dõi',
+			'refreshFeed' => 'Làm tươi bảng tin',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Báo cáo',
+		'selectReason' => 'Chọn một lý do',
+		'reported' => 'Bị báo cáo',
+		'sendingReport' => 'Đang gửi báo cáo...',
+		'thanksMsg' => 'Cảm ơn đã gửi báo cáo, bạn đã giúp cộng đồng sạch hơn!',
+		'contactAdminMsg' => 'Nếu cần thiết, hãy liên hệ quản trị viên về ảnh này hoặc báo cáo',
 	],
 
 ];
