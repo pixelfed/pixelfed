@@ -186,9 +186,9 @@ return [
 
 		'onboarding' => [
 			'welcome' => 'ようこそ',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'thisIsYourHomeFeed' => 'これはあなたのフォームフィードです、フォローしているアカウントからの投稿が時系列で表示されます。',
+			'letUsHelpYouFind' => '興味のある人をフォローするお手伝いをします',
+			'refreshFeed' => 'フィードをリフレッシュ',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => '報告',
+		'selectReason' => '理由を選択してください',
+		'reported' => '報告済み',
+		'sendingReport' => '報告を送信中',
+		'thanksMsg' => '報告ありがとうございます、あなたのような人々が私達のコミュニティーを安全に保ちます！',
+		'contactAdminMsg' => 'この投稿または報告について管理者に問い合わせたい場合',
 	],
 
 ];
