@@ -13,7 +13,7 @@ return [
 		'shared' => 'Geteilt',
 		'shares' => 'Geteilt',
 		'unshare' => 'Teilen rückgängig machen',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Lesezeichen',
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Anderes',
 		'readMore' => 'Weiterlesen',
 		'success' => 'Erfolg',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Fortfahren',
+		'next' => 'Weiter',
+		'close' => 'Schließen',
+		'clickHere' => 'hier klicken',
 
 		'sensitive' => 'Sensibel',
 		'sensitiveContent' => 'Sensibler Inhalt',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Keine Benachrichtigungen gefunden',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Herzlich willkommen',
+			'thisIsYourHomeFeed' => 'Dies ist Ihr Heim-Feed, ein chronologischer Feed von Beiträgen aus den Konten, denen Sie folgen.',
+			'letUsHelpYouFind' => 'Lassen Sie uns Ihnen helfen, einige interessante Leute zu finden, denen Sie folgen können',
+			'refreshFeed' => 'Feed aktualisieren',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Melden',
+		'selectReason' => 'Wählen Sie einen Grund',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Meldung wird gesendet',
+		'thanksMsg' => 'Vielen Dank für die Meldung, Leute wie Sie helfen, unsere Community sicher zu halten!',
+		'contactAdminMsg' => 'Wenn Sie einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren möchten',
 	],
 
 ];
