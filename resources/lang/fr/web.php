@@ -24,10 +24,10 @@ return [
 		'other' => 'Autre',
 		'readMore' => 'En savoir plus',
 		'success' => 'Opération réussie',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Continuer',
+		'next' => 'Suivant',
+		'close' => 'Fermer',
+		'clickHere' => 'cliquer ici',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'journal de modération',
 		'post' => 'publication',
 		'story' => 'story',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Aucune notification trouvée',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Connaissances possibles',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Bienvenue',
+			'thisIsYourHomeFeed' => 'Ceci est votre flux personnel, un flux chronologique des publications de comptes que vous suivez.',
+			'letUsHelpYouFind' => 'Laissez-nous vous aider à trouver des personnes intéressantes à suivre',
+			'refreshFeed' => 'Actualiser mon flux',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Signaler',
+		'selectReason' => 'Sélectionner un motif',
+		'reported' => 'Signalé',
+		'sendingReport' => 'Envoi du signalement',
+		'thanksMsg' => 'Merci pour votre signalement, les gens comme vous aident à assurer la sécurité de notre communauté !',
+		'contactAdminMsg' => 'Si vous souhaitez contacter un administrateur à propos de cette publication ou de ce signalement',
 	],
 
 ];
