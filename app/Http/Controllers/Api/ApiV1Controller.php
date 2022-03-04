@@ -2547,7 +2547,7 @@ class ApiV1Controller extends Controller
 
 		$sortBy = $request->input('sort', 'all');
 
-		if($sortBy == 'all' && $status['replies_count'] && $request->has('refresh_cache')) {
+		if($sortBy == 'all' && isset($status['replies_count']) && $status['replies_count'] && $request->has('refresh_cache')) {
 			if(!Cache::has('status:replies:all-rc:' . $id)) {
 				Cache::forget('status:replies:all:' . $id);
 				Cache::put('status:replies:all-rc:' . $id, true, 300);
