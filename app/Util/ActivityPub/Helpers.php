@@ -629,7 +629,7 @@ class Helpers {
 						$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 						$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 						$profile->inbox_url = $res['inbox'];
-						$profile->outbox_url = $res['outbox'];
+						$profile->outbox_url = isset($res['outbox']) ? $res['outbox'] : null;
 						$profile->remote_url = $res['id'];
 						$profile->public_key = $res['publicKey']['publicKeyPem'];
 						$profile->key_id = $res['publicKey']['id'];
