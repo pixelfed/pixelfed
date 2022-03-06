@@ -210,7 +210,12 @@ class CollectionController extends Controller
                     'visibility' => $collection->visibility,
                     'title' => $collection->title,
                     'description' => $collection->description,
-                    'thumb' => $collection->posts()->first()->thumb(),
+                    'thumb' => transform(
+                        $collection->posts()->first(),
+                        function (Status $post) {
+                            return $post->thumb();
+                        }
+                    ),
                     'url' => $collection->url(),
                     'post_count' => $collection->posts()->count(),
                     'published_at' => $collection->published_at
