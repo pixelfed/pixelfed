@@ -27,10 +27,6 @@ class SpaController extends Controller
 			return view('layouts.spa');
 		}
 
-		if(SnowflakeService::byDate(now()->subDays(30)) > $id) {
-			return redirect('/login');
-		}
-
 		$post = StatusService::get($id);
 
 		if(
@@ -39,6 +35,7 @@ class SpaController extends Controller
 			isset($post['local']) &&
 			$post['local'] === true
 		) {
+			sleep(5);
 			return redirect($post['url']);
 		}
 
@@ -56,11 +53,13 @@ class SpaController extends Controller
 			return view('layouts.spa');
 		}
 
-		// $account = AccountService::get($id);
+		$account = AccountService::get($id);
 
-		// if($account && isset($account['url'])) {
-		// 	return redirect($account['url']);
-		// }
+		sleep(5);
+
+		if($account && isset($account['url']) && $account['local']) {
+			return redirect($account['url']);
+		}
 
 		return redirect('/login');
 	}
