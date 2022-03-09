@@ -47,11 +47,12 @@ class StatusService
 			return null;
 		}
 
+        $status['replies_count'] = $status['reply_count'];
+
 		if(config('exp.emc') == false) {
 			return $status;
 		}
 
-		$status['replies_count'] = $status['reply_count'];
 		unset(
 			$status['_v'],
 			$status['comments_disabled'],
