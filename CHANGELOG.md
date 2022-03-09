@@ -25,6 +25,7 @@
 - Improved profile layout on mobile breakpoints ([77b9b6bd](https://github.com/pixelfed/pixelfed/commit/77b9b6bd))
 - New Discover layout with My Hashtags, My Memories, Account Insights, Find Friends and Server Timelines ([0b680099](https://github.com/pixelfed/pixelfed/commit/0b680099))
 - Fix private profile feed not loading for owner ([e950b3b2](https://github.com/pixelfed/pixelfed/commit/e950b3b2))
+- Add "Shared by" link to posts that opens a list of accounts that reblogged the post ([e4b4bfc1](https://github.com/pixelfed/pixelfed/commit/e4b4bfc1))
 
 ### Updated
 - Updated MediaStorageService, fix remote avatar bug. ([1c20d696](https://github.com/pixelfed/pixelfed/commit/1c20d696))
