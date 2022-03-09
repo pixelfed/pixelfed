@@ -14,7 +14,7 @@
 			>
 				<b-carousel-slide v-for="(media, index) in status.media_attachments" :key="media.id + '-media'">
 
-					<video v-if="media.type == 'video'" slot="img" class="embed-responsive-item" preload="none" controls playsinline loop :alt="media.description" width="100%" height="100%" :poster="media.preview_url">
+					<video v-if="media.type == 'video'" slot="img" class="embed-responsive-item" preload="none" controls playsinline loop :alt="media.description" width="100%" height="100%">
 						<source :src="media.url" :type="media.mime">
 					</video>
 
@@ -53,7 +53,7 @@
 		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0">
 			<slide v-for="(media, index) in status.media_attachments" :key="'px-carousel-'+media.id + '-' + index" class="w-100 h-100 d-block mx-auto text-center" style="background: #000; display: flex;align-items: center;">
 
-				<video v-if="media.type == 'video'" class="embed-responsive-item" preload="none" controls loop :title="media.description" width="100%" height="100%" :poster="media.preview_url">
+				<video v-if="media.type == 'video'" class="embed-responsive-item" preload="none" controls loop :title="media.description" width="100%" height="100%">
 					<source :src="media.url" :type="media.mime">
 				</video>
 
