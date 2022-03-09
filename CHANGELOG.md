@@ -74,6 +74,7 @@
 - Updated AP Helpers, fixes #3290. ([53975206](https://github.com/pixelfed/pixelfed/commit/53975206))
 - Updated AccountController, refresh relationship after handling follow request. ([fe768785](https://github.com/pixelfed/pixelfed/commit/fe768785))
 - Updated CollectionController, fixes #3289. ([c7e1e473](https://github.com/pixelfed/pixelfed/commit/c7e1e473))
+- Updated SpaController, handle web redirects. ([b6c6c85b](https://github.com/pixelfed/pixelfed/commit/b6c6c85b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
