@@ -4,6 +4,7 @@
 
 ### Added
 - Custom Emoji ([#3166](https://github.com/pixelfed/pixelfed/pull/3166))
+- LDAP Authentication ([#3296](https://github.com/pixelfed/pixelfed/pull/3296))
 
 ### Metro 2.0 UI
 - Added Hovercards ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))

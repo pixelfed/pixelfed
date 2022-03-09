@@ -65,14 +65,26 @@ return [
     */
 
     'providers' => [
+
+    	// Comment out or remove below for LDAP
         'users' => [
             'driver' => 'eloquent',
             'model'  => App\User::class,
         ],
 
+        // Uncomment below for LDAP
         // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
+        // 	'driver' => 'ldap',
+        // 	'model' => LdapRecord\Models\ActiveDirectory\User::class,
+        // 	'rules' => [],
+        // 	'database' => [
+        // 		'model' => App\User::class,
+        // 		'sync_passwords' => false,
+        // 		'sync_attributes' => [
+        // 			'name' => 'cn',
+        // 			'email' => 'mail',
+        // 		],
+        // 	],
         // ],
     ],
 
