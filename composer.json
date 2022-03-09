@@ -16,7 +16,6 @@
 		"bacon/bacon-qr-code": "^2.0.3",
 		"brick/math": "^0.8",
 		"buzz/laravel-h-captcha": "1.0.2",
-		"directorytree/ldaprecord-laravel": "^2.5",
 		"doctrine/dbal": "^2.7",
 		"fideloper/proxy": "^4.0",
 		"fruitcake/laravel-cors": "^2.0",
