@@ -237,7 +237,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('collection/items/{id}', 'CollectionController@getItems');
 			Route::post('collection/item', 'CollectionController@storeId');
 			Route::delete('collection/item', 'CollectionController@deleteId');
-			Route::get('collection/{id}', 'CollectionController@get');
+			Route::get('collection/{id}', 'CollectionController@getCollection');
 			Route::post('collection/{id}', 'CollectionController@store');
 			Route::delete('collection/{id}', 'CollectionController@delete');
 			Route::post('collection/{id}/publish', 'CollectionController@publish');
