@@ -4,12 +4,12 @@
 
 <div class="container">
 	<collection-component 
-		collection-id="{{$collection->id}}" 
-		collection-title="{{$collection->title}}" 
-		collection-description="{{$collection->description}}" 
-		collection-visibility="{{$collection->visibility}}"
-		profile-id="{{$collection->profile_id}}" 
-		profile-username="{{$collection->profile->username}}"
+		collection-id="{{$collection['id']}}"
+		collection-title="{{$collection['title']}}"
+		collection-description="{{$collection['description']}}"
+		collection-visibility="{{$collection['visibility']}}"
+		profile-id="{{$collection['pid']}}"
+		profile-username="{{$collection['username']}}"
 	></collection-component>
 </div>
 

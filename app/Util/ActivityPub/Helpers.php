@@ -71,11 +71,25 @@ class Helpers {
 		$mimeTypes = explode(',', config_cache('pixelfed.media_types'));
 		$mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
 
+		// Peertube
+		// $mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video', 'Link'] : ['Document', 'Image'];
+
 		if(!isset($activity['attachment']) || empty($activity['attachment'])) {
 			return false;
 		}
 
+		// peertube
+		// $attachment = is_array($activity['url']) ?
+		// 	collect($activity['url'])
+		// 	->filter(function($media) {
+		// 		return $media['type'] == 'Link' && $media['mediaType'] == 'video/mp4';
+		// 	})
+		// 	->take(1)
+		// 	->values()
+		// 	->toArray()[0] : $activity['attachment'];
+
 		$attachment = $activity['attachment'];
+
 		$valid = Validator::make($attachment, [
 			'*.type' => [
 				'required',
@@ -88,7 +102,7 @@ class Helpers {
 				'string',
 				Rule::in($mimeTypes)
 			],
-			'*.name' => 'nullable|string|max:255'
+			'*.name' => 'sometimes|nullable|string|max:255'
 		])->passes();
 
 		return $valid;
@@ -247,6 +261,19 @@ class Helpers {
 		return self::fetchFromUrl($url);
 	}
 
+	public static function pluckval($val)
+	{
+		if(is_string($val)) {
+			return $val;
+		}
+
+		if(is_array($val)) {
+			return !empty($val) ? $val[0] : null;
+		}
+
+		return null;
+	}
+
 	public static function statusFirstOrFetch($url, $replyTo = false)
 	{
 		$url = self::validateUrl($url);
@@ -330,7 +357,7 @@ class Helpers {
 			}
 		}
 
-		$id = isset($res['id']) ? $res['id'] : $url;
+		$id = isset($res['id']) ? self::pluckval($res['id']) : self::pluckval($url);
 		$idDomain = parse_url($id, PHP_URL_HOST);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 
@@ -338,9 +365,20 @@ class Helpers {
 			return;
 		}
 
-		if(isset($activity['object']['attributedTo'])) {
-			$actorDomain = parse_url($activity['object']['attributedTo'], PHP_URL_HOST);
-			if(!self::validateUrl($activity['object']['attributedTo']) ||
+		$attributedTo = is_string($activity['object']['attributedTo']) ?
+			$activity['object']['attributedTo'] :
+			(is_array($activity['object']['attributedTo']) ?
+				collect($activity['object']['attributedTo'])
+					->filter(function($o) {
+						return $o && isset($o['type']) && $o['type'] == 'Person';
+					})
+					->pluck('id')
+					->first() : null
+			);
+
+		if($attributedTo) {
+			$actorDomain = parse_url($attributedTo, PHP_URL_HOST);
+			if(!self::validateUrl($attributedTo) ||
 				$idDomain !== $actorDomain ||
 				$actorDomain !== $urlDomain
 			)
@@ -353,14 +391,14 @@ class Helpers {
 			return;
 		}
 
-		$profile = self::profileFirstOrNew($activity['object']['attributedTo']);
+		$profile = self::profileFirstOrNew($attributedTo);
 		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) || $replyTo == true) {
-			$reply_to = self::statusFirstOrFetch($activity['object']['inReplyTo'], false);
+			$reply_to = self::statusFirstOrFetch(self::pluckval($activity['object']['inReplyTo']), false);
 			$reply_to = optional($reply_to)->id;
 		} else {
 			$reply_to = null;
 		}
-		$ts = is_array($res['published']) ? $res['published'][0] : $res['published'];
+		$ts = self::pluckval($res['published']);
 
 		if($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
 			$scope = 'unlisted';
@@ -399,8 +437,8 @@ class Helpers {
 			return DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
 				$status = new Status;
 				$status->profile_id = $profile->id;
-				$status->url = isset($res['url']) ? $res['url'] : $url;
-				$status->uri = isset($res['url']) ? $res['url'] : $url;
+				$status->url = isset($res['url']) && is_string($res['url']) ? $res['url'] : $url;
+				$status->uri = isset($res['url']) && is_string($res['url']) ? $res['url'] : $url;
 				$status->object_url = $id;
 				$status->caption = strip_tags($res['content']);
 				$status->rendered = Purify::clean($res['content']);
@@ -486,10 +524,16 @@ class Helpers {
 	public static function importNoteAttachment($data, Status $status)
 	{
 		if(self::verifyAttachments($data) == false) {
+			// \Log::info('importNoteAttachment::failedVerification.', [$data['id']]);
 			$status->viewType();
 			return;
 		}
 		$attachments = isset($data['object']) ? $data['object']['attachment'] : $data['attachment'];
+		// peertube
+		// if(!$attachments) {
+		// 	$obj = isset($data['object']) ? $data['object'] : $data;
+		// 	$attachments = is_array($obj['url']) ? $obj['url'] : null;
+		// }
 		$user = $status->profile;
 		$storagePath = MediaPathService::get($user, 2);
 		$allowed = explode(',', config_cache('pixelfed.media_types'));
@@ -585,7 +629,7 @@ class Helpers {
 						$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
 						$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
 						$profile->inbox_url = $res['inbox'];
-						$profile->outbox_url = $res['outbox'];
+						$profile->outbox_url = isset($res['outbox']) ? $res['outbox'] : null;
 						$profile->remote_url = $res['id'];
 						$profile->public_key = $res['publicKey']['publicKeyPem'];
 						$profile->key_id = $res['publicKey']['id'];

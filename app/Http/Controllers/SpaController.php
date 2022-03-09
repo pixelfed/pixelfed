@@ -126,4 +126,13 @@ class SpaController extends Controller
 		}
 		return redirect('/i/web/profile/' . $id);
 	}
+
+	public function hashtagRedirect(Request $request, $tag)
+	{
+		if(!$request->user()) {
+			return redirect('/discover/tags/' . $tag);
+		}
+
+		return view('layouts.spa');
+	}
 }

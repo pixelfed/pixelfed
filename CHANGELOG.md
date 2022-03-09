@@ -67,6 +67,12 @@
 - Updated admin diagnostics, add more configuration data to help diagnose potential issues. ([eab96fc3](https://github.com/pixelfed/pixelfed/commit/eab96fc3))
 - Updated ConfigCacheService, fix discover features. ([ad48521a](https://github.com/pixelfed/pixelfed/commit/ad48521a))
 - Updated MediaTransformer, fix type case bug. Fixes #3281. ([c1669253](https://github.com/pixelfed/pixelfed/commit/c1669253))
+- Updated SpaController, redirect web ui hashtags to legacy page for unauthenticated users. ([a44b812b](https://github.com/pixelfed/pixelfed/commit/a44b812b))
+- Updated ApiV1Controller, fixes #3288. ([3e670774](https://github.com/pixelfed/pixelfed/commit/3e670774))
+- Updated AP Helpers, fixes #3287. ([b78bff72](https://github.com/pixelfed/pixelfed/commit/b78bff72))
+- Updated AP Helpers, fixes #3290. ([53975206](https://github.com/pixelfed/pixelfed/commit/53975206))
+- Updated AccountController, refresh relationship after handling follow request. ([fe768785](https://github.com/pixelfed/pixelfed/commit/fe768785))
+- Updated CollectionController, fixes #3289. ([c7e1e473](https://github.com/pixelfed/pixelfed/commit/c7e1e473))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)

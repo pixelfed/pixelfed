@@ -237,7 +237,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('collection/items/{id}', 'CollectionController@getItems');
 			Route::post('collection/item', 'CollectionController@storeId');
 			Route::delete('collection/item', 'CollectionController@deleteId');
-			Route::get('collection/{id}', 'CollectionController@get');
+			Route::get('collection/{id}', 'CollectionController@getCollection');
 			Route::post('collection/{id}', 'CollectionController@store');
 			Route::delete('collection/{id}', 'CollectionController@delete');
 			Route::post('collection/{id}/publish', 'CollectionController@publish');
@@ -351,6 +351,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('warning', 'AccountInterstitialController@read');
 		Route::get('my2020', 'SeasonalController@yearInReview');
 
+		Route::get('web/hashtag/{tag}', 'SpaController@hashtagRedirect');
 		Route::get('web/username/{id}', 'SpaController@usernameRedirect');
 		Route::get('web/post/{id}', 'SpaController@webPost');
 		Route::get('web/profile/{id}', 'SpaController@webProfile');
