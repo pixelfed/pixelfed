@@ -53,7 +53,7 @@ class ReblogService
 		$pid = intval($parentId);
 		$id = intval($reblogId);
 		if($pid && $id) {
-			return Redis::zadd(self::REBLOGS_KEY . $pid, $id);
+			return Redis::zadd(self::REBLOGS_KEY . $pid, $id, $id);
 		}
 	}
 
