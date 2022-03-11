@@ -9,8 +9,8 @@ use App\Status;
 class ReblogService
 {
 	const CACHE_KEY = 'pf:services:reblogs:';
-	const REBLOGS_KEY = 'pf:services:reblogs:post:';
-	const COLDBOOT_KEY = 'pf:services:reblogs:post_:';
+	const REBLOGS_KEY = 'pf:services:reblogs:v1:post:';
+	const COLDBOOT_KEY = 'pf:services:reblogs:v1:post_:';
 
 	public static function get($profileId, $statusId)
 	{
@@ -50,11 +50,19 @@ class ReblogService
 
 	public static function addPostReblog($parentId, $reblogId)
 	{
-		return Redis::zadd(self::REBLOGS_KEY . $parentId, $reblogId);
+		$pid = intval($parentId);
+		$id = intval($reblogId);
+		if($pid && $id) {
+			return Redis::zadd(self::REBLOGS_KEY . $pid, $id);
+		}
 	}
 
 	public static function removePostReblog($parentId, $reblogId)
 	{
-		return Redis::zrem(self::REBLOGS_KEY . $parentId, $reblogId);
+		$pid = intval($parentId);
+		$id = intval($reblogId);
+		if($pid && $id) {
+			return Redis::zrem(self::REBLOGS_KEY . $pid, $id);
+		}
 	}
 }
