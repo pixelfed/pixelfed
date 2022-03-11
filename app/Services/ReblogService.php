@@ -9,8 +9,8 @@ use App\Status;
 class ReblogService
 {
 	const CACHE_KEY = 'pf:services:reblogs:';
-	const REBLOGS_KEY = 'pf:services:reblogs:post:';
-	const COLDBOOT_KEY = 'pf:services:reblogs:post_:';
+	const REBLOGS_KEY = 'pf:services:reblogs:v1:post:';
+	const COLDBOOT_KEY = 'pf:services:reblogs:v1:post_:';
 
 	public static function get($profileId, $statusId)
 	{
