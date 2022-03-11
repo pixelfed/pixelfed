@@ -15,6 +15,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\Announce;
 use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\ReblogService;
 use App\Services\StatusService;
 
 class SharePipeline implements ShouldQueue
@@ -74,6 +75,8 @@ class SharePipeline implements ShouldQueue
 		}
 
 		$this->remoteAnnounceDeliver();
+
+		ReblogService::addPostReblog($parent->id, $status->id);
 
 		$parent->reblogs_count = $parent->shares()->count();
 		$parent->save();
