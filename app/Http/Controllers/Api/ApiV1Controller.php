@@ -2238,7 +2238,7 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
@@ -2281,7 +2281,7 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
