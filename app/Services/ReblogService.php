@@ -50,11 +50,19 @@ class ReblogService
 
 	public static function addPostReblog($parentId, $reblogId)
 	{
-		return Redis::zadd(self::REBLOGS_KEY . $parentId, $reblogId);
+		$pid = intval($parentId);
+		$id = intval($reblogId);
+		if($pid && $id) {
+			return Redis::zadd(self::REBLOGS_KEY . $pid, $id);
+		}
 	}
 
 	public static function removePostReblog($parentId, $reblogId)
 	{
-		return Redis::zrem(self::REBLOGS_KEY . $parentId, $reblogId);
+		$pid = intval($parentId);
+		$id = intval($reblogId);
+		if($pid && $id) {
+			return Redis::zrem(self::REBLOGS_KEY . $pid, $id);
+		}
 	}
 }
