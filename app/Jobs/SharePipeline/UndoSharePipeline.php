@@ -15,6 +15,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use App\Transformer\ActivityPub\Verb\UndoAnnounce;
 use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\ReblogService;
 use App\Services\StatusService;
 
 class UndoSharePipeline implements ShouldQueue
@@ -34,6 +35,8 @@ class UndoSharePipeline implements ShouldQueue
 		$actor = $status->profile;
 		$parent = $status->parent();
 		$target = $status->parent()->profile;
+
+		ReblogService::removePostReblog($parent->id, $status->id);
 
 		if ($status->uri !== null) {
 			return;

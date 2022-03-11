@@ -1879,7 +1879,7 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
@@ -1922,22 +1922,7 @@ class ApiV1Controller extends Controller
 	public function statusCard(Request $request, $id)
 	{
 		abort_if(!$request->user(), 403);
-
-		$user = $request->user();
-
-		$status = Status::findOrFail($id);
-
-		if($status->profile_id !== $user->profile_id) {
-			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
-			} else {
-				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
-			}
-		}
-
-		// Return empty response since we don't handle support cards
 		$res = [];
-
 		return response()->json($res);
 	}
 
@@ -1963,15 +1948,30 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
 		}
 
-		$shared = $status->sharedBy()->latest()->simplePaginate($limit);
-		$resource = new Fractal\Resource\Collection($shared, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$page = $request->input('page', 1);
+		$start = $page == 1 ? 0 : (($page * $limit) - $limit);
+		$end = $start + $limit - 1;
+
+		$ids = ReblogService::getPostReblogs($id, $start, $end);
+		if(empty($ids)) {
+			return [];
+		}
+
+		$res = collect($ids)
+			->map(function($id) {
+				$status = StatusService::get($id);
+				return AccountService::get($status['account']['id']);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values();
 
 		$url = $request->url();
 		$page = $request->input('page', 1);
@@ -2238,7 +2238,7 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
@@ -2281,7 +2281,7 @@ class ApiV1Controller extends Controller
 
 		if($status->profile_id !== $user->profile_id) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
