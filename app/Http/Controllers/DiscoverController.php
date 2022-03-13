@@ -214,7 +214,9 @@ class DiscoverController extends Controller
 					->limit(20)
 					->pluck('status_id')
 					->map(function($id) {
-						return StatusService::get($id, false);
+						$status = StatusService::get($id, false);
+						$status['favourited'] = true;
+						return $status;
 					})
 					->filter(function($post) {
 						return $post && isset($post['account']);
