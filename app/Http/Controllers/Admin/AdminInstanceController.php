@@ -7,6 +7,7 @@ use App\{Instance, Profile};
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Services\InstanceService;
 
 trait AdminInstanceController
 {
@@ -126,9 +127,9 @@ trait AdminInstanceController
 				break;
 		}
 
-		Cache::forget('instances:banned:domains');
-		Cache::forget('instances:unlisted:domains');
-		Cache::forget('instances:auto_cw:domains');
+		Cache::forget(InstanceService::CACHE_KEY_BANNED_DOMAINS);
+		Cache::forget(InstanceService::CACHE_KEY_UNLISTED_DOMAINS);
+		Cache::forget(InstanceService::CACHE_KEY_NSFW_DOMAINS);
 
 		return response()->json([]);
 	}
