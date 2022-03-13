@@ -85,6 +85,7 @@ class SearchApiV2Service
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
 		$query = '%' . $this->query->input('q') . '%';
+		$banned = InstanceService::getBannedDomains();
 		$results = Profile::select('profiles.*', 'followers.profile_id', 'followers.created_at')
 			->whereNull('status')
 			->leftJoin('followers', function($join) use($user) {
@@ -97,9 +98,16 @@ class SearchApiV2Service
 			->offset($offset)
 			->limit($limit)
 			->get()
+			->filter(function($profile) use ($banned) {
+				return in_array($profile->domain, $banned) == false;
+			})
 			->map(function($res) {
 				return AccountService::get($res['id']);
-			});
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			})
+			->values();
 
 		return $results;
 	}

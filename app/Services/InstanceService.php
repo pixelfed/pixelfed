@@ -7,6 +7,10 @@ use App\Instance;
 
 class InstanceService
 {
+	const CACHE_KEY_BANNED_DOMAINS = 'instances:banned:domains';
+	const CACHE_KEY_UNLISTED_DOMAINS = 'instances:unlisted:domains';
+	const CACHE_KEY_NSFW_DOMAINS = 'instances:auto_cw:domains';
+
 	public static function getByDomain($domain)
 	{
 		return Cache::remember('pf:services:instance:by_domain:'.$domain, 3600, function() use($domain) {
@@ -16,21 +20,21 @@ class InstanceService
 
 	public static function getBannedDomains()
 	{
-		return Cache::remember('instances:banned:domains', now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_BANNED_DOMAINS, now()->addHours(12), function() {
 			return Instance::whereBanned(true)->pluck('domain')->toArray();
 		});
 	}
 
 	public static function getUnlistedDomains()
 	{
-		return Cache::remember('instances:unlisted:domains', now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_UNLISTED_DOMAINS, now()->addHours(12), function() {
 			return Instance::whereUnlisted(true)->pluck('domain')->toArray();
 		});
 	}
 
 	public static function getNsfwDomains()
 	{
-		return Cache::remember('instances:auto_cw:domains', now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_NSFW_DOMAINS, now()->addHours(12), function() {
 			return Instance::whereAutoCw(true)->pluck('domain')->toArray();
 		});
 	}

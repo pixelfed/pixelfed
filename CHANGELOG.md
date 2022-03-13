@@ -81,6 +81,8 @@
 - Updated presenter components, remove video poster attribute. ([4d612dfa](https://github.com/pixelfed/pixelfed/commit/4d612dfa))
 - Improved reblog api performance ([3ef6c9fe](https://github.com/pixelfed/pixelfed/commit/3ef6c9fe))
 - Updated ApiV1Controller, fix unlisted replies. ([c13bca76](https://github.com/pixelfed/pixelfed/commit/c13bca76))
+- Updated SearchApiV2Service, filter banned instances. ([281443d7](https://github.com/pixelfed/pixelfed/commit/281443d7))
+- Updated DiscoverController, fix favourited state on memories. ([b91747b4](https://github.com/pixelfed/pixelfed/commit/b91747b4))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
