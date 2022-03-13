@@ -2581,7 +2581,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$data = $ids->map(function($post) use($pid) {
-			$status = StatusService::get($post->id);
+			$status = StatusService::get($post->id, false);
 
 			if(!$status || !isset($status['id'])) {
 				return false;
