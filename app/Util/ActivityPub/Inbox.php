@@ -591,6 +591,9 @@ class Inbox
 			DeleteRemoteProfilePipeline::dispatchNow($profile);
 			return;
 		} else {
+			if(!isset($obj['id'], $this->payload['object'], $this->payload['object']['id'])) {
+				return;
+			}
 			$type = $this->payload['object']['type'];
 			$typeCheck = in_array($type, ['Person', 'Tombstone', 'Story']);
 			if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
