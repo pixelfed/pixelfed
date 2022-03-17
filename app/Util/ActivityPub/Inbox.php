@@ -687,6 +687,11 @@ class Inbox
 		$profile = self::actorFirstOrCreate($actor);
 		$obj = $this->payload['object'];
 
+		// TODO: Some implementations do not inline the object, skip for now
+		if(!$obj || !is_array($obj) || !isset($obj['type'])) {
+			return;
+		}
+
 		switch ($obj['type']) {
 			case 'Accept':
 				break;
