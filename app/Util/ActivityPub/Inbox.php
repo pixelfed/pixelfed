@@ -182,6 +182,9 @@ class Inbox
 		if(!$actor || $actor->domain == null) {
 			return;
 		}
+		if(!isset($activity['to'])) {
+			return;
+		}
 		$to = $activity['to'];
 		$cc = isset($activity['cc']) ? $activity['cc'] : [];
 
