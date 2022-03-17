@@ -59,7 +59,7 @@ class InboxValidator implements ShouldQueue
                 // Job processed already
                 return 1;
             }
-            Cache::put($lockKey, 1, 300);
+            Cache::put($lockKey, 1, 3600);
         }
 
         if(!isset($headers['signature']) || !isset($headers['date'])) {
@@ -154,6 +154,9 @@ class InboxValidator implements ShouldQueue
            !now()->parse($date)->lt(now()->addDays(1))
        ) {
             return;
+        }
+        if(!isset($bodyDecoded['id'])) {
+        	return;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
