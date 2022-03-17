@@ -182,6 +182,9 @@ class Inbox
 		if(!$actor || $actor->domain == null) {
 			return;
 		}
+		if(!isset($activity['to'])) {
+			return;
+		}
 		$to = $activity['to'];
 		$cc = isset($activity['cc']) ? $activity['cc'] : [];
 
@@ -259,10 +262,16 @@ class Inbox
 		}
 
 		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
+
 		if(Status::whereUrl($url)->exists()) {
 			return;
 		}
-		Helpers::statusFetch($url);
+
+		Helpers::storeStatus(
+			$url,
+			$actor,
+			$activity
+		);
 		return;
 	}
 
@@ -591,6 +600,9 @@ class Inbox
 			DeleteRemoteProfilePipeline::dispatchNow($profile);
 			return;
 		} else {
+			if(!isset($obj['id'], $this->payload['object'], $this->payload['object']['id'])) {
+				return;
+			}
 			$type = $this->payload['object']['type'];
 			$typeCheck = in_array($type, ['Person', 'Tombstone', 'Story']);
 			if(!Helpers::validateUrl($actor) || !Helpers::validateUrl($obj['id']) || !$typeCheck) {
@@ -686,6 +698,11 @@ class Inbox
 		$actor = $this->payload['actor'];
 		$profile = self::actorFirstOrCreate($actor);
 		$obj = $this->payload['object'];
+
+		// TODO: Some implementations do not inline the object, skip for now
+		if(!$obj || !is_array($obj) || !isset($obj['type'])) {
+			return;
+		}
 
 		switch ($obj['type']) {
 			case 'Accept':

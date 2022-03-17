@@ -434,37 +434,124 @@ class Helpers {
 				);
 				return $status;
 			}
-			return DB::transaction(function() use($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id) {
-				$status = new Status;
-				$status->profile_id = $profile->id;
-				$status->url = isset($res['url']) && is_string($res['url']) ? $res['url'] : $url;
-				$status->uri = isset($res['url']) && is_string($res['url']) ? $res['url'] : $url;
-				$status->object_url = $id;
-				$status->caption = strip_tags($res['content']);
-				$status->rendered = Purify::clean($res['content']);
-				$status->created_at = Carbon::parse($ts);
-				$status->in_reply_to_id = $reply_to;
-				$status->local = false;
-				$status->is_nsfw = $cw;
-				$status->scope = $scope;
-				$status->visibility = $scope;
-				$status->cw_summary = $cw == true && isset($res['summary']) ?
-					Purify::clean(strip_tags($res['summary'])) : null;
-				$status->save();
-				if($reply_to == null) {
-					self::importNoteAttachment($res, $status);
-				} else {
-					StatusReplyPipeline::dispatch($status);
-				}
 
-				if(isset($res['tag']) && is_array($res['tag']) && !empty($res['tag'])) {
-					StatusTagsPipeline::dispatch($res, $status);
-				}
-				return $status;
-			});
+			return self::storeStatus($url, $profile, $res);
 		});
 
 		return $status;
+	}
+
+	public static function storeStatus($url, $profile, $activity)
+	{
+		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
+		$url = isset($activity['url']) && is_string($activity['url']) ? $activity['url'] : $id;
+		$idDomain = parse_url($id, PHP_URL_HOST);
+		$urlDomain = parse_url($url, PHP_URL_HOST);
+		if(!self::validateUrl($id) || !self::validateUrl($url)) {
+			return;
+		}
+
+		$reply_to = self::getReplyTo($activity);
+
+		return DB::transaction(function() use($url, $profile, $activity, $reply_to, $id) {
+			$ts = self::pluckval($activity['published']);
+			$scope = self::getScope($activity);
+			$cw = self::getSensitive($activity);
+
+			$status = new Status;
+			$status->profile_id = $profile->id;
+			$status->url = $url;
+			$status->uri = $url;
+			$status->object_url = $id;
+			$status->caption = strip_tags($activity['content']);
+			$status->rendered = Purify::clean($activity['content']);
+			$status->created_at = Carbon::parse($ts);
+			$status->in_reply_to_id = $reply_to;
+			$status->local = false;
+			$status->is_nsfw = $cw;
+			$status->scope = $scope;
+			$status->visibility = $scope;
+			$status->cw_summary = $cw == true && isset($activity['summary']) ?
+				Purify::clean(strip_tags($activity['summary'])) : null;
+			$status->save();
+
+			if($reply_to == null) {
+				self::importNoteAttachment($activity, $status);
+			} else {
+				StatusReplyPipeline::dispatch($status);
+			}
+
+			if(isset($activity['tag']) && is_array($activity['tag']) && !empty($activity['tag'])) {
+				StatusTagsPipeline::dispatch($activity, $status);
+			}
+			return $status;
+		});
+	}
+
+	public static function getSensitive($activity)
+	{
+		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
+		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
+		$urlDomain = parse_url($url, PHP_URL_HOST);
+
+		$cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
+
+		if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
+			$cw = true;
+		}
+
+		return $cw;
+	}
+
+	public static function getReplyTo($activity)
+	{
+		$reply_to = null;
+		$inReplyTo = isset($activity['inReplyTo']) && !empty($activity['inReplyTo']) ?
+			self::pluckval($activity['inReplyTo']) :
+			false;
+
+		if($inReplyTo) {
+			$reply_to = self::statusFirstOrFetch($inReplyTo);
+			if($reply_to) {
+				$reply_to = optional($reply_to)->id;
+			}
+		} else {
+			$reply_to = null;
+		}
+
+		return $reply_to;
+	}
+
+	public static function getScope($activity)
+	{
+		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
+		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
+		$urlDomain = parse_url($url, PHP_URL_HOST);
+		$scope = 'private';
+
+		if(isset($activity['to']) == true) {
+			if(is_array($activity['to']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['to'])) {
+				$scope = 'public';
+			}
+			if(is_string($activity['to']) && 'https://www.w3.org/ns/activitystreams#Public' == $activity['to']) {
+				$scope = 'public';
+			}
+		}
+
+		if(isset($activity['cc']) == true) {
+			if(is_array($activity['cc']) && in_array('https://www.w3.org/ns/activitystreams#Public', $activity['cc'])) {
+				$scope = 'unlisted';
+			}
+			if(is_string($activity['cc']) && 'https://www.w3.org/ns/activitystreams#Public' == $activity['cc']) {
+				$scope = 'unlisted';
+			}
+		}
+
+		if($scope == 'public' && in_array($urlDomain, InstanceService::getUnlistedDomains())) {
+			$scope = 'unlisted';
+		}
+
+		return $scope;
 	}
 
 	private static function storePoll($profile, $res, $url, $ts, $reply_to, $cw, $scope, $id)

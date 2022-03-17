@@ -149,6 +149,9 @@ class SearchApiV2Service
 			->get()
 			->map(function($status) {
 				return StatusService::get($status->id);
+			})
+			->filter(function($status) {
+				return $status && isset($status['account']);
 			});
 		return $results;
 	}
@@ -188,6 +191,7 @@ class SearchApiV2Service
 
 			try {
 				$res = ActivityPubFetchService::get($query);
+				$banned = InstanceService::getBannedDomains();
 				if($res) {
 					$json = json_decode($res, true);
 
@@ -202,16 +206,23 @@ class SearchApiV2Service
 					switch($json['type']) {
 						case 'Note':
 							$obj = Helpers::statusFetch($query);
-							if(!$obj) {
+							if(!$obj || !isset($obj['id'])) {
 								return $default;
 							}
-							$default['statuses'][] = StatusService::get($obj['id']);
+							$note = StatusService::get($obj['id']);
+							if(!$note) {
+								return $default;
+							}
+							$default['statuses'][] = $note;
 							return $default;
 						break;
 
 						case 'Person':
 							$obj = Helpers::profileFetch($query);
 							if(!$obj) {
+								return $default;
+							}
+							if(in_array($obj['domain'], $banned)) {
 								return $default;
 							}
 							$default['accounts'][] = AccountService::get($obj['id']);
