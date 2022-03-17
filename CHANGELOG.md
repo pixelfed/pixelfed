@@ -83,6 +83,13 @@
 - Updated ApiV1Controller, fix unlisted replies. ([c13bca76](https://github.com/pixelfed/pixelfed/commit/c13bca76))
 - Updated SearchApiV2Service, filter banned instances. ([281443d7](https://github.com/pixelfed/pixelfed/commit/281443d7))
 - Updated DiscoverController, fix favourited state on memories. ([b91747b4](https://github.com/pixelfed/pixelfed/commit/b91747b4))
+- Updated InboxPipeline, fixes #3306. ([20710f4d](https://github.com/pixelfed/pixelfed/commit/20710f4d))
+- Updated inbox workers, fixes #3304. ([cd4f73be](https://github.com/pixelfed/pixelfed/commit/cd4f73be))
+- Updated Inbox, fixes #3305. ([14231632](https://github.com/pixelfed/pixelfed/commit/14231632))
+- Updated Inbox, fixes #3313. ([1c3e72c0](https://github.com/pixelfed/pixelfed/commit/1c3e72c0))
+- Updated Inbox, fixes #3314. ([dfcd2e6d](https://github.com/pixelfed/pixelfed/commit/dfcd2e6d))
+- Updated search service, fix banned instance edge case. ([74018e9c](https://github.com/pixelfed/pixelfed/commit/74018e9c))
+- Updated inbox, fixes #3315. ([c3c3ce18](https://github.com/pixelfed/pixelfed/commit/c3c3ce18))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
