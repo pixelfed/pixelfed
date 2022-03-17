@@ -262,10 +262,16 @@ class Inbox
 		}
 
 		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
+
 		if(Status::whereUrl($url)->exists()) {
 			return;
 		}
-		Helpers::statusFetch($url);
+
+		Helpers::storeStatus(
+			$url,
+			$actor,
+			$activity
+		);
 		return;
 	}
 

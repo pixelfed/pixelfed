@@ -68,6 +68,14 @@ class StatusReplyPipeline implements ShouldQueue
             return 1;
         }
 
+        if(config('database.default') === 'mysql') {
+	        DB::transaction(function() use($reply) {
+	        	$count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $reply->id]);
+	        	$reply->reply_count = count($count);
+	        	$reply->save();
+	        });
+        }
+
         DB::transaction(function() use($target, $actor, $status) {
             $notification = new Notification();
             $notification->profile_id = $target->id;
@@ -82,6 +90,15 @@ class StatusReplyPipeline implements ShouldQueue
             NotificationService::setNotification($notification);
             NotificationService::set($notification->profile_id, $notification->id);
         });
+
+        if($exists = Cache::get('status:replies:all:' . $reply->id)) {
+        	if($exists && $exists->count() == 3) {
+        	} else {
+        		Cache::forget('status:replies:all:' . $reply->id);
+        	}
+        } else {
+        	Cache::forget('status:replies:all:' . $reply->id);
+        }
 
         return 1;
 	}
