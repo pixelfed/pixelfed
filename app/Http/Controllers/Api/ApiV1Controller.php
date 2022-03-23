@@ -2086,9 +2086,8 @@ class ApiV1Controller extends Controller
 		$this->validate($request, [
 			'status' => 'nullable|string',
 			'in_reply_to_id' => 'nullable',
-			'media_ids' => 'array|max:' . config_cache('pixelfed.max_album_length'),
-			'media_ids.*' => 'integer|min:1',
-			'sensitive' => 'nullable|boolean',
+			'media_ids' => 'sometimes|array|max:' . config_cache('pixelfed.max_album_length'),
+			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
 		]);
 
