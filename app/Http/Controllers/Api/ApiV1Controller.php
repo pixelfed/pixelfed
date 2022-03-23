@@ -1649,7 +1649,7 @@ class ApiV1Controller extends Controller
 		$page = $request->input('page');
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
-		$limit = $request->input('limit') ?? 3;
+		$limit = $request->input('limit') ?? 20;
 		$pid = $request->user()->profile_id;
 
 		$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
@@ -1809,7 +1809,7 @@ class ApiV1Controller extends Controller
 
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
-		$limit = $request->input('limit') ?? 3;
+		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
