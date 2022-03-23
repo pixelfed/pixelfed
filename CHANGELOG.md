@@ -98,6 +98,7 @@
 - Updated ApiV1Controller, fix context entities. ([b1ab41e0](https://github.com/pixelfed/pixelfed/commit/b1ab41e0))
 - Updated ApiV1Controller, fix timeline default limit. ([a87f8301](https://github.com/pixelfed/pixelfed/commit/a87f8301))
 - Updated ApiV1Controller, fix search v2 entities. ([9dac861e](https://github.com/pixelfed/pixelfed/commit/9dac861e))
+- Updated ApiV1Controller, fix apps endpoint. ([50baae52](https://github.com/pixelfed/pixelfed/commit/50baae52))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
