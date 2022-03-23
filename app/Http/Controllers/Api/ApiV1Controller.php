@@ -102,9 +102,7 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'client_name' 		=> 'required',
-			'redirect_uris' 	=> 'required',
-			'scopes' 			=> 'nullable',
-			'website' 			=> 'nullable'
+			'redirect_uris' 	=> 'required'
 		]);
 
 		$uris = implode(',', explode('\n', $request->redirect_uris));
@@ -122,11 +120,11 @@ class ApiV1Controller extends Controller
 		$client->save();
 
 		$res = [
-			'id' => $client->id,
+			'id' => (string) $client->id,
 			'name' => $client->name,
 			'website' => null,
 			'redirect_uri' => $client->redirect,
-			'client_id' => $client->id,
+			'client_id' => (string) $client->id,
 			'client_secret' => $client->secret,
 			'vapid_key' => null
 		];
