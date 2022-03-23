@@ -1896,40 +1896,49 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
+		$status = StatusService::getMastodon($id, false);
 
-		$status = Status::findOrFail($id);
+		if(!$status || !isset($status['account'])) {
+			return response('', 404);
+		}
 
-		if($status->profile_id !== $user->profile_id) {
-			if($status->scope == 'private') {
-				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
+		if($status['account']['id'] != $user->profile_id) {
+			if($status['visibility'] == 'private') {
+				if(!FollowerService::follows($user->profile_id, $status['account']['id'])) {
+					return response('', 404);
+				}
 			} else {
-				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
+				if(!in_array($status['visibility'], ['public','unlisted'])) {
+					return response('', 404);
+				}
 			}
 		}
 
-		if($status->comments_disabled) {
-			$res = [
-				'ancestors' => [],
-				'descendants' => []
-			];
-		} else {
-			$ancestors = $status->parent();
-			if($ancestors) {
-				$ares = new Fractal\Resource\Item($ancestors, new StatusTransformer());
-				$ancestors = [
-					$this->fractal->createData($ares)->toArray()
-				];
-			} else {
-				$ancestors = [];
-			}
-			$descendants = Status::whereInReplyToId($id)->latest()->limit(20)->get();
-			$dres = new Fractal\Resource\Collection($descendants, new StatusTransformer());
-			$descendants = $this->fractal->createData($dres)->toArray();
-			$res = [
-				'ancestors' => $ancestors,
-				'descendants' => $descendants
-			];
+		$ancestors = [];
+		$descendants = [];
+
+		if($status['in_reply_to_id']) {
+			$ancestors[] = StatusService::getMastodon($status['in_reply_to_id'], false);
 		}
+
+		if($status['replies_count']) {
+			$descendants = DB::table('statuses')
+				->where('in_reply_to_id', $id)
+				->limit(20)
+				->pluck('id')
+				->map(function($sid) {
+					return StatusService::getMastodon($sid, false);
+				})
+				->filter(function($post) {
+					return $post && isset($post['account']);
+				})
+				->values();
+		}
+
+		$res = [
+			'ancestors' => $ancestors,
+			'descendants' => $descendants
+		];
 
 		return $this->json($res);
 	}
