@@ -91,6 +91,11 @@ class ApiV1Controller extends Controller
 		$this->fractal->setSerializer(new ArraySerializer());
 	}
 
+	public function json($res, $code = 200, $headers = [])
+	{
+		return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
+	}
+
 	public function apps(Request $request)
 	{
 		abort_if(!config_cache('pixelfed.oauth_enabled'), 404);
@@ -126,7 +131,7 @@ class ApiV1Controller extends Controller
 			'vapid_key' => null
 		];
 
-		return response()->json($res, 200, [
+		return $this->json($res, 200, [
 			'Access-Control-Allow-Origin' => '*'
 		]);
 	}
@@ -154,7 +159,7 @@ class ApiV1Controller extends Controller
 			'fields' => []
 		];
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -170,7 +175,7 @@ class ApiV1Controller extends Controller
 		if(!$res) {
 			return response()->json(['error' => 'Record not found'], 404);
 		}
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -402,7 +407,7 @@ class ApiV1Controller extends Controller
 		$res['bio'] = strip_tags($res['note']);
 		$res = array_merge($res, $other);
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -449,7 +454,7 @@ class ApiV1Controller extends Controller
 			->values()
 			->toArray();
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -496,7 +501,7 @@ class ApiV1Controller extends Controller
 			->values()
 			->toArray();
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -582,7 +587,7 @@ class ApiV1Controller extends Controller
 		})
 		->values();
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -622,7 +627,7 @@ class ApiV1Controller extends Controller
 		// Following already, return empty relationship
 		if($isFollowing == true) {
 			$res = RelationshipService::get($user->profile_id, $target->id) ?? [];
-			return response()->json($res);
+			return $this->json($res);
 		}
 
 		// Rate limits, max 7500 followers per account
@@ -672,7 +677,7 @@ class ApiV1Controller extends Controller
 
 		$res = RelationshipService::get($user->profile_id, $target->id);
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -703,7 +708,7 @@ class ApiV1Controller extends Controller
 			$resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
 			$res = $this->fractal->createData($resource)->toArray();
 
-			return response()->json($res);
+			return $this->json($res);
 		}
 
 		// Rate limits, follow 30 accounts per hour max
@@ -742,7 +747,7 @@ class ApiV1Controller extends Controller
 
 		$res = RelationshipService::get($user->profile_id, $target->id);
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -768,7 +773,7 @@ class ApiV1Controller extends Controller
 			->map(function($id) use($pid) {
 				return RelationshipService::get($pid, $id);
 		});
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -802,7 +807,7 @@ class ApiV1Controller extends Controller
 
 		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -834,7 +839,7 @@ class ApiV1Controller extends Controller
 		$profiles = Profile::findOrFail($blocked);
 		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -878,7 +883,7 @@ class ApiV1Controller extends Controller
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -913,13 +918,13 @@ class ApiV1Controller extends Controller
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
 	 * GET /api/v1/custom_emojis
 	 *
-	 * Return empty array, we don't support custom emoji
+	 * Return custom emoji
 	 *
 	 * @return array
 	 */
@@ -1003,13 +1008,9 @@ class ApiV1Controller extends Controller
 
 			$baseUrl = config('app.url') . '/api/v1/favourites?limit=' . $limit . '&';
 			$link = '<'.$baseUrl.'max_id='.$max.'>; rel="next",<'.$baseUrl.'min_id='.$min.'>; rel="prev"';
-			return response()
-				->json($res)
-				->withHeaders([
-					'Link' => $link,
-				]);
+			return $this->json($res, 200, ['Link' => $link]);
 		} else {
-			return response()->json($res);
+			return $this->json($res);
 		}
 	}
 
@@ -1064,7 +1065,7 @@ class ApiV1Controller extends Controller
 
 		$status['favourited'] = true;
 		$status['favourites_count'] = $status['favourites_count'] + 1;
-		return response()->json($status);
+		return $this->json($status);
 	}
 
 	/**
@@ -1104,7 +1105,7 @@ class ApiV1Controller extends Controller
 
 		$res = StatusService::getMastodon($status->id, false);
 		$res['favourited'] = false;
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1140,7 +1141,7 @@ class ApiV1Controller extends Controller
 
 		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1236,18 +1237,20 @@ class ApiV1Controller extends Controller
 				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
 				'email' => config('instance.email'),
 				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') .')',
-				'urls' => [],
+				'urls' => [
+					'streaming_api' => 'wss://' . config('pixelfed.domain.app')
+				],
 				'stats' => $stats,
-				'thumbnail' => url('headers/default.jpg'),
+				'thumbnail' => url('img/pixelfed-icon-color.png'),
 				'languages' => ['en'],
-				'registrations' => (bool) config('pixelfed.open_registration'),
+				'registrations' => (bool) config_cache('pixelfed.open_registration'),
 				'approval_required' => false,
 				'contact_account' => $contact,
 				'rules' => $rules
 			];
 		});
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1400,7 +1403,7 @@ class ApiV1Controller extends Controller
 		$res = $this->fractal->createData($resource)->toArray();
 		$res['preview_url'] = $media->url(). '?cb=1&_v=' . time();
 		$res['url'] = $media->url(). '?cb=1&_v=' . time();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1431,7 +1434,31 @@ class ApiV1Controller extends Controller
 		$res = $this->fractal->createData($resource)->toArray();
 		$res['preview_url'] = url('/storage/no-preview.png');
 		$res['url'] = url('/storage/no-preview.png');
-		return response()->json($res);
+		return $this->json($res);
+	}
+
+	/**
+	 * GET /api/v1/media/{id}
+	 *
+	 * @param  integer  $id
+	 *
+	 * @return MediaTransformer
+	 */
+	public function mediaGet(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		$user = $request->user();
+
+		$media = Media::whereUserId($user->id)
+			->whereNull('status_id')
+			->findOrFail($id);
+
+		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
+		$res = $this->fractal->createData($resource)->toArray();
+		$res['preview_url'] = url('/storage/no-preview.png');
+		$res['url'] = url('/storage/no-preview.png');
+		return $this->json($res);
 	}
 
 	/**
@@ -1461,7 +1488,7 @@ class ApiV1Controller extends Controller
 
 		$resource = new Fractal\Resource\Collection($accounts, new AccountTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1493,7 +1520,7 @@ class ApiV1Controller extends Controller
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1527,7 +1554,7 @@ class ApiV1Controller extends Controller
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1562,14 +1589,14 @@ class ApiV1Controller extends Controller
 		$minId = null;
 
 		if($max) {
-			$res = NotificationService::getMax($pid, $max, $limit);
+			$res = NotificationService::getMaxMastodon($pid, $max, $limit);
 			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
 			if(!empty($ids)) {
 				$maxId = max($ids);
 				$minId = min($ids);
 			}
 		} else {
-			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
+			$res = NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
 			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
 			if(!empty($ids)) {
 				$maxId = max($ids);
@@ -1600,15 +1627,8 @@ class ApiV1Controller extends Controller
 			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
 		}
 
-		$res = response()->json($res);
-
-		if(isset($link)) {
-			$res->withHeaders([
-				'Link' => $link,
-			]);
-		}
-
-		return $res;
+		$headers = isset($link) ? ['Link' => $link] : [];
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
@@ -1629,7 +1649,7 @@ class ApiV1Controller extends Controller
 		$page = $request->input('page');
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
-		$limit = $request->input('limit') ?? 3;
+		$limit = $request->input('limit') ?? 20;
 		$pid = $request->user()->profile_id;
 
 		$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
@@ -1704,7 +1724,7 @@ class ApiV1Controller extends Controller
 			->toArray();
 		}
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -1770,7 +1790,7 @@ class ApiV1Controller extends Controller
 			})
 			->values();
 
-		return response()->json($dms);
+		return $this->json($dms);
 	}
 
 	/**
@@ -1789,7 +1809,7 @@ class ApiV1Controller extends Controller
 
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
-		$limit = $request->input('limit') ?? 3;
+		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
@@ -1825,7 +1845,8 @@ class ApiV1Controller extends Controller
 		})
 		->values()
 		->toArray();
-		return response()->json($res);
+
+		return $this->json($res);
 	}
 
 	/**
@@ -1859,7 +1880,8 @@ class ApiV1Controller extends Controller
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
 		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
-		return response()->json($res);
+
+		return $this->json($res);
 	}
 
 	/**
@@ -1874,42 +1896,51 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
+		$status = StatusService::getMastodon($id, false);
 
-		$status = Status::findOrFail($id);
+		if(!$status || !isset($status['account'])) {
+			return response('', 404);
+		}
 
-		if($status->profile_id !== $user->profile_id) {
-			if($status->scope == 'private') {
-				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
+		if($status['account']['id'] != $user->profile_id) {
+			if($status['visibility'] == 'private') {
+				if(!FollowerService::follows($user->profile_id, $status['account']['id'])) {
+					return response('', 404);
+				}
 			} else {
-				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
+				if(!in_array($status['visibility'], ['public','unlisted'])) {
+					return response('', 404);
+				}
 			}
 		}
 
-		if($status->comments_disabled) {
-			$res = [
-				'ancestors' => [],
-				'descendants' => []
-			];
-		} else {
-			$ancestors = $status->parent();
-			if($ancestors) {
-				$ares = new Fractal\Resource\Item($ancestors, new StatusTransformer());
-				$ancestors = [
-					$this->fractal->createData($ares)->toArray()
-				];
-			} else {
-				$ancestors = [];
-			}
-			$descendants = Status::whereInReplyToId($id)->latest()->limit(20)->get();
-			$dres = new Fractal\Resource\Collection($descendants, new StatusTransformer());
-			$descendants = $this->fractal->createData($dres)->toArray();
-			$res = [
-				'ancestors' => $ancestors,
-				'descendants' => $descendants
-			];
+		$ancestors = [];
+		$descendants = [];
+
+		if($status['in_reply_to_id']) {
+			$ancestors[] = StatusService::getMastodon($status['in_reply_to_id'], false);
 		}
 
-		return response()->json($res);
+		if($status['replies_count']) {
+			$descendants = DB::table('statuses')
+				->where('in_reply_to_id', $id)
+				->limit(20)
+				->pluck('id')
+				->map(function($sid) {
+					return StatusService::getMastodon($sid, false);
+				})
+				->filter(function($post) {
+					return $post && isset($post['account']);
+				})
+				->values();
+		}
+
+		$res = [
+			'ancestors' => $ancestors,
+			'descendants' => $descendants
+		];
+
+		return $this->json($res);
 	}
 
 	/**
@@ -1966,7 +1997,10 @@ class ApiV1Controller extends Controller
 		$res = collect($ids)
 			->map(function($id) {
 				$status = StatusService::get($id);
-				return AccountService::get($status['account']['id']);
+				if($status) {
+					return AccountService::get($status['account']['id']);
+				}
+				return;
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
@@ -1979,7 +2013,7 @@ class ApiV1Controller extends Controller
 		$prev = $page > 1 ? $page - 1 : 1;
 		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
 
-		return response()->json($res, 200, ['Link' => $links]);
+		return $this->json($res, 200, ['Link' => $links]);
 	}
 
 	/**
@@ -2045,7 +2079,7 @@ class ApiV1Controller extends Controller
 		$prev = $page > 1 ? $page - 1 : 1;
 		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
 
-		return response()->json($res, 200, ['Link' => $links]);
+		return $this->json($res, 200, ['Link' => $links]);
 	}
 
 	/**
@@ -2060,10 +2094,9 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'status' => 'nullable|string',
-			'in_reply_to_id' => 'nullable|integer',
-			'media_ids' => 'array|max:' . config_cache('pixelfed.max_album_length'),
-			'media_ids.*' => 'integer|min:1',
-			'sensitive' => 'nullable|boolean',
+			'in_reply_to_id' => 'nullable',
+			'media_ids' => 'sometimes|array|max:' . config_cache('pixelfed.max_album_length'),
+			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
 		]);
 
@@ -2192,9 +2225,8 @@ class ApiV1Controller extends Controller
 		Cache::forget('profile:embed:' . $status->profile_id);
 		Cache::forget($limitKey);
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		$res = StatusService::getMastodon($status->id, false);
+		return $this->json($res);
 	}
 
 	/**
@@ -2219,7 +2251,8 @@ class ApiV1Controller extends Controller
 		$res = $this->fractal->createData($resource)->toArray();
 		$res['text'] = $res['content'];
 		unset($res['content']);
-		return response()->json($res);
+
+		return $this->json($res);
 	}
 
 	/**
@@ -2262,7 +2295,7 @@ class ApiV1Controller extends Controller
 		$res = StatusService::getMastodon($status->id);
 		$res['reblogged'] = true;
 
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -2292,17 +2325,18 @@ class ApiV1Controller extends Controller
 		  ->first();
 
 		if(!$reblog) {
-			$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-			$res = $this->fractal->createData($resource)->toArray();
-			return response()->json($res);
+			$res = StatusService::getMastodon($status->id);
+			$res['reblogged'] = false;
+			return $this->json($res);
 		}
 
 		UndoSharePipeline::dispatch($reblog);
 		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
-		$res['reblogged'] = true;
-		return response()->json($res);
+		$res['reblogged'] = false;
+
+		return $this->json($res);
 	}
 
 	/**
@@ -2358,7 +2392,7 @@ class ApiV1Controller extends Controller
 			->values()
 			->toArray();
 
-		return response()->json($res, 200, [], JSON_PRETTY_PRINT);
+		return $this->json($res);
 	}
 
 	/**
@@ -2404,7 +2438,8 @@ class ApiV1Controller extends Controller
 		foreach($bookmarks as $id) {
 			$res[] = \App\Services\StatusService::getMastodon($id);
 		}
-		return $res;
+
+		return $this->json($res);
 	}
 
 	/**
@@ -2426,9 +2461,9 @@ class ApiV1Controller extends Controller
 			'status_id' => $status->id,
 			'profile_id' => $request->user()->profile_id
 		]);
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		$res = StatusService::getMastodon($status->id);
+
+		return $this->json($res);
 	}
 
 	/**
@@ -2446,18 +2481,13 @@ class ApiV1Controller extends Controller
 			->whereScope('public')
 			->findOrFail($id);
 
-		Bookmark::firstOrCreate([
-			'status_id' => $status->id,
-			'profile_id' => $request->user()->profile_id
-		]);
 		$bookmark = Bookmark::whereStatusId($status->id)
 			->whereProfileId($request->user()->profile_id)
 			->firstOrFail();
 		$bookmark->delete();
+		$res = StatusService::getMastodon($status->id);
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return response()->json($res);
+		return $this->json($res);
 	}
 
 	/**
@@ -2483,7 +2513,7 @@ class ApiV1Controller extends Controller
 			'following' => 'nullable'
 		]);
 
-		return SearchApiV2Service::query($request);
+		return $this->json(SearchApiV2Service::query($request, true));
 	}
 
 	/**
@@ -2515,7 +2545,7 @@ class ApiV1Controller extends Controller
 		})
 		->take(12)
 		->values();
-		return response()->json(compact('posts'));
+		return $this->json(compact('posts'));
 	}
 
 	/**
@@ -2600,7 +2630,7 @@ class ApiV1Controller extends Controller
 			'next' => $ids->nextPageUrl()
 		];
 
-		return $res;
+		return $this->json($res);
 	}
 
 	/**
@@ -2617,7 +2647,7 @@ class ApiV1Controller extends Controller
 		$pid = $request->user()->profile_id;
 		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
 
-		return StatusService::getState($status->id, $pid);
+		return $this->json(StatusService::getState($status->id, $pid));
 	}
 
    /**
@@ -2650,6 +2680,6 @@ class ApiV1Controller extends Controller
 			->take(6)
 			->values();
 
-		return response()->json($ids, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		return $this->json($ids);
 	}
 }

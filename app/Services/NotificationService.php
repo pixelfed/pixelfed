@@ -16,6 +16,15 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 class NotificationService {
 
 	const CACHE_KEY = 'pf:services:notifications:ids:';
+	const MASTODON_TYPES = [
+		'follow',
+		'follow_request',
+		'mention',
+		'reblog',
+		'favourite',
+		'poll',
+		'status'
+	];
 
 	public static function get($id, $start = 0, $stop = 400)
 	{
@@ -79,6 +88,63 @@ class NotificationService {
 		foreach($ids as $id) {
 			$n = self::getNotification($id);
 			if($n != null) {
+				$res->push($n);
+			}
+		}
+		return $res->toArray();
+	}
+
+
+	public static function getMaxMastodon($id = false, $start = 0, $limit = 10)
+	{
+		$ids = self::getRankedMaxId($id, $start, $limit);
+
+		if(empty($ids)) {
+			return [];
+		}
+
+		$res = collect([]);
+		foreach($ids as $id) {
+			$n = self::getNotification($id);
+			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
+				$n['account'] = AccountService::getMastodon($n['account']['id']);
+
+				if(isset($n['relationship'])) {
+					unset($n['relationship']);
+				}
+
+				if(isset($n['status'])) {
+					$n['status'] = StatusService::getMastodon($n['status']['id'], false);
+				}
+
+				$res->push($n);
+			}
+		}
+		return $res->toArray();
+	}
+
+	public static function getMinMastodon($id = false, $start = 0, $limit = 10)
+	{
+		$ids = self::getRankedMinId($id, $start, $limit);
+
+		if(empty($ids)) {
+			return [];
+		}
+
+		$res = collect([]);
+		foreach($ids as $id) {
+			$n = self::getNotification($id);
+			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
+				$n['account'] = AccountService::getMastodon($n['account']['id']);
+
+				if(isset($n['relationship'])) {
+					unset($n['relationship']);
+				}
+
+				if(isset($n['status'])) {
+					$n['status'] = StatusService::getMastodon($n['status']['id'], false);
+				}
+
 				$res->push($n);
 			}
 		}
