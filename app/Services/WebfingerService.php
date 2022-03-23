@@ -11,15 +11,17 @@ use App\Services\AccountService;
 
 class WebfingerService
 {
-	public static function lookup($query)
+	public static function lookup($query, $mastodonMode = false)
 	{
-		return (new self)->run($query);
+		return (new self)->run($query, $mastodonMode);
 	}
 
-	protected function run($query)
+	protected function run($query, $mastodonMode)
 	{
 		if($profile = Profile::whereUsername($query)->first()) {
-			return AccountService::get($profile->id);
+			return $mastodonMode ?
+				AccountService::getMastodon($profile->id, true) :
+				AccountService::get($profile->id);
 		}
 		$url = WebfingerUrl::generateWebfingerUrl($query);
 		if(!Helpers::validateUrl($url)) {
@@ -54,6 +56,8 @@ class WebfingerService
 			->first();
 
 		$profile = Helpers::profileFetch($link);
-		return AccountService::get($profile->id);
+		return $mastodonMode ?
+			AccountService::getMastodon($profile->id, true) :
+			AccountService::get($profile->id);
 	}
 }

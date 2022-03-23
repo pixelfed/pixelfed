@@ -2513,7 +2513,7 @@ class ApiV1Controller extends Controller
 			'following' => 'nullable'
 		]);
 
-		return $this->json(SearchApiV2Service::query($request));
+		return $this->json(SearchApiV2Service::query($request, true));
 	}
 
 	/**
