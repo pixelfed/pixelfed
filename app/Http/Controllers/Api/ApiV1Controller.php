@@ -1589,14 +1589,14 @@ class ApiV1Controller extends Controller
 		$minId = null;
 
 		if($max) {
-			$res = NotificationService::getMax($pid, $max, $limit);
+			$res = NotificationService::getMaxMastodon($pid, $max, $limit);
 			$ids = NotificationService::getRankedMaxId($pid, $max, $limit);
 			if(!empty($ids)) {
 				$maxId = max($ids);
 				$minId = min($ids);
 			}
 		} else {
-			$res = NotificationService::getMin($pid, $min ?? $since, $limit);
+			$res = NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
 			$ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
 			if(!empty($ids)) {
 				$maxId = max($ids);
@@ -2216,9 +2216,7 @@ class ApiV1Controller extends Controller
 		Cache::forget('profile:embed:' . $status->profile_id);
 		Cache::forget($limitKey);
 
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-
+		$res = StatusService::getMastodon($status->id, false);
 		return $this->json($res);
 	}
 
@@ -2318,16 +2316,16 @@ class ApiV1Controller extends Controller
 		  ->first();
 
 		if(!$reblog) {
-			$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-			$res = $this->fractal->createData($resource)->toArray();
-			return response()->json($res);
+			$res = StatusService::getMastodon($status->id);
+			$res['reblogged'] = false;
+			return $this->json($res);
 		}
 
 		UndoSharePipeline::dispatch($reblog);
 		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
-		$res['reblogged'] = true;
+		$res['reblogged'] = false;
 
 		return $this->json($res);
 	}
@@ -2454,8 +2452,7 @@ class ApiV1Controller extends Controller
 			'status_id' => $status->id,
 			'profile_id' => $request->user()->profile_id
 		]);
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = StatusService::getMastodon($status->id);
 
 		return $this->json($res);
 	}
@@ -2475,17 +2472,11 @@ class ApiV1Controller extends Controller
 			->whereScope('public')
 			->findOrFail($id);
 
-		Bookmark::firstOrCreate([
-			'status_id' => $status->id,
-			'profile_id' => $request->user()->profile_id
-		]);
 		$bookmark = Bookmark::whereStatusId($status->id)
 			->whereProfileId($request->user()->profile_id)
 			->firstOrFail();
 		$bookmark->delete();
-
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
+		$res = StatusService::getMastodon($status->id);
 
 		return $this->json($res);
 	}
