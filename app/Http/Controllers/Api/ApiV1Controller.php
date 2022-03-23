@@ -1249,7 +1249,7 @@ class ApiV1Controller extends Controller
 			];
 		});
 
-		return response()->json($res);
+		return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
 	}
 
 	/**
