@@ -1236,11 +1236,13 @@ class ApiV1Controller extends Controller
 				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
 				'email' => config('instance.email'),
 				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') .')',
-				'urls' => [],
+				'urls' => [
+					'streaming_api' => 'wss://' . config('pixelfed.domain.app')
+				],
 				'stats' => $stats,
-				'thumbnail' => url('headers/default.jpg'),
+				'thumbnail' => url('img/pixelfed-icon-color.png'),
 				'languages' => ['en'],
-				'registrations' => (bool) config('pixelfed.open_registration'),
+				'registrations' => (bool) config_cache('pixelfed.open_registration'),
 				'approval_required' => false,
 				'contact_account' => $contact,
 				'rules' => $rules
@@ -1426,6 +1428,30 @@ class ApiV1Controller extends Controller
 
 		$media->caption = $request->input('description');
 		$media->save();
+
+		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
+		$res = $this->fractal->createData($resource)->toArray();
+		$res['preview_url'] = url('/storage/no-preview.png');
+		$res['url'] = url('/storage/no-preview.png');
+		return response()->json($res);
+	}
+
+	/**
+	 * GET /api/v1/media/{id}
+	 *
+	 * @param  integer  $id
+	 *
+	 * @return MediaTransformer
+	 */
+	public function mediaGet(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		$user = $request->user();
+
+		$media = Media::whereUserId($user->id)
+			->whereNull('status_id')
+			->findOrFail($id);
 
 		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
