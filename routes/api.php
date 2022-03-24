@@ -21,6 +21,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 	Route::group(['prefix' => 'v1'], function() use($middleware) {
 		Route::post('apps', 'Api\ApiV1Controller@apps');
+		Route::get('apps/verify_credentials', 'Api\ApiV1Controller@getApp')->middleware($middleware);
 		Route::get('instance', 'Api\ApiV1Controller@instance');
 		Route::get('bookmarks', 'Api\ApiV1Controller@bookmarks')->middleware($middleware);
 
@@ -58,6 +59,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('follow_requests/{id}/reject', 'Api\ApiV1Controller@accountFollowRequestReject')->middleware($middleware);
 		Route::get('lists', 'Api\ApiV1Controller@accountLists')->middleware($middleware);
 		Route::post('media', 'Api\ApiV1Controller@mediaUpload')->middleware($middleware);
+		Route::get('media/{id}', 'Api\ApiV1Controller@mediaGet')->middleware($middleware);
 		Route::put('media/{id}', 'Api\ApiV1Controller@mediaUpdate')->middleware($middleware);
 		Route::get('mutes', 'Api\ApiV1Controller@accountMutes')->middleware($middleware);
 		Route::get('notifications', 'Api\ApiV1Controller@accountNotifications')->middleware($middleware);

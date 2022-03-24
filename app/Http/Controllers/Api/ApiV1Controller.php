@@ -96,6 +96,21 @@ class ApiV1Controller extends Controller
 		return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
 	}
 
+	public function getApp(Request $request)
+	{
+		if(!$request->user()) {
+			return response('', 403);
+		}
+		$client = $request->user()->token()->client;
+		$res = [
+			'name' => $client->name,
+			'website' => null,
+			'vapid_key' => null
+		];
+
+		return $this->json($res);
+	}
+
 	public function apps(Request $request)
 	{
 		abort_if(!config_cache('pixelfed.oauth_enabled'), 404);
