@@ -80,6 +80,7 @@ use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
 use App\Services\CustomEmojiService;
+use App\Services\MarkerService;
 
 class ApiV1Controller extends Controller
 {
@@ -536,11 +537,14 @@ class ApiV1Controller extends Controller
 			'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 			'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 			'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$profile = AccountService::getMastodon($id);
-        abort_if(!$profile, 404);
+		$profile = AccountService::getMastodon($id, true);
+
+        if(!$profile || !isset($profile['id']) || !$user) {
+        	return response('', 404);
+        }
 
 		$limit = $request->limit ?? 20;
 		$max_id = $request->max_id;
@@ -566,7 +570,9 @@ class ApiV1Controller extends Controller
 			$visibility = ['public', 'unlisted', 'private'];
 		} else if($profile['locked']) {
 			$following = FollowerService::follows($pid, $profile['id']);
-			abort_unless($following, 403);
+			if(!$following) {
+				return response('', 403);
+			}
 			$visibility = ['public', 'unlisted', 'private'];
 		} else {
 			$following = FollowerService::follows($pid, $profile['id']);
@@ -585,11 +591,8 @@ class ApiV1Controller extends Controller
 		->orderByDesc('id')
 		->get()
 		->map(function($s) use($user) {
-			try {
-				$status = StatusService::getMastodon($s->id, false);
-			} catch (\Exception $e) {
-				$status = false;
-			}
+			$status = StatusService::getMastodon($s->id, false);
+
 			if($user && $status) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
 			}
@@ -1581,7 +1584,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'limit' => 'nullable|integer|min:1|max:80',
+			'limit' => 'nullable|integer|min:1|max:100',
 			'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
 			'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
 			'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
@@ -1656,7 +1659,7 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:80'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$page = $request->input('page');
@@ -1817,7 +1820,7 @@ class ApiV1Controller extends Controller
 		$this->validate($request,[
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:80'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$min = $request->input('min_id');
@@ -1983,7 +1986,7 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'page'  => 'nullable|integer|min:1|max:40',
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
 		$limit = $request->input('limit') ?? 40;
@@ -2042,7 +2045,7 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'page'  => 'nullable|integer|min:1|max:40',
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
 		$page = $request->input('page', 1);
@@ -2239,6 +2242,11 @@ class ApiV1Controller extends Controller
 		Cache::forget($limitKey);
 
 		$res = StatusService::getMastodon($status->id, false);
+		$res['favourited'] = false;
+		$res['language'] = 'en';
+		$res['bookmarked'] = false;
+		$res['pinned'] = false;
+		$res['card'] = null;
 		return $this->json($res);
 	}
 
@@ -2365,7 +2373,7 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:40'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$tag = Hashtag::whereName($hashtag)
@@ -2390,18 +2398,18 @@ class ApiV1Controller extends Controller
 
 		$res = StatusHashtag::whereHashtagId($tag->id)
 			->whereStatusVisibility('public')
-			->whereHas('media')
 			->where('status_id', $dir, $id)
 			->latest()
 			->limit($limit)
 			->pluck('status_id')
-			->filter(function($i) {
-				return StatusService::getMastodon($i);
-			})
 			->map(function ($i) {
-				return StatusService::getMastodon($i);
+				if($i) {
+					return StatusService::getMastodon($i);
+				}
 			})
-			->filter()
+			->filter(function($i) {
+				return $i && isset($i['account']);
+			})
 			->values()
 			->toArray();
 
@@ -2514,7 +2522,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'q' => 'required|string|min:1|max:80',
+			'q' => 'required|string|min:1|max:100',
 			'account_id' => 'nullable|string',
 			'max_id' => 'nullable|string',
 			'min_id' => 'nullable|string',
@@ -2694,5 +2702,96 @@ class ApiV1Controller extends Controller
 			->values();
 
 		return $this->json($ids);
+	}
+
+	/**
+	* GET /api/v1/preferences
+	*
+	*
+	* @return array
+	*/
+	public function getPreferences(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		return $this->json([
+			'posting:default:visibility'		=>  $account['locked'] ? 'private' : 'public',
+			'posting:default:sensitive'			=>  false,
+			'posting:default:language'			=>  null,
+			'reading:expand:media'				=>  'default',
+			'reading:expand:spoilers'			=>  false
+		]);
+	}
+
+	/**
+	* GET /api/v1/trends
+	*
+	*
+	* @return array
+	*/
+	public function getTrends(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		return $this->json([]);
+	}
+
+	/**
+	* GET /api/v1/announcements
+	*
+	*
+	* @return array
+	*/
+	public function getAnnouncements(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		return $this->json([]);
+	}
+
+	/**
+	* GET /api/v1/markers
+	*
+	*
+	* @return array
+	*/
+	public function getMarkers(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$type = $request->input('timeline');
+		if(is_array($type)) {
+			$type = $type[0];
+		}
+		if(!$type || !in_array($type, ['home', 'notifications'])) {
+			return $this->json([]);
+		}
+		$pid = $request->user()->profile_id;
+		return $this->json(MarkerService::get($pid, $type));
+	}
+
+	/**
+	* POST /api/v1/markers
+	*
+	*
+	* @return array
+	*/
+	public function setMarkers(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$home = $request->input('home.last_read_id');
+		$notifications = $request->input('notifications.last_read_id');
+
+		if($home) {
+			return $this->json(MarkerService::set($pid, 'home', $home));
+		}
+
+		if($notifications) {
+			return $this->json(MarkerService::set($pid, 'notifications', $notifications));
+		}
+
+		return $this->json([]);
 	}
 }
