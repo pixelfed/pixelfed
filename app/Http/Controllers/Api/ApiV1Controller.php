@@ -540,8 +540,11 @@ class ApiV1Controller extends Controller
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$profile = AccountService::getMastodon($id);
-        abort_if(!$profile, 404);
+		$profile = AccountService::getMastodon($id, true);
+
+        if(!$profile || !isset($profile['id']) || !$user) {
+        	return response('', 404);
+        }
 
 		$limit = $request->limit ?? 20;
 		$max_id = $request->max_id;
@@ -567,7 +570,9 @@ class ApiV1Controller extends Controller
 			$visibility = ['public', 'unlisted', 'private'];
 		} else if($profile['locked']) {
 			$following = FollowerService::follows($pid, $profile['id']);
-			abort_unless($following, 403);
+			if(!$following) {
+				return response('', 403);
+			}
 			$visibility = ['public', 'unlisted', 'private'];
 		} else {
 			$following = FollowerService::follows($pid, $profile['id']);
@@ -586,11 +591,8 @@ class ApiV1Controller extends Controller
 		->orderByDesc('id')
 		->get()
 		->map(function($s) use($user) {
-			try {
-				$status = StatusService::getMastodon($s->id, false);
-			} catch (\Exception $e) {
-				$status = false;
-			}
+			$status = StatusService::getMastodon($s->id, false);
+
 			if($user && $status) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
 			}

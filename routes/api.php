@@ -42,7 +42,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('accounts/{id}/unmute', 'Api\ApiV1Controller@accountUnmuteById')->middleware($middleware);
 		Route::get('accounts/{id}/lists', 'Api\ApiV1Controller@accountListsById')->middleware($middleware);
 		Route::get('lists/{id}/accounts', 'Api\ApiV1Controller@accountListsById')->middleware($middleware);
-		Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById');
+		Route::get('accounts/{id}', 'Api\ApiV1Controller@accountById')->middleware($middleware);
 
 		Route::post('avatar/update', 'ApiController@avatarUpdate')->middleware($middleware);
 		Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware($middleware);
