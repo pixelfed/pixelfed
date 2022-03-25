@@ -537,7 +537,7 @@ class ApiV1Controller extends Controller
 			'max_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 			'since_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 			'min_id' => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
 		$profile = AccountService::getMastodon($id);
@@ -1582,7 +1582,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'limit' => 'nullable|integer|min:1|max:80',
+			'limit' => 'nullable|integer|min:1|max:100',
 			'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
 			'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
 			'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
@@ -1984,7 +1984,7 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'page'  => 'nullable|integer|min:1|max:40',
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
 		$limit = $request->input('limit') ?? 40;
@@ -2043,7 +2043,7 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'page'  => 'nullable|integer|min:1|max:40',
-			'limit' => 'nullable|integer|min:1|max:80'
+			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
 		$page = $request->input('page', 1);
@@ -2515,7 +2515,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'q' => 'required|string|min:1|max:80',
+			'q' => 'required|string|min:1|max:100',
 			'account_id' => 'nullable|string',
 			'max_id' => 'nullable|string',
 			'min_id' => 'nullable|string',
