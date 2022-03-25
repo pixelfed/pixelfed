@@ -2696,8 +2696,7 @@ class ApiV1Controller extends Controller
 		return $this->json($ids);
 	}
 
-
-   /**
+	/**
 	* GET /api/v1/preferences
 	*
 	*
@@ -2716,5 +2715,18 @@ class ApiV1Controller extends Controller
 			'reading:expand:media'				=>  'default',
 			'reading:expand:spoilers'			=>  false
 		]);
+	}
+
+	/**
+	* GET /api/v1/trends
+	*
+	*
+	* @return array
+	*/
+	public function getTrends(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		return $this->json([]);
 	}
 }
