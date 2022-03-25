@@ -2729,4 +2729,17 @@ class ApiV1Controller extends Controller
 
 		return $this->json([]);
 	}
+
+	/**
+	* GET /api/v1/announcements
+	*
+	*
+	* @return array
+	*/
+	public function getAnnouncements(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		return $this->json([]);
+	}
 }
