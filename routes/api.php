@@ -87,6 +87,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('preferences', 'Api\ApiV1Controller@getPreferences')->middleware($middleware);
 		Route::get('trends', 'Api\ApiV1Controller@getTrends')->middleware($middleware);
 		Route::get('announcements', 'Api\ApiV1Controller@getAnnouncements')->middleware($middleware);
+		Route::get('markers', 'Api\ApiV1Controller@getMarkers')->middleware($middleware);
+		Route::post('markers', 'Api\ApiV1Controller@setMarkers')->middleware($middleware);
 	});
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {

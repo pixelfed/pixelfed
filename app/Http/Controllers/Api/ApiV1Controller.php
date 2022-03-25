@@ -80,6 +80,7 @@ use App\Util\Media\License;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
 use App\Services\CustomEmojiService;
+use App\Services\MarkerService;
 
 class ApiV1Controller extends Controller
 {
@@ -2739,6 +2740,47 @@ class ApiV1Controller extends Controller
 	public function getAnnouncements(Request $request)
 	{
 		abort_if(!$request->user(), 403);
+
+		return $this->json([]);
+	}
+
+	/**
+	* GET /api/v1/markers
+	*
+	*
+	* @return array
+	*/
+	public function getMarkers(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$type = $request->input('timeline');
+		if(!$type || !in_array($type, ['home', 'notifications'])) {
+			return $this->json([]);
+		}
+		$pid = $request->user()->profile_id;
+		return $this->json(MarkerService::get($pid, $type));
+	}
+
+	/**
+	* POST /api/v1/markers
+	*
+	*
+	* @return array
+	*/
+	public function setMarkers(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$home = $request->input('home.last_read_id');
+		$notifications = $request->input('notifications.last_read_id');
+
+		if($home) {
+			return $this->json(MarkerService::set($pid, 'home', $home));
+		}
+
+		if($notifications) {
+			return $this->json(MarkerService::set($pid, 'notifications', $notifications));
+		}
 
 		return $this->json([]);
 	}
