@@ -2365,7 +2365,7 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:40'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$tag = Hashtag::whereName($hashtag)
@@ -2390,18 +2390,18 @@ class ApiV1Controller extends Controller
 
 		$res = StatusHashtag::whereHashtagId($tag->id)
 			->whereStatusVisibility('public')
-			->whereHas('media')
 			->where('status_id', $dir, $id)
 			->latest()
 			->limit($limit)
 			->pluck('status_id')
-			->filter(function($i) {
-				return StatusService::getMastodon($i);
-			})
 			->map(function ($i) {
-				return StatusService::getMastodon($i);
+				if($i) {
+					return StatusService::getMastodon($i);
+				}
 			})
-			->filter()
+			->filter(function($i) {
+				return $i && isset($i['account']);
+			})
 			->values()
 			->toArray();
 
