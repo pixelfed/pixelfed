@@ -83,6 +83,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('timelines/public', 'Api\ApiV1Controller@timelinePublic')->middleware($middleware);
 		Route::get('timelines/tag/{hashtag}', 'Api\ApiV1Controller@timelineHashtag');
 		Route::get('discover/posts', 'Api\ApiV1Controller@discoverPosts')->middleware($middleware);
+
+		Route::get('preferences', 'Api\ApiV1Controller@getPreferences')->middleware($middleware);
 	});
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {

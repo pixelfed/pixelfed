@@ -2695,4 +2695,26 @@ class ApiV1Controller extends Controller
 
 		return $this->json($ids);
 	}
+
+
+   /**
+	* GET /api/v1/preferences
+	*
+	*
+	* @return array
+	*/
+	public function getPreferences(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		return $this->json([
+			'posting:default:visibility'		=>  $account['locked'] ? 'private' : 'public',
+			'posting:default:sensitive'			=>  false,
+			'posting:default:language'			=>  null,
+			'reading:expand:media'				=>  'default',
+			'reading:expand:spoilers'			=>  false
+		]);
+	}
 }
