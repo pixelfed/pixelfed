@@ -1656,7 +1656,7 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:80'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$page = $request->input('page');
@@ -1817,7 +1817,7 @@ class ApiV1Controller extends Controller
 		$this->validate($request,[
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:80'
+		  'limit'       => 'nullable|integer|max:100'
 		]);
 
 		$min = $request->input('min_id');
