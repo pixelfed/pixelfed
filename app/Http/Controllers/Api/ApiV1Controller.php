@@ -2754,6 +2754,9 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 		$type = $request->input('timeline');
+		if(is_array($type)) {
+			$type = $type[0];
+		}
 		if(!$type || !in_array($type, ['home', 'notifications'])) {
 			return $this->json([]);
 		}
