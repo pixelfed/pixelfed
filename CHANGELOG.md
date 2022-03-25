@@ -106,6 +106,9 @@
 - Updated ApiV1Controller, add trends endpoint. ([d40a8453](https://github.com/pixelfed/pixelfed/commit/d40a8453))
 - Updated ApiV1Controller, add announcements endpoint. ([fbe07c51](https://github.com/pixelfed/pixelfed/commit/fbe07c51))
 - Updated ApiV1Controller, add markers endpoint. ([93a9769e](https://github.com/pixelfed/pixelfed/commit/93a9769e))
+- Updated ApiV1Controller, increase limits from 80 to 100. ([15eccd44](https://github.com/pixelfed/pixelfed/commit/15eccd44))
+- Updated ApiV1Controller, fix accountStatusesById endpoint. ([db7b1af3](https://github.com/pixelfed/pixelfed/commit/db7b1af3))
+- Updated ApiV1Controller, update statusCreate entity. ([a84ab6ea](https://github.com/pixelfed/pixelfed/commit/a84ab6ea))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
