@@ -73,6 +73,7 @@
 	"extra": {
 		"laravel": {
 			"dont-discover": [
+				"laravel/passport"
 			]
 		}
 	},
