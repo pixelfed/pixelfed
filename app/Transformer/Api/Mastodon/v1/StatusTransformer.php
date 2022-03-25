@@ -31,7 +31,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'favourited'                => $status->liked(),
 			'muted'                     => false,
 			'bookmarked'                => false,
-			'pinned'                    => false,
 			'content'                   => $status->rendered ?? $status->caption ?? '',
 			'reblog'                    => null,
 			'application'               => [

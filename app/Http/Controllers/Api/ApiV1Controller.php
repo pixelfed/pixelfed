@@ -2245,7 +2245,6 @@ class ApiV1Controller extends Controller
 		$res['favourited'] = false;
 		$res['language'] = 'en';
 		$res['bookmarked'] = false;
-		$res['pinned'] = false;
 		$res['card'] = null;
 		return $this->json($res);
 	}
