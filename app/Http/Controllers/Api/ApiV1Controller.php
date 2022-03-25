@@ -2242,6 +2242,11 @@ class ApiV1Controller extends Controller
 		Cache::forget($limitKey);
 
 		$res = StatusService::getMastodon($status->id, false);
+		$res['favourited'] = false;
+		$res['language'] = 'en';
+		$res['bookmarked'] = false;
+		$res['pinned'] = false;
+		$res['card'] = null;
 		return $this->json($res);
 	}
 
