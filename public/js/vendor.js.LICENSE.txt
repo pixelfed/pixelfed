@@ -106,7 +106,7 @@
  */
 
 /*!
- * vue-i18n v8.27.0 
+ * vue-i18n v8.27.1 
  * (c) 2022 kazuya kawaguchi
  * Released under the MIT License.
  */
