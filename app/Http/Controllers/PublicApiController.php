@@ -128,7 +128,7 @@ class PublicApiController extends Controller
         return response()->json($res);
     }
 
-    public function statusState(Request $request, $username, $postid)
+    public function statusState(Request $request, $username, int $postid)
     {
         $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
