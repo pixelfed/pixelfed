@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Util\Media\License;
 use Storage;
+use Illuminate\Support\Str;
 
 class Media extends Model
 {

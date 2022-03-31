@@ -63,12 +63,12 @@ class DiscoverController extends Controller
 
 	public function getHashtags(Request $request)
 	{
-		$auth = Auth::check();
-		abort_if(!config('instance.discover.tags.is_public') && !$auth, 403);
+		$user = $request->user();
+		abort_if(!config('instance.discover.tags.is_public') && !$user, 403);
 
 		$this->validate($request, [
 			'hashtag' => 'required|string|min:1|max:124',
-			'page' => 'nullable|integer|min:1|max:' . ($auth ? 29 : 10)
+			'page' => 'nullable|integer|min:1|max:' . ($user ? 29 : 10)
 		]);
 
 		$page = $request->input('page') ?? '1';
@@ -76,8 +76,8 @@ class DiscoverController extends Controller
 		$tag = $request->input('hashtag');
 
 		$hashtag = Hashtag::whereName($tag)->firstOrFail();
-		if($page == 1) {
-			$res['follows'] = HashtagFollow::whereUserId(Auth::id())
+		if($user && $page == 1) {
+			$res['follows'] = HashtagFollow::whereUserId($user->id)
 				->whereHashtagId($hashtag->id)
 				->exists();
 		}
@@ -85,7 +85,37 @@ class DiscoverController extends Controller
 			'name' => $hashtag->name,
 			'url' => $hashtag->url()
 		];
-		$res['tags'] = StatusHashtagService::get($hashtag->id, $page, $end);
+		if($user) {
+			$tags = StatusHashtagService::get($hashtag->id, $page, $end);
+			$res['tags'] = collect($tags)
+				->filter(function($tag) {
+					if(!StatusService::get($tag['status']['id'])) {
+						return false;
+					}
+					return true;
+				})
+				->values();
+		} else {
+			$key = 'discover:tags:public_feed:' . $hashtag->id . ':page:' . $page;
+			$tags = Cache::remember($key, 900, function() use($hashtag, $page, $end) {
+				return collect(StatusHashtagService::get($hashtag->id, $page, $end))
+					->filter(function($tag) {
+						if(!$tag['status']['local']) {
+							return false;
+						}
+						return true;
+					})
+					->values();
+			});
+			$res['tags'] = collect($tags)
+				->filter(function($tag) {
+					if(!StatusService::get($tag['status']['id'])) {
+						return false;
+					}
+					return true;
+				})
+				->values();
+		}
 		return $res;
 	}
 
