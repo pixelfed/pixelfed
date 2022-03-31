@@ -110,6 +110,7 @@
 - Updated ApiV1Controller, fix accountStatusesById endpoint. ([db7b1af3](https://github.com/pixelfed/pixelfed/commit/db7b1af3))
 - Updated ApiV1Controller, update statusCreate entity. ([a84ab6ea](https://github.com/pixelfed/pixelfed/commit/a84ab6ea))
 - Updated ApiV1Controller, remove pinned attribute to match MastoAPI Status entity. ([6057de30](https://github.com/pixelfed/pixelfed/commit/6057de30))
+- Updated controller signatures, fix mysql 8 support. ([72e3d891](https://github.com/pixelfed/pixelfed/commit/72e3d891))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
