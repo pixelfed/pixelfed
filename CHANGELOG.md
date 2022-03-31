@@ -114,6 +114,7 @@
 - Updated ApiV1Controller, remove no-preview image from media urls. ([37dfb101](https://github.com/pixelfed/pixelfed/commit/37dfb101))
 - Updated DeleteAccountPipeline, fix perf issues. ([a9edd93f](https://github.com/pixelfed/pixelfed/commit/a9edd93f))
 - Updated DeleteAccountPipeline, improve coverage. ([4870cc3b](https://github.com/pixelfed/pixelfed/commit/4870cc3b))
+- Updated media model, use original photo url for non-existent thumbnails. ([9b04b9d8](https://github.com/pixelfed/pixelfed/commit/9b04b9d8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
