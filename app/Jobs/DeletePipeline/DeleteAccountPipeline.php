@@ -8,6 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use DB;
+use Storage;
 use Illuminate\Support\Str;
 use App\{
 	AccountInterstitial,
@@ -61,15 +62,10 @@ class DeleteAccountPipeline implements ShouldQueue
 	public function handle()
 	{
 		$user = $this->user;
+		$this->deleteUserColumns($user);
 
 		DB::transaction(function() use ($user) {
-			AccountLog::chunk(200, function($logs) use ($user) {
-				foreach($logs as $log) {
-					if($log->user_id == $user->id) {
-						$log->forceDelete();
-					}
-				}
-			});
+			AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
 		});
 
 		DB::transaction(function() use ($user) {
@@ -133,14 +129,14 @@ class DeleteAccountPipeline implements ShouldQueue
 		DB::transaction(function() use ($user) {
 			$medias = Media::whereUserId($user->id)->get();
 			foreach($medias as $media) {
-				$path = storage_path('app/'.$media->media_path);
-				$thumb = storage_path('app/'.$media->thumbnail_path);
-				if(is_file($path)) {
-					unlink($path);
+				if(config('pixelfed.cloud_storage')) {
+					$disk = Storage::disk(config('filesystems.cloud'));
+					$disk->delete($media->media_path);
+					$disk->delete($media->thumbnail_path);
 				}
-				if(is_file($thumb)) {
-					unlink($thumb);
-				}
+				$disk = Storage::disk(config('filesystems.local'));
+				$disk->delete($media->media_path);
+				$disk->delete($media->thumbnail_path);
 				$media->forceDelete();
 			}
 		});
@@ -165,14 +161,7 @@ class DeleteAccountPipeline implements ShouldQueue
 		});
 
 		DB::transaction(function() use ($user) {
-			Status::whereProfileId($user->profile_id)
-				->cursor()
-				->each(function($status) {
-					AccountInterstitial::where('item_type', 'App\Status')
-						->where('item_id', $status->id)
-						->delete();
-					$status->forceDelete();
-				});
+			Status::whereProfileId($user->profile_id)->forceDelete();
 			Report::whereUserId($user->id)->forceDelete();
 			$this->deleteProfile($user);
 		});
@@ -191,7 +180,6 @@ class DeleteAccountPipeline implements ShouldQueue
 			UserDevice::whereUserId($user->id)->forceDelete();
 			UserFilter::whereUserId($user->id)->forceDelete();
 			UserSetting::whereUserId($user->id)->forceDelete();
-			$this->deleteUserColumns($user);
 		});
 	}
 
