@@ -56,7 +56,9 @@ class Media extends Model
         }
 
         if($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png'])) {
-        	return url(Storage::url($this->media_path));
+        	return $this->remote_media || Str::startsWith($this->media_path, 'http') ?
+                $this->media_path :
+                url(Storage::url($this->media_path));
         }
 
         return url(Storage::url('public/no-preview.png'));
