@@ -422,8 +422,8 @@ class PublicApiController extends Controller
 
     public function homeTimelineApi(Request $request)
     {
-        if(!Auth::check()) {
-            return abort(403);
+        if(!$request->user()) {
+            return response('', 403);
         }
 
         $this->validate($request,[
@@ -586,7 +586,10 @@ class PublicApiController extends Controller
 
     public function networkTimelineApi(Request $request)
     {
-        abort_if(!Auth::check(), 403);
+        if(!$request->user()) {
+            return response('', 403);
+        }
+
         abort_if(config('federation.network_timeline') == false, 404);
 
         $this->validate($request,[
