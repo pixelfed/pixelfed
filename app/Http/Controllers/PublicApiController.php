@@ -293,8 +293,8 @@ class PublicApiController extends Controller
           'limit'       => 'nullable|integer|max:30'
         ]);
 
-        if(config('instance.timeline.local.is_public') == false && !Auth::check()) {
-            abort(403, 'Authentication required.');
+        if(!$request->user()) {
+            return response('', 403);
         }
 
         $page = $request->input('page');
@@ -422,8 +422,8 @@ class PublicApiController extends Controller
 
     public function homeTimelineApi(Request $request)
     {
-        if(!Auth::check()) {
-            return abort(403);
+        if(!$request->user()) {
+            return response('', 403);
         }
 
         $this->validate($request,[
@@ -586,7 +586,10 @@ class PublicApiController extends Controller
 
     public function networkTimelineApi(Request $request)
     {
-        abort_if(!Auth::check(), 403);
+        if(!$request->user()) {
+            return response('', 403);
+        }
+
         abort_if(config('federation.network_timeline') == false, 404);
 
         $this->validate($request,[
