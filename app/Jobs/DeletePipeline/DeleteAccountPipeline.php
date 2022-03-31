@@ -10,10 +10,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use DB;
 use Storage;
 use Illuminate\Support\Str;
+use App\Services\AccountService;
+use App\Services\PublicTimelineService;
 use App\{
 	AccountInterstitial,
 	AccountLog,
-	Activity,
 	Avatar,
 	Bookmark,
 	Collection,
@@ -39,6 +40,7 @@ use App\{
 	ReportComment,
 	ReportLog,
 	StatusHashtag,
+	StatusArchived,
 	Status,
 	Story,
 	StoryView,
@@ -47,6 +49,7 @@ use App\{
 	UserFilter,
 	UserSetting,
 };
+use App\Models\UserPronoun;
 
 class DeleteAccountPipeline implements ShouldQueue
 {
@@ -63,6 +66,7 @@ class DeleteAccountPipeline implements ShouldQueue
 	{
 		$user = $this->user;
 		$this->deleteUserColumns($user);
+		AccountService::del($user->profile_id);
 
 		DB::transaction(function() use ($user) {
 			AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
@@ -75,6 +79,19 @@ class DeleteAccountPipeline implements ShouldQueue
 		DB::transaction(function() use ($user) {
 			if($user->profile) {
 				$avatar = $user->profile->avatar;
+				$path = $avatar->media_path;
+				if(!in_array($path, [
+					'public/avatars/default.jpg',
+					'public/avatars/default.png'
+				])) {
+					if(config('pixelfed.cloud_storage')) {
+						$disk = Storage::disk(config('filesystems.cloud'));
+						$disk->delete($path);
+					}
+					$disk = Storage::disk(config('filesystems.local'));
+					$disk->delete($path);
+				}
+
 				$avatar->forceDelete();
 			}
 
@@ -102,7 +119,9 @@ class DeleteAccountPipeline implements ShouldQueue
 			Bookmark::whereProfileId($id)->forceDelete();
 			EmailVerification::whereUserId($user->id)->forceDelete();
 			StatusHashtag::whereProfileId($id)->delete();
-			DirectMessage::whereFromId($id)->delete();
+			DirectMessage::whereFromId($id)->orWhereToId($id)->delete();
+			StatusArchived::whereProfileId($id)->delete();
+			UserPronoun::whereProfileId($id)->delete();
 			FollowRequest::whereFollowingId($id)
 				->orWhere('follower_id', $id)
 				->forceDelete();
@@ -157,12 +176,15 @@ class DeleteAccountPipeline implements ShouldQueue
 			Contact::whereUserId($user->id)->delete();
 			HashtagFollow::whereUserId($user->id)->delete();
 			OauthClient::whereUserId($user->id)->delete();
+			DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
+			DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
 			ProfileSponsor::whereProfileId($user->profile_id)->delete();
 		});
 
 		DB::transaction(function() use ($user) {
 			Status::whereProfileId($user->profile_id)->forceDelete();
 			Report::whereUserId($user->id)->forceDelete();
+			PublicTimelineService::warmCache(true, 400);
 			$this->deleteProfile($user);
 		});
 	}
