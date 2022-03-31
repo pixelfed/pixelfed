@@ -293,8 +293,8 @@ class PublicApiController extends Controller
           'limit'       => 'nullable|integer|max:30'
         ]);
 
-        if(config('instance.timeline.local.is_public') == false && !Auth::check()) {
-            abort(403, 'Authentication required.');
+        if(!$request->user()) {
+            return response('', 403);
         }
 
         $page = $request->input('page');
