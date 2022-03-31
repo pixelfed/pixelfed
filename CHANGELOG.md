@@ -111,6 +111,8 @@
 - Updated ApiV1Controller, update statusCreate entity. ([a84ab6ea](https://github.com/pixelfed/pixelfed/commit/a84ab6ea))
 - Updated ApiV1Controller, remove pinned attribute to match MastoAPI Status entity. ([6057de30](https://github.com/pixelfed/pixelfed/commit/6057de30))
 - Updated controller signatures, fix mysql 8 support. ([72e3d891](https://github.com/pixelfed/pixelfed/commit/72e3d891))
+- Updated ApiV1Controller, remove no-preview image from media urls. ([37dfb101](https://github.com/pixelfed/pixelfed/commit/37dfb101))
+- Updated DeleteAccountPipeline, fix perf issues. ([a9edd93f](https://github.com/pixelfed/pixelfed/commit/a9edd93f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
