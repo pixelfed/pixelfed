@@ -55,6 +55,10 @@ class Media extends Model
             return url(Storage::url($this->thumbnail_path));
         }
 
+        if($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png'])) {
+        	return url(Storage::url($this->media_path));
+        }
+
         return url(Storage::url('public/no-preview.png'));
     }
 
