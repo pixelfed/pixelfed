@@ -26,7 +26,6 @@ class StatusHashtagService {
 
 		return StatusHashtag::whereHashtagId($id)
 			->whereStatusVisibility('public')
-			->whereHas('media')
 			->skip($stop)
 			->latest()
 			->take(9)
@@ -35,7 +34,10 @@ class StatusHashtagService {
 				return self::getStatus($i, $id);
 			})
 			->filter(function ($i) use($filtered) {
-				return isset($i['status']) && !empty($i['status']) && !in_array($i['status']['account']['id'], $filtered);
+				return isset($i['status']) &&
+				!empty($i['status']) && !in_array($i['status']['account']['id'], $filtered) &&
+				isset($i['status']['media_attachments']) &&
+				!empty($i['status']['media_attachments']);
 			})
 			->values();
 	}

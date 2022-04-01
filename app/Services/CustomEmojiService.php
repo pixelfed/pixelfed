@@ -118,7 +118,7 @@ class CustomEmojiService
 					return [
 						'shortcode' => str_replace(':', '', $emojo->shortcode),
 						'url' => $url,
-						'static_path' => $url,
+						'static_url' => $url,
 						'visible_in_picker' => $emojo->disabled == false
 					];
 				})
