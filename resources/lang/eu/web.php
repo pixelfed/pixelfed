@@ -13,6 +13,7 @@ return [
 		'shared' => 'Partekatuta',
 		'shares' => 'Partekatze',
 		'unshare' => 'Utzi partekatzeari',
+		'bookmark' => 'Laster-marka',
 
 		'cancel' => 'Utzi',
 		'copyLink' => 'Kopiatu esteka',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Bestelakoa',
 		'readMore' => 'Irakurri gehiago',
 		'success' => 'Burutu da',
+		'proceed' => 'Jarraitu',
+		'next' => 'Hurrengoa',
+		'close' => 'Itxi',
+		'clickHere' => 'klikatu hemen',
 
 		'sensitive' => 'Hunkigarria',
 		'sensitiveContent' => 'Eduki hunkigarria',
@@ -39,7 +44,7 @@ return [
 		'admin' => 'Adminaren panela',
 
 		// Timelines
-		'homeFeed' => 'Etxeko jarioa',
+		'homeFeed' => 'Hasierako jarioa',
 		'localFeed' => 'Jario lokala',
 		'globalFeed' => 'Jario globala',
 
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Unitatea',
 		'settings' => 'Ezarpenak',
 		'compose' => 'Sortu berria',
-		'logout' => 'Saioa itxi',
+		'logout' => 'Itxi saioa',
 
 		// Nav footer
 		'about' => 'Honi buruz',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modloga',
 		'post' => 'bidalketa',
 		'story' => 'istorioa',
+		'noneFound' => 'Ez da jakinarazpenik aurkitu',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea'
+		'peopleYouMayKnow' => 'Ezagutu dezakezun jendea',
+
+		'onboarding' => [
+			'welcome' => 'Ongi etorri',
+			'thisIsYourHomeFeed' => 'Hau da zure hasierako jarioa, jarraitzen dituzun kontuen bidalketa jario kronologikoa.',
+			'letUsHelpYouFind' => 'Utzi iezaiguzu jarraitzeko moduko jende interesgarria bilatzen laguntzen',
+			'refreshFeed' => 'Berritu nire jarioa',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Ez dugu topatu traola hau duen bidalketarik'
+	],
+
+	'report' => [
+		'report' => 'Salatu',
+		'selectReason' => 'Hautatu arrazoia',
+		'reported' => 'Salatuta',
+		'sendingReport' => 'Txostena bidaltzen',
+		'thanksMsg' => 'Eskerrik asko salaketagatik, zu bezalako jendeak egiten du komunitatea seguruagoa!',
+		'contactAdminMsg' => 'Kudeatzaile batekin kontaktatu edo salaketa egin nahi baduzu bidalketa honen harira',
 	],
 
 ];

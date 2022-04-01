@@ -13,6 +13,7 @@ return [
 		'shared' => 'S\'han compartit',
 		'shares' => 'S\'han compartit',
 		'unshare' => 'Deixa de compartir',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Cancel·la',
 		'copyLink' => 'Copia l\'enllaç',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Altres',
 		'readMore' => 'Llegiu-ne més',
 		'success' => 'Completat amb èxit',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contingut sensible',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Unitat',
 		'settings' => 'Paràmetres',
 		'compose' => 'Crea un nou',
-		'logout' => 'Logout',
+		'logout' => 'Tanca la sessió',
 
 		// Nav footer
 		'about' => 'Quant a',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'publicació',
 		'story' => 'història',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'Sol·licitud de seguidor',
 		'joined' => 'S\'ha unit',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'Sembla que no trobem cap col·lecció',
+		'emptyPosts' => 'Sembla que no trobem cap publicació',
 	],
 
 	'menu' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Gent que potser coneixes'
+		'peopleYouMayKnow' => 'Gent que potser coneixes',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Sembla que no trobem cap publicació per a aquesta etiqueta'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

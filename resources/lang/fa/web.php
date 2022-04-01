@@ -13,6 +13,7 @@ return [
 		'shared' => 'Shared',
 		'shares' => 'هم‌رسانی',
 		'unshare' => 'لغو هم‌رسانی',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'لغو',
 		'copyLink' => 'روگرفت پیوند',
@@ -23,6 +24,10 @@ return [
 		'other' => 'سایر',
 		'readMore' => 'بیشتر بخوانید',
 		'success' => 'موفق',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'حساس',
 		'sensitiveContent' => 'محتوای حساس',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'تنظیمات',
 		'compose' => 'فرستهٔ جدید',
-		'logout' => 'Logout',
+		'logout' => 'خروج',
 
 		// Nav footer
 		'about' => 'درباره',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'فرسته',
 		'story' => 'داستان',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -118,8 +124,8 @@ return [
 		'followRequested' => 'درخواست دنبال کردن فرستاده شد',
 		'joined' => 'پیوست',
 
-		'emptyCollections' => 'به نظر می‌رسد که نمی‌توانیم هیچ مجموعه‌ای پیدا کنیم',
-		'emptyPosts' => 'به نظر می‌رسد که نمی‌توانیم هیچ فرسته‌ای پیدا کنیم',
+		'emptyCollections' => 'We can\'t seem to find any collections',
+		'emptyPosts' => 'We can\'t seem to find any posts',
 	],
 
 	'menu' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'افرادی که ممکن است بشناسید'
+		'peopleYouMayKnow' => 'افرادی که ممکن است بشناسید',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'به نظر می‌رسد که نمی‌توانیم چیزی برای این هشتگ پیدا کنیم'
+		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

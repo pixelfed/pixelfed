@@ -6,13 +6,14 @@ return [
 		'comment' => 'Komentář',
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
-		'like' => 'Líbí se mi',
+		'like' => 'To se mi líbí',
 		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
 		'shared' => 'Sdíleno',
 		'shares' => 'Sdílení',
 		'unshare' => 'Zrušit sdílení',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Zrušit',
 		'copyLink' => 'Kopírovat odkaz',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Další',
 		'readMore' => 'Číst více',
 		'success' => 'Úspěch',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Zavřít',
+		'clickHere' => 'klikněte zde',
 
 		'sensitive' => 'Citlivé',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -39,9 +44,9 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Domovská časová osa',
-		'localFeed' => 'Místní časová osa',
-		'globalFeed' => 'Globalní časová osa',
+		'homeFeed' => 'Domů',
+		'localFeed' => 'Místní kanál',
+		'globalFeed' => 'Globální kanál',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -71,7 +76,7 @@ return [
 	'directMessages' => [
 		'inbox' => 'Přijaté zprávy',
 		'sent' => 'Odeslané',
-		'requests' => 'Požadavky'
+		'requests' => 'Žádosti'
 	],
 
 	'notifications' => [
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'moderátorský záznam',
 		'post' => 'příspěvek',
 		'story' => 'příbeh',
+		'noneFound' => 'Nebyla nalezena žádná oznámení',
 	],
 
 	'post' => [
@@ -109,7 +115,7 @@ return [
 	'profile' => [
 		'posts' => 'Příspěvky',
 		'followers' => 'Sledující',
-		'following' => 'Sledovaní',
+		'following' => 'Sleduje',
 		'admin' => 'Administrátor',
 		'collections' => 'Sbírky',
 		'follow' => 'Sledovat',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Lidé, které možná znáte'
+		'peopleYouMayKnow' => 'Lidé, které možná znáte',
+
+		'onboarding' => [
+			'welcome' => 'Vítejte',
+			'thisIsYourHomeFeed' => 'Toto je váš domovský kanál, chronologický kanál příspěvků z účtů, které sledujete.',
+			'letUsHelpYouFind' => 'Pomůžeme vám najít nějaké zajímavé lidi ke sledování',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Zdá se, že pro tento štítek nelze najít žádné příspěvky'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Vyberte důvod',
+		'reported' => 'Nahlášeno',
+		'sendingReport' => 'Odesílání hlášení',
+		'thanksMsg' => 'Díky za hlášení, lidé jako jste vy pomáhají udržet naši komunitu bezpečnou!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

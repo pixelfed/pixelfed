@@ -13,6 +13,7 @@ return [
 		'shared' => 'Rhannu',
 		'shares' => 'Rhannu',
 		'unshare' => 'Dad-rannu',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Canslo',
 		'copyLink' => 'Copïo\'r ddolen',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Arall',
 		'readMore' => 'Darllen mwy',
 		'success' => 'Llwyddiant',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Cynnwys sensitif',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Gyriant storio',
 		'settings' => 'Gosodiadau',
 		'compose' => 'Creu newydd',
-		'logout' => 'Logout',
+		'logout' => 'Allgofnodi',
 
 		// Nav footer
 		'about' => 'Amdano',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'stori',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod'
+		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Ni allwn dod o hyd i unrhyw bostiadau ar gyfer yr hashnod hwn'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

@@ -13,6 +13,7 @@ return [
 		'shared' => '共有されました',
 		'shares' => '共有',
 		'unshare' => '共有解除',
+		'bookmark' => 'ブックマーク',
 
 		'cancel' => 'キャンセル',
 		'copyLink' => 'リンクをコピー',
@@ -23,6 +24,10 @@ return [
 		'other' => 'その他',
 		'readMore' => 'もっと読む',
 		'success' => '成功しました',
+		'proceed' => '続行',
+		'next' => '次へ',
+		'close' => '閉じる',
+		'clickHere' => 'ここをクリック',
 
 		'sensitive' => 'センシティブ',
 		'sensitiveContent' => 'センシティブなコンテンツ',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'モデレーションログ',
 		'post' => '投稿',
 		'story' => 'ストーリー',
+		'noneFound' => '通知はありません',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => '知り合いかも'
+		'peopleYouMayKnow' => '知り合いかも',
+
+		'onboarding' => [
+			'welcome' => 'ようこそ',
+			'thisIsYourHomeFeed' => 'これはあなたのフォームフィードです、フォローしているアカウントからの投稿が時系列で表示されます。',
+			'letUsHelpYouFind' => '興味のある人をフォローするお手伝いをします',
+			'refreshFeed' => 'フィードをリフレッシュ',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'このハッシュタグの投稿が見つかりませんでした'
+	],
+
+	'report' => [
+		'report' => '報告',
+		'selectReason' => '理由を選択してください',
+		'reported' => '報告済み',
+		'sendingReport' => '報告を送信中',
+		'thanksMsg' => '報告ありがとうございます、あなたのような人々が私達のコミュニティーを安全に保ちます！',
+		'contactAdminMsg' => 'この投稿または報告について管理者に問い合わせたい場合',
 	],
 
 ];

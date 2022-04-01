@@ -13,6 +13,7 @@ return [
 		'shared' => 'שיתפו',
 		'shares' => 'שיתופים',
 		'unshare' => 'ביטול-שיתוף',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'ביטול',
 		'copyLink' => 'העתק קישור',
@@ -23,6 +24,10 @@ return [
 		'other' => 'אחר',
 		'readMore' => 'קרא עוד',
 		'success' => 'הצלחה',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'רגיש',
 		'sensitiveContent' => 'תוכן רגיש',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'לוג מנהלים',
 		'post' => 'פוסט',
 		'story' => 'סטורי',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים'
+		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'לא נמצאו פוסטים עבור תיוג זה'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

@@ -13,6 +13,7 @@ return [
 		'shared' => 'Поделились',
 		'shares' => 'Поделились',
 		'unshare' => 'Не делиться',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Отмена',
 		'copyLink' => 'Скопировать ссылку',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Прочее',
 		'readMore' => 'Читать далее',
 		'success' => 'Успешно',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Чувствительный',
 		'sensitiveContent' => 'Чувствительный контент',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Диск',
 		'settings' => 'Настройки',
 		'compose' => 'Создать новый пост',
-		'logout' => 'Logout',
+		'logout' => 'Выйти',
 
 		// Nav footer
 		'about' => 'О нас',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'пост',
 		'story' => 'история',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -159,12 +165,12 @@ return [
 		'modMarkAsSpammerConfirm' => 'Вы уверены, что хотите отметить этого пользователя спамом? Все существующие и будущие сообщения будут исключены из списка в сроки, и будет применяться предупреждение о содержании.',
 		'modMarkAsSpammerSuccess' => 'Аккаунт успешно помечен как спаммер',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'подписчикам',
 
 		'showCaption' => 'Показать подпись',
 		'showLikes' => 'Показать отметки "мне нравится"',
 		'compactMode' => 'Компактный режим',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'embedConfirmText' => 'Используя этот инстант, вы соглашаетесь с нашими',
 
 		'deletePostConfirm' => 'Вы действительно хотите удалить этот пост?',
 		'archivePostConfirm' => 'Вы действительно хотите архивировать этот пост?',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Возможные друзья'
+		'peopleYouMayKnow' => 'Возможные друзья',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Похоже, мы не можем найти записи для этого хэштега'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

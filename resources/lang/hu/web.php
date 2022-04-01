@@ -7,12 +7,13 @@ return [
 		'commented' => 'Hozzászólva',
 		'comments' => 'Hozzászólások',
 		'like' => 'Tetszik',
-		'liked' => 'Tetszik',
+		'liked' => 'Kedvelem',
 		'likes' => 'Kedvelések',
 		'share' => 'Megosztás',
 		'shared' => 'Megosztva',
 		'shares' => 'Megosztások',
 		'unshare' => 'Megosztás visszavonása',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Mégsem',
 		'copyLink' => 'Link másolása',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Egyéb',
 		'readMore' => 'Tovább',
 		'success' => 'Siker',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Érzékeny',
 		'sensitiveContent' => 'Kényes tartalom',
@@ -39,7 +44,7 @@ return [
 		'admin' => 'Admin irányítópult',
 
 		// Timelines
-		'homeFeed' => 'Saját idővonal',
+		'homeFeed' => 'Kezdőlap',
 		'localFeed' => 'Helyi idővonal',
 		'globalFeed' => 'Globális idővonal',
 
@@ -52,10 +57,10 @@ return [
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Meghajtó',
+		'drive' => 'Tárhely',
 		'settings' => 'Beállítások',
-		'compose' => 'Új létrehozása',
-		'logout' => 'Logout',
+		'compose' => 'Új bejegyzés létrehozása',
+		'logout' => 'Kijelentkezés',
 
 		// Nav footer
 		'about' => 'Rólunk',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'mod napló',
 		'post' => 'bejegyzés',
 		'story' => 'történet',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Emberek akiket ismerhetsz'
+		'peopleYouMayKnow' => 'Emberek akiket ismerhetsz',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Úgy tűnik nem található egy bejegyzés sem ehhez a hashtag-hez'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

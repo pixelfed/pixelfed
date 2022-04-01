@@ -13,6 +13,7 @@ return [
 		'shared' => 'Udostępnione',
 		'shares' => 'Udostępnione',
 		'unshare' => 'Anuluj udostępnianie',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'Anuluj',
 		'copyLink' => 'Kopiuj Link',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Inne',
 		'readMore' => 'Czytaj więcej',
 		'success' => 'Sukces',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
 		'sensitive' => 'Wrażliwe',
 		'sensitiveContent' => 'Treść wrażliwa',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Dysk',
 		'settings' => 'Ustawienia',
 		'compose' => 'Utwórz nowy',
-		'logout' => 'Logout',
+		'logout' => 'Wyloguj się',
 
 		// Nav footer
 		'about' => 'O nas',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'logi',
 		'post' => 'post',
 		'story' => 'opowieść',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Ludzie, których możesz znać'
+		'peopleYouMayKnow' => 'Ludzie, których możesz znać',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Nie możemy znaleźć żadnych postów dla tego hasztaga'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

@@ -13,6 +13,7 @@ return [
 		'shared' => 'Đã chia sẻ',
 		'shares' => 'Lượt chia sẻ',
 		'unshare' => 'Hủy chia sẻ',
+		'bookmark' => 'Lưu',
 
 		'cancel' => 'Hủy',
 		'copyLink' => 'Chép link',
@@ -23,6 +24,10 @@ return [
 		'other' => 'Khác',
 		'readMore' => 'Xem thêm',
 		'success' => 'Hoàn tất',
+		'proceed' => 'Tiếp tục',
+		'next' => 'Tiếp theo',
+		'close' => 'Đóng',
+		'clickHere' => 'nhấn vào đây',
 
 		'sensitive' => 'Nhạy cảm',
 		'sensitiveContent' => 'Nội dung nhạy cảm',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'nhật ký kiểm duyệt',
 		'post' => 'bài đăng',
 		'story' => 'khoảnh khắc',
+		'noneFound' => 'Không có thông báo mới',
 	],
 
 	'post' => [
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Những người bạn có thể biết'
+		'peopleYouMayKnow' => 'Những người bạn có thể biết',
+
+		'onboarding' => [
+			'welcome' => 'Chào mừng',
+			'thisIsYourHomeFeed' => 'Đây là bảng tin của bạn, được xếp theo thứ tự thời gian với những tài khoản mà bạn theo dõi.',
+			'letUsHelpYouFind' => 'Đây là vài người thú vị mà bạn nên theo dõi',
+			'refreshFeed' => 'Làm tươi bảng tin',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Không tìm thấy ảnh nào với hashtag này'
+	],
+
+	'report' => [
+		'report' => 'Báo cáo',
+		'selectReason' => 'Chọn một lý do',
+		'reported' => 'Bị báo cáo',
+		'sendingReport' => 'Đang gửi báo cáo...',
+		'thanksMsg' => 'Cảm ơn đã gửi báo cáo, bạn đã giúp cộng đồng sạch hơn!',
+		'contactAdminMsg' => 'Nếu cần thiết, hãy liên hệ quản trị viên về ảnh này hoặc báo cáo',
 	],
 
 ];

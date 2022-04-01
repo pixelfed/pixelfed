@@ -13,16 +13,21 @@ return [
 		'shared' => 'Dibagikan',
 		'shares' => 'Dibagikan',
 		'unshare' => 'Batalkan berbagi',
+		'bookmark' => 'Penanda Buku',
 
 		'cancel' => 'Batal',
 		'copyLink' => 'Salin tautan',
 		'delete' => 'Hapus',
-		'error' => 'Kesalahan',
+		'error' => 'Galat',
 		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
 		'success' => 'Berhasil',
+		'proceed' => 'Lanjut',
+		'next' => 'Berikutnya',
+		'close' => 'Tutup',
+		'clickHere' => 'klik di sini',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Konten Sensitif',
@@ -54,7 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Perangkat Keras',
 		'settings' => 'Pengaturan',
-		'compose' => 'Membuat baru',
+		'compose' => 'Buat baru',
 		'logout' => 'Keluar',
 
 		// Nav footer
@@ -81,7 +86,7 @@ return [
 		'shared' => 'membagikan',
 		'tagged' => 'menandai Anda pada sebuah',
 
-		'updatedA' => 'mengupdate sebuah',
+		'updatedA' => 'memperbarui sebuah',
 		'sentA' => 'mengirim sebuah',
 
 		'followed' => 'diikuti',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'postingan',
 		'story' => 'cerita',
+		'noneFound' => 'Tak ditemukan pemberitahuan',
 	],
 
 	'post' => [
@@ -110,7 +116,7 @@ return [
 		'posts' => 'Postingan',
 		'followers' => 'Pengikut',
 		'following' => 'Mengikuti',
-		'admin' => 'Pengelola',
+		'admin' => 'Pengurus',
 		'collections' => 'Koleksi',
 		'follow' => 'Ikuti',
 		'unfollow' => 'Berhenti Ikuti',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal'
+		'peopleYouMayKnow' => 'Orang yang mungkin Anda kenal',
+
+		'onboarding' => [
+			'welcome' => 'Selamat Datang',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Segarkan laman umpan',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Sepertinya kami tidak dapat menemukan postingan untuk tagar ini'
+	],
+
+	'report' => [
+		'report' => 'Laporkan',
+		'selectReason' => 'Pilih alasan',
+		'reported' => 'Terlaporkan',
+		'sendingReport' => 'Mengirim laporan',
+		'thanksMsg' => 'Terima kasih atas laporannya, tindakan Anda amat membantu menjaga komunitas!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

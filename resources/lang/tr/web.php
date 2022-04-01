@@ -4,15 +4,16 @@ return [
 
 	'common' => [
 		'comment' => 'Yorum',
-		'commented' => 'Yorumlar',
+		'commented' => 'Yorum yaptı',
 		'comments' => 'Yorumlar',
 		'like' => 'Beğen',
 		'liked' => 'Beğenildi',
 		'likes' => 'Beğeniler',
 		'share' => 'Paylaş',
-		'shared' => 'Paylaşılan',
+		'shared' => 'Paylaşıldı',
 		'shares' => 'Paylaşılanlar',
 		'unshare' => 'Paylaşımı kaldır',
+		'bookmark' => 'Bookmark',
 
 		'cancel' => 'İptal',
 		'copyLink' => 'Bağlantıyı Kopyala',
@@ -23,8 +24,12 @@ return [
 		'other' => 'Diğer',
 		'readMore' => 'Daha fazlasını oku',
 		'success' => 'Başarılı',
+		'proceed' => 'Proceed',
+		'next' => 'Next',
+		'close' => 'Close',
+		'clickHere' => 'click here',
 
-		'sensitive' => 'Hassasiyet',
+		'sensitive' => 'Hassas',
 		'sensitiveContent' => 'Hassas içerik',
 		'sensitiveContentWarning' => 'Bu ileti hassas içerik içeriyor olabilir',
 	],
@@ -39,13 +44,13 @@ return [
 		'admin' => 'Yönetici Paneli',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
+		'homeFeed' => 'Ana Akış',
 		'localFeed' => 'Yerel Akış',
 		'globalFeed' => 'Evrensel Akış',
 
 		// Core features
 		'discover' => 'Keşfet',
-		'directMessages' => 'Direkt Mesajlar',
+		'directMessages' => 'Doğrudan İletiler',
 		'notifications' => 'Bildirimler',
 		'groups' => 'Gruplar',
 		'stories' => 'Hikayeler',
@@ -55,7 +60,7 @@ return [
 		'drive' => 'Depolama',
 		'settings' => 'Ayarlar',
 		'compose' => 'Yeni oluştur',
-		'logout' => 'Logout',
+		'logout' => 'Oturumu kapat',
 
 		// Nav footer
 		'about' => 'Hakkında',
@@ -95,15 +100,16 @@ return [
 		'dm' => 'özel mesaj',
 		'groupPost' => 'group post',
 		'modlog' => 'modlog',
-		'post' => 'post',
+		'post' => 'gönderi',
 		'story' => 'hikaye',
+		'noneFound' => 'No notifications found',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Takipçileri paylaş',
 		'shareToOther' => 'Share to other',
 		'noLikes' => 'Henüz beğenilmedi',
-		'uploading' => 'Yükleniyor',
+		'uploading' => 'Karşıya Yükleniyor',
 	],
 
 	'profile' => [
@@ -111,7 +117,7 @@ return [
 		'followers' => 'Takipçiler',
 		'following' => 'Takip ediliyor',
 		'admin' => 'Yönetici',
-		'collections' => 'Koleksiyonlar',
+		'collections' => 'Derlemeler',
 		'follow' => 'Takip et',
 		'unfollow' => 'Takibi bırak',
 		'editProfile' => 'Profili Düzenle',
@@ -125,7 +131,7 @@ return [
 	'menu' => [
 		'viewPost' => 'Gönderiyi görüntüle',
 		'viewProfile' => 'Profili Görüntüle',
-		'moderationTools' => 'Denetim Ayarları',
+		'moderationTools' => 'Denetim Araçları',
 		'report' => 'Bildir',
 		'archive' => 'Archive',
 		'unarchive' => 'Arşivden çıkar',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler'
+		'peopleYouMayKnow' => 'Tanıyor olabileceğin kişiler',
+
+		'onboarding' => [
+			'welcome' => 'Welcome',
+			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
+			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'refreshFeed' => 'Refresh my feed',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+	],
+
+	'report' => [
+		'report' => 'Report',
+		'selectReason' => 'Select a reason',
+		'reported' => 'Reported',
+		'sendingReport' => 'Sending report',
+		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
+		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
 	],
 
 ];

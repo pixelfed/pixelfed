@@ -13,6 +13,7 @@ return [
 		'shared' => 'Geteilt',
 		'shares' => 'Geteilt',
 		'unshare' => 'Teilen rückgängig machen',
+		'bookmark' => 'Lesezeichen',
 
 		'cancel' => 'Abbrechen',
 		'copyLink' => 'Link kopieren',
@@ -22,7 +23,11 @@ return [
 		'oops' => 'Hoppla!',
 		'other' => 'Anderes',
 		'readMore' => 'Weiterlesen',
-		'success' => 'Erfolgreich',
+		'success' => 'Erfolg',
+		'proceed' => 'Fortfahren',
+		'next' => 'Weiter',
+		'close' => 'Schließen',
+		'clickHere' => 'hier klicken',
 
 		'sensitive' => 'Sensibel',
 		'sensitiveContent' => 'Sensibler Inhalt',
@@ -97,6 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+		'noneFound' => 'Keine Benachrichtigungen gefunden',
 	],
 
 	'post' => [
@@ -147,16 +153,16 @@ return [
 		'confirmReport' => 'Meldung bestätigen',
 		'confirmReportText' => 'Bist du sicher, dass du diesen Beitrag melden möchtest?',
 		'reportSent' => 'Meldung gesendet!',
-		'reportSentText' => 'Wir haben deinen Bericht erfolgreich erhalten.',
+		'reportSentText' => 'Wir haben deine Meldung erfolgreich erhalten.',
 		'reportSentError' => 'Es gab ein Problem beim Melden dieses Beitrags.',
 
 		'modAddCWConfirm' => 'Bist du sicher, dass du diesem Beitrag eine Inhaltswarnung hinzufügen möchtest?',
 		'modCWSuccess' => 'Inhaltswarnung erfolgreich hinzugefügt',
-		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung auf diesem Beitrag entfernt werden soll?',
+		'modRemoveCWConfirm' => 'Bist du sicher, dass die Inhaltswarnung für diesen Beitrag entfernt werden soll?',
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
 		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
-		'modUnlistSuccess' => 'Beitrag erfolgreich nicht gelistet',
-		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spam markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
+		'modUnlistSuccess' => 'Beitrag aus Timelines entfernt',
+		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spammer markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
 		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
 		'toFollowers' => 'an die Folgenden',
@@ -176,11 +182,27 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
+		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst',
+
+		'onboarding' => [
+			'welcome' => 'Herzlich willkommen',
+			'thisIsYourHomeFeed' => 'Dies ist Ihr Heim-Feed, ein chronologischer Feed von Beiträgen aus den Konten, denen Sie folgen.',
+			'letUsHelpYouFind' => 'Lassen Sie uns Ihnen helfen, einige interessante Leute zu finden, denen Sie folgen können',
+			'refreshFeed' => 'Feed aktualisieren',
+		],
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
+	],
+
+	'report' => [
+		'report' => 'Melden',
+		'selectReason' => 'Wählen Sie einen Grund',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Meldung wird gesendet',
+		'thanksMsg' => 'Vielen Dank für die Meldung, Leute wie Sie helfen, unsere Community sicher zu halten!',
+		'contactAdminMsg' => 'Wenn Sie einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren möchten',
 	],
 
 ];
