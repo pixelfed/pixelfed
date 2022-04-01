@@ -47,7 +47,7 @@ class CustomEmoji extends Model
 					return [
 						'shortcode' => $match,
 						'url' => $url,
-						'static_path' => $url,
+						'static_url' => $url,
 						'visible_in_picker' => $tag->disabled == false
 					];
 				}
@@ -57,7 +57,7 @@ class CustomEmoji extends Model
 			if($activitypub == true) {
 				return $tag && isset($tag['icon']);
 			} else {
-				return $tag && isset($tag['static_path']);
+				return $tag && isset($tag['static_url']);
 			}
 		})
 		->values()
