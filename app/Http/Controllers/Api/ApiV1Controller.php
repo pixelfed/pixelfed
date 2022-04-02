@@ -1684,7 +1684,7 @@ class ApiV1Controller extends Controller
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->latest()
-			->take($limit)
+			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
 				$status = StatusService::getMastodon($s['id']);
@@ -1701,6 +1701,7 @@ class ApiV1Controller extends Controller
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
+			->take($limit)
 			->values()
 			->toArray();
 		} else {
@@ -1715,7 +1716,7 @@ class ApiV1Controller extends Controller
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->latest()
-			->take($limit)
+			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
 				$status = StatusService::getMastodon($s['id']);
@@ -1732,9 +1733,67 @@ class ApiV1Controller extends Controller
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
+			->take($limit)
 			->values()
 			->toArray();
 		}
+
+		return $this->json($res);
+	}
+
+	/**
+	 * GET /api/v1/timelines/public
+	 *
+	 *
+	 * @return StatusTransformer
+	 */
+	public function timelinePublic(Request $request)
+	{
+		$this->validate($request,[
+		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
+		  'limit'       => 'nullable|integer|max:100'
+		]);
+
+		$min = $request->input('min_id');
+		$max = $request->input('max_id');
+		$limit = $request->input('limit') ?? 20;
+		$user = $request->user();
+        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+
+		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+			if(PublicTimelineService::count() == 0) {
+				PublicTimelineService::warmCache(true, 400);
+			}
+		});
+
+		if ($max) {
+			$feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+		} else if ($min) {
+			$feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+		} else {
+			$feed = PublicTimelineService::get(0, $limit + 5);
+		}
+
+		$res = collect($feed)
+		->map(function($k) use($user) {
+			$status = StatusService::getMastodon($k);
+			if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+				return false;
+			}
+
+			if($user) {
+				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
+				$status['reblogged'] = (bool) ReblogService::get($user->profile_id, $status['id']);
+			}
+			return $status;
+		})
+		->filter(function($s) use($filtered) {
+			return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+		})
+		->take($limit)
+		->values()
+		->toArray();
 
 		return $this->json($res);
 	}
@@ -1803,62 +1862,6 @@ class ApiV1Controller extends Controller
 			->values();
 
 		return $this->json($dms);
-	}
-
-	/**
-	 * GET /api/v1/timelines/public
-	 *
-	 *
-	 * @return StatusTransformer
-	 */
-	public function timelinePublic(Request $request)
-	{
-		$this->validate($request,[
-		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
-		]);
-
-		$min = $request->input('min_id');
-		$max = $request->input('max_id');
-		$limit = $request->input('limit') ?? 20;
-		$user = $request->user();
-        $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
-
-		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
-			if(PublicTimelineService::count() == 0) {
-				PublicTimelineService::warmCache(true, 400);
-			}
-		});
-
-		if ($max) {
-			$feed = PublicTimelineService::getRankedMaxId($max, $limit);
-		} else if ($min) {
-			$feed = PublicTimelineService::getRankedMinId($min, $limit);
-		} else {
-			$feed = PublicTimelineService::get(0, $limit);
-		}
-
-		$res = collect($feed)
-		->map(function($k) use($user) {
-			$status = StatusService::getMastodon($k);
-			if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
-				return false;
-			}
-
-			if($user) {
-				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
-				$status['reblogged'] = (bool) ReblogService::get($user->profile_id, $status['id']);
-			}
-			return $status;
-		})
-		->filter(function($s) use($filtered) {
-			return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
-		})
-		->values()
-		->toArray();
-
-		return $this->json($res);
 	}
 
 	/**
