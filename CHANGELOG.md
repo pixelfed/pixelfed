@@ -118,6 +118,9 @@
 - Updated PlaceController, require authentication. ([e7783af6](https://github.com/pixelfed/pixelfed/commit/e7783af6))
 - Updated PublicApiController, disable legacy public access to local timeline. ([6ba7d433](https://github.com/pixelfed/pixelfed/commit/6ba7d433))
 - Updated DiscoverController, cache public tag feed and only include local posts for unauthenticated users. ([0541aed5](https://github.com/pixelfed/pixelfed/commit/0541aed5))
+- Updated DiscoverController, improve tag feed performance. ([d8ff40eb](https://github.com/pixelfed/pixelfed/commit/d8ff40eb))
+- Updated ApiV1Controller, fix timeline pagination. ([a5cdc28b](https://github.com/pixelfed/pixelfed/commit/a5cdc28b))
+- Updated ApiV1Controller, add missing pagination header. ([5649873a](https://github.com/pixelfed/pixelfed/commit/5649873a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
