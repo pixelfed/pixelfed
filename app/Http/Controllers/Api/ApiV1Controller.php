@@ -1702,8 +1702,7 @@ class ApiV1Controller extends Controller
 				return $status && isset($status['account']);
 			})
 			->take($limit)
-			->values()
-			->toArray();
+			->values();
 		} else {
 			$res = Status::select(
 				'id',
@@ -1734,11 +1733,35 @@ class ApiV1Controller extends Controller
 				return $status && isset($status['account']);
 			})
 			->take($limit)
-			->values()
-			->toArray();
+			->values();
 		}
 
-		return $this->json($res);
+		$baseUrl = config('app.url') . '/api/v1/timelines/home?limit=' . $limit . '&';
+		$minId = $res->map(function($s) {
+			return ['id' => $s['id']];
+		})->min('id');
+		$maxId = $res->map(function($s) {
+			return ['id' => $s['id']];
+		})->max('id');
+
+		if($minId == $maxId) {
+			$minId = null;
+		}
+
+		if($maxId) {
+			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+		}
+
+		if($minId) {
+			$link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+		}
+
+		if($maxId && $minId) {
+			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+		}
+
+		$headers = isset($link) ? ['Link' => $link] : [];
+		return $this->json($res->toArray(), 200, $headers);
 	}
 
 	/**
@@ -1792,10 +1815,35 @@ class ApiV1Controller extends Controller
 			return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
 		})
 		->take($limit)
-		->values()
-		->toArray();
+		->values();
+		// ->toArray();
 
-		return $this->json($res);
+		$baseUrl = config('app.url') . '/api/v1/timelines/public?limit=' . $limit . '&';
+		$minId = $res->map(function($s) {
+			return ['id' => $s['id']];
+		})->min('id');
+		$maxId = $res->map(function($s) {
+			return ['id' => $s['id']];
+		})->max('id');
+
+		if($minId == $maxId) {
+			$minId = null;
+		}
+
+		if($maxId) {
+			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+		}
+
+		if($minId) {
+			$link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+		}
+
+		if($maxId && $minId) {
+			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+		}
+
+		$headers = isset($link) ? ['Link' => $link] : [];
+		return $this->json($res->toArray(), 200, $headers);
 	}
 
 	/**
