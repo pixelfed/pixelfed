@@ -67,7 +67,7 @@ class SpaController extends Controller
 	public function updateLanguage(Request $request)
 	{
 		abort_unless(config('exp.spa'), 404);
-		abort_unless($req->user(), 404);
+		abort_unless($request->user(), 404);
 		$this->validate($request, [
 			'v' => 'required|in:0.1,0.2',
 			'l' => 'required|alpha_dash|max:5'
