@@ -1878,11 +1878,11 @@ export default {
 		}
 		a.list-group-item:hover {
 			text-decoration: none;
-			background-color: #f8f9fa !important;
+			background-color: #f8f9fa;
 		}
 		.compose-action:hover {
 			cursor: pointer;
-			background-color: #f8f9fa !important;
+			background-color: #f8f9fa;
 		}
 		.collections-list-group {
 			max-height: 500px;
