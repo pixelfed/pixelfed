@@ -378,7 +378,7 @@ class PublicApiController extends Controller
                                return $status;
                           })
                           ->filter(function($s) use($filtered) {
-                                return $s && in_array($s['account']['id'], $filtered) == false;
+                                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
                           })
                           ->values();
 
@@ -402,7 +402,7 @@ class PublicApiController extends Controller
             $res = collect($feed)
             ->map(function($k) use($user) {
                 $status = StatusService::get($k);
-                if($user) {
+                if($status && isset($status['account']) && $user) {
                     $status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
                     $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $k);
                     $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $k);
@@ -411,7 +411,7 @@ class PublicApiController extends Controller
                 return $status;
             })
             ->filter(function($s) use($filtered) {
-                return isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+                return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
             })
             ->values()
             ->toArray();
