@@ -21,8 +21,8 @@
 			:hash="status.media_attachments[0].blurhash"
 			:alt="altText(status)"/>
 	</div>
-	<div v-else class="w-100 h-100 p-0">
-		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0">
+	<div v-else class="w-100 h-100 p-0 album-wrapper">
+		<carousel ref="carousel" :centerMode="true" :loop="false" :per-page="1" :paginationPosition="'bottom-overlay'" paginationActiveColor="#3897f0" paginationColor="#dbdbdb" class="p-0 m-0" :id="'carousel-' + status.id">
 			<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="" style="background: #000; display: flex;align-items: center;" :title="img.description">
 
 				<img
@@ -31,71 +31,67 @@
 					:src="img.url"
 					:alt="altText(img)"
 					loading="lazy"
+					:data-bp="img.url"
 					onerror="this.onerror=null;this.src='/storage/no-preview.png'">
 
-				<p v-if="!status.sensitive && sensitive"
-					@click="status.sensitive = true"
-					style="
-					margin-top: 0;
-					padding: 10px;
-					color: #fff;
-					font-size: 10px;
-					text-align: right;
-					position: absolute;
-					top: 0;
-					right: 0;
-					border-top-left-radius: 5px;
-					cursor: pointer;
-					background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
-				">
-					<i class="fas fa-eye-slash fa-lg"></i>
-				</p>
-
-				<p
-					v-if="status.media_attachments[0].license"
-					style="
-					margin-bottom: 0;
-					padding: 0 5px;
-					color: #fff;
-					font-size: 10px;
-					text-align: right;
-					position: absolute;
-					bottom: 0;
-					right: 0;
-					border-top-left-radius: 5px;
-					background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
-				">
-					<a :href="status.url" class="font-weight-bold text-light">Photo</a> by <a :href="status.account.url" class="font-weight-bold text-light">&commat;{{status.account.username}}</a> licensed under <a :href="status.media_attachments[0].license.url" class="font-weight-bold text-light">{{status.media_attachments[0].license.title}}</a>
-				</p>
 			</slide>
 		</carousel>
+		<div class="album-overlay">
+			<p v-if="!status.sensitive && sensitive"
+				@click="status.sensitive = true"
+				style="
+				margin-top: 0;
+				padding: 10px;
+				color: #fff;
+				font-size: 10px;
+				text-align: right;
+				position: absolute;
+				top: 0;
+				right: 0;
+				border-top-left-radius: 5px;
+				cursor: pointer;
+				background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+			">
+				<i class="fas fa-eye-slash fa-lg"></i>
+			</p>
+
+			<p @click.prevent="toggleLightbox"
+				style="
+				margin-top: 0;
+				padding: 10px;
+				color: #fff;
+				font-size: 10px;
+				text-align: right;
+				position: absolute;
+				left: 0;
+				top: 0;
+				border-bottom-right-radius: 5px;
+				cursor: pointer;
+				background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+			">
+				<i class="fas fa-expand fa-lg"></i>
+			</p>
+
+			<p
+				v-if="status.media_attachments[0].license"
+				style="
+				margin-bottom: 0;
+				padding: 0 5px;
+				color: #fff;
+				font-size: 10px;
+				text-align: right;
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				border-top-left-radius: 5px;
+				background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+			">
+				<a :href="status.url" class="font-weight-bold text-light">Photo</a> by <a :href="status.account.url" class="font-weight-bold text-light">&commat;{{status.account.username}}</a> licensed under <a :href="status.media_attachments[0].license.url" class="font-weight-bold text-light">{{status.media_attachments[0].license.title}}</a>
+			</p>
+		</div>
 	</div>
 </template>
 
-<style type="text/css" scoped>
-  .card-img-top {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
-  }
-  .content-label-wrapper {
-  	position: relative;
-  }
-  .content-label {
-  	margin: 0;
-  	position: absolute;
-  	top:50%;
-  	left:50%;
-  	transform: translate(-50%, -50%);
-  	display: flex;
-  	flex-direction: column;
-  	align-items: center;
-  	justify-content: center;
-  	width: 100%;
-  	height: 100%;
-  	z-index: 2;
-  	background: rgba(0, 0, 0, 0.2)
-  }
-</style>
 
 <script type="text/javascript">
 	import BigPicture from 'bigpicture';
@@ -125,7 +121,9 @@
 
 			toggleLightbox(e) {
 				BigPicture({
-					el: e.target
+					el: e.target,
+					gallery: '#carousel-' + this.status.id,
+					position: this.$refs.carousel.currentPage
 				})
 			},
 
@@ -161,3 +159,31 @@
 		}
 	}
 </script>
+
+<style type="text/css" scoped>
+  .card-img-top {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+  }
+  .content-label-wrapper {
+  	position: relative;
+  }
+  .content-label {
+  	margin: 0;
+  	position: absolute;
+  	top:50%;
+  	left:50%;
+  	transform: translate(-50%, -50%);
+  	display: flex;
+  	flex-direction: column;
+  	align-items: center;
+  	justify-content: center;
+  	width: 100%;
+  	height: 100%;
+  	z-index: 2;
+  	background: rgba(0, 0, 0, 0.2)
+  }
+  .album-wrapper {
+  	position: relative;
+  }
+</style>
