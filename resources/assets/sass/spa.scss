@@ -31,7 +31,7 @@
 		--light: #000;
 		--dark: #fff;
 		--body-bg: #000;
-		--body-color: #818181;
+		--body-color: #9ca3af;
 		--nav-bg: #000;
 		--bg-light: #212124;
 
@@ -83,7 +83,7 @@
 	--light: #000;
 	--dark: #fff;
 	--body-bg: #000;
-	--body-color: #818181;
+	--body-color: #9ca3af;
 	--nav-bg: #000;
 	--bg-light: #212124;
 
@@ -142,6 +142,10 @@ body {
 
 .navbar-light .navbar-brand {
 	color: var(--dark);
+
+	&:hover {
+		color: var(--dark);
+	}
 }
 
 .primary {
