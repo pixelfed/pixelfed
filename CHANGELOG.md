@@ -7,6 +7,7 @@
 - LDAP Authentication ([#3296](https://github.com/pixelfed/pixelfed/pull/3296))
 
 ### Metro 2.0 UI
+- Dark Mode ([cb540373](https://github.com/pixelfed/pixelfed/commit/cb540373))
 - Added Hovercards ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
 - Fix word-break on statuses ([16ced7b4](https://github.com/pixelfed/pixelfed/commit/16ced7b4))
 - Add pronouns to hovercards ([33f863e8](https://github.com/pixelfed/pixelfed/commit/33f863e8))
