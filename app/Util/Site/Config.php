@@ -7,10 +7,10 @@ use Illuminate\Support\Str;
 
 class Config {
 
-	const CACHE_KEY = 'api:site:configuration:_v0.5';
+	const CACHE_KEY = 'api:site:configuration:_v0.6';
 
 	public static function get() {
-		return Cache::remember(self::CACHE_KEY, 86400, function() {
+		return Cache::remember(self::CACHE_KEY, 900, function() {
 			return [
 				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
@@ -51,12 +51,15 @@ class Config {
 				],
 
 				'features' => [
+					'timelines' => [
+						'local' => true,
+						'network' => (bool) config('federation.network_timeline'),
+					],
 					'mobile_apis' => (bool) config_cache('pixelfed.oauth_enabled'),
-					'circles' => false,
 					'stories' => (bool) config_cache('instance.stories.enabled'),
 					'video'	=> Str::contains(config_cache('pixelfed.media_types'), 'video/mp4'),
 					'import' => [
-						'instagram' => config_cache('pixelfed.import.instagram.enabled'),
+						'instagram' => (bool) config_cache('pixelfed.import.instagram.enabled'),
 						'mastodon' => false,
 						'pixelfed' => false
 					],

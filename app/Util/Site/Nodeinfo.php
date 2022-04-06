@@ -33,6 +33,8 @@ class Nodeinfo {
 				return Status::whereLocal(true)->count();
 			});
 
+			$features = [ 'features' => \App\Util\Site\Config::get()['features'] ];
+
 			return [
 				'metadata' => [
 					'nodeName' => config_cache('app.name'),
@@ -40,7 +42,7 @@ class Nodeinfo {
 						'homepage'  => 'https://pixelfed.org',
 						'repo'      => 'https://github.com/pixelfed/pixelfed',
 					],
-					'config' => \App\Util\Site\Config::get()
+					'config' => $features
 				],
 				'protocols'         => [
 					'activitypub',
