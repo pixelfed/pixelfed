@@ -157,7 +157,7 @@ class InboxWorker implements ShouldQueue
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
-            if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
+            if(parse_url(Helpers::pluckval($bodyDecoded['object']['attributedTo']), PHP_URL_HOST) !== $keyDomain) {
                 return;
             }
         }
@@ -166,7 +166,7 @@ class InboxWorker implements ShouldQueue
         }
         $actor = Profile::whereKeyId($keyId)->first();
         if(!$actor) {
-            $actorUrl = is_array($bodyDecoded['actor']) ? $bodyDecoded['actor'][0] : $bodyDecoded['actor'];
+            $actorUrl = Helpers::pluckval($bodyDecoded['actor']);
             $actor = Helpers::profileFirstOrNew($actorUrl);
         }
         if(!$actor) {
