@@ -667,7 +667,7 @@ class Helpers {
 		}
 		$hash = base64_encode($url);
 		$key = 'ap:profile:by_url:' . $hash;
-		$ttl = now()->addMinutes(5);
+		$ttl = now()->addSeconds(60);
 		$profile = Cache::remember($key, $ttl, function() use($url, $runJobs) {
 			$host = parse_url($url, PHP_URL_HOST);
 			$local = config('pixelfed.domain.app') == $host ? true : false;
@@ -706,26 +706,23 @@ class Helpers {
 				if($instance->wasRecentlyCreated == true) {
 					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
 				}
-				$profileLockKey = 'helpers:profile-lock:' . hash('sha256', $res['id']);
-				$profile = Cache::lock($profileLockKey)->get(function () use($domain, $webfinger, $res, $runJobs) {
-					return DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
-						$profile = new Profile();
-						$profile->domain = strtolower($domain);
-						$profile->username = Purify::clean($webfinger);
-						$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-						$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-						$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-						$profile->inbox_url = $res['inbox'];
-						$profile->outbox_url = isset($res['outbox']) ? $res['outbox'] : null;
-						$profile->remote_url = $res['id'];
-						$profile->public_key = $res['publicKey']['publicKeyPem'];
-						$profile->key_id = $res['publicKey']['id'];
-						$profile->webfinger = Purify::clean($webfinger);
-						$profile->last_fetched_at = now();
-						$profile->save();
-						RemoteAvatarFetch::dispatch($profile);
-						return $profile;
-					});
+				$profile = DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
+					$profile = new Profile();
+					$profile->domain = strtolower($domain);
+					$profile->username = Purify::clean($webfinger);
+					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
+					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
+					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
+					$profile->inbox_url = $res['inbox'];
+					$profile->outbox_url = isset($res['outbox']) ? $res['outbox'] : null;
+					$profile->remote_url = $res['id'];
+					$profile->public_key = $res['publicKey']['publicKeyPem'];
+					$profile->key_id = $res['publicKey']['id'];
+					$profile->webfinger = Purify::clean($webfinger);
+					$profile->last_fetched_at = now();
+					$profile->save();
+					RemoteAvatarFetch::dispatch($profile);
+					return $profile;
 				});
 			} else {
 				// Update info after 24 hours
