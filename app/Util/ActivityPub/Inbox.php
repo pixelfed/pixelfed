@@ -623,7 +623,10 @@ class Inbox
 					break;
 
 				case 'Tombstone':
-						$profile = Helpers::profileFetch($actor);
+						$profile = Profile::whereRemoteUrl($actor)->first();
+						if(!$profile || $profile->private_key != null) {
+							return;
+						}
 						$status = Status::whereProfileId($profile->id)
 							->whereUri($id)
 							->orWhere('url', $id)

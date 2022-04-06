@@ -122,6 +122,8 @@
 - Updated DiscoverController, improve tag feed performance. ([d8ff40eb](https://github.com/pixelfed/pixelfed/commit/d8ff40eb))
 - Updated ApiV1Controller, fix timeline pagination. ([a5cdc28b](https://github.com/pixelfed/pixelfed/commit/a5cdc28b))
 - Updated ApiV1Controller, add missing pagination header. ([5649873a](https://github.com/pixelfed/pixelfed/commit/5649873a))
+- Updated CollectionController, limit unpublished collections to owner. ([a0061eb5](https://github.com/pixelfed/pixelfed/commit/a0061eb5))
+- Updated AP Inbox, fixes #3332. ([f8931dc7](https://github.com/pixelfed/pixelfed/commit/f8931dc7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
