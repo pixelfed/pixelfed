@@ -457,9 +457,14 @@ class Helpers {
 			$ts = self::pluckval($activity['published']);
 			$scope = self::getScope($activity);
 			$cw = self::getSensitive($activity);
+			$pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
+
+			if(!$pid) {
+				return;
+			}
 
 			$status = new Status;
-			$status->profile_id = $profile->id;
+			$status->profile_id = $pid;
 			$status->url = $url;
 			$status->uri = $url;
 			$status->object_url = $id;
