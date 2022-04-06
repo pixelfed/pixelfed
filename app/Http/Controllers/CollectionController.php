@@ -237,6 +237,9 @@ class CollectionController extends Controller
 
         return Collection::whereProfileId($profile->id)
         	->whereIn('visibility', $visibility)
+        	->when(!$owner, function($q, $owner) {
+        		return $q->whereNotNull('published_at');
+        	})
             ->orderByDesc('id')
             ->paginate(9)
             ->map(function($collection) {

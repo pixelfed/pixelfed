@@ -213,6 +213,9 @@ class DeleteWorker implements ShouldQueue
 		  'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
 		])->get($actor->remote_url);
 		$res = json_decode($res->body(), true, 8);
+		if(!isset($res['publicKey'], $res['publicKey']['id'])) {
+			return;
+		}
 		if($res['publicKey']['id'] !== $actor->key_id) {
 			return;
 		}
