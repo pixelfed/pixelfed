@@ -21,6 +21,9 @@
 	<link rel="canonical" href="{{url(request()->url())}}">
 	<link href="{{ mix('css/app.css') }}" rel="stylesheet" data-stylesheet="light">
 	<link href="{{ mix('css/spa.css') }}" rel="stylesheet" data-stylesheet="light">
+	@if(config_cache('uikit.show_custom.css'))
+	<style type="text/css">{!!config_cache('uikit.custom.css')!!}</style>
+	@endif
 	@auth
 	<script type="text/javascript">
 		window._sharedData = {
