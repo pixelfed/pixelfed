@@ -121,7 +121,9 @@ trait AdminSettingsController
 			$val = $request->input($key);
 			if($cc && $cc->v != $val) {
 				ConfigCacheService::put($value, $val);
-			}
+			} else if(!empty($val)) {
+                ConfigCacheService::put($value, $val);
+            }
 		}
 
 		$bools = [
