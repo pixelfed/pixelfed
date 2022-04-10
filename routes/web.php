@@ -529,6 +529,14 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('{username}', 'ProfileController@permalinkRedirect');
 	});
 
+	Route::group(['prefix' => 'installer'], function() {
+		Route::get('api/requirements', 'InstallController@getRequirements')->withoutMiddleware(['web']);
+		Route::post('precheck/database', 'InstallController@precheckDatabase')->withoutMiddleware(['web']);
+		Route::post('store', 'InstallController@store')->withoutMiddleware(['web']);
+		Route::get('/', 'InstallController@index')->withoutMiddleware(['web']);
+		Route::get('/{q}', 'InstallController@index')->withoutMiddleware(['web'])->where('q', '.*');
+	});
+
 	Route::get('stories/{username}', 'ProfileController@stories');
 	Route::get('p/{id}', 'StatusController@shortcodeRedirect');
 	Route::get('c/{collection}', 'CollectionController@show');
