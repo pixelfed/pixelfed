@@ -14,6 +14,9 @@ class ConfigCacheService
 	{
 		$cacheKey = self::CACHE_KEY . $key;
 		$ttl = now()->addHours(12);
+		if(!config('instance.enable_cc')) {
+			return config($key);
+		}
 
 		return Cache::remember($cacheKey, $ttl, function() use($key) {
 

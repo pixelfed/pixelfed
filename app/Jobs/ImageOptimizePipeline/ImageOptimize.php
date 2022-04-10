@@ -39,6 +39,10 @@ class ImageOptimize implements ShouldQueue
      */
     public function handle()
     {
+    	if(config('pixelfed.optimize_image') == false) {
+    		return;
+    	}
+
         $media = $this->media;
         $path = storage_path('app/'.$media->media_path);
         if (!is_file($path) || $media->skip_optimize) {
