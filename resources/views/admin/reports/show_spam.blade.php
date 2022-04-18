@@ -48,7 +48,8 @@
 		<button type="button" class="btn btn-light border btn-block font-weight-bold mb-3 action-btn" data-action="approve">Mark as not spam</button>
 		<hr>
 		<button type="button" class="btn btn-default border btn-block font-weight-bold mb-3 action-btn" data-action="dismiss-all">Mark all as read</button>
-		<button type="button" class="btn btn-light border btn-block font-weight-bold mb-3 action-btn mb-5" data-action="approve-all">Mark all as not spam</button>
+		<button type="button" class="btn btn-light border btn-block font-weight-bold mb-3 action-btn" data-action="approve-all">Mark all as not spam</button>
+		<button type="button" class="btn btn-danger border btn-block font-weight-bold mb-3 action-btn mb-5" data-action="delete-account">Delete Account</button>
 		@endif
 		<div class="card shadow-none border">
 			<div class="card-header text-center font-weight-bold bg-light">
@@ -102,6 +103,12 @@
 
 			case 'approve-all':
 				if(!window.confirm('Are you sure you want to approve this post and all other posts by this account?')) {
+					return;
+				}
+			break;
+
+			case 'delete-account':
+				if(!window.confirm('Are you sure you want to delete this account?')) {
 					return;
 				}
 			break;
