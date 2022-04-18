@@ -22,6 +22,8 @@ use App\{
 };
 use Illuminate\Validation\Rule;
 use App\Services\StoryService;
+use App\Services\ModLogService;
+use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 
 trait AdminReportController
 {
@@ -243,7 +245,7 @@ trait AdminReportController
 	public function updateSpam(Request $request, $id)
 	{
 		$this->validate($request, [
-			'action' => 'required|in:dismiss,approve,dismiss-all,approve-all'
+			'action' => 'required|in:dismiss,approve,dismiss-all,approve-all,delete-account'
 		]);
 
 		$action = $request->input('action');
@@ -256,6 +258,41 @@ trait AdminReportController
 		$now = now();
 		Cache::forget('admin-dash:reports:spam-count:total');
 		Cache::forget('admin-dash:reports:spam-count:30d');
+
+		if($action == 'delete-account') {
+			if(config('pixelfed.account_deletion') == false) {
+				abort(404);
+			}
+
+			$user = User::findOrFail($appeal->user_id);
+			$profile = $user->profile;
+
+			if($user->is_admin == true) {
+				$mid = $request->user()->id;
+				abort_if($user->id < $mid, 403);
+			}
+
+			$ts = now()->addMonth();
+			$user->status = 'delete';
+			$profile->status = 'delete';
+			$user->delete_after = $ts;
+			$profile->delete_after = $ts;
+			$user->save();
+			$profile->save();
+
+			ModLogService::boot()
+				->objectUid($user->id)
+				->objectId($user->id)
+				->objectType('App\User::class')
+				->user($request->user())
+				->action('admin.user.delete')
+				->accessLevel('admin')
+				->save();
+
+			Cache::forget('profiles:private');
+			DeleteAccountPipeline::dispatch($user)->onQueue('high');
+			return;
+		}
 
 		if($action == 'dismiss') {
 			$appeal->is_spam = true;
