@@ -30,7 +30,7 @@ class AccountTransformer extends Fractal\TransformerAbstract
 			'following_count' => (int) $profile->followingCount(),
 			'statuses_count' => (int) $profile->statusCount(),
 			'note' => $profile->bio ?? '',
-			'note_text' => strip_tags($profile->bio),
+			'note_text' => $profile->bio ? strip_tags($profile->bio) : null,
 			'url' => $profile->url(),
 			'avatar' => $profile->avatarUrl(),
 			'website' => $profile->website,

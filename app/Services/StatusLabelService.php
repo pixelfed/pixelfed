@@ -19,6 +19,11 @@ class StatusLabelService
 		}
 		
 		return Cache::remember(self::CACHE_KEY . $status->id, now()->addDays(7), function() use($status) {
+			if(!$status->caption) {
+				return [
+					'covid' => false
+				];
+			}
 			return [
 				'covid' => Str::of(strtolower($status->caption))->contains(['covid','corona', 'coronavirus', 'vaccine', 'vaxx', 'vaccination', 'plandemic'])
 			];
