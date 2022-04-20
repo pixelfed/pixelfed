@@ -28,6 +28,7 @@ use App\Jobs\StoryPipeline\StoryReplyDeliver;
 use App\Jobs\StoryPipeline\StoryFanout;
 use App\Jobs\StoryPipeline\StoryDelete;
 use ImageOptimizer;
+use App\Models\Conversation;
 
 class StoryComposeController extends Controller
 {
@@ -420,6 +421,19 @@ class StoryComposeController extends Controller
 		]);
 		$dm->save();
 
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $story->profile_id,
+				'from_id' => $pid
+			],
+			[
+				'type' => 'story:react',
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => false
+			]
+		);
+
 		if($story->local) {
 			// generate notification
 			$n = new Notification;
@@ -480,6 +494,19 @@ class StoryComposeController extends Controller
 			'caption' => $text
 		]);
 		$dm->save();
+
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $story->profile_id,
+				'from_id' => $pid
+			],
+			[
+				'type' => 'story:comment',
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => false
+			]
+		);
 
 		if($story->local) {
 			// generate notification
