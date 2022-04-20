@@ -36,6 +36,7 @@ use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
 use App\Services\PollService;
 use App\Services\FollowerService;
+use App\Models\Conversation;
 
 class Inbox
 {
