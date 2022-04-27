@@ -81,6 +81,7 @@ use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
 use App\Services\CustomEmojiService;
 use App\Services\MarkerService;
+use App\Models\Conversation;
 
 class ApiV1Controller extends Controller
 {
@@ -1867,27 +1868,31 @@ class ApiV1Controller extends Controller
 
 		if(config('database.default') == 'pgsql') {
 			$dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
-					return $q->whereIsHidden(false)->whereToId($pid)->orWhere('from_id', $pid);
+					return $q->whereIsHidden(false)->where('to_id', $pid)->orWhere('from_id', $pid);
 				})
 				->when($scope === 'sent', function($q, $scope) use($pid) {
-					return $q->whereFromId($pid);
+					return $q->whereFromId($pid)->groupBy(['to_id', 'id']);
 				})
 				->when($scope === 'requests', function($q, $scope) use($pid) {
 					return $q->whereToId($pid)->whereIsHidden(true);
 				});
 		} else {
-			$dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
-					return $q->whereIsHidden(false)->whereToId($pid)->orWhere('from_id', $pid)->groupBy('to_id');
-				})
-				->when($scope === 'sent', function($q, $scope) use($pid) {
-					return $q->whereFromId($pid)->groupBy('to_id');
-				})
-				->when($scope === 'requests', function($q, $scope) use($pid) {
-					return $q->whereToId($pid)->whereIsHidden(true);
-				});
+			$dms = Conversation::when($scope === 'inbox', function($q, $scope) use($pid) {
+				return $q->whereIsHidden(false)
+					->where('to_id', $pid)
+					->orWhere('from_id', $pid)
+					->orderByDesc('status_id')
+					->groupBy(['to_id', 'from_id']);
+			})
+			->when($scope === 'sent', function($q, $scope) use($pid) {
+				return $q->whereFromId($pid)->groupBy('to_id');
+			})
+			->when($scope === 'requests', function($q, $scope) use($pid) {
+				return $q->whereToId($pid)->whereIsHidden(true);
+			});
 		}
 
-		$dms = $dms->latest()
+		$dms = $dms->orderByDesc('status_id')
 			->simplePaginate($limit)
 			->map(function($dm) use($pid) {
 				$from = $pid == $dm->to_id ? $dm->from_id : $dm->to_id;

@@ -20,6 +20,7 @@ use App\Jobs\StatusPipeline\NewStatusPipeline;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Services\WebfingerService;
+use App\Models\Conversation;
 
 class DirectMessageController extends Controller
 {
@@ -329,6 +330,19 @@ class DirectMessageController extends Controller
 		$dm->type = $request->input('type');
 		$dm->save();
 
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $recipient->id,
+				'from_id' => $profile->id
+			],
+			[
+				'type' => $dm->type,
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => $hidden
+			]
+		);
+
 		if(filter_var($msg, FILTER_VALIDATE_URL)) {
 			if(Helpers::validateUrl($msg)) {
 				$dm->type = 'link';
@@ -572,6 +586,19 @@ class DirectMessageController extends Controller
 		$dm->type = array_first(explode('/', $media->mime)) == 'video' ? 'video' : 'photo';
 		$dm->is_hidden = $hidden;
 		$dm->save();
+
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $recipient->id,
+				'from_id' => $profile->id
+			],
+			[
+				'type' => $dm->type,
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => $hidden
+			]
+		);
 
 		if($recipient->domain) {
 			$this->remoteDeliver($dm);

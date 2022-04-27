@@ -49,15 +49,6 @@ class DeleteWorker implements ShouldQueue
 		$headers = $this->headers;
 		$payload = json_decode($this->payload, true, 8);
 
-		if(isset($payload['id'])) {
-			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $payload['id']);
-			if(Cache::get($lockKey) !== null) {
-				// Job processed already
-				return 1;
-			}
-			Cache::put($lockKey, 1, 300);
-		}
-
 		if(!isset($headers['signature']) || !isset($headers['date'])) {
 			return;
 		}

@@ -36,6 +36,7 @@ use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
 use App\Services\PollService;
 use App\Services\FollowerService;
+use App\Models\Conversation;
 
 class Inbox
 {
@@ -367,6 +368,19 @@ class Inbox
 		$dm->is_hidden = $hidden;
 		$dm->type = 'text';
 		$dm->save();
+
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $profile->id,
+				'from_id' => $actor->id
+			],
+			[
+				'type' => 'text',
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => $hidden
+			]
+		);
 
 		if(count($activity['attachment'])) {
 			$photos = 0;
@@ -911,6 +925,19 @@ class Inbox
 		]);
 		$dm->save();
 
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $story->profile_id,
+				'from_id' => $actorProfile->id
+			],
+			[
+				'type' => 'story:react',
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => false
+			]
+		);
+
 		$n = new Notification;
 		$n->profile_id = $dm->to_id;
 		$n->actor_id = $dm->from_id;
@@ -1006,6 +1033,19 @@ class Inbox
 			'caption' => $text
 		]);
 		$dm->save();
+
+		Conversation::updateOrInsert(
+			[
+				'to_id' => $story->profile_id,
+				'from_id' => $actorProfile->id
+			],
+			[
+				'type' => 'story:comment',
+				'status_id' => $status->id,
+				'dm_id' => $dm->id,
+				'is_hidden' => false
+			]
+		);
 
 		$n = new Notification;
 		$n->profile_id = $dm->to_id;

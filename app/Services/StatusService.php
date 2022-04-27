@@ -131,7 +131,7 @@ class StatusService
 
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
-		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
+		$resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
 		return $fractal->createData($resource)->toArray();
 	}
 

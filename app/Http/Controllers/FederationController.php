@@ -121,6 +121,23 @@ class FederationController extends Controller
 		$obj = json_decode($payload, true, 8);
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
+			if(!isset($obj['id'])) {
+				return;
+			}
+			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
+			if( isset($obj['actor']) &&
+				isset($obj['object']) &&
+				isset($obj['id']) &&
+				is_string($obj['id']) &&
+				is_string($obj['actor']) &&
+				is_string($obj['object']) &&
+				$obj['actor'] == $obj['object']
+			) {
+				if(Cache::get($lockKey) !== null) {
+					return;
+				}
+			}
+			Cache::put($lockKey, 1, 3600);
 			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 		} else {
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
@@ -138,6 +155,23 @@ class FederationController extends Controller
 		$obj = json_decode($payload, true, 8);
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
+			if(!isset($obj['id'])) {
+				return;
+			}
+			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
+			if( isset($obj['actor']) &&
+				isset($obj['object']) &&
+				isset($obj['id']) &&
+				is_string($obj['id']) &&
+				is_string($obj['actor']) &&
+				is_string($obj['object']) &&
+				$obj['actor'] == $obj['object']
+			) {
+				if(Cache::get($lockKey) !== null) {
+					return;
+				}
+			}
+			Cache::put($lockKey, 1, 3600);
 			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 		} else {
 			dispatch(new InboxWorker($headers, $payload))->onQueue('high');
