@@ -93,6 +93,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {
 		Route::get('search', 'Api\ApiV1Controller@searchV2')->middleware($middleware);
+		Route::post('media', 'Api\ApiV1Controller@mediaUploadV2')->middleware($middleware);
 	});
 
 });
