@@ -1327,6 +1327,10 @@ class ApiV1Controller extends Controller
 			return [];
 		}
 
+		if(empty($request->file('file'))) {
+			return response('', 422);
+		}
+
 		$limitKey = 'compose:rate-limit:media-upload:' . $user->id;
 		$limitTtl = now()->addMinutes(15);
 		$limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
@@ -1418,8 +1422,8 @@ class ApiV1Controller extends Controller
 		Cache::forget($limitKey);
 		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
-		$res['preview_url'] = $media->url(). '?cb=1&_v=' . time();
-		$res['url'] = $media->url(). '?cb=1&_v=' . time();
+		$res['preview_url'] = $media->url(). '?v=' . time();
+		$res['url'] = $media->url(). '?v=' . time();
 		return $this->json($res);
 	}
 
@@ -1472,6 +1476,125 @@ class ApiV1Controller extends Controller
 		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 		return $this->json($res);
+	}
+
+	/**
+	 * POST /api/v2/media
+	 *
+	 *
+	 * @return MediaTransformer
+	 */
+	public function mediaUploadV2(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+		  'file.*'      => function() {
+			return [
+				'required',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			];
+		  },
+		  'filter_name' => 'nullable|string|max:24',
+		  'filter_class' => 'nullable|alpha_dash|max:24',
+		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
+		]);
+
+		$user = $request->user();
+
+		if($user->last_active_at == null) {
+			return [];
+		}
+
+		if(empty($request->file('file'))) {
+			return response('', 422);
+		}
+
+		$limitKey = 'compose:rate-limit:media-upload:' . $user->id;
+		$limitTtl = now()->addMinutes(15);
+		$limitReached = Cache::remember($limitKey, $limitTtl, function() use($user) {
+			$dailyLimit = Media::whereUserId($user->id)->where('created_at', '>', now()->subDays(1))->count();
+
+			return $dailyLimit >= 250;
+		});
+		abort_if($limitReached == true, 429);
+
+		$profile = $user->profile;
+
+		if(config_cache('pixelfed.enforce_account_limit') == true) {
+			$size = Cache::remember($user->storageUsedKey(), now()->addDays(3), function() use($user) {
+				return Media::whereUserId($user->id)->sum('size') / 1000;
+			});
+			$limit = (int) config_cache('pixelfed.max_account_size');
+			if ($size >= $limit) {
+			   abort(403, 'Account size limit reached.');
+			}
+		}
+
+		$filterClass = in_array($request->input('filter_class'), Filter::classes()) ? $request->input('filter_class') : null;
+		$filterName = in_array($request->input('filter_name'), Filter::names()) ? $request->input('filter_name') : null;
+
+		$photo = $request->file('file');
+
+		$mimes = explode(',', config_cache('pixelfed.media_types'));
+		if(in_array($photo->getMimeType(), $mimes) == false) {
+			abort(403, 'Invalid or unsupported mime type.');
+		}
+
+		$storagePath = MediaPathService::get($user, 2);
+		$path = $photo->store($storagePath);
+		$hash = \hash_file('sha256', $photo);
+		$license = null;
+		$mime = $photo->getMimeType();
+
+		$settings = UserSetting::whereUserId($user->id)->first();
+
+		if($settings && !empty($settings->compose_settings)) {
+			$compose = $settings->compose_settings;
+
+			if(isset($compose['default_license']) && $compose['default_license'] != 1) {
+				$license = $compose['default_license'];
+			}
+		}
+
+		abort_if(MediaBlocklistService::exists($hash) == true, 451);
+
+		$media = new Media();
+		$media->status_id = null;
+		$media->profile_id = $profile->id;
+		$media->user_id = $user->id;
+		$media->media_path = $path;
+		$media->original_sha256 = $hash;
+		$media->size = $photo->getSize();
+		$media->mime = $mime;
+		$media->caption = $request->input('description');
+		$media->filter_class = $filterClass;
+		$media->filter_name = $filterName;
+		if($license) {
+			$media->license = $license;
+		}
+		$media->save();
+
+		switch ($media->mime) {
+			case 'image/jpeg':
+			case 'image/png':
+				ImageOptimize::dispatch($media);
+				break;
+
+			case 'video/mp4':
+				VideoThumbnail::dispatch($media);
+				$preview_url = '/storage/no-preview.png';
+				$url = '/storage/no-preview.png';
+				break;
+		}
+
+		Cache::forget($limitKey);
+		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
+		$res = $this->fractal->createData($resource)->toArray();
+		$res['preview_url'] = $media->url(). '?v=' . time();
+		$res['url'] = null;
+		return $this->json($res, 202);
 	}
 
 	/**
