@@ -49,7 +49,7 @@ class ActivityPubDeliveryService
 
 		$body = $this->payload;
 		$payload = json_encode($body);
-		$headers = HttpSignature::sign($this->sender, $this->to, $body);
+		$headers = HttpSignature::sign($this->sender, $this->to, $body, ['Content-Type' => 'application/activity+json']);
 
 		$ch = curl_init($this->to);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
