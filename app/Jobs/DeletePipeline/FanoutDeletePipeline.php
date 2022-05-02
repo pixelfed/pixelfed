@@ -63,7 +63,12 @@ class FanoutDeletePipeline implements ShouldQueue
 
         $requests = function($audience) use ($client, $activity, $profile, $payload) {
             foreach($audience as $url) {
-                $headers = HttpSignature::sign($profile, $url, $activity);
+				$version = config('pixelfed.version');
+				$appUrl = config('app.url');
+				$headers = HttpSignature::sign($profile, $url, $activity, [
+					'Content-Type'	=> 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+					'User-Agent'	=> "(Pixelfed/{$version}; +{$appUrl})",
+				]);
                 yield function() use ($client, $url, $headers, $payload) {
                     return $client->postAsync($url, [
                         'curl' => [
