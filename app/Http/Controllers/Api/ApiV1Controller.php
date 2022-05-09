@@ -1061,7 +1061,7 @@ class ApiV1Controller extends Controller
 		abort_if(
 			Like::whereProfileId($user->profile_id)
 				->where('created_at', '>', now()->subDay())
-				->count() >= 100,
+				->count() >= Like::MAX_PER_DAY,
 			429
 		);
 

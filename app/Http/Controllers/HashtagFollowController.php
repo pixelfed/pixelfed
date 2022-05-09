@@ -9,6 +9,7 @@ use App\{
 	HashtagFollow,
 	Status
 };
+use App\Services\HashtagService;
 
 class HashtagFollowController extends Controller
 {
@@ -37,9 +38,11 @@ class HashtagFollowController extends Controller
 
         if($hashtagFollow->wasRecentlyCreated) {
             $state = 'created';
+            HashtagService::follow($profile->id, $hashtag->id);
             // todo: send to HashtagFollowService
         } else {
             $state = 'deleted';
+            HashtagService::unfollow($profile->id, $hashtag->id);
             $hashtagFollow->delete();
         }
 

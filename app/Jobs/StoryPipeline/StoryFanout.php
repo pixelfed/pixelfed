@@ -81,7 +81,6 @@ class StoryFanout implements ShouldQueue
 			foreach($audience as $url) {
 				$version = config('pixelfed.version');
 				$appUrl = config('app.url');
-				$proxy = config('');
 				$headers = HttpSignature::sign($profile, $url, $activity, [
 					'Content-Type'	=> 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
 					'User-Agent'	=> "(Pixelfed/{$version}; +{$appUrl})",

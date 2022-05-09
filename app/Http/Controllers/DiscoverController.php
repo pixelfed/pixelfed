@@ -16,7 +16,11 @@ use App\{
 };
 use Auth, DB, Cache;
 use Illuminate\Http\Request;
+use App\Services\BookmarkService;
 use App\Services\ConfigCacheService;
+use App\Services\HashtagService;
+use App\Services\LikeService;
+use App\Services\ReblogService;
 use App\Services\StatusHashtagService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
@@ -76,10 +80,8 @@ class DiscoverController extends Controller
 		$tag = $request->input('hashtag');
 
 		$hashtag = Hashtag::whereName($tag)->firstOrFail();
-		if($user && $page == 1) {
-			$res['follows'] = HashtagFollow::whereUserId($user->id)
-				->whereHashtagId($hashtag->id)
-				->exists();
+		if($user) {
+			$res['follows'] = HashtagService::isFollowing($user->profile_id, $hashtag->id);
 		}
 		$res['hashtag'] = [
 			'name' => $hashtag->name,
@@ -88,6 +90,12 @@ class DiscoverController extends Controller
 		if($user) {
 			$tags = StatusHashtagService::get($hashtag->id, $page, $end);
 			$res['tags'] = collect($tags)
+				->map(function($tag) use($user) {
+					$tag['status']['favourited'] = (bool) LikeService::liked($user->profile_id, $tag['status']['id']);
+					$tag['status']['reblogged'] = (bool) ReblogService::get($user->profile_id, $tag['status']['id']);
+					$tag['status']['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $tag['status']['id']);
+					return $tag;
+				})
 				->filter(function($tag) {
 					if(!StatusService::get($tag['status']['id'])) {
 						return false;
