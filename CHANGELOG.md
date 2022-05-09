@@ -127,7 +127,8 @@
 - Updated AdminReportController, add account delete button. ([563817a9](https://github.com/pixelfed/pixelfed/commit/563817a9))
 - Updated ApiV1Controller, added /api/v2/media endpoint, fixes #3405. ([f07cc14c](https://github.com/pixelfed/pixelfed/commit/f07cc14c))
 - Updated AP fanout, added Content-Type and User-Agent for activity delivery. ([@noellabo](https://github.com/noellabo)) ([209c125](https://github.com/pixelfed/pixelfed/commit/209c125))
-- Update DirectMessageController to support new Metro 2.0 UI DMs. ([a4659fd2](https://github.com/pixelfed/pixelfed/commit/a4659fd2))
+- Updated DirectMessageController to support new Metro 2.0 UI DMs. ([a4659fd2](https://github.com/pixelfed/pixelfed/commit/a4659fd2))
+- Updated Like model, bump max likes per day from 100 to 200. ([71ba5fed](https://github.com/pixelfed/pixelfed/commit/71ba5fed))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
