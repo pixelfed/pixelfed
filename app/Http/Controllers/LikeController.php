@@ -33,6 +33,12 @@ class LikeController extends Controller
 			$like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
 			UnlikePipeline::dispatch($like);
 		} else {
+			abort_if(
+				Like::whereProfileId($user->profile_id)
+					->where('created_at', '>', now()->subDay())
+					->count() >= Like::MAX_PER_DAY,
+				429
+			);
 			$count = $status->likes_count > 4 ? $status->likes_count : $status->likes()->count();
 			$like = Like::firstOrCreate([
 				'profile_id' => $user->profile_id,
