@@ -129,6 +129,8 @@
 - Updated AP fanout, added Content-Type and User-Agent for activity delivery. ([@noellabo](https://github.com/noellabo)) ([209c125](https://github.com/pixelfed/pixelfed/commit/209c125))
 - Updated DirectMessageController to support new Metro 2.0 UI DMs. ([a4659fd2](https://github.com/pixelfed/pixelfed/commit/a4659fd2))
 - Updated Like model, bump max likes per day from 100 to 200. ([71ba5fed](https://github.com/pixelfed/pixelfed/commit/71ba5fed))
+- Updated HashtagService, use sorted set for followed tags. ([153eb6ba](https://github.com/pixelfed/pixelfed/commit/153eb6ba))
+- Updated Discover component, fixed post side effects (fixes #3409). ([fe5a92b2](https://github.com/pixelfed/pixelfed/commit/fe5a92b2))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.2 (2022-01-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.1...v0.11.2)
