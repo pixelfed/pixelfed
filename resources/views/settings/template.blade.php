@@ -9,7 +9,7 @@
 @if ($errors->any())
     <div class="alert alert-danger px-3 h6 text-center">
             @foreach($errors->all() as $error)
-                <p class="font-weight-bold mb-1">{{ $error }}</li>
+                <p class="font-weight-bold mb-1">{{ $error }}</p>
             @endforeach
     </div>
 @endif
