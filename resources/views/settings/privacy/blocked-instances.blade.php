@@ -86,7 +86,6 @@
             swal.stopLoading();
             swal.close();
             swal('Invalid URL', msg, 'error');
-            return;
           });
         } catch(e) {
           swal.stopLoading();

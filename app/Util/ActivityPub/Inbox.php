@@ -667,6 +667,7 @@ class Inbox
 					if($story) {
 						StoryExpire::dispatch($story)->onQueue('story');
 					}
+                    break;
 
 				default:
 					return;
