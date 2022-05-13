@@ -425,18 +425,15 @@ export default {
 			switch(type) {
 				case 'hashtag':
 					return obj.url + '?src=search';
-				break;
 
 				case 'profile':
 					if(obj.entity.local == true) {
 						return obj.url;
 					}
 					return '/i/web/profile/_/' + obj.entity.id;
-				break;
 
 				default:
 					return obj.url + '?src=search';
-				break;
 
 			}
 		},

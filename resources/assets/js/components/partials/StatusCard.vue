@@ -300,19 +300,15 @@
 				switch(fmt) {
 					case '@':
 					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
-					break;
 
 					case 'from':
 					return usr + '<span class="text-lighter font-weight-bold"> <span class="font-weight-normal">from</span> ' + dom + '</span>';
-					break;
 
 					case 'custom':
 					return usr + '<span class="text-lighter font-weight-bold"> ' + txt + ' ' + dom + '</span>';
-					break;
 
 					default:
 					return usr + '<span class="text-lighter font-weight-bold">@' + dom + '</span>';
-					break;
 				}
 			},
 
