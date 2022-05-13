@@ -13,8 +13,8 @@ class FilterTransformer extends Fractal\TransformerAbstract
 			'phrase' => (string) '',
 			'context' => [],
 			'expires_at' => null,
-			'irreversible' => (bool) false,
-			'whole_word' => (bool) false
+			'irreversible' => (bool)false,
+			'whole_word' => (bool)false
 		];
 	}
 }
