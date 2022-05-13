@@ -41,9 +41,9 @@ pixlfed.loadIFrame = function(el) {
 }
 
 pixlfed.run = function() {
-	var lazyFrames = [].slice.call(document.querySelectorAll("div.pixelfed-embed"));
+    const lazyFrames = [].slice.call(document.querySelectorAll("div.pixelfed-embed"));
 
-	if ("IntersectionObserver" in window) {
+    if ("IntersectionObserver" in window) {
 	let lazyFrameObserver = new IntersectionObserver(function(entries, observer) {
 	  entries.forEach(function(entry) {
 	    if (entry.isIntersecting) {

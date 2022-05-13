@@ -881,8 +881,8 @@ export default {
 				if(!this.ownerOrAdmin()) {
 					return;
 				}
-				var result = confirm('Are you sure you want to delete this post?');
-				if (result) {
+                const result = confirm('Are you sure you want to delete this post?');
+                if (result) {
 						if($('body').hasClass('loggedIn') == false) {
 						return;
 						}

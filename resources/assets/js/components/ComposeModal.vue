@@ -1610,8 +1610,8 @@ export default {
 
 		applyFilterToMedia() {
 			// this is where the magic happens
-			var ua = navigator.userAgent.toLowerCase();
-			if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
+            const ua = navigator.userAgent.toLowerCase();
+            if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
 			 	swal('Oops!', 'Your browser does not support the filter feature.', 'error');
 			 	return;
 			}
@@ -1624,7 +1624,7 @@ export default {
 			let blob = null;
 			let data = null;
 
-			for (var i = medias.length - 1; i >= 0; i--) {
+			for (let i = medias.length - 1; i >= 0; i--) {
 				media = medias[i];
 				if(media.filter_class) {
 					image.src = media.url;

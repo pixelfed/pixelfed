@@ -157,10 +157,10 @@ $(document).ready(function() {
 		$('#maxAvatarSize').text(filesize({{config('pixelfed.max_avatar_size') * 1024}}, {round: 0}));
 
 		$('#avatarInput').on('change', function(e) {
-				var file = document.getElementById('avatarInput').files[0];
-				var reader = new FileReader();
+            const file = document.getElementById('avatarInput').files[0];
+            const reader = new FileReader();
 
-				reader.addEventListener("load", function() {
+            reader.addEventListener("load", function() {
 						$('#previewAvatar').html('<img src="' + reader.result + '" class="rounded-circle box-shadow mb-3" width="100%" height="100%"/>');
 				}, false);
 

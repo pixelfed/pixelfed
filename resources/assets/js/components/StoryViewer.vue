@@ -56,9 +56,9 @@
 
 			preloadImages() {
 				let self = this;
-				for (var i = 0; i < this.stories[0].items.length; i++) {
-					var preload = new Image();
-					$(preload).on('load', function() {
+				for (const i = 0; i < this.stories[0].items.length; i++) {
+                    const preload = new Image();
+                    $(preload).on('load', function() {
 
 						self.preloadIndex = i;
 						if(i == self.stories[0].items.length) {

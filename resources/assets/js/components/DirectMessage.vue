@@ -487,8 +487,8 @@
 					this.max_id = Math.max(...mids)
 					this.min_id = Math.min(...mids)
 					setTimeout(function() {
-						var objDiv = document.querySelector('.dm-wrapper');
-						objDiv.scrollTop = objDiv.scrollHeight;
+                        const objDiv = document.querySelector('.dm-wrapper');
+                        objDiv.scrollTop = objDiv.scrollHeight;
 					}, 300);
 				}).catch(err => {
 					if(err.response.status == 403) {
@@ -593,8 +593,8 @@
 						};
 						self.threads[self.threadIndex].messages.push(msg);
 						setTimeout(function() {
-							var objDiv = document.querySelector('.dm-wrapper');
-							objDiv.scrollTop = objDiv.scrollHeight;
+                            const objDiv = document.querySelector('.dm-wrapper');
+                            objDiv.scrollTop = objDiv.scrollHeight;
 						}, 300);
 
 					}).catch(function(e) {

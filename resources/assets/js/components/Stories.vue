@@ -47,8 +47,8 @@
 				.then(res => {
 					this.stories = res.data;
 					$('.stories-card .loader').hide();
-					var stories = pixelfed.stories.create('stories');
-					stories.update(this.stories);
+                    const stories = pixelfed.stories.create('stories');
+                    stories.update(this.stories);
 				});
 			}
 		}

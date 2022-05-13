@@ -254,8 +254,8 @@
 
 	$(document).on('click', '.row-check-item', function(e) {
 		return;
-		var el = $(this)[0];
-		let len = $('.row-check-item:checked').length;
+        const el = $(this)[0];
+        let len = $('.row-check-item:checked').length;
 		if($('#row-check-all:checked').length > 0) {
 			len--;
 		}

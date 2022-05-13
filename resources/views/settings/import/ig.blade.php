@@ -56,12 +56,12 @@
 @push('scripts')
 <script type="text/javascript">
   $(document).ready(function() {
-    var currentStep = 1;
-    var stepOne = $('.step-one');
-    var stepTwo = $('.step-two');
-    var stepThree = $('.step-three');
+      const currentStep = 1;
+      const stepOne = $('.step-one');
+      const stepTwo = $('.step-two');
+      const stepThree = $('.step-three');
 
-    if(currentStep == 1) {
+      if(currentStep == 1) {
 
       stepTwo.addClass('card-disabled').find('form').hide();
       stepThree.addClass('card-disabled').find('form').hide();
