@@ -490,7 +490,7 @@ class Autolink extends Regex
         }
         if (is_array($json)) {
             foreach ($json as $key => $vals) {
-                $entities = array_merge($entities, $json[$key]);
+                $entities = array_merge($entities, $vals);
             }
         }
 
