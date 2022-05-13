@@ -32,8 +32,8 @@ class SearchApiV2Service
 		$this->query = $query;
 		$q = urldecode($query->input('q'));
 
-		if($query->has('resolve') && 
-			$query->resolve == true && 
+		if($query->has('resolve') &&
+			$query->resolve == true &&
 			( Str::startsWith($q, 'https://') ||
 			  Str::substrCount($q, '@') == 2)
 		) {
@@ -48,22 +48,19 @@ class SearchApiV2Service
 						'hashtags' => [],
 						'statuses' => []
 					];
-					break;
-				case 'hashtags':
+                case 'hashtags':
 					return [
 						'accounts' => [],
 						'hashtags' => $this->hashtags(),
 						'statuses' => []
 					];
-					break;
-				case 'statuses':
+                case 'statuses':
 					return [
 						'accounts' => [],
 						'hashtags' => [],
 						'statuses' => $this->statuses()
 					];
-					break;
-			}
+            }
 		}
 
 		if($query->has('account_id')) {
@@ -233,9 +230,8 @@ class SearchApiV2Service
 							}
 							$default['statuses'][] = $note;
 							return $default;
-						break;
 
-						case 'Person':
+                        case 'Person':
 							$obj = Helpers::profileFetch($query);
 							if(!$obj) {
 								return $default;
@@ -247,16 +243,14 @@ class SearchApiV2Service
 								AccountService::getMastodon($obj['id']) :
 								AccountService::get($obj['id']);
 							return $default;
-						break;
 
-						default:
+                        default:
 							return [
 								'accounts' => [],
 								'hashtags' => [],
 								'statuses' => [],
 							];
-						break;
-					}
+                    }
 				}
 			} catch (\Exception $e) {
 				return [

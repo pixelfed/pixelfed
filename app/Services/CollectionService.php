@@ -124,7 +124,7 @@ class CollectionService
 	public static function getThumb($id)
 	{
 		$item = self::getItems($id, 0, 1);
-		if(!$item || empty($item)) {
+		if(empty($item)) {
 			return '/storage/no-preview.png';
 		}
 		$status = StatusService::get($item[0]);
@@ -132,7 +132,7 @@ class CollectionService
 			return '/storage/no-preview.png';
 		}
 
-		if(!isset($status['media_attachments']) || empty($status['media_attachments'])) {
+		if(empty($status['media_attachments'])) {
 			return '/storage/no-preview.png';
 		}
 

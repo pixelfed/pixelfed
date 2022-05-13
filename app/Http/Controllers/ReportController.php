@@ -100,8 +100,8 @@ class ReportController extends Controller
         $object = null;
         $types = [
             // original 3
-            'spam', 
-            'sensitive', 
+            'spam',
+            'sensitive',
             'abusive',
 
             // new
@@ -136,8 +136,7 @@ class ReportController extends Controller
             } else {
                 return redirect('/timeline')->with('error', 'Invalid report type');
             }
-          break;
-      }
+        }
 
         if ($exists !== 0) {
             if($request->wantsJson()) {
