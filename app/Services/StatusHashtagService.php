@@ -44,7 +44,7 @@ class StatusHashtagService {
 
 	public static function coldGet($id, $start = 0, $stop = 2000)
 	{
-		$stop = $stop > 2000 ? 2000 : $stop;
+		$stop = min($stop, 2000);
 		$ids = StatusHashtag::whereHashtagId($id)
 			->whereStatusVisibility('public')
 			->whereHas('media')

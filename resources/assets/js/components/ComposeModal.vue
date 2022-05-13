@@ -1503,7 +1503,7 @@ export default {
 		},
 
 		locationSearch(input) {
-			if (input.length < 1) { return []; };
+			if (input.length < 1) { return []; }
 			let results = [];
 			return axios.get('/api/compose/v0/search/location', {
 				params: {
@@ -1650,7 +1650,7 @@ export default {
 		},
 
 		tagSearch(input) {
-			if (input.length < 1) { return []; };
+			if (input.length < 1) { return []; }
 			let self = this;
 			let results = [];
 			return axios.get('/api/compose/v0/search/tag', {

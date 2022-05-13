@@ -305,7 +305,7 @@ export default {
 		},
 
 		composeSearch(input) {
-			if (input.length < 1) { return []; };
+			if (input.length < 1) { return []; }
 			let self = this;
 			let results = [];
 			return axios.post('/api/direct/lookup', {
