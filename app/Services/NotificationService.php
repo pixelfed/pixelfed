@@ -30,7 +30,7 @@ class NotificationService {
 	{
 		$res = collect([]);
 		$key = self::CACHE_KEY . $id;
-		$stop = $stop > 400 ? 400 : $stop;
+		$stop = min($stop, 400);
 		$ids = Redis::zrangebyscore($key, $start, $stop);
 		if(empty($ids)) {
 			$ids = self::coldGet($id, $start, $stop);
@@ -46,7 +46,7 @@ class NotificationService {
 
 	public static function coldGet($id, $start = 0, $stop = 400)
 	{
-		$stop = $stop > 400 ? 400 : $stop;
+		$stop = min($stop, 400);
 		$ids = Notification::whereProfileId($id)
 			->latest()
 			->skip($start)
@@ -225,7 +225,7 @@ class NotificationService {
 			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
-	} 
+	}
 
 	public static function warmCache($id, $stop = 400, $force = false)
 	{

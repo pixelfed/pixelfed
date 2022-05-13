@@ -269,7 +269,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id || ($profile->user && $profile->user->is_admin == true)) {
+			if ($profile->id == $user->id || ($profile->user && $profile->user->is_admin)) {
 				return abort(403);
 			}
 			$class = get_class($profile);
@@ -442,7 +442,7 @@ class AccountController extends Controller
 		}
 		if(password_verify($password, $user->password) === true) {
 			$request->session()->put('sudoMode', time());
-			if($trustDevice == true) {
+			if($trustDevice) {
 				$request->session()->put('sudoTrustDevice', 1);
 			}
 			return redirect($next);
