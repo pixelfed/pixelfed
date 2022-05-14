@@ -35,7 +35,6 @@ class SpaController extends Controller
 			isset($post['local']) &&
 			$post['local'] === true
 		) {
-			sleep(5);
 			return redirect($post['url']);
 		}
 
@@ -54,8 +53,6 @@ class SpaController extends Controller
 		}
 
 		$account = AccountService::get($id);
-
-		sleep(5);
 
 		if($account && isset($account['url']) && $account['local']) {
 			return redirect($account['url']);
