@@ -98,7 +98,7 @@
 							<div>
 								<p class="mb-0 small text-lighter font-weight-bold d-flex justify-content-between">
 									<span>{{ status.poll.votes_count }} votes</span>
-									<a v-if="tab != 'results' && authenticated && !activeRefreshTimeout & status.poll.expired != true && status.poll.voted" class="text-lighter" @click.prevent="refreshResults()" href="#">Refresh Results</a>
+									<a v-if="tab != 'results' && authenticated && !activeRefreshTimeout && status.poll.expired != true && status.poll.voted" class="text-lighter" @click.prevent="refreshResults()" href="#">Refresh Results</a>
 									<span v-if="tab != 'results' && authenticated && refreshingResults" class="text-lighter">
 										<div class="spinner-border spinner-border-sm" role="status">
 											<span class="sr-only">Loading...</span>
