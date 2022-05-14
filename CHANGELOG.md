@@ -8,6 +8,7 @@
 - Add storage flags to admin dashboard diagnostics ([#3444](https://github.com/pixelfed/pixelfed/pull/3444))
 - Hardcode UTC application timezone to prevent timezone issues ([b0d2c5e1](https://github.com/pixelfed/pixelfed/commit/b0d2c5e1))
 - Remove arbitrary metro url redirect timeout ([84209c24](https://github.com/pixelfed/pixelfed/commit/84209c24))
+- Add trusted proxies flag to admin dashboard diagnostics ([#3450](https://github.com/pixelfed/pixelfed/pull/3450))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
 
