@@ -54,17 +54,32 @@ class Note extends Fractal\TransformerAbstract
 
 		return [
 			'@context' => [
-				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
+				'https://www.w3.org/ns/activitystreams',
 				[
-					'sc'				=> 'http://schema.org#',
 					'Hashtag' 			=> 'as:Hashtag',
 					'sensitive' 		=> 'as:sensitive',
-					'commentsEnabled' 	=> 'sc:Boolean',
-					'@capabilities'		=> [
-						'@announce'			=> '@id',
-						'@like'				=> '@id',
-						'@reply'			=> '@id',
+					'schema' 		=> 'http://schema.org/',
+					'pixelfed' 		=> 'http://pixelfed.org/ns#'
+					'commentsEnabled' 	=> [
+						'@id' 		=> 'pixelfed:commentsEnabled',
+						'@type' 		=> 'schema:Boolean'
+					],
+					'capabilities'		=> [
+						'@id' 		=> 'pixelfed:capabilities',
+						'@container' => '@set'
+					],
+					'announce'		=> [
+						'@id' 		=> 'pixelfed:canAnnounce',
+						'@type' => '@id'
+					],
+					'like'		=> [
+						'@id' 		=> 'pixelfed:canLike',
+						'@type' => '@id'
+					],
+					'reply'		=> [
+						'@id' 		=> 'pixelfed:canReply',
+						'@type' => '@id'
 					],
 					'toot' 				=> 'http://joinmastodon.org/ns#',
 					'Emoji'				=> 'toot:Emoji'
