@@ -60,10 +60,10 @@ class CreateNote extends Fractal\TransformerAbstract
 					'Hashtag' 			=> 'as:Hashtag',
 					'sensitive' 		=> 'as:sensitive',
 					'commentsEnabled' 	=> 'sc:Boolean',
-					'capabilities'		=> [
-						'announce'		=> ['@type' => '@id'],
-						'like'			=> ['@type' => '@id'],
-						'reply'			=> ['@type' => '@id']
+					'@capabilities'		=> [
+						'@announce'			=> '@id',
+						'@like'				=> '@id',
+						'@reply'			=> '@id',
 					],
 					'toot' 				=> 'http://joinmastodon.org/ns#',
 					'Emoji'				=> 'toot:Emoji'
