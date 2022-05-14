@@ -94,17 +94,10 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
 	Route::get('/', 'SiteController@home')->name('timeline.personal');
-	Route::post('/', 'StatusController@store');
 
 	Auth::routes();
 
-	Route::get('/home', 'HomeController@index')->name('home');
-
-	Route::get('discover/c/{slug}', 'DiscoverController@showCategory');
-	Route::redirect('discover/personal', '/discover');
 	Route::get('discover', 'DiscoverController@home')->name('discover');
-	Route::get('discover/loops', 'DiscoverController@showLoops');
-	Route::get('discover/profiles', 'DiscoverController@profilesDirectory')->name('discover.profiles');
 
 	Route::group(['prefix' => 'api'], function () {
 		Route::get('search', 'SearchController@searchAPI');

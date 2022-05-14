@@ -176,6 +176,14 @@
 			<strong><span class="badge badge-primary">OAUTH</span> private key exists: </strong>
 			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅' : '❌' }}</span>
 		</li>
+		<li>
+			<strong><span class="badge badge-primary">Storage</span> Cloud Storage: </strong>
+			<span>{{ config_cache('pixelfed.cloud_storage') ? '✅' : '❌' }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">Storage</span> Filesystems default (local/s3/spaces): </strong>
+			<span>{{ config_cache('filesystems.default')}}</span>
+		</li>
 	</ul>
 </div>
 <div class="pb-3 border-bottom">

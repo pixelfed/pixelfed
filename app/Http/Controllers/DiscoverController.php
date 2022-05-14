@@ -45,26 +45,6 @@ class DiscoverController extends Controller
 			return view('discover.tags.show', compact('tag', 'tagCount'));
 	}
 
-	public function showCategory(Request $request, $slug)
-	{
-		abort(404);
-	}
-
-	public function showLoops(Request $request)
-	{
-			abort(404);
-	}
-
-	public function loopsApi(Request $request)
-	{
-			abort(404);
-	}
-
-	public function loopWatch(Request $request)
-	{
-			return response()->json(200);
-	}
-
 	public function getHashtags(Request $request)
 	{
 		$user = $request->user();

@@ -470,7 +470,7 @@ class Helpers {
 			$status->object_url = $id;
 			$status->caption = strip_tags($activity['content']);
 			$status->rendered = Purify::clean($activity['content']);
-			$status->created_at = Carbon::parse($ts);
+			$status->created_at = Carbon::parse($ts)->tz('UTC');
 			$status->in_reply_to_id = $reply_to;
 			$status->local = false;
 			$status->is_nsfw = $cw;
@@ -580,7 +580,7 @@ class Helpers {
 		$status->object_url = $id;
 		$status->caption = strip_tags($res['content']);
 		$status->rendered = Purify::clean($res['content']);
-		$status->created_at = Carbon::parse($ts);
+		$status->created_at = Carbon::parse($ts)->tz('UTC');
 		$status->in_reply_to_id = null;
 		$status->local = false;
 		$status->is_nsfw = $cw;
