@@ -283,32 +283,6 @@
 				}, interval);
 			},
 
-			refreshNotifications() {
-				let self = this;
-				axios.get('/api/pixelfed/v1/notifications')
-				.then(res => {
-					let data = res.data.filter(n => {
-						if(n.type == 'share' || self.notificationMaxId >= n.id) {
-							return false;
-						}
-						return true;
-					});
-					if(data.length > 0) {
-						let ids = data.map(n => n.id);
-						let max = Math.max(ids);
-						if(max <= self.notificationMaxId) {
-							return;
-						} else {
-							self.notificationMaxId = max;
-							self.notifications = data;
-							let beep = new Audio('/static/beep.mp3');
-							beep.volume = 0.7;
-							beep.play();
-						}
-					}
-				});
-			},
-
 			fetchFollowRequests() {
 				if(window._sharedData.curUser.locked == true) {
 					axios.get('/account/follow-requests.json')

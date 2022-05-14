@@ -77,7 +77,6 @@ class InstallController extends Controller
     {
     	abort_if(file_exists(base_path('.env')), 404, 'The .env configuration file already exists.');
     	return $this->checkPermissions($request);
-    	return response()->json($request->all(), 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
     protected function checkPermissions($request)
