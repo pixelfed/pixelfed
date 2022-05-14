@@ -880,7 +880,7 @@ var UsersChart = (function() {
 
     $chart.data('chart', usersChart);
 
-  };
+  }
 
 
   // Events
