@@ -44,7 +44,7 @@ class StoryService
 		return Cache::forget(self::STORY_KEY . 'by-id:id-' . $id);
 	}
 
-	public static function getStories($id, $pid)
+	public static function getStories($id, $pid = null)
 	{
 		return Story::whereProfileId($id)
 			->latest()
