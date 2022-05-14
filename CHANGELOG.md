@@ -2,6 +2,11 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.3...dev)
 
+### Updates
+- Improve S3 support by removing `ListObjects` call in media deletion ([#3438](https://github.com/pixelfed/pixelfed/pull/3438))
+- Enforce UTC in incoming activities ([18931a1f](https://github.com/pixelfed/pixelfed/commit/18931a1f))
+- Add storage flags to admin dashboard diagnostics ([#3444](https://github.com/pixelfed/pixelfed/pull/3444))
+
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
 
 ### Added
