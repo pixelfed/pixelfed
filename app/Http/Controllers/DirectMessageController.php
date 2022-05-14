@@ -796,6 +796,7 @@ class DirectMessageController extends Controller
 
 		$body = [
 			'@context' => [
+				'https://w3id.org/security/v1',
 				'https://www.w3.org/ns/activitystreams',
 			],
 			'id'                    => $dm->status->permalink(),
