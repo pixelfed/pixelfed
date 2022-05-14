@@ -10,10 +10,7 @@ class DeleteNote extends Fractal\TransformerAbstract
 	public function transform(Status $status)
 	{
 		return [
-			'@context' => [
-				'https://www.w3.org/ns/activitystreams',
-				'https://w3id.org/security/v1',
-			],
+			'@context' => 'https://www.w3.org/ns/activitystreams',
 			'id' 					=> $status->permalink('#delete'),
 			'type' 					=> 'Delete',
 			'actor' 				=> $status->profile->permalink(),
