@@ -219,7 +219,7 @@
 	<tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_KEY</strong></td>
-        <td><span>****************************************************************/span></td>
+        <td><span>****************************************************************</span></td>
         <td><strong><strong>Keep this secret.</strong><br>Notes:</strong> Generate this key with 'php artisan key:generate'</td>
         <td>✅</td>
 	</tr>
