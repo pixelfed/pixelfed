@@ -273,7 +273,7 @@ return [
 	| using S3 urls (if enabled). Default: off
 	|
 	*/
-	'media_fast_process' => env('PF_MEDIA_FAST_PROCESS', true),
+	'media_fast_process' => env('PF_MEDIA_FAST_PROCESS', false),
 
 	'max_altext_length' => env('PF_MEDIA_MAX_ALTTEXT_LENGTH', 1000),
 ];
