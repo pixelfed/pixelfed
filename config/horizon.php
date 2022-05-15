@@ -52,7 +52,7 @@ return [
 	|
 	*/
 
-	'prefix' => env('HORIZON_PREFIX'.-:, 'horizon-:'),
+	'prefix' => env('HORIZON_PREFIX', 'horizon-:'),
 
 	/*
 	|--------------------------------------------------------------------------
