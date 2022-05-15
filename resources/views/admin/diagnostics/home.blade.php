@@ -11,7 +11,49 @@
         Information
         <span class="small text-primary ml-3 copy-information cursor-pointer text-uppercase font-weight-bold">Copy</span>
     </p>
-    <ul class="information">
+	<ul class="information">
+		<p class="font-weight-bold text-muted">
+			Troubleshooting
+        </p>
+
+		<li>
+            <strong>Bootstrap:</strong>
+            <span>{{is_writable(base_path('bootstrap/')) ? 'Writable ✅' : 'Not writable ❌'}}</span>
+        </li>
+        <li>
+            <strong>Storage:</strong>
+            <span>{{is_writable(base_path('storage/')) ? 'Writable ✅' : 'Not writable ❌'}}</span>
+        </li>
+
+		@foreach([
+            'bcmath',
+            'gd',
+            'imagick',
+            'ctype',
+            'curl',
+            'intl',
+            'json',
+            'mbstring',
+            'openssl',
+            'redis'
+        ] as $ext)
+            @if(!extension_loaded($ext))
+                <li>
+                    <strong>PHP Module {{$ext}}:</strong>
+                    <span>Not installed/Not loaded ❌</span>
+                </li>
+            @endif
+        @endforeach
+
+        <li>
+            <strong><span class="badge badge-primary">REDIS</span> Ping:</strong>
+            <span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? 'Pong ✅' : 'Not Responding ❌' }}</span>
+        </li>
+		<hr>
+		<p class="font-weight-bold text-muted">
+			Important Information
+        </p>
+	
         <li>
             <strong>APP_DOMAIN:</strong>
             <span>{{config_cache('pixelfed.domain.app')}}</span>
@@ -27,114 +69,13 @@
                 <span>{{config('pixelfed.version')}}</span>
             </li>
         @endif
-        <li>
-            <strong>PHP:</strong>
-            <span>{{phpversion()}}</span>
-        </li>
-        @foreach([
-            'bcmath',
-            'gd',
-            'imagick',
-            'ctype',
-            'curl',
-            'intl',
-            'json',
-            'mbstring',
-            'openssl',
-            'redis'
-        ] as $ext)
-            @if(!extension_loaded($ext))
-                <li>
-                    <strong>PHP-{{$ext}}:</strong>
-                    <span>Not installed/loaded</span>
-                </li>
-            @endif
-        @endforeach
+
         <li>
             <strong>Database:</strong>
             @php($v = explode(' ', DB::select('select version() as version')[0]->version))
             <span>{{config('database.default')}} ({{count($v) == 1 ? $v[0] : $v[1]}})</span>
         </li>
-        <li>
-            <strong>Bootstrap:</strong>
-            <span>{{is_writable(base_path('bootstrap/')) ? 'Writable' : 'Not writable'}}</span>
-        </li>
-        <li>
-            <strong>Storage:</strong>
-            <span>{{is_writable(base_path('storage/')) ? 'Writable' : 'Not writable'}}</span>
-        </li>
-        <li>
-            <strong>Image Driver:</strong>
-            <span>{{ config('image.driver') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">REDIS</span> Ping:</strong>
-            <span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? '✅' : '❌' }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">PHP</span> memory_limit:</strong>
-            <span>{{ ini_get('memory_limit') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">PHP</span> post_max_size:</strong>
-            <span>{{ ini_get('post_max_size') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">PHP</span> upload_max_filesize:</strong>
-            <span>{{ ini_get('upload_max_filesize') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Cache Driver:</strong>
-            <span>{{ config_cache('cache.default') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Mail Driver:</strong>
-            <span>{{ config_cache('mail.driver') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Mail Host:</strong>
-            <span>{{ config_cache('mail.host') ? substr(config_cache('mail.host'), 0, 5) . str_repeat('*', strlen(config_cache('mail.host')) - 5) : 'undefined' }}</span>
-        </li>
-        @if(config_cache('mail.driver') == 'mailgun')
-            <li>
-                <strong><span class="badge badge-primary">APP</span> Mailgun Domain:</strong>
-                <span>{{ config_cache('services.mailgun.domain') ?? 'undefined' }}</span>
-            </li>
-            <li>
-                <strong><span class="badge badge-primary">APP</span> Mailgun Secret:</strong>
-                <span>{{ config_cache('services.mailgun.secret') ? str_repeat('*', strlen(config_cache('services.mailgun.secret'))) : 'undefined' }}</span>
-            </li>
-        @endif
-        @if(config_cache('mail.driver') == 'ses')
-            <li>
-                <strong><span class="badge badge-primary">APP</span> SES Key:</strong>
-                <span>{{ config_cache('services.ses.key') ? str_repeat('*', strlen(config_cache('services.ses.key'))) : 'undefined' }}</span>
-            </li>
-            <li>
-                <strong><span class="badge badge-primary">APP</span> SES Secret:</strong>
-                <span>{{ config_cache('services.ses.secret') ? str_repeat('*', strlen(config_cache('services.ses.secret'))) : 'undefined' }}</span>
-            </li>
-            <li>
-                <strong><span class="badge badge-primary">APP</span> SES Region:</strong>
-                <span>{{ config_cache('services.ses.region') ?? 'undefined' }}</span>
-            </li>
-        @endif
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Queue Driver:</strong>
-            <span>{{ config_cache('queue.default') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Session Driver:</strong>
-            <span>{{ config_cache('session.driver') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Session Lifetime:</strong>
-            <span>{{ config_cache('session.lifetime') }}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">APP</span> Session Domain:</strong>
-            <span>{{ config_cache('session.domain') }}</span>
-        </li>
+
         <li>
             <div class="tt">
                 <strong><span class="badge badge-primary">CONFIG</span> pixelfed: </strong>
@@ -171,18 +112,34 @@
             <strong><span class="badge badge-primary">OAUTH</span> private key exists: </strong>
             <span>{{ file_exists(storage_path('oauth-private.key')) ? '✅' : '❌' }}</span>
         </li>
+
+
+		<hr>
+		<p class="font-weight-bold text-muted">
+			PHP Information
+        </p>
+		<li>
+            <strong>PHP:</strong>
+            <span>{{phpversion()}}</span>
+        </li>
+
         <li>
-            <strong><span class="badge badge-primary">Storage</span> Cloud Storage: </strong>
-            <span>{{ config_cache('pixelfed.cloud_storage') ? '✅' : '❌' }}</span>
+            <strong><span class="badge badge-primary">PHP</span> memory_limit:</strong>
+            <span>{{ ini_get('memory_limit') }}</span>
         </li>
         <li>
-            <strong><span class="badge badge-primary">Storage</span> Filesystems default (local/s3/spaces): </strong>
-            <span>{{ config_cache('filesystems.default')}}</span>
+            <strong><span class="badge badge-primary">PHP</span> post_max_size:</strong>
+            <span>{{ ini_get('post_max_size') }}</span>
         </li>
+        <li>
+            <strong><span class="badge badge-primary">PHP</span> upload_max_filesize:</strong>
+            <span>{{ ini_get('upload_max_filesize') }}</span>
+        </li>
+
 
 	<hr>
 	<p class="font-weight-bold text-muted">
-		Pixelfed Variables
+		Pixelfed Variables (No Secrets)
 	</p>
 
         <li>
@@ -213,18 +170,23 @@
             <strong><span class="badge badge-primary">APP</span> APP_FALLBACK_LOCALE:</strong>
             <span>{{config('app.fallback_locale')}}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">BROADCASTING</span> BROADCAST_DRIVER:</strong>
             <span>{{config('broadcasting.default')}}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">CACHE</span> CACHE_DRIVER:</strong>
             <span>{{config('cache.default')}}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">CAPTCHA</span> CAPTCHA_ENABLED:</strong>
             <span>{{ config_cache('captcha.enabled') ? '✅' : '❌' }}</span>
-        </li>        <li>
+        </li>
+
+		<li>
             <strong><span class="badge badge-primary">DATABASE</span> DB_CONNECTION:</strong>
             <span>{{config('database.default')}}</span>
         </li>
@@ -232,7 +194,8 @@
             <strong><span class="badge badge-primary">DATABASE</span> REDIS_CLIENT:</strong>
             <span>{{config('database.redis.client')}}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">EXP</span> EXP_LC:</strong>
             <span>{{config('exp.lc') ? '✅' : '❌' }}</span>
         </li>
@@ -256,7 +219,8 @@
             <strong><span class="badge badge-primary">EXP</span> EXP_EMC:</strong>
             <span>{{config('exp.emc') ? '✅' : '❌' }}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">FEDERATION</span> ACTIVITY_PUB:</strong>
             <span>{{config('federation.activitypub.enabled') ? '✅' : '❌' }}</span>
         </li>
@@ -376,11 +340,13 @@
             <strong><span class="badge badge-primary">IMAGE</span> IMAGE_DRIVER (gd/imagick):</strong>
             <span>{{config('image.driver')}}</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">IMAGE OPTIMIZER</span> IMAGE_QUALITY: </strong>
             <span>na</span>
         </li>
-        <li>
+
+		<li>
             <strong><span class="badge badge-primary">INSTANCE</span> INSTANCE_DESCRIPTION:</strong>
             <span>{{config('instance.description')}}</span>
         </li>
@@ -493,19 +459,6 @@
         <li>
             <strong><span class="badge badge-primary">LDAP</span> LDAP_CACHE:</strong>
             <span>{{config('ldap.cache.enabled') ? '✅' : '❌' }}</span>
-        </li>
-
-        <li>
-            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
-            <span>{{config('ldap.default')}}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
-            <span>{{config('ldap.default')}}</span>
-        </li>
-        <li>
-            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
-            <span>{{config('ldap.default')}}</span>
         </li>
 
         <li>
