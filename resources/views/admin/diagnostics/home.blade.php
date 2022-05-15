@@ -164,7 +164,7 @@
         <th width="20%">Variable Name</th>
         <th width="40%">Details</th>
 		<th width="35%">Notes (Recommendations for Production)</th>
-		<th width="5%">Stable?</th>
+		<th width="5%"></th>
 	</tr>
 
       <tr>
@@ -199,28 +199,28 @@
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_TIMEZONE</strong></td>
         <td><span></span></td>
-        <td>Currently not used. <br></td>
+        <td>Currently not used. <br><strong>Notes:</strong> </td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_LOCALE</strong></td>
         <td><span>{{config('app.locale')}}</span></td>
-        <td><strong>Default:</strong> "en"<br></td>
+        <td><strong>Default:</strong> "en"<br><strong>Notes:</strong> </td>
         <td>✅</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_FALLBACK_LOCALE</strong></td>
         <td><span>{{config('app.fallback_locale')}}</span></td>
-        <td><strong>Default:</strong> "en"<br></td>
+        <td><strong>Default:</strong> "en"<br><strong>Notes:</strong> </td>
         <td>✅</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_KEY</strong></td>
         <td><span>{{config('app.fallback_locale')}}</span></td>
-        <td><strong>Notes:</strong> Generate this key with 'php artisan key:generate' <br></td>
+        <td><strong>Notes:</strong> Generate this key with 'php artisan key:generate' <br><strong>Notes:</strong> </td>
         <td>✅</td>
 	</tr>
 
