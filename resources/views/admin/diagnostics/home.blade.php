@@ -82,24 +82,6 @@
 			Important Information
 		</p>
 
-		<li>
-			<strong>APP_URL:</strong>
-			<span>{{config_cache('app.url')}}</span>
-		</li>
-		<li>
-			<strong>APP_DOMAIN:</strong>
-			<span>{{config_cache('pixelfed.domain.app')}}</span>
-		</li>
-		<li>
-			<strong>ADMIN_DOMAIN:</strong>
-			<span>{{config_cache('pixelfed.domain.admin')}}</span>
-		</li>
-		<li>
-			<strong>SESSION_DOMAIN:</strong>
-			<span>{{config_cache('session.domain')}}</span>
-		</li>
-
-
 
 		@if(function_exists('shell_exec'))
 			<li>
@@ -117,6 +99,22 @@
 			<strong>Database:</strong>
 			@php($v = explode(' ', DB::select('select version() as version')[0]->version))
 			<span>{{config('database.default')}} ({{count($v) == 1 ? $v[0] : $v[1]}})</span>
+		</li>
+		<li>
+			<strong>APP_URL:</strong>
+			<span>{{config_cache('app.url')}}</span>
+		</li>
+		<li>
+			<strong>APP_DOMAIN:</strong>
+			<span>{{config_cache('pixelfed.domain.app')}}</span>
+		</li>
+		<li>
+			<strong>ADMIN_DOMAIN:</strong>
+			<span>{{config_cache('pixelfed.domain.admin')}}</span>
+		</li>
+		<li>
+			<strong>SESSION_DOMAIN:</strong>
+			<span>{{config_cache('session.domain')}}</span>
 		</li>
 
 		<!-- <li>
