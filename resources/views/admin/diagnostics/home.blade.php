@@ -139,20 +139,30 @@
 			<strong>PHP:</strong>
 			<span>{{phpversion()}}</span>
 		</li>
-
 		<li>
-			<strong><span class="badge badge-primary">PHP</span> memory_limit:</strong>
+			<strong><span class="badge badge-primary">PHP INI</span> memory_limit:</strong>
 			<span>{{ ini_get('memory_limit') }}</span>
 		</li>
 		<li>
-			<strong><span class="badge badge-primary">PHP</span> post_max_size:</strong>
+			<strong><span class="badge badge-primary">PHP INI</span> post_max_size:</strong>
 			<span>{{ ini_get('post_max_size') }}</span>
 		</li>
 		<li>
-			<strong><span class="badge badge-primary">PHP</span> upload_max_filesize:</strong>
+			<strong><span class="badge badge-primary">PHP INI</span> upload_max_filesize:</strong>
 			<span>{{ ini_get('upload_max_filesize') }}</span>
 		</li>
-
+		<li>
+			<strong><span class="badge badge-primary">PHP INI</span> max_file_uploads:</strong>
+			<span>{{ ini_get('max_file_uploads') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI</span> max_execution_time:</strong>
+			<span>{{ ini_get('max_execution_time') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI</span> file_uploads:</strong>
+			<span>{{ ini_get('file_uploads') ? '✅' : '❌' }}</span>
+		</li>
 
 	<hr>
 	<p class="font-weight-bold text-muted">
