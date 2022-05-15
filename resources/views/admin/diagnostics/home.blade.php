@@ -199,28 +199,28 @@
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_TIMEZONE</strong></td>
         <td><span></span></td>
-        <td>Currently not used</td>
+        <td>Currently not used. <br></td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_LOCALE</strong></td>
         <td><span>{{config('app.locale')}}</span></td>
-        <td><strong>Default:</strong> "en"<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "en"<br></td>
         <td>✅</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_FALLBACK_LOCALE</strong></td>
         <td><span>{{config('app.fallback_locale')}}</span></td>
-        <td><strong>Default:</strong> "en"<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "en"<br></td>
         <td>✅</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_KEY</strong></td>
         <td><span>{{config('app.fallback_locale')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Notes:</strong> Generate this key with 'php artisan key:generate'.</td>
+        <td><strong>Notes:</strong> Generate this key with 'php artisan key:generate' <br></td>
         <td>✅</td>
 	</tr>
 
@@ -252,7 +252,7 @@
         <td><span class="badge badge-primary">DATABASE</span></td>
         <td><strong>DB_CONNECTION</strong></td>
         <td><span>{{config('database.default')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "mysql"<br><strong>Note:</strong> Supports "mysql" and "pgsql"<br></td>
         <td>✅</td>
 	</tr>
       <tr>
@@ -267,42 +267,42 @@
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_LC</strong></td>
         <td><span>{{config('exp.lc') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_TOP</strong></td>
         <td><span>{{config('exp.top') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_POLLS</strong></td>
         <td><span>{{config('exp.polls') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_CPT</strong></td>
         <td><span>{{config('exp.cached_public_timeline') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_GPS</strong></td>
         <td><span>{{config('exp.gps') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
       <tr>
         <td><span class="badge badge-primary">EXP</span></td>
         <td><strong>EXP_EMC</strong></td>
         <td><span>{{config('exp.emc') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>❌</td>
 	</tr>
 
@@ -1052,7 +1052,7 @@
         <td><strong>SESSION_DOMAIN</strong></td>
         <td><span>{{config('session.domain')}}</span></td>
         <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
-        <td>?</td>
+        <td>✅</td>
 	</tr>
 
       <tr>
@@ -1060,7 +1060,7 @@
         <td><strong>TRUST_PROXIES</strong></td>
         <td><span>{{config('trustedproxy.proxies')}}</span></td>
         <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
-        <td>?</td>
+        <td>✅</td>
 	</tr>
     </table>
   </div>
