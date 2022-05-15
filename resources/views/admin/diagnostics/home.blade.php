@@ -116,7 +116,7 @@
 
 		<hr>
 		<p class="font-weight-bold text-muted">
-			PHP Information
+			PHP Variables
         </p>
 		<li>
             <strong>PHP:</strong>
