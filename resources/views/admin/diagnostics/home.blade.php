@@ -192,7 +192,7 @@
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_URL</strong></td>
         <td><span>{{config('app.url')}}</span></td>
-        <td><strong>Default:</strong> "https://localhost"<br><strong>Recommended:</strong> Use full domain name including protocol. <strong>Example:</strong> "https://instance.com"</td>
+        <td><strong>Default:</strong> "https://localhost"<br><strong>Recommended:</strong> Use full domain name including protocol. <strong>"https://instance.domain"</strong></td>
         <td>✅</td>
 	</tr>
 	<tr>
