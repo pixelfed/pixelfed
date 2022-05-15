@@ -900,7 +900,7 @@
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_MAX_USERS</strong></td>
-        <td><span>{{config('pixelfed.max_users')}}</span></td>
+        <td><span>{{config('pixelfed.max_users') ? config('pixelfed.max_users') : '❌ false'}}</span></td>
         <td><strong>Default:</strong> "❌ false"<br><strong>Notes:</strong> "false for unlimited or a number to limit users"</td>
         <td>?</td>
 	</tr>
@@ -963,7 +963,7 @@
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>LIMIT_ACCOUNT_SIZE</strong></td>
-        <td><span>{{config('pixelfed.enforce_account_limit')}}</span></td>
+        <td><span>{{config('pixelfed.enforce_account_limit') ? '✅ true' : '❌ false' }}</span></td>
         <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "✅ true"</td>
         <td>?</td>
 	</tr>
