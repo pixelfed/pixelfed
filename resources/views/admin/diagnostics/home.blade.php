@@ -513,8 +513,175 @@
             <span>{{config('logging.default')}}</span>
         </li>
         <li>
-            <strong><span class="badge badge-primary">LOGGING</span> LOG_LEVEL:</strong>
+            <strong><span class="badge badge-primary">LOGGING</span> LOG_LEVEL (stack):</strong>
             <span>{{config('logging.channels.single.level')}}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_DRIVER:</strong>
+            <span>{{config('mail.driver')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_HOST:</strong>
+            <span>{{config('mail.host')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_PORT:</strong>
+            <span>{{config('mail.port')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_FROM_ADDRESS:</strong>
+            <span>{{config('mail.from.address')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_FROM_NAME:</strong>
+            <span>{{config('mail.from.name')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">MAIL</span> MAIL_ENCRYPTION:</strong>
+            <span>{{config('mail.encryption')}}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">MEDIA</span> MEDIA_EXIF_DATABASE:</strong>
+            <span>{{config('media.exif.batabase') ? '✅' : '❌' }}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> ADMIN_DOMAIN:</strong>
+            <span>{{config('pixelfed.domain.admin')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> APP_DOMAIN:</strong>
+            <span>{{config('pixelfed.domain.app')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MEMORY_LIMIT:</strong>
+            <span>{{config('pixelfed.memory_limit')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> OPEN_REGISTRATION:</strong>
+            <span>{{config('pixelfed.open_registration') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_ACCOUNT_SIZE (KB):</strong>
+            <span>{{config('pixelfed.max_account_size')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_PHOTO_SIZE (KB):</strong>
+            <span>{{config('pixelfed.max_photo_size')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_AVATAR_SIZE (KB):</strong>
+            <span>{{config('pixelfed.max_avatar_size')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_CAPTION_LENGTH:</strong>
+            <span>{{config('pixelfed.max_caption_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_BIO_LENGTH:</strong>
+            <span>{{config('pixelfed.max_bio_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_NAME_LENGTH:</strong>
+            <span>{{config('pixelfed.max_name_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MIN_PASSWORD_LENGTH:</strong>
+            <span>{{config('pixelfed.min_password_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MAX_ALBUM_LENGTH:</strong>
+            <span>{{config('pixelfed.max_album_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> ENFORCE_EMAIL_VERIFICATION:</strong>
+            <span>{{config('pixelfed.enforce_email_verification') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> IMAGE_QUALITY (1-100):</strong>
+            <span>{{config('pixelfed.image_quality')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> ACCOUNT_DELETION:</strong>
+            <span>{{config('pixelfed.account_deletion') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> ACCOUNT_DELETE_AFTER:</strong>
+            <span>{{config('pixelfed.account_delete_after') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_ENABLE_CLOUD:</strong>
+            <span>{{config('pixelfed.cloud_storage') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_MAX_USERS:</strong>
+            <span>{{config('pixelfed.max_users')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_OPTIMIZE_IMAGES:</strong>
+            <span>{{config('pixelfed.optimize_image') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_OPTIMIZE_VIDEOS:</strong>
+            <span>{{config('pixelfed.optimize_video') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_USER_INVITES:</strong>
+            <span>{{config('pixelfed.user_invites.enabled') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_USER_INVITES_TOTAL_LIMIT:</strong>
+            <span>{{config('pixelfed.user_invites.limit.total')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_USER_INVITES_DAILY_LIMIT:</strong>
+            <span>{{config('pixelfed.user_invites.limit.daily')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_USER_INVITES_MONTHLY_LIMIT:</strong>
+            <span>{{config('pixelfed.user_invites.limit.monthly')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_MAX_COLLECTION_LENGTH:</strong>
+            <span>{{config('pixelfed.max_collection_length')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> MEDIA_TYPES:</strong>
+            <span>{{config('pixelfed.media_types')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> LIMIT_ACCOUNT_SIZE:</strong>
+            <span>{{config('pixelfed.enforce_account_limit')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> IMPORT_INSTAGRAM:</strong>
+            <span>{{config('pixelfed.import.instagram.enabled') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> IMPORT_INSTAGRAM_POST_LIMIT:</strong>
+            <span>{{config('pixelfed.import.instagram.limits.posts')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> IMPORT_INSTAGRAM_SIZE_LIMIT:</strong>
+            <span>{{config('pixelfed.import.instagram.limits.size')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> OAUTH_ENABLED:</strong>
+            <span>{{config('pixelfed.oauth_enabled') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_BOUNCER_ENABLED:</strong>
+            <span>{{config('pixelfed.bouncer.enabled') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_MEDIA_FAST_PROCESS:</strong>
+            <span>{{config('pixelfed.media_fast_process') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">PIXELFED</span> PF_MEDIA_MAX_ALTTEXT_LENGTH:</strong>
+            <span>{{config('pixelfed.max_altext_length')}}</span>
         </li>
 
 
