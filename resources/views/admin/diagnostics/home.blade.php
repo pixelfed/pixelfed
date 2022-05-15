@@ -50,7 +50,7 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">REDIS</span> Ping:</strong>
-			<span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? 'Pong ✅' : 'Redis Not Responding ❌' }}</span>
+			<span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? 'Pong! Connected to Redis ✅' : 'Redis Not Responding ❌' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor created: </strong>
