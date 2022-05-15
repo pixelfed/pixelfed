@@ -716,14 +716,14 @@
         <td><span class="badge badge-primary">LOGGING</span></td>
         <td><strong>LOG_CHANNEL</strong></td>
         <td><span>{{config('logging.default')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "stack"<br><strong>Recommended:</strong> "stack"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">LOGGING</span></td>
         <td><strong>LOG_LEVEL (stack)</strong></td>
         <td><span>{{config('logging.channels.single.level')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "debug"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 
