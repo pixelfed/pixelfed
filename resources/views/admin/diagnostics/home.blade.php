@@ -267,42 +267,42 @@
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_LC</strong></td>
 		<td><span>{{config('exp.lc') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Hidden like counts (deprecated)"</td>
 		<td>❌</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_TOP</strong></td>
 		<td><span>{{config('exp.top') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Text only posts (alpha)"</td>
 		<td>❌</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_POLLS</strong></td>
 		<td><span>{{config('exp.polls') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Poll statuses (alpha)"</td>
 		<td>❌</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_CPT</strong></td>
 		<td><span>{{config('exp.cached_public_timeline') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Cached public timeline for larger instances (beta)"</td>
 		<td>❌</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_GPS</strong></td>
 		<td><span>{{config('exp.gps') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Groups (unreleased)"</td>
 		<td>❌</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">EXP</span></td>
 		<td><strong>EXP_EMC</strong></td>
 		<td><span>{{config('exp.emc') ? '✅ true' : '❌ false' }}</span></td>
-		<td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+		<td><strong>Default:</strong> "❌ false"<br><strong>Note:</strong> "Enforce Mastoapi Compatibility (alpha)"</td>
 		<td>❌</td>
 	</tr>
 
