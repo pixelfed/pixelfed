@@ -195,7 +195,7 @@
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_DEBUG:</strong>
-            <span>{{config('app.debug')}}</span>
+            <span>{{config('app.debug') ? '✅' : '❌' }}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_URL:</strong>
