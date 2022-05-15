@@ -244,7 +244,7 @@
         <td><span class="badge badge-primary">CAPTCHA</span></td>
         <td><strong>CAPTCHA_ENABLED</strong></td>
         <td><span>{{ config_cache('captcha.enabled') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Notes:</strong> Signup at https://www.hcaptcha.com/</td>
         <td>❌</td>
 	</tr>
 
