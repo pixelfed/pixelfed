@@ -46,7 +46,7 @@
 
 		<li>
 			<strong><span class="badge badge-primary">DATABASE</span> Ping:</strong>
-			<span>{{ \DB::connection()->getPDO() ? 'Connected to DB "' . \DB::connection()->getDatabaseName() . '" ✅' : 'DB Not Responding ❌' }}</span>
+			<span>{{ \DB::connection()->getPDO() ? 'Pong! Connected to DB "' . \DB::connection()->getDatabaseName() . '" ✅' : 'DB Not Responding ❌' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">REDIS</span> Ping:</strong>
