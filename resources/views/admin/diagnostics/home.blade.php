@@ -187,19 +187,19 @@
 
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_NAME:</strong>
-            <span>{{config('pixelfed.name')}}</span>
+            <span>{{config('app.name')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_ENV:</strong>
-            <span>{{config('pixelfed.env')}}</span>
+            <span>{{config('app.env')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_DEBUG:</strong>
-            <span>{{config('pixelfed.debug')}}</span>
+            <span>{{config('app.debug')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_URL:</strong>
-            <span>{{config('pixelfed.url')}}</span>
+            <span>{{config('app.url')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_TIMEZONE:</strong>
@@ -207,11 +207,11 @@
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_LOCALE:</strong>
-            <span>{{config('pixelfed.locale')}}</span>
+            <span>{{config('app.locale')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">APP</span> APP_FALLBACK_LOCALE:</strong>
-            <span>{{config('pixelfed.fallback_locale')}}</span>
+            <span>{{config('app.fallback_locale')}}</span>
         </li>
         <li>
             <strong><span class="badge badge-primary">BROADCASTING</span> BROADCAST_DRIVER:</strong>
@@ -480,6 +480,44 @@
             <strong><span class="badge badge-primary">INSTANCE</span> ENABLE_CONFIG_CACHE:</strong>
             <span>{{config('instance.enable_cc') ? '✅' : '❌' }}</span>
         </li>
+
+
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
+            <span>{{config('ldap.default')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_LOGGING:</strong>
+            <span>{{config('ldap.logging') ? '✅' : '❌' }}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_CACHE:</strong>
+            <span>{{config('ldap.cache.enabled') ? '✅' : '❌' }}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
+            <span>{{config('ldap.default')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
+            <span>{{config('ldap.default')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">LDAP</span> LDAP_CONNECTION:</strong>
+            <span>{{config('ldap.default')}}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">LOGGING</span> LOG_CHANNEL:</strong>
+            <span>{{config('logging.default')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">LOGGING</span> LOG_LEVEL:</strong>
+            <span>{{config('logging.channels.single.level')}}</span>
+        </li>
+
+
 
 	</ul>
 </div>
