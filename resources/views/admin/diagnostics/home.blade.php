@@ -684,8 +684,34 @@
             <span>{{config('pixelfed.max_altext_length')}}</span>
         </li>
 
+        <li>
+            <strong><span class="badge badge-primary">PURIFY</span> RESTRICT_HTML_TYPES (true/false):</strong>
+            <span>{{config('purify.settings.HTML.Allowed')}}</span>
+        </li>
 
+        <li>
+            <strong><span class="badge badge-primary">QUEUE</span> QUEUE_DRIVER (redis/database/sync):</strong>
+            <span>{{config('queue.default')}}</span>
+        </li>
 
+        <li>
+            <strong><span class="badge badge-primary">SESSION</span> SESSION_DRIVER:</strong>
+            <span>{{config('session.driver')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">SESSION</span> SESSION_LIFETIME:</strong>
+            <span>{{config('session.lifetime')}}</span>
+        </li>
+        <li>
+            <strong><span class="badge badge-primary">SESSION</span> SESSION_DOMAIN:</strong>
+            <span>{{config('session.domain')}}</span>
+        </li>
+
+        <li>
+            <strong><span class="badge badge-primary">TRUSTEDPROXY</span> TRUST_PROXIES:</strong>
+            <span>{{config('trustedproxy.proxies')}}</span>
+        </li>
+		
 	</ul>
 </div>
 <div class="pb-3 border-bottom">
