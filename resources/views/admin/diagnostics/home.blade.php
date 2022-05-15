@@ -782,14 +782,14 @@
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>ADMIN_DOMAIN</strong></td>
         <td><span>{{config('pixelfed.domain.admin')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Note:</strong> ""</td>
+        <td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>APP_DOMAIN</strong></td>
         <td><span>{{config('pixelfed.domain.app')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Note:</strong> ""</td>
+        <td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
@@ -1029,7 +1029,7 @@
         <td><span class="badge badge-primary">QUEUE</span></td>
         <td><strong>QUEUE_DRIVER</strong></td>
         <td><span>{{config('queue.default')}}</span></td>
-        <td><strong>Default:</strong> "sync"<br><strong>Recommended:</strong> redis</td>
+        <td><strong>Default:</strong> "sync"<br><strong>Recommended:</strong> "redis"</td>
         <td>✅</td>
 	</tr>
 
@@ -1037,7 +1037,7 @@
         <td><span class="badge badge-primary">SESSION</span></td>
         <td><strong>SESSION_DRIVER</strong></td>
         <td><span>{{config('session.driver')}}</span></td>
-        <td><strong>Default:</strong> "database"<br><strong>Recommended:</strong> redis</td>
+        <td><strong>Default:</strong> "database"<br><strong>Recommended:</strong> "redis"</td>
         <td>✅</td>
 	</tr>
 	<tr>
@@ -1051,7 +1051,7 @@
         <td><span class="badge badge-primary">SESSION</span></td>
         <td><strong>SESSION_DOMAIN</strong></td>
         <td><span>{{config('session.domain')}}</span></td>
-        <td><strong></strong> "domain.instance"<br><strong>Notes:</strong> ""</td>
+        <td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
         <td>✅</td>
 	</tr>
 
