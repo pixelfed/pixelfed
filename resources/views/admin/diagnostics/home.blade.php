@@ -150,9 +150,14 @@
 			<span>{{ ini_get('max_execution_time') }}</span>
 		</li>
 		<li>
+			<strong><span class="badge badge-primary">PHP INI</span> max_input_time:</strong>
+			<span>{{ ini_get('max_input_time') }}</span>
+		</li>
+		<li>
 			<strong><span class="badge badge-primary">PHP INI</span> file_uploads:</strong>
 			<span>{{ ini_get('file_uploads') ? '✅' : '❌' }}</span>
 		</li>
+
 
 	<hr>
 	<p class="font-weight-bold text-muted">
