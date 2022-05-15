@@ -686,7 +686,7 @@
         <td><span class="badge badge-primary">INSTANCE</span></td>
         <td><strong>ENABLE_CONFIG_CACHE</strong></td>
         <td><span>{{config('instance.enable_cc') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Notes:</strong> This enables the webmin settings page, which overrides the values from the .env file</td>
         <td>?</td>
 	</tr>
 
@@ -766,7 +766,7 @@
         <td><span class="badge badge-primary">MAIL</span></td>
         <td><strong>MAIL_ENCRYPTION</strong></td>
         <td><span>{{config('mail.encryption')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "tls"<br><strong>Recommended:</strong> "tls"</td>
         <td>?</td>
 	</tr>
 
@@ -774,7 +774,7 @@
         <td><span class="badge badge-primary">MEDIA</span></td>
         <td><strong>MEDIA_EXIF_DATABASE</strong></td>
         <td><span>{{config('media.exif.batabase') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 
@@ -782,210 +782,210 @@
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>ADMIN_DOMAIN</strong></td>
         <td><span>{{config('pixelfed.domain.admin')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> ""<br><strong>Note:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>APP_DOMAIN</strong></td>
         <td><span>{{config('pixelfed.domain.app')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> ""<br><strong>Note:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MEMORY_LIMIT</strong></td>
         <td><span>{{config('pixelfed.memory_limit')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "1024M"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>OPEN_REGISTRATION</strong></td>
         <td><span>{{config('pixelfed.open_registration') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_ACCOUNT_SIZE (KB)</strong></td>
         <td><span>{{config('pixelfed.max_account_size')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "1000000"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_PHOTO_SIZE (KB)</strong></td>
         <td><span>{{config('pixelfed.max_photo_size')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "15000"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_AVATAR_SIZE (KB)</strong></td>
         <td><span>{{config('pixelfed.max_avatar_size')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "2000"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_CAPTION_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_caption_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "500"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_BIO_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_bio_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "125"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_NAME_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_name_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "30"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MIN_PASSWORD_LENGTH</strong></td>
         <td><span>{{config('pixelfed.min_password_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "8"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MAX_ALBUM_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_album_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "4"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>ENFORCE_EMAIL_VERIFICATION</strong></td>
         <td><span>{{config('pixelfed.enforce_email_verification') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "✅ true"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>IMAGE_QUALITY (1-100)</strong></td>
         <td><span>{{config('pixelfed.image_quality')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "80"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>ACCOUNT_DELETION</strong></td>
         <td><span>{{config('pixelfed.account_deletion') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>ACCOUNT_DELETE_AFTER</strong></td>
         <td><span>{{config('pixelfed.account_delete_after') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_ENABLE_CLOUD</strong></td>
         <td><span>{{config('pixelfed.cloud_storage') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_MAX_USERS</strong></td>
         <td><span>{{config('pixelfed.max_users')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Notes:</strong> "false for unlimited or a number to limit users"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_OPTIMIZE_IMAGES</strong></td>
         <td><span>{{config('pixelfed.optimize_image') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_OPTIMIZE_VIDEOS</strong></td>
         <td><span>{{config('pixelfed.optimize_video') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_USER_INVITES</strong></td>
         <td><span>{{config('pixelfed.user_invites.enabled') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_USER_INVITES_TOTAL_LIMIT</strong></td>
         <td><span>{{config('pixelfed.user_invites.limit.total')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "0"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_USER_INVITES_DAILY_LIMIT</strong></td>
         <td><span>{{config('pixelfed.user_invites.limit.daily')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "0"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_USER_INVITES_MONTHLY_LIMIT</strong></td>
         <td><span>{{config('pixelfed.user_invites.limit.monthly')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "0"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_MAX_COLLECTION_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_collection_length')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "18"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>MEDIA_TYPES</strong></td>
         <td><span>{{config('pixelfed.media_types')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "'image/jpeg,image/png,image/gif'"<br><strong>Notes:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>LIMIT_ACCOUNT_SIZE</strong></td>
         <td><span>{{config('pixelfed.enforce_account_limit')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "✅ true"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>IMPORT_INSTAGRAM</strong></td>
         <td><span>{{config('pixelfed.import.instagram.enabled') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "❌ false"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>IMPORT_INSTAGRAM_POST_LIMIT</strong></td>
         <td><span>{{config('pixelfed.import.instagram.limits.posts')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "100"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>IMPORT_INSTAGRAM_SIZE_LIMIT</strong></td>
         <td><span>{{config('pixelfed.import.instagram.limits.size')}}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "5000"<br><strong>Recommended:</strong> ""</td>
         <td>?</td>
 	</tr>
 	<tr>
@@ -999,21 +999,21 @@
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_BOUNCER_ENABLED</strong></td>
         <td><span>{{config('pixelfed.bouncer.enabled') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> ""<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "❌ false"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_MEDIA_FAST_PROCESS</strong></td>
         <td><span>{{config('pixelfed.media_fast_process') ? '✅ true' : '❌ false' }}</span></td>
-        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "❌ false"</td>
+        <td><strong>Default:</strong> "✅ true"<br><strong>Recommended:</strong> "?"</td>
         <td>?</td>
 	</tr>
 	<tr>
         <td><span class="badge badge-primary">PIXELFED</span></td>
         <td><strong>PF_MEDIA_MAX_ALTTEXT_LENGTH</strong></td>
         <td><span>{{config('pixelfed.max_altext_length')}}</span></td>
-        <td><strong>Default:</strong> "1000"<br><strong>Recommended:</strong> ""</td>
+        <td><strong>Default:</strong> "1000"<br><strong>Recommended:</strong> "1000"</td>
         <td>?</td>
 	</tr>
 
