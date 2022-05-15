@@ -178,7 +178,7 @@
         <td><span class="badge badge-primary">APP</span></td>
         <td><strong>APP_ENV</strong></td>
         <td><span>{{config('app.env')}}</span></td>
-        <td><strong>Default:</strong> "production" <br><strong>Recommended:</strong> "production"</td>
+        <td><strong>Default:</strong> "production" <br><strong>Notes:</strong> "production" or "local" for development</td>
         <td>✅</td>
 	</tr>
 	<tr>
