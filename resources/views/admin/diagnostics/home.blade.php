@@ -3,7 +3,6 @@
 @section('section')
 <div class="title mb-4">
 	<h3 class="font-weight-bold">Diagnostics</h3>
-	<p class="lead mb-0">Instance diagnostics</p>
 </div>
 
 <div class="pb-3 border-bottom">
@@ -46,8 +45,12 @@
 		@endforeach
 
 		<li>
+			<strong><span class="badge badge-primary">DATABASE</span> Ping:</strong>
+			<span>{{ \DB::connection()->getPDO() ? 'Connected to DB "' . \DB::connection()->getDatabaseName() . '" ✅' : 'DB Not Responding ❌' }}</span>
+		</li>
+		<li>
 			<strong><span class="badge badge-primary">REDIS</span> Ping:</strong>
-			<span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? 'Pong ✅' : 'Not Responding ❌' }}</span>
+			<span>{{ \Illuminate\Support\Facades\Redis::command('ping') ? 'Pong ✅' : 'Redis Not Responding ❌' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor created: </strong>
