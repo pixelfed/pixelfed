@@ -27,6 +27,7 @@
               Max Size: 1 MB. Supported formats: jpeg, png.
             </small>
           </div>
+        </form>
         </div>
       </div>
     </div>
@@ -39,8 +40,6 @@
         </div>
       </div>
     </div>
-    </form>
-
   </div>
 
 @endsection

@@ -796,13 +796,8 @@ class DirectMessageController extends Controller
 
 		$body = [
 			'@context' => [
-				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
-				[
-					'sc'                => 'http://schema.org#',
-					'Hashtag'           => 'as:Hashtag',
-					'sensitive'         => 'as:sensitive',
-				]
+				'https://www.w3.org/ns/activitystreams',
 			],
 			'id'                    => $dm->status->permalink(),
 			'type'                  => 'Create',
@@ -845,12 +840,6 @@ class DirectMessageController extends Controller
 		$body = [
 			'@context' => [
 				'https://www.w3.org/ns/activitystreams',
-				'https://w3id.org/security/v1',
-				[
-					'sc'				=> 'http://schema.org#',
-					'Hashtag'			=> 'as:Hashtag',
-					'sensitive'			=> 'as:sensitive',
-				]
 			],
 			'id' => $dm->status->permalink('#delete'),
 			'to' => [

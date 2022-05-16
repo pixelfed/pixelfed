@@ -37,7 +37,7 @@
   <div class="card status-card-embed card-md-rounded-0 border">
     <div class="card-header d-inline-flex align-items-center justify-content-between bg-white">
       <div>
-        <img src="{{$profile['avatar']}}" width="32px" height="32px" target="_blank" style="border-radius: 32px;">
+        <img src="{{$profile['avatar']}}" width="32px" height="32px" style="border-radius: 32px;">
         <a class="username font-weight-bold pl-2 text-dark" target="_blank" href="{{$profile['url']}}">
           {{$profile['username']}}
         </a>

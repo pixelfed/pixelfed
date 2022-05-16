@@ -11,13 +11,10 @@ class ProfileTransformer extends Fractal\TransformerAbstract
     {
         return [
           '@context' => [
-            'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
+            'https://www.w3.org/ns/activitystreams',
             [
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
-              'PropertyValue'             => 'schema:PropertyValue',
-              'schema'                    => 'http://schema.org#',
-              'value'                     => 'schema:value'
             ],
           ],
           'id'                        => $profile->permalink(),
