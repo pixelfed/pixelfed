@@ -23,5 +23,5 @@ return [
      * how many proxies that client's request has
      * subsequently passed through.
      */
-    'proxies' => env('TRUST_PROXIES', ''),
+    'proxies' => env('TRUST_PROXIES', '*'),
 ];

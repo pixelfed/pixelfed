@@ -32,6 +32,5 @@ return [
 	'spa' => true,
 
 	// Enforce Mastoapi Compatibility (alpha)
-	// Note: this may break 3rd party apps who use non-mastodon compliant fields
-	'emc' => env('EXP_EMC', false),
+	'emc' => env('EXP_EMC', true),
 ];

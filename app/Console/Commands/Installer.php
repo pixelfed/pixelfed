@@ -97,7 +97,6 @@ class Installer extends Command
             if(extension_loaded($ext) == false) {
                 $this->error("- {$ext} extension not found, aborting installation");
                 exit;
-            } else {
             }
         }
         $this->info("- Required PHP extensions found!");
