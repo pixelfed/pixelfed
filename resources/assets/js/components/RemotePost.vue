@@ -614,7 +614,6 @@ export default {
 						layout: this.profileLayout,
 						showProfileMorePosts: false,
 						profileMorePosts: [],
-						replySending: false,
 						reactionBarLoading: true,
 						profileUrl: null,
 						currentLayout: 'status'

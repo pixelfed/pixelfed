@@ -38,7 +38,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
 				'website'   => null
 			 ],
 			'mentions'                  => [],
-			'tags'                      => [],
 			'emojis'                    => [],
 			'card'                      => null,
 			'poll'                      => null,
