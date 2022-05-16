@@ -107,7 +107,7 @@ return [
 
     'redis' => [
 
-        'client' => env('REDIS_CLIENT', 'phpredis'),
+        'client' => env('REDIS_CLIENT', 'predis'),
 
         'default' => [
             'scheme'   => env('REDIS_SCHEME', 'tcp'),
