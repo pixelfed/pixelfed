@@ -58,27 +58,27 @@ class CreateNote extends Fractal\TransformerAbstract
 				[
 					'Hashtag' 			=> 'as:Hashtag',
 					'sensitive' 		=> 'as:sensitive',
-					'schema' 		=> 'http://schema.org/',
-					'pixelfed' 		=> 'http://pixelfed.org/ns#'
+					'schema' 			=> 'http://schema.org/',
+					'pixelfed' 			=> 'http://pixelfed.org/ns#',
 					'commentsEnabled' 	=> [
-						'@id' 		=> 'pixelfed:commentsEnabled',
+						'@id' 			=> 'pixelfed:commentsEnabled',
 						'@type' 		=> 'schema:Boolean'
 					],
 					'capabilities'		=> [
-						'@id' 		=> 'pixelfed:capabilities',
-						'@container' => '@set'
+						'@id' 			=> 'pixelfed:capabilities',
+						'@container'	=> '@set'
 					],
-					'announce'		=> [
-						'@id' 		=> 'pixelfed:canAnnounce',
-						'@type' => '@id'
+					'announce'			=> [
+						'@id'			=> 'pixelfed:canAnnounce',
+						'@type'			=> '@id'
 					],
-					'like'		=> [
-						'@id' 		=> 'pixelfed:canLike',
-						'@type' => '@id'
+					'like'				=> [
+						'@id' 			=> 'pixelfed:canLike',
+						'@type' 		=> '@id'
 					],
-					'reply'		=> [
-						'@id' 		=> 'pixelfed:canReply',
-						'@type' => '@id'
+					'reply'				=> [
+						'@id' 			=> 'pixelfed:canReply',
+						'@type' 		=> '@id'
 					],
 					'toot' 				=> 'http://joinmastodon.org/ns#',
 					'Emoji'				=> 'toot:Emoji'
