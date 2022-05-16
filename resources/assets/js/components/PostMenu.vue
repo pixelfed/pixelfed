@@ -160,7 +160,7 @@
 						});
 					break;
 					case 'suspend':
-						let msg = 'Are you sure you want to suspend the account of ' + username + ' ?';
+						msg = 'Are you sure you want to suspend the account of ' + username + ' ?';
 						swal({
 							title: 'Confirm',
 							text: msg,
