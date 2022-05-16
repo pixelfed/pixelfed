@@ -184,6 +184,11 @@
 			<strong><span class="badge badge-primary">Storage</span> Filesystems default (local/s3/spaces): </strong>
 			<span>{{ config_cache('filesystems.default')}}</span>
 		</li>
+		<li>
+			<strong><span class="badge badge-primary">Network</span> TrustedProxy: </strong>
+			<span>{{ config('trustedproxy.proxies') }}</span>
+		</li>
+
 	</ul>
 </div>
 <div class="pb-3 border-bottom">
