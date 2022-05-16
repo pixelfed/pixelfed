@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.3...dev)
 
+### Breaking
+- Replaced `predis` with `phpredis` as default redis driver due to predis being deprecated, install [phpredis](https://github.com/phpredis/phpredis/blob/develop/INSTALL.markdown) if you're still using predis.
+
 ### Updates
 - Improve S3 support by removing `ListObjects` call in media deletion ([#3438](https://github.com/pixelfed/pixelfed/pull/3438))
 - Enforce UTC in incoming activities ([18931a1f](https://github.com/pixelfed/pixelfed/commit/18931a1f))
