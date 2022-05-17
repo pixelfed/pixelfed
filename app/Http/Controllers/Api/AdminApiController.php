@@ -70,48 +70,48 @@ class AdminApiController extends Controller
     {
         abort(400, 'Unpublished API');
         
-        $this->validate($request, [
-            'type' => 'required|string|in:status,profile',
-            'id'   => 'required|integer|min:1',
-            'action' => 'required|string|in:cw,unlink,unlist,suspend,delete'
-        ]);
+//         $this->validate($request, [
+//             'type' => 'required|string|in:status,profile',
+//             'id'   => 'required|integer|min:1',
+//             'action' => 'required|string|in:cw,unlink,unlist,suspend,delete'
+//         ]);
 
-        $type = $request->input('type');
-        $id = $request->input('id');
-        $action = $request->input('action');
+//         $type = $request->input('type');
+//         $id = $request->input('id');
+//         $action = $request->input('action');
 
-        if ($type == 'status') {
-            $status = Status::findOrFail($id);
-            switch ($action) {
-                case 'cw':
-                    $status->is_nsfw = true;
-                    $status->save();
-                    break;
-                case 'unlink':
-                    $status->rendered = $status->caption;
-                    $status->save();
-                    break;
-                case 'unlist':
-                    $status->scope = 'unlisted';
-                    $status->visibility = 'unlisted';
-                    $status->save();
-                    break;
+//         if ($type == 'status') {
+//             $status = Status::findOrFail($id);
+//             switch ($action) {
+//                 case 'cw':
+//                     $status->is_nsfw = true;
+//                     $status->save();
+//                     break;
+//                 case 'unlink':
+//                     $status->rendered = $status->caption;
+//                     $status->save();
+//                     break;
+//                 case 'unlist':
+//                     $status->scope = 'unlisted';
+//                     $status->visibility = 'unlisted';
+//                     $status->save();
+//                     break;
                 
-                default:
-                    break;
-            }
-        } else if ($type == 'profile') {
-            $profile = Profile::findOrFail($id);
-            switch ($action) {
+//                 default:
+//                     break;
+//             }
+//         } else if ($type == 'profile') {
+//             $profile = Profile::findOrFail($id);
+//             switch ($action) {
 
-                case 'delete':
-                    StatusDelete::dispatch($status);
-                    break;
+//                 case 'delete':
+//                     StatusDelete::dispatch($status);
+//                     break;
                 
-                default:
-                    break;
-            }
-        }
+//                 default:
+//                     break;
+//             }
+//         }
 
     }
 
