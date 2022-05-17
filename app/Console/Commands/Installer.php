@@ -176,7 +176,7 @@ class Installer extends Command
                 $database_host = $this->ask('Select database host', '127.0.0.1');
                 $this->updateEnvFile('DB_HOST', $database_host ?? 'mysql');
 
-                $database_port = $this->ask('Select database port', 3306);
+                $database_port = $this->ask('Select database port', '3306');
                 $this->updateEnvFile('DB_PORT', $database_port ?? 3306);
 
                 $database_db = $this->ask('Select database', 'pixelfed');
@@ -204,7 +204,7 @@ class Installer extends Command
         $redis_password = $this->ask('Set redis password', 'null');
         $this->updateEnvFile('REDIS_PASSWORD', $redis_password);
 
-        $redis_port = $this->ask('Set redis port', 6379);
+        $redis_port = $this->ask('Set redis port', '6379');
         $this->updateEnvFile('REDIS_PORT', $redis_port);
 
         $open_registration = $this->choice('Allow new registrations?', ['true', 'false'], true , 1, false);
