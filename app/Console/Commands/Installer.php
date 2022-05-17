@@ -169,7 +169,7 @@ class Installer extends Command
         $this->updateEnvFile('SESSION_DOMAIN', $domain ?? 'example.org');
         $this->updateEnvFile('APP_URL', 'https://' . $domain ?? 'https://example.org');
 
-        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], 0);
+        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], null, 1, null);
         $this->updateEnvFile('DB_CONNECTION', $database ?? 'mysql');
         switch ($database) {
             case 'mysql':
