@@ -735,7 +735,6 @@ export default {
 						layout: this.profileLayout,
 						showProfileMorePosts: false,
 						profileMorePosts: [],
-						replySending: false,
 						reactionBarLoading: true,
 						tributeSettings: {
 							collection: [

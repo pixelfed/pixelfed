@@ -120,7 +120,7 @@ class AdminController extends Controller
 	public function appsHome(Request $request)
 	{
 		$filter = $request->input('filter');
-		if(in_array($filter, ['revoked'])) {
+		if($filter == 'revoked') {
 			$apps = OauthClient::with('user')
 			->whereNotNull('user_id')
 			->whereRevoked(true)

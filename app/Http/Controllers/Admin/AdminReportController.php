@@ -528,9 +528,12 @@ trait AdminReportController
 					return !in_array($id, $ignored);
 				})
 				->map(function($id) {
-					$account = AccountService::get($id);
 					$user = User::whereProfileId($id)->first();
 					if(!$user) {
+						return [];
+					}
+					$account = AccountService::get($id);
+					if(!$account) {
 						return [];
 					}
 					$account['email'] = $user->email;

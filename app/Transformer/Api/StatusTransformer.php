@@ -53,7 +53,6 @@ class StatusTransformer extends Fractal\TransformerAbstract
 				'website'   => null
 			 ],
 			'language'                  => null,
-			'pinned'                    => null,
 			'mentions'                  => StatusMentionService::get($status->id),
 			'pf_type'                   => $status->type ?? $status->setType(),
 			'reply_count'               => (int) $status->reply_count,
