@@ -82,18 +82,18 @@ class SpaController extends Controller
 		return ['language' => $lang];
 	}
 
-	public function getPrivacy()
+	public function getPrivacy(Request $request)
 	{
-		abort_unless($req->user(), 404);
+		abort_unless($request->user(), 404);
 		$body = $this->markdownToHtml('views/page/privacy.md');
 		return [
 			'body' => $body
 		];
 	}
 
-	public function getTerms()
+	public function getTerms(Request $request)
 	{
-		abort_unless($req->user(), 404);
+		abort_unless($request->user(), 404);
 		$body = $this->markdownToHtml('views/page/terms.md');
 		return [
 			'body' => $body
