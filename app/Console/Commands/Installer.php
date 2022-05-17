@@ -169,7 +169,7 @@ class Installer extends Command
         $this->updateEnvFile('SESSION_DOMAIN', $domain ?? 'example.org');
         $this->updateEnvFile('APP_URL', 'https://' . $domain ?? 'https://example.org');
 
-        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], null, 1, null);
+        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], null, 1, false);
         $this->updateEnvFile('DB_CONNECTION', $database ?? 'mysql');
         switch ($database) {
             case 'mysql':
@@ -192,10 +192,10 @@ class Installer extends Command
             
         }
 
-        $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
+        $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], null, 1, false);
         $this->updateEnvFile('CACHE_DRIVER', $cache ?? 'redis');
 
-        $session = $this->choice('Select session driver', ["redis", "file", "cookie", "database", "apc", "memcached", "array"], 0);
+        $session = $this->choice('Select session driver', ["redis", "file", "cookie", "database", "apc", "memcached", "array"], null, 1, false);
         $this->updateEnvFile('SESSION_DRIVER', $session ?? 'redis');
 
         $redis_host = $this->ask('Set redis host', 'localhost');
@@ -207,10 +207,10 @@ class Installer extends Command
         $redis_port = $this->ask('Set redis port', 6379);
         $this->updateEnvFile('REDIS_PORT', $redis_port);
 
-        $open_registration = $this->choice('Allow new registrations?', ['true', 'false'], 1);
+        $open_registration = $this->choice('Allow new registrations?', ['true', 'false'], true , 1, false);
         $this->updateEnvFile('OPEN_REGISTRATION', $open_registration);
 
-        $enforce_email_verification = $this->choice('Enforce email verification?', ['true', 'false'], 0);
+        $enforce_email_verification = $this->choice('Enforce email verification?', ['true', 'false'], true, 1, false);
         $this->updateEnvFile('ENFORCE_EMAIL_VERIFICATION', $enforce_email_verification);
 
     }
