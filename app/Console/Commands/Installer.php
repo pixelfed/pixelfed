@@ -185,8 +185,7 @@ class Installer extends Command
                 $database_username = $this->ask('Select database username', 'pixelfed');
                 $this->updateEnvFile('DB_USERNAME', $database_username ?? 'pixelfed');
 
-                $db_pass = str_random(64);
-                $database_password = $this->secret('Select database password', $db_pass);
+                $database_password = $this->secret('Select database password', true);
                 $this->updateEnvFile('DB_PASSWORD', $database_password);
             break;
             
