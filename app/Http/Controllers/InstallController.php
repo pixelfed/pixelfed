@@ -40,7 +40,7 @@ class InstallController extends Controller
 
     	$reqs['php'] = [
     		'version' => PHP_VERSION,
-    		'supported' => (bool) version_compare(PHP_VERSION, 7.4),
+    		'supported' => (bool) version_compare(PHP_VERSION, '7.4'),
     		'min_version' => '7.4',
     		'memory_limit' => [
     			'recommended' => '256M',
