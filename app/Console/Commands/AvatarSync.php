@@ -60,7 +60,7 @@ class AvatarSync extends Command
 		$name = $this->choice(
 			'Select an action',
 			$actions,
-			0,
+			null,
 			1,
 			false
 		);
