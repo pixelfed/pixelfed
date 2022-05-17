@@ -160,7 +160,6 @@ class ProfileController extends Controller
 			case 'suspended':
 			case 'delete':
 				return view('profile.disabled');
-				break;
 
 			default:
 				break;

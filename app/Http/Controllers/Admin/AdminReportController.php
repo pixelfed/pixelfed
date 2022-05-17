@@ -165,13 +165,10 @@ trait AdminReportController
 					switch($tab) {
 						case 'home':
 							return $q->whereNull('appeal_handled_at');
-						break;
 						case 'spam':
 							return $q->whereIsSpam(true);
-						break;
 						case 'not-spam':
 							return $q->whereIsSpam(false);
-						break;
 					}
 				})
 				->latest()

@@ -634,7 +634,6 @@ class Inbox
 						}
 						DeleteRemoteProfilePipeline::dispatchNow($profile);
 						return;
-					break;
 
 				case 'Tombstone':
 						$profile = Profile::whereRemoteUrl($actor)->first();
@@ -659,7 +658,6 @@ class Inbox
 						$status->shares()->delete();
 						$status->delete();
 						return;
-					break;
 
 				case 'Story':
 					$story = Story::whereObjectId($id)
@@ -671,7 +669,6 @@ class Inbox
 
 				default:
 					return;
-					break;
 			}
 		}
 	}

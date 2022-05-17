@@ -172,7 +172,6 @@ class InboxValidator implements ShouldQueue
             }
         }
         if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
-            return;
             abort(400, 'Invalid request');
         }
         $actor = Profile::whereKeyId($keyId)->first();

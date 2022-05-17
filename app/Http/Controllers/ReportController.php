@@ -136,7 +136,6 @@ class ReportController extends Controller
             } else {
                 return redirect('/timeline')->with('error', 'Invalid report type');
             }
-          break;
       }
 
         if ($exists !== 0) {
