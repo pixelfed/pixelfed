@@ -163,15 +163,17 @@
 	<p class="font-weight-bold text-muted">
 		Pixelfed Variables (No Secrets)
 	</p>
-	<table style="width:100%" border="1">
+	<table style="width:100%" class="table">
+	<thead class="bg-light">
 	<tr>
-		<th width="5%">CONFIG</th>
-		<th width="20%">Variable Name</th>
-		<th width="40%">Details</th>
-		<th width="35%">Notes (Recommendations for Production)</th>
-		<th width="5%"></th>
+		<th width="5%" scope="col" class="border-0 text-dark">CONFIG</th>
+		<th width="20%"scope="col" class="border-0 text-dark">Variable Name</th>
+		<th width="40%"scope="col" class="border-0 text-dark">Details</th>
+		<th width="35%"scope="col" class="border-0 text-dark">Notes (Recommendations for Production)</th>
+		<th width="5%"scope="col" class="border-0 text-dark"></th>
 	</tr>
-
+	</thead>
+	<tbody>
 	<tr>
 		<td><span class="badge badge-primary">APP</span></td>
 		<td><strong>APP_NAME</strong></td>
@@ -1067,7 +1069,8 @@
 		<td><strong>Default:</strong> ""<br><strong>Note:</strong> Try "*" if you're experiencing problems or using Docker</td>
 		<td>✅</td>
 	</tr>
-    </table>
+      </tbody>
+      </table>
   </div>
   </ul>
 </div>
