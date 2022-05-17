@@ -81,7 +81,7 @@ class FixUsernames extends Command
             foreach($affected as $u) {
                 $old = $u->username;
                 $this->info("Found user: {$old}");
-                $opt = $this->choice('Select fix method:', $opts, 3);
+                $opt = $this->choice('Select fix method:', $opts,, null 3);
 
                 switch ($opt) {
                     case $opts[0]:
