@@ -432,15 +432,28 @@
 								</div>
 							</div>
 						</div>
-						<div class="border-bottom d-flex justify-content-between px-4 mb-0 py-2 ">
-							<div>
-								<div class="text-dark ">Contains NSFW Media</div>
-							</div>
-							<div>
-								<div class="custom-control custom-switch" style="z-index: 9999;">
-									<input type="checkbox" class="custom-control-input" id="asnsfw" v-model="nsfw">
-									<label class="custom-control-label" for="asnsfw"></label>
+						<div class="border-bottom px-4 mb-0 py-2">
+							<div class="d-flex justify-content-between">
+								<div>
+									<div class="text-dark ">Contains NSFW Media</div>
 								</div>
+								<div>
+									<div class="custom-control custom-switch" style="z-index: 9999;">
+										<input type="checkbox" class="custom-control-input" id="asnsfw" v-model="nsfw">
+										<label class="custom-control-label" for="asnsfw"></label>
+									</div>
+								</div>
+							</div>
+
+							<div v-if="nsfw">
+								<textarea
+									class="form-control mt-3"
+									placeholder="Add an optional content warning or spoiler text"
+									maxlength="140"
+									v-model="spoilerText">
+								</textarea>
+
+								<p class="help-text small text-right text-muted mb-0">{{ spoilerTextLength }}/140</p>
 							</div>
 						</div>
 						<div class="border-bottom">
@@ -1009,6 +1022,13 @@ export default {
 			collectionsLoaded: false,
 			collectionsPage: 1,
 			collectionsCanLoadMore: false,
+			spoilerText: undefined,
+		}
+	},
+
+	computed: {
+		spoilerTextLength: function() {
+			return this.spoilerText ? this.spoilerText.length : 0;
 		}
 	},
 
@@ -1248,7 +1268,8 @@ export default {
 						tagged: this.taggedUsernames,
 						optimize_media: this.optimizeMedia,
 						license: this.licenseId,
-						video: this.video
+						video: this.video,
+						spoiler_text: this.spoilerText,
 					};
 
 					if(this.collectionsSelected.length) {

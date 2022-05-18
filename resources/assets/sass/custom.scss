@@ -652,3 +652,18 @@ details summary::-webkit-details-marker {
 				font-weight: bold;
 		}
 }
+
+.content-label {
+	&-wrapper {
+		div:not(.content-label) {
+			height: 100%;
+		}
+	}
+
+	&-text {
+		width: 80%;
+		@media (min-width: 768px) {
+			width: 50%;
+		}
+	}
+}
