@@ -261,7 +261,7 @@
 		}
 		if($(this).hasClass('row-check-all')) {
 			return;
-		};
+		}
 		if(el.checked == true) {
 			$(this).parents().eq(2).addClass('user-row-active');
 			$('.bulk-actions').removeClass('d-none');

@@ -453,6 +453,7 @@ class ComposeController extends Controller
 			'tagged' => 'nullable',
 			'license' => 'nullable|integer|min:1|max:16',
 			'collections' => 'sometimes|array|min:1|max:5',
+			'spoiler_text' => 'nullable|string|max:140',
 			// 'optimize_media' => 'nullable'
 		]);
 
@@ -538,6 +539,10 @@ class ComposeController extends Controller
 
 		if($request->filled('comments_disabled')) {
 			$status->comments_disabled = (bool) $request->input('comments_disabled');
+		}
+
+		if($request->filled('spoiler_text') && $cw) {
+			$status->cw_summary = $request->input('spoiler_text');
 		}
 
 		$status->caption = strip_tags($request->caption);

@@ -7,7 +7,7 @@
 			<p class="h4 font-weight-bold text-center">
 				Sensitive Content
 			</p>
-			<p class="text-center py-2">
+			<p class="text-center py-2 content-label-text">
 				{{ status.spoiler_text ? status.spoiler_text : 'This album may contain sensitive content.'}}
 			</p>
 			<p class="mb-0">

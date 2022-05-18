@@ -93,7 +93,7 @@ class CreateNote extends Fractal\TransformerAbstract
 			'object' => [
 				'id' 				=> $status->url(),
 				'type' 				=> 'Note',
-				'summary'   		=> null,
+				'summary'   		=> $status->is_nsfw ? $status->cw_summary : null,
 				'content'   		=> $status->rendered ?? $status->caption,
 				'inReplyTo' 		=> $status->in_reply_to_id ? $status->parent()->url() : null,
 				'published'    		=> $status->created_at->toAtomString(),

@@ -2289,6 +2289,7 @@ class ApiV1Controller extends Controller
 			'media_ids' => 'sometimes|array|max:' . config_cache('pixelfed.max_album_length'),
 			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
+			'spoiler_text' => 'sometimes|string|max:140',
 		]);
 
 		if(config('costar.enabled') == true) {
@@ -2338,6 +2339,8 @@ class ApiV1Controller extends Controller
 
 		$content = strip_tags($request->input('status'));
 		$rendered = Autolink::create()->autolink($content);
+		$cw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+		$spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
 		if($in_reply_to_id) {
 			$parent = Status::findOrFail($in_reply_to_id);
@@ -2348,7 +2351,8 @@ class ApiV1Controller extends Controller
 			$status->scope = $visibility;
 			$status->visibility = $visibility;
 			$status->profile_id = $user->profile_id;
-			$status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+			$status->is_nsfw = $cw;
+			$status->cw_summary = $spoilerText;
 			$status->in_reply_to_id = $parent->id;
 			$status->in_reply_to_profile_id = $parent->profile_id;
 			$status->save();
@@ -2371,7 +2375,8 @@ class ApiV1Controller extends Controller
 				$status->rendered = $rendered;
 				$status->profile_id = $user->profile_id;
 				$status->scope = 'draft';
-				$status->is_nsfw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+				$status->is_nsfw = $cw;
+				$status->cw_summary = $spoilerText;
 				$status->save();
 			}
 

@@ -455,8 +455,8 @@ class Helpers {
 
 		return DB::transaction(function() use($url, $profile, $activity, $reply_to, $id) {
 			$ts = self::pluckval($activity['published']);
-			$scope = self::getScope($activity);
-			$cw = self::getSensitive($activity);
+			$scope = self::getScope($activity, $url);
+			$cw = self::getSensitive($activity, $url);
 			$pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
 
 			if(!$pid) {
@@ -493,7 +493,7 @@ class Helpers {
 		});
 	}
 
-	public static function getSensitive($activity)
+	public static function getSensitive($activity, $url)
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
@@ -527,7 +527,7 @@ class Helpers {
 		return $reply_to;
 	}
 
-	public static function getScope($activity)
+	public static function getScope($activity, $url)
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;

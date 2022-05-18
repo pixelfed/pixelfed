@@ -291,3 +291,40 @@ span.twitter-typeahead .tt-suggestion:focus {
 		color: var(--body-color);
 	}
 }
+
+.ui-menu {
+	.btn-group {
+		.btn:first-child {
+			border-top-left-radius: 50rem;
+			border-bottom-left-radius: 50rem;
+		}
+
+		.btn:last-child {
+			border-top-right-radius: 50rem;
+			border-bottom-right-radius: 50rem;
+		}
+
+		.btn-primary {
+			font-weight: bold;
+		}
+	}
+
+	.b-custom-control-lg {
+		padding-bottom: 8px;
+	}
+}
+
+.content-label {
+	&-wrapper {
+		div:not(.content-label) {
+			height: 100%;
+		}
+	}
+
+	&-text {
+		width: 80%;
+		@media (min-width: 768px) {
+			width: 50%;
+		}
+	}
+}
