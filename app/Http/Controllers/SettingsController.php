@@ -208,7 +208,7 @@ class SettingsController extends Controller
 		$opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
 
 		if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
-			return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');;
+			return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
 		}
 
 		$res = [
@@ -251,7 +251,7 @@ class SettingsController extends Controller
 		} else {
 			Redis::zrem('pf:tl:replies', $pid);
 		}
-		return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');;
+		return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
 	}
 
 	public function mediaSettings(Request $request)

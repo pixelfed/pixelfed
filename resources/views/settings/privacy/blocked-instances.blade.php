@@ -68,7 +68,7 @@
           swal.stopLoading();
           swal.close();
           return;
-        };
+        }
         let msg = 'The URL you have entered is not valid, please try again.'
         try {
           let validator = new URL(val);
@@ -77,7 +77,7 @@
             swal.close();
             swal('Invalid URL', msg, 'error');
             return;
-          };
+          }
           axios.post(window.location.href, {
             domain: validator.href
           }).then(res => {

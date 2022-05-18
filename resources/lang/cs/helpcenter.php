@@ -21,8 +21,8 @@ return [
 	'blockingAccounts' => 'Blokování účtů',
 	'safetyTips' => 'Tipy pro bezpečnost',
 	'reportSomething' => 'Nahlašování',
-	'dataPolicy' => 'Politika dat'
+	'dataPolicy' => 'Politika dat',
 
 	'taggingPeople' => 'Označování lidí'
 
-];
+]
