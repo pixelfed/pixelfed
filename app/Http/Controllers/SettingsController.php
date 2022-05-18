@@ -163,7 +163,7 @@ class SettingsController extends Controller
 		$mode = $request->input('mode');
 
 		if($mode == 'dark') {
-			$cookie = Cookie::make('dark-mode', true, 43800);
+			$cookie = Cookie::make('dark-mode', 'true', 43800);
 		} else {
 			$cookie = Cookie::forget('dark-mode');
 		}
