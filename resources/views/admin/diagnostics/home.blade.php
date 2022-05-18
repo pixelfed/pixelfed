@@ -606,13 +606,11 @@
 		<td><span class="badge badge-primary">PIXELFED</span></td>
 		<td><strong>ADMIN_DOMAIN</strong></td>
 		<td><span>"{{config_cache('pixelfed.domain.admin')}}"</span></td>
-		<td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">PIXELFED</span></td>
 		<td><strong>APP_DOMAIN</strong></td>
 		<td><span>"{{config_cache('pixelfed.domain.app')}}"</span></td>
-		<td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">PIXELFED</span></td>
@@ -801,7 +799,6 @@
 		<td><span class="badge badge-primary">SESSION</span></td>
 		<td><strong>SESSION_DOMAIN</strong></td>
 		<td><span>"{{config_cache('session.domain')}}"</span></td>
-		<td><strong>"instance.domain"</strong> <br><strong>Notes:</strong> ""</td>
 	</tr>
 
 	<tr>
