@@ -102,7 +102,7 @@ class StatusEntityLexer implements ShouldQueue
 				continue;
 			}
 			DB::transaction(function () use ($status, $tag) {
-				$slug = str_slug($tag, '-', false);
+				$slug = str_slug($tag, '-');
 				$hashtag = Hashtag::where('slug', $slug)->first();
 				if (!$hashtag) {
 					$hashtag = Hashtag::create(
