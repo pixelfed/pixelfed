@@ -427,8 +427,7 @@ class Inbox
 				$dm->type = 'link';
 				$dm->meta = [
 					'domain' => parse_url($msgText, PHP_URL_HOST),
-					'local' => parse_url($msgText, PHP_URL_HOST) ==
-						parse_url(config('app.url'), PHP_URL_HOST)
+					'local' => parse_url(config('app.url'), PHP_URL_HOST)
 				];
 				$dm->save();
 			}
