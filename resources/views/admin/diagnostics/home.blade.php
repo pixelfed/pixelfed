@@ -223,6 +223,7 @@
 
 	<tr>
 		<td><span class="badge badge-primary">DATABASE</span></td>
+		<td><strong>DB_CONNECTION</strong></td>
 		<td><span>"{{config_cache('database.default')}}"</span></td>
 	</tr>
 	<tr>
