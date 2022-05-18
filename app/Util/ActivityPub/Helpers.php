@@ -300,7 +300,7 @@ class Helpers {
 
 		$res = self::fetchFromUrl($url);
 
-		if(!$res || empty($res) || isset($res['error']) || !isset($res['@context']) ) {
+		if(isset($res['error']) || !isset($res['@context']) ) {
 			return;
 		}
 
@@ -495,7 +495,7 @@ class Helpers {
 
 	public static function getSensitive($activity)
 	{
-		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
+		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 
@@ -529,7 +529,7 @@ class Helpers {
 
 	public static function getScope($activity)
 	{
-		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
+		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 		$scope = 'private';
