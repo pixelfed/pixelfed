@@ -36,7 +36,7 @@ trait LabsSettings {
 		$cookie = Cookie::forget('dark-mode');
 		if($request->has('dark_mode')) {
 			if($request->dark_mode == 'on') {
-				$cookie = Cookie::make('dark-mode', true, 43800);
+				$cookie = Cookie::make('dark-mode', 'true', 43800);
 			} 
 		}
 
