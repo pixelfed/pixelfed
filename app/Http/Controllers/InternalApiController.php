@@ -326,7 +326,7 @@ class InternalApiController extends Controller
 				if(!$status) {
 					return false;
 				}
-				$status['bookmarked_at'] = $bookmark->created_at->format('c');
+				$status['bookmarked_at'] = str_replace('+00:00', 'Z', $bookmark->created_at->format(DATE_RFC3339_EXTENDED));
 
 				if($status) {
 					BookmarkService::add($pid, $status['id']);

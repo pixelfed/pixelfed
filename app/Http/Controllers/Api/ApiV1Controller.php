@@ -1008,7 +1008,7 @@ class ApiV1Controller extends Controller
 			->map(function($like) {
 				$status =  StatusService::getMastodon($like['status_id'], false);
 				$status['like_id'] = $like->id;
-				$status['liked_at'] = $like->created_at->format('c');
+				$status['liked_at'] = str_replace('+00:00', 'Z', $like->created_at->format(DATE_RFC3339_EXTENDED));
 				return $status;
 			})
 			->filter(function($status) {
