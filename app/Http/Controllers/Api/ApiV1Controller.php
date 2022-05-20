@@ -1250,8 +1250,8 @@ class ApiV1Controller extends Controller
 			return [
 				'uri' => config('pixelfed.domain.app'),
 				'title' => config('app.name'),
-				'short_description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
-				'description' => 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms',
+				'short_description' => config_cache('app.short_description'),
+				'description' => config_cache('app.description'),
 				'email' => config('instance.email'),
 				'version' => '2.7.2 (compatible; Pixelfed ' . config('pixelfed.version') .')',
 				'urls' => [
@@ -1259,7 +1259,7 @@ class ApiV1Controller extends Controller
 				],
 				'stats' => $stats,
 				'thumbnail' => url('img/pixelfed-icon-color.png'),
-				'languages' => ['en'],
+				'languages' => [config('app.locale')],
 				'registrations' => (bool) config_cache('pixelfed.open_registration'),
 				'approval_required' => false,
 				'contact_account' => $contact,
