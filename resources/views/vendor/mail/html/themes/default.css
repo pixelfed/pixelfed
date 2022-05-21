@@ -28,7 +28,7 @@ ul,
 ol,
 blockquote {
     line-height: 1.4;
-    text-align: left;
+    text-align: start;
 }
 
 a {
@@ -46,7 +46,7 @@ h1 {
     font-size: 19px;
     font-weight: bold;
     margin-top: 0;
-    text-align: left;
+    text-align: start;
 }
 
 h2 {
@@ -54,7 +54,7 @@ h2 {
     font-size: 16px;
     font-weight: bold;
     margin-top: 0;
-    text-align: left;
+    text-align: start;
 }
 
 h3 {
@@ -62,7 +62,7 @@ h3 {
     font-size: 14px;
     font-weight: bold;
     margin-top: 0;
-    text-align: left;
+    text-align: start;
 }
 
 p {
@@ -70,7 +70,7 @@ p {
     font-size: 16px;
     line-height: 1.5em;
     margin-top: 0;
-    text-align: left;
+    text-align: start;
 }
 
 p.sub {
@@ -224,27 +224,27 @@ img {
 .button-primary {
     background-color: #3490dc;
     border-top: 10px solid #3490dc;
-    border-right: 18px solid #3490dc;
+    border-inline-end: 18px solid #3490dc;
     border-bottom: 10px solid #3490dc;
-    border-left: 18px solid #3490dc;
+    border-inline-start: 18px solid #3490dc;
 }
 
 .button-green,
 .button-success {
     background-color: #38c172;
     border-top: 10px solid #38c172;
-    border-right: 18px solid #38c172;
+    border-inline-end: 18px solid #38c172;
     border-bottom: 10px solid #38c172;
-    border-left: 18px solid #38c172;
+    border-inline-start: 18px solid #38c172;
 }
 
 .button-red,
 .button-error {
     background-color: #e3342f;
     border-top: 10px solid #e3342f;
-    border-right: 18px solid #e3342f;
+    border-inline-end: 18px solid #e3342f;
     border-bottom: 10px solid #e3342f;
-    border-left: 18px solid #e3342f;
+    border-inline-start: 18px solid #e3342f;
 }
 
 /* Panels */
