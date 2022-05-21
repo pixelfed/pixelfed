@@ -187,7 +187,7 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> disable_functions:</strong>
-			<span>{{ ini_get('disable_functions') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('disable_functions') }}</span>
 		</li>
 
 	<hr>
