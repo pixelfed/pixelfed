@@ -37,7 +37,7 @@ class AdminStatsService
         return Cache::remember('admin:dashboard:storage:stats', 120000, function() {
             $res = [];
 
-            $res['last_updated'] = now()->format('c');
+            $res['last_updated'] = str_replace('+00:00', 'Z', now()->format(DATE_RFC3339_EXTENDED));
 
             $avatars = Avatar::count();
             $avatarsLocal = Avatar::whereNull('cdn_url')->count();

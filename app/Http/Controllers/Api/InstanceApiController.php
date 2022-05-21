@@ -19,7 +19,7 @@ class InstanceApiController extends Controller {
 				'acct'			  => $admin->username,
 				'display_name' 	  => e($admin->name),
 				'locked' 		  => (bool) $admin->is_private,
-				'created_at' 	  => $admin->created_at->format('c'),
+				'created_at' 	  => str_replace('+00:00', 'Z', $admin->created_at->format(DATE_RFC3339_EXTENDED)),
 				'note' 			  => e($admin->bio),
 				'url' 			  => $admin->url(),
 				'avatar' 		  => $admin->avatarUrl(),

@@ -22,6 +22,7 @@
 - Update home timeline, redirect to /i/web unless force_old_ui is present ([5ff4730f](https://github.com/pixelfed/pixelfed/commit/5ff4730f))
 - Update adminReportController, fix mail verification request 500 bug by changing filter precedence to catch deleted users that may still be cached in AccountService ([3f322e29](https://github.com/pixelfed/pixelfed/commit/3f322e29))
 - Update AP Helpers, fix getSensitive and getScope missing parameters ([657c66c1](https://github.com/pixelfed/pixelfed/commit/657c66c1))
+- Fix mastodon api compatibility ([#3499](https://github.com/pixelfed/pixelfed/pull/3499))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
 

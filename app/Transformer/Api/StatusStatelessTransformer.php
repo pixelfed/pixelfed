@@ -35,7 +35,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'reblog'                    => null,
 			'content'                   => $status->rendered ?? $status->caption,
 			'content_text'              => $status->caption,
-			'created_at'                => $status->created_at->format('c'),
+			'created_at'                => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),
 			'emojis'                    => CustomEmoji::scan($status->caption),
 			'reblogs_count'             => $status->reblogs_count ?? 0,
 			'favourites_count'          => $status->likes_count ?? 0,
