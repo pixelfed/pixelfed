@@ -721,7 +721,7 @@ class Helpers {
 			abort_if(!self::validateUrl($res['inbox']), 400);
 			abort_if(!self::validateUrl($res['id']), 400);
 
-			$profile = DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
+			$profile = DB::transaction(function() use($domain, $webfinger, $res) {
 				$instance = Instance::updateOrCreate([
 					'domain' => $domain
 				]);
