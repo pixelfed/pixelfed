@@ -22,7 +22,7 @@ trait AdminSettingsController
 		$cloud_ready = !empty(config('filesystems.disks.' . $cloud_disk . '.key')) && !empty(config('filesystems.disks.' . $cloud_disk . '.secret'));
 		$types = explode(',', ConfigCacheService::get('pixelfed.media_types'));
 		$rules = ConfigCacheService::get('app.rules') ? json_decode(ConfigCacheService::get('app.rules'), true) : null;
-		$jpeg = in_array('image/jpg', $types) ? true : in_array('image/jpeg', $types);
+		$jpeg = in_array('image/jpg', $types) || in_array('image/jpeg', $types);
 		$png = in_array('image/png', $types);
 		$gif = in_array('image/gif', $types);
 		$mp4 = in_array('video/mp4', $types);
