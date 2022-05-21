@@ -16,6 +16,8 @@ class CreateConversationsTable extends Migration
      */
     public function up()
     {
+    	Schema::dropIfExists('conversations');
+
         Schema::create('conversations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('to_id')->unsigned()->index();

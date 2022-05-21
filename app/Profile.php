@@ -26,7 +26,7 @@ class Profile extends Model
 	];
 	protected $hidden = ['private_key'];
 	protected $visible = ['id', 'user_id', 'username', 'name'];
-	protected $fillable = ['user_id'];
+	protected $guarded = [];
 
 	public function user()
 	{

@@ -36,6 +36,7 @@ use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Util\Media\License;
 use App\Models\Poll;
+use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class Helpers {
 
@@ -664,26 +665,43 @@ class Helpers {
 		return;
 	}
 
-	public static function profileFirstOrNew($url, $runJobs = false)
+	public static function profileFirstOrNew($url)
 	{
 		$url = self::validateUrl($url);
-		if($url == false || strlen($url) > 190) {
+		if($url == false) {
 			return;
 		}
+
+		$host = parse_url($url, PHP_URL_HOST);
+		$local = config('pixelfed.domain.app') == $host ? true : false;
+
+		if($local == true) {
+			$id = last(explode('/', $url));
+			return Profile::whereNull('status')
+				->whereNull('domain')
+				->whereUsername($id)
+				->firstOrFail();
+		}
+
+		if($profile = Profile::whereRemoteUrl($url)->first()) {
+			if($profile->last_fetched_at->lt(now()->subHours(24))) {
+				return self::profileUpdateOrCreate($url);
+			}
+			return $profile;
+		}
+
+		return self::profileUpdateOrCreate($url);
+	}
+
+	public static function profileUpdateOrCreate($url)
+	{
 		$hash = base64_encode($url);
 		$key = 'ap:profile:by_url:' . $hash;
-		$ttl = now()->addSeconds(60);
-		$profile = Cache::remember($key, $ttl, function() use($url, $runJobs) {
-			$host = parse_url($url, PHP_URL_HOST);
-			$local = config('pixelfed.domain.app') == $host ? true : false;
+		$lock = Cache::lock($key, 30);
+		$profile = null;
 
-			if($local == true) {
-				$id = last(explode('/', $url));
-				return Profile::whereNull('status')
-					->whereNull('domain')
-					->whereUsername($id)
-					->firstOrFail();
-			}
+		try {
+			$lock->block(5);
 
 			$res = self::fetchProfileFromUrl($url);
 			if(isset($res['id']) == false) {
@@ -703,47 +721,48 @@ class Helpers {
 			abort_if(!self::validateUrl($res['inbox']), 400);
 			abort_if(!self::validateUrl($res['id']), 400);
 
-			$profile = Profile::whereRemoteUrl($res['id'])->first();
-			if(!$profile) {
-				$instance = Instance::firstOrCreate([
+			$profile = DB::transaction(function() use($domain, $webfinger, $res) {
+				$instance = Instance::updateOrCreate([
 					'domain' => $domain
 				]);
 				if($instance->wasRecentlyCreated == true) {
 					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
 				}
-				$profile = DB::transaction(function() use($domain, $webfinger, $res, $runJobs) {
-					$profile = new Profile();
-					$profile->domain = strtolower($domain);
-					$profile->username = Purify::clean($webfinger);
-					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-					$profile->inbox_url = $res['inbox'];
-					$profile->outbox_url = isset($res['outbox']) ? $res['outbox'] : null;
-					$profile->remote_url = $res['id'];
-					$profile->public_key = $res['publicKey']['publicKeyPem'];
-					$profile->key_id = $res['publicKey']['id'];
-					$profile->webfinger = Purify::clean($webfinger);
-					$profile->last_fetched_at = now();
-					$profile->save();
-					RemoteAvatarFetch::dispatch($profile);
-					return $profile;
-				});
-			} else {
-				// Update info after 24 hours
-				if($profile->last_fetched_at == null ||
-				   $profile->last_fetched_at->lt(now()->subHours(24)) == true
+
+				$profile = Profile::updateOrCreate(
+					[
+						'domain' => strtolower($domain),
+						'username' => Purify::clean($webfinger),
+						'remote_url' => $res['id'],
+					],
+					[
+						'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
+						'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+						'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
+						'inbox_url' => $res['inbox'],
+						'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
+						'public_key' => $res['publicKey']['publicKeyPem'],
+						'key_id' => $res['publicKey']['id'],
+						'webfinger' => Purify::clean($webfinger),
+					]
+				);
+
+				if( $profile->last_fetched_at == null ||
+					$profile->last_fetched_at->lt(now()->subHours(24))
 				) {
-					$profile->name = isset($res['name']) ? Purify::clean($res['name']) : 'user';
-					$profile->bio = isset($res['summary']) ? Purify::clean($res['summary']) : null;
-					$profile->last_fetched_at = now();
-					$profile->sharedInbox = isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) && Helpers::validateUrl($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null;
-					$profile->save();
+					RemoteAvatarFetch::dispatch($profile);
 				}
-				RemoteAvatarFetch::dispatch($profile);
-			}
+				$profile->last_fetched_at = now();
+				$profile->save();
+				return $profile;
+			});
+
 			return $profile;
-		});
+		} catch (LockTimeoutException $e) {
+		} finally {
+		    optional($lock)->release();
+		}
+
 		return $profile;
 	}
 
