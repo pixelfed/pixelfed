@@ -58,15 +58,15 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor created: </strong>
-			<span>{{ \App\Models\InstanceActor::count() ? '✅' : '❌' }}</span>
+			<span>{{ \App\Models\InstanceActor::count() ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor cached: </strong>
-			<span>{{ Cache::get(\App\Models\InstanceActor::PROFILE_KEY) ? '✅' : '❌' }}</span>
+			<span>{{ Cache::get(\App\Models\InstanceActor::PROFILE_KEY) ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> enabled: </strong>
-			<span>{{ config_cache('pixelfed.oauth_enabled') ? '✅' : '❌' }}</span>
+			<span>{{ config_cache('pixelfed.oauth_enabled') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> token_expiration</strong>
@@ -74,11 +74,11 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> public key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-public.key')) ? '✅' : '❌' }}</span>
+			<span>{{ file_exists(storage_path('oauth-public.key')) ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> private key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅' : '❌' }}</span>
+			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅ true' : '❌ false' }}</span>
 		</li>		
 		
 		<hr>
@@ -155,35 +155,35 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI</span> file_uploads:</strong>
-			<span>{{ ini_get('file_uploads') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('file_uploads') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_fopen (false):</strong>
-			<span>{{ ini_get('allow_url_fopen') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('allow_url_fopen') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_include (false):</strong>
-			<span>{{ ini_get('allow_url_include') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('allow_url_include') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> expose_php (false):</strong>
-			<span>{{ ini_get('expose_php') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('expose_php') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> display_errors (false):</strong>
-			<span>{{ ini_get('display_errors') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('display_errors') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> display_startup_errors (false):</strong>
-			<span>{{ ini_get('display_startup_errors') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('display_startup_errors') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> log_errors (true):</strong>
-			<span>{{ ini_get('log_errors') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('log_errors') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> ignore_repeated_errors (false):</strong>
-			<span>{{ ini_get('ignore_repeated_errors') ? '✅' : '❌' }}</span>
+			<span>{{ ini_get('ignore_repeated_errors') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">PHP INI - Security</span> disable_functions:</strong>
