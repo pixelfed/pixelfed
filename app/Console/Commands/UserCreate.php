@@ -53,7 +53,7 @@ class UserCreate extends Command
             $user->email = $o['email'];
             $user->password = bcrypt($o['password']);
             $user->is_admin = (bool) $o['is_admin'];
-            $user->email_verified_at = (bool) $o['confirm_email'] ? now() : null;
+            $user->email_verified_at = $o['confirm_email'] ? now() : null;
             $user->save();
 
             $this->info('Successfully created user!');
