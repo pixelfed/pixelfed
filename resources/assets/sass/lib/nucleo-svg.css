@@ -63,7 +63,7 @@ Align icon and text
 
 .icon-text-aligner .icon {
   color: inherit;
-  margin-right: 0.4em;
+  margin-inline-end: 0.4em;
 }
 
 .icon-text-aligner .icon use {

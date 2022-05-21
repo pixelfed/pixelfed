@@ -59,8 +59,8 @@ License - nucleoapp.com/license/
   list icons
 -------------------------*/
 .ni-ul {
-  padding-left: 0;
-  margin-left: 2.14285714em;
+  padding-inline-start: 0;
+  margin-inline-start: 2.14285714em;
   list-style-type: none;
 }
 .ni-ul > li {

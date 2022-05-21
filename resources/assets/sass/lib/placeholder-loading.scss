@@ -30,7 +30,7 @@
 	left: 50%;
 	z-index: 1;
 	width: 500%;
-	margin-left: -250%;
+	margin-inline-start: -250%;
 	background: linear-gradient(to right, rgba(255, 255, 255, 0) 46%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 54%) 50% 50%;
 	-webkit-animation: phAnimation 0.8s linear infinite;
 					animation: phAnimation 0.8s linear infinite;
@@ -42,8 +42,8 @@
 	flex: 1 1 auto;
 	flex-flow: column;
 	margin-bottom: 15px;
-	padding-right: 15px;
-	padding-left: 15px;
+	padding-inline-end: 15px;
+	padding-inline-start: 15px;
 }
 
 .ph-row {

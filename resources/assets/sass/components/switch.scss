@@ -74,7 +74,7 @@ $switch-transition: .2s all !default;
     }
 
     &:checked + label::after {
-      margin-left: $switch-height;
+      margin-inline-start: $switch-height;
     }
 
     &:focus + label::before {
@@ -114,7 +114,7 @@ $switch-transition: .2s all !default;
       }
 
       &:checked + label::after {
-        margin-left: $switch-height-sm;
+        margin-inline-start: $switch-height-sm;
       }
     }
   }
@@ -141,12 +141,12 @@ $switch-transition: .2s all !default;
       }
 
       &:checked + label::after {
-        margin-left: $switch-height-lg;
+        margin-inline-start: $switch-height-lg;
       }
     }
   }
 
   + .switch {
-    margin-left: 1rem;
+    margin-inline-start: 1rem;
   }
 }

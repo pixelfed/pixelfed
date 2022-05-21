@@ -195,7 +195,7 @@
     left: 50%;
     position: absolute;
     top: 9px;
-    margin-left: -30px;
+    margin-inline-start: -30px;
     background: #171818;
     border-radius: 6px
 }
@@ -306,7 +306,7 @@
     left: 9px;
     top: 50%;
     margin-top: -30px;
-    margin-left: 0
+    margin-inline-start: 0
 }
 
 .marvel-device.iphone-x.landscape .notch {
@@ -360,7 +360,7 @@
     left: 50%;
     position: absolute;
     top: 25px;
-    margin-left: -28px;
+    margin-inline-start: -28px;
     background: #171818;
     z-index: 1;
     border-radius: 8px
@@ -512,7 +512,7 @@
     width: 8px;
     top: 50%;
     margin-top: -28px;
-    margin-left: 0;
+    margin-inline-start: 0;
     right: 25px;
     left: auto
 }
@@ -581,8 +581,8 @@
     top: 0;
     border-top: 0;
     border-bottom: 0;
-    border-left: 2px solid #9fa0a2;
-    border-right: 2px solid #9fa0a2
+    border-inline-start: 2px solid #9fa0a2;
+    border-inline-end: 2px solid #9fa0a2
 }
 
 .marvel-device.note8.landscape .shadow {

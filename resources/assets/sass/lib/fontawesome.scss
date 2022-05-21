@@ -58,8 +58,8 @@
 
 .fa-ul {
   list-style-type: none;
-  margin-left: 2.5em;
-  padding-left: 0; }
+  margin-inline-start: 2.5em;
+  padding-inline-start: 0; }
   .fa-ul > li {
     position: relative; }
 
@@ -76,24 +76,24 @@
   padding: .2em .25em .15em; }
 
 .fa-pull-left {
-  float: left; }
+  float: inline-start; }
 
 .fa-pull-right {
-  float: right; }
+  float: inline-end; }
 
 .fa.fa-pull-left,
 .fas.fa-pull-left,
 .far.fa-pull-left,
 .fal.fa-pull-left,
 .fab.fa-pull-left {
-  margin-right: .3em; }
+  margin-inline-end: .3em; }
 
 .fa.fa-pull-right,
 .fas.fa-pull-right,
 .far.fa-pull-right,
 .fal.fa-pull-right,
 .fab.fa-pull-right {
-  margin-left: .3em; }
+  margin-inline-start: .3em; }
 
 .fa-spin {
   -webkit-animation: fa-spin 2s infinite linear;
