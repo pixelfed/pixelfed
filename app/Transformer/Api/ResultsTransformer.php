@@ -36,7 +36,7 @@ class ResultsTransformer extends Fractal\TransformerAbstract
 
 	public function includeTags($results)
 	{
-		$hashtags = $status->hashtags;
+		$hashtags = $results->hashtags;
 		return $this->collection($hashtags, new HashtagTransformer());
 	}
 }
