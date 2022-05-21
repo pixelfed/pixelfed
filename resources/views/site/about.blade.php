@@ -6,9 +6,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="mobile-web-app-capable" content="yes">
-	<title>{{ config('app.name', 'Pixelfed') }}</title>
-	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}">
-	<meta property="og:title" content="{{ config_cache('app.name', 'pixelfed') }}">
+	<title>{{ config_cache('app.name') ?? 'pixelfed' }}</title>
+	<meta property="og:site_name" content="{{ config_cache('app.name') ?? 'pixelfed' }}">
+	<meta property="og:title" content="{{ config_cache('app.name') ?? 'pixelfed' }}">
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{route('site.about')}}">
 	<meta property="og:description" content="{{config_cache('app.short_description')}}">
