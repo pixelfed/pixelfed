@@ -45,6 +45,7 @@ return [
 	],
 
 	'network_timeline' => env('PF_NETWORK_TIMELINE', true),
+	'network_timeline_days_falloff' => env('PF_NETWORK_TIMELINE_DAYS_FALLOFF', 2),
 
 	'custom_emoji' => [
 		'enabled' => env('CUSTOM_EMOJI', false),

@@ -604,7 +604,7 @@ class PublicApiController extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 3;
         $user = $request->user();
-        $amin = SnowflakeService::byDate(now()->subDays(490));
+        $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
