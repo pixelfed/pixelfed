@@ -185,7 +185,10 @@
 			<strong><span class="badge badge-primary">PHP INI - Security</span> ignore_repeated_errors (false):</strong>
 			<span>{{ ini_get('ignore_repeated_errors') ? '✅' : '❌' }}</span>
 		</li>
-
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> disable_functions:</strong>
+			<span>{{ ini_get('disable_functions') ? '✅' : '❌' }}</span>
+		</li>
 
 	<hr>
 	<p class="font-weight-bold text-muted">
