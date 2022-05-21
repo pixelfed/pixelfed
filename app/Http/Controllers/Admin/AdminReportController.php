@@ -379,6 +379,7 @@ trait AdminReportController
 			return redirect('/i/admin/reports/appeals');
 		}
 
+		$status = null;
 		switch ($appeal->type) {
 			case 'post.cw':
 				$status = $appeal->status;

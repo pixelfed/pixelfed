@@ -283,6 +283,7 @@ class SettingsController extends Controller
 		$compose = is_string($setting->compose_settings) ? json_decode($setting->compose_settings, true) : $setting->compose_settings;
 		$changed = false;
 
+		$key = null;
 		if($sync) {
 			$key = 'pf:settings:mls_recently:'.$uid;
 			if(Cache::get($key) == 2) {

@@ -42,6 +42,7 @@ class DirectMessageController extends Controller
 		$action = $request->input('a', 'inbox');
 		$page = $request->input('page');
 
+		$dms = null;
 		if(config('database.default') == 'pgsql') {
 			if($action == 'inbox') {
 				$dms = DirectMessage::select('id', 'type', 'to_id', 'from_id', 'id', 'status_id', 'is_hidden', 'meta', 'created_at', 'read_at')

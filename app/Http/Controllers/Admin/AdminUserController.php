@@ -245,6 +245,7 @@ trait AdminUserController
 			abort_if($profile->user_id < $mid, 403);
 		}
 
+		$msg = null;
 		switch ($action) {
 			case 'cw':
 				$profile->cw = !$profile->cw;

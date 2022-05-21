@@ -162,6 +162,7 @@ class AccountController extends Controller
 			return abort(406);
 		}
 		$filterable = [];
+		$profile = null;
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
@@ -206,6 +207,7 @@ class AccountController extends Controller
 			return abort(406);
 		}
 		$filterable = [];
+		$profile = null;
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
@@ -266,6 +268,7 @@ class AccountController extends Controller
 			return abort(406);
 		}
 		$filterable = [];
+		$profile = null;
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
@@ -311,6 +314,7 @@ class AccountController extends Controller
 			return abort(406);
 		}
 		$filterable = [];
+		$profile = null;
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);

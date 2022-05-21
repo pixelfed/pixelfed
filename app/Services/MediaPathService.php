@@ -16,6 +16,7 @@ class MediaPathService {
 	{
 		$mh = hash('sha256', date('Y').'-.-'.date('m'));
 		
+		$path = null;
 		if($account instanceOf User) {
 			switch ($version) {
 				// deprecated
@@ -55,6 +56,7 @@ class MediaPathService {
 		$monthHash = HashidService::encode(date('Y').date('m'));
 		$random = date('d').Str::random(32);
 
+		$path = null;
 		if($account instanceOf User) {
 			switch ($version) {
 				case 1:

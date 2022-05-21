@@ -60,6 +60,7 @@ class DiscoverController extends Controller
 		$tag = $request->input('hashtag');
 
 		$hashtag = Hashtag::whereName($tag)->firstOrFail();
+		$res = null;
 		if($user) {
 			$res['follows'] = HashtagService::isFollowing($user->profile_id, $hashtag->id);
 		}
@@ -209,6 +210,7 @@ class DiscoverController extends Controller
 		abort_if(!$this->config()['memories']['enabled'], 404);
 		$type = $request->input('type') ?? 'posts';
 
+		$res = null;
 		switch($type) {
 			case 'posts':
 				$res = Status::whereProfileId($pid)

@@ -15,6 +15,7 @@ class HttpSignature {
    */
 
   public static function sign(Profile $profile, $url, $body = false, $addlHeaders = []) {
+    $digest = null;
     if($body) {
       $digest = self::_digest($body);
     }
@@ -39,6 +40,7 @@ class HttpSignature {
     $privateKey = Cache::rememberForever(InstanceActor::PKI_PRIVATE, function() {
       return InstanceActor::first()->private_key;
     });
+    $digest = null;
     if($body) {
       $digest = self::_digest($body);
     }

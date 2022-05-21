@@ -25,6 +25,7 @@ trait RelationshipSettings
 		$mode = $request->input('mode') ?? 'followers';
 		$profile = Auth::user()->profile;
 
+		$data = null;
 		switch ($mode) {
 			case 'following':
 				$data = $profile->following()->simplePaginate(10);

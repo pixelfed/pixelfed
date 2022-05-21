@@ -74,6 +74,7 @@ class AvatarController extends Controller
     {
         $padded = str_pad($id, 19, 0, STR_PAD_LEFT);
         $parts = str_split($padded, 3);
+        $avatarpath = null;
         foreach ($parts as $k => $part) {
             if ($k == 0) {
                 $prefix = storage_path('app/public/avatars/'.$parts[0]);

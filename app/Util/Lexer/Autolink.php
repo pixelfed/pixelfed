@@ -628,6 +628,7 @@ class Autolink extends Regex
 
     public function linkToUrl($entity)
     {
+        $attributes = null;
         if (!empty($this->class_url)) {
             $attributes['class'] = $this->class_url;
         }
