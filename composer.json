@@ -15,7 +15,7 @@
 		"ext-openssl": "*",
 		"bacon/bacon-qr-code": "^2.0.3",
 		"brick/math": "^0.9.3",
-		"buzz/laravel-h-captcha": "1.0.2",
+		"buzz/laravel-h-captcha": "1.0.3",
 		"doctrine/dbal": "^2.7",
 		"fideloper/proxy": "^4.0",
 		"fruitcake/laravel-cors": "^2.0",
@@ -40,7 +40,7 @@
 		"spatie/laravel-backup": "^6.0.0",
 		"spatie/laravel-image-optimizer": "^1.1",
 		"stevebauman/purify": "3.0.*",
-		"symfony/http-kernel": "5.1.5"
+		"symfony/http-kernel": "5.4.8"
 	},
 	"require-dev": {
 		"brianium/paratest": "^6.1",
