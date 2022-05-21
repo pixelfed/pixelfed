@@ -19,7 +19,7 @@ class PollService
 			$poll = Poll::whereStatusId($id)->firstOrFail();
 			return [
 				'id' => (string) $poll->id,
-				'expires_at' => $poll->expires_at->format('c'),
+				'expires_at' => str_replace('+00:00', 'Z', $poll->expires_at->format(DATE_RFC3339_EXTENDED)),
 				'expired' => null,
 				'multiple' => $poll->multiple,
 				'votes_count' => $poll->votes_count,
