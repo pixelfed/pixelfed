@@ -40,26 +40,26 @@ use Illuminate\Contracts\Cache\LockTimeoutException;
 
 class Helpers {
 
-	public static function validateObject($data)
-	{
-		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
+// 	public static function validateObject($data)
+// 	{
+// 		$verbs = ['Create', 'Announce', 'Like', 'Follow', 'Delete', 'Accept', 'Reject', 'Undo', 'Tombstone'];
 
-		$valid = Validator::make($data, [
-			'type' => [
-				'required',
-				'string',
-				Rule::in($verbs)
-			],
-			'id' => 'required|string',
-			'actor' => 'required|string|url',
-			'object' => 'required',
-			'object.type' => 'required_if:type,Create',
-			'object.attributedTo' => 'required_if:type,Create|url',
-			'published' => 'required_if:type,Create|date'
-		])->passes();
+// 		$valid = Validator::make($data, [
+// 			'type' => [
+// 				'required',
+// 				'string',
+// 				Rule::in($verbs)
+// 			],
+// 			'id' => 'required|string',
+// 			'actor' => 'required|string|url',
+// 			'object' => 'required',
+// 			'object.type' => 'required_if:type,Create',
+// 			'object.attributedTo' => 'required_if:type,Create|url',
+// 			'published' => 'required_if:type,Create|date'
+// 		])->passes();
 
-		return $valid;
-	}
+// 		return $valid;
+// 	}
 
 	public static function verifyAttachments($data)
 	{
@@ -149,12 +149,12 @@ class Helpers {
 		return $audience;
 	}
 
-	public static function userInAudience($profile, $data)
-	{
-		$audience = self::normalizeAudience($data);
-		$url = $profile->permalink();
-		return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
-	}
+// 	public static function userInAudience($profile, $data)
+// 	{
+// 		$audience = self::normalizeAudience($data);
+// 		$url = $profile->permalink();
+// 		return in_array($url, $audience['to']) || in_array($url, $audience['cc']);
+// 	}
 
 	public static function validateUrl($url)
 	{
@@ -226,15 +226,15 @@ class Helpers {
 		return false;
 	}
 
-	public static function zttpUserAgent()
-	{
-		$version = config('pixelfed.version');
-		$url = config('app.url');
-		return [
-			'Accept'     => 'application/activity+json',
-			'User-Agent' => "(Pixelfed/{$version}; +{$url})",
-		];
-	}
+// 	public static function zttpUserAgent()
+// 	{
+// 		$version = config('pixelfed.version');
+// 		$url = config('app.url');
+// 		return [
+// 			'Accept'     => 'application/activity+json',
+// 			'User-Agent' => "(Pixelfed/{$version}; +{$url})",
+// 		];
+// 	}
 
 	public static function fetchFromUrl($url = false)
 	{
