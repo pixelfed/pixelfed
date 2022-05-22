@@ -4441,6 +4441,7 @@ input[type='button'].btn-block
 	left: 0;
 
 	display: none;
+	float: left;
 	float: inline-start;
 
 	min-width: 10rem;
@@ -7821,6 +7822,7 @@ a.badge:focus
 	font-weight: 600;
 	line-height: 1;
 
+	float: right;
 	float: inline-end;
 
 	opacity: .5;
@@ -8521,6 +8523,7 @@ a.close.disabled
 	position: relative;
 
 	display: none;
+	float: left;
 	float: inline-start;
 
 	width: 100%;
@@ -10155,11 +10158,13 @@ button.bg-darker:focus
 
 .float-left
 {
+	float: left;
 	float: inline-start !important;
 }
 
 .float-right
 {
+	float: right;
 	float: inline-end !important;
 }
 
@@ -10172,10 +10177,12 @@ button.bg-darker:focus
 {
 	.float-sm-left
 	{
+		float: left;
 		float: inline-start !important;
 	}
 	.float-sm-right
 	{
+		float: right;
 		float: inline-end !important;
 	}
 	.float-sm-none
@@ -10188,10 +10195,12 @@ button.bg-darker:focus
 {
 	.float-md-left
 	{
+		float: left;
 		float: inline-start !important;
 	}
 	.float-md-right
 	{
+		float: right;
 		float: inline-end !important;
 	}
 	.float-md-none
@@ -10204,10 +10213,12 @@ button.bg-darker:focus
 {
 	.float-lg-left
 	{
+		float: left;
 		float: inline-start !important;
 	}
 	.float-lg-right
 	{
+		float: right;
 		float: inline-end !important;
 	}
 	.float-lg-none
@@ -10220,10 +10231,12 @@ button.bg-darker:focus
 {
 	.float-xl-left
 	{
+		float: left;
 		float: inline-start !important;
 	}
 	.float-xl-right
 	{
+		float: right;
 		float: inline-end !important;
 	}
 	.float-xl-none
@@ -20601,6 +20614,7 @@ textarea[resize='horizontal']
 {
 	font-weight: 500;
 
+	float: right;
 	float: inline-end;
 
 	color: #adb5bd;
@@ -25735,6 +25749,7 @@ a.text-lighter:focus
 }
 .datepicker-rtl table tr td span
 {
+	float: right;
 	float: inline-end;
 }
 .datepicker-dropdown
@@ -25940,6 +25955,7 @@ a.text-lighter:focus
 	line-height: 54px;
 
 	display: block;
+	float: left;
 	float: inline-start;
 
 	width: 23%;
@@ -26150,6 +26166,7 @@ table.dataTable tbody > tr.selected
 .dataTables_filter
 {
 	display: inline-block;
+	float: right;
 	float: inline-end;
 
 	padding-inline-end: 1.5rem;
@@ -26327,6 +26344,7 @@ table.dataTable tbody > tr.selected
 }
 .fc-event .fc-time
 {
+	float: left;
 	float: inline-start;
 
 	margin: 0 0 0 -1px;
