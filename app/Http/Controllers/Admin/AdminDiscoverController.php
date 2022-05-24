@@ -66,7 +66,6 @@ trait AdminDiscoverController
 			'hashtags' => 'nullable|string'
 		]);
 		$name = $request->input('name');
-		$slug = str_slug($name);
 		$active = $request->input('active');
 		$media = (int) $request->input('media');
 		$media = Media::findOrFail($media);
