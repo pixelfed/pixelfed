@@ -509,10 +509,6 @@ class AccountController extends Controller
 		}
 	}
 
-	public function accountRestored(Request $request)
-	{
-	}
-
 	public function accountMutes(Request $request)
     {
         abort_if(!$request->user(), 403);
