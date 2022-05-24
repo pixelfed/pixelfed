@@ -130,7 +130,6 @@ trait AdminUserController
 			'message' => 'required|string|min:5|max:500'
 		]);
 		$user = User::findOrFail($id);
-		$profile = $user->profile;
 		$message = $request->input('message');
 		Mail::to($user->email)->send(new AdminMessage($message));
 		ModLogService::boot()
