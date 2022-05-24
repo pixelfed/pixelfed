@@ -42,8 +42,6 @@ class DirectMessage extends Model
     public function toHtml()
     {
         $actorName = $this->author->username;
-        $actorUrl = $this->author->url();
-        $url = $this->url();
 
         return "{$actorName} sent a direct message.";
     }
