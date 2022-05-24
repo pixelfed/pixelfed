@@ -23,7 +23,7 @@ class AccountInterstitial extends Model
 	public function status()
 	{
 		if($this->item_type != 'App\Status') {
-			return;
+			return null;
 		}
 		return $this->hasOne(Status::class, 'id', 'item_id');
 	}
