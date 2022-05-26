@@ -96,4 +96,14 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('media', 'Api\ApiV1Controller@mediaUploadV2')->middleware($middleware);
 	});
 
+	Route::group(['prefix' => 'live'], function() use($middleware) {
+		Route::post('create_stream', 'LiveStreamController@createStream')->middleware($middleware);
+		Route::post('stream/edit', 'LiveStreamController@editStream')->middleware($middleware);
+		Route::get('active/list', 'LiveStreamController@getActiveStreams')->middleware($middleware);
+		Route::get('accounts/stream', 'LiveStreamController@getUserStream')->middleware($middleware);
+		Route::delete('accounts/stream', 'LiveStreamController@deleteStream')->middleware($middleware);
+		Route::get('chat/latest', 'LiveStreamController@getLatestChat')->middleware($middleware);
+		Route::post('chat/message', 'LiveStreamController@addChatComment')->middleware($middleware);
+		Route::post('chat/delete', 'LiveStreamController@deleteChatComment')->middleware($middleware);
+	});
 });
