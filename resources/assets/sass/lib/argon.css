@@ -8950,7 +8950,7 @@ button.bg-darker:focus
 	border-bottom: 1px solid #e9ecef !important;
 }
 
-.border-inline-start
+.border-left
 {
 	border-inline-start: 1px solid #e9ecef !important;
 }
@@ -8975,7 +8975,7 @@ button.bg-darker:focus
 	border-bottom: 0 !important;
 }
 
-.border-inline-start-0
+.border-left-0
 {
 	border-inline-start: 0 !important;
 }

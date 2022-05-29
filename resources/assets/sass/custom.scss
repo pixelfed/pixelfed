@@ -346,7 +346,7 @@ body, button, input, textarea {
 	box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
 }
 
-.border-inline-start-primary {
+.border-left-primary {
 	border-inline-start: 3px solid $primary;
 }
 
@@ -420,7 +420,7 @@ details summary::-webkit-details-marker {
 	background: linear-gradient(to bottom right,#6736dd,#10c5f8);
 }
 
-.border-inline-start-blue {
+.border-left-blue {
 	border-inline-start: 3px solid #10c5f8;
 }
 
