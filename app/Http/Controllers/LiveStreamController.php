@@ -217,4 +217,20 @@ class LiveStreamController extends Controller
 
     	return;
     }
+
+    public function getConfig(Request $request)
+    {
+    	abort_if(!config('livestreaming.enabled'), 400);
+    	abort_if(!$request->user(), 403);
+
+    	$res = [
+    		'enabled' => config('livestreaming.enabled'),
+    		'broadcast' => [
+    			'sources' => config('livestreaming.broadcast.sources'),
+    			'limits' => config('livestreaming.broadcast.limits')
+    		],
+    	];
+
+    	return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+    }
 }
