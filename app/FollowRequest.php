@@ -11,6 +11,11 @@ class FollowRequest extends Model
 	protected $casts = [
 		'activity' => 'array',
 	];
+
+    public function actor()
+    {
+        return $this->belongsTo(Profile::class, 'follower_id', 'id');
+    }
 	
     public function follower()
     {
@@ -20,11 +25,6 @@ class FollowRequest extends Model
     public function following()
     {
         return $this->belongsTo(Profile::class, 'following_id', 'id');
-    }
-
-    public function actor()
-    {
-        return $this->belongsTo(Profile::class, 'follower_id', 'id');
     }
 
     public function target()

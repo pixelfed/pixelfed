@@ -29,6 +29,7 @@ use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Services\AccountService;
 use App\Services\UserFilterService;
 use App\Services\RelationshipService;
+use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 
 class AccountController extends Controller
 {
@@ -394,8 +395,13 @@ class AccountController extends Controller
 			$follow->profile_id = $follower->id;
 			$follow->following_id = $pid;
 			$follow->save();
-			FollowPipeline::dispatch($follow);
-			$followRequest->delete();
+
+            if($follower->domain != null && $follower->private_key === null) {
+                FollowAcceptPipeline::dispatch($followRequest);
+            } else {
+                FollowPipeline::dispatch($follow);
+                $followRequest->delete();
+            }
 			break;
 
 			case 'reject':

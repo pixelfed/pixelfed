@@ -16,7 +16,7 @@ class AcceptFollow extends Fractal\TransformerAbstract
 			'actor'     => $follow->target->permalink(),
 			'object' 	=> [
 				'type' 		=> 'Follow',
-				'id'        => $follow->activity ? $follow->activity['id'] : null,
+				'id'        => $follow->activity && isset($follow->activity['id']) ? $follow->activity['id'] : null,
 				'actor'		=> $follow->actor->permalink(),
 				'object'	=> $follow->target->permalink()
 			]
