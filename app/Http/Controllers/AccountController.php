@@ -364,7 +364,8 @@ class AccountController extends Controller
 			'accounts' => $followers->take(10)->map(function($a) {
 				$actor = $a->actor;
 				return [
-					'id' => $actor->id,
+					'rid' => (string) $a->id,
+					'id' => (string) $actor->id,
 					'username' => $actor->username,
 					'avatar' => $actor->avatarUrl(),
 					'url' => $actor->url(),
