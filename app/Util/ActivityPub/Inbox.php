@@ -477,7 +477,7 @@ class Inbox
 				'follower_id' => $actor->id,
 				'following_id' => $target->id,
 			],[
-				'activity' => collect($this->payload)->only(['id','actor','object'])->toArray()
+				'activity' => collect($this->payload)->only(['id','actor','object','type'])->toArray()
 			]);
 		} else {
 			$follower = new Follower;
