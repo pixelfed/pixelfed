@@ -158,7 +158,7 @@
 			<span>{{ ini_get('file_uploads') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
-			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_fopen (false):</strong>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_fopen (true):</strong>
 			<span>{{ ini_get('allow_url_fopen') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
