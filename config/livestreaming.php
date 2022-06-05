@@ -10,6 +10,7 @@ return [
 	],
 
 	'broadcast' => [
+		'delete_token_after_finished' => (bool) env('HLS_LIVE_BROADCAST_DELETE_TOKEN_AFTER', true),
 		'max_duration' => (int) env('HLS_LIVE_BROADCAST_MAX_DURATION', 60),
 		'max_active' => (int) env('HLS_LIVE_BROADCAST_MAX_ACTIVE', 10),
 
