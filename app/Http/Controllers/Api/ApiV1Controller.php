@@ -1811,7 +1811,7 @@ class ApiV1Controller extends Controller
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id']);
+				$status = StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
@@ -1842,7 +1842,7 @@ class ApiV1Controller extends Controller
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id']);
+				$status = StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
