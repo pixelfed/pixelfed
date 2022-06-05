@@ -38,6 +38,8 @@ class UserCreate extends Command
      */
     public function handle()
     {
+
+        
         $this->info('Creating a new user...');
 
         $o = $this->options();
@@ -81,6 +83,11 @@ class UserCreate extends Command
 
         if($password !== $confirm) {
             $this->error('Password mismatch, please try again...');
+            exit;
+        }
+        
+        if (strlen($password) < 6) {
+            $this->error('Must be 6 or more characters, please try again...');
             exit;
         }
         
