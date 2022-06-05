@@ -521,7 +521,7 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get()
                       ->map(function($s) use ($user) {
-                           $status = StatusService::get($s->id);
+                           $status = StatusService::get($s->id, false);
                            if(!$status) {
                            		return false;
                            }
@@ -567,7 +567,7 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get()
                       ->map(function($s) use ($user) {
-                           $status = StatusService::get($s->id);
+                           $status = StatusService::get($s->id, false);
                            if(!$status) {
                            		return false;
                            }
