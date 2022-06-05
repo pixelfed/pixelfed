@@ -37,9 +37,7 @@ class UserCreate extends Command
      * @return mixed
      */
     public function handle()
-    {
-
-        
+    {        
         $this->info('Creating a new user...');
 
         $o = $this->options();
