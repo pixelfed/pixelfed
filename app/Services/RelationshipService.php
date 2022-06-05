@@ -57,6 +57,8 @@ class RelationshipService
 
 	public static function refresh($aid, $tid)
 	{
+		Cache::forget('pf:services:follow:audience:' . $aid);
+		Cache::forget('pf:services:follow:audience:' . $tid);
 		self::delete($tid, $aid);
 		self::delete($aid, $tid);
 		self::get($tid, $aid);

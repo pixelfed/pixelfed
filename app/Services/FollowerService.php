@@ -78,11 +78,11 @@ class FollowerService
 			}
 			return $profile
 				->followers()
-				->whereLocalProfile(false)
 				->get()
 				->map(function($follow) {
 					return $follow->sharedInbox ?? $follow->inbox_url;
 				})
+				->filter()
 				->unique()
 				->values()
 				->toArray();
