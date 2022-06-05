@@ -271,7 +271,28 @@ class Profile extends Model
 						$this->permalink('/followers')
 					]
 				];
-				break;
+			break;
+
+			case 'unlisted':
+				$audience = [
+					'to' => [
+					],
+					'cc' => [
+						'https://www.w3.org/ns/activitystreams#Public',
+						$this->permalink('/followers')
+					]
+				];
+			break;
+
+			case 'private':
+				$audience = [
+					'to' => [
+						$this->permalink('/followers')
+					],
+					'cc' => [
+					]
+				];
+			break;
 		}
 		return $audience;
 	}
