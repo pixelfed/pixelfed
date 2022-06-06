@@ -155,7 +155,7 @@
 		</li>
 
 		<li>
-			<strong><span class="badge badge-primary">PHP INI</span> file_uploads:</strong>
+			<strong><span class="badge badge-primary">PHP INI</span> file_uploads (On):</strong>
 			<span>{{ ini_get('file_uploads') }}</span>
 		</li>
 		<li>
