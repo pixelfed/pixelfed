@@ -29,9 +29,6 @@ class GenerateInstanceActor extends Command
 		}
 
 		if(InstanceActor::exists()) {
-			$this->line(' ');
-			$this->error('Instance actor already exists!');
-			$this->line(' ');
 			$actor = InstanceActor::whereNotNull('public_key')
 				->whereNotNull('private_key')
 				->firstOrFail();
@@ -42,7 +39,8 @@ class GenerateInstanceActor extends Command
 			Cache::rememberForever(InstanceActor::PKI_PRIVATE, function() use($actor) {
 				return $actor->private_key;
 			});
-			exit;
+			$this->info('Instance actor succesfully generated. You do not need to run this command again.');
+			return;
 		}
 
 		$pkiConfig = [
