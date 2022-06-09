@@ -496,7 +496,7 @@ class Helpers {
 				$status->in_reply_to_id === null &&
 				$status->reblog_of_id === null &&
 				in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))
+				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old')))
 			) {
 				NetworkTimelineService::add($status->id);
 			}
