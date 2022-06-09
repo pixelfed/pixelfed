@@ -62,6 +62,7 @@ use App\Services\{
 	FollowerService,
 	InstanceService,
 	LikeService,
+	NetworkTimelineService,
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
@@ -1899,28 +1900,46 @@ class ApiV1Controller extends Controller
 		$this->validate($request,[
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
+		  'limit'       => 'nullable|integer|max:100',
+		  'remote'		=> 'sometimes'
 		]);
 
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
+		$remote = $request->has('remote');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
-			if(PublicTimelineService::count() == 0) {
-				PublicTimelineService::warmCache(true, 400);
-			}
-		});
+        if($remote && config('instance.timeline.network.cached')) {
+			Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
+				if(NetworkTimelineService::count() == 0) {
+					NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+				}
+			});
 
-		if ($max) {
-			$feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
-		} else if ($min) {
-			$feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
-		} else {
-			$feed = PublicTimelineService::get(0, $limit + 5);
-		}
+			if ($max) {
+				$feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+			} else if ($min) {
+				$feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+			} else {
+				$feed = NetworkTimelineService::get(0, $limit + 5);
+			}
+        } else {
+			Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+				if(PublicTimelineService::count() == 0) {
+					PublicTimelineService::warmCache(true, 400);
+				}
+			});
+
+			if ($max) {
+				$feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+			} else if ($min) {
+				$feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+			} else {
+				$feed = PublicTimelineService::get(0, $limit + 5);
+			}
+        }
 
 		$res = collect($feed)
 		->map(function($k) use($user) {
@@ -1943,6 +1962,9 @@ class ApiV1Controller extends Controller
 		// ->toArray();
 
 		$baseUrl = config('app.url') . '/api/v1/timelines/public?limit=' . $limit . '&';
+		if($remote) {
+			$baseUrl .= 'remote=1&';
+		}
 		$minId = $res->map(function($s) {
 			return ['id' => $s['id']];
 		})->min('id');
