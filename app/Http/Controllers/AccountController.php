@@ -30,6 +30,7 @@ use App\Services\AccountService;
 use App\Services\UserFilterService;
 use App\Services\RelationshipService;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
+use App\Jobs\FollowPipeline\FollowRejectPipeline;
 
 class AccountController extends Controller
 {
@@ -406,8 +407,11 @@ class AccountController extends Controller
 			break;
 
 			case 'reject':
-			$followRequest->is_rejected = true;
-			$followRequest->save();
+				if($follower->domain != null && $follower->private_key === null) {
+					FollowRejectPipeline::dispatch($followRequest);
+				} else {
+					$followRequest->delete();
+				}
 			break;
 		}
 

@@ -32,9 +32,9 @@ class FollowRequest extends Model
         return $this->belongsTo(Profile::class, 'following_id', 'id');
     }
 
-    public function permalink($append = null)
+    public function permalink($append = null, $namespace = '#accepts')
     {
-        $path = $this->target->permalink("#accepts/follows/{$this->id}{$append}");
+        $path = $this->target->permalink("{$namespace}/follows/{$this->id}{$append}");
         return url($path);
     }
 }
