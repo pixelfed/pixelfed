@@ -1160,18 +1160,21 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 		$this->validate($request, [
-			'limit' => 'sometimes|integer|min:1|max:40'
+			'limit' => 'sometimes|integer|min:1|max:100'
 		]);
 		$user = $request->user();
 
-		$followRequests = FollowRequest::whereFollowingId($user->profile->id)
+		$res = FollowRequest::whereFollowingId($user->profile->id)
 			->limit($request->input('limit', 40))
-			->pluck('follower_id');
+			->pluck('follower_id')
+			->map(function($id) {
+				return AccountService::getMastodon($id, true);
+			})
+			->filter(function($acct) {
+				return $acct && isset($acct['id']);
+			})
+			->values();
 
-		$profiles = Profile::find($followRequests);
-
-		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
 		return $this->json($res);
 	}
 
@@ -1203,6 +1206,16 @@ class ApiV1Controller extends Controller
 		$follow->profile_id = $follower->id;
 		$follow->following_id = $pid;
 		$follow->save();
+
+		$profile = Profile::findOrFail($pid);
+		$profile->followers_count++;
+		$profile->save();
+		AccountService::del($profile->id);
+
+		$profile = Profile::findOrFail($follower->id);
+		$profile->following_count++;
+		$profile->save();
+		AccountService::del($profile->id);
 
 		if($follower->domain != null && $follower->private_key === null) {
 			FollowAcceptPipeline::dispatch($followRequest);

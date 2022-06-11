@@ -393,17 +393,27 @@ class AccountController extends Controller
 
 		switch ($action) {
 			case 'accept':
-			$follow = new Follower();
-			$follow->profile_id = $follower->id;
-			$follow->following_id = $pid;
-			$follow->save();
+				$follow = new Follower();
+				$follow->profile_id = $follower->id;
+				$follow->following_id = $pid;
+				$follow->save();
 
-            if($follower->domain != null && $follower->private_key === null) {
-                FollowAcceptPipeline::dispatch($followRequest);
-            } else {
-                FollowPipeline::dispatch($follow);
-                $followRequest->delete();
-            }
+				$profile = Profile::findOrFail($pid);
+				$profile->followers_count++;
+				$profile->save();
+				AccountService::del($profile->id);
+
+				$profile = Profile::findOrFail($follower->id);
+				$profile->following_count++;
+				$profile->save();
+				AccountService::del($profile->id);
+
+				if($follower->domain != null && $follower->private_key === null) {
+					FollowAcceptPipeline::dispatch($followRequest);
+				} else {
+					FollowPipeline::dispatch($follow);
+					$followRequest->delete();
+				}
 			break;
 
 			case 'reject':
