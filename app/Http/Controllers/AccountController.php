@@ -370,7 +370,7 @@ class AccountController extends Controller
 					'avatar' => $actor->avatarUrl(),
 					'url' => $actor->url(),
 					'local' => $actor->domain == null,
-					'following' => $actor->followedBy(Auth::user()->profile)
+					'account' => AccountService::get($actor->id)
 				];
 			})
 		];

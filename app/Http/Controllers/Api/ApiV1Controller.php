@@ -442,7 +442,7 @@ class ApiV1Controller extends Controller
 
 		if($pid != $account['id']) {
 			if($account['locked']) {
-				if(FollowerService::follows($pid, $account['id'])) {
+				if(!FollowerService::follows($pid, $account['id'])) {
 					return [];
 				}
 			}
@@ -489,7 +489,7 @@ class ApiV1Controller extends Controller
 
 		if($pid != $account['id']) {
 			if($account['locked']) {
-				if(FollowerService::follows($pid, $account['id'])) {
+				if(!FollowerService::follows($pid, $account['id'])) {
 					return [];
 				}
 			}
