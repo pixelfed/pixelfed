@@ -63,11 +63,6 @@ class FollowPipeline implements ShouldQueue
 			$notification->item_id = $target->id;
 			$notification->item_type = "App\Profile";
 			$notification->save();
-
-			$redis = Redis::connection();
-
-			$nkey = config('cache.prefix').':user.'.$target->id.'.notifications';
-			$redis->lpush($nkey, $notification->id);
 		} catch (Exception $e) {
 			Log::error($e);
 		}

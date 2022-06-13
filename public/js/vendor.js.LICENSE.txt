@@ -16,7 +16,7 @@
  */
 
 /*!
- * BootstrapVue Icons, generated from Bootstrap Icons 1.2.2
+ * BootstrapVue Icons, generated from Bootstrap Icons 1.5.0
  *
  * @link https://icons.getbootstrap.com/
  * @license MIT

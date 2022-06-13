@@ -29,6 +29,8 @@ use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Services\AccountService;
 use App\Services\UserFilterService;
 use App\Services\RelationshipService;
+use App\Jobs\FollowPipeline\FollowAcceptPipeline;
+use App\Jobs\FollowPipeline\FollowRejectPipeline;
 
 class AccountController extends Controller
 {
@@ -363,12 +365,13 @@ class AccountController extends Controller
 			'accounts' => $followers->take(10)->map(function($a) {
 				$actor = $a->actor;
 				return [
-					'id' => $actor->id,
+					'rid' => (string) $a->id,
+					'id' => (string) $actor->id,
 					'username' => $actor->username,
 					'avatar' => $actor->avatarUrl(),
 					'url' => $actor->url(),
 					'local' => $actor->domain == null,
-					'following' => $actor->followedBy(Auth::user()->profile)
+					'account' => AccountService::get($actor->id)
 				];
 			})
 		];
@@ -390,17 +393,35 @@ class AccountController extends Controller
 
 		switch ($action) {
 			case 'accept':
-			$follow = new Follower();
-			$follow->profile_id = $follower->id;
-			$follow->following_id = $pid;
-			$follow->save();
-			FollowPipeline::dispatch($follow);
-			$followRequest->delete();
+				$follow = new Follower();
+				$follow->profile_id = $follower->id;
+				$follow->following_id = $pid;
+				$follow->save();
+
+				$profile = Profile::findOrFail($pid);
+				$profile->followers_count++;
+				$profile->save();
+				AccountService::del($profile->id);
+
+				$profile = Profile::findOrFail($follower->id);
+				$profile->following_count++;
+				$profile->save();
+				AccountService::del($profile->id);
+
+				if($follower->domain != null && $follower->private_key === null) {
+					FollowAcceptPipeline::dispatch($followRequest);
+				} else {
+					FollowPipeline::dispatch($follow);
+					$followRequest->delete();
+				}
 			break;
 
 			case 'reject':
-			$followRequest->is_rejected = true;
-			$followRequest->save();
+				if($follower->domain != null && $follower->private_key === null) {
+					FollowRejectPipeline::dispatch($followRequest);
+				} else {
+					$followRequest->delete();
+				}
 			break;
 		}
 

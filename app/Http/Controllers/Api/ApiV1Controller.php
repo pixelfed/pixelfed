@@ -62,6 +62,7 @@ use App\Services\{
 	FollowerService,
 	InstanceService,
 	LikeService,
+	NetworkTimelineService,
 	NotificationService,
 	MediaPathService,
 	PublicTimelineService,
@@ -82,6 +83,8 @@ use App\Services\DiscoverService;
 use App\Services\CustomEmojiService;
 use App\Services\MarkerService;
 use App\Models\Conversation;
+use App\Jobs\FollowPipeline\FollowAcceptPipeline;
+use App\Jobs\FollowPipeline\FollowRejectPipeline;
 
 class ApiV1Controller extends Controller
 {
@@ -441,7 +444,7 @@ class ApiV1Controller extends Controller
 
 		if($pid != $account['id']) {
 			if($account['locked']) {
-				if(FollowerService::follows($pid, $account['id'])) {
+				if(!FollowerService::follows($pid, $account['id'])) {
 					return [];
 				}
 			}
@@ -488,7 +491,7 @@ class ApiV1Controller extends Controller
 
 		if($pid != $account['id']) {
 			if($account['locked']) {
-				if(FollowerService::follows($pid, $account['id'])) {
+				if(!FollowerService::follows($pid, $account['id'])) {
 					return [];
 				}
 			}
@@ -722,6 +725,13 @@ class ApiV1Controller extends Controller
 			->exists();
 
 		if($isFollowing == false) {
+			$followRequest = FollowRequest::whereFollowerId($user->profile_id)
+				->whereFollowingId($target->id)
+				->first();
+			if($followRequest) {
+				$followRequest->delete();
+				RelationshipService::refresh($target->id, $user->profile_id);
+			}
 			$resource = new Fractal\Resource\Item($target, new RelationshipTransformer());
 			$res = $this->fractal->createData($resource)->toArray();
 
@@ -1149,15 +1159,22 @@ class ApiV1Controller extends Controller
 	public function accountFollowRequests(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-
+		$this->validate($request, [
+			'limit' => 'sometimes|integer|min:1|max:100'
+		]);
 		$user = $request->user();
 
-		$followRequests = FollowRequest::whereFollowingId($user->profile->id)->pluck('follower_id');
+		$res = FollowRequest::whereFollowingId($user->profile->id)
+			->limit($request->input('limit', 40))
+			->pluck('follower_id')
+			->map(function($id) {
+				return AccountService::getMastodon($id, true);
+			})
+			->filter(function($acct) {
+				return $acct && isset($acct['id']);
+			})
+			->values();
 
-		$profiles = Profile::find($followRequests);
-
-		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
 		return $this->json($res);
 	}
 
@@ -1171,10 +1188,46 @@ class ApiV1Controller extends Controller
 	public function accountFollowRequestAccept(Request $request, $id)
 	{
 		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$target = AccountService::getMastodon($id);
 
-		// todo
+		if(!$target) {
+			return response()->json(['error' => 'Record not found'], 404);
+		}
 
-		return response()->json([]);
+		$followRequest = FollowRequest::whereFollowingId($pid)->whereFollowerId($id)->first();
+
+		if(!$followRequest) {
+			return response()->json(['error' => 'Record not found'], 404);
+		}
+
+		$follower = $followRequest->follower;
+		$follow = new Follower();
+		$follow->profile_id = $follower->id;
+		$follow->following_id = $pid;
+		$follow->save();
+
+		$profile = Profile::findOrFail($pid);
+		$profile->followers_count++;
+		$profile->save();
+		AccountService::del($profile->id);
+
+		$profile = Profile::findOrFail($follower->id);
+		$profile->following_count++;
+		$profile->save();
+		AccountService::del($profile->id);
+
+		if($follower->domain != null && $follower->private_key === null) {
+			FollowAcceptPipeline::dispatch($followRequest);
+		} else {
+			FollowPipeline::dispatch($follow);
+			$followRequest->delete();
+		}
+
+		RelationshipService::refresh($pid, $id);
+		$res = RelationshipService::get($pid, $id);
+		$res['followed_by'] = true;
+		return $this->json($res);
 	}
 
 	/**
@@ -1187,10 +1240,30 @@ class ApiV1Controller extends Controller
 	public function accountFollowRequestReject(Request $request, $id)
 	{
 		abort_if(!$request->user(), 403);
+		$pid = $request->user()->profile_id;
+		$target = AccountService::getMastodon($id);
 
-		// todo
+		if(!$target) {
+			return response()->json(['error' => 'Record not found'], 404);
+		}
 
-		return response()->json([]);
+		$followRequest = FollowRequest::whereFollowingId($pid)->whereFollowerId($id)->first();
+
+		if(!$followRequest) {
+			return response()->json(['error' => 'Record not found'], 404);
+		}
+
+		$follower = $followRequest->follower;
+
+		if($follower->domain != null && $follower->private_key === null) {
+			FollowRejectPipeline::dispatch($followRequest);
+		} else {
+			$followRequest->delete();
+		}
+
+		RelationshipService::refresh($pid, $id);
+		$res = RelationshipService::get($pid, $id);
+		return $this->json($res);
 	}
 
 	/**
@@ -1811,7 +1884,7 @@ class ApiV1Controller extends Controller
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id']);
+				$status = StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
@@ -1842,7 +1915,7 @@ class ApiV1Controller extends Controller
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id']);
+				$status = StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
@@ -1899,28 +1972,46 @@ class ApiV1Controller extends Controller
 		$this->validate($request,[
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
+		  'limit'       => 'nullable|integer|max:100',
+		  'remote'		=> 'sometimes'
 		]);
 
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
+		$remote = $request->has('remote');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-		Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
-			if(PublicTimelineService::count() == 0) {
-				PublicTimelineService::warmCache(true, 400);
-			}
-		});
+        if($remote && config('instance.timeline.network.cached')) {
+			Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
+				if(NetworkTimelineService::count() == 0) {
+					NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+				}
+			});
 
-		if ($max) {
-			$feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
-		} else if ($min) {
-			$feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
-		} else {
-			$feed = PublicTimelineService::get(0, $limit + 5);
-		}
+			if ($max) {
+				$feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+			} else if ($min) {
+				$feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+			} else {
+				$feed = NetworkTimelineService::get(0, $limit + 5);
+			}
+        } else {
+			Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
+				if(PublicTimelineService::count() == 0) {
+					PublicTimelineService::warmCache(true, 400);
+				}
+			});
+
+			if ($max) {
+				$feed = PublicTimelineService::getRankedMaxId($max, $limit + 5);
+			} else if ($min) {
+				$feed = PublicTimelineService::getRankedMinId($min, $limit + 5);
+			} else {
+				$feed = PublicTimelineService::get(0, $limit + 5);
+			}
+        }
 
 		$res = collect($feed)
 		->map(function($k) use($user) {
@@ -1943,6 +2034,9 @@ class ApiV1Controller extends Controller
 		// ->toArray();
 
 		$baseUrl = config('app.url') . '/api/v1/timelines/public?limit=' . $limit . '&';
+		if($remote) {
+			$baseUrl .= 'remote=1&';
+		}
 		$minId = $res->map(function($s) {
 			return ['id' => $s['id']];
 		})->min('id');

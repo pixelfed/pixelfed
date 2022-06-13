@@ -26,6 +26,7 @@
 - Add ffmpeg config, disable logging by default ([108e3803](https://github.com/pixelfed/pixelfed/commit/108e3803))
 - Refactor AP profileFetch logic to fix race conditions and improve updating fields and avatars ([505261da](https://github.com/pixelfed/pixelfed/commit/505261da))
 - Update network timeline api, limit falloff to 2 days ([13a66303](https://github.com/pixelfed/pixelfed/commit/13a66303))
+- Update Inbox, store follow request activity ([c82f2085](https://github.com/pixelfed/pixelfed/commit/c82f2085))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)

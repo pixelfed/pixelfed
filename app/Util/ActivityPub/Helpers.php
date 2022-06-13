@@ -32,6 +32,7 @@ use App\Services\CustomEmojiService;
 use App\Services\InstanceService;
 use App\Services\MediaPathService;
 use App\Services\MediaStorageService;
+use App\Services\NetworkTimelineService;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Util\Media\License;
@@ -490,6 +491,16 @@ class Helpers {
 			if(isset($activity['tag']) && is_array($activity['tag']) && !empty($activity['tag'])) {
 				StatusTagsPipeline::dispatch($activity, $status);
 			}
+
+			if( config('instance.timeline.network.cached') &&
+				$status->in_reply_to_id === null &&
+				$status->reblog_of_id === null &&
+				in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
+				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old')))
+			) {
+				NetworkTimelineService::add($status->id);
+			}
+
 			return $status;
 		});
 	}

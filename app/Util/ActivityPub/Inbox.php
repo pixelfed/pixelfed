@@ -473,17 +473,12 @@ class Inbox
 			return;
 		}
 		if($target->is_private == true) {
-			FollowRequest::firstOrCreate([
+			FollowRequest::updateOrCreate([
 				'follower_id' => $actor->id,
-				'following_id' => $target->id
+				'following_id' => $target->id,
+			],[
+				'activity' => collect($this->payload)->only(['id','actor','object','type'])->toArray()
 			]);
-
-			Cache::forget('profile:follower_count:'.$target->id);
-			Cache::forget('profile:follower_count:'.$actor->id);
-			Cache::forget('profile:following_count:'.$target->id);
-			Cache::forget('profile:following_count:'.$actor->id);
-			FollowerService::add($actor->id, $target->id);
-
 		} else {
 			$follower = new Follower;
 			$follower->profile_id = $actor->id;
