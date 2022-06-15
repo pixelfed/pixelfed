@@ -4,6 +4,7 @@
 
 ### New Features
 - Custom content warnings/spoiler text ([d4864213](https://github.com/pixelfed/pixelfed/commit/d4864213))
+- Add NetworkTimelineService cache ([1310d95c](https://github.com/pixelfed/pixelfed/commit/1310d95c))
 
 ### Breaking
 - Replaced `predis` with `phpredis` as default redis driver due to predis being deprecated, install [phpredis](https://github.com/phpredis/phpredis/blob/develop/INSTALL.markdown) if you're still using predis.
@@ -27,6 +28,13 @@
 - Refactor AP profileFetch logic to fix race conditions and improve updating fields and avatars ([505261da](https://github.com/pixelfed/pixelfed/commit/505261da))
 - Update network timeline api, limit falloff to 2 days ([13a66303](https://github.com/pixelfed/pixelfed/commit/13a66303))
 - Update Inbox, store follow request activity ([c82f2085](https://github.com/pixelfed/pixelfed/commit/c82f2085))
+- Update UserFilterService, improve cache strategy by using in-memory state via UserFilterObserver for empty lists with a ttl of 90 days ([9c17def4](https://github.com/pixelfed/pixelfed/commit/9c17def4))
+- Update ApiV1Controller, add network timeline support via NetworkTimelineService ([f54fd6e9](https://github.com/pixelfed/pixelfed/commit/f54fd6e9))
+- Bump max_collection_length default to 100 from 18 ([65cf9cca](https://github.com/pixelfed/pixelfed/commit/65cf9cca))
+- Improve follow request flow, federate rejections and delete rejections from database to properly handle future follow requests from same actor ([4470981a](https://github.com/pixelfed/pixelfed/commit/4470981a))
+- Update follower counts on follow_request approval ([e97900a0](https://github.com/pixelfed/pixelfed/commit/e97900a0))
+- Update ApiV1Controller, improve local/remote logic in public timeline endpoint ([4ff179ad](https://github.com/pixelfed/pixelfed/commit/4ff179ad))
+- Update ApiV1Controller, fix network timeline ([11e99d78](https://github.com/pixelfed/pixelfed/commit/11e99d78))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
