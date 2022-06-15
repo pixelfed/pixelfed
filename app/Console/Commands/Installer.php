@@ -113,7 +113,7 @@ class Installer extends Command
     {
         $this->line('');
         if(!file_exists(app()->environmentFilePath())) {
-            exec('cp .env.installer .env');
+            exec('cp .env.example .env');
         }
     }
 
