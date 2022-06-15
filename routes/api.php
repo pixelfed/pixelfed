@@ -106,5 +106,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('chat/message', 'LiveStreamController@addChatComment')->middleware($middleware);
 		Route::post('chat/delete', 'LiveStreamController@deleteChatComment')->middleware($middleware);
 		Route::get('config', 'LiveStreamController@getConfig')->middleware($middleware);
+		Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish');
+		Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish');
 	});
 });
