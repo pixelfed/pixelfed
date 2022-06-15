@@ -371,9 +371,17 @@ class Installer extends Command
 
         if($confirm === 'Yes') {
         	sleep(3);
+            $this->line('');
+            $this->info('Migrating DB:');
         	$this->call('migrate', ['--force' => true]);
+            $this->line('');
+            $this->info('Importing Cities:');
             $this->callSilently('import:cities');
+            $this->line('');
+            $this->info('Creating Federation Instance Actor:');
             $this->callSilently('instance:actor');
+            $this->line('');
+            $this->info('Creating Password Keys for API:');
             $this->callSilently('passport:keys, ['--force' => true]);
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
