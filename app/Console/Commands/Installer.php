@@ -112,6 +112,7 @@ class Installer extends Command
     protected function envCreate()
     {
         $this->line('');
+        $this->info('Creating .env if required');
         if(!file_exists(app()->environmentFilePath())) {
             exec('cp .env.example .env');
         }
