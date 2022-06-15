@@ -376,13 +376,13 @@ class Installer extends Command
         	$this->call('migrate', ['--force' => true]);
             $this->line('');
             $this->info('Importing Cities:');
-            $this->callSilently('import:cities');
+            $this->call('import:cities');
             $this->line('');
             $this->info('Creating Federation Instance Actor:');
-            $this->callSilently('instance:actor');
+            $this->call('instance:actor');
             $this->line('');
             $this->info('Creating Password Keys for API:');
-            $this->callSilently('passport:keys, ['--force' => true]);
+            $this->call('passport:keys, ['--force' => true]);
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
 	        if($confirm === 'Yes') {
