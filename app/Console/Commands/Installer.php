@@ -66,8 +66,8 @@ class Installer extends Command
         $this->envCreate();
         $this->installType();
 
-        if($this->installType === 'Production') {
-            $this->info('Installer: Production...');
+        if($this->installType === 'Advanced') {
+            $this->info('Installer: Advanced...');
             $this->checkPHPDependencies();
             $this->checkFFmpegDependencies();
             $this->checkDiskPermissions();
@@ -83,7 +83,15 @@ class Installer extends Command
             $this->resetArtisanCache();
         } else {
             $this->info('Installer: Simple...');
-            exit;
+            $this->checkDiskPermissions();
+            $this->envProd();
+            $this->instanceDB();
+            $this->instanceRedis();
+            $this->instanceURL();
+            $this->activityPubSettings();
+            $this->instanceSettings();
+            $this->dbMigrations();
+            $this->resetArtisanCache();
         }
     }
 
@@ -111,7 +119,7 @@ class Installer extends Command
 
     protected function installType()
     {
-        $type = $this->choice('Select installation type', ['Simple', 'Production'], 1);
+        $type = $this->choice('Select installation type', ['Simple', 'Advanced'], 1);
                 $this->installType = $type;
     }
 
