@@ -1973,17 +1973,18 @@ class ApiV1Controller extends Controller
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'limit'       => 'nullable|integer|max:100',
-		  'remote'		=> 'sometimes'
+		  'remote'		=> 'sometimes',
+		  'local'		=> 'sometimes'
 		]);
 
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
-		$remote = $request->has('remote');
+		$remote = ($request->has('remote') && $request->input('remote') == true) || ($request->filled('local') && $request->input('local') != true);
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        if($remote && config('instance.timeline.network.cached')) {
+        if((!$request->has('local') || $remote) && config('instance.timeline.network.cached')) {
 			Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
 				if(NetworkTimelineService::count() == 0) {
 					NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
