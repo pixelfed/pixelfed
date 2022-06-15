@@ -337,12 +337,8 @@ class Installer extends Command
                 $this->error('Max image quality is 100');
                 exit;
             }
-        $this->info(' Note: Max photo size cannot exceed php.ini `post_max_size` of ' . ini_get('post_max_size'));
+        $this->info('Note: Max photo size cannot exceed `post_max_size` in php.ini.');
         $max_photo_size = $this->ask('Max photo upload size in kilobytes. Default 15000 which is equal to 15MB', '15000');
-        	if($max_photo_size * 1024 > $this->parseSize(ini_get('post_max_size'))) {
-        		$this->error('Max photo size (' . (round($max_photo_size / 1000)) . 'M) cannot exceed php.ini `post_max_size` of ' . ini_get('post_max_size'));
-        		exit;
-        	}
         
         $max_caption_length = $this->ask('Max caption limit. Default to 500, max 5000.', '500');
             if($max_caption_length > 5000) {
