@@ -80,8 +80,8 @@ class Installer extends Command
             $this->instanceSettings();
             $this->mediaSettings();
             $this->dbMigrations();
-            $this->resetArtisanCache();
             $this->validateEnv();
+            $this->resetArtisanCache();
         } else {
             $this->info('Installer: Simple...');
             $this->checkDiskPermissions();
@@ -92,8 +92,8 @@ class Installer extends Command
             $this->activityPubSettings();
             $this->instanceSettings();
             $this->dbMigrations();
-            $this->resetArtisanCache();
             $this->validateEnv();
+            $this->resetArtisanCache();
         }
     }
 
