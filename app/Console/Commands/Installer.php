@@ -111,12 +111,6 @@ class Installer extends Command
 
     protected function envCreate()
     {
-        if( $this->option('dangerously-overwrite-env') ) {
-            $this->line('');
-            $this->error('Existing .env File Found - Renaming to .env.danger');
-            exec('cp .env .env.danger');
-        }
-        
         $this->line('');
         $this->info('Creating .env if required');
         if(!file_exists(app()->environmentFilePath())) {
