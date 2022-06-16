@@ -81,6 +81,7 @@ class Installer extends Command
             $this->mediaSettings();
             $this->dbMigrations();
             $this->resetArtisanCache();
+            $this->validateEnv();
         } else {
             $this->info('Installer: Simple...');
             $this->checkDiskPermissions();
@@ -92,6 +93,7 @@ class Installer extends Command
             $this->instanceSettings();
             $this->dbMigrations();
             $this->resetArtisanCache();
+            $this->validateEnv();
         }
     }
 
@@ -394,14 +396,32 @@ class Installer extends Command
     
     protected function resetArtisanCache()
     {
-            $this->call('config:cache');
-            $this->call('route:cache');
-            $this->call('view:cache');
+        $this->call('config:cache');
+        $this->call('route:cache');
+        $this->call('view:cache');
+    }
+
+    protected function validateEnv()
+    {
+        $this->checkEnvKeys('APP_KEY', "key:generate failed?");
+        $this->checkEnvKeys('APP_ENV', "APP_ENV value should be production");
+        $this->checkEnvKeys('APP_DEBUG', "APP_DEBUG value should be false");
     }
 
 #####
 # Installer Functions
 #####
+
+    protected function checkEnvKeys($key, $error)
+    {
+        $envPath = app()->environmentFilePath();
+        $payload = file_get_contents($envPath);
+
+        if ($existing = $this->existingEnv($key, $payload)) {
+            } else {
+            $this->info("$key empty - $error");
+        }
+    }
 
     protected function updateEnvFile($key, $value)
     {
