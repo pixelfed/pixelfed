@@ -36,6 +36,7 @@
 - Update ApiV1Controller, improve local/remote logic in public timeline endpoint ([4ff179ad](https://github.com/pixelfed/pixelfed/commit/4ff179ad))
 - Update ApiV1Controller, fix network timeline ([11e99d78](https://github.com/pixelfed/pixelfed/commit/11e99d78))
 - Update ApiV1Controller, fix public timeline min/max id pagination ([a7613bae](https://github.com/pixelfed/pixelfed/commit/a7613bae))
+- Improve CollectionService cache invalidation, fixes [#3548](https://github.com/pixelfed/pixelfed/issues/3548) ([44f4a9ed](https://github.com/pixelfed/pixelfed/commit/44f4a9ed))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
