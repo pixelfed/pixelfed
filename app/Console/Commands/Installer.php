@@ -166,7 +166,7 @@ class Installer extends Command
     protected function checkOptimiseDependencies()
     {
         $this->line(' ');
-        $this->info('Checking for optional FFmpeg dependencies...');
+        $this->info('Checking for optional Media Optimisation dependencies...');
         
         $dependencies = [
             'jpegoptim',
