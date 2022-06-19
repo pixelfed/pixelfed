@@ -139,7 +139,13 @@ class Installer extends Command
             'json',
             'mbstring',
             'openssl',
+            'gd',
+            'intl',
+            'xml',
+            'zip',
+            'redis',
         ];
+
         foreach($extensions as $ext) {
             if(extension_loaded($ext) == false) {
                 $this->error("- \"{$ext}\" PHP extension not found, aborting installation");
