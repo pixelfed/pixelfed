@@ -131,7 +131,7 @@ class Installer extends Command
     protected function checkPHPRequiredDependencies()
     {
         $this->line(' ');
-        $this->info('Checking for required php extensions...');
+        $this->info('Checking for Required PHP Extensions...');
 
         $extensions = [
             'bcmath',
@@ -144,7 +144,7 @@ class Installer extends Command
 
         foreach($extensions as $ext) {
             if(extension_loaded($ext) == false) {
-                $this->error("- \"{$ext}\" Required PHP extension not found, aborting installation");
+                $this->error("- \"{$ext}\" Required PHP Extension not found, aborting installation");
                 exit;
             }
         }
@@ -154,7 +154,7 @@ class Installer extends Command
     protected function checkPHPOptionalDependencies()
     {
         $this->line(' ');
-        $this->info('Checking For Optional PHP Extensions...');
+        $this->info('Checking For Additional PHP Extensions...');
 
         $extensions = [
             'gd',
@@ -166,9 +166,9 @@ class Installer extends Command
 
         foreach($extensions as $ext) {
             if(extension_loaded($ext) == false) {
-                $this->error("- \"{$ext}\" Optional PHP extension not found");
+                $this->error("- \"{$ext}\" PHP extension not found");
             } else {
-                $this->info ("- \"{$ext}\" Optional PHP extension found");
+                $this->info ("- \"{$ext}\" PHP extension found");
             }
         }
     }    
