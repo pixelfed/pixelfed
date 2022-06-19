@@ -168,7 +168,7 @@ class Installer extends Command
             if(extension_loaded($ext) == false) {
                 $this->error("- \"{$ext}\" Optional PHP extension not found");
             } else {
-                $this->info ("- \"{$dep}\" Optional PHP extension found");
+                $this->info ("- \"{$ext}\" Optional PHP extension found");
             }
         }
     }    
