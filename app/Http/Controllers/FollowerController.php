@@ -111,19 +111,19 @@ class FollowerController extends Controller
 
         Cache::forget('profile:following:'.$target->id);
         Cache::forget('profile:followers:'.$target->id);
-        Cache::forget('profile:following:'.$user->id);
-        Cache::forget('profile:followers:'.$user->id);
-        Cache::forget('api:local:exp:rec:'.$user->id);
+        Cache::forget('profile:following:'.$user->profile_id);
+        Cache::forget('profile:followers:'.$user->profile_id);
+        Cache::forget('api:local:exp:rec:'.$user->profile_id);
         Cache::forget('user:account:id:'.$target->user_id);
-        Cache::forget('user:account:id:'.$user->user_id);
+        Cache::forget('user:account:id:'.$user->id);
         Cache::forget('px:profile:followers-v1.3:'.$user->id);
         Cache::forget('px:profile:followers-v1.3:'.$target->id);
         Cache::forget('px:profile:following-v1.3:'.$user->id);
         Cache::forget('px:profile:following-v1.3:'.$target->id);
         Cache::forget('profile:follower_count:'.$target->id);
-        Cache::forget('profile:follower_count:'.$user->id);
+        Cache::forget('profile:follower_count:'.$user->profile_id);
         Cache::forget('profile:following_count:'.$target->id);
-        Cache::forget('profile:following_count:'.$user->id);
+        Cache::forget('profile:following_count:'.$user->profile_id);
 
         return $target->url();
     }
