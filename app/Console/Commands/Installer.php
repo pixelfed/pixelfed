@@ -68,7 +68,8 @@ class Installer extends Command
 
         if($this->installType === 'Advanced') {
             $this->info('Installer: Advanced...');
-            $this->checkPHPDependencies();
+            $this->checkPHPRequiredDependencies();
+            $this->checkPHPOptionalDependencies();
             $this->checkFFmpegDependencies();
             $this->checkOptimiseDependencies();
             $this->checkDiskPermissions();
@@ -127,7 +128,7 @@ class Installer extends Command
                 $this->installType = $type;
     }
 
-    protected function checkPHPDependencies()
+    protected function checkPHPRequiredDependencies()
     {
         $this->line(' ');
         $this->info('Checking for required php extensions...');
@@ -139,6 +140,23 @@ class Installer extends Command
             'json',
             'mbstring',
             'openssl',
+        ];
+
+        foreach($extensions as $ext) {
+            if(extension_loaded($ext) == false) {
+                $this->error("- \"{$ext}\" Required PHP extension not found, aborting installation");
+                exit;
+            }
+        }
+        $this->info("- Required PHP extensions found!");
+    }
+
+    protected function checkPHPOptionalDependencies()
+    {
+        $this->line(' ');
+        $this->info('Checking For Optional PHP Extensions...');
+
+        $extensions = [
             'gd',
             'intl',
             'xml',
@@ -148,13 +166,13 @@ class Installer extends Command
 
         foreach($extensions as $ext) {
             if(extension_loaded($ext) == false) {
-                $this->error("- \"{$ext}\" PHP extension not found, aborting installation");
-                exit;
+                $this->error("- \"{$ext}\" Optional PHP extension not found");
+            } else {
+                $this->info ("- \"{$dep}\" Optional PHP extension found");
             }
         }
-        $this->info("- Required PHP extensions found!");
-    }
-
+    }    
+    
     protected function checkFFmpegDependencies()
     {
         $this->line(' ');
