@@ -240,7 +240,7 @@ class ProfileController extends Controller
 	{
 		$res = view('profile.embed-removed');
 
-		if(strlen($username) > 15 || strlen($username) < 2) {
+		if(strlen($username) > 30 || strlen($username) < 2) {
 			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 		}
 

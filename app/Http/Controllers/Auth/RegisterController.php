@@ -68,7 +68,7 @@ class RegisterController extends Controller
 		$usernameRules = [
 			'required',
 			'min:2',
-			'max:15',
+			'max:30',
 			'unique:users',
 			function ($attribute, $value, $fail) {
 				$dash = substr_count($value, '-');

@@ -108,7 +108,7 @@ class SiteController extends Controller
 	public function followIntent(Request $request)
 	{
 		$this->validate($request, [
-			'user' => 'string|min:1|max:15|exists:users,username',
+			'user' => 'string|min:1|max:30|exists:users,username',
 		]);
 		$profile = Profile::whereUsername($request->input('user'))->firstOrFail();
 		$user = $request->user();
