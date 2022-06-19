@@ -154,7 +154,7 @@ class Installer extends Command
     protected function checkPHPOptionalDependencies()
     {
         $this->line(' ');
-        $this->info('Checking For Additional PHP Extensions...');
+        $this->info('Checking For Optional PHP Extensions...');
 
         $extensions = [
             'gd',
@@ -176,7 +176,7 @@ class Installer extends Command
     protected function checkFFmpegDependencies()
     {
         $this->line(' ');
-        $this->info('Checking for required FFmpeg dependencies...');
+        $this->info('Checking for Required FFmpeg dependencies...');
 
         $ffmpeg = exec('which ffmpeg');
         if(empty($ffmpeg)) {
@@ -190,7 +190,7 @@ class Installer extends Command
     protected function checkOptimiseDependencies()
     {
         $this->line(' ');
-        $this->info('Checking for optional Media Optimisation dependencies...');
+        $this->info('Checking for Optional Media Optimisation dependencies...');
         
         $dependencies = [
             'jpegoptim',
