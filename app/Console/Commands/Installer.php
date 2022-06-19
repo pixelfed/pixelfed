@@ -70,6 +70,7 @@ class Installer extends Command
             $this->info('Installer: Advanced...');
             $this->checkPHPDependencies();
             $this->checkFFmpegDependencies();
+            $this->checkOptimiseDependencies();
             $this->checkDiskPermissions();
             $this->envProd();
             $this->instanceDB();
@@ -141,7 +142,7 @@ class Installer extends Command
         ];
         foreach($extensions as $ext) {
             if(extension_loaded($ext) == false) {
-                $this->error("\"{$ext}\" PHP extension not found, aborting installation");
+                $this->error("- \"{$ext}\" PHP extension not found, aborting installation");
                 exit;
             }
         }
@@ -155,10 +156,32 @@ class Installer extends Command
 
         $ffmpeg = exec('which ffmpeg');
         if(empty($ffmpeg)) {
-            $this->error("\"{$ext}\" FFmpeg not found, aborting installation");
+            $this->error("- \"{$ext}\" FFmpeg not found, aborting installation");
             exit;
         } else {
             $this->info('- Found FFmpeg!');
+        }
+    }
+
+    protected function checkOptimiseDependencies()
+    {
+        $this->line(' ');
+        $this->info('Checking for optional FFmpeg dependencies...');
+        
+        $dependencies = [
+            'jpegoptim',
+            'optipng',
+            'pngquant',
+            'gifsicle',
+        ];
+
+        foreach($dependencies as $dep) {
+            $which = exec("which $dep");
+            if(empty($which)) {
+                $this->error("- \"{$dep}\" not found");
+            } else {
+                $this->info ("- \"{$dep}\" found");
+            }
         }
     }
 
