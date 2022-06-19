@@ -5,6 +5,7 @@ namespace App\Jobs\StatusPipeline;
 use DB, Storage;
 use App\{
 	AccountInterstitial,
+	CollectionItem,
 	MediaTag,
 	Notification,
 	Report,
@@ -25,6 +26,7 @@ use GuzzleHttp\Pool;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
+use App\Services\CollectionService;
 use App\Services\StatusService;
 use App\Services\MediaStorageService;
 
@@ -89,6 +91,19 @@ class StatusDelete implements ShouldQueue
 				$parent->save();
 			});
 		}
+
+        DB::transaction(function() use($status) {
+            CollectionItem::whereObjectType('App\Status')
+                ->whereObjectId($status->id)
+                ->get()
+                ->each(function($col) {
+                    $id = $col->collection_id;
+                    $sid = $col->object_id;
+                    $col->delete();
+                    CollectionService::removeItem($id, $sid);
+                });
+        });
+
 		DB::transaction(function() use($status) {
 			$comments = Status::where('in_reply_to_id', $status->id)->get();
 			foreach ($comments as $comment) {

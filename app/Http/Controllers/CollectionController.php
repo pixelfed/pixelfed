@@ -132,6 +132,18 @@ class CollectionController extends Controller
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
 
+        if($count) {
+            CollectionItem::whereCollectionId($collection->id)
+                ->get()
+                ->filter(function($col) {
+                    return StatusService::get($col->object_id, false) == null;
+                })
+                ->each(function($col) use($collectionId) {
+                    CollectionService::removeItem($collectionId, $col->object_id);
+                    $col->delete();
+                });
+        }
+
         $max = config('pixelfed.max_collection_length');
         if($count >= $max) {
             abort(400, 'You can only add '.$max.' posts per collection');
