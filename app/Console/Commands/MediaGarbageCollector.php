@@ -51,10 +51,10 @@ class MediaGarbageCollector extends Command
 		$bar = $this->output->createProgressBar($gc->count());
 		$bar->start();
 		foreach($gc as $media) {
-			MediaStorageService::delete($media);
-			$media->forceDelete();
+			MediaStorageService::delete($media, true);
 			$bar->advance();
 		}
 		$bar->finish();
+		$this->line('');
 	}
 }
