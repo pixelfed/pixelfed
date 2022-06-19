@@ -36,6 +36,7 @@ use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
 use App\Services\PollService;
 use App\Services\FollowerService;
+use App\Services\StatusService;
 use App\Models\Conversation;
 
 class Inbox
@@ -644,6 +645,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
+						StatusService::del($status->id, true);
 						Notification::whereActorId($profile->id)
 							->whereItemType('App\Status')
 							->whereItemId($status->id)
