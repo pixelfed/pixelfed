@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Redis;
 
 class CollectionService
 {
-	const CACHE_KEY = 'pf:services:collections:';
+	const CACHE_KEY = 'pf:services:collections-v1:';
 
 	public static function getItems($id, $start = 0, $stop = 10)
 	{
@@ -41,6 +41,9 @@ class CollectionService
 			return CollectionItem::whereCollectionId($id)
 				->orderBy('order')
 				->get()
+				->filter(function($item) use($id) {
+					return StatusService::get($item->object_id) != null;
+				})
 				->each(function($item) use ($id) {
 					self::addItem($id, $item->object_id, $item->order);
 				})
@@ -80,13 +83,14 @@ class CollectionService
 				'visibility' => $collection->visibility,
 				'title' => $collection->title,
 				'description' => $collection->description,
-				'thumb' => self::getThumb($id),
+				'thumb' => '/storage/no-preview.png',
 				'url' => $collection->url(),
 				'published_at' => $collection->published_at
 			];
 		});
 
 		if($collection) {
+			$collection['thumb'] = self::getThumb($id);
 			$collection['post_count'] = self::count($id);
 		}
 
