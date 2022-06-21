@@ -695,7 +695,7 @@ class Helpers {
 		}
 
 		if($profile = Profile::whereRemoteUrl($url)->first()) {
-			if($profile->last_fetched_at->lt(now()->subHours(24))) {
+			if($profile->last_fetched_at && $profile->last_fetched_at->lt(now()->subHours(24))) {
 				return self::profileUpdateOrCreate($url);
 			}
 			return $profile;
