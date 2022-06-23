@@ -173,7 +173,7 @@ class ApiV1Controller extends Controller
 			'privacy' => $res['locked'] ? 'private' : 'public',
 			'sensitive' => false,
 			'language' => $user->language ?? 'en',
-			'note' => '',
+			'note' => strip_tags($res['note']),
 			'fields' => []
 		];
 
