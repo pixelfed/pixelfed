@@ -228,8 +228,6 @@ class ComposeController extends Controller
 
 		MediaStorageService::delete($media, true);
 
-		$media->forceDelete();
-
 		return response()->json([
 			'msg' => 'Successfully deleted',
 			'code' => 200

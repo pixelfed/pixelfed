@@ -57,7 +57,9 @@ class MediaDeletePipeline implements ShouldQueue
 			$disk->deleteDirectory($i);
 		}
 
-		return 1;
+		$media->forceDelete();
+
+		return;
 	}
 
 }

@@ -401,6 +401,7 @@ class PublicApiController extends Controller
             }
 
             $res = collect($feed)
+            ->take($limit)
             ->map(function($k) use($user) {
                 $status = StatusService::get($k);
                 if($status && isset($status['account']) && $user) {
@@ -680,6 +681,7 @@ class PublicApiController extends Controller
             }
 
             $res = collect($feed)
+            ->take($limit)
             ->map(function($k) use($user) {
                 $status = StatusService::get($k);
                 if($status && isset($status['account']) && $user) {
