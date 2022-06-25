@@ -148,9 +148,9 @@ class Installer extends Command
 
         foreach ($extensions as $ext) {
             if (extension_loaded($ext) == false) {
-                $this->error("- \"{$ext}\" PHP extension not found");
+                $this->error("- \"{$ext}\" not found");
             } else {
-                $this->info("- \"{$ext}\" PHP extension found");
+                $this->info("- \"{$ext}\" found");
             }
         }
 
