@@ -66,10 +66,9 @@ class Installer extends Command
         $this->envCreate();
         $this->installType();
 
-        if($this->installType === 'Advanced') {
+        if ($this->installType === 'Advanced') {
             $this->info('Installer: Advanced...');
             $this->checkPHPRequiredDependencies();
-            $this->checkPHPOptionalDependencies();
             $this->checkFFmpegDependencies();
             $this->checkOptimiseDependencies();
             $this->checkDiskPermissions();
@@ -101,9 +100,9 @@ class Installer extends Command
 
     protected function envCheck()
     {
-        if( file_exists(base_path('.env')) &&
-                filesize(base_path('.env')) !== 0 &&
-                !$this->option('dangerously-overwrite-env')
+        if (file_exists(base_path('.env')) &&
+            filesize(base_path('.env')) !== 0 &&
+            !$this->option('dangerously-overwrite-env')
         ) {
             $this->line('');
             $this->error('Existing .env File Found - Installation Aborted');
@@ -117,7 +116,7 @@ class Installer extends Command
     {
         $this->line('');
         $this->info('Creating .env if required');
-        if(!file_exists(app()->environmentFilePath())) {
+        if (!file_exists(app()->environmentFilePath())) {
             exec('cp .env.example .env');
         }
     }
@@ -125,7 +124,7 @@ class Installer extends Command
     protected function installType()
     {
         $type = $this->choice('Select installation type', ['Simple', 'Advanced'], 1);
-                $this->installType = $type;
+        $this->installType = $type;
     }
 
     protected function checkPHPRequiredDependencies()
@@ -140,23 +139,6 @@ class Installer extends Command
             'json',
             'mbstring',
             'openssl',
-        ];
-
-        foreach($extensions as $ext) {
-            if(extension_loaded($ext) == false) {
-                $this->error("- \"{$ext}\" Required PHP Extension not found, aborting installation");
-                exit;
-            }
-        }
-        $this->info("- Required PHP extensions found!");
-    }
-
-    protected function checkPHPOptionalDependencies()
-    {
-        $this->line(' ');
-        $this->info('Checking For Optional PHP Extensions...');
-
-        $extensions = [
             'gd',
             'intl',
             'xml',
@@ -164,22 +146,29 @@ class Installer extends Command
             'redis',
         ];
 
-        foreach($extensions as $ext) {
-            if(extension_loaded($ext) == false) {
+        foreach ($extensions as $ext) {
+            if (extension_loaded($ext) == false) {
                 $this->error("- \"{$ext}\" PHP extension not found");
             } else {
-                $this->info ("- \"{$ext}\" PHP extension found");
+                $this->info("- \"{$ext}\" PHP extension found");
             }
         }
-    }    
-    
+
+        $continue = $this->choice('Do you wish to continue?', ['no', 'yes'], 0);
+        if ($this->continue === 'no') {
+            $this->info('Exiting Installer.');
+            exit;
+        }
+
+    }
+
     protected function checkFFmpegDependencies()
     {
         $this->line(' ');
         $this->info('Checking for Required FFmpeg dependencies...');
 
         $ffmpeg = exec('which ffmpeg');
-        if(empty($ffmpeg)) {
+        if (empty($ffmpeg)) {
             $this->error("- \"{$ext}\" FFmpeg not found, aborting installation");
             exit;
         } else {
@@ -191,7 +180,7 @@ class Installer extends Command
     {
         $this->line(' ');
         $this->info('Checking for Optional Media Optimisation dependencies...');
-        
+
         $dependencies = [
             'jpegoptim',
             'optipng',
@@ -199,12 +188,12 @@ class Installer extends Command
             'gifsicle',
         ];
 
-        foreach($dependencies as $dep) {
+        foreach ($dependencies as $dep) {
             $which = exec("which $dep");
-            if(empty($which)) {
+            if (empty($which)) {
                 $this->error("- \"{$dep}\" not found");
             } else {
-                $this->info ("- \"{$dep}\" found");
+                $this->info("- \"{$dep}\" found");
             }
         }
     }
@@ -217,11 +206,11 @@ class Installer extends Command
 
         $paths = [
             base_path('bootstrap'),
-            base_path('storage')
+            base_path('storage'),
         ];
 
-        foreach($paths as $path) {
-            if(is_writeable($path) == false) {
+        foreach ($paths as $path) {
+            if (is_writeable($path) == false) {
                 $this->error("- Invalid permission found! Aborting installation.");
                 $this->error("  Please make the following path writeable by the web server:");
                 $this->error("  $path");
@@ -236,12 +225,12 @@ class Installer extends Command
     {
         $this->line('');
         $this->info('Enabling production');
-        
+
         $this->updateEnvFile('APP_ENV', 'production');
         $this->updateEnvFile('APP_DEBUG', 'false');
         $this->call('key:generate', ['--force' => true]);
-    }    
-    
+    }
+
     protected function instanceDB()
     {
         $this->line('');
@@ -265,10 +254,10 @@ class Installer extends Command
         $this->info('Testing Database...');
         $dsn = "{$database}:dbname={$database_db};host={$database_host};port={$database_port};";
         try {
-                $dbh = new PDO($dsn, $database_username, $database_password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            $dbh = new PDO($dsn, $database_username, $database_password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         } catch (\PDOException $e) {
-                $this->error('Cannot connect to database, check your details and try again');
-                exit;
+            $this->error('Cannot connect to database, check your details and try again');
+            exit;
         }
         $this->info('- Connected to DB Successfully');
     }
@@ -282,7 +271,6 @@ class Installer extends Command
         $redis_password = $this->ask('Set redis password', 'null');
         $redis_port = $this->ask('Set redis port', 6379);
 
-        
         $this->updateEnvFile('REDIS_CLIENT', $redis_client);
         $this->updateEnvFile('REDIS_SCHEME', 'tcp');
         $this->updateEnvFile('REDIS_HOST', $redis_host);
@@ -291,12 +279,12 @@ class Installer extends Command
 
         $this->info('Testing Redis...');
         $redis = Redis::connection();
-            if($redis->ping()) {
-                $this->info('- Connected to Redis Successfully!');
-            } else {
-                $this->error('Cannot connect to Redis, check your details and try again');
-                exit;
-            }
+        if ($redis->ping()) {
+            $this->info('- Connected to Redis Successfully!');
+        } else {
+            $this->error('Cannot connect to Redis, check your details and try again');
+            exit;
+        }
     }
 
     protected function instanceURL()
@@ -307,18 +295,18 @@ class Installer extends Command
 
         $domain = $this->ask('Site Domain [ex: pixelfed.com]');
         $domain = strtolower($domain);
-            if(empty($domain)) {
-                $this->error('You must set the site domain');
-                exit;
-            }
-            if(starts_with($domain, 'http')) {
-                $this->error('The site domain cannot start with https://, you must use the FQDN (eg: example.org)');
-                exit;
-            }
-            if(strpos($domain, '.') == false) {
-                $this->error('You must enter a valid site domain');
-                exit;
-            }
+        if (empty($domain)) {
+            $this->error('You must set the site domain');
+            exit;
+        }
+        if (starts_with($domain, 'http')) {
+            $this->error('The site domain cannot start with https://, you must use the FQDN (eg: example.org)');
+            exit;
+        }
+        if (strpos($domain, '.') == false) {
+            $this->error('You must enter a valid site domain');
+            exit;
+        }
 
         $this->updateEnvFile('APP_NAME', $name);
         $this->updateEnvFile('APP_URL', 'https://' . $domain);
@@ -331,7 +319,7 @@ class Installer extends Command
     {
         $this->line('');
         $this->info('Laravel Settings (Defaults are recommended):');
-        $session = $this->choice('Select session driver', ["database", "file", "cookie", "redis", "memcached", "array"], 0);    
+        $session = $this->choice('Select session driver', ["database", "file", "cookie", "redis", "memcached", "array"], 0);
         $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
         $queue = $this->choice('Select queue driver', ["redis", "database", "sync", "beanstalkd", "sqs", "null"], 0);
         $broadcast = $this->choice('Select broadcast driver', ["log", "redis", "pusher", "null"], 0);
@@ -345,7 +333,7 @@ class Installer extends Command
         $this->updateEnvFile('LOG_CHANNEL', $log);
         $this->updateEnvFile('HORIZON_PREFIX', $horizon);
     }
-    
+
     protected function instanceSettings()
     {
         $this->line('');
@@ -363,11 +351,11 @@ class Installer extends Command
     }
 
     protected function activityPubSettings()
-    {    
+    {
         $this->line('');
         $this->info('Federation Settings:');
         $activitypub_federation = $this->choice('Enable ActivityPub federation?', ['false', 'true'], 1);
-        
+
         $this->updateEnvFile('ACTIVITY_PUB', $activitypub_federation);
         $this->updateEnvFile('AP_REMOTE_FOLLOW', $activitypub_federation);
         $this->updateEnvFile('AP_INBOX', $activitypub_federation);
@@ -376,38 +364,38 @@ class Installer extends Command
     }
 
     protected function mediaSettings()
-    {        
+    {
         $this->line('');
         $this->info('Media Settings:');
         $optimize_media = $this->choice('Optimize media uploads? Requires jpegoptim and other dependencies!', ['false', 'true'], 1);
         $image_quality = $this->ask('Set image optimization quality between 1-100. Default is 80%, lower values use less disk space at the expense of image quality.', '80');
-            if($image_quality < 1) {
-                $this->error('Min image quality is 1. You should avoid such a low value, 60 at minimum is recommended.');
-                exit;
-            }
-            if($image_quality > 100) {
-                $this->error('Max image quality is 100');
-                exit;
-            }
+        if ($image_quality < 1) {
+            $this->error('Min image quality is 1. You should avoid such a low value, 60 at minimum is recommended.');
+            exit;
+        }
+        if ($image_quality > 100) {
+            $this->error('Max image quality is 100');
+            exit;
+        }
         $this->info('Note: Max photo size cannot exceed `post_max_size` in php.ini.');
         $max_photo_size = $this->ask('Max photo upload size in kilobytes. Default 15000 which is equal to 15MB', '15000');
-        
+
         $max_caption_length = $this->ask('Max caption limit. Default to 500, max 5000.', '500');
-            if($max_caption_length > 5000) {
-                $this->error('Max caption length is 5000 characters.');
-                exit;
-            }
+        if ($max_caption_length > 5000) {
+            $this->error('Max caption length is 5000 characters.');
+            exit;
+        }
 
         $max_album_length = $this->ask('Max photos allowed per album. Choose a value between 1 and 10.', '4');
-                if($max_album_length < 1) {
-                        $this->error('Min album length is 1 photos per album.');
-                        exit;
-                }
-                if($max_album_length > 10) {
-                        $this->error('Max album length is 10 photos per album.');
-                        exit;
-                }
-        
+        if ($max_album_length < 1) {
+            $this->error('Min album length is 1 photos per album.');
+            exit;
+        }
+        if ($max_album_length > 10) {
+            $this->error('Max album length is 10 photos per album.');
+            exit;
+        }
+
         $this->updateEnvFile('PF_OPTIMIZE_IMAGES', $optimize_media);
         $this->updateEnvFile('IMAGE_QUALITY', $image_quality);
         $this->updateEnvFile('MAX_PHOTO_SIZE', $max_photo_size);
@@ -421,11 +409,11 @@ class Installer extends Command
         $this->info('Note: We recommend running database migrations now!');
         $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
 
-        if($confirm === 'Yes') {
-        	sleep(3);
+        if ($confirm === 'Yes') {
+            sleep(3);
             $this->line('');
             $this->info('Migrating DB:');
-        	$this->call('migrate', ['--force' => true]);
+            $this->call('migrate', ['--force' => true]);
             $this->line('');
             $this->info('Importing Cities:');
             $this->call('import:cities');
@@ -437,12 +425,12 @@ class Installer extends Command
             $this->call('passport:keys', ['--force' => true]);
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
-	        if($confirm === 'Yes') {
-	        	$this->call('user:create');
-	        }
+            if ($confirm === 'Yes') {
+                $this->call('user:create');
+            }
         }
     }
-    
+
     protected function resetArtisanCache()
     {
         $this->call('config:cache');
@@ -458,8 +446,8 @@ class Installer extends Command
     }
 
 #####
-# Installer Functions
-#####
+    # Installer Functions
+    #####
 
     protected function checkEnvKeys($key, $error)
     {
@@ -467,7 +455,7 @@ class Installer extends Command
         $payload = file_get_contents($envPath);
 
         if ($existing = $this->existingEnv($key, $payload)) {
-            } else {
+        } else {
             $this->info("$key empty - $error");
         }
     }
@@ -502,14 +490,14 @@ class Installer extends Command
         fclose($file);
     }
 
-    protected function parseSize($size) {
+    protected function parseSize($size)
+    {
         $unit = preg_replace('/[^bkmgtpezy]/i', '', $size);
         $size = preg_replace('/[^0-9\.]/', '', $size);
         if ($unit) {
-                return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
-        }
-        else {
-                return round($size);
+            return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+        } else {
+            return round($size);
         }
     }
 }
