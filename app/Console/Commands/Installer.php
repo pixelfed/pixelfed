@@ -282,6 +282,8 @@ class Installer extends Command
         $redis_password = $this->ask('Set redis password', 'null');
         $redis_port = $this->ask('Set redis port', 6379);
 
+        
+        $this->updateEnvFile('REDIS_CLIENT', $redis_client);
         $this->updateEnvFile('REDIS_SCHEME', 'tcp');
         $this->updateEnvFile('REDIS_HOST', $redis_host);
         $this->updateEnvFile('REDIS_PASSWORD', $redis_password);
@@ -338,8 +340,8 @@ class Installer extends Command
 
         $this->updateEnvFile('SESSION_DRIVER', $session);
         $this->updateEnvFile('CACHE_DRIVER', $cache);
-        $this->updateEnvFile('QUEUE_DRIVER', $cache);
-        $this->updateEnvFile('BROADCAST_DRIVER', $cache);
+        $this->updateEnvFile('QUEUE_DRIVER', $queue);
+        $this->updateEnvFile('BROADCAST_DRIVER', $broadcast);
         $this->updateEnvFile('LOG_CHANNEL', $log);
         $this->updateEnvFile('HORIZON_PREFIX', $horizon);
     }
