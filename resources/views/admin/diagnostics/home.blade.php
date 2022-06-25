@@ -58,15 +58,15 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor created: </strong>
-			<span>{{ \App\Models\InstanceActor::count() ? '✅' : '❌' }}</span>
+			<span>{{ \App\Models\InstanceActor::count() ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">ACTIVITYPUB</span> instance actor cached: </strong>
-			<span>{{ Cache::get(\App\Models\InstanceActor::PROFILE_KEY) ? '✅' : '❌' }}</span>
+			<span>{{ Cache::get(\App\Models\InstanceActor::PROFILE_KEY) ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> enabled: </strong>
-			<span>{{ config_cache('pixelfed.oauth_enabled') ? '✅' : '❌' }}</span>
+			<span>{{ config_cache('pixelfed.oauth_enabled') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> token_expiration</strong>
@@ -74,11 +74,11 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> public key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-public.key')) ? '✅' : '❌' }}</span>
+			<span>{{ file_exists(storage_path('oauth-public.key')) ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> private key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅' : '❌' }}</span>
+			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅ true' : '❌ false' }}</span>
 		</li>		
 		
 		<hr>
@@ -153,11 +153,43 @@
 			<strong><span class="badge badge-primary">PHP INI</span> max_input_time:</strong>
 			<span>{{ ini_get('max_input_time') }}</span>
 		</li>
-		<li>
-			<strong><span class="badge badge-primary">PHP INI</span> file_uploads:</strong>
-			<span>{{ ini_get('file_uploads') ? '✅' : '❌' }}</span>
-		</li>
 
+		<li>
+			<strong><span class="badge badge-primary">PHP INI</span> file_uploads (On):</strong>
+			<span>{{ ini_get('file_uploads') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_fopen (true):</strong>
+			<span>{{ ini_get('allow_url_fopen') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> allow_url_include (false):</strong>
+			<span>{{ ini_get('allow_url_include') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> expose_php (false):</strong>
+			<span>{{ ini_get('expose_php') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> display_errors (false):</strong>
+			<span>{{ ini_get('display_errors') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> display_startup_errors (false):</strong>
+			<span>{{ ini_get('display_startup_errors') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> log_errors (true):</strong>
+			<span>{{ ini_get('log_errors') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> ignore_repeated_errors (false):</strong>
+			<span>{{ ini_get('ignore_repeated_errors') }}</span>
+		</li>
+		<li>
+			<strong><span class="badge badge-primary">PHP INI - Security</span> disable_functions:</strong>
+			<span>{{ ini_get('disable_functions') }}</span>
+		</li>
 
 	<hr>
 	<p class="font-weight-bold text-muted">
@@ -330,6 +362,11 @@
 	</tr>
 	<tr>
 		<td><span class="badge badge-primary">FEDERATION</span></td>
+		<td><strong>PF_NETWORK_TIMELINE_DAYS_FALLOFF</strong></td>
+		<td><span>{{config('federation.network_timeline_days_falloff') }}</span></td>
+	</tr>
+	<tr>
+		<td><span class="badge badge-primary">FEDERATION</span></td>
 		<td><strong>CUSTOM_EMOJI</strong></td>
 		<td><span>{{config_cache('federation.custom_emoji.enabled') ? '✅ true' : '❌ false' }}</span></td>
 	</tr>
@@ -453,6 +490,23 @@
 		<td><strong>INSTANCE_PUBLIC_LOCAL_TIMELINE</strong></td>
 		<td><span>{{config_cache('instance.timeline.local.is_public') ? '✅ true' : '❌ false' }}</span></td>
 	</tr>
+
+	<tr>
+		<td><span class="badge badge-primary">INSTANCE</span></td>
+		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHED</strong></td>
+		<td><span>{{config('instance.timeline.network.cached') }}</span></td>
+	</tr>
+	<tr>
+		<td><span class="badge badge-primary">INSTANCE</span></td>
+		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF</strong></td>
+		<td><span>{{config('instance.timeline.network.cache_dropoff') }}</span></td>
+	</tr>
+	<tr>
+		<td><span class="badge badge-primary">INSTANCE</span></td>
+		<td><strong>INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST</strong></td>
+		<td><span>{{config('instance.timeline.network.max_hours_old') }}</span></td>
+	</tr>
+
 	<tr>
 		<td><span class="badge badge-primary">INSTANCE</span></td>
 		<td><strong>PAGE_404_HEADER</strong></td>
