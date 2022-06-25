@@ -155,6 +155,7 @@ class Installer extends Command
         }
 
         $continue = $this->choice('Do you wish to continue?', ['no', 'yes'], 0);
+        $this->continue = $continue;
         if ($this->continue === 'no') {
             $this->info('Exiting Installer.');
             exit;
