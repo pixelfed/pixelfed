@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Storage;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\LiveStreamService;
+use App\User;
+use App\Events\LiveStream\NewChatComment;
+use App\Events\LiveStream\DeleteChatComment;
+use App\Events\LiveStream\BanUser;
+use App\Events\LiveStream\PinChatMessage;
+use App\Events\LiveStream\UnpinChatMessage;
 
 class LiveStreamController extends Controller
 {
@@ -63,30 +69,20 @@ class LiveStreamController extends Controller
 		abort_if(!config('livestreaming.enabled'), 400);
 		abort_if(!$request->user(), 403);
 
-		$stream = LiveStream::whereProfileId($request->input('profile_id'))->first();
+		$stream = LiveStream::whereProfileId($request->input('profile_id'))
+			->whereNotNull('live_at')
+			->orderByDesc('live_at')
+			->first();
 
 		if(!$stream) {
 			return [];
 		}
 
 		$res = [];
-		$owner = $stream->profile_id == $request->user()->profile_id;
+		$owner = $request->user() ? $stream->profile_id == $request->user()->profile_id : false;
 
 		if($stream->visibility === 'private') {
 			abort_if(!$owner && !FollowerService::follows($request->user()->profile_id, $stream->profile_id), 403, 'LSE:011');
-		}
-
-		if($owner) {
-			$res['stream_key'] = $stream->stream_key;
-			$res['stream_id'] = $stream->stream_id;
-			$res['stream_url'] = $stream->getStreamKeyUrl();
-		}
-
-		if($stream->live_at == null) {
-			$res['hls_url'] = null;
-			$res['name'] = $stream->name;
-			$res['description'] = $stream->description;
-			return $res;
 		}
 
 		$res = [
@@ -96,6 +92,47 @@ class LiveStreamController extends Controller
 		];
 
 		return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+	}
+
+
+	public function getUserStreamAsGuest(Request $request)
+	{
+		abort_if(!config('livestreaming.enabled'), 400);
+
+		$stream = LiveStream::whereProfileId($request->input('profile_id'))
+			->whereVisibility('public')
+			->whereNotNull('live_at')
+			->orderByDesc('live_at')
+			->first();
+
+		if(!$stream) {
+			return [];
+		}
+
+		$res = [];
+
+		$res = [
+			'hls_url' => $stream->getHlsUrl(),
+			'name' => $stream->name,
+			'description' => $stream->description
+		];
+
+		return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+	}
+
+	public function showProfilePlayer(Request $request, $username)
+	{
+		abort_if(!config('livestreaming.enabled'), 400);
+
+		$user = User::whereUsername($username)->firstOrFail();
+		$id = (string) $user->profile_id;
+		$stream = LiveStream::whereProfileId($id)
+			->whereNotNull('live_at')
+			->first();
+
+		abort_if(!$request->user() && $stream->visibility !== 'public', 404);
+
+		return view('live.player', compact('id'));
 	}
 
 	public function deleteStream(Request $request)
@@ -118,7 +155,7 @@ class LiveStreamController extends Controller
 		abort_if(!config('livestreaming.enabled'), 400);
 		abort_if(!$request->user(), 403);
 
-		return LiveStream::whereVisibility('local')->whereNotNull('live_at')->get()->map(function($stream) {
+		return LiveStream::whereIn('visibility', ['local', 'public'])->whereNotNull('live_at')->get()->map(function($stream) {
 			return [
 				'account' => AccountService::get($stream->profile_id),
 				'stream_id' => $stream->stream_id
@@ -162,22 +199,30 @@ class LiveStreamController extends Controller
 			'message' => 'required|max:140'
 		]);
 
-		$stream = LiveStream::whereProfileId($request->input('profile_id'))->firstOrFail();
+		$stream = LiveStream::whereProfileId($request->input('profile_id'))
+			->whereNotNull('live_at')
+			->firstOrFail();
 
 		$owner = $stream->profile_id == $request->user()->profile_id;
 		if($stream->visibility === 'private') {
-			abort_if(!$owner && !FollowerService::follows($request->user()->profile_id, $stream->profile_id), 403, 'LSE:022');
+			abort_if(!$owner && !FollowerService::follows($request->user()->profile_id, $stream->profile_id), 403);
 		}
 
+		$user = AccountService::get($request->user()->profile_id);
+
+		abort_if(!$user, 422);
+
 		$res = [
+			'id' => (string) Str::uuid(),
 			'pid' => (string) $request->user()->profile_id,
-			'username' => $request->user()->username,
+			'avatar' => $user['avatar'],
+			'username' => $user['username'],
 			'text' => $request->input('message'),
 			'ts' => now()->timestamp
 		];
 
 		LiveStreamService::addComment($stream->profile_id, json_encode($res, JSON_UNESCAPED_SLASHES));
-
+		NewChatComment::dispatch($stream, $res);
 		return $res;
 	}
 
@@ -209,14 +254,79 @@ class LiveStreamController extends Controller
 			'message' => 'required'
 		]);
 
-		abort_if($request->user()->profile_id != $request->input('profile_id'), 403);
+		$uid = $request->user()->profile_id;
+		$pid = $request->input('profile_id');
+		$msg = $request->input('message');
+		$admin = $uid == $request->input('profile_id');
+		$owner = $uid == $msg['pid'];
+		abort_if(!$admin && !$owner, 403);
 
-		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
+		$stream = LiveStream::whereProfileId($pid)->firstOrFail();
 
 		$payload = $request->input('message');
+		broadcast(new DeleteChatComment($stream, $payload))->toOthers();
 		$payload = json_encode($payload, JSON_UNESCAPED_SLASHES);
 		LiveStreamService::deleteComment($stream->profile_id, $payload);
+		return;
+	}
 
+	public function banChatUser(Request $request)
+	{
+		abort_if(!config('livestreaming.enabled'), 400);
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'profile_id' => 'required|exists:profiles,id',
+		]);
+
+		abort_if($request->user()->profile_id == $request->input('profile_id'), 403);
+
+		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
+		$pid = $request->input('profile_id');
+
+		BanUser::dispatch($stream, $pid);
+		return;
+	}
+
+	public function pinChatComment(Request $request)
+	{
+		abort_if(!config('livestreaming.enabled'), 400);
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'profile_id' => 'required|exists:profiles,id',
+			'message' => 'required'
+		]);
+
+		$uid = $request->user()->profile_id;
+		$pid = $request->input('profile_id');
+		$msg = $request->input('message');
+
+		abort_if($uid != $pid, 403);
+
+		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
+		PinChatMessage::dispatch($stream, $msg);
+		return;
+	}
+
+	public function unpinChatComment(Request $request)
+	{
+		abort_if(!config('livestreaming.enabled'), 400);
+		abort_if(!$request->user(), 403);
+
+		$this->validate($request, [
+			'profile_id' => 'required|exists:profiles,id',
+			'message' => 'required'
+		]);
+
+		$uid = $request->user()->profile_id;
+		$pid = $request->input('profile_id');
+		$msg = $request->input('message');
+
+		abort_if($uid != $pid, 403);
+
+		$stream = LiveStream::whereProfileId($request->user()->profile_id)->firstOrFail();
+		UnpinChatMessage::dispatch($stream, $msg);
 		return;
 	}
 
