@@ -154,7 +154,7 @@ class Installer extends Command
             }
         }
 
-        $continue = $this->choice('Do you wish to continue?', ['no', 'yes'], 0);
+        $continue = $this->choice('Do you wish to continue?', ['yes', 'no'], 0);
         $this->continue = $continue;
         if ($this->continue === 'no') {
             $this->info('Exiting Installer.');
@@ -457,7 +457,7 @@ class Installer extends Command
 
         if ($existing = $this->existingEnv($key, $payload)) {
         } else {
-            $this->info("$key empty - $error");
+            $this->error("$key empty - $error");
         }
     }
 
