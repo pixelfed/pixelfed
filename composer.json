@@ -14,6 +14,7 @@
 		"ext-mbstring": "*",
 		"ext-openssl": "*",
 		"bacon/bacon-qr-code": "^2.0.3",
+		"beyondcode/laravel-websockets": "^1.13",
 		"brick/math": "^0.9.3",
 		"buzz/laravel-h-captcha": "1.0.3",
 		"doctrine/dbal": "^2.7",
@@ -45,6 +46,7 @@
 	"require-dev": {
 		"brianium/paratest": "^6.1",
 		"facade/ignition": "^2.3.6",
+		"laravel/telescope": "^4.9",
 		"mockery/mockery": "^1.0",
 		"nunomaduro/collision": "^5.0",
 		"phpunit/phpunit": "^9.0"
