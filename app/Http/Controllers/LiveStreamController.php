@@ -147,7 +147,7 @@ class LiveStreamController extends Controller
 			->each(function($stream) {
 				Storage::deleteDirectory("public/live-hls/{$stream->stream_id}");
 				LiveStreamService::clearChat($stream->profile_id);
-				StreamEnd::dispatch($stream);
+				StreamEnd::dispatch($stream->profile_id);
 				$stream->delete();
 			});
 
@@ -377,7 +377,7 @@ class LiveStreamController extends Controller
 			$stream->live_at = now();
 			$stream->save();
 
-			StreamStart::dispatch($stream);
+			StreamStart::dispatch($stream->profile_id);
 			return [];
 		} else {
 			abort(400);
@@ -394,7 +394,7 @@ class LiveStreamController extends Controller
 		$name = $url['name'] ?? $request->input('name');
 
 		$stream = LiveStream::whereStreamId($name)->whereStreamKey($url['key'])->firstOrFail();
-		StreamEnd::dispatch($stream);
+		StreamEnd::dispatch($stream->profile_id);
 		LiveStreamService::clearChat($stream->profile_id);
 
 		if(config('livestreaming.broadcast.delete_token_after_finished')) {
