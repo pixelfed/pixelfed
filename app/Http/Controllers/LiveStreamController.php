@@ -368,16 +368,16 @@ class LiveStreamController extends Controller
 
 		if($token) {
 			$stream = LiveStream::whereStreamKey($key)->firstOrFail();
+			StreamStart::dispatch($stream->profile_id);
 			return redirect($stream->getStreamRtmpUrl(), 301);
 		} else {
 			$stream = LiveStream::whereStreamId($key)->firstOrFail();
+			StreamStart::dispatch($stream->profile_id);
 		}
 
 		if($request->filled('name') && $token == false) {
 			$stream->live_at = now();
 			$stream->save();
-
-			StreamStart::dispatch($stream->profile_id);
 			return [];
 		} else {
 			abort(400);
