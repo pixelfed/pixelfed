@@ -389,6 +389,8 @@ class LiveStreamController extends Controller
 
 		$stream = LiveStream::whereStreamId($name)->whereStreamKey($url['key'])->firstOrFail();
 
+		LiveStreamService::clearChat($stream->profile_id);
+
 		if(config('livestreaming.broadcast.delete_token_after_finished')) {
 			$stream->delete();
 		} else {
