@@ -130,7 +130,7 @@ class LiveStreamController extends Controller
 			->whereNotNull('live_at')
 			->first();
 
-		abort_if(!$request->user() && $stream->visibility !== 'public', 404);
+		abort_if(!$request->user() && $stream && $stream->visibility !== 'public', 404);
 
 		return view('live.player', compact('id'));
 	}
