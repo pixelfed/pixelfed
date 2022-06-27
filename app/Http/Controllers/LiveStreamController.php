@@ -147,6 +147,7 @@ class LiveStreamController extends Controller
 			->each(function($stream) {
 				Storage::deleteDirectory("public/live-hls/{$stream->stream_id}");
 				LiveStreamService::clearChat($stream->profile_id);
+				StreamEnd::dispatch($stream);
 				$stream->delete();
 			});
 
