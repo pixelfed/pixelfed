@@ -389,11 +389,9 @@ class LiveStreamController extends Controller
 	public function clientBroadcastFinish(Request $request)
 	{
 		abort_if(!config('livestreaming.enabled'), 400);
-		abort_if(!$request->filled('tcurl'), 400);
-		$url = $this->parseStreamUrl($request->input('tcurl'));
-		$name = $url['name'] ?? $request->input('name');
-
-		$stream = LiveStream::whereStreamId($name)->whereStreamKey($url['key'])->firstOrFail();
+		abort_if($request->ip() != '127.0.0.1', 400);
+		$name = $request->input('name');
+		$stream = LiveStream::whereStreamId($name)->firstOrFail();
 		StreamEnd::dispatch($stream->profile_id);
 		LiveStreamService::clearChat($stream->profile_id);
 
