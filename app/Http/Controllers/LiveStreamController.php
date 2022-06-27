@@ -15,6 +15,8 @@ use App\Events\LiveStream\DeleteChatComment;
 use App\Events\LiveStream\BanUser;
 use App\Events\LiveStream\PinChatMessage;
 use App\Events\LiveStream\UnpinChatMessage;
+use App\Events\LiveStream\StreamStart;
+use App\Events\LiveStream\StreamEnd;
 
 class LiveStreamController extends Controller
 {
@@ -373,6 +375,8 @@ class LiveStreamController extends Controller
 		if($request->filled('name') && $token == false) {
 			$stream->live_at = now();
 			$stream->save();
+
+			StreamStart::dispatch($stream);
 			return [];
 		} else {
 			abort(400);
@@ -389,7 +393,7 @@ class LiveStreamController extends Controller
 		$name = $url['name'] ?? $request->input('name');
 
 		$stream = LiveStream::whereStreamId($name)->whereStreamKey($url['key'])->firstOrFail();
-
+		StreamEnd::dispatch($stream);
 		LiveStreamService::clearChat($stream->profile_id);
 
 		if(config('livestreaming.broadcast.delete_token_after_finished')) {
