@@ -353,6 +353,7 @@ class LiveStreamController extends Controller
 	public function clientBroadcastPublish(Request $request)
 	{
 		abort_if(!config('livestreaming.enabled'), 400);
+		abort_if($request->ip() != '127.0.0.1', 400);
 		$key = $request->input('name');
 		$name = $request->input('name');
 
@@ -368,16 +369,17 @@ class LiveStreamController extends Controller
 
 		if($token) {
 			$stream = LiveStream::whereStreamKey($key)->firstOrFail();
-			StreamStart::dispatch($stream->profile_id);
 			return redirect($stream->getStreamRtmpUrl(), 301);
 		} else {
 			$stream = LiveStream::whereStreamId($key)->firstOrFail();
-			StreamStart::dispatch($stream->profile_id);
 		}
+
+		StreamStart::dispatch($stream->profile_id);
 
 		if($request->filled('name') && $token == false) {
 			$stream->live_at = now();
 			$stream->save();
+
 			return [];
 		} else {
 			abort(400);
