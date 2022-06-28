@@ -33,7 +33,7 @@ class StreamEnd implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('live.chat.' . $this->id);
+        return new Channel('live.chat.' . $this->id);
     }
 
     public function broadcastAs()

@@ -268,7 +268,7 @@ class LiveStreamController extends Controller
 		$stream = LiveStream::whereProfileId($pid)->firstOrFail();
 
 		$payload = $request->input('message');
-		broadcast(new DeleteChatComment($stream, $payload))->toOthers();
+		DeleteChatComment::dispatch($stream, $payload);
 		$payload = json_encode($payload, JSON_UNESCAPED_SLASHES);
 		LiveStreamService::deleteComment($stream->profile_id, $payload);
 		return;
