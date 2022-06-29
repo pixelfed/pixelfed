@@ -110,7 +110,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('chat/ban-user', 'LiveStreamController@banChatUser')->middleware($middleware);
 		Route::post('chat/pin', 'LiveStreamController@pinChatComment')->middleware($middleware);
 		Route::post('chat/unpin', 'LiveStreamController@unpinChatComment')->middleware($middleware);
-		Route::get('config', 'LiveStreamController@getConfig')->middleware($middleware);
+		Route::get('config', 'LiveStreamController@getConfig');
 		Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish');
 		Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish');
 	});

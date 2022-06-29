@@ -336,11 +336,8 @@ class LiveStreamController extends Controller
 
 	public function getConfig(Request $request)
 	{
-		abort_if(!config('livestreaming.enabled'), 400);
-		abort_if(!$request->user(), 403);
-
 		$res = [
-			'enabled' => config('livestreaming.enabled'),
+			'enabled' => (bool) config('livestreaming.enabled'),
 			'broadcast' => [
 				'sources' => config('livestreaming.broadcast.sources'),
 				'limits' => config('livestreaming.broadcast.limits')
