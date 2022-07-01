@@ -540,6 +540,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 	Route::get('p/{username}/{id}.json', 'StatusController@showObject');
 	Route::get('p/{username}/{id}', 'StatusController@show');
 	Route::get('{username}/embed', 'ProfileController@embed');
+	Route::get('{username}/live', 'LiveStreamController@showProfilePlayer');
 	Route::get('@{username}@{domain}', 'SiteController@legacyWebfingerRedirect');
 	Route::get('@{username}', 'SiteController@legacyProfileRedirect');
 	Route::get('{username}', 'ProfileController@show');

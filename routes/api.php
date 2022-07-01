@@ -94,6 +94,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	Route::group(['prefix' => 'v2'], function() use($middleware) {
 		Route::get('search', 'Api\ApiV1Controller@searchV2')->middleware($middleware);
 		Route::post('media', 'Api\ApiV1Controller@mediaUploadV2')->middleware($middleware);
+		Route::get('streaming/config', 'Api\ApiV1Controller@getWebsocketConfig');
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {
@@ -101,11 +102,15 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('stream/edit', 'LiveStreamController@editStream')->middleware($middleware);
 		Route::get('active/list', 'LiveStreamController@getActiveStreams')->middleware($middleware);
 		Route::get('accounts/stream', 'LiveStreamController@getUserStream')->middleware($middleware);
+		Route::get('accounts/stream/guest', 'LiveStreamController@getUserStreamAsGuest');
 		Route::delete('accounts/stream', 'LiveStreamController@deleteStream')->middleware($middleware);
 		Route::get('chat/latest', 'LiveStreamController@getLatestChat')->middleware($middleware);
 		Route::post('chat/message', 'LiveStreamController@addChatComment')->middleware($middleware);
 		Route::post('chat/delete', 'LiveStreamController@deleteChatComment')->middleware($middleware);
-		Route::get('config', 'LiveStreamController@getConfig')->middleware($middleware);
+		Route::post('chat/ban-user', 'LiveStreamController@banChatUser')->middleware($middleware);
+		Route::post('chat/pin', 'LiveStreamController@pinChatComment')->middleware($middleware);
+		Route::post('chat/unpin', 'LiveStreamController@unpinChatComment')->middleware($middleware);
+		Route::get('config', 'LiveStreamController@getConfig');
 		Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish');
 		Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish');
 	});

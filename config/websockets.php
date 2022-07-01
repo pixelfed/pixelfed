@@ -1,125 +1,299 @@
 <?php
 
-use BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize;
-
 return [
 
     /*
-     * This package comes with multi tenancy out of the box. Here you can
-     * configure the different apps that can use the webSockets server.
-     *
-     * Optionally you can disable client events so clients cannot send
-     * messages to each other via the webSockets.
-     */
+    |--------------------------------------------------------------------------
+    | Dashboard Settings
+    |--------------------------------------------------------------------------
+    |
+    | You can configure the dashboard settings from here.
+    |
+    */
+
+    'dashboard' => [
+
+        'port' => env('LARAVEL_WEBSOCKETS_PORT', 6001),
+
+        'domain' => env('LARAVEL_WEBSOCKETS_DOMAIN'),
+
+        'path' => env('LARAVEL_WEBSOCKETS_PATH', 'laravel-websockets'),
+
+        'middleware' => [
+            'web',
+            \BeyondCode\LaravelWebSockets\Dashboard\Http\Middleware\Authorize::class,
+        ],
+
+    ],
+
+    'managers' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Application Manager
+        |--------------------------------------------------------------------------
+        |
+        | An Application manager determines how your websocket server allows
+        | the use of the TCP protocol based on, for example, a list of allowed
+        | applications.
+        | By default, it uses the defined array in the config file, but you can
+        | anytime implement the same interface as the class and add your own
+        | custom method to retrieve the apps.
+        |
+        */
+
+        'app' => \BeyondCode\LaravelWebSockets\Apps\ConfigAppManager::class,
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Applications Repository
+    |--------------------------------------------------------------------------
+    |
+    | By default, the only allowed app is the one you define with
+    | your PUSHER_* variables from .env.
+    | You can configure to use multiple apps if you need to, or use
+    | a custom App Manager that will handle the apps from a database, per se.
+    |
+    | You can apply multiple settings, like the maximum capacity, enable
+    | client-to-client messages or statistics.
+    |
+    */
+
     'apps' => [
         [
             'id' => env('PUSHER_APP_ID'),
             'name' => env('APP_NAME'),
+            'host' => env('PUSHER_APP_HOST'),
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
-            'enable_client_messages' => env('WSS_CM', false),
-            'enable_statistics' => env('WSS_STATS', false),
+            'path' => env('PUSHER_APP_PATH'),
+            'capacity' => null,
+            'enable_client_messages' => false,
+            'enable_statistics' => false,
+            'allowed_origins' => [
+                // env('LARAVEL_WEBSOCKETS_DOMAIN'),
+            ],
         ],
     ],
 
     /*
-     * This class is responsible for finding the apps. The default provider
-     * will use the apps defined in this config file.
-     *
-     * You can create a custom provider by implementing the
-     * `AppProvider` interface.
-     */
-    'app_provider' => BeyondCode\LaravelWebSockets\Apps\ConfigAppProvider::class,
+    |--------------------------------------------------------------------------
+    | Broadcasting Replication PubSub
+    |--------------------------------------------------------------------------
+    |
+    | You can enable replication to publish and subscribe to
+    | messages across the driver.
+    |
+    | By default, it is set to 'local', but you can configure it to use drivers
+    | like Redis to ensure connection between multiple instances of
+    | WebSocket servers. Just set the driver to 'redis' to enable the PubSub using Redis.
+    |
+    */
 
-    /*
-     * This array contains the hosts of which you want to allow incoming requests.
-     * Leave this empty if you want to accept requests from all hosts.
-     */
-    'allowed_origins' => [
-        //
-    ],
+    'replication' => [
 
-    /*
-     * The maximum request size in kilobytes that is allowed for an incoming WebSocket request.
-     */
-    'max_request_size_in_kb' => 250,
+        'mode' => env('WEBSOCKETS_REPLICATION_MODE', 'local'),
 
-    /*
-     * This path will be used to register the necessary routes for the package.
-     */
-    'path' => 'pxws',
+        'modes' => [
 
-    /*
-     * Dashboard Routes Middleware
-     *
-     * These middleware will be assigned to every dashboard route, giving you
-     * the chance to add your own middleware to this list or change any of
-     * the existing middleware. Or, you can simply stick with this list.
-     */
-    'middleware' => [
-        'web',
-        Authorize::class,
+            /*
+            |--------------------------------------------------------------------------
+            | Local Replication
+            |--------------------------------------------------------------------------
+            |
+            | Local replication is actually a null replicator, meaning that it
+            | is the default behaviour of storing the connections into an array.
+            |
+            */
+
+            'local' => [
+
+                /*
+                |--------------------------------------------------------------------------
+                | Channel Manager
+                |--------------------------------------------------------------------------
+                |
+                | The channel manager is responsible for storing, tracking and retrieving
+                | the channels as long as their members and connections.
+                |
+                */
+
+                'channel_manager' => \BeyondCode\LaravelWebSockets\ChannelManagers\LocalChannelManager::class,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Statistics Collector
+                |--------------------------------------------------------------------------
+                |
+                | The Statistics Collector will, by default, handle the incoming statistics,
+                | storing them until they will become dumped into another database, usually
+                | a MySQL database or a time-series database.
+                |
+                */
+
+                'collector' => \BeyondCode\LaravelWebSockets\Statistics\Collectors\MemoryCollector::class,
+
+            ],
+
+            'redis' => [
+
+                'connection' => env('WEBSOCKETS_REDIS_REPLICATION_CONNECTION', 'default'),
+
+                /*
+                |--------------------------------------------------------------------------
+                | Channel Manager
+                |--------------------------------------------------------------------------
+                |
+                | The channel manager is responsible for storing, tracking and retrieving
+                | the channels as long as their members and connections.
+                |
+                */
+
+                'channel_manager' => \BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager::class,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Statistics Collector
+                |--------------------------------------------------------------------------
+                |
+                | The Statistics Collector will, by default, handle the incoming statistics,
+                | storing them until they will become dumped into another database, usually
+                | a MySQL database or a time-series database.
+                |
+                */
+
+                'collector' => \BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector::class,
+
+            ],
+
+        ],
+
     ],
 
     'statistics' => [
-        /*
-         * This model will be used to store the statistics of the WebSocketsServer.
-         * The only requirement is that the model should extend
-         * `WebSocketsStatisticsEntry` provided by this package.
-         */
-        'model' => \BeyondCode\LaravelWebSockets\Statistics\Models\WebSocketsStatisticsEntry::class,
 
         /*
-         * Here you can specify the interval in seconds at which statistics should be logged.
-         */
+        |--------------------------------------------------------------------------
+        | Statistics Store
+        |--------------------------------------------------------------------------
+        |
+        | The Statistics Store is the place where all the temporary stats will
+        | be dumped. This is a much reliable store and will be used to display
+        | graphs or handle it later on your app.
+        |
+        */
+
+        'store' => \BeyondCode\LaravelWebSockets\Statistics\Stores\DatabaseStore::class,
+
+        /*
+        |--------------------------------------------------------------------------
+        | Statistics Interval Period
+        |--------------------------------------------------------------------------
+        |
+        | Here you can specify the interval in seconds at which
+        | statistics should be logged.
+        |
+        */
+
         'interval_in_seconds' => 60,
 
         /*
-         * When the clean-command is executed, all recorded statistics older than
-         * the number of days specified here will be deleted.
-         */
+        |--------------------------------------------------------------------------
+        | Statistics Deletion Period
+        |--------------------------------------------------------------------------
+        |
+        | When the clean-command is executed, all recorded statistics older than
+        | the number of days specified here will be deleted.
+        |
+        */
+
         'delete_statistics_older_than_days' => 60,
 
-        /*
-         * Use an DNS resolver to make the requests to the statistics logger
-         * default is to resolve everything to 127.0.0.1.
-         */
-        'perform_dns_lookup' => false,
     ],
 
     /*
-     * Define the optional SSL context for your WebSocket connections.
-     * You can see all available options at: http://php.net/manual/en/context.ssl.php
-     */
+    |--------------------------------------------------------------------------
+    | Maximum Request Size
+    |--------------------------------------------------------------------------
+    |
+    | The maximum request size in kilobytes that is allowed for
+    | an incoming WebSocket request.
+    |
+    */
+
+    'max_request_size_in_kb' => 250,
+
+    /*
+    |--------------------------------------------------------------------------
+    | SSL Configuration
+    |--------------------------------------------------------------------------
+    |
+    | By default, the configuration allows only on HTTP. For SSL, you need
+    | to set up the the certificate, the key, and optionally, the passphrase
+    | for the private key.
+    | You will need to restart the server for the settings to take place.
+    |
+    */
+
     'ssl' => [
-        /*
-         * Path to local certificate file on filesystem. It must be a PEM encoded file which
-         * contains your certificate and private key. It can optionally contain the
-         * certificate chain of issuers. The private key also may be contained
-         * in a separate file specified by local_pk.
-         */
-        'local_cert' => env('WSS_LOCAL_CERT', null),
 
-        /*
-         * Path to local private key file on filesystem in case of separate files for
-         * certificate (local_cert) and private key.
-         */
-        'local_pk' => env('WSS_LOCAL_PK', null),
+        'local_cert' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT', null),
 
-        /*
-         * Passphrase for your local_cert file.
-         */
-        'passphrase' => env('WSS_PASSPHRASE', null),
+        'capath' => env('LARAVEL_WEBSOCKETS_SSL_CA', null),
 
-        'verify_peer' => env('WSS_VERIFY_PEER', false),
+        'local_pk' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_PK', null),
+
+        'passphrase' => env('LARAVEL_WEBSOCKETS_SSL_PASSPHRASE', null),
+
+        'verify_peer' => env('APP_ENV') === 'production',
+
+        'allow_self_signed' => env('APP_ENV') !== 'production',
+
     ],
 
     /*
-     * Channel Manager
-     * This class handles how channel persistence is handled.
-     * By default, persistence is stored in an array by the running webserver.
-     * The only requirement is that the class should implement
-     * `ChannelManager` interface provided by this package.
-     */
-    'channel_manager' => \BeyondCode\LaravelWebSockets\WebSockets\Channels\ChannelManagers\ArrayChannelManager::class,
+    |--------------------------------------------------------------------------
+    | Route Handlers
+    |--------------------------------------------------------------------------
+    |
+    | Here you can specify the route handlers that will take over
+    | the incoming/outgoing websocket connections. You can extend the
+    | original class and implement your own logic, alongside
+    | with the existing logic.
+    |
+    */
+
+    'handlers' => [
+
+        'websocket' => \BeyondCode\LaravelWebSockets\Server\WebSocketHandler::class,
+
+        'health' => \BeyondCode\LaravelWebSockets\Server\HealthHandler::class,
+
+        'trigger_event' => \BeyondCode\LaravelWebSockets\API\TriggerEvent::class,
+
+        'fetch_channels' => \BeyondCode\LaravelWebSockets\API\FetchChannels::class,
+
+        'fetch_channel' => \BeyondCode\LaravelWebSockets\API\FetchChannel::class,
+
+        'fetch_users' => \BeyondCode\LaravelWebSockets\API\FetchUsers::class,
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Promise Resolver
+    |--------------------------------------------------------------------------
+    |
+    | The promise resolver is a class that takes a input value and is
+    | able to make sure the PHP code runs async by using ->then(). You can
+    | use your own Promise Resolver. This is usually changed when you want to
+    | intercept values by the promises throughout the app, like in testing
+    | to switch from async to sync.
+    |
+    */
+
+    'promise_resolver' => \React\Promise\FulfilledPromise::class,
+
 ];

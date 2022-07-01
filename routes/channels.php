@@ -14,3 +14,11 @@
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('live.chat.{id}', function ($user, $id) {
+    return true;
+}, ['guards' => ['web', 'api']]);
+
+Broadcast::channel('live.presence.{id}', function ($user, $id) {
+    return [ $user->profile_id ];
+}, ['guards' => ['web', 'api']]);

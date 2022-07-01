@@ -39,7 +39,7 @@ class LiveStreamService
 		return Redis::lrem($key, 0, $val);
 	}
 
-	public static function clearChat($id, $val)
+	public static function clearChat($id)
 	{
 		$key = self::CACHE_KEY . 'chat:' . $id;
 		return Redis::del($key);

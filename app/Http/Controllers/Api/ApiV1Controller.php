@@ -101,6 +101,16 @@ class ApiV1Controller extends Controller
 		return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
 	}
 
+	public function getWebsocketConfig()
+	{
+		return config('broadcasting.default') === 'pusher' ? [
+			'host' => config('broadcasting.connections.pusher.options.host'),
+			'port' => config('broadcasting.connections.pusher.options.port'),
+			'key' => config('broadcasting.connections.pusher.key'),
+			'cluster' => config('broadcasting.connections.pusher.options.cluster')
+		] : [];
+	}
+
 	public function getApp(Request $request)
 	{
 		if(!$request->user()) {
