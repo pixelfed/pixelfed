@@ -84,6 +84,11 @@ class UserCreate extends Command
             exit;
         }
         
+        if (strlen($password) < 6) {
+            $this->error('Must be 6 or more characters, please try again...');
+            exit;
+        }
+        
         $is_admin = $this->confirm('Make this user an admin?');
         $confirm_email = $this->confirm('Manually verify email address?');
 

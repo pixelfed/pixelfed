@@ -57,52 +57,81 @@ class Installer extends Command
         $this->info(' ');
         $this->info('Pixelfed version: ' . config('pixelfed.version'));
         $this->line(' ');
+        $this->installerSteps();
+    }
+
+    protected function installerSteps()
+    {
         $this->envCheck();
+        $this->envCreate();
+        $this->installType();
+
+        if ($this->installType === 'Advanced') {
+            $this->info('Installer: Advanced...');
+            $this->checkPHPRequiredDependencies();
+            $this->checkFFmpegDependencies();
+            $this->checkOptimiseDependencies();
+            $this->checkDiskPermissions();
+            $this->envProd();
+            $this->instanceDB();
+            $this->instanceRedis();
+            $this->instanceURL();
+            $this->activityPubSettings();
+            $this->laravelSettings();
+            $this->instanceSettings();
+            $this->mediaSettings();
+            $this->dbMigrations();
+            $this->validateEnv();
+            $this->resetArtisanCache();
+        } else {
+            $this->info('Installer: Simple...');
+            $this->checkDiskPermissions();
+            $this->envProd();
+            $this->instanceDB();
+            $this->instanceRedis();
+            $this->instanceURL();
+            $this->activityPubSettings();
+            $this->instanceSettings();
+            $this->dbMigrations();
+            $this->validateEnv();
+            $this->resetArtisanCache();
+        }
     }
 
     protected function envCheck()
     {
-        if( file_exists(base_path('.env')) &&
-        	filesize(base_path('.env')) !== 0 &&
-        	!$this->option('dangerously-overwrite-env')
+        if (file_exists(base_path('.env')) &&
+            filesize(base_path('.env')) !== 0 &&
+            !$this->option('dangerously-overwrite-env')
         ) {
             $this->line('');
-            $this->error('Installation aborted, found existing .env file');
-            $this->line('Run the following command to re-run the installer:');
-            $this->line('');
-            $this->info('php artisan install --dangerously-overwrite-env');
+            $this->error('Existing .env File Found - Installation Aborted');
+            $this->line('Run the following command to re-run the installer: php artisan install --dangerously-overwrite-env');
             $this->line('');
             exit;
         }
-        $this->installType();
+    }
+
+    protected function envCreate()
+    {
+        $this->line('');
+        $this->info('Creating .env if required');
+        if (!file_exists(app()->environmentFilePath())) {
+            exec('cp .env.example .env');
+        }
     }
 
     protected function installType()
     {
-    	$type = $this->choice('Select installation type', ['Simple', 'Advanced'], 0);
-		$this->installType = $type;
-        $this->preflightCheck();
+        $type = $this->choice('Select installation type', ['Simple', 'Advanced'], 1);
+        $this->installType = $type;
     }
 
-    protected function preflightCheck()
+    protected function checkPHPRequiredDependencies()
     {
-        if($this->installType === 'Advanced') {
-			$this->info('Scanning system...');
-			$this->line(' ');
-			$this->info('Checking for installed dependencies...');
-	        $redis = Redis::connection();
-	        if($redis->ping()) {
-	            $this->info('- Found redis!');
-	        } else {
-	            $this->error('- Redis not found, aborting installation');
-	            exit;
-	        }
-        }
-        $this->checkPhpDependencies();
-    }
+        $this->line(' ');
+        $this->info('Checking for Required PHP Extensions...');
 
-    protected function checkPhpDependencies()
-    {
         $extensions = [
             'bcmath',
             'ctype',
@@ -110,197 +139,326 @@ class Installer extends Command
             'json',
             'mbstring',
             'openssl',
+            'gd',
+            'intl',
+            'xml',
+            'zip',
+            'redis',
         ];
-        if($this->installType === 'Advanced') {
-	        $ffmpeg = exec('which ffmpeg');
-	        if(empty($ffmpeg)) {
-	            $this->error('FFmpeg not found, please install it.');
-	            $this->error('Cancelling installation.');
-	            exit;
-	        } else {
-	            $this->info('- Found FFmpeg!');
-	        }
-	        $this->line('');
-        	$this->info('Checking for required php extensions...');
-	    }
-        foreach($extensions as $ext) {
-            if(extension_loaded($ext) == false) {
-                $this->error("\"{$ext}\" PHP extension not found, aborting installation");
-                exit;
+
+        foreach ($extensions as $ext) {
+            if (extension_loaded($ext) == false) {
+                $this->error("- \"{$ext}\" not found");
+            } else {
+                $this->info("- \"{$ext}\" found");
             }
         }
-        if($this->installType === 'Advanced') {
-	        $this->info("- Required PHP extensions found!");
-	    }
 
-	    $this->checkPermissions();
+        $continue = $this->choice('Do you wish to continue?', ['yes', 'no'], 0);
+        $this->continue = $continue;
+        if ($this->continue === 'no') {
+            $this->info('Exiting Installer.');
+            exit;
+        }
+
     }
 
-    protected function checkPermissions()
+    protected function checkFFmpegDependencies()
     {
-    	if($this->installType === 'Advanced') {
-	        $this->line('');
-	        $this->info('Checking for proper filesystem permissions...');
-	    }
+        $this->line(' ');
+        $this->info('Checking for Required FFmpeg dependencies...');
+
+        $ffmpeg = exec('which ffmpeg');
+        if (empty($ffmpeg)) {
+            $this->error("- \"{$ext}\" FFmpeg not found, aborting installation");
+            exit;
+        } else {
+            $this->info('- Found FFmpeg!');
+        }
+    }
+
+    protected function checkOptimiseDependencies()
+    {
+        $this->line(' ');
+        $this->info('Checking for Optional Media Optimisation dependencies...');
+
+        $dependencies = [
+            'jpegoptim',
+            'optipng',
+            'pngquant',
+            'gifsicle',
+        ];
+
+        foreach ($dependencies as $dep) {
+            $which = exec("which $dep");
+            if (empty($which)) {
+                $this->error("- \"{$dep}\" not found");
+            } else {
+                $this->info("- \"{$dep}\" found");
+            }
+        }
+    }
+
+    protected function checkDiskPermissions()
+    {
+        $this->line('');
+        $this->info('Checking for proper filesystem permissions...');
+        $this->callSilently('storage:link');
 
         $paths = [
             base_path('bootstrap'),
-            base_path('storage')
+            base_path('storage'),
         ];
 
-        foreach($paths as $path) {
-            if(is_writeable($path) == false) {
+        foreach ($paths as $path) {
+            if (is_writeable($path) == false) {
                 $this->error("- Invalid permission found! Aborting installation.");
                 $this->error("  Please make the following path writeable by the web server:");
                 $this->error("  $path");
                 exit;
             } else {
-            	if($this->installType === 'Advanced') {
-	                $this->info("- Found valid permissions for {$path}");
-	            }
+                $this->info("- Found valid permissions for {$path}");
             }
         }
-
-        $this->createEnv();
     }
 
-    protected function createEnv()
+    protected function envProd()
     {
         $this->line('');
-        if(!file_exists(app()->environmentFilePath())) {
-            exec('cp .env.example .env');
-            $this->updateEnvFile('APP_ENV', 'setup');
-            $this->call('key:generate');
-        }
-
-        $name = $this->ask('Site name [ex: Pixelfed]');
-        $this->updateEnvFile('APP_NAME', $name ?? 'pixelfed');
-
-        $domain = $this->ask('Site Domain [ex: pixelfed.com]');
-        if(empty($domain)) {
-        	$this->error('You must set the site domain');
-        	exit;
-        }
-        if(starts_with($domain, 'http')) {
-        	$this->error('The site domain cannot start with https://, you must use the FQDN (eg: example.org)');
-        	exit;
-        }
-        if(strpos($domain, '.') == false) {
-        	$this->error('You must enter a valid site domain');
-        	exit;
-        }
-        $this->updateEnvFile('APP_DOMAIN', $domain ?? 'example.org');
-        $this->updateEnvFile('ADMIN_DOMAIN', $domain ?? 'example.org');
-        $this->updateEnvFile('SESSION_DOMAIN', $domain ?? 'example.org');
-        $this->updateEnvFile('APP_URL', 'https://' . $domain);
-
-        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], 0);
-        $this->updateEnvFile('DB_CONNECTION', $database ?? 'mysql');
-
-        $database_host = $this->ask('Select database host', '127.0.0.1');
-        $this->updateEnvFile('DB_HOST', $database_host ?? 'mysql');
-
-        $database_port_default = $database === 'mysql' ? 3306 : 5432;
-        $database_port = $this->ask('Select database port', $database_port_default);
-        $this->updateEnvFile('DB_PORT', $database_port ?? $database_port_default);
-
-        $database_db = $this->ask('Select database', 'pixelfed');
-        $this->updateEnvFile('DB_DATABASE', $database_db ?? 'pixelfed');
-
-        $database_username = $this->ask('Select database username', 'pixelfed');
-        $this->updateEnvFile('DB_USERNAME', $database_username ?? 'pixelfed');
-
-        $db_pass = str_random(64);
-        $database_password = $this->secret('Select database password', $db_pass);
-        $this->updateEnvFile('DB_PASSWORD', $database_password);
-
-        $dsn = "{$database}:dbname={$database_db};host={$database_host};port={$database_port};";
-        try {
-        	$dbh = new PDO($dsn, $database_username, $database_password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-        } catch (\PDOException $e) {
-        	$this->error('Cannot connect to database, check your credentials and try again');
-        	exit;
-        }
-
-        if($this->installType === 'Advanced') {
-	        $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
-	        $this->updateEnvFile('CACHE_DRIVER', $cache ?? 'redis');
-
-	        $session = $this->choice('Select session driver', ["redis", "file", "cookie", "database", "apc", "memcached", "array"], 0);
-	        $this->updateEnvFile('SESSION_DRIVER', $session ?? 'redis');
-
-	        $redis_host = $this->ask('Set redis host', 'localhost');
-	        $this->updateEnvFile('REDIS_HOST', $redis_host);
-
-	        $redis_password = $this->ask('Set redis password', 'null');
-	        $this->updateEnvFile('REDIS_PASSWORD', $redis_password);
-
-	        $redis_port = $this->ask('Set redis port', 6379);
-	        $this->updateEnvFile('REDIS_PORT', $redis_port);
-	    }
-
-        $open_registration = $this->choice('Allow new registrations?', ['false', 'true'], 0);
-        $this->updateEnvFile('OPEN_REGISTRATION', $open_registration);
-
-        $activitypub_federation = $this->choice('Enable ActivityPub federation?', ['false', 'true'], 1);
-        $this->updateEnvFile('ACTIVITY_PUB', $activitypub_federation);
-        $this->updateEnvFile('AP_INBOX', $activitypub_federation);
-        $this->updateEnvFile('AP_SHAREDINBOX', $activitypub_federation);
-        $this->updateEnvFile('AP_REMOTE_FOLLOW', $activitypub_federation);
-
-        $enforce_email_verification = $this->choice('Enforce email verification?', ['false', 'true'], 1);
-        $this->updateEnvFile('ENFORCE_EMAIL_VERIFICATION', $enforce_email_verification);
-
-        $enable_mobile_apis = $this->choice('Enable mobile app/apis support?', ['false', 'true'], 1);
-        $this->updateEnvFile('OAUTH_ENABLED', $enable_mobile_apis);
-        $this->updateEnvFile('EXP_EMC', $enable_mobile_apis);
-
-    	$optimize_media = $this->choice('Optimize media uploads? Requires jpegoptim and other dependencies!', ['false', 'true'], 0);
-    	$this->updateEnvFile('PF_OPTIMIZE_IMAGES', $optimize_media);
-
-        if($this->installType === 'Advanced') {
-
-        	if($optimize_media === 'true') {
-	        	$image_quality = $this->ask('Set image optimization quality between 1-100. Default is 80%, lower values use less disk space at the expense of image quality.', '80');
-	        	if($image_quality < 1) {
-	        		$this->error('Min image quality is 1. You should avoid such a low value, 60 at minimum is recommended.');
-	        		exit;
-	        	}
-	        	if($image_quality > 100) {
-	        		$this->error('Max image quality is 100');
-	        		exit;
-	        	}
-	    		$this->updateEnvFile('IMAGE_QUALITY', $image_quality);
-        	}
-
-        	$max_photo_size = $this->ask('Max photo upload size in kilobytes. Default 15000 which is equal to 15MB', '15000');
-        	if($max_photo_size * 1024 > $this->parseSize(ini_get('post_max_size'))) {
-        		$this->error('Max photo size (' . (round($max_photo_size / 1000)) . 'M) cannot exceed php.ini `post_max_size` of ' . ini_get('post_max_size'));
-        		exit;
-        	}
-        	$this->updateEnvFile('MAX_PHOTO_SIZE', $max_photo_size);
-
-        	$max_caption_length = $this->ask('Max caption limit. Default to 500, max 5000.', '500');
-        	if($max_caption_length > 5000) {
-        		$this->error('Max caption length is 5000 characters.');
-        		exit;
-        	}
-        	$this->updateEnvFile('MAX_CAPTION_LENGTH', $max_caption_length);
-
-        	$max_album_length = $this->ask('Max photos allowed per album. Choose a value between 1 and 10.', '4');
-        	if($max_album_length < 1) {
-        		$this->error('Min album length is 1 photos per album.');
-        		exit;
-        	}
-        	if($max_album_length > 10) {
-        		$this->error('Max album length is 10 photos per album.');
-        		exit;
-        	}
-        	$this->updateEnvFile('MAX_ALBUM_LENGTH', $max_album_length);
-        }
+        $this->info('Enabling production');
 
         $this->updateEnvFile('APP_ENV', 'production');
-        $this->postInstall();
+        $this->updateEnvFile('APP_DEBUG', 'false');
+        $this->call('key:generate', ['--force' => true]);
+    }
+
+    protected function instanceDB()
+    {
+        $this->line('');
+        $this->info('Database Settings:');
+        $database = $this->choice('Select database driver', ['mysql', 'pgsql'], 0);
+        $database_host = $this->ask('Select database host', '127.0.0.1');
+        $database_port_default = $database === 'mysql' ? 3306 : 5432;
+        $database_port = $this->ask('Select database port', $database_port_default);
+
+        $database_db = $this->ask('Select database', 'pixelfed');
+        $database_username = $this->ask('Select database username', 'pixelfed');
+        $database_password = $this->secret('Select database password');
+
+        $this->updateEnvFile('DB_CONNECTION', $database);
+        $this->updateEnvFile('DB_HOST', $database_host);
+        $this->updateEnvFile('DB_PORT', $database_port);
+        $this->updateEnvFile('DB_DATABASE', $database_db);
+        $this->updateEnvFile('DB_USERNAME', $database_username);
+        $this->updateEnvFile('DB_PASSWORD', $database_password);
+
+        $this->info('Testing Database...');
+        $dsn = "{$database}:dbname={$database_db};host={$database_host};port={$database_port};";
+        try {
+            $dbh = new PDO($dsn, $database_username, $database_password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+        } catch (\PDOException $e) {
+            $this->error('Cannot connect to database, check your details and try again');
+            exit;
+        }
+        $this->info('- Connected to DB Successfully');
+    }
+
+    protected function instanceRedis()
+    {
+        $this->line('');
+        $this->info('Redis Settings:');
+        $redis_client = $this->choice('Set redis client (PHP extension)', ['phpredis', 'predis'], 0);
+        $redis_host = $this->ask('Set redis host', 'localhost');
+        $redis_password = $this->ask('Set redis password', 'null');
+        $redis_port = $this->ask('Set redis port', 6379);
+
+        $this->updateEnvFile('REDIS_CLIENT', $redis_client);
+        $this->updateEnvFile('REDIS_SCHEME', 'tcp');
+        $this->updateEnvFile('REDIS_HOST', $redis_host);
+        $this->updateEnvFile('REDIS_PASSWORD', $redis_password);
+        $this->updateEnvFile('REDIS_PORT', $redis_port);
+
+        $this->info('Testing Redis...');
+        $redis = Redis::connection();
+        if ($redis->ping()) {
+            $this->info('- Connected to Redis Successfully!');
+        } else {
+            $this->error('Cannot connect to Redis, check your details and try again');
+            exit;
+        }
+    }
+
+    protected function instanceURL()
+    {
+        $this->line('');
+        $this->info('Instance URL Settings:');
+        $name = $this->ask('Site name [ex: Pixelfed]', 'Pixelfed');
+
+        $domain = $this->ask('Site Domain [ex: pixelfed.com]');
+        $domain = strtolower($domain);
+        if (empty($domain)) {
+            $this->error('You must set the site domain');
+            exit;
+        }
+        if (starts_with($domain, 'http')) {
+            $this->error('The site domain cannot start with https://, you must use the FQDN (eg: example.org)');
+            exit;
+        }
+        if (strpos($domain, '.') == false) {
+            $this->error('You must enter a valid site domain');
+            exit;
+        }
+
+        $this->updateEnvFile('APP_NAME', $name);
+        $this->updateEnvFile('APP_URL', 'https://' . $domain);
+        $this->updateEnvFile('APP_DOMAIN', $domain);
+        $this->updateEnvFile('ADMIN_DOMAIN', $domain);
+        $this->updateEnvFile('SESSION_DOMAIN', $domain);
+    }
+
+    protected function laravelSettings()
+    {
+        $this->line('');
+        $this->info('Laravel Settings (Defaults are recommended):');
+        $session = $this->choice('Select session driver', ["database", "file", "cookie", "redis", "memcached", "array"], 0);
+        $cache = $this->choice('Select cache driver', ["redis", "apc", "array", "database", "file", "memcached"], 0);
+        $queue = $this->choice('Select queue driver', ["redis", "database", "sync", "beanstalkd", "sqs", "null"], 0);
+        $broadcast = $this->choice('Select broadcast driver', ["log", "redis", "pusher", "null"], 0);
+        $log = $this->choice('Select Log Channel', ["stack", "single", "daily", "stderr", "syslog", "null"], 0);
+        $horizon = $this->ask('Set Horizon Prefix [ex: horizon-]', 'horizon-');
+
+        $this->updateEnvFile('SESSION_DRIVER', $session);
+        $this->updateEnvFile('CACHE_DRIVER', $cache);
+        $this->updateEnvFile('QUEUE_DRIVER', $queue);
+        $this->updateEnvFile('BROADCAST_DRIVER', $broadcast);
+        $this->updateEnvFile('LOG_CHANNEL', $log);
+        $this->updateEnvFile('HORIZON_PREFIX', $horizon);
+    }
+
+    protected function instanceSettings()
+    {
+        $this->line('');
+        $this->info('Instance Settings:');
+        $max_registration = $this->ask('Set Maximum users on this instance.', '1000');
+        $open_registration = $this->choice('Allow new registrations?', ['false', 'true'], 0);
+        $enforce_email_verification = $this->choice('Enforce email verification?', ['false', 'true'], 0);
+        $enable_mobile_apis = $this->choice('Enable mobile app/apis support?', ['false', 'true'], 1);
+
+        $this->updateEnvFile('PF_MAX_USERS', $max_registration);
+        $this->updateEnvFile('OPEN_REGISTRATION', $open_registration);
+        $this->updateEnvFile('ENFORCE_EMAIL_VERIFICATION', $enforce_email_verification);
+        $this->updateEnvFile('OAUTH_ENABLED', $enable_mobile_apis);
+        $this->updateEnvFile('EXP_EMC', $enable_mobile_apis);
+    }
+
+    protected function activityPubSettings()
+    {
+        $this->line('');
+        $this->info('Federation Settings:');
+        $activitypub_federation = $this->choice('Enable ActivityPub federation?', ['false', 'true'], 1);
+
+        $this->updateEnvFile('ACTIVITY_PUB', $activitypub_federation);
+        $this->updateEnvFile('AP_REMOTE_FOLLOW', $activitypub_federation);
+        $this->updateEnvFile('AP_INBOX', $activitypub_federation);
+        $this->updateEnvFile('AP_OUTBOX', $activitypub_federation);
+        $this->updateEnvFile('AP_SHAREDINBOX', $activitypub_federation);
+    }
+
+    protected function mediaSettings()
+    {
+        $this->line('');
+        $this->info('Media Settings:');
+        $optimize_media = $this->choice('Optimize media uploads? Requires jpegoptim and other dependencies!', ['false', 'true'], 1);
+        $image_quality = $this->ask('Set image optimization quality between 1-100. Default is 80%, lower values use less disk space at the expense of image quality.', '80');
+        if ($image_quality < 1) {
+            $this->error('Min image quality is 1. You should avoid such a low value, 60 at minimum is recommended.');
+            exit;
+        }
+        if ($image_quality > 100) {
+            $this->error('Max image quality is 100');
+            exit;
+        }
+        $this->info('Note: Max photo size cannot exceed `post_max_size` in php.ini.');
+        $max_photo_size = $this->ask('Max photo upload size in kilobytes. Default 15000 which is equal to 15MB', '15000');
+
+        $max_caption_length = $this->ask('Max caption limit. Default to 500, max 5000.', '500');
+        if ($max_caption_length > 5000) {
+            $this->error('Max caption length is 5000 characters.');
+            exit;
+        }
+
+        $max_album_length = $this->ask('Max photos allowed per album. Choose a value between 1 and 10.', '4');
+        if ($max_album_length < 1) {
+            $this->error('Min album length is 1 photos per album.');
+            exit;
+        }
+        if ($max_album_length > 10) {
+            $this->error('Max album length is 10 photos per album.');
+            exit;
+        }
+
+        $this->updateEnvFile('PF_OPTIMIZE_IMAGES', $optimize_media);
+        $this->updateEnvFile('IMAGE_QUALITY', $image_quality);
+        $this->updateEnvFile('MAX_PHOTO_SIZE', $max_photo_size);
+        $this->updateEnvFile('MAX_CAPTION_LENGTH', $max_caption_length);
+        $this->updateEnvFile('MAX_ALBUM_LENGTH', $max_album_length);
+    }
+
+    protected function dbMigrations()
+    {
+        $this->line('');
+        $this->info('Note: We recommend running database migrations now!');
+        $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
+
+        if ($confirm === 'Yes') {
+            sleep(3);
+            $this->line('');
+            $this->info('Migrating DB:');
+            $this->call('migrate', ['--force' => true]);
+            $this->line('');
+            $this->info('Importing Cities:');
+            $this->call('import:cities');
+            $this->line('');
+            $this->info('Creating Federation Instance Actor:');
+            $this->call('instance:actor');
+            $this->line('');
+            $this->info('Creating Password Keys for API:');
+            $this->call('passport:keys', ['--force' => true]);
+
+            $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
+            if ($confirm === 'Yes') {
+                $this->call('user:create');
+            }
+        }
+    }
+
+    protected function resetArtisanCache()
+    {
+        $this->call('config:cache');
+        $this->call('route:cache');
+        $this->call('view:cache');
+    }
+
+    protected function validateEnv()
+    {
+        $this->checkEnvKeys('APP_KEY', "key:generate failed?");
+        $this->checkEnvKeys('APP_ENV', "APP_ENV value should be production");
+        $this->checkEnvKeys('APP_DEBUG', "APP_DEBUG value should be false");
+    }
+
+#####
+    # Installer Functions
+    #####
+
+    protected function checkEnvKeys($key, $error)
+    {
+        $envPath = app()->environmentFilePath();
+        $payload = file_get_contents($envPath);
+
+        if ($existing = $this->existingEnv($key, $payload)) {
+        } else {
+            $this->error("$key empty - $error");
+        }
     }
 
     protected function updateEnvFile($key, $value)
@@ -333,37 +491,14 @@ class Installer extends Command
         fclose($file);
     }
 
-    protected function postInstall()
+    protected function parseSize($size)
     {
-        $this->line('');
-        $this->info('We recommend running database migrations now, or you can do it manually later.');
-        $confirm = $this->choice('Do you want to run the database migrations?', ['No', 'Yes'], 0);
-        if($confirm === 'Yes') {
-        	$this->callSilently('config:clear');
-        	sleep(3);
-        	$this->call('migrate', ['--force' => true]);
-	        $this->callSilently('instance:actor');
-	        $this->callSilently('passport:install');
-
-	        $confirm = $this->choice('Do you want to create an admin account?', ['No', 'Yes'], 0);
-	        if($confirm === 'Yes') {
-	        	$this->call('user:create');
-	        }
+        $unit = preg_replace('/[^bkmgtpezy]/i', '', $size);
+        $size = preg_replace('/[^0-9\.]/', '', $size);
+        if ($unit) {
+            return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
         } else {
-        	$this->callSilently('config:cache');
+            return round($size);
         }
-
-        $this->info('Pixelfed has been successfully installed!');
-    }
-
-    protected function parseSize($size) {
-    	$unit = preg_replace('/[^bkmgtpezy]/i', '', $size);
-    	$size = preg_replace('/[^0-9\.]/', '', $size);
-    	if ($unit) {
-    		return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
-    	}
-    	else {
-    		return round($size);
-    	}
     }
 }
