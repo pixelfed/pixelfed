@@ -80,9 +80,9 @@ class Installer extends Command
             $this->laravelSettings();
             $this->instanceSettings();
             $this->mediaSettings();
-            $this->dbMigrations();
             $this->validateEnv();
             $this->resetArtisanCache();
+            $this->dbMigrations();
         } else {
             $this->info('Installer: Simple...');
             $this->checkDiskPermissions();
@@ -92,9 +92,9 @@ class Installer extends Command
             $this->instanceURL();
             $this->activityPubSettings();
             $this->instanceSettings();
-            $this->dbMigrations();
             $this->validateEnv();
             $this->resetArtisanCache();
+            $this->dbMigrations();
         }
     }
 
