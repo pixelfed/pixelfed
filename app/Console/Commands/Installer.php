@@ -80,6 +80,7 @@ class Installer extends Command
             $this->laravelSettings();
             $this->instanceSettings();
             $this->mediaSettings();
+            $this->instanceArtisan();
             $this->dbMigrations();
             $this->validateEnv();
             $this->resetArtisanCache();
@@ -404,6 +405,16 @@ class Installer extends Command
         $this->updateEnvFile('MAX_ALBUM_LENGTH', $max_album_length);
     }
 
+    protected function instanceArtisan()
+    {
+        $this->line('');
+        $this->info('Creating Federation Instance Actor:');
+        $this->call('instance:actor');
+        $this->line('');
+        $this->info('Creating Password Keys for API:');
+        $this->call('passport:keys', ['--force' => true]);
+    }    
+    
     protected function dbMigrations()
     {
         $this->line('');
@@ -420,11 +431,7 @@ class Installer extends Command
             $this->info('Importing Cities:');
             $this->call('import:cities');
             $this->line('');
-            $this->info('Creating Federation Instance Actor:');
-            $this->call('instance:actor');
-            $this->line('');
-            $this->info('Creating Password Keys for API:');
-            $this->call('passport:keys', ['--force' => true]);
+            $this->info('DB Migration Completed');
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
             if ($confirm === 'Yes') {
