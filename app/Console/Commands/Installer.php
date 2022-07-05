@@ -412,6 +412,7 @@ class Installer extends Command
 
         if ($confirm === 'Yes') {
             sleep(3);
+            $this->call('config:cache');
             $this->line('');
             $this->info('Migrating DB:');
             $this->call('migrate', ['--force' => true]);
