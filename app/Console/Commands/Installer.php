@@ -92,10 +92,9 @@ class Installer extends Command
             $this->instanceURL();
             $this->activityPubSettings();
             $this->instanceSettings();
+            $this->dbMigrations();
             $this->validateEnv();
-            $this->dbMigrations();
             $this->resetArtisanCache();
-            $this->dbMigrations();
         }
     }
 
