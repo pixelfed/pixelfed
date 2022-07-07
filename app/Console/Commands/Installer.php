@@ -415,7 +415,7 @@ class Installer extends Command
             sleep(3);
             $this->line('');
             $this->info('Migrating DB:');
-            $this->call('migrate');
+            $this->call('migrate', ['--force' => true]);
             $this->line('');
             $this->info('Importing Cities:');
             $this->call('import:cities');
@@ -424,7 +424,7 @@ class Installer extends Command
             $this->call('instance:actor');
             $this->line('');
             $this->info('Creating Password Keys for API:');
-            $this->call('passport:install', ['--force' => true]);
+            $this->call('passport:install');
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
             if ($confirm === 'Yes') {
