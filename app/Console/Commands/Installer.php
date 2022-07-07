@@ -447,7 +447,7 @@ class Installer extends Command
         $this->checkEnvKeys('APP_DEBUG', "APP_DEBUG value should be false");
     }
 
-#####
+    #####
     # Installer Functions
     #####
 
