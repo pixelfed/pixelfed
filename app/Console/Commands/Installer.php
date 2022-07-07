@@ -424,7 +424,7 @@ class Installer extends Command
             $this->call('instance:actor');
             $this->line('');
             $this->info('Creating Password Keys for API:');
-            $this->call('passport:keys', ['--force' => true]);
+            $this->call('passport:install', ['--force' => true]);
 
             $confirm = $this->choice('Do you want to create an admin account?', ['Yes', 'No'], 0);
             if ($confirm === 'Yes') {
