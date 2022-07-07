@@ -229,7 +229,7 @@ class Installer extends Command
 
         $this->updateEnvFile('APP_ENV', 'production');
         $this->updateEnvFile('APP_DEBUG', 'false');
-        $this->call('key:generate', ['--force' => true]);
+        $this->call('key:generate');
     }
 
     protected function instanceDB()
@@ -411,11 +411,11 @@ class Installer extends Command
         $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
 
         if ($confirm === 'Yes') {
-            sleep(3);
             $this->call('config:cache');
+            sleep(3);
             $this->line('');
             $this->info('Migrating DB:');
-            $this->call('migrate', ['--force' => true]);
+            $this->call('migrate');
             $this->line('');
             $this->info('Importing Cities:');
             $this->call('import:cities');
