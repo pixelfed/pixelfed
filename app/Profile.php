@@ -157,15 +157,19 @@ class Profile extends Model
 
 	public function avatarUrl()
 	{
-		$url = Cache::remember('avatar:'.$this->id, now()->addYears(1), function () {
+		$url = Cache::remember('avatar:'.$this->id, 1209600, function () {
 			$avatar = $this->avatar;
 
 			if($avatar->cdn_url) {
-				return $avatar->cdn_url ?? url('/storage/avatars/default.jpg');
+				if(substr($avatar->cdn_url, 0, 8) === 'https://') {
+					return $avatar->cdn_url;
+				} else {
+					return url($avatar->cdn_url);
+				}
 			}
 
 			if($avatar->is_remote) {
-				return $avatar->cdn_url ?? url('/storage/avatars/default.jpg');
+				return url('/storage/avatars/default.jpg');
 			}
 			
 			$path = $avatar->media_path;
