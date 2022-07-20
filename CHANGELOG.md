@@ -41,6 +41,7 @@
 - Update MediaDeletePipeline, fix async media deletion ([bb1cccbe](https://github.com/pixelfed/pixelfed/commit/bb1cccbe))
 - Fix timeline infinite scroll ([03a85460](https://github.com/pixelfed/pixelfed/commit/03a85460))
 - Fix remote avatar urls when not using cloud storage ([672f7c8c](https://github.com/pixelfed/pixelfed/commit/672f7c8c))
+- Update ResetPasswordController redirectTo path to /i/web as /home is deprecated ([8803c6de](https://github.com/pixelfed/pixelfed/commit/8803c6de))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
