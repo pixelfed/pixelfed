@@ -916,6 +916,7 @@ class ApiV1Controller extends Controller
 
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -951,6 +952,7 @@ class ApiV1Controller extends Controller
 
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -1736,6 +1738,7 @@ class ApiV1Controller extends Controller
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -1769,6 +1772,7 @@ class ApiV1Controller extends Controller
 			Cache::forget("user:filter:list:$pid");
 			Cache::forget("feature:discover:posts:$pid");
 			Cache::forget("api:local:exp:rec:$pid");
+			RelationshipService::refresh($pid, $id);
 		}
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());

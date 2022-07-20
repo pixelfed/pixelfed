@@ -42,6 +42,7 @@
 - Fix timeline infinite scroll ([03a85460](https://github.com/pixelfed/pixelfed/commit/03a85460))
 - Fix remote avatar urls when not using cloud storage ([672f7c8c](https://github.com/pixelfed/pixelfed/commit/672f7c8c))
 - Update ResetPasswordController redirectTo path to /i/web as /home is deprecated ([8803c6de](https://github.com/pixelfed/pixelfed/commit/8803c6de))
+- Fix v1 api block/mute endpoints, refresh RelationshipService cache after relationship changes ([54a5c3be](https://github.com/pixelfed/pixelfed/commit/54a5c3be))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
