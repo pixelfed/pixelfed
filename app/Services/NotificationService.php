@@ -203,10 +203,16 @@ class NotificationService {
 
 	public static function getNotification($id)
 	{
-		return Cache::remember('service:notification:'.$id, now()->addDays(3), function() use($id) {
+		return Cache::remember('service:notification:'.$id, 86400, function() use($id) {
 			$n = Notification::with('item')->find($id);
 
 			if(!$n) {
+				return null;
+			}
+
+			$account = AccountService::get($n->actor_id, true);
+
+			if(!$account) {
 				return null;
 			}
 
