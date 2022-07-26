@@ -44,6 +44,7 @@
 - Update ResetPasswordController redirectTo path to /i/web as /home is deprecated ([8803c6de](https://github.com/pixelfed/pixelfed/commit/8803c6de))
 - Fix v1 api block/mute endpoints, refresh RelationshipService cache after relationship changes ([54a5c3be](https://github.com/pixelfed/pixelfed/commit/54a5c3be))
 - Fix NotificationService bug returning html response on /api/v1/notifications endpoint when a notification id belonging to a deleted account is rendered by checking AccountService before NotificationTransformer. ([734b30e5](https://github.com/pixelfed/pixelfed/commit/734b30e5))
+- Hydrate `favourited` and `reblogged` state on v1 context endpoint ([abb4f7e1](https://github.com/pixelfed/pixelfed/commit/abb4f7e1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
