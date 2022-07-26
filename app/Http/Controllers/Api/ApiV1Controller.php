@@ -2208,6 +2208,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
+		$pid = $user->profile_id;
 		$status = StatusService::getMastodon($id, false);
 
 		if(!$status || !isset($status['account'])) {
@@ -2243,6 +2244,11 @@ class ApiV1Controller extends Controller
 				})
 				->filter(function($post) {
 					return $post && isset($post['account']);
+				})
+				->map(function($status) use($pid) {
+					$status['favourited'] = LikeService::liked($pid, $status['id']);
+					$status['reblogged'] = ReblogService::get($pid, $status['id']);
+					return $status;
 				})
 				->values();
 		}
