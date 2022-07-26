@@ -35,9 +35,17 @@
 						<p class="mb-0">
 							Timestamp: <span class="font-weight-bold">{{now()->parse($report->status->created_at)->format('r')}}</span>
 						</p>
-						<p class="" style="word-break: break-all !important;">
-							URL: <span class="font-weight-bold text-primary"><a href="{{$report->status->url()}}">{{$report->status->url()}}</a></span>
+						<p class="mb-0" style="word-break: break-all !important;">
+							Original URL: <span class="font-weight-bold text-primary"><a href="/i/web/post/{{$report->status->id}}">{{$report->status->url()}}</a></span>
 						</p>
+                        <p class="" style="word-break: break-all !important;">
+                            Local URL: <span class="font-weight-bold text-primary"><a href="/i/web/post/{{$report->status->id}}">{{url('/i/web/post/' . $report->status->id)}}</a></span>
+                        </p>
+                        @if($report->status->in_reply_to_id)
+                        <p class="mt-n3" style="word-break: break-all !important;">
+                            Parent Post: <span class="font-weight-bold text-primary"><a href="/i/web/post/{{$report->status->in_reply_to_id}}">{{url('/i/web/post/' . $report->status->in_reply_to_id)}}</a></span>
+                        </p>
+                        @endif
 					</div>
 				</div>
 			</div>
@@ -49,7 +57,7 @@
 
 			<div class="card shadow-none border mt-5">
 				<div class="card-header text-center font-weight-bold bg-light">
-					&commat;{{$report->reportedUser->username}} stats
+					{{$report->reportedUser->username}} stats
 				</div>
 				<div class="card-body">
 					<p>
