@@ -73,7 +73,7 @@ trait AdminReportController
 
 	public function showReport(Request $request, $id)
 	{
-		$report = Report::findOrFail($id);
+		$report = Report::with('status')->findOrFail($id);
 		return view('admin.reports.show', compact('report'));
 	}
 
@@ -245,7 +245,7 @@ trait AdminReportController
 	public function updateSpam(Request $request, $id)
 	{
 		$this->validate($request, [
-			'action' => 'required|in:dismiss,approve,dismiss-all,approve-all,delete-account'
+			'action' => 'required|in:dismiss,approve,dismiss-all,approve-all,delete-account,mark-spammer'
 		]);
 
 		$action = $request->input('action');
@@ -336,6 +336,37 @@ trait AdminReportController
 						StatusService::del($status->id, true);
 					}
 				});
+			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
+			Cache::forget('admin-dash:reports:spam-count');
+			return $res;
+		}
+
+		if($action == 'mark-spammer') {
+			AccountInterstitial::whereType('post.autospam')
+				->whereItemType('App\Status')
+				->whereNull('appeal_handled_at')
+				->whereUserId($appeal->user_id)
+				->update(['appeal_handled_at' => $now, 'is_spam' => true]);
+
+			$pro = Profile::whereUserId($appeal->user_id)->firstOrFail();
+
+			$pro->update([
+				'unlisted' => true,
+				'cw' => true,
+				'no_autolink' => true
+			]);
+
+			Status::whereProfileId($pro->id)
+				->get()
+				->each(function($report) {
+					$status->is_nsfw = $meta->is_nsfw;
+					$status->scope = 'public';
+					$status->visibility = 'public';
+					$status->save();
+					StatusService::del($status->id, true);
+				});
+
 			Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
 			Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
 			Cache::forget('admin-dash:reports:spam-count');
