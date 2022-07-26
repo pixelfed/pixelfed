@@ -97,6 +97,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('streaming/config', 'Api\ApiV1Controller@getWebsocketConfig');
 	});
 
+	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
+		Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
+	});
+
 	Route::group(['prefix' => 'live'], function() use($middleware) {
 		Route::post('create_stream', 'LiveStreamController@createStream')->middleware($middleware);
 		Route::post('stream/edit', 'LiveStreamController@editStream')->middleware($middleware);

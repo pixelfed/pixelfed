@@ -916,6 +916,7 @@ class ApiV1Controller extends Controller
 
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -951,6 +952,7 @@ class ApiV1Controller extends Controller
 
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -1736,6 +1738,7 @@ class ApiV1Controller extends Controller
 		Cache::forget("user:filter:list:$pid");
 		Cache::forget("feature:discover:posts:$pid");
 		Cache::forget("api:local:exp:rec:$pid");
+		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -1769,6 +1772,7 @@ class ApiV1Controller extends Controller
 			Cache::forget("user:filter:list:$pid");
 			Cache::forget("feature:discover:posts:$pid");
 			Cache::forget("api:local:exp:rec:$pid");
+			RelationshipService::refresh($pid, $id);
 		}
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
@@ -2204,6 +2208,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$user = $request->user();
+		$pid = $user->profile_id;
 		$status = StatusService::getMastodon($id, false);
 
 		if(!$status || !isset($status['account'])) {
@@ -2239,6 +2244,11 @@ class ApiV1Controller extends Controller
 				})
 				->filter(function($post) {
 					return $post && isset($post['account']);
+				})
+				->map(function($status) use($pid) {
+					$status['favourited'] = LikeService::liked($pid, $status['id']);
+					$status['reblogged'] = ReblogService::get($pid, $status['id']);
+					return $status;
 				})
 				->values();
 		}
