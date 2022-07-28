@@ -6,6 +6,7 @@ use App\{
 	AccountInterstitial,
 	Contact,
 	Hashtag,
+	Instance,
 	Newsroom,
 	OauthClient,
 	Profile,
@@ -31,6 +32,7 @@ use App\Http\Controllers\Admin\{
 };
 use Illuminate\Validation\Rule;
 use App\Services\AdminStatsService;
+use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\StoryService;
 use App\Models\CustomEmoji;
@@ -55,8 +57,70 @@ class AdminController extends Controller
 
 	public function home()
 	{
+		return view('admin.home');
+	}
+
+	public function stats()
+	{
 		$data = AdminStatsService::get();
-		return view('admin.home', compact('data'));
+		return view('admin.stats', compact('data'));
+	}
+
+	public function getStats()
+	{
+		return AdminStatsService::summary();
+	}
+
+	public function getAccounts()
+	{
+		$users = User::orderByDesc('id')->cursorPaginate(10);
+
+		$res = [
+			"next_page_url" => $users->nextPageUrl(),
+			"data" => $users->map(function($user) {
+				$account = AccountService::get($user->profile_id, true);
+				if(!$account) {
+					return [
+						"id" => $user->profile_id,
+						"username" => $user->username,
+						"status" => "deleted",
+						"avatar" => "/storage/avatars/default.jpg",
+						"created_at" => $user->created_at
+					];
+				}
+				$account['user_id'] = $user->id;
+				return $account;
+			})
+			->filter(function($user) {
+				return $user;
+			})
+		];
+		return $res;
+	}
+
+	public function getPosts()
+	{
+		$posts = DB::table('statuses')
+			->orderByDesc('id')
+			->cursorPaginate(10);
+
+		$res = [
+			"next_page_url" => $posts->nextPageUrl(),
+			"data" => $posts->map(function($post) {
+				$status = StatusService::get($post->id, false);
+				if(!$status) {
+					return ["id" => $post->id, "created_at" => $post->created_at];
+				}
+				return $status;
+			})
+		];
+
+		return $res;
+	}
+
+	public function getInstances()
+	{
+		return Instance::orderByDesc('id')->cursorPaginate(10);
 	}
 
 	public function statuses(Request $request)

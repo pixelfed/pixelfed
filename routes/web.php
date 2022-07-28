@@ -4,6 +4,7 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::redirect('/', '/dashboard');
 	Route::redirect('timeline', config('app.url').'/timeline');
 	Route::get('dashboard', 'AdminController@home')->name('admin.home');
+	Route::get('stats', 'AdminController@stats')->name('admin.stats');
 	Route::get('reports', 'AdminController@reports')->name('admin.reports');
 	Route::get('reports/show/{id}', 'AdminController@showReport');
 	Route::post('reports/show/{id}', 'AdminController@updateReport');
@@ -90,6 +91,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 	Route::post('custom-emoji/new', 'AdminController@customEmojiStore');
 	Route::post('custom-emoji/delete/{id}', 'AdminController@customEmojiDelete');
 	Route::get('custom-emoji/duplicates/{id}', 'AdminController@customEmojiShowDuplicates');
+
+	Route::prefix('api')->group(function() {
+		Route::get('stats', 'AdminController@getStats');
+		Route::get('accounts', 'AdminController@getAccounts');
+		Route::get('posts', 'AdminController@getPosts');
+		Route::get('instances', 'AdminController@getInstances');
+	});
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
