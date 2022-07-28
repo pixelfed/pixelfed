@@ -26,10 +26,18 @@ class AdminStatsService
 	public static function get()
 	{
 		return array_merge(
-				self::recentData(),
-				self::additionalData(),
-				self::postsGraph()
-			);
+			self::recentData(),
+			self::additionalData(),
+			self::postsGraph()
+		);
+	}
+
+	public static function summary()
+	{
+		return array_merge(
+			self::recentData(),
+			self::additionalDataSummary(),
+		);
 	}
 
 	public static function storage()
@@ -98,6 +106,19 @@ class AdminStatsService
 				'instances' => PrettyNumber::convert(Instance::count()),
 				'media' => PrettyNumber::convert(Media::count()),
 				'storage' => Media::sum('size'),
+			];
+		});
+	}
+
+	protected static function additionalDataSummary()
+	{
+		$ttl = now()->addHours(24);
+		return Cache::remember('admin:dashboard:home:data:v0:24hr', $ttl, function() {
+			return [
+				'statuses' => PrettyNumber::convert(Status::count()),
+				'profiles' => PrettyNumber::convert(Profile::count()),
+				'users' => PrettyNumber::convert(User::count()),
+				'instances' => PrettyNumber::convert(Instance::count()),
 			];
 		});
 	}
