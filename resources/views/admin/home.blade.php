@@ -161,7 +161,7 @@
                         </div>
 
                         <div>
-                            <div class="d-flex" style="font-size: 13px;">
+                            <div v-if="item.account" class="d-flex" style="font-size: 13px;">
                                 <div v-text="timeAgo(item.created_at)" class="small text-light"></div>
                             </div>
                         </div>
