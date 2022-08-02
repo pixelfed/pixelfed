@@ -753,7 +753,9 @@ class ApiV1Controller extends Controller
 			abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
 		}
 
-		$user->profile->decrement('following_count');
+		if($user->profile->following_count) {
+			$user->profile->decrement('following_count');
+		}
 
 		FollowRequest::whereFollowerId($user->profile_id)
 			->whereFollowingId($target->id)
