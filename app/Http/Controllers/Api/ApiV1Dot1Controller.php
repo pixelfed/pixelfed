@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Cache;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use League\Fractal;
@@ -10,6 +11,7 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Status;
 use App\Report;
 use App\Profile;
+use App\Services\AccountService;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -127,5 +129,41 @@ class ApiV1Dot1Controller extends Controller
             "code" => 200
         ];
         return $this->json($res);
+    }
+
+    /**
+     * DELETE /api/v1.1/accounts/avatar
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function deleteAvatar(Request $request)
+    {
+        $user = $request->user();
+
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $avatar = $user->profile->avatar;
+
+        if( $avatar->media_path == 'public/avatars/default.png' ||
+            $avatar->media_path == 'public/avatars/default.jpg'
+        ) {
+            return AccountService::get($user->profile_id);
+        }
+
+        if(is_file(storage_path('app/' . $avatar->media_path))) {
+            @unlink(storage_path('app/' . $avatar->media_path));
+        }
+
+        $avatar->media_path = 'public/avatars/default.jpg';
+        $avatar->change_count = $avatar->change_count + 1;
+        $avatar->save();
+
+        Cache::forget('avatar:' . $user->profile_id);
+        Cache::forget("avatar:{$user->profile_id}");
+        Cache::forget('user:account:id:'.$user->id);
+        AccountService::del($user->profile_id);
+
+        return AccountService::get($user->profile_id);
     }
 }
