@@ -132,6 +132,13 @@
 						</a>
 					</li>
 
+                    <li class="nav-item">
+                        <a class="nav-link {{request()->is('*stats')?'active':''}}" href="/i/admin/stats">
+                            <i class="ni ni-bold-right text-primary"></i>
+                            <span class="nav-link-text">Stats</span>
+                        </a>
+                    </li>
+
 					<li class="nav-item">
 						<a class="nav-link {{request()->is('*settings/system')?'active':''}}" href="/i/admin/settings/system">
 							<i class="ni ni-bold-right text-primary"></i>

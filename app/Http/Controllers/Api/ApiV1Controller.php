@@ -217,10 +217,10 @@ class ApiV1Controller extends Controller
 
 		$this->validate($request, [
 			'avatar'			=> 'sometimes|mimetypes:image/jpeg,image/png|min:10|max:' . config('pixelfed.max_avatar_size'),
-			'display_name'      => 'nullable|string',
-			'note'              => 'nullable|string',
+			'display_name'      => 'nullable|string|max:30',
+			'note'              => 'nullable|string|max:200',
 			'locked'            => 'nullable',
-			'website'			=> 'nullable',
+			'website'			=> 'nullable|string|max:120',
 			// 'source.privacy'    => 'nullable|in:unlisted,public,private',
 			// 'source.sensitive'  => 'nullable|boolean'
 		], [
@@ -753,7 +753,9 @@ class ApiV1Controller extends Controller
 			abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
 		}
 
-		$user->profile->decrement('following_count');
+		if($user->profile->following_count) {
+			$user->profile->decrement('following_count');
+		}
 
 		FollowRequest::whereFollowerId($user->profile_id)
 			->whereFollowingId($target->id)

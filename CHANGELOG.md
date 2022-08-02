@@ -45,6 +45,8 @@
 - Fix v1 api block/mute endpoints, refresh RelationshipService cache after relationship changes ([54a5c3be](https://github.com/pixelfed/pixelfed/commit/54a5c3be))
 - Fix NotificationService bug returning html response on /api/v1/notifications endpoint when a notification id belonging to a deleted account is rendered by checking AccountService before NotificationTransformer. ([734b30e5](https://github.com/pixelfed/pixelfed/commit/734b30e5))
 - Hydrate `favourited` and `reblogged` state on v1 context endpoint ([abb4f7e1](https://github.com/pixelfed/pixelfed/commit/abb4f7e1))
+- Improve admin dashboard by moving expensive stats to its page and loading stats and recent data async on the dashboard home page ([9d52b9c2](https://github.com/pixelfed/pixelfed/commit/9d52b9c2))
+- Update unfollow api endpoint to only decrement when appropriate, fixes #3539 ([44de1ad7](https://github.com/pixelfed/pixelfed/commit/44de1ad7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
