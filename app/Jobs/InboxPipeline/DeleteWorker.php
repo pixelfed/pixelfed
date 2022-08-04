@@ -24,8 +24,9 @@ class DeleteWorker implements ShouldQueue
 	protected $headers;
 	protected $payload;
 
-	public $timeout = 60;
-	public $tries = 1;
+	public $timeout = 120;
+	public $tries = 3;
+	public $maxExceptions = 1;
 
 	/**
 	 * Create a new job instance.
@@ -72,7 +73,7 @@ class DeleteWorker implements ShouldQueue
 				'h:' . hash('sha256', $actor);
 
 			$lockKey = 'ap:inbox:actor-delete-exists:lock:' . $hash;
-			Cache::lock($lockKey, 10)->block(5, function () use(
+			Cache::lock($lockKey, 30)->block(15, function () use(
 				$headers,
 				$payload,
 				$actor,
@@ -94,30 +95,30 @@ class DeleteWorker implements ShouldQueue
 						if($profile) {
 							DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
 						}
-						return;
+						return 1;
 					} else {
 						// Signature verification failed, exit.
-						return;
+						return 1;
 					}
 				} else {
 					// Remote user doesn't exist, exit early.
-					return;
+					return 1;
 				}
 			});
 
-			return;
+			return 1;
 		}
 
 		$profile = null;
 
 		if($this->verifySignature($headers, $payload) == true) {
 			(new Inbox($headers, $profile, $payload))->handle();
-			return;
+			return 1;
 		} else if($this->blindKeyRotation($headers, $payload) == true) {
 			(new Inbox($headers, $profile, $payload))->handle();
-			return;
+			return 1;
 		} else {
-			return;
+			return 1;
 		}
 	}
 
