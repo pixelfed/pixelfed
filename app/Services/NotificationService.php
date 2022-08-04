@@ -105,7 +105,7 @@ class NotificationService {
 
 		$res = collect([]);
 		foreach($ids as $id) {
-			$n = self::getNotification($id);
+			$n = self::rewriteMastodonTypes(self::getNotification($id));
 			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
 				$n['account'] = AccountService::getMastodon($n['account']['id']);
 
@@ -133,7 +133,7 @@ class NotificationService {
 
 		$res = collect([]);
 		foreach($ids as $id) {
-			$n = self::getNotification($id);
+			$n = self::rewriteMastodonTypes(self::getNotification($id));
 			if($n != null && in_array($n['type'], self::MASTODON_TYPES)) {
 				$n['account'] = AccountService::getMastodon($n['account']['id']);
 
@@ -173,6 +173,23 @@ class NotificationService {
 			'withscores' => true,
 			'limit' => [0, $limit]
 		]));
+	}
+
+	public static function rewriteMastodonTypes($notification)
+	{
+		if(!$notification || !isset($notification['type'])) {
+			return $notification;
+		}
+
+		if($notification['type'] === 'comment') {
+			$notification['type'] = 'mention';
+		}
+
+		if($notification['type'] === 'share') {
+			$notification['type'] = 'reblog';
+		}
+
+		return $notification;
 	}
 
 	public static function set($id, $val)

@@ -49,6 +49,7 @@
 - Update unfollow api endpoint to only decrement when appropriate, fixes #3539 ([44de1ad7](https://github.com/pixelfed/pixelfed/commit/44de1ad7))
 - Improve cache invalidation after processing VideoThumbnail to eliminate "No Preview Available" on grid feeds ([47571887](https://github.com/pixelfed/pixelfed/commit/47571887))
 - Use poster in VideoPresenter component ([a3cc90b0](https://github.com/pixelfed/pixelfed/commit/a3cc90b0))
+- Fix mastoapi notification type casting to include comment and share (mention and reblog) notifications ([eba84530](https://github.com/pixelfed/pixelfed/commit/eba84530))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
