@@ -47,6 +47,8 @@
 - Hydrate `favourited` and `reblogged` state on v1 context endpoint ([abb4f7e1](https://github.com/pixelfed/pixelfed/commit/abb4f7e1))
 - Improve admin dashboard by moving expensive stats to its page and loading stats and recent data async on the dashboard home page ([9d52b9c2](https://github.com/pixelfed/pixelfed/commit/9d52b9c2))
 - Update unfollow api endpoint to only decrement when appropriate, fixes #3539 ([44de1ad7](https://github.com/pixelfed/pixelfed/commit/44de1ad7))
+- Improve cache invalidation after processing VideoThumbnail to eliminate "No Preview Available" on grid feeds ([47571887](https://github.com/pixelfed/pixelfed/commit/47571887))
+- Use poster in VideoPresenter component ([a3cc90b0](https://github.com/pixelfed/pixelfed/commit/a3cc90b0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
