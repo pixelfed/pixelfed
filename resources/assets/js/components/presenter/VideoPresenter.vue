@@ -22,7 +22,7 @@
 			:alt="altText(status)"/>
 	</div>
 	<div v-else class="embed-responsive embed-responsive-16by9">
-		<video class="video" controls playsinline preload="metadata" loop :data-id="status.id">
+		<video class="video" controls playsinline preload="metadata" loop :data-id="status.id" :poster="poster()">
 			<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
 		</video>
 	</div>
@@ -76,7 +76,15 @@
 
 			toggleContentWarning(status) {
 				this.$emit('togglecw');
-			}
+			},
+
+            poster() {
+                let url = this.status.media_attachments[0].preview_url;
+                if(url.endsWith('no-preview.jpg') || url.endsWith('no-preview.png')) {
+                    return;
+                }
+                return url;
+            }
 		}
 	}
 </script>
