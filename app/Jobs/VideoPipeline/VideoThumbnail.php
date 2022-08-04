@@ -14,6 +14,8 @@ use Storage;
 use App\Media;
 use App\Jobs\MediaPipeline\MediaStoragePipeline;
 use App\Util\Media\Blurhash;
+use App\Services\MediaService;
+use App\Services\StatusService;
 
 class VideoThumbnail implements ShouldQueue
 {
@@ -72,6 +74,11 @@ class VideoThumbnail implements ShouldQueue
 
         if($media->status_id) {
             Cache::forget('status:transformer:media:attachments:' . $media->status_id);
+            MediaService::del($media->status_id);
+            Cache::forget('status:thumb:nsfw0' . $media->status_id);
+            Cache::forget('status:thumb:nsfw1' . $media->status_id);
+            Cache::forget('pf:services:sh:id:' . $media->status_id);
+            StatusService::del($media->status_id);
         }
 
         MediaStoragePipeline::dispatch($media);
