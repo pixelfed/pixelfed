@@ -1305,7 +1305,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function instance(Request $request)
 	{
-		$res = Cache::remember('api:v1:instance-data-response-v0', 1800, function () {
+		$res = Cache::remember('api:v1:instance-data-response-v1', 1800, function () {
 			$contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
 				$admin = User::whereIsAdmin(true)->first();
 				return $admin && isset($admin->profile_id) ?
@@ -1350,7 +1350,28 @@ class ApiV1Controller extends Controller
 				'registrations' => (bool) config_cache('pixelfed.open_registration'),
 				'approval_required' => false,
 				'contact_account' => $contact,
-				'rules' => $rules
+				'rules' => $rules,
+				'configuration' => [
+					'media_attachments' => [
+						'image_matrix_limit' => 16777216,
+						'image_size_limit' => config('pixelfed.max_photo_size') * 1024,
+						'supported_mime_types' => explode(',', config('pixelfed.media_types')),
+						'video_frame_rate_limit' => 120,
+						'video_matrix_limit' => 2304000,
+						'video_size_limit' => config('pixelfed.max_photo_size') * 1024,
+					],
+					'polls' => [
+						'max_characters_per_option' => 50,
+						'max_expiration' => 2629746,
+						'max_options' => 4,
+						'min_expiration' => 300
+					],
+					'statuses' => [
+						'characters_reserved_per_url' => 23,
+						'max_characters' => (int) config('pixelfed.max_caption_length'),
+						'max_media_attachments' => (int) config('pixelfed.max_album_length')
+					]
+				]
 			];
 		});
 

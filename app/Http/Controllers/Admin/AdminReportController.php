@@ -560,10 +560,10 @@ trait AdminReportController
 				})
 				->map(function($id) {
 					$user = User::whereProfileId($id)->first();
-					if(!$user) {
+					if(!$user || $user->email_verified_at) {
 						return [];
 					}
-					$account = AccountService::get($id);
+					$account = AccountService::get($id, true);
 					if(!$account) {
 						return [];
 					}
