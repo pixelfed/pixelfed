@@ -38,6 +38,8 @@ use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Util\Media\License;
 use App\Models\Poll;
 use Illuminate\Contracts\Cache\LockTimeoutException;
+use App\Jobs\ProfilePipeline\IncrementPostCount;
+use App\Jobs\ProfilePipeline\DecrementPostCount;
 
 class Helpers {
 
@@ -500,6 +502,8 @@ class Helpers {
 			) {
 				NetworkTimelineService::add($status->id);
 			}
+
+			IncrementPostCount::dispatch($pid)->onQueue('low');
 
 			return $status;
 		});
