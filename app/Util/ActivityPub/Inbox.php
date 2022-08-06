@@ -38,6 +38,8 @@ use App\Services\PollService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Models\Conversation;
+use App\Jobs\ProfilePipeline\IncrementPostCount;
+use App\Jobs\ProfilePipeline\DecrementPostCount;
 
 class Inbox
 {
@@ -655,6 +657,7 @@ class Inbox
 						$status->likes()->delete();
 						$status->shares()->delete();
 						$status->delete();
+                        DecrementPostCount::dispatch($profile->id)->onQueue('low');
 						return;
 					break;
 
