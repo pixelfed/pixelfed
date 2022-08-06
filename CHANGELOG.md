@@ -50,6 +50,8 @@
 - Improve cache invalidation after processing VideoThumbnail to eliminate "No Preview Available" on grid feeds ([47571887](https://github.com/pixelfed/pixelfed/commit/47571887))
 - Use poster in VideoPresenter component ([a3cc90b0](https://github.com/pixelfed/pixelfed/commit/a3cc90b0))
 - Fix mastoapi notification type casting to include comment and share (mention and reblog) notifications ([eba84530](https://github.com/pixelfed/pixelfed/commit/eba84530))
+- Fix email verification requests filtering to gracefully handle deleted accounts and accounts already verified ([b57066d1](https://github.com/pixelfed/pixelfed/commit/b57066d1))
+- Add configuration to v1/instance endpoint. Fixes #3605 ([2fb18b7d](https://github.com/pixelfed/pixelfed/commit/2fb18b7d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
