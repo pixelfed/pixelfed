@@ -1089,6 +1089,11 @@ class ApiV1Controller extends Controller
 			429
 		);
 
+		$blocks = UserFilterService::blocks($spid);
+		if($blocks && in_array($user->profile_id, $blocks)) {
+			abort(422);
+		}
+
 		$like = Like::firstOrCreate([
 			'profile_id' => $user->profile_id,
 			'status_id' => $status['id']
@@ -2494,6 +2499,8 @@ class ApiV1Controller extends Controller
 
 		if($in_reply_to_id) {
 			$parent = Status::findOrFail($in_reply_to_id);
+			$blocks = UserFilterService::blocks($parent->profile_id);
+			abort_if(in_array($profile->id, $blocks), 422, 'Cannot reply to this post at this time.');
 
 			$status = new Status;
 			$status->caption = $content;
@@ -2624,6 +2631,11 @@ class ApiV1Controller extends Controller
 				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
+			}
+
+			$blocks = UserFilterService::blocks($status->profile_id);
+			if($blocks && in_array($user->profile_id, $blocks)) {
+				abort(422);
 			}
 		}
 

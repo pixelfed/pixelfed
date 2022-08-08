@@ -37,6 +37,7 @@ use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 use App\Services\PollService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
+use App\Services\UserFilterService;
 use App\Models\Conversation;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
@@ -475,6 +476,12 @@ class Inbox
 		) {
 			return;
 		}
+
+        $blocks = UserFilterService::blocks($target->id);
+        if($blocks && in_array($actor->id, $blocks)) {
+            return;
+        }
+
 		if($target->is_private == true) {
 			FollowRequest::updateOrCreate([
 				'follower_id' => $actor->id,
@@ -531,6 +538,11 @@ class Inbox
 		if(empty($parent)) {
 			return;
 		}
+
+        $blocks = UserFilterService::blocks($parent->profile_id);
+        if($blocks && in_array($actor->id, $blocks)) {
+            return;
+        }
 
 		$status = Status::firstOrCreate([
 			'profile_id' => $actor->id,
@@ -693,6 +705,12 @@ class Inbox
 		if(!$status || !$profile) {
 			return;
 		}
+
+        $blocks = UserFilterService::blocks($status->profile_id);
+        if($blocks && in_array($actor->id, $blocks)) {
+            return;
+        }
+
 		$like = Like::firstOrCreate([
 			'profile_id' => $profile->id,
 			'status_id' => $status->id

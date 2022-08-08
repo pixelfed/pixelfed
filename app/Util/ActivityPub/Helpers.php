@@ -40,6 +40,7 @@ use App\Models\Poll;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
+use App\Services\UserFilterService;
 
 class Helpers {
 
@@ -398,6 +399,12 @@ class Helpers {
 		$profile = self::profileFirstOrNew($attributedTo);
 		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) || $replyTo == true) {
 			$reply_to = self::statusFirstOrFetch(self::pluckval($activity['object']['inReplyTo']), false);
+			if($reply_to) {
+				$blocks = UserFilterService::blocks($reply_to->profile_id);
+				if(in_array($profile->id, $blocks)) {
+					return;
+				}
+			}
 			$reply_to = optional($reply_to)->id;
 		} else {
 			$reply_to = null;

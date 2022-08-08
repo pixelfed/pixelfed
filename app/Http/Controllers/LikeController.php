@@ -25,6 +25,9 @@ class LikeController extends Controller
 			'item'    => 'required|integer|min:1',
 		]);
 
+		// API deprecated
+		return;
+
 		$user = Auth::user();
 		$profile = $user->profile;
 		$status = Status::findOrFail($request->input('item'));
