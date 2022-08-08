@@ -53,6 +53,7 @@
 - Fix email verification requests filtering to gracefully handle deleted accounts and accounts already verified ([b57066d1](https://github.com/pixelfed/pixelfed/commit/b57066d1))
 - Add configuration to v1/instance endpoint. Fixes #3605 ([2fb18b7d](https://github.com/pixelfed/pixelfed/commit/2fb18b7d))
 - Fix remote account post counts ([149cf9dc](https://github.com/pixelfed/pixelfed/commit/149cf9dc))
+- Enforce blocks on incoming likes, shares, replies and follows on all endpoints ([1545e37c](https://github.com/pixelfed/pixelfed/commit/1545e37c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)

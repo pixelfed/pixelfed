@@ -18,6 +18,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Services\UserFilterService;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -134,6 +135,10 @@ class StatusEntityLexer implements ShouldQueue
 			if (empty($mentioned) || !isset($mentioned->id)) {
 				continue;
 			}
+            $blocks = UserFilterService::blocks($mentioned->id);
+            if($blocks && in_array($status->profile_id, $blocks)) {
+                continue;
+            }
 
 			DB::transaction(function () use ($status, $mentioned) {
 				$m = new Mention();
