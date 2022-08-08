@@ -707,7 +707,7 @@ class Inbox
 		}
 
         $blocks = UserFilterService::blocks($status->profile_id);
-        if($blocks && in_array($actor->id, $blocks)) {
+        if($blocks && in_array($profile->id, $blocks)) {
             return;
         }
 
