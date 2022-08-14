@@ -27,7 +27,11 @@ class SpaController extends Controller
 			return view('layouts.spa');
 		}
 
-		$post = StatusService::get($id);
+		$post = StatusService::get($id, false);
+
+		if($post && !in_array($post['visibility'], ['public', 'unlisted'])) {
+			return redirect('/login');
+		}
 
 		if(
 			$post &&
