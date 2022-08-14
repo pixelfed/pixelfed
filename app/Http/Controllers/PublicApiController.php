@@ -118,7 +118,9 @@ class PublicApiController extends Controller
         $status = Status::whereProfileId($profile->id)->findOrFail($postid);
         $this->scopeCheck($profile, $status);
         if(!$request->user()) {
-            $res = ['status' => StatusService::get($status->id)];
+            $cached = StatusService::get($status->id, false);
+            abort_if(!in_array($cached['visibility'], ['public', 'unlisted']), 403);
+            $res = ['status' => $cached];
         } else {
             $item = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
             $res = [

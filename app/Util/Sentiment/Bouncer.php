@@ -6,6 +6,7 @@ use App\AccountInterstitial;
 use App\Status;
 use Cache;
 use Illuminate\Support\Str;
+use App\Services\StatusService;
 
 class Bouncer {
 
@@ -133,6 +134,8 @@ class Bouncer {
 		$status->visibility = 'unlisted';
 		// $status->is_nsfw = true;
 		$status->save();
+
+		StatusService::del($status->id);
 
 		Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $status->profile_id);
 		Cache::forget('pf:bouncer_v0:recent_by_pid:' . $status->profile_id);
