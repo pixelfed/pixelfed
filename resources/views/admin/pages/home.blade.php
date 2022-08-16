@@ -37,7 +37,7 @@
                         </form>
                         @endif
                         @if(!$pages->contains('slug', '=', '/site/kb/community-guidelines'))
-                        <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+                        <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
                             @csrf
                             <input type="hidden" name="page" value="community_guidelines">
                             <button type="submit" class="btn btn-default font-weight-bold">Customize Guidelines Page</button>
