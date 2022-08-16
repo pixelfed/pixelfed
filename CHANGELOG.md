@@ -55,6 +55,10 @@
 - Fix remote account post counts ([149cf9dc](https://github.com/pixelfed/pixelfed/commit/149cf9dc))
 - Enforce blocks on incoming likes, shares, replies and follows on all endpoints ([1545e37c](https://github.com/pixelfed/pixelfed/commit/1545e37c))
 - Fix unlisted post web redirect and api response ([6033d837](https://github.com/pixelfed/pixelfed/commit/6033d837))
+- Remove quilljs from admin page editor, fixes #3616 ([75fbd373](https://github.com/pixelfed/pixelfed/commit/75fbd373))
+- Fix AdminStatService cache key, fixes #3612 ([d1dbed89](https://github.com/pixelfed/pixelfed/commit/d1dbed89))
+- Improve mute/block v1 api endpoints, fixes #3540 ([c3e8a0e4](https://github.com/pixelfed/pixelfed/commit/c3e8a0e4))
+- Set Last-Modified header for atom feeds, fixes #2988 ([c18dcde3](https://github.com/pixelfed/pixelfed/commit/c18dcde3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
