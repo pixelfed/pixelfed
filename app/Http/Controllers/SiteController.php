@@ -80,7 +80,7 @@ class SiteController extends Controller
 	{
 		$page = Cache::remember('site:privacy', now()->addDays(120), function() {
 			$slug = '/site/privacy';
-			$page = Page::whereSlug($slug)->whereActive(true)->first();
+			return Page::whereSlug($slug)->whereActive(true)->first();
 		});
 		return View::make('site.privacy')->with(compact('page'))->render();
 	}
