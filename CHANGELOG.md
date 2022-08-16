@@ -5,6 +5,7 @@
 ### New Features
 - Custom content warnings/spoiler text ([d4864213](https://github.com/pixelfed/pixelfed/commit/d4864213))
 - Add NetworkTimelineService cache ([1310d95c](https://github.com/pixelfed/pixelfed/commit/1310d95c))
+- Customizable Legal Notice page ([0b7d0a96](https://github.com/pixelfed/pixelfed/commit/0b7d0a96))
 
 ### Breaking
 - Replaced `predis` with `phpredis` as default redis driver due to predis being deprecated, install [phpredis](https://github.com/phpredis/phpredis/blob/develop/INSTALL.markdown) if you're still using predis.
