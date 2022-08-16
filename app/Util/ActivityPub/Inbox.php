@@ -38,6 +38,7 @@ use App\Services\PollService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
+use App\Services\NetworkTimelineService;
 use App\Models\Conversation;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
@@ -659,6 +660,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
+						NetworkTimelineService::del($status->id);
 						StatusService::del($status->id, true);
 						Notification::whereActorId($profile->id)
 							->whereItemType('App\Status')
