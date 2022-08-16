@@ -154,4 +154,14 @@ class SiteController extends Controller
 
 		return redirect($url);
 	}
+
+	public function legalNotice(Request $request)
+	{
+		$page = Cache::remember('site:legal-notice', now()->addDays(120), function() {
+			$slug = '/site/legal-notice';
+			return Page::whereSlug($slug)->whereActive(true)->first();
+		});
+		abort_if(!$page, 404);
+		return View::make('site.legal-notice')->with(compact('page'))->render();
+	}
 }

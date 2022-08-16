@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth, Cache;
 use App\Page;
+use App\Services\ConfigCacheService;
 
 class PageController extends Controller
 {
@@ -18,7 +19,8 @@ class PageController extends Controller
 			'/site/about' => 'site:about',
 			'/site/privacy' => 'site:privacy',
 			'/site/terms' => 'site:terms',
-			'/site/kb/community-guidelines' => 'site:help:community-guidelines'
+			'/site/kb/community-guidelines' => 'site:help:community-guidelines',
+			'/site/legal-notice' => 'site:legal-notice'
 		];
 	}
 
@@ -60,10 +62,11 @@ class PageController extends Controller
 		$page->title = $request->input('title');
 		$page->active = (bool) $request->input('active');
 		$page->save();
-		if($page->cached) {
-			$keys = $this->cacheKeys();
-			$key = $keys[$page->slug];
-			Cache::forget($key);
+		$keys = $this->cacheKeys();
+		$key = $keys[$page->slug];
+		Cache::forget($key);
+		if($page->slug === '/site/legal-notice') {
+			ConfigCacheService::put('instance.has_legal_notice', $page->active);
 		}
 		return response()->json(['msg' => 200]);
 	}
@@ -75,14 +78,17 @@ class PageController extends Controller
 		]);
 
 		$page = Page::findOrFail($request->input('id'));
+		$keys = $this->cacheKeys();
+		$key = $keys[$page->slug];
 		$page->delete();
+		Cache::forget($key);
 		return redirect(route('admin.settings.pages'));
 	}
 
 	public function generatePage(Request $request)
 	{
 		$this->validate($request, [
-			'page' => 'required|string|in:about,terms,privacy,community_guidelines',
+			'page' => 'required|string|in:about,terms,privacy,community_guidelines,legal_notice',
 		]);
 
 		$page = $request->input('page');
@@ -102,6 +108,10 @@ class PageController extends Controller
 
 			case 'community_guidelines':
 				Page::firstOrCreate(['slug' => '/site/kb/community-guidelines']);
+				break;
+
+			case 'legal_notice':
+				Page::firstOrCreate(['slug' => '/site/legal-notice']);
 				break;
 		}
 
