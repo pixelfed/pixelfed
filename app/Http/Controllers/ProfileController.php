@@ -243,6 +243,10 @@ class ProfileController extends Controller
 	{
 		$res = view('profile.embed-removed');
 
+		if(!config('instance.embed.profile')) {
+			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		}
+
 		if(strlen($username) > 15 || strlen($username) < 2) {
 			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 		}

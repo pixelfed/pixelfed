@@ -106,6 +106,11 @@ class StatusController extends Controller
 
 	public function showEmbed(Request $request, $username, int $id)
 	{
+		if(!config('instance.embed.post')) {
+			$res = view('status.embed-removed');
+			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		}
+
 		$profile = Profile::whereNull(['domain','status'])
 			->whereIsPrivate(false)
 			->whereUsername($username)
