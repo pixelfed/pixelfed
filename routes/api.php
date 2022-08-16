@@ -100,6 +100,11 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
 		Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 		Route::delete('accounts/avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
+		Route::get('direct/thread', 'DirectMessageController@thread')->middleware($middleware);
+
+		Route::group(['prefix' => 'stories'], function () use($middleware) {
+			Route::get('recent', 'StoryController@recent')->middleware($middleware);
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {

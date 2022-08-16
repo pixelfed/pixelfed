@@ -84,4 +84,11 @@ return [
 	],
 
 	'enable_cc' => env('ENABLE_CONFIG_CACHE', false),
+
+	'has_legal_notice' => env('INSTANCE_LEGAL_NOTICE', false),
+
+	'embed' => [
+		'profile' => env('INSTANCE_PROFILE_EMBEDS', true),
+		'post' => env('INSTANCE_POST_EMBEDS', true),
+	],
 ];

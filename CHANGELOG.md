@@ -5,6 +5,7 @@
 ### New Features
 - Custom content warnings/spoiler text ([d4864213](https://github.com/pixelfed/pixelfed/commit/d4864213))
 - Add NetworkTimelineService cache ([1310d95c](https://github.com/pixelfed/pixelfed/commit/1310d95c))
+- Customizable Legal Notice page ([0b7d0a96](https://github.com/pixelfed/pixelfed/commit/0b7d0a96))
 
 ### Breaking
 - Replaced `predis` with `phpredis` as default redis driver due to predis being deprecated, install [phpredis](https://github.com/phpredis/phpredis/blob/develop/INSTALL.markdown) if you're still using predis.
@@ -59,6 +60,7 @@
 - Fix AdminStatService cache key, fixes #3612 ([d1dbed89](https://github.com/pixelfed/pixelfed/commit/d1dbed89))
 - Improve mute/block v1 api endpoints, fixes #3540 ([c3e8a0e4](https://github.com/pixelfed/pixelfed/commit/c3e8a0e4))
 - Set Last-Modified header for atom feeds, fixes #2988 ([c18dcde3](https://github.com/pixelfed/pixelfed/commit/c18dcde3))
+- Add instance post/profile embed config setting ([7734dc03](https://github.com/pixelfed/pixelfed/commit/7734dc03))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)

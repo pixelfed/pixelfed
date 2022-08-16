@@ -53,6 +53,8 @@ class ConfigCacheService
 				'account.autofollow',
 				'account.autofollow_usernames',
 				'config.discover.features',
+
+				'instance.has_legal_notice',
 				// 'system.user_mode'
 			];
 

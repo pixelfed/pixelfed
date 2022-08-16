@@ -11,7 +11,7 @@
 					<p class="lead text-white mt-n4 mb-0">Manage public and custom page content</p>
 				</div>
 
-                @if($pages->count() < 4)
+                @if($pages->count() < 5)
                 <div class="col-12">
                     <hr>
                     <div class="btn-group">
@@ -37,10 +37,17 @@
                         </form>
                         @endif
                         @if(!$pages->contains('slug', '=', '/site/kb/community-guidelines'))
-                        <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+                        <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
                             @csrf
                             <input type="hidden" name="page" value="community_guidelines">
                             <button type="submit" class="btn btn-default font-weight-bold">Customize Guidelines Page</button>
+                        </form>
+                        @endif
+                        @if(!$pages->contains('slug', '=', '/site/legal-notice'))
+                        <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+                            @csrf
+                            <input type="hidden" name="page" value="legal_notice">
+                            <button type="submit" class="btn btn-default font-weight-bold">Customize Legal Notice Page</button>
                         </form>
                         @endif
                   </div>
