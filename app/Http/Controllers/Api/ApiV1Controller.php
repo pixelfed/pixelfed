@@ -873,12 +873,15 @@ class ApiV1Controller extends Controller
 			->whereFilterableType('App\Profile')
 			->whereFilterType('block')
 			->simplePaginate($limit)
-			->pluck('filterable_id');
+			->pluck('filterable_id')
+			->map(function($id) {
+				return AccountService::get($id, true);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			});
 
-		$profiles = Profile::findOrFail($blocked);
-		$resource = new Fractal\Resource\Collection($profiles, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return $this->json($res);
+		return $this->json($blocked);
 	}
 
 	/**
@@ -1725,19 +1728,21 @@ class ApiV1Controller extends Controller
 		]);
 
 		$user = $request->user();
-		$limit = $request->input('limit') ?? 40;
+		$limit = $request->input('limit', 40);
 
 		$mutes = UserFilter::whereUserId($user->profile_id)
 			->whereFilterableType('App\Profile')
 			->whereFilterType('mute')
 			->simplePaginate($limit)
-			->pluck('filterable_id');
+			->pluck('filterable_id')
+			->map(function($id) {
+				return AccountService::get($id, true);
+			})
+			->filter(function($account) {
+				return $account && isset($account['id']);
+			});
 
-		$accounts = Profile::find($mutes);
-
-		$resource = new Fractal\Resource\Collection($accounts, new AccountTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return $this->json($res);
+		return $this->json($mutes);
 	}
 
 	/**

@@ -113,7 +113,7 @@ class AdminStatsService
 	protected static function additionalDataSummary()
 	{
 		$ttl = now()->addHours(24);
-		return Cache::remember('admin:dashboard:home:data:v0:24hr', $ttl, function() {
+		return Cache::remember('admin:dashboard:home:data-summary:v0:24hr', $ttl, function() {
 			return [
 				'statuses' => PrettyNumber::convert(Status::count()),
 				'profiles' => PrettyNumber::convert(Profile::count()),

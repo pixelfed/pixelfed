@@ -1,11 +1,56 @@
 @extends('admin.partial.template-full')
 
 @section('section')
-  <div class="title">
-    <h3 class="font-weight-bold">Pages</h3>
-    <p class="lead">Set custom page content</p>
-  </div>
-  <hr>
+</div>
+<div class="header bg-primary pb-3 mt-n4">
+	<div class="container-fluid">
+		<div class="header-body">
+			<div class="row align-items-center py-4">
+				<div class="col-lg-6 col-7">
+					<p class="display-1 text-white">Pages</p>
+					<p class="lead text-white mt-n4 mb-0">Manage public and custom page content</p>
+				</div>
+
+                @if($pages->count() < 4)
+                <div class="col-12">
+                    <hr>
+                    <div class="btn-group">
+                        @if(!$pages->contains('slug', '=', '/site/about'))
+                        <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+                            @csrf
+                            <input type="hidden" name="page" value="about">
+                            <button type="submit" class="btn btn-default font-weight-bold">Customize About Page</button>
+                        </form>
+                        @endif
+                        @if(!$pages->contains('slug', '=', '/site/privacy'))
+                        <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+                            @csrf
+                            <input type="hidden" name="page" value="privacy">
+                            <button type="submit" class="btn btn-default font-weight-bold">Customize Privacy Page</button>
+                        </form>
+                        @endif
+                        @if(!$pages->contains('slug', '=', '/site/terms'))
+                        <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
+                            @csrf
+                            <input type="hidden" name="page" value="terms">
+                            <button type="submit" class="btn btn-default font-weight-bold">Customize Terms Page</button>
+                        </form>
+                        @endif
+                        @if(!$pages->contains('slug', '=', '/site/kb/community-guidelines'))
+                        <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
+                            @csrf
+                            <input type="hidden" name="page" value="community_guidelines">
+                            <button type="submit" class="btn btn-default font-weight-bold">Customize Guidelines Page</button>
+                        </form>
+                        @endif
+                  </div>
+                </div>
+                @endif
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container-fluid mt-4">
   @if($pages->count())
   <div class="table-responsive">
     <table class="table">
@@ -46,57 +91,11 @@
   <div class="d-flex justify-content-center mt-5 small">
     {{$pages->links()}}
   </div>
-  <hr>
-  <div class="btn-group">
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="about">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About</button>
-    </form>
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="privacy">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy</button>
-    </form>
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="terms">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms</button>
-    </form>
-    <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="community_guidelines">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Guidelines</button>
-    </form>
-  </div>
-  @else 
-  <div class="card bg-light shadow-none rounded-0">
+  @else
+  <div class="card border shadow-none rounded-0">
     <div class="card-body text-center">
-      <p class="lead text-muted font-weight-bold py-5 mb-0">No custom pages found</p>
+      <p class="lead text-muted font-weight-bold py-5">No custom pages found</p>
     </div>
-  </div>
-  <hr>
-  <div class="btn-group">
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="about">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create About</button>
-    </form>
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="privacy">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Privacy</button>
-    </form>
-    <form class="form-inline mr-1" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="terms">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Terms</button>
-    </form>
-    <form class="form-inline" method="post" action="/i/admin/settings/pages/create">
-      @csrf
-      <input type="hidden" name="page" value="community_guidelines">
-      <button type="submit" class="btn btn-outline-secondary font-weight-bold">Create Guidelines</button>
-    </form>
   </div>
   @endif
 @endsection
