@@ -194,6 +194,9 @@ class NotificationService {
 
 	public static function set($id, $val)
 	{
+		if(self::count($id) > 400) {
+			Redis::zpopmin(self::CACHE_KEY . $id);
+		}
 		return Redis::zadd(self::CACHE_KEY . $id, $val, $val);
 	}
 
@@ -220,7 +223,7 @@ class NotificationService {
 
 	public static function getNotification($id)
 	{
-		return Cache::remember('service:notification:'.$id, 86400, function() use($id) {
+		$notification = Cache::remember('service:notification:'.$id, 86400, function() use($id) {
 			$n = Notification::with('item')->find($id);
 
 			if(!$n) {
@@ -238,6 +241,16 @@ class NotificationService {
 			$resource = new Fractal\Resource\Item($n, new NotificationTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
+
+		if(!$notification) {
+			return;
+		}
+
+		if(isset($notification['account'])) {
+			$notification['account'] = AccountService::get($notification['account']['id'], true);
+		}
+
+		return $notification;
 	}
 
 	public static function setNotification(Notification $notification)

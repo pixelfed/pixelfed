@@ -62,6 +62,7 @@
 - Set Last-Modified header for atom feeds, fixes #2988 ([c18dcde3](https://github.com/pixelfed/pixelfed/commit/c18dcde3))
 - Add instance post/profile embed config setting ([7734dc03](https://github.com/pixelfed/pixelfed/commit/7734dc03))
 - Remove remote posts from NetworkTimelineService when processing Tombstones ([2e4f2377](https://github.com/pixelfed/pixelfed/commit/2e4f2377))
+- Limit NotificationService to 400 items ([f6ed560e](https://github.com/pixelfed/pixelfed/commit/f6ed560e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)

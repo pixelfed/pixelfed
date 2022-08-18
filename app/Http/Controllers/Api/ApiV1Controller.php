@@ -2449,7 +2449,7 @@ class ApiV1Controller extends Controller
 			'media_ids' => 'sometimes|array|max:' . config_cache('pixelfed.max_album_length'),
 			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
-			'spoiler_text' => 'sometimes|string|max:140',
+			'spoiler_text' => 'sometimes|max:140',
 		]);
 
 		if(config('costar.enabled') == true) {
