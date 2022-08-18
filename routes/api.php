@@ -105,6 +105,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
 		});
+
+		Route::group(['prefix' => 'compose/v0'], function () use($middleware) {
+			Route::get('/search/location', 'ComposeController@searchLocation')->middleware($middleware);
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {
