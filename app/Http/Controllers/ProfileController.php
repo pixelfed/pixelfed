@@ -210,7 +210,6 @@ class ProfileController extends Controller
 			->whereVisibility('public')
 			->whereType('photo')
 			->orderByDesc('id')
-			->take(10)
 			->get()
 			->map(function($status) {
 				return StatusService::get($status->id);
