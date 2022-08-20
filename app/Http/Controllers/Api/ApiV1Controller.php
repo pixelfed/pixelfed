@@ -3028,24 +3028,26 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 		$pid = $request->user()->profile_id;
 
-		$ids = DB::table('profiles')
+		$ids = Cache::remember('api:v1.1:discover:accounts:popular', 86400, function() {
+			return DB::table('profiles')
 			->where('is_private', false)
 			->whereNull('status')
 			->orderByDesc('profiles.followers_count')
 			->limit(20)
 			->get();
+		});
 
 		$ids = $ids->map(function($profile) {
-				return AccountService::getMastodon($profile->id);
-			})
-			->filter(function($profile) use($pid) {
-				return $profile &&
-					isset($profile['id']) &&
-					!FollowerService::follows($pid, $profile['id']) &&
-					$profile['id'] != $pid;
-			})
-			->take(6)
-			->values();
+			return AccountService::getMastodon($profile->id, true);
+		})
+		->filter(function($profile) use($pid) {
+			return $profile && isset($profile['id']);
+		})
+		->filter(function($profile) use($pid) {
+			return $profile['id'] != $pid;
+		})
+		->take(6)
+		->values();
 
 		return $this->json($ids);
 	}
