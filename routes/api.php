@@ -109,6 +109,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::group(['prefix' => 'compose/v0'], function () use($middleware) {
 			Route::get('/search/location', 'ComposeController@searchLocation')->middleware($middleware);
 		});
+
+		Route::group(['prefix' => 'discover'], function () use($middleware) {
+			Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {
