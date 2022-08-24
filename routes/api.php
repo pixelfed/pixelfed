@@ -112,6 +112,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 		Route::group(['prefix' => 'discover'], function () use($middleware) {
 			Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
+			Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
+			Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
 		});
 	});
 

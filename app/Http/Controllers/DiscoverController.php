@@ -123,7 +123,7 @@ class DiscoverController extends Controller
 
 	public function trendingApi(Request $request)
 	{
-		abort_if(config('instance.discover.public') == false && !Auth::check(), 403);
+		abort_if(config('instance.discover.public') == false && !$request->user(), 403);
 
 		$this->validate($request, [
 			'range' => 'nullable|string|in:daily,monthly,yearly',
@@ -179,21 +179,25 @@ class DiscoverController extends Controller
 
 	public function trendingHashtags(Request $request)
 	{
-		$res = StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
-			->groupBy('hashtag_id')
-			->orderBy('total','desc')
-			->where('created_at', '>', now()->subDays(90))
-			->take(9)
-			->get()
-			->map(function($h) {
-				$hashtag = $h->hashtag;
-				return [
-					'id' => $hashtag->id,
-					'total' => $h->total,
-					'name' => '#'.$hashtag->name,
-					'url' => $hashtag->url('?src=dsh1')
-				];
-			});
+		abort_if(!$request->user(), 403);
+
+		$res = Cache::remember('api:discover:v1.1:trending:hashtags', 3600, function() {
+			return StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
+				->groupBy('hashtag_id')
+				->orderBy('total','desc')
+				->where('created_at', '>', now()->subDays(90))
+				->take(9)
+				->get()
+				->map(function($h) {
+					$hashtag = $h->hashtag;
+					return [
+						'id' => $hashtag->id,
+						'total' => $h->total,
+						'name' => '#'.$hashtag->name,
+						'url' => $hashtag->url()
+					];
+				});
+		});
 		return $res;
 	}
 
