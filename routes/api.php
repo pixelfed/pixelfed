@@ -105,6 +105,16 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
 		});
+
+		Route::group(['prefix' => 'compose/v0'], function () use($middleware) {
+			Route::get('/search/location', 'ComposeController@searchLocation')->middleware($middleware);
+		});
+
+		Route::group(['prefix' => 'discover'], function () use($middleware) {
+			Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
+			Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
+			Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {

@@ -311,7 +311,7 @@ class ComposeController extends Controller
 
 	public function searchLocation(Request $request)
 	{
-		abort_if(!Auth::check(), 403);
+		abort_if(!$request->user(), 403);
 		$this->validate($request, [
 			'q' => 'required|string|max:100'
 		]);
