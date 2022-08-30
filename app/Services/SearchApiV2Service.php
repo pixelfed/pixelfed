@@ -35,7 +35,7 @@ class SearchApiV2Service
 		if($query->has('resolve') && 
 			$query->resolve == true && 
 			( Str::startsWith($q, 'https://') ||
-			  Str::substrCount($q, '@') == 2)
+			  Str::substrCount($q, '@') >= 1)
 		) {
 			return $this->resolveQuery();
 		}
@@ -81,13 +81,21 @@ class SearchApiV2Service
 		];
 	}
 
-	protected function accounts()
+	protected function accounts($initalQuery = false)
 	{
 		$mastodonMode = self::$mastodonMode;
 		$user = request()->user();
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
-		$query = '%' . $this->query->input('q') . '%';
+		$rawQuery = $initalQuery ? $initalQuery : $this->query->input('q');
+		$query = '%' . $rawQuery . '%';
+		if(Str::substrCount($rawQuery, '@') >= 1 && Str::contains($rawQuery, config('pixelfed.domain.app'))) {
+			$deliminatorCount = Str::substrCount($rawQuery, '@');
+			$query = explode('@', $rawQuery)[$deliminatorCount == 1 ? 0 : 1];
+		}
+		if(Str::substrCount($rawQuery, '@') == 1 && substr($rawQuery, 0, 1) == '@') {
+			$query = substr($rawQuery, 1) . '%';
+		}
 		$banned = InstanceService::getBannedDomains();
 		$results = Profile::select('profiles.*', 'followers.profile_id', 'followers.created_at')
 			->whereNull('status')
@@ -173,8 +181,17 @@ class SearchApiV2Service
 
 	protected function resolveQuery()
 	{
+		$default =  [
+			'accounts' => [],
+			'hashtags' => [],
+			'statuses' => [],
+		];
 		$mastodonMode = self::$mastodonMode;
 		$query = urldecode($this->query->input('q'));
+		if(substr($query, 0, 1) === '@' && !Str::contains($query, '.')) {
+			$default['accounts'] = $this->accounts(substr($query, 1));
+			return $default;
+		}
 		if(Helpers::validateLocalUrl($query)) {
 			if(Str::contains($query, '/p/')) {
 				return $this->resolveLocalStatus();
@@ -182,13 +199,22 @@ class SearchApiV2Service
 				return $this->resolveLocalProfile();
 			}
 		} else {
-			$default =  [
-				'accounts' => [],
-				'hashtags' => [],
-				'statuses' => [],
-			];
 			if(!Helpers::validateUrl($query) && strpos($query, '@') == -1) {
 				return $default;
+			}
+
+			if(Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
+				try {
+					$res = WebfingerService::lookup('@' . $query, $mastodonMode);
+				} catch (\Exception $e) {
+					return $default;
+				}
+				if($res && isset($res['id'])) {
+					$default['accounts'][] = $res;
+					return $default;
+				} else {
+					return $default;
+				}
 			}
 
 			if(Str::substrCount($query, '@') == 2) {
