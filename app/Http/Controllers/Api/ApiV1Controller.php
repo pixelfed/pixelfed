@@ -89,6 +89,7 @@ use App\Jobs\FollowPipeline\FollowRejectPipeline;
 class ApiV1Controller extends Controller
 {
 	protected $fractal;
+	const PF_API_ENTITY_KEY = "_pe";
 
 	public function __construct()
 	{
@@ -177,7 +178,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
-		$res = AccountService::getMastodon($user->profile_id);
+		$res = $request->has(self::PF_API_ENTITY_KEY) ? AccountService::get($user->profile_id) : AccountService::getMastodon($user->profile_id);
 
 		$res['source'] = [
 			'privacy' => $res['locked'] ? 'private' : 'public',
@@ -199,7 +200,7 @@ class ApiV1Controller extends Controller
 	 */
 	public function accountById(Request $request, $id)
 	{
-		$res = AccountService::getMastodon($id, true);
+		$res = $request->has(self::PF_API_ENTITY_KEY) ? AccountService::get($id, true) : AccountService::getMastodon($id, true);
 		if(!$res) {
 			return response()->json(['error' => 'Record not found'], 404);
 		}
@@ -554,7 +555,8 @@ class ApiV1Controller extends Controller
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$profile = AccountService::getMastodon($id, true);
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
+		$profile = $napi ? AccountService::get($id, true) : AccountService::getMastodon($id, true);
 
         if(!$profile || !isset($profile['id']) || !$user) {
         	return response('', 404);
@@ -604,8 +606,11 @@ class ApiV1Controller extends Controller
 		->limit($limit)
 		->orderByDesc('id')
 		->get()
-		->map(function($s) use($user) {
-			$status = StatusService::getMastodon($s->id, false);
+		->map(function($s) use($user, $napi, $profile) {
+			$status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
+			if($profile) {
+				$status['account'] = $profile;
+			}
 
 			if($user && $status) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
@@ -1034,6 +1039,7 @@ class ApiV1Controller extends Controller
 			->get()
 			->map(function($like) {
 				$status =  StatusService::getMastodon($like['status_id'], false);
+				$status['favourited'] = true;
 				$status['like_id'] = $like->id;
 				$status['liked_at'] = str_replace('+00:00', 'Z', $like->created_at->format(DATE_RFC3339_EXTENDED));
 				return $status;
@@ -1902,6 +1908,7 @@ class ApiV1Controller extends Controller
 		  'limit'       => 'nullable|integer|max:100'
 		]);
 
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 		$page = $request->input('page');
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
@@ -1931,7 +1938,7 @@ class ApiV1Controller extends Controller
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id'], false);
+				$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
@@ -1961,8 +1968,8 @@ class ApiV1Controller extends Controller
 			->latest()
 			->take(($limit * 2))
 			->get()
-			->map(function($s) use($pid) {
-				$status = StatusService::getMastodon($s['id'], false);
+			->map(function($s) use($pid, $napi) {
+				$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
@@ -2024,6 +2031,7 @@ class ApiV1Controller extends Controller
 		  'local'		=> 'sometimes'
 		]);
 
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
@@ -2075,8 +2083,8 @@ class ApiV1Controller extends Controller
 				return $max != $k;
 			}
 		})
-		->map(function($k) use($user) {
-			$status = StatusService::getMastodon($k);
+		->map(function($k) use($user, $napi) {
+			$status = $napi ? StatusService::get($k) : StatusService::getMastodon($k);
 			if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 				return false;
 			}
@@ -2207,7 +2215,7 @@ class ApiV1Controller extends Controller
 
 		$user = $request->user();
 
-		$res = StatusService::getMastodon($id, false);
+		$res = $request->has(self::PF_API_ENTITY_KEY) ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
 		if(!$res || !isset($res['visibility'])) {
 			abort(404);
 		}
