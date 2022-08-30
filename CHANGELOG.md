@@ -63,6 +63,10 @@
 - Add instance post/profile embed config setting ([7734dc03](https://github.com/pixelfed/pixelfed/commit/7734dc03))
 - Remove remote posts from NetworkTimelineService when processing Tombstones ([2e4f2377](https://github.com/pixelfed/pixelfed/commit/2e4f2377))
 - Limit NotificationService to 400 items ([f6ed560e](https://github.com/pixelfed/pixelfed/commit/f6ed560e))
+- Refactor discover accounts endpoint, cache popular accounts and remove following check as most invocations are from new accounts ([016b11f3](https://github.com/pixelfed/pixelfed/commit/016b11f3))
+- Fix cache invalidation in AdminSettingsController when updating rules ([fe6787f7](https://github.com/pixelfed/pixelfed/commit/fe6787f7))
+- Update SearchApiService, improve account/webfinger results ([533f7165](https://github.com/pixelfed/pixelfed/commit/533f7165))
+- Update NotificationService, fix account attribute ([949b7bb6](https://github.com/pixelfed/pixelfed/commit/949b7bb6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
