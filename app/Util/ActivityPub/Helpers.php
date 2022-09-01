@@ -474,22 +474,25 @@ class Helpers {
 				return;
 			}
 
-			$status = new Status;
-			$status->profile_id = $pid;
-			$status->url = $url;
-			$status->uri = $url;
-			$status->object_url = $id;
-			$status->caption = strip_tags($activity['content']);
-			$status->rendered = Purify::clean($activity['content']);
-			$status->created_at = Carbon::parse($ts)->tz('UTC');
-			$status->in_reply_to_id = $reply_to;
-			$status->local = false;
-			$status->is_nsfw = $cw;
-			$status->scope = $scope;
-			$status->visibility = $scope;
-			$status->cw_summary = $cw == true && isset($activity['summary']) ?
-				Purify::clean(strip_tags($activity['summary'])) : null;
-			$status->save();
+            $status = Status::updateOrCreate(
+                [
+                    'uri' => $url
+                ], [
+                    'profile_id' => $pid,
+                    'url' => $url,
+                    'object_url' => $id,
+                    'caption' => strip_tags($activity['content']),
+                    'rendered' => Purify::clean($activity['content']),
+                    'created_at' => Carbon::parse($ts)->tz('UTC'),
+                    'in_reply_to_id' => $reply_to,
+                    'local' => false,
+                    'is_nsfw' => $cw,
+                    'scope' => $scope,
+                    'visibility' => $scope,
+                    'cw_summary' => ($cw == true && isset($activity['summary']) ?
+                        Purify::clean(strip_tags($activity['summary'])) : null)
+                ]
+            );
 
 			if($reply_to == null) {
 				self::importNoteAttachment($activity, $status);
@@ -717,75 +720,66 @@ class Helpers {
 
 	public static function profileUpdateOrCreate($url)
 	{
-		$hash = base64_encode($url);
-		$key = 'ap:profile:by_url:' . $hash;
-		$lock = Cache::lock($key, 30);
-		$profile = null;
-
-		try {
-			$lock->block(5);
-
-			$res = self::fetchProfileFromUrl($url);
-			if(isset($res['id']) == false) {
-				return;
-			}
-			$domain = parse_url($res['id'], PHP_URL_HOST);
-			if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
-				return;
-			}
-			$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
-			if(empty($username)) {
-				return;
-			}
-			$remoteUsername = $username;
-			$webfinger = "@{$username}@{$domain}";
-
-			abort_if(!self::validateUrl($res['inbox']), 400);
-			abort_if(!self::validateUrl($res['id']), 400);
-
-			$profile = DB::transaction(function() use($domain, $webfinger, $res) {
-				$instance = Instance::updateOrCreate([
-					'domain' => $domain
-				]);
-				if($instance->wasRecentlyCreated == true) {
-					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
-				}
-
-				$profile = Profile::updateOrCreate(
-					[
-						'domain' => strtolower($domain),
-						'username' => Purify::clean($webfinger),
-						'remote_url' => $res['id'],
-					],
-					[
-						'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
-						'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
-						'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
-						'inbox_url' => $res['inbox'],
-						'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
-						'public_key' => $res['publicKey']['publicKeyPem'],
-						'key_id' => $res['publicKey']['id'],
-						'webfinger' => Purify::clean($webfinger),
-					]
-				);
-
-				if( $profile->last_fetched_at == null ||
-					$profile->last_fetched_at->lt(now()->subHours(24))
-				) {
-					RemoteAvatarFetch::dispatch($profile);
-				}
-				$profile->last_fetched_at = now();
-				$profile->save();
-				return $profile;
-			});
-
-			return $profile;
-		} catch (LockTimeoutException $e) {
-		} finally {
-		    optional($lock)->release();
+		$res = self::fetchProfileFromUrl($url);
+		if(!$res || isset($res['id']) == false) {
+			return;
 		}
+		$domain = parse_url($res['id'], PHP_URL_HOST);
+		if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
+			return;
+		}
+		$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
+		if(empty($username)) {
+			return;
+		}
+		$remoteUsername = $username;
+		$webfinger = "@{$username}@{$domain}";
+
+		if(!self::validateUrl($res['inbox'])) {
+            return;
+        }
+		if(!self::validateUrl($res['id'])) {
+            return;
+        }
+
+		$profile = DB::transaction(function() use($domain, $webfinger, $res) {
+			$instance = Instance::updateOrCreate([
+				'domain' => $domain
+			]);
+			if($instance->wasRecentlyCreated == true) {
+				\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+			}
+
+			$profile = Profile::updateOrCreate(
+				[
+					'domain' => strtolower($domain),
+					'username' => Purify::clean($webfinger),
+					'webfinger' => Purify::clean($webfinger),
+					'key_id' => $res['publicKey']['id'],
+				],
+				[
+					'remote_url' => $res['id'],
+					'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
+					'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+					'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
+					'inbox_url' => $res['inbox'],
+					'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
+					'public_key' => $res['publicKey']['publicKeyPem'],
+				]
+			);
+
+			if( $profile->last_fetched_at == null ||
+				$profile->last_fetched_at->lt(now()->subHours(24))
+			) {
+				RemoteAvatarFetch::dispatch($profile);
+			}
+			$profile->last_fetched_at = now();
+			$profile->save();
+			return $profile;
+		});
 
 		return $profile;
+
 	}
 
 	public static function profileFetch($url)

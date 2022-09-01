@@ -56,6 +56,9 @@ class WebfingerService
 			->first();
 
 		$profile = Helpers::profileFetch($link);
+		if(!$profile) {
+			return;
+		}
 		return $mastodonMode ?
 			AccountService::getMastodon($profile->id, true) :
 			AccountService::get($profile->id);

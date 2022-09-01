@@ -33,7 +33,6 @@ class SearchApiV2Service
 		$q = urldecode($query->input('q'));
 
 		if($query->has('resolve') && 
-			$query->resolve == true && 
 			( Str::startsWith($q, 'https://') ||
 			  Str::substrCount($q, '@') >= 1)
 		) {
@@ -203,7 +202,7 @@ class SearchApiV2Service
 				return $default;
 			}
 
-			if(Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
+			if(!Str::startsWith($query, 'http') && Str::substrCount($query, '@') == 1 && strpos($query, '@') !== 0) {
 				try {
 					$res = WebfingerService::lookup('@' . $query, $mastodonMode);
 				} catch (\Exception $e) {

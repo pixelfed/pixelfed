@@ -72,39 +72,31 @@ class DeleteWorker implements ShouldQueue
 				'b:' . base64_encode($actor) :
 				'h:' . hash('sha256', $actor);
 
-			$lockKey = 'ap:inbox:actor-delete-exists:lock:' . $hash;
-			Cache::lock($lockKey, 30)->block(15, function () use(
-				$headers,
-				$payload,
-				$actor,
-				$hash
-			) {
-				$key = 'ap:inbox:actor-delete-exists:' . $hash;
-				$actorDelete = Cache::remember($key, now()->addMinutes(15), function() use($actor) {
-					return Profile::whereRemoteUrl($actor)
-						->whereNotNull('domain')
-						->exists();
-				});
-				if($actorDelete) {
-					if($this->verifySignature($headers, $payload) == true) {
-						Cache::set($key, false);
-						$profile = Profile::whereNotNull('domain')
-							->whereNull('status')
-							->whereRemoteUrl($actor)
-							->first();
-						if($profile) {
-							DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
-						}
-						return 1;
-					} else {
-						// Signature verification failed, exit.
-						return 1;
+			$key = 'ap:inbox:actor-delete-exists:' . $hash;
+			$actorDelete = Cache::remember($key, now()->addMinutes(15), function() use($actor) {
+				return Profile::whereRemoteUrl($actor)
+					->whereNotNull('domain')
+					->exists();
+			});
+			if($actorDelete) {
+				if($this->verifySignature($headers, $payload) == true) {
+					Cache::set($key, false);
+					$profile = Profile::whereNotNull('domain')
+						->whereNull('status')
+						->whereRemoteUrl($actor)
+						->first();
+					if($profile) {
+						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
 					}
+					return 1;
 				} else {
-					// Remote user doesn't exist, exit early.
+					// Signature verification failed, exit.
 					return 1;
 				}
-			});
+			} else {
+				// Remote user doesn't exist, exit early.
+				return 1;
+			}
 
 			return 1;
 		}
