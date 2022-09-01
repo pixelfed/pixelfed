@@ -28,7 +28,24 @@ class Status extends Model
 	 */
 	protected $dates = ['deleted_at'];
 
-	protected $fillable = ['profile_id', 'visibility', 'in_reply_to_id', 'reblog_of_id', 'type'];
+	protected $fillable = [
+		'scope',
+		'caption',
+		'rendered',
+		'url',
+		'uri',
+		'object_url',
+		'created_at',
+		'local',
+		'is_nsfw',
+		'scope',
+		'cw_summary',
+		'profile_id',
+		'visibility',
+		'in_reply_to_id',
+		'reblog_of_id',
+		'type'
+	];
 
 	const STATUS_TYPES = [
 		'text',

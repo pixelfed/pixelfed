@@ -474,22 +474,25 @@ class Helpers {
 				return;
 			}
 
-			$status = new Status;
-			$status->profile_id = $pid;
-			$status->url = $url;
-			$status->uri = $url;
-			$status->object_url = $id;
-			$status->caption = strip_tags($activity['content']);
-			$status->rendered = Purify::clean($activity['content']);
-			$status->created_at = Carbon::parse($ts)->tz('UTC');
-			$status->in_reply_to_id = $reply_to;
-			$status->local = false;
-			$status->is_nsfw = $cw;
-			$status->scope = $scope;
-			$status->visibility = $scope;
-			$status->cw_summary = $cw == true && isset($activity['summary']) ?
-				Purify::clean(strip_tags($activity['summary'])) : null;
-			$status->save();
+            $status = Status::updateOrCreate(
+                [
+                    'uri' => $url
+                ], [
+                    'profile_id' => $pid,
+                    'url' => $url,
+                    'object_url' => $id,
+                    'caption' => strip_tags($activity['content']),
+                    'rendered' => Purify::clean($activity['content']),
+                    'created_at' => Carbon::parse($ts)->tz('UTC'),
+                    'in_reply_to_id' => $reply_to,
+                    'local' => false,
+                    'is_nsfw' => $cw,
+                    'scope' => $scope,
+                    'visibility' => $scope,
+                    'cw_summary' => ($cw == true && isset($activity['summary']) ?
+                        Purify::clean(strip_tags($activity['summary'])) : null)
+                ]
+            );
 
 			if($reply_to == null) {
 				self::importNoteAttachment($activity, $status);
