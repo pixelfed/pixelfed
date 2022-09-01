@@ -1113,7 +1113,7 @@ class ApiV1Controller extends Controller
 			$like->is_comment = !empty($status['in_reply_to_id']);
 			$like->save();
 			Status::findOrFail($status['id'])->update([
-				'favourites_count' => ($status['favourites_count'] ?? 0) + 1
+				'likes_count' => ($status['favourites_count'] ?? 0) + 1
 			]);
 			LikePipeline::dispatch($like);
 		}
