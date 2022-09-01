@@ -720,75 +720,66 @@ class Helpers {
 
 	public static function profileUpdateOrCreate($url)
 	{
-		$hash = base64_encode($url);
-		$key = 'ap:profile:by_url:' . $hash;
-		$lock = Cache::lock($key, 30);
-		$profile = null;
-
-		try {
-			$lock->block(5);
-
-			$res = self::fetchProfileFromUrl($url);
-			if(isset($res['id']) == false) {
-				return;
-			}
-			$domain = parse_url($res['id'], PHP_URL_HOST);
-			if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
-				return;
-			}
-			$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
-			if(empty($username)) {
-				return;
-			}
-			$remoteUsername = $username;
-			$webfinger = "@{$username}@{$domain}";
-
-			abort_if(!self::validateUrl($res['inbox']), 400);
-			abort_if(!self::validateUrl($res['id']), 400);
-
-			$profile = DB::transaction(function() use($domain, $webfinger, $res) {
-				$instance = Instance::updateOrCreate([
-					'domain' => $domain
-				]);
-				if($instance->wasRecentlyCreated == true) {
-					\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
-				}
-
-				$profile = Profile::updateOrCreate(
-					[
-						'domain' => strtolower($domain),
-						'username' => Purify::clean($webfinger),
-						'remote_url' => $res['id'],
-					],
-					[
-						'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
-						'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
-						'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
-						'inbox_url' => $res['inbox'],
-						'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
-						'public_key' => $res['publicKey']['publicKeyPem'],
-						'key_id' => $res['publicKey']['id'],
-						'webfinger' => Purify::clean($webfinger),
-					]
-				);
-
-				if( $profile->last_fetched_at == null ||
-					$profile->last_fetched_at->lt(now()->subHours(24))
-				) {
-					RemoteAvatarFetch::dispatch($profile);
-				}
-				$profile->last_fetched_at = now();
-				$profile->save();
-				return $profile;
-			});
-
-			return $profile;
-		} catch (LockTimeoutException $e) {
-		} finally {
-		    optional($lock)->release();
+		$res = self::fetchProfileFromUrl($url);
+		if(!$res || isset($res['id']) == false) {
+			return;
 		}
+		$domain = parse_url($res['id'], PHP_URL_HOST);
+		if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
+			return;
+		}
+		$username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
+		if(empty($username)) {
+			return;
+		}
+		$remoteUsername = $username;
+		$webfinger = "@{$username}@{$domain}";
+
+		if(!self::validateUrl($res['inbox'])) {
+            return;
+        }
+		if(!self::validateUrl($res['id'])) {
+            return;
+        }
+
+		$profile = DB::transaction(function() use($domain, $webfinger, $res) {
+			$instance = Instance::updateOrCreate([
+				'domain' => $domain
+			]);
+			if($instance->wasRecentlyCreated == true) {
+				\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+			}
+
+			$profile = Profile::updateOrCreate(
+				[
+					'domain' => strtolower($domain),
+					'username' => Purify::clean($webfinger),
+					'remote_url' => $res['id'],
+					'webfinger' => Purify::clean($webfinger),
+					'key_id' => $res['publicKey']['id'],
+				],
+				[
+					'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
+					'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+					'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
+					'inbox_url' => $res['inbox'],
+					'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
+					'public_key' => $res['publicKey']['publicKeyPem'],
+				]
+			);
+
+			if( $profile->last_fetched_at == null ||
+				$profile->last_fetched_at->lt(now()->subHours(24))
+			) {
+				RemoteAvatarFetch::dispatch($profile);
+			}
+			$profile->last_fetched_at = now();
+			$profile->save();
+			return $profile;
+		});
 
 		return $profile;
+
 	}
 
 	public static function profileFetch($url)
