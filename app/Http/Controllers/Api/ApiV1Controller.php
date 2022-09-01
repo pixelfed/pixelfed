@@ -1937,7 +1937,7 @@ class ApiV1Controller extends Controller
 			->latest()
 			->take(($limit * 2))
 			->get()
-			->map(function($s) use($pid) {
+			->map(function($s) use($pid, $napi) {
 				$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
