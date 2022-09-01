@@ -67,6 +67,12 @@
 - Fix cache invalidation in AdminSettingsController when updating rules ([fe6787f7](https://github.com/pixelfed/pixelfed/commit/fe6787f7))
 - Update SearchApiService, improve account/webfinger results ([533f7165](https://github.com/pixelfed/pixelfed/commit/533f7165))
 - Update NotificationService, fix account attribute ([949b7bb6](https://github.com/pixelfed/pixelfed/commit/949b7bb6))
+- Update DeleteWorker, remove cache lock ([6d6a033a](https://github.com/pixelfed/pixelfed/commit/6d6a033a))
+- Fix SearchApiV2Service, improve webfinger condition ([9d31f73b](https://github.com/pixelfed/pixelfed/commit/9d31f73b))
+- Update inbox handler, upsert statuses to fix duplicate bug. Fixes #2670, #2961, #3556 ([2c20d9e3](https://github.com/pixelfed/pixelfed/commit/2c20d9e3))
+- Update AP helpers, remove cache lock from profileUpdateOrCreate method and move webfinger + key_id to unique constraints to fix sql duplicate errors ([bc2bbc14](https://github.com/pixelfed/pixelfed/commit/bc2bbc14))
+- Add migrations to fix webfinger profiles ([66aa8bf9](https://github.com/pixelfed/pixelfed/commit/66aa8bf9))
+- Update ap helpers, move remote_url constraint ([acd8f5bb](https://github.com/pixelfed/pixelfed/commit/acd8f5bb))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
