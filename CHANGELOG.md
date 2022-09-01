@@ -73,6 +73,7 @@
 - Update AP helpers, remove cache lock from profileUpdateOrCreate method and move webfinger + key_id to unique constraints to fix sql duplicate errors ([bc2bbc14](https://github.com/pixelfed/pixelfed/commit/bc2bbc14))
 - Add migrations to fix webfinger profiles ([66aa8bf9](https://github.com/pixelfed/pixelfed/commit/66aa8bf9))
 - Update ap helpers, move remote_url constraint ([acd8f5bb](https://github.com/pixelfed/pixelfed/commit/acd8f5bb))
+- Update ApiV1Controller, fix typo in statavouriteById method ([c91a6a75](https://github.com/pixelfed/pixelfed/commit/c91a6a75))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
