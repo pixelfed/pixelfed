@@ -411,7 +411,7 @@ class Installer extends Command
         $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
 
         if ($confirm === 'Yes') {
-            $this->callSilently('config:cache');
+            $this->callSilently('config:clear');
             sleep(3);
             $this->line('');
             $this->info('Migrating DB:');
