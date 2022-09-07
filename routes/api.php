@@ -100,8 +100,17 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
 		Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 		Route::delete('accounts/avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
-		Route::get('direct/thread', 'DirectMessageController@thread')->middleware($middleware);
-		Route::post('direct/thread/send', 'DirectMessageController@create')->middleware($middleware);
+
+		Route::group(['prefix' => 'direct'], function () use($middleware) {
+			Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
+			Route::post('thread/send', 'DirectMessageController@create')->middleware($middleware);
+			Route::delete('thread/message', 'DirectMessageController@delete')->middleware($middleware);
+			Route::post('thread/mute', 'DirectMessageController@mute')->middleware($middleware);
+			Route::post('thread/unmute', 'DirectMessageController@unmute')->middleware($middleware);
+			Route::post('thread/media', 'DirectMessageController@mediaUpload')->middleware($middleware);
+			Route::post('thread/read', 'DirectMessageController@read')->middleware($middleware);
+			Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
+		});
 
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
