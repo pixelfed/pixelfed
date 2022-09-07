@@ -704,12 +704,14 @@ class DirectMessageController extends Controller
 		->limit(8)
 		->get()
 		->map(function($r) {
+			$acct = AccountService::get($r->id);
 			return [
 				'local' => (bool) !$r->domain,
 				'id' => (string) $r->id,
 				'name' => $r->username,
 				'privacy' => true,
-				'avatar' => $r->avatarUrl()
+				'avatar' => $r->avatarUrl(),
+				'account' => $acct
 			];
 		});
 
