@@ -25,12 +25,13 @@
 								<select class="custom-select" v-model="collection.visibility">
 									<option value="public">Public</option>
 									<option value="private">Followers Only</option>
+									<option value="draft">Draft</option>
 								</select>
 							</div>
 						</form>
 						<hr>
 						<p>
-							<button v-if="posts.length > 0" type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publish</button>
+							<button v-if="posts.length > 0 && collection.visibility != 'draft'" type="button" class="btn btn-primary font-weight-bold btn-block" @click="publish">Publish</button>
 							<button v-else type="button" class="btn btn-primary font-weight-bold btn-block disabled" disabled>Publish</button>
 						</p>
 						<p>
@@ -55,7 +56,7 @@
 				</ul>
 			</div>
 			<div class="card rounded-0 shadow-none border border-top-0">
-				<div class="card-body" style="height: 460px; overflow-y: auto">
+				<div class="card-body" style="min-height: 460px;">
 					<div v-if="tab == 'all'" class="row">
 						<div class="col-4 p-1" v-for="(s, index) in posts">
 							<a class="card info-overlay card-md-border-0" :href="s.url">
@@ -89,7 +90,7 @@
 						</div>
 						<div class="form-group pt-4">
 							<label for="title" class="font-weight-bold text-muted">Add Recent Post</label>
-							<div>
+							<div style="max-height: 360px; overflow-y: auto">
 								<div v-for="(s, index) in recentPosts" :class="[selectedPost == s.id ? 'box-shadow border border-warning d-inline-block m-1':'d-inline-block m-1']" @click="selectPost(s)">
 									<div class="cursor-pointer" :style="'width: 175px; height: 175px; ' + previewBackground(s)"></div>
 								</div>
@@ -119,11 +120,10 @@ export default {
 			step: 1,
 			title: '',
 			description: '',
-			visibility: 'private',
 			collection: {
 				title: '',
 				description: '',
-				visibility: 'public'
+				visibility: 'draft'
 			},
 			id: '',
 			posts: [],
@@ -188,11 +188,16 @@ export default {
 				swal('Invalid URL', 'You can only add posts from this instance', 'error');
 				this.id = '';
 			}
-			if(url.slice(0, origin.length + 3) !== origin + '/p/' || split.length !== 6) {
+
+            if(url.includes('/i/web/post/') || url.includes('/p/')) {
+            	let id = split[split.length - 1];
+            	console.log('adding ' + id);
+                this.addToIds(id);
+                return;
+            } else {
 				swal('Invalid URL', 'Invalid URL', 'error');
 				this.id = '';
-			}
-			this.addToIds(split[5]);
+            }
 			return;
 		},
 
@@ -206,10 +211,11 @@ export default {
 		},
 
 		fetchRecentPosts() {
-			axios.get('/api/pixelfed/v1/accounts/' + this.profileId + '/statuses', {
+			axios.get('/api/v1/accounts/' + this.profileId + '/statuses', {
 				params: {
 					only_media: true,
 					min_id: 1,
+                    limit: 40
 				}
 			}).then(res => {
 				this.recentPosts = res.data.filter(s => {
@@ -217,7 +223,7 @@ export default {
 						return s.id;
 					});
 					return s.visibility == 'public' && s.sensitive == false && ids.indexOf(s.id) == -1;
-				}).slice(0,3);
+				});
 			});
 		},
 
@@ -237,7 +243,7 @@ export default {
 				visibility: this.collection.visibility	
 			})
 			.then(res => {
-				window.location.href = res.data;
+				window.location.href = res.data.url;
 			}).catch(err => {
 				swal('Something went wrong', 'There was a problem with your request, please try again later.', 'error');
 			});

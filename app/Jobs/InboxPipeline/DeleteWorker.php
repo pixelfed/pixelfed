@@ -140,9 +140,17 @@ class DeleteWorker implements ShouldQueue
 			&& is_array($bodyDecoded['object'])
 			&& isset($bodyDecoded['object']['attributedTo'])
 		) {
-			if(parse_url($bodyDecoded['object']['attributedTo'], PHP_URL_HOST) !== $keyDomain) {
-				return;
-			}
+            $attr = Helpers::pluckval($bodyDecoded['object']['attributedTo']);
+            if(is_array($attr)) {
+                if(isset($attr['id'])) {
+                    $attr = $attr['id'];
+                } else {
+                    $attr = "";
+                }
+            }
+            if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
+                return;
+            }
 		}
 		if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
 			return;

@@ -167,7 +167,15 @@ class InboxValidator implements ShouldQueue
             && is_array($bodyDecoded['object'])
             && isset($bodyDecoded['object']['attributedTo'])
         ) {
-            if(parse_url(Helpers::pluckval($bodyDecoded['object']['attributedTo']), PHP_URL_HOST) !== $keyDomain) {
+            $attr = Helpers::pluckval($bodyDecoded['object']['attributedTo']);
+            if(is_array($attr)) {
+                if(isset($attr['id'])) {
+                    $attr = $attr['id'];
+                } else {
+                    $attr = "";
+                }
+            }
+            if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
                 return;
             }
         }

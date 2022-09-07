@@ -5,13 +5,53 @@
 	</div>
 	<div class="row mt-3" v-if="loaded">
 		<div class="col-12 p-0 mb-3">
+			<div v-if="owner && !collection.published_at">
+				<div class="alert alert-danger d-flex justify-content-center">
+					<div class="media align-items-center">
+						<i class="far fa-exclamation-triangle fa-3x mr-3"></i>
+						<div class="media-body">
+							<p class="font-weight-bold mb-0">
+								This collection is unpublished.
+							</p>
+							<p class="small mb-0">
+								This collection is not visible to anyone else until you publish it. <br />
+								To publish, click on the <strong>Edit</strong> button and then click on the <strong>Publish</strong> button.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-12 p-0 mb-3">
+
 			<picture class="d-flex align-items-center justify-content-center">
 				<div class="dims"></div>
 				<div style="z-index:500;position: absolute;" class="text-white">
 					<p class="display-4 text-center pt-3">{{title || 'Untitled Collection'}}</p>
 					<p class="lead text-center mb-3">{{description}}</p>
 					<p class="text-center">
-						{{posts.length}} photos · by <a :href="'/' + profileUsername" class="font-weight-bold text-white">{{profileUsername}}</a>
+
+						<span v-if="owner && collection.visibility != 'public'">
+							<span
+								v-if="collection.visibility == 'draft'"
+								class="btn btn-outline-light btn-sm text-capitalize py-0"
+								style="font-size: 10px"
+								>
+								<i class="far fa-lock"></i> Draft
+							</span>
+							<span
+								v-else-if="collection.visibility == 'private'"
+								class="btn btn-outline-light btn-sm text-capitalize py-0"
+								style="font-size: 10px"
+								>
+								Followers Only
+							</span>
+							<span>·</span>
+						</span>
+						<span>{{collection.post_count}} photos</span>
+						<span>·</span>
+						<span>by <a :href="'/' + profileUsername" class="font-weight-bold text-white">{{profileUsername}}</a></span>
 					</p>
 					<p v-if="owner == true" class="pt-3 text-center">
 						<span>
@@ -23,30 +63,103 @@
 									</div>
 								</span>
 							</button>
-							 &nbsp; &nbsp; 
+							 &nbsp; &nbsp;
 							<button class="btn btn-outline-light btn-sm" @click.prevent="editCollection" onclick="this.blur();">Edit</button>
-							 &nbsp; &nbsp; 
+							 &nbsp; &nbsp;
 							<button class="btn btn-outline-light btn-sm" @click.prevent="deleteCollection">Delete</button>
 						</span>
 					</p>
 				</div>
-				<img :src="previewUrl(posts[0])"
+				<img
+					v-if="posts && posts.length"
+					:src="previewUrl(posts[0])"
 					 alt=""
-					 style="width:100%; height: 600px; object-fit: cover;" 
+					 style="width:100%; height: 400px; object-fit: cover;"
 				>
+				<div v-else class="bg-info" style="width:100%; height: 400px;"></div>
 			</picture>
 		</div>
 		<div class="col-12 p-0">
-			<masonry
+			<!-- <masonry
 			  :cols="{default: 2, 700: 2, 400: 1}"
 			  :gutter="{default: '5px'}"
-			>
-				<div v-for="(s, index) in posts">
-					<a class="card info-overlay card-md-border-0 mb-1" :href="s.url">
-						<img :src="previewUrl(s)" class="img-fluid w-100">
-					</a>
+			> -->
+			<div v-if="posts && posts.length > 0" class="row px-3 px-md-0">
+				<div v-for="(s, index) in posts" class="col-6 col-md-4 feed">
+					<!-- <a class="card info-overlay card-md-border-0 mb-4 square" :href="s.url">
+						<img :src="previewUrl(s)" class="square-content w-100" style="object-fit: cover;">
+					</a> -->
+
+					<a v-if="s.hasOwnProperty('pf_type') && s.pf_type == 'video'" class="card info-overlay card-md-border-0" :href="statusUrl(s)">
+							<div class="square">
+								<div class="square-content">
+									<div class="info-overlay-text-label rounded">
+										<h5 class="text-white m-auto font-weight-bold">
+											<span>
+												<span class="far fa-video fa-2x p-2 d-flex-inline"></span>
+											</span>
+										</h5>
+									</div>
+									<blur-hash-canvas
+										width="32"
+										height="32"
+										class="rounded"
+										:hash="s.media_attachments[0].blurhash">
+									</blur-hash-canvas>
+								</div>
+							</div>
+						</a>
+
+						<a v-else-if="s.sensitive" class="card info-overlay card-md-border-0" :href="statusUrl(s)">
+							<div class="square">
+								<div class="square-content">
+									<div class="info-overlay-text-label rounded">
+										<h5 class="text-white m-auto font-weight-bold">
+											<span>
+												<span class="far fa-eye-slash fa-lg p-2 d-flex-inline"></span>
+											</span>
+										</h5>
+									</div>
+									<blur-hash-canvas
+										width="32"
+										height="32"
+										class="rounded"
+										:hash="s.media_attachments[0].blurhash">
+									</blur-hash-canvas>
+								</div>
+							</div>
+						</a>
+
+						<a v-else class="card info-overlay card-md-border-0" :href="statusUrl(s)">
+							<div class="square">
+								<div class="square-content">
+									<!-- <img :src="previewUrl(s)" class="img-fluid w-100 rounded-lg" onerror="this.onerror=null;this.src='/storage/no-preview.png?v=0'">
+									<span class="badge badge-light" style="position: absolute;bottom:2px;right:2px;opacity: 0.4;">
+										{{ timeago(s.created_at) }}
+									</span> -->
+									<blur-hash-image
+										width="32"
+										height="32"
+										class="rounded"
+										:hash="s.media_attachments[0].blurhash"
+										:src="previewUrl(s)" />
+								</div>
+							</div>
+						</a>
 				</div>
-			</masonry>
+
+				<div v-if="canLoadMore" class="col-12">
+					<intersect @enter="enterIntersect">
+						<div class="card card-body shadow-none border">
+							<div class="d-flex justify-content-center align-items-center flex-column">
+								<b-spinner variant="muted" />
+								<p class="text-lighter small mt-2 mb-0">Loading more...</p>
+							</div>
+						</div>
+					</intersect>
+				</div>
+			</div>
+			<!-- </masonry> -->
 		</div>
 	</div>
 	<b-modal ref="editModal" id="edit-modal" hide-footer centered title="Edit Collection" body-class="">
@@ -64,6 +177,7 @@
 				<select class="custom-select" v-model="visibility">
 					<option value="public">Public</option>
 					<option value="private">Followers Only</option>
+					<option value="draft">Draft</option>
 				</select>
 			</div>
 			<div class="d-flex justify-content-between align-items-center pt-3">
@@ -101,13 +215,14 @@
 			</div>
 		</form>
 	</b-modal>
+
 	<b-modal ref="addPhotoModal" id="add-photo-modal" hide-footer centered title="Add Photo" body-class="m-3">
 		<div class="form-group">
 			<label for="title" class="font-weight-bold text-muted">Add Recent Post</label>
-			<div class="row m-1" v-if="postsList.length > 0">
+			<div class="row m-1" v-if="postsList.length > 0" style="max-height: 360px; overflow-y: auto;">
 				<div v-for="(p, index) in postsList" :key="'postList-'+index" class="col-4 p-1 cursor-pointer" @click="addRecentId(p)">
-					<div class="square">
-						<div class="square-content" v-bind:style="'background-image: url(' + p.media_attachments[0].url + ');'"></div>
+					<div class="square border">
+						<div class="square-content" v-bind:style="'background-image: url(' + getPreviewUrl(p) + ');'"></div>
 					</div>
 				</div>
 				<div class="col-12">
@@ -133,13 +248,14 @@
 			</button>
 		</form>
 	</b-modal>
+
 	<b-modal ref="editPhotosModal" id="edit-photos-modal" hide-footer centered title="Edit Collection Photos" body-class="m-3">
 		<div class="form-group">
 			<p class="font-weight-bold text-dark text-center">Select a Photo to Delete</p>
 			<div class="row m-1 scrollbar-hidden" v-if="posts.length > 0" style="max-height: 350px;overflow-y: auto;">
 				<div v-for="(p, index) in posts" :key="'plm-'+index" class="col-4 p-1 cursor-pointer">
 					<div :class="[markedForDeletion.indexOf(p.id) == -1 ? 'square' : 'square  delete-border']" @click="markPhotoForDeletion(p.id)">
-						<div class="square-content" v-bind:style="'background-image: url(' + p.media_attachments[0].url + ');'"></div>
+						<div class="square-content border" v-bind:style="'background-image: url(' + p.media_attachments[0].url + ');'"></div>
 					</div>
 				</div>
 			</div>
@@ -147,12 +263,11 @@
 				<button type="button" @click.prevent="confirmDeletion" class="btn btn-primary font-weight-bold py-0 btn-block mb-0 mt-4">Delete {{markedForDeletion.length}} {{markedForDeletion.length == 1 ? 'photo':'photos'}}</button>
 			</div>
 		</div>
-
 	</b-modal>
 </div>
 </template>
 
-<style type="text/css" scoped>
+<style lang="scss" scoped>
 	.dims {
 		position: absolute;
 		top: 0;
@@ -172,12 +287,28 @@
 		background-color: red;
 		background-blend-mode: screen;
 	}
+
+	.info-overlay-text-field {
+		font-size: 13.5px;
+		margin-bottom: 2px;
+
+		@media (min-width: 768px) {
+			font-size: 20px;
+			margin-bottom: 15px;
+		}
+	}
+
+	.feed {
+		.card.info-overlay {
+			margin-bottom: 2rem;
+		}
+	}
 </style>
 
 <script type="text/javascript">
-import VueMasonry from 'vue-masonry-css'
+import VueMasonry from 'vue-masonry-css';
+import Intersect from 'vue-intersect';
 
-Vue.use(VueMasonry);
 export default {
 	props: [
 		'collection-id', 
@@ -188,6 +319,10 @@ export default {
 		'profile-username'
 	],
 
+	components: {
+		"intersect": Intersect,
+	},
+
 	data() {
 		return {
 			collection: {},
@@ -195,7 +330,7 @@ export default {
 			loaded: false,
 			posts: [],
 			ids: [],
-			currentUser: false,
+			user: false,
 			owner: false,
 			title: this.collectionTitle,
 			description: this.collectionDescription,
@@ -204,7 +339,10 @@ export default {
 			postsList: [],
 			loadingPostList: false,
 			addingPostToCollection: false,
-			markedForDeletion: []
+			markedForDeletion: [],
+			canLoadMore: false,
+			isIntersecting: false,
+			page: 1
 		}
 	},
 
@@ -212,14 +350,27 @@ export default {
 		this.fetchCollection();
 	},
 
-	mounted() {
-	},
-
 	methods: {
+		enterIntersect() {
+			if(this.isIntersecting) {
+				return;
+			}
+			this.isIntersecting = true;
+			this.page++;
+			this.fetchItems();
+		},
+
+		statusUrl(s) {
+			return '/i/web/post/' + s.id;
+		},
+
 		fetchCollection() {
 			axios.get('/api/local/collection/' + this.collectionId)
 			.then(res => {
 				this.collection = res.data;
+				if(this.collection.post_count > 9) {
+					this.canLoadMore = true;
+				}
 				this.fetchCurrentUser();
 			})
 		},
@@ -227,8 +378,8 @@ export default {
 		fetchCurrentUser() {
 			if(document.querySelectorAll('body')[0].classList.contains('loggedIn') == true) {
 				axios.get('/api/pixelfed/v1/accounts/verify_credentials').then(res => {
-					this.currentUser = res.data;
-					this.owner = this.currentUser.id == this.profileId;
+					this.user = res.data;
+					this.owner = this.user.id == this.profileId;
 					window._sharedData.curUser = res.data;
 					window.App.util.navatar();
 					this.fetchItems();
@@ -239,18 +390,39 @@ export default {
 		},
 
 		fetchItems() {
-			axios.get('/api/local/collection/items/' + this.collectionId)
+			axios.get(
+				'/api/local/collection/items/' + this.collectionId,
+				{
+					params: {
+						page: this.page
+					}
+				}
+			)
 			.then(res => {
-				this.posts = res.data;
+				if(res.data.length == 0) {
+					console.log('no items found');
+					this.loaded = true;
+					this.isIntersecting = false;
+					this.canLoadMore = false;
+					return;
+				}
+				let data = res.data.filter(p => {
+					return this.ids.indexOf(p.id) == -1;
+				});
+				this.posts.push(...data);
 				this.ids = this.posts.map(p => {
 					return p.id;
 				});
 				this.loaded = true;
+				this.isIntersecting = false;
+				if(data.length == 0) {
+					this.canLoadMore = false;
+				}
 			});
 		},
-		
+
 		previewUrl(status) {
-			return status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].preview_url;
+			return status && status.sensitive ? '/storage/no-preview.png?v=' + new Date().getTime() : status.media_attachments[0].url;
 		},
 
 		previewBackground(status) {
@@ -262,16 +434,16 @@ export default {
 			let self = this;
 			this.loadingPostList = true;
 			if(this.postsList.length == 0) {
-				axios.get('/api/pixelfed/v1/accounts/'+this.profileId+'/statuses', {
+				axios.get('/api/v1/accounts/'+this.profileId+'/statuses', {
 					params: {
 						min_id: 1,
-						limit: 13
+						limit: 40
 					}
 				})
 				.then(res => {
 					self.postsList = res.data.filter(l => {
 						return self.ids.indexOf(l.id) == -1;
-					}).splice(0,9);
+					});
 					self.loadingPostList = false;
 					self.$refs.addPhotoModal.show();
 				}).catch(err => {
@@ -299,22 +471,29 @@ export default {
 				swal('Invalid URL', 'You can only add posts from this instance', 'error');
 				this.photoId = '';
 			}
-			if(url.slice(0, origin.length + 3) !== origin + '/p/' || split.length !== 6) {
-				swal('Invalid URL', 'Invalid URL', 'error');
-				this.photoId = '';
-			}
+
+            if(!url.includes('/i/web/post/') && !url.includes('/p/')) {
+                swal('Invalid URL', 'Invalid URL', 'error');
+                this.photoId = '';
+                return;
+            }
+
+            let fragment = split[split.length - 1].split('?')[0];
 
 			axios.post('/api/local/collection/item', {
 				collection_id: this.collectionId,
-				post_id: split[5]
+				post_id: fragment
 			}).then(res => {
-				self.ids.push(...split[5]);
+				self.ids.push(...fragment);
+				self.posts.push(res.data);
+				self.collection.post_count++;
+				self.id = '';
 			}).catch(err => {
 				swal('Invalid URL', 'The post you entered was invalid', 'error');
 				this.photoId = '';
 			});
 			self.$refs.addPhotoModal.hide();
-			window.location.reload();
+			// window.location.reload();
 		},
 
 		editCollection() {
@@ -350,7 +529,8 @@ export default {
 					visibility: this.visibility
 				})
 				.then(res => {
-					window.location.href = '/';
+					console.log(res.data);
+					// window.location.href = res.data.url;
 				});
 			} else {
 				return;
@@ -358,13 +538,13 @@ export default {
 		},
 
 		updateCollection() {
-			this.$refs.editModal.hide();
+			this.closeModals();
 			axios.post('/api/local/collection/' + this.collectionId, {
 				title: this.title,
 				description: this.description,
 				visibility: this.visibility
 			}).then(res => {
-				console.log(res.data);
+				this.collection = res.data;
 			});
 		},
 
@@ -394,7 +574,9 @@ export default {
 					})
 					.then(res => {
 						self.removeItem(mfd);
-						this.$refs.editPhotosModal.hide();
+						this.collection.post_count = this.collection.post_count - 1;
+						this.closeModals();
+
 					})
 					.catch(err => {
 						swal(
@@ -420,12 +602,41 @@ export default {
 				collection_id: self.collectionId,
 				post_id: post.id
 			}).then(res => {
-				window.location.reload();
+				// window.location.reload();
+				this.closeModals();
+				this.posts.push(res.data);
+				this.collection.post_count++;
 			}).catch(err => {
 				swal('Oops!', 'An error occured, please try selecting another post.', 'error');
 				this.photoId = '';
 			});
-		}		
+		},
+
+		timeago(ts) {
+			return App.util.format.timeAgo(ts);
+		},
+
+		closeModals() {
+			this.$refs.editModal.hide();
+			this.$refs.addPhotoModal.hide();
+			this.$refs.editPhotosModal.hide();
+		},
+
+		getPreviewUrl(post) {
+			if(!post.media_attachments || !post.media_attachments.length) {
+				return '/storage/no-preview.png';
+			}
+
+			let media = post.media_attachments[0];
+
+			if(media.preview_url.endsWith('storage/no-preview.png')) {
+				return media.type === 'image' ?
+					media.url :
+					'/storage/no-preview.png';
+			}
+
+			return media.preview_url;
+		}
 	}
 }
 </script>
