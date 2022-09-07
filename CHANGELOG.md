@@ -74,6 +74,8 @@
 - Add migrations to fix webfinger profiles ([66aa8bf9](https://github.com/pixelfed/pixelfed/commit/66aa8bf9))
 - Update ap helpers, move remote_url constraint ([acd8f5bb](https://github.com/pixelfed/pixelfed/commit/acd8f5bb))
 - Update ApiV1Controller, fix typo in statavouriteById method ([c91a6a75](https://github.com/pixelfed/pixelfed/commit/c91a6a75))
+- Update InboxPipeline, fix peertube attributedTo parsing ([99fb80bf](https://github.com/pixelfed/pixelfed/commit/99fb80bf))
+- Update Collection components, fix addId bug #3230 ([62c05665](https://github.com/pixelfed/pixelfed/commit/62c05665))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
