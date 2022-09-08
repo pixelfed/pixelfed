@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
 use \PDO;
+use Dotenv;
 
 class Installer extends Command
 {
@@ -406,6 +407,10 @@ class Installer extends Command
 
     protected function dbMigrations()
     {
+        
+        with(new Dotenv(app()->environmentPath(), app()->environmentFile()))->overload();
+        with(new LoadConfiguration())->bootstrap(app());
+        
         $this->line('');
         $this->info('Note: We recommend running database migrations now!');
         $confirm = $this->choice('Do you want to run the database migrations?', ['Yes', 'No'], 0);
@@ -416,6 +421,7 @@ class Installer extends Command
             $this->line('');
             $this->info('Migrating DB:');
             $this->call('migrate', ['--force' => true]);
+            # passthru('php artisan migrate');
             $this->line('');
             $this->info('Importing Cities:');
             $this->call('import:cities');
