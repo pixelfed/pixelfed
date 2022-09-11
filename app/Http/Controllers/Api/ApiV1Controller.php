@@ -432,9 +432,13 @@ class ApiV1Controller extends Controller
 			MediaSyncLicensePipeline::dispatch($user->id, $request->input('license'));
 		}
 
-		$res = AccountService::getMastodon($user->profile_id);
-		$res['bio'] = strip_tags($res['note']);
-		$res = array_merge($res, $other);
+        if($request->has(self::PF_API_ENTITY_KEY)) {
+            $res = AccountService::get($user->profile_id, true);
+        } else {
+           $res = AccountService::getMastodon($user->profile_id, true);
+           $res['bio'] = strip_tags($res['note']);
+           $res = array_merge($res, $other);
+       }
 
 		return $this->json($res);
 	}
