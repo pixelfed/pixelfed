@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Observers;
+
+use App\Status;
+use App\Services\ProfileStatusService;
+
+class StatusObserver
+{
+    /**
+     * Handle the Status "created" event.
+     *
+     * @param  \App\Status  $status
+     * @return void
+     */
+    public function created(Status $status)
+    {
+        //
+    }
+
+    /**
+     * Handle the Status "updated" event.
+     *
+     * @param  \App\Status  $status
+     * @return void
+     */
+    public function updated(Status $status)
+    {
+        if(in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
+            ProfileStatusService::add($status->profile_id, $status->id);
+        }
+    }
+
+    /**
+     * Handle the Status "deleted" event.
+     *
+     * @param  \App\Status  $status
+     * @return void
+     */
+    public function deleted(Status $status)
+    {
+        ProfileStatusService::delete($status->profile_id, $status->id);
+    }
+
+    /**
+     * Handle the Status "restored" event.
+     *
+     * @param  \App\Status  $status
+     * @return void
+     */
+    public function restored(Status $status)
+    {
+        //
+    }
+
+    /**
+     * Handle the Status "force deleted" event.
+     *
+     * @param  \App\Status  $status
+     * @return void
+     */
+    public function forceDeleted(Status $status)
+    {
+        //
+    }
+}
