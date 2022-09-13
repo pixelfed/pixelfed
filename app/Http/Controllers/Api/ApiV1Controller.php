@@ -65,6 +65,7 @@ use App\Services\{
 	NetworkTimelineService,
 	NotificationService,
 	MediaPathService,
+    ProfileStatusService,
 	PublicTimelineService,
 	ReblogService,
 	RelationshipService,
@@ -3030,7 +3031,7 @@ class ApiV1Controller extends Controller
 	}
 
    /**
-	* GET /api/v1/discover/accounts/popular
+	* GET /api/v1.1/discover/accounts/popular
 	*
 	*
 	* @return array
@@ -3058,6 +3059,18 @@ class ApiV1Controller extends Controller
 		->filter(function($profile) use($pid) {
 			return $profile['id'] != $pid;
 		})
+        ->map(function($profile) {
+            $ids = collect(ProfileStatusService::get($profile['id'], 0, 9))
+                ->map(function($id) {
+                    return StatusService::get($id, true);
+                })
+                ->filter(function($post) {
+                    return $post && isset($post['id']);
+                })
+                ->take(3);
+            $profile['recent_posts'] = $ids;
+            return $profile;
+        })
 		->take(6)
 		->values();
 
