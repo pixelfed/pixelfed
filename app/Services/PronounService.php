@@ -15,7 +15,7 @@ class PronounService {
 
 		return Cache::remember($key, $ttl, function() use($id) {
 			$res = UserPronoun::whereProfileId($id)->first();
-			return $res ? json_decode($res->pronouns, true) : [];
+			return $res && $res->pronouns ? json_decode($res->pronouns, true) : [];
 		});
 	}
 
