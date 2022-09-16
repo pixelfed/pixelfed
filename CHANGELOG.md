@@ -77,6 +77,9 @@
 - Update InboxPipeline, fix peertube attributedTo parsing ([99fb80bf](https://github.com/pixelfed/pixelfed/commit/99fb80bf))
 - Update Collection components, fix addId bug #3230 ([62c05665](https://github.com/pixelfed/pixelfed/commit/62c05665))
 - Update DirectMessageController, include account entity in lookup endpoint ([9e223a6b](https://github.com/pixelfed/pixelfed/commit/9e223a6b))
+- Update ApiV1Controller update_credentials endpoint to support app response ([61d26e85](https://github.com/pixelfed/pixelfed/commit/61d26e85))
+- Update PronounService, fix json_decode null parameter ([d72cd819](https://github.com/pixelfed/pixelfed/commit/d72cd819))
+- Update ApiV1Controller, normalize profile id comparison ([374bfdae](https://github.com/pixelfed/pixelfed/commit/374bfdae))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
