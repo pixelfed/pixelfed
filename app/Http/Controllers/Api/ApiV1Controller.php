@@ -1897,15 +1897,15 @@ class ApiV1Controller extends Controller
 		}
 
 		if($maxId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
 		}
 
 		if($minId) {
-			$link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		if($maxId && $minId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		$headers = isset($link) ? ['Link' => $link] : [];
@@ -2019,15 +2019,15 @@ class ApiV1Controller extends Controller
 		}
 
 		if($maxId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
 		}
 
 		if($minId) {
-			$link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		if($maxId && $minId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		$headers = isset($link) ? ['Link' => $link] : [];
@@ -2136,15 +2136,15 @@ class ApiV1Controller extends Controller
 		}
 
 		if($maxId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
 		}
 
 		if($minId) {
-			$link = '<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		if($maxId && $minId) {
-			$link = '<'.$baseUrl.'max_id='.$maxId.'>; rel="next",<'.$baseUrl.'min_id='.$minId.'>; rel="prev"';
+			$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
 		}
 
 		$headers = isset($link) ? ['Link' => $link] : [];
