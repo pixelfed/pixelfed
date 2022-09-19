@@ -100,6 +100,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
 		Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 		Route::delete('accounts/avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
+		Route::get('accounts/{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
 
 		Route::group(['prefix' => 'direct'], function () use($middleware) {
 			Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
@@ -116,8 +117,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
 		});
 
-		Route::group(['prefix' => 'compose/v0'], function () use($middleware) {
-			Route::get('/search/location', 'ComposeController@searchLocation')->middleware($middleware);
+		Route::group(['prefix' => 'compose'], function () use($middleware) {
+			Route::get('search/location', 'ComposeController@searchLocation')->middleware($middleware);
+			Route::get('settings', 'ComposeController@composeSettings')->middleware($middleware);
 		});
 
 		Route::group(['prefix' => 'discover'], function () use($middleware) {
