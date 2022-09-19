@@ -2477,6 +2477,7 @@ class ApiV1Controller extends Controller
 			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
 			'spoiler_text' => 'sometimes|max:140',
+			'place_id' => 'sometimes|integer|min:1|max:128769'
 		]);
 
 		if(config('costar.enabled') == true) {
@@ -2566,6 +2567,9 @@ class ApiV1Controller extends Controller
 				$status->scope = 'draft';
 				$status->is_nsfw = $cw;
 				$status->cw_summary = $spoilerText;
+				if($request->has('place_id')) {
+					$status->place_id = $request->input('place_id');
+				}
 				$status->save();
 			}
 

@@ -303,7 +303,7 @@ class SettingsController extends Controller
 		}
 
 		if($changed) {
-			$setting->compose_settings = json_encode($compose);
+			$setting->compose_settings = $compose;
 			$setting->save();
 			Cache::forget('profile:compose:settings:' . $request->user()->id);
 		}

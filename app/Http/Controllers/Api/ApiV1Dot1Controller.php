@@ -12,6 +12,8 @@ use App\Status;
 use App\Report;
 use App\Profile;
 use App\Services\AccountService;
+use App\Services\StatusService;
+use App\Services\ProfileStatusService;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -165,5 +167,41 @@ class ApiV1Dot1Controller extends Controller
         AccountService::del($user->profile_id);
 
         return AccountService::get($user->profile_id);
+    }
+
+    /**
+     * GET /api/v1.1/accounts/{id}/posts
+     *
+     * @return \App\Transformer\Api\StatusTransformer
+     */
+    public function accountPosts(Request $request, $id)
+    {
+        $user = $request->user();
+
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $account = AccountService::get($id);
+
+        if(!$account || $account['username'] !== $request->input('username')) {
+            return $this->json([]);
+        }
+
+        $posts = ProfileStatusService::get($id);
+
+        if(!$posts) {
+            return $this->json([]);
+        }
+
+        $res = collect($posts)
+            ->map(function($id) {
+                return StatusService::get($id);
+            })
+            ->filter(function($post) {
+                return $post && isset($post['account']);
+            })
+            ->toArray();
+
+        return $this->json($res);
     }
 }
