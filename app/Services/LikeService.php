@@ -10,13 +10,45 @@ use App\Like;
 class LikeService {
 
 	const CACHE_KEY = 'pf:services:likes:ids:';
+	const CACHE_SET_KEY = 'pf:services:likes:set:';
 
 	public static function add($profileId, $statusId)
 	{
 		$key = self::CACHE_KEY . $profileId . ':' . $statusId;
 		Cache::increment('pf:services:likes:count:'.$statusId);
 		Cache::forget('pf:services:likes:liked_by:'.$statusId);
+		self::setAdd($profileId, $statusId);
 		return Cache::put($key, true, 86400);
+	}
+
+	public static function setAdd($profileId, $statusId)
+	{
+		if(self::setCount($profileId) > 400) {
+			if(config('database.redis.client') === 'phpredis') {
+				Redis::zpopmin(self::CACHE_SET_KEY . $id);
+			}
+		}
+
+		return Redis::zadd(self::CACHE_SET_KEY . $profileId, $statusId, $statusId);
+	}
+
+	public static function setCount($id)
+	{
+		return Redis::zcard(self::CACHE_SET_KEY . $id);
+	}
+
+	public static function setRem($profileId, $val)
+	{
+		return Redis::zrem(self::CACHE_SET_KEY . $profileId, $val);
+	}
+
+	public static function get($profileId, $start = 0, $stop = 10)
+	{
+		if($stop > 100) {
+			$stop = 100;
+		}
+
+		return Redis::zrevrange(self::CACHE_SET_KEY . $profileId, $start, $stop);
 	}
 
 	public static function remove($profileId, $statusId)
@@ -24,6 +56,7 @@ class LikeService {
 		$key = self::CACHE_KEY . $profileId . ':' . $statusId;
 		Cache::decrement('pf:services:likes:count:'.$statusId);
 		Cache::forget('pf:services:likes:liked_by:'.$statusId);
+		self::setRem($profileId, $statusId);
 		return Cache::put($key, false, 86400);
 	}
 
