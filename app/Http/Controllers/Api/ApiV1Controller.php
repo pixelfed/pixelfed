@@ -895,7 +895,8 @@ class ApiV1Controller extends Controller
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
-			});
+			})
+			->values();
 
 		return $this->json($blocked);
 	}
@@ -1757,7 +1758,8 @@ class ApiV1Controller extends Controller
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
-			});
+			})
+			->values();
 
 		return $this->json($mutes);
 	}
