@@ -83,6 +83,7 @@
 - Update ApiV1Controller, fix pagination header. Fixes #3354 ([4fe07e6f](https://github.com/pixelfed/pixelfed/commit/4fe07e6f))
 - Update ApiV1Controller, add optional place_id parameter to POST /api/v1/statuses endpoint ([ef0d1f84](https://github.com/pixelfed/pixelfed/commit/ef0d1f84))
 - Update SettingsController, fix double json encoding and cache settings for 7 days ([4514ab1d](https://github.com/pixelfed/pixelfed/commit/4514ab1d))
+- Update ApiV1Controller, fix mute/block entities ([364adb43](https://github.com/pixelfed/pixelfed/commit/364adb43))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
