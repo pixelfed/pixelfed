@@ -7,20 +7,14 @@
   <title>{{$profile['username']}} on Pixelfed</title>
   <subtitle type="html">{{$profile['note']}}</subtitle>
   <updated>{{$profile['created_at']}}</updated>
-  <logo></logo>
   <author>
-	<id>{{$profile['url']}}</id>
 	<uri>{{$profile['url']}}</uri>
 	<name>{{$profile['url']}}</name>
-	<summary type="html">{{$profile['note']}}</summary>
-	<link rel="alternate" type="text/html" href="{{$profile['url']}}"/>
-	<link rel="avatar" type="image/jpeg" media:width="120" media:height="120" href="{{$profile['avatar']}}"/>
   </author>
   <link rel="alternate" type="text/html" href="{{$profile['url']}}"/>
   <link rel="self" type="application/atom+xml" href="{{$permalink}}"/>
-@foreach($items as $item)
-	<entry>
-		<title>{{ strip_tags($item['content']) }}</title>
+@foreach($items as $item)       <entry>
+                <title>{{ $item['content'] ? strip_tags($item['content']) : "No caption" }}</title>
 		<link rel="alternate" href="{{ $item['url'] }}" />
 		<id>{{ $item['url'] }}</id>
 		<author>
