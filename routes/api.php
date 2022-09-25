@@ -99,8 +99,16 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
 	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
 		Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
-		Route::delete('accounts/avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
-		Route::get('accounts/{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
+
+		Route::group(['prefix' => 'accounts'], function () use($middleware) {
+			Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
+			Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
+			Route::post('change-password', 'Api\ApiV1Dot1Controller@accountChangePassword')->middleware($middleware);
+			Route::get('login-activity', 'Api\ApiV1Dot1Controller@accountLoginActivity')->middleware($middleware);
+			Route::get('two-factor', 'Api\ApiV1Dot1Controller@accountTwoFactor')->middleware($middleware);
+			Route::get('emails-from-pixelfed', 'Api\ApiV1Dot1Controller@accountEmailsFromPixelfed')->middleware($middleware);
+			Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
+		});
 
 		Route::group(['prefix' => 'direct'], function () use($middleware) {
 			Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
