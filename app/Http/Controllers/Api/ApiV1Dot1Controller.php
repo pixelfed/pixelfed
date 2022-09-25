@@ -388,7 +388,7 @@ class ApiV1Dot1Controller extends Controller
         abort_if(!$user, 403);
         abort_if($user->status != null, 403);
 
-        $res = $user->tokens->map(function($token, $key) {
+        $res = $user->tokens->sortByDesc('created_at')->take(10)->map(function($token, $key) {
             return [
                 'id' => $key + 1,
                 'did' => encrypt($token->id),
