@@ -392,11 +392,11 @@ class ApiV1Dot1Controller extends Controller
             return [
                 'id' => $key + 1,
                 'did' => encrypt($token->id),
-                'name' => $token->name,
+                'name' => $token->client->name,
                 'scopes' => $token->scopes,
                 'revoked' => $token->revoked,
-                'created_at' => $token->created_at,
-                'expires_at' => $token->expires_at
+                'created_at' => str_replace('@', 'at', now()->parse($token->created_at)->format('M j, Y @ g:i:s A')),
+                'expires_at' => str_replace('@', 'at', now()->parse($token->expires_at)->format('M j, Y @ g:i:s A'))
             ];
         });
 
