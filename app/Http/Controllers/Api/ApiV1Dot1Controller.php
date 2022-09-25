@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use Cache;
+use DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\AccountLog;
+use App\EmailVerification;
 use App\Status;
 use App\Report;
 use App\Profile;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
+use Jenssegers\Agent\Agent;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -201,6 +205,156 @@ class ApiV1Dot1Controller extends Controller
                 return $post && isset($post['account']);
             })
             ->toArray();
+
+        return $this->json($res);
+    }
+
+    /**
+     * POST /api/v1.1/accounts/change-password
+     *
+     * @return \App\Transformer\Api\AccountTransformer
+     */
+    public function accountChangePassword(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $this->validate($request, [
+            'current_password' => 'bail|required|current_password',
+            'new_password' => 'required|min:' . config('pixelfed.min_password_length', 8),
+            'confirm_password' => 'required|same:new_password'
+        ],[
+            'current_password' => 'The password you entered is incorrect'
+        ]);
+
+        $user->password = bcrypt($request->input('new_password'));
+        $user->save();
+
+        return $this->json(AccountService::get($user->profile_id));
+    }
+
+    /**
+     * GET /api/v1.1/accounts/login-activity
+     *
+     * @return array
+     */
+    public function accountLoginActivity(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+        $agent = new Agent();
+
+        $activity = AccountLog::whereUserId($user->id)
+            ->whereAction('auth.login')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function($item) use($agent) {
+                $agent->setUserAgent($item->user_agent);
+                return [
+                    'id' => $item->id,
+                    'action' => $item->action,
+                    'ip' => $item->ip_address,
+                    'is_mobile' => $agent->isMobile(),
+                    'device' => $agent->device(),
+                    'browser' => $agent->browser(),
+                    'platform' => $agent->platform(),
+                    'created_at' => $item->created_at->format('c')
+                ];
+            });
+
+        return $this->json($activity);
+    }
+
+    /**
+     * GET /api/v1.1/accounts/two-factor
+     *
+     * @return array
+     */
+    public function accountTwoFactor(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $res = [
+            'active' => (bool) $user->{'2fa_enabled'},
+            'setup_at' => $user->{'2fa_setup_at'}
+        ];
+        return $this->json($res);
+    }
+
+    /**
+     * GET /api/v1.1/accounts/emails-from-pixelfed
+     *
+     * @return array
+     */
+    public function accountEmailsFromPixelfed(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $emailVerifications = EmailVerification::whereUserId($user->id)
+            ->orderByDesc('id')
+            ->where('created_at', '>', now()->subDays(14))
+            ->limit(10)
+            ->get()
+            ->map(function($mail) {
+                return [
+                    'type' => 'Email Verification',
+                    'created_at' => $mail->created_at->format('c')
+                ];
+            })
+            ->toArray();
+
+        $passwordResets = DB::table('password_resets')
+            ->whereEmail($user->email)
+            ->where('created_at', '>', now()->subDays(14))
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get()
+            ->map(function($mail) {
+                return [
+                    'type' => 'Password Reset',
+                    'created_at' => now()->parse($mail->created_at)->format('c')
+                ];
+            })
+            ->toArray();
+
+        $res = [
+            'email_verifications' => $emailVerifications,
+            'password_resets' => $passwordResets
+        ];
+
+        return $this->json($res);
+    }
+
+
+    /**
+     * GET /api/v1.1/accounts/apps-and-applications
+     *
+     * @return array
+     */
+    public function accountApps(Request $request)
+    {
+        $user = $request->user();
+        abort_if(!$user, 403);
+        abort_if($user->status != null, 403);
+
+        $res = $user->tokens->map(function($token, $key) {
+            return [
+                'id' => $key + 1,
+                'did' => encrypt($token->id),
+                'name' => $token->name,
+                'scopes' => $token->scopes,
+                'revoked' => $token->revoked,
+                'created_at' => $token->created_at,
+                'expires_at' => $token->expires_at
+            ];
+        });
 
         return $this->json($res);
     }
