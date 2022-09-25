@@ -327,7 +327,7 @@ class ApiV1Dot1Controller extends Controller
                     'subject' => 'Confirm Email',
                     'to_address' => $user->email,
                     'from_address' => $from,
-                    'created_at' => $mail->created_at->format('c')
+                    'created_at' => str_replace('@', 'at', $mail->created_at->format('M j, Y @ g:i:s A'))
                 ];
             })
             ->toArray();
@@ -344,7 +344,7 @@ class ApiV1Dot1Controller extends Controller
                     'subject' => 'Reset Password Notification',
                     'to_address' => $user->email,
                     'from_address' => $from,
-                    'created_at' => now()->parse($mail->created_at)->format('c')
+                    'created_at' => str_replace('@', 'at', now()->parse($mail->created_at)->format('M j, Y @ g:i:s A'))
                 ];
             })
             ->toArray();
@@ -361,7 +361,7 @@ class ApiV1Dot1Controller extends Controller
                     'subject' => 'Password Change',
                     'to_address' => $user->email,
                     'from_address' => $from,
-                    'created_at' => now()->parse($mail->created_at)->format('c')
+                    'created_at' => str_replace('@', 'at', now()->parse($mail->created_at)->format('M j, Y @ g:i:s A'))
                 ];
             })
             ->toArray();
