@@ -314,15 +314,19 @@ class ApiV1Dot1Controller extends Controller
         $user = $request->user();
         abort_if(!$user, 403);
         abort_if($user->status != null, 403);
+        $from = config('mail.from.address');
 
         $emailVerifications = EmailVerification::whereUserId($user->id)
             ->orderByDesc('id')
             ->where('created_at', '>', now()->subDays(14))
             ->limit(10)
             ->get()
-            ->map(function($mail) {
+            ->map(function($mail) use($user, $from) {
                 return [
                     'type' => 'Email Verification',
+                    'subject' => 'Confirm Email',
+                    'to_address' => $user->email,
+                    'from_address' => $from,
                     'created_at' => $mail->created_at->format('c')
                 ];
             })
@@ -334,9 +338,12 @@ class ApiV1Dot1Controller extends Controller
             ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function($mail) {
+            ->map(function($mail) use($user, $from) {
                 return [
                     'type' => 'Password Reset',
+                    'subject' => 'Reset Password Notification',
+                    'to_address' => $user->email,
+                    'from_address' => $from,
                     'created_at' => now()->parse($mail->created_at)->format('c')
                 ];
             })
@@ -348,19 +355,23 @@ class ApiV1Dot1Controller extends Controller
             ->orderByDesc('created_at')
             ->limit(10)
             ->get()
-            ->map(function($mail) {
+            ->map(function($mail) use($user, $from) {
                 return [
                     'type' => 'Password Change',
-                    'created_at' => $mail->created_at
+                    'subject' => 'Password Change',
+                    'to_address' => $user->email,
+                    'from_address' => $from,
+                    'created_at' => now()->parse($mail->created_at)->format('c')
                 ];
             })
             ->toArray();
 
-        $res = [
-            'email_verifications' => $emailVerifications,
-            'password_resets' => $passwordResets,
-            'password_changes' => $passwordChanges
-        ];
+        $res = collect([])
+            ->merge($emailVerifications)
+            ->merge($passwordResets)
+            ->merge($passwordChanges)
+            ->sortByDesc('created_at')
+            ->values();
 
         return $this->json($res);
     }
