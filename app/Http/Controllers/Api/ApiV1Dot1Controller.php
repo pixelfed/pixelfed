@@ -18,6 +18,8 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
 use Jenssegers\Agent\Agent;
+use Mail;
+use App\Mail\PasswordChange;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -231,6 +233,19 @@ class ApiV1Dot1Controller extends Controller
         $user->password = bcrypt($request->input('new_password'));
         $user->save();
 
+        $log = new AccountLog;
+        $log->user_id = $user->id;
+        $log->item_id = $user->id;
+        $log->item_type = 'App\User';
+        $log->action = 'account.edit.password';
+        $log->message = 'Password changed';
+        $log->link = null;
+        $log->ip_address = $request->ip();
+        $log->user_agent = $request->userAgent();
+        $log->save();
+
+        Mail::to($request->user())->send(new PasswordChange($user));
+
         return $this->json(AccountService::get($user->profile_id));
     }
 
@@ -324,9 +339,24 @@ class ApiV1Dot1Controller extends Controller
             })
             ->toArray();
 
+        $passwordChanges = AccountLog::whereUserId($user->id)
+            ->whereAction('account.edit.password')
+            ->where('created_at', '>', now()->subDays(14))
+            ->orderByDesc('created_at')
+            ->limit(10)
+            ->get()
+            ->map(function($mail) {
+                return [
+                    'type' => 'Password Change',
+                    'created_at' => $mail->created_at
+                ];
+            })
+            ->toArray();
+
         $res = [
             'email_verifications' => $emailVerifications,
-            'password_resets' => $passwordResets
+            'password_resets' => $passwordResets,
+            'password_changes' => $passwordChanges
         ];
 
         return $this->json($res);
