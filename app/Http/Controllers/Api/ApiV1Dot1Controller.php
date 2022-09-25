@@ -260,18 +260,20 @@ class ApiV1Dot1Controller extends Controller
         abort_if(!$user, 403);
         abort_if($user->status != null, 403);
         $agent = new Agent();
+        $currentIp = $request->ip();
 
         $activity = AccountLog::whereUserId($user->id)
             ->whereAction('auth.login')
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()
-            ->map(function($item) use($agent) {
+            ->map(function($item) use($agent, $currentIp) {
                 $agent->setUserAgent($item->user_agent);
                 return [
                     'id' => $item->id,
                     'action' => $item->action,
                     'ip' => $item->ip_address,
+                    'ip_current' => $item->ip_address === $currentIp,
                     'is_mobile' => $agent->isMobile(),
                     'device' => $agent->device(),
                     'browser' => $agent->browser(),
