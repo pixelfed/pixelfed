@@ -888,6 +888,7 @@ class ApiV1Controller extends Controller
 			->whereUserId($user->profile_id)
 			->whereFilterableType('App\Profile')
 			->whereFilterType('block')
+			->orderByDesc('id')
 			->simplePaginate($limit)
 			->pluck('filterable_id')
 			->map(function($id) {
@@ -1751,6 +1752,7 @@ class ApiV1Controller extends Controller
 		$mutes = UserFilter::whereUserId($user->profile_id)
 			->whereFilterableType('App\Profile')
 			->whereFilterType('mute')
+			->orderByDesc('id')
 			->simplePaginate($limit)
 			->pluck('filterable_id')
 			->map(function($id) {
