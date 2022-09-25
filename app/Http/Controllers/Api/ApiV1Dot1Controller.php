@@ -265,6 +265,7 @@ class ApiV1Dot1Controller extends Controller
         $activity = AccountLog::whereUserId($user->id)
             ->whereAction('auth.login')
             ->orderBy('created_at', 'desc')
+            ->groupBy('ip_address')
             ->limit(10)
             ->get()
             ->map(function($item) use($agent, $currentIp) {
