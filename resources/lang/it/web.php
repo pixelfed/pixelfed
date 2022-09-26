@@ -84,9 +84,9 @@ return [
 		'updatedA' => 'ha aggiornato un',
 		'sentA' => 'ha inviato un',
 
-		'followed' => 'stai seguendo',
+		'followed' => 'sta seguendo',
 		'mentioned' => 'menzionato',
-		'you' => 'tu',
+		'you' => 'te',
 
 		'yourApplication' => 'La tua candidatura per unirti',
 		'applicationApproved' => 'è stata approvata!',
