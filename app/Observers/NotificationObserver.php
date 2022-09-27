@@ -8,6 +8,13 @@ use App\Services\NotificationService;
 class NotificationObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the notification "created" event.
      *
      * @param  \App\Notification  $notification

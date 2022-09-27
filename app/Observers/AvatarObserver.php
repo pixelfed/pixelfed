@@ -10,6 +10,13 @@ use App\Services\AccountService;
 class AvatarObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the avatar "created" event.
      *
      * @param  \App\Avatar  $avatar

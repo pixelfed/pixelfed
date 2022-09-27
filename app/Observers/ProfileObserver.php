@@ -8,6 +8,13 @@ use App\Services\AccountService;
 class ProfileObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Profile "created" event.
      *
      * @param  \App\Profile  $profile
