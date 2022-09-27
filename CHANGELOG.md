@@ -85,6 +85,7 @@
 - Update SettingsController, fix double json encoding and cache settings for 7 days ([4514ab1d](https://github.com/pixelfed/pixelfed/commit/4514ab1d))
 - Update ApiV1Controller, fix mute/block entities ([364adb43](https://github.com/pixelfed/pixelfed/commit/364adb43))
 - Update atom feed, remove invalid entities ([e362ef9e](https://github.com/pixelfed/pixelfed/commit/e362ef9e))
+- Update StatusObserver, handle events after all transactions are committed ([805a014e](https://github.com/pixelfed/pixelfed/commit/805a014e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
