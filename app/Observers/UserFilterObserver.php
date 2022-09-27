@@ -7,6 +7,13 @@ use App\Services\UserFilterService;
 
 class UserFilterObserver
 {
+    /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
 	/**
 	 * Handle the user filter "created" event.
 	 *

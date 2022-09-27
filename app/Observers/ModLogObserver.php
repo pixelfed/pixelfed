@@ -10,6 +10,13 @@ use Log;
 class ModLogObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the mod log "created" event.
      *
      * @param  \App\ModLog  $modLog

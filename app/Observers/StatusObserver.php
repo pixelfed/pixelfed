@@ -8,6 +8,13 @@ use App\Services\ProfileStatusService;
 class StatusObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Status "created" event.
      *
      * @param  \App\Status  $status

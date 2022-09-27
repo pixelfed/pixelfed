@@ -8,6 +8,13 @@ use App\Services\LikeService;
 class LikeObserver
 {
     /**
+     * Handle events after all transactions are committed.
+     *
+     * @var bool
+     */
+    public $afterCommit = true;
+
+    /**
      * Handle the Like "created" event.
      *
      * @param  \App\Models\Like  $like
