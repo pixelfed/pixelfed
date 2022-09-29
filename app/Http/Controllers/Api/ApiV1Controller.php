@@ -2486,6 +2486,7 @@ class ApiV1Controller extends Controller
 			'spoiler_text' => 'sometimes|max:140',
 			'place_id' => 'sometimes|integer|min:1|max:128769',
 			'collection_ids' => 'sometimes|array|max:3',
+			'comments_disabled' => 'sometimes|boolean',
 		]);
 
 		if(config('costar.enabled') == true) {
@@ -2540,6 +2541,9 @@ class ApiV1Controller extends Controller
 
 		if($in_reply_to_id) {
 			$parent = Status::findOrFail($in_reply_to_id);
+			if($parent->comments_disabled) {
+				return $this->json("Comments have been disabled on this post", 422);
+			}
 			$blocks = UserFilterService::blocks($parent->profile_id);
 			abort_if(in_array($profile->id, $blocks), 422, 'Cannot reply to this post at this time.');
 
@@ -2599,6 +2603,10 @@ class ApiV1Controller extends Controller
 			if(empty($mimes)) {
 				$status->delete();
 				abort(400, 'Invalid media ids');
+			}
+
+			if($request->has('comments_disabled') && $request->input('comments_disabled')) {
+				$status->comments_disabled = true;
 			}
 
 			$status->scope = $visibility;
