@@ -110,6 +110,12 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
 		});
 
+		Route::group(['prefix' => 'collections'], function () use($middleware) {
+			Route::get('accounts/{id}', 'CollectionController@getUserCollections')->middleware($middleware);
+			Route::get('items/{id}', 'CollectionController@getItems')->middleware($middleware);
+			Route::get('view/{id}', 'CollectionController@getCollection')->middleware($middleware);
+		});
+
 		Route::group(['prefix' => 'direct'], function () use($middleware) {
 			Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
 			Route::post('thread/send', 'DirectMessageController@create')->middleware($middleware);
