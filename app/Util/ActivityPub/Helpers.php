@@ -469,6 +469,7 @@ class Helpers {
 			$scope = self::getScope($activity, $url);
 			$cw = self::getSensitive($activity, $url);
 			$pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
+            $commentsDisabled = isset($activity['commentsEnabled']) ? !boolval($activity['commentsEnabled']) : false;
 
 			if(!$pid) {
 				return;
@@ -490,7 +491,8 @@ class Helpers {
                     'scope' => $scope,
                     'visibility' => $scope,
                     'cw_summary' => ($cw == true && isset($activity['summary']) ?
-                        Purify::clean(strip_tags($activity['summary'])) : null)
+                        Purify::clean(strip_tags($activity['summary'])) : null),
+                    'comments_disabled' => $commentsDisabled
                 ]
             );
 
