@@ -17,6 +17,7 @@ use App\Transformer\Api\{
 };
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\FollowerService;
 use App\Services\StatusService;
@@ -222,32 +223,33 @@ class CollectionController extends Controller
     	$follows = false;
     	$visibility = ['public'];
 
-        $profile = Profile::whereNull('status')
-            ->whereNull('domain')
-            ->findOrFail($id);
-
-        if($pid) {
-        	$follows = FollowerService::follows($pid, $profile->id);
+        $profile = AccountService::get($id, true);
+        if(!$profile || !isset($profile['id'])) {
+            return response()->json([], 404);
         }
 
-        if($profile->is_private) {
+        if($pid) {
+        	$follows = FollowerService::follows($pid, $profile['id']);
+        }
+
+        if($profile['locked']) {
             abort_if(!$pid, 404);
             if(!$user->is_admin) {
-            	abort_if($profile->id != $pid && $follows == false, 404);
+            	abort_if($profile['id'] != $pid && $follows == false, 404);
             }
         }
 
-        $owner = $pid ? $pid == $profile->id : false;
+        $owner = $pid ? $pid == $profile['id'] : false;
 
         if($follows) {
         	$visibility = ['public', 'private'];
         }
 
-        if($pid && $pid == $profile->id) {
+        if($pid && $pid == $profile['id']) {
         	$visibility = ['public', 'private', 'draft'];
         }
 
-        return Collection::whereProfileId($profile->id)
+        return Collection::whereProfileId($profile['id'])
         	->whereIn('visibility', $visibility)
         	->when(!$owner, function($q, $owner) {
         		return $q->whereNotNull('published_at');

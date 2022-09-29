@@ -12,6 +12,8 @@ use Auth, Cache, DB, URL;
 use App\{
 	Avatar,
 	Bookmark,
+	Collection,
+	CollectionItem,
 	DirectMessage,
 	Follower,
 	FollowRequest,
@@ -59,6 +61,7 @@ use App\Jobs\VideoPipeline\{
 
 use App\Services\{
 	AccountService,
+	CollectionService,
 	FollowerService,
 	InstanceService,
 	LikeService,
@@ -2481,7 +2484,9 @@ class ApiV1Controller extends Controller
 			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
 			'spoiler_text' => 'sometimes|max:140',
-			'place_id' => 'sometimes|integer|min:1|max:128769'
+			'place_id' => 'sometimes|integer|min:1|max:128769',
+			'collection_ids' => 'sometimes|array|max:3',
+			'comments_disabled' => 'sometimes|boolean',
 		]);
 
 		if(config('costar.enabled') == true) {
@@ -2536,6 +2541,9 @@ class ApiV1Controller extends Controller
 
 		if($in_reply_to_id) {
 			$parent = Status::findOrFail($in_reply_to_id);
+			if($parent->comments_disabled) {
+				return $this->json("Comments have been disabled on this post", 422);
+			}
 			$blocks = UserFilterService::blocks($parent->profile_id);
 			abort_if(in_array($profile->id, $blocks), 422, 'Cannot reply to this post at this time.');
 
@@ -2597,6 +2605,10 @@ class ApiV1Controller extends Controller
 				abort(400, 'Invalid media ids');
 			}
 
+			if($request->has('comments_disabled') && $request->input('comments_disabled')) {
+				$status->comments_disabled = true;
+			}
+
 			$status->scope = $visibility;
 			$status->visibility = $visibility;
 			$status->type = StatusController::mimeTypeCheck($mimes);
@@ -2617,6 +2629,27 @@ class ApiV1Controller extends Controller
 		Cache::forget($user->storageUsedKey());
 		Cache::forget('profile:embed:' . $status->profile_id);
 		Cache::forget($limitKey);
+
+		if($request->has('collection_ids') && $ids) {
+			$collections = Collection::whereProfileId($user->profile_id)
+				->find($request->input('collection_ids'))
+				->each(function($collection) use($status) {
+					$count = $collection->items()->count();
+			        $item = CollectionItem::firstOrCreate([
+			            'collection_id' => $collection->id,
+			            'object_type'   => 'App\Status',
+			            'object_id'     => $status->id
+			        ],[
+			            'order'         => $count,
+			        ]);
+
+			        CollectionService::addItem(
+			        	$collection->id,
+			        	$status->id,
+			        	$count
+			        );
+				});
+		}
 
 		$res = StatusService::getMastodon($status->id, false);
 		$res['favourited'] = false;

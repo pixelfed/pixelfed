@@ -539,6 +539,11 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('/{q}', 'InstallController@index')->withoutMiddleware(['web'])->where('q', '.*');
 	});
 
+	Route::group(['prefix' => 'e'], function() {
+		Route::get('terms', 'MobileController@terms');
+		Route::get('privacy', 'MobileController@privacy');
+	});
+
 	Route::get('stories/{username}', 'ProfileController@stories');
 	Route::get('p/{id}', 'StatusController@shortcodeRedirect');
 	Route::get('c/{collection}', 'CollectionController@show');
