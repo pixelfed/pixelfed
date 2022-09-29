@@ -25,7 +25,7 @@ class LikeService {
 	{
 		if(self::setCount($profileId) > 400) {
 			if(config('database.redis.client') === 'phpredis') {
-				Redis::zpopmin(self::CACHE_SET_KEY . $id);
+				Redis::zpopmin(self::CACHE_SET_KEY . $profileId);
 			}
 		}
 
