@@ -12,6 +12,8 @@ use Auth, Cache, DB, URL;
 use App\{
 	Avatar,
 	Bookmark,
+	Collection,
+	CollectionItem,
 	DirectMessage,
 	Follower,
 	FollowRequest,
@@ -59,6 +61,7 @@ use App\Jobs\VideoPipeline\{
 
 use App\Services\{
 	AccountService,
+	CollectionService,
 	FollowerService,
 	InstanceService,
 	LikeService,
@@ -2481,7 +2484,8 @@ class ApiV1Controller extends Controller
 			'sensitive' => 'nullable',
 			'visibility' => 'string|in:private,unlisted,public',
 			'spoiler_text' => 'sometimes|max:140',
-			'place_id' => 'sometimes|integer|min:1|max:128769'
+			'place_id' => 'sometimes|integer|min:1|max:128769',
+			'collection_ids' => 'sometimes|array|max:3',
 		]);
 
 		if(config('costar.enabled') == true) {
@@ -2617,6 +2621,27 @@ class ApiV1Controller extends Controller
 		Cache::forget($user->storageUsedKey());
 		Cache::forget('profile:embed:' . $status->profile_id);
 		Cache::forget($limitKey);
+
+		if($request->has('collection_ids') && $ids) {
+			$collections = Collection::whereProfileId($user->profile_id)
+				->find($request->input('collection_ids'))
+				->each(function($collection) use($status) {
+					$count = $collection->items()->count();
+			        $item = CollectionItem::firstOrCreate([
+			            'collection_id' => $collection->id,
+			            'object_type'   => 'App\Status',
+			            'object_id'     => $status->id
+			        ],[
+			            'order'         => $count,
+			        ]);
+
+			        CollectionService::addItem(
+			        	$collection->id,
+			        	$status->id,
+			        	$count
+			        );
+				});
+		}
 
 		$res = StatusService::getMastodon($status->id, false);
 		$res['favourited'] = false;
