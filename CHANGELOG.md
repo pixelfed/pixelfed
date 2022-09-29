@@ -87,6 +87,7 @@
 - Update atom feed, remove invalid entities ([e362ef9e](https://github.com/pixelfed/pixelfed/commit/e362ef9e))
 - Update StatusObserver, handle events after all transactions are committed ([805a014e](https://github.com/pixelfed/pixelfed/commit/805a014e))
 - Update ApiV1Controller, add collection_ids parameter to /api/v1/statuses endpoint ([7ae21fc3](https://github.com/pixelfed/pixelfed/commit/7ae21fc3))
+- Update ApiV1Controller, add comments_disabled param to /api/v1/statuses endpoint ([95b58610](https://github.com/pixelfed/pixelfed/commit/95b58610))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
