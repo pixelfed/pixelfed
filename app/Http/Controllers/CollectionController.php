@@ -168,6 +168,10 @@ class CollectionController extends Controller
         	$count
         );
 
+        $collection->updated_at = now();
+        $collection->save();
+        CollectionService::setCollection($collection->id, $collection);
+
         return StatusService::get($status->id);
     }
 
@@ -304,6 +308,10 @@ class CollectionController extends Controller
             ->firstOrFail();
 
         $item->delete();
+
+        $collection->updated_at = now();
+        $collection->save();
+        CollectionService::setCollection($collection->id, $collection);
 
         return 200;
     }

@@ -84,8 +84,8 @@ class CollectionService
 				'description' => $collection->description,
 				'thumb' => url('/storage/no-preview.png'),
 				'url' => $collection->url(),
-				'updated_at' => $collection->updated_at,
-				'published_at' => $collection->published_at,
+				'updated_at' => str_replace('+00:00', 'Z', $collection->updated_at->format(DATE_RFC3339_EXTENDED)),
+				'published_at' => str_replace('+00:00', 'Z', $collection->published_at->format(DATE_RFC3339_EXTENDED)),
 			];
 		});
 
@@ -117,8 +117,8 @@ class CollectionService
 			'description' => $collection->description,
 			'thumb' => self::getThumb($id),
 			'url' => $collection->url(),
-			'updated_at' => $collection->updated_at,
-			'published_at' => $collection->published_at
+			'updated_at' => str_replace('+00:00', 'Z', $collection->updated_at->format(DATE_RFC3339_EXTENDED)),
+			'published_at' => str_replace('+00:00', 'Z', $collection->published_at->format(DATE_RFC3339_EXTENDED)),
 		];
 		Cache::put(self::CACHE_KEY . 'get:' . $id, $res, 86400);
 		$res['post_count'] = self::count($id);
