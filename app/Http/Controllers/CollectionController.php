@@ -175,6 +175,11 @@ class CollectionController extends Controller
     {
 		$user = $request->user();
 		$collection = CollectionService::getCollection($id);
+
+        if(!$collection) {
+            return response()->json([], 404);
+        }
+
 		if($collection['published_at'] == null || $collection['visibility'] != 'public') {
 			abort_unless($user, 404);
 			if($user->profile_id != $collection['pid']) {
@@ -192,6 +197,11 @@ class CollectionController extends Controller
     {
     	$user = $request->user();
     	$collection = CollectionService::getCollection($id);
+
+        if(!$collection) {
+            return response()->json([], 404);
+        }
+
         if($collection['published_at'] == null || $collection['visibility'] != 'public') {
 			abort_unless($user, 404);
 			if($user->profile_id != $collection['pid']) {
