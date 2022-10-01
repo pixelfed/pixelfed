@@ -89,6 +89,8 @@
 - Update ApiV1Controller, add collection_ids parameter to /api/v1/statuses endpoint ([7ae21fc3](https://github.com/pixelfed/pixelfed/commit/7ae21fc3))
 - Update ApiV1Controller, add comments_disabled param to /api/v1/statuses endpoint ([95b58610](https://github.com/pixelfed/pixelfed/commit/95b58610))
 - Update ap helpers to handle disabled comments ([92f56c9b](https://github.com/pixelfed/pixelfed/commit/92f56c9b))
+- Update CollectionController, limit max title and description length ([6e76cf4b](https://github.com/pixelfed/pixelfed/commit/6e76cf4b))
+- Update collection components, fix title/description padding/overflow bug and add title/description limit and input counter ([6e4272a8](https://github.com/pixelfed/pixelfed/commit/6e4272a8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
