@@ -121,6 +121,8 @@ class CollectionService
 			'published_at' => $collection->published_at,
 		];
 		Cache::put(self::CACHE_KEY . 'get:' . $id, $res, 86400);
+		$res['avatar'] = $account['avatar'];
+		$res['username'] = $account['username'];
 		$res['post_count'] = self::count($id);
 		return $res;
 	}
