@@ -79,17 +79,23 @@ class CollectionService
 			return [
 				'id' => (string) $collection->id,
 				'pid' => (string) $collection->profile_id,
-				'username' => $account['username'],
 				'visibility' => $collection->visibility,
 				'title' => $collection->title,
 				'description' => $collection->description,
-				'thumb' => '/storage/no-preview.png',
+				'thumb' => url('/storage/no-preview.png'),
 				'url' => $collection->url(),
-				'published_at' => $collection->published_at
+				'updated_at' => $collection->updated_at,
+				'published_at' => $collection->published_at,
 			];
 		});
 
 		if($collection) {
+			$account = AccountService::get($collection['pid']);
+			if(!$account) {
+				return false;
+			}
+			$collection['avatar'] = $account['avatar'];
+			$collection['username'] = $account['username'];
 			$collection['thumb'] = self::getThumb($id);
 			$collection['post_count'] = self::count($id);
 		}
@@ -106,12 +112,12 @@ class CollectionService
 		$res = [
 			'id' => (string) $collection->id,
 			'pid' => (string) $collection->profile_id,
-			'username' => $account['username'],
 			'visibility' => $collection->visibility,
 			'title' => $collection->title,
 			'description' => $collection->description,
 			'thumb' => self::getThumb($id),
 			'url' => $collection->url(),
+			'updated_at' => $collection->updated_at,
 			'published_at' => $collection->published_at
 		];
 		Cache::put(self::CACHE_KEY . 'get:' . $id, $res, 86400);
@@ -129,15 +135,15 @@ class CollectionService
 	{
 		$item = self::getItems($id, 0, 1);
 		if(!$item || empty($item)) {
-			return '/storage/no-preview.png';
+			return url('/storage/no-preview.png');
 		}
 		$status = StatusService::get($item[0]);
 		if(!$status) {
-			return '/storage/no-preview.png';
+			return url('/storage/no-preview.png');
 		}
 
 		if(!isset($status['media_attachments']) || empty($status['media_attachments'])) {
-			return '/storage/no-preview.png';
+			return url('/storage/no-preview.png');
 		}
 
 		return $status['media_attachments'][0]['url'];
