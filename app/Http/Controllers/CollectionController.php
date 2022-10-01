@@ -65,8 +65,8 @@ class CollectionController extends Controller
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'title'         => 'nullable',
-            'description'   => 'nullable',
+            'title'         => 'nullable|max:50',
+            'description'   => 'nullable|max:500',
             'visibility'    => 'nullable|string|in:public,private,draft'
         ]);
 
@@ -84,8 +84,8 @@ class CollectionController extends Controller
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'title'         => 'nullable',
-            'description'   => 'nullable',
+            'title'         => 'nullable|max:50',
+            'description'   => 'nullable|max:500',
             'visibility'    => 'required|alpha|in:public,private,draft'
         ]);
         $profile = Auth::user()->profile;   
