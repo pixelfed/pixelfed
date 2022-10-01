@@ -25,11 +25,11 @@
 
 		<div class="col-12 p-0 mb-3">
 
-			<picture class="d-flex align-items-center justify-content-center">
+			<div class="d-flex align-items-center justify-content-center overflow-hidden">
 				<div class="dims"></div>
-				<div style="z-index:500;position: absolute;" class="text-white">
-					<p class="display-4 text-center pt-3">{{title || 'Untitled Collection'}}</p>
-					<p class="lead text-center mb-3">{{description}}</p>
+				<div style="z-index:500;position: absolute;" class="text-white mx-5">
+					<p class="text-center pt-3 text-break" style="font-size: 3rem;line-height: 3rem;">{{title || 'Untitled Collection'}}</p>
+					<div class="text-center mb-3 text-break read-more" style="overflow-y: hidden">{{description}}</div>
 					<p class="text-center">
 
 						<span v-if="owner && collection.visibility != 'public'">
@@ -77,7 +77,7 @@
 					 style="width:100%; height: 400px; object-fit: cover;"
 				>
 				<div v-else class="bg-info" style="width:100%; height: 400px;"></div>
-			</picture>
+			</div>
 		</div>
 		<div class="col-12 p-0">
 			<!-- <masonry
@@ -166,11 +166,17 @@
 		<form>
 			<div class="form-group">
 				<label for="title" class="font-weight-bold text-muted">Title</label>
-				<input type="text" class="form-control" id="title" placeholder="Untitled Collection" v-model="title">
+				<input type="text" class="form-control" id="title" placeholder="Untitled Collection" v-model="title" maxlength="50">
+                <div class="text-right small text-muted">
+                    <span>{{title ? title.length : 0}}/50</span>
+                </div>
 			</div>
 			<div class="form-group">
 				<label for="description" class="font-weight-bold text-muted">Description</label>
-				<textarea class="form-control" id="description" placeholder="Add a description here ..." v-model="description" rows="3"></textarea>
+				<textarea class="form-control" id="description" placeholder="Add a description here ..." v-model="description" rows="3" maxlength="500"></textarea>
+                <div class="text-right small text-muted">
+                    <span>{{description ? description.length : 0}}/500</span>
+                </div>
 			</div>
 			<div class="form-group">
 				<label for="visibility" class="font-weight-bold text-muted">Visibility</label>
@@ -349,6 +355,10 @@ export default {
 	beforeMount() {
 		this.fetchCollection();
 	},
+
+    updated() {
+        this.initReadMore();
+    },
 
 	methods: {
 		enterIntersect() {
@@ -636,7 +646,23 @@ export default {
 			}
 
 			return media.preview_url;
-		}
+		},
+
+        initReadMore() {
+          $('.read-more').each(function(k,v) {
+              let el = $(this);
+              let attr = el.attr('data-readmore');
+              if(typeof attr !== typeof undefined && attr !== false) {
+                return;
+              }
+              el.readmore({
+                collapsedHeight: 38,
+                heightMargin: 38,
+                moreLink: '<a href="#" class="d-block text-center small font-weight-bold mt-n3 mb-2" style="color: rgba(255, 255, 255, 0.5)">Show more</a>',
+                lessLink: '<a href="#" class="d-block text-center small font-weight-bold mt-n3 mb-2" style="color: rgba(255, 255, 255, 0.5)">Show less</a>',
+              });
+          });
+        }
 	}
 }
 </script>
