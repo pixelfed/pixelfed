@@ -2648,6 +2648,9 @@ class ApiV1Controller extends Controller
 			        	$status->id,
 			        	$count
 			        );
+                    $collection->updated_at = now();
+                    $collection->save();
+                    CollectionService::setCollection($collection->id, $collection);
 				});
 		}
 

@@ -65,8 +65,8 @@ class CollectionController extends Controller
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'title'         => 'nullable',
-            'description'   => 'nullable',
+            'title'         => 'nullable|max:50',
+            'description'   => 'nullable|max:500',
             'visibility'    => 'nullable|string|in:public,private,draft'
         ]);
 
@@ -84,8 +84,8 @@ class CollectionController extends Controller
     {
         abort_if(!Auth::check(), 403);
         $this->validate($request, [
-            'title'         => 'nullable',
-            'description'   => 'nullable',
+            'title'         => 'nullable|max:50',
+            'description'   => 'nullable|max:500',
             'visibility'    => 'required|alpha|in:public,private,draft'
         ]);
         $profile = Auth::user()->profile;   
@@ -168,6 +168,10 @@ class CollectionController extends Controller
         	$count
         );
 
+        $collection->updated_at = now();
+        $collection->save();
+        CollectionService::setCollection($collection->id, $collection);
+
         return StatusService::get($status->id);
     }
 
@@ -175,6 +179,11 @@ class CollectionController extends Controller
     {
 		$user = $request->user();
 		$collection = CollectionService::getCollection($id);
+
+        if(!$collection) {
+            return response()->json([], 404);
+        }
+
 		if($collection['published_at'] == null || $collection['visibility'] != 'public') {
 			abort_unless($user, 404);
 			if($user->profile_id != $collection['pid']) {
@@ -192,6 +201,11 @@ class CollectionController extends Controller
     {
     	$user = $request->user();
     	$collection = CollectionService::getCollection($id);
+
+        if(!$collection) {
+            return response()->json([], 404);
+        }
+
         if($collection['published_at'] == null || $collection['visibility'] != 'public') {
 			abort_unless($user, 404);
 			if($user->profile_id != $collection['pid']) {
@@ -294,6 +308,10 @@ class CollectionController extends Controller
             ->firstOrFail();
 
         $item->delete();
+
+        $collection->updated_at = now();
+        $collection->save();
+        CollectionService::setCollection($collection->id, $collection);
 
         return 200;
     }

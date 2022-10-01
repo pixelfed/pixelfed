@@ -13,12 +13,18 @@
 						<form>
 							<div class="form-group">
 								<label for="title" class="font-weight-bold text-muted">Title</label>
-								<input type="text" class="form-control" id="title" placeholder="Collection Title" v-model="collection.title">
+								<input type="text" class="form-control" id="title" placeholder="Collection Title" v-model="collection.title" maxlength="50">
+                                <div class="text-right small text-muted">
+                                    <span>{{collection.title ? collection.title.length : 0}}/50</span>
+                                </div>
 							</div>
 							<div class="form-group">
 								<label for="description" class="font-weight-bold text-muted">Description</label>
-								<textarea class="form-control" id="description" placeholder="Example description here" v-model="collection.description" rows="3">
+								<textarea class="form-control" id="description" placeholder="Example description here" v-model="collection.description" rows="3" maxlength="500">
 								</textarea>
+                                <div class="text-right small text-muted">
+                                    <span>{{collection.description ? collection.description.length : 0}}/500</span>
+                                </div>
 							</div>
 							<div class="form-group">
 								<label for="visibility" class="font-weight-bold text-muted">Visibility</label>
