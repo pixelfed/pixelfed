@@ -22,37 +22,32 @@ class CollectionService
 
 	public static function addItem($id, $sid, $score)
 	{
-		Redis::zadd(self::CACHE_KEY . 'items:' . $id, $score, $sid);
+		return Redis::zadd(self::CACHE_KEY . 'items:' . $id, $score, $sid);
 	}
 
 	public static function removeItem($id, $sid)
 	{
-		Redis::zrem(self::CACHE_KEY . 'items:' . $id, $sid);
+		return Redis::zrem(self::CACHE_KEY . 'items:' . $id, $sid);
 	}
 
 	public static function clearItems($id)
 	{
-		Redis::del(self::CACHE_KEY . 'items:' . $id);
+		return Redis::del(self::CACHE_KEY . 'items:' . $id);
 	}
 
 	public static function coldBootItems($id)
 	{
-		return Cache::remember(self::CACHE_KEY . 'items:' . $id, 86400, function() use($id) {
-			return CollectionItem::whereCollectionId($id)
-				->orderBy('order')
-				->get()
-				->filter(function($item) use($id) {
-					return StatusService::get($item->object_id) != null;
-				})
-				->each(function($item) use ($id) {
-					self::addItem($id, $item->object_id, $item->order);
-				})
-				->map(function($item) {
-					return (string) $item->object_id;
-				})
-				->values()
-				->toArray();
-		});
+		return CollectionItem::whereCollectionId($id)
+			->orderBy('order')
+			->get()
+			->each(function($item) use ($id) {
+				return self::addItem($id, $item->object_id, $item->order);
+			})
+			->map(function($item) {
+				return (string) $item->object_id;
+			})
+			->values()
+			->toArray();
 	}
 
 	public static function count($id)

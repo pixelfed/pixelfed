@@ -77,6 +77,7 @@ class CollectionController extends Controller
         $collection->visibility = $request->input('visibility');
         $collection->save();
 
+        CollectionService::deleteCollection($id);
         return CollectionService::setCollection($collection->id, $collection);
     }
 
@@ -93,9 +94,9 @@ class CollectionController extends Controller
         if($collection->items()->count() == 0) {
             abort(404);
         }
-        $collection->title = e($request->input('title'));
+        $collection->title = strip_tags($request->input('title'));
         $collection->description = strip_tags($request->input('description'));
-        $collection->visibility = strip_tags($request->input('visibility'));
+        $collection->visibility = $request->input('visibility');
         $collection->published_at = now();
         $collection->save();
         return CollectionService::setCollection($collection->id, $collection);
@@ -134,6 +135,7 @@ class CollectionController extends Controller
 
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
+        CollectionService::deleteCollection($collection->id);
 
         if($count) {
             CollectionItem::whereCollectionId($collection->id)
@@ -301,11 +303,6 @@ class CollectionController extends Controller
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
-        CollectionService::removeItem(
-        	$collection->id,
-        	$status->id
-        );
-
         $item = CollectionItem::whereCollectionId($collection->id)
             ->whereObjectType('App\Status')
             ->whereObjectId($status->id)
@@ -313,9 +310,17 @@ class CollectionController extends Controller
 
         $item->delete();
 
+        CollectionItem::whereCollectionId($collection->id)
+            ->orderBy('created_at')
+            ->get()
+            ->each(function($item, $index) {
+                $item->order = $index;
+                $item->save();
+            });
+
         $collection->updated_at = now();
         $collection->save();
-        CollectionService::setCollection($collection->id, $collection);
+        CollectionService::deleteCollection($collection->id);
 
         return 200;
     }
