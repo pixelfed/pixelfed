@@ -63,26 +63,27 @@ class CollectionController extends Controller
 
     public function store(Request $request, $id)
     {
-        abort_if(!Auth::check(), 403);
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'title'         => 'nullable|max:50',
             'description'   => 'nullable|max:500',
             'visibility'    => 'nullable|string|in:public,private,draft'
         ]);
 
-        $profile = Auth::user()->profile;   
-        $collection = Collection::whereProfileId($profile->id)->findOrFail($id);
-        $collection->title = e($request->input('title'));
-        $collection->description = e($request->input('description'));
-        $collection->visibility = e($request->input('visibility'));
+        $pid = $request->user()->profile_id;
+        $collection = Collection::whereProfileId($pid)->findOrFail($id);
+        $collection->title = strip_tags($request->input('title'));
+        $collection->description = strip_tags($request->input('description'));
+        $collection->visibility = $request->input('visibility');
         $collection->save();
 
+        CollectionService::deleteCollection($id);
         return CollectionService::setCollection($collection->id, $collection);
     }
 
     public function publish(Request $request, int $id)
     {
-        abort_if(!Auth::check(), 403);
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'title'         => 'nullable|max:50',
             'description'   => 'nullable|max:500',
@@ -93,9 +94,9 @@ class CollectionController extends Controller
         if($collection->items()->count() == 0) {
             abort(404);
         }
-        $collection->title = e($request->input('title'));
-        $collection->description = e($request->input('description'));
-        $collection->visibility = e($request->input('visibility'));
+        $collection->title = strip_tags($request->input('title'));
+        $collection->description = strip_tags($request->input('description'));
+        $collection->visibility = $request->input('visibility');
         $collection->published_at = now();
         $collection->save();
         return CollectionService::setCollection($collection->id, $collection);
@@ -103,35 +104,38 @@ class CollectionController extends Controller
 
     public function delete(Request $request, int $id)
     {
-        abort_if(!Auth::check(), 403);
-        $user = Auth::user();
+        abort_if(!$request->user(), 403);
+        $user = $request->user();
 
         $collection = Collection::whereProfileId($user->profile_id)->findOrFail($id);
         $collection->items()->delete();
         $collection->delete();
 
+        CollectionService::deleteCollection($id);
+
         if($request->wantsJson()) {
             return 200;
         }
-
-        CollectionService::deleteCollection($id);
 
         return redirect('/');
     }
 
     public function storeId(Request $request)
     {
+        abort_if(!$request->user(), 403);
+
         $this->validate($request, [
             'collection_id' => 'required|int|min:1|exists:collections,id',
-            'post_id'       => 'required|int|min:1|exists:statuses,id'
+            'post_id'       => 'required|int|min:1'
         ]);
         
-        $profileId = Auth::user()->profile_id;
+        $profileId = $request->user()->profile_id;
         $collectionId = $request->input('collection_id');
         $postId = $request->input('post_id');
 
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
+        CollectionService::deleteCollection($collection->id);
 
         if($count) {
             CollectionItem::whereCollectionId($collection->id)
@@ -151,6 +155,7 @@ class CollectionController extends Controller
         }
 
         $status = Status::whereScope('public')
+            ->whereProfileId($profileId)
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
@@ -277,12 +282,13 @@ class CollectionController extends Controller
 
     public function deleteId(Request $request)
     {
+        abort_if(!$request->user(), 403);
         $this->validate($request, [
             'collection_id' => 'required|int|min:1|exists:collections,id',
-            'post_id'       => 'required|int|min:1|exists:statuses,id'
+            'post_id'       => 'required|int|min:1'
         ]);
         
-        $profileId = Auth::user()->profile_id;
+        $profileId = $request->user()->profile_id;
         $collectionId = $request->input('collection_id');
         $postId = $request->input('post_id');
 
@@ -297,11 +303,6 @@ class CollectionController extends Controller
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
-        CollectionService::removeItem(
-        	$collection->id,
-        	$status->id
-        );
-
         $item = CollectionItem::whereCollectionId($collection->id)
             ->whereObjectType('App\Status')
             ->whereObjectId($status->id)
@@ -309,9 +310,17 @@ class CollectionController extends Controller
 
         $item->delete();
 
+        CollectionItem::whereCollectionId($collection->id)
+            ->orderBy('created_at')
+            ->get()
+            ->each(function($item, $index) {
+                $item->order = $index;
+                $item->save();
+            });
+
         $collection->updated_at = now();
         $collection->save();
-        CollectionService::setCollection($collection->id, $collection);
+        CollectionService::deleteCollection($collection->id);
 
         return 200;
     }

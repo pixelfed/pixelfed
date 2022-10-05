@@ -56,6 +56,10 @@ class Media extends Model
             return url(Storage::url($this->thumbnail_path));
         }
 
+        if($this->remote_media && !$this->thumbnail_path && $this->cdn_url) {
+            return $this->cdn_url;
+        }
+
         if($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png'])) {
         	return $this->remote_media || Str::startsWith($this->media_path, 'http') ?
                 $this->media_path :

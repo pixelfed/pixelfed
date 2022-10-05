@@ -23,7 +23,7 @@ return [
 	| This value is the version of your Pixelfed instance.
 	|
 	*/
-	'version' => '0.11.3',
+	'version' => '0.11.4',
 
 	/*
 	|--------------------------------------------------------------------------

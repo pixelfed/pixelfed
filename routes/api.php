@@ -114,6 +114,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('accounts/{id}', 'CollectionController@getUserCollections')->middleware($middleware);
 			Route::get('items/{id}', 'CollectionController@getItems')->middleware($middleware);
 			Route::get('view/{id}', 'CollectionController@getCollection')->middleware($middleware);
+			Route::post('add', 'CollectionController@storeId')->middleware($middleware);
+			Route::post('update/{id}', 'CollectionController@store')->middleware($middleware);
+			Route::delete('delete/{id}', 'CollectionController@delete')->middleware($middleware);
+			Route::post('remove', 'CollectionController@deleteId')->middleware($middleware);
 		});
 
 		Route::group(['prefix' => 'direct'], function () use($middleware) {
