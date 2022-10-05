@@ -419,9 +419,8 @@ class Helpers {
 			$cw = true;
 		}
 
-		$statusLockKey = 'helpers:status-lock:' . hash('sha256', $res['id']);
-		$status = Cache::lock($statusLockKey)
-			->get(function () use(
+		if($res['type'] === 'Question') {
+			$status = self::storePoll(
 				$profile,
 				$res,
 				$url,
@@ -430,24 +429,11 @@ class Helpers {
 				$cw,
 				$scope,
 				$id
-		) {
-
-			if($res['type'] === 'Question') {
-				$status = self::storePoll(
-					$profile,
-					$res,
-					$url,
-					$ts,
-					$reply_to,
-					$cw,
-					$scope,
-					$id
-				);
-				return $status;
-			}
-
-			return self::storeStatus($url, $profile, $res);
-		});
+			);
+			return $status;
+		} else {
+            $status = self::storeStatus($url, $profile, $res);
+        }
 
 		return $status;
 	}
