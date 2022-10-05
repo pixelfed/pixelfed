@@ -1,6 +1,8 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.3...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.4...dev)
+
+## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 
 ### New Features
 - Custom content warnings/spoiler text ([d4864213](https://github.com/pixelfed/pixelfed/commit/d4864213))
@@ -91,6 +93,7 @@
 - Update ap helpers to handle disabled comments ([92f56c9b](https://github.com/pixelfed/pixelfed/commit/92f56c9b))
 - Update CollectionController, limit max title and description length ([6e76cf4b](https://github.com/pixelfed/pixelfed/commit/6e76cf4b))
 - Update collection components, fix title/description padding/overflow bug and add title/description limit and input counter ([6e4272a8](https://github.com/pixelfed/pixelfed/commit/6e4272a8))
+- Update Media model, fix thumbnail cdn paths ([9888af12](https://github.com/pixelfed/pixelfed/commit/9888af12))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.3 (2022-05-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.2...v0.11.3)
