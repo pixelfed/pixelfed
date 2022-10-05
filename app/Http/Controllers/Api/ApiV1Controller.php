@@ -2449,12 +2449,12 @@ class ApiV1Controller extends Controller
 			->limit($limit)
 			->get()
 			->map(function($like) {
-				$account = AccountService::getMastodon($like->profile_id);
+				$account = AccountService::getMastodon($like->profile_id, true);
 				$account['follows'] = isset($like->created_at);
 				return $account;
 			})
 			->filter(function($account) use($user) {
-				return $account && isset($account['id']) && $account['id'] != $user->profile_id;
+				return $account && isset($account['id']);
 			})
 			->values();
 
