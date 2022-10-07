@@ -90,7 +90,7 @@ class BaseApiController extends Controller
 
         if(empty($res) && !Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
         	Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
-        	NotificationService::warmCache($pid, 400, true);
+        	NotificationService::warmCache($pid, 100, true);
         }
 
         return response()->json($res);

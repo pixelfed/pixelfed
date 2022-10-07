@@ -3109,7 +3109,7 @@ class ApiV1Controller extends Controller
 		});
 
 		$ids = $ids->map(function($profile) {
-			return AccountService::getMastodon($profile->id, true);
+			return AccountService::get($profile->id, true);
 		})
 		->filter(function($profile) use($pid) {
 			return $profile && isset($profile['id']);
