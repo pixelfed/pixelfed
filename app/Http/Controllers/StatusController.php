@@ -29,7 +29,7 @@ use App\Services\ReblogService;
 
 class StatusController extends Controller
 {
-	public function show(Request $request, $username, int $id)
+	public function show(Request $request, $username, $id)
 	{
 		// redirect authed users to Metro 2.0
 		if($request->user()) {
