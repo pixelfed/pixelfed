@@ -24,6 +24,7 @@ use Illuminate\Support\Str;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryFetch;
 
@@ -622,7 +623,7 @@ class Inbox
 			if(!$profile || $profile->private_key != null) {
 				return;
 			}
-			DeleteRemoteProfilePipeline::dispatchNow($profile);
+			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
 			return;
 		} else {
 			if(!isset($obj['id'], $this->payload['object'], $this->payload['object']['id'])) {
@@ -643,7 +644,7 @@ class Inbox
 						if(!$profile || $profile->private_key != null) {
 							return;
 						}
-						DeleteRemoteProfilePipeline::dispatchNow($profile);
+						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
 						return;
 					break;
 
@@ -660,18 +661,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
-						NetworkTimelineService::del($status->id);
-						StatusService::del($status->id, true);
-						Notification::whereActorId($profile->id)
-							->whereItemType('App\Status')
-							->whereItemId($status->id)
-							->forceDelete();
-						$status->directMessage()->delete();
-						$status->media()->delete();
-						$status->likes()->delete();
-						$status->shares()->delete();
-						$status->delete();
-                        DecrementPostCount::dispatch($profile->id)->onQueue('low');
+						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('delete');
 						return;
 					break;
 
