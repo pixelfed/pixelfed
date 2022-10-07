@@ -236,7 +236,10 @@ class MediaStorageService {
 		$tmpBase = storage_path('app/remcache/');
 		$tmpPath = 'avatar_' . $avatar->profile_id . '-' . $path;
 		$tmpName = $tmpBase . $tmpPath;
-		$data = file_get_contents($url, false, null, 0, $head['length']);
+		$data = @file_get_contents($url, false, null, 0, $head['length']);
+		if(!$data) {
+			return;
+		}
 		file_put_contents($tmpName, $data);
 
 		$disk = Storage::disk($driver);
