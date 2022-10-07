@@ -364,7 +364,6 @@ class PublicApiController extends Controller
                           )
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                          ->with('profile', 'hashtags', 'mentions')
                           ->whereLocal(true)
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
@@ -517,7 +516,6 @@ class PublicApiController extends Controller
                       ->when($textOnlyReplies != true, function($q, $textOnlyReplies) {
                         return $q->whereNull('in_reply_to_id');
                       })
-                      ->with('profile', 'hashtags', 'mentions')
                       ->where('id', $dir, $id)
                       ->whereIn('profile_id', $following)
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
@@ -564,7 +562,6 @@ class PublicApiController extends Controller
                       ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
                         return $q->whereNull('in_reply_to_id');
                       })
-                      ->with('profile', 'hashtags', 'mentions')
                       ->whereIn('profile_id', $following)
                       ->whereIn('visibility',['public', 'unlisted', 'private'])
                       ->orderBy('created_at', 'desc')
