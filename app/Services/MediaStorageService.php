@@ -248,7 +248,7 @@ class MediaStorageService {
 
 		$avatar->media_path = $base . $path;
 		$avatar->is_remote = true;
-		$avatar->cdn_url = $permalink;
+		$avatar->cdn_url = $local ? config('app.url') . $permalink : $permalink;
 		$avatar->size = $head['length'];
 		$avatar->change_count = $avatar->change_count + 1;
 		$avatar->last_fetched_at = now();
