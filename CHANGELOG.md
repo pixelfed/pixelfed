@@ -6,6 +6,7 @@
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
 - Update PublicApiController, remove expensive and unused relationships ([2ecc3144](https://github.com/pixelfed/pixelfed/commit/2ecc3144))
 - Update status deletion, fix database lock issues and side effects ([04e8c96a](https://github.com/pixelfed/pixelfed/commit/04e8c96a))
+- Fix remote profile avatar urls when storing locally ([b0422d4f](https://github.com/pixelfed/pixelfed/commit/b0422d4f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
