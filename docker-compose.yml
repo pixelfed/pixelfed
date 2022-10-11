@@ -55,7 +55,7 @@ services:
 
 ## DB and Cache
   db:
-    image: mysql:8.0
+    image: mariadb:jammy
     restart: unless-stopped
     networks:
       - internal
