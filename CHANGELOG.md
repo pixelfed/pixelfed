@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.4...dev)
 
+### New Features
+- Portfolios ([#3705](https://github.com/pixelfed/pixelfed/pull/3705))
+
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
 - Update PublicApiController, remove expensive and unused relationships ([2ecc3144](https://github.com/pixelfed/pixelfed/commit/2ecc3144))
