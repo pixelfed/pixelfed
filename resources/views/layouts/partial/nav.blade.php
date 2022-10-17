@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand navbar-light navbar-laravel shadow-none border-bottom sticky-top py-1">
 	<div class="container">
-			<a class="navbar-brand d-flex align-items-center" href="/" title="Logo">
+			<a class="navbar-brand d-flex align-items-center" href="{{ config('app.url') }}" title="Logo">
 				<img src="/img/pixelfed-icon-color.svg" height="30px" class="px-2" loading="eager" alt="Pixelfed logo">
 				<span class="font-weight-bold mb-0 d-none d-sm-block" style="font-size:20px;">{{ config_cache('app.name') }}</span>
 			</a>
