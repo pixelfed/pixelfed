@@ -69,6 +69,10 @@
                     <hr>
 
                     <p class="text-center font-weight-bold">
+                        @if(config_cache('pixelfed.open_registration'))
+                        <a href="/register">Register</a>
+                        <span class="px-1">·</span>
+                        @endif
                         <a href="{{ route('password.request') }}">
                             {{ __('Forgot Password') }}
                         </a>
