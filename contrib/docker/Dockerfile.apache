@@ -4,9 +4,6 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /var/www/
 
-# Use the default production configuration
-COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
-
 # Get Composer binary
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -86,12 +83,18 @@ RUN apt-get update \
   && rm -rf /var/cache/apt \
   && rm -rf /var/lib/apt/lists/
 
+# Use the default production configuration
+COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
+
 COPY . /var/www/
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN cp -r storage storage.skel \
   && composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader \
   && rm -rf html && ln -s public html \
   && chown -R www-data:www-data /var/www
+
+RUN php artisan horizon:publish
+
 VOLUME /var/www/storage /var/www/bootstrap
 
 CMD ["/var/www/contrib/docker/start.apache.sh"]
