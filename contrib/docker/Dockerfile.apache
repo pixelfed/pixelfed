@@ -1,20 +1,17 @@
-FROM php:7.4-apache-bullseye
+FROM php:8.0-apache
+
+ENV COMPOSER_MEMORY_LIMIT=-1
+ARG DEBIAN_FRONTEND=noninteractive
+WORKDIR /var/www/
 
 # Use the default production configuration
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
-# Install Composer
-ENV COMPOSER_VERSION=2.1.14 \
-    COMPOSER_HOME=/var/www/.composer \
-    COMPOSER_MEMORY_LIMIT=-1 \
-    PATH="~/.composer/vendor/bin:./vendor/bin:${PATH}"
-ARG DEBIAN_FRONTEND=noninteractive
-WORKDIR /var/www/
-RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
-  && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
-  && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
-  && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --version=${COMPOSER_VERSION} && rm -rf /tmp/composer-setup.php \
-  && apt-get update \
+# Get Composer binary
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install package dependencies
+RUN apt-get update \
   && apt-get upgrade -y \
 #  && apt-get install -y --no-install-recommends apt-utils \
   && apt-get install -y --no-install-recommends \
