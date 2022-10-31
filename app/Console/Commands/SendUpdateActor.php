@@ -7,6 +7,7 @@ use App\Profile;
 use App\User;
 use App\Instance;
 use App\Util\ActivityPub\Helpers;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SendUpdateActor extends Command
 {
@@ -75,15 +76,18 @@ class SendUpdateActor extends Command
             $this->info('Found sharedInbox: ' . $url);
             $bar = $this->output->createProgressBar($totalUserCount);
             $bar->start();
-            User::chunk(50, function($users) use($bar, $url) {
+            User::whereNull('status')->chunk(50, function($users) use($bar, $url) {
                 foreach($users as $user) {
                     $profile = Profile::find($user->profile_id);
                     if(!$profile) {
                         continue;
                     }
                     $body = $this->updateObject($profile);
-                    Helpers::sendSignedObject($profile, $url, $body);
-                    usleep(500);
+                    try {
+                        Helpers::sendSignedObject($profile, $url, $body);
+                    } catch (HttpException $e) {
+                        continue;
+                    }
                     $bar->advance();
                 }
             });
