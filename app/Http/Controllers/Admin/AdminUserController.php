@@ -222,7 +222,7 @@ trait AdminUserController
 			->save();
 
 		Cache::forget('profiles:private');
-		DeleteAccountPipeline::dispatch($user)->onQueue('high');
+		DeleteAccountPipeline::dispatch($user);
 
 		$msg = "Successfully deleted {$user->username}!";
 		$request->session()->flash('status', $msg);
