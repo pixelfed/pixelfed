@@ -4,9 +4,9 @@ return [
 
   'likedPhoto'          => 'syntes om dit billede.',
   'likedComment'        => 'Syntes om din kommentar.',
-  'startedFollowingYou' => 'f&oslash;lger dig nu.',
+  'startedFollowingYou' => 'følger dig nu.',
   'commented'           => 'har kommenteret på dit opslag.',
-  'mentionedYou'        => 'har n&aelig;vnt dig.',
+  'mentionedYou'        => 'har nævnt dig.',
   'shared'				=> 'har delt dit opslag.',
 
 ];

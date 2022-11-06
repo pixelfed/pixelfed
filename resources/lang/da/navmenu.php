@@ -1,9 +1,9 @@
 <?php
 return [
-	'search'			=> 'S&oslash;g',
+	'search'			=> 'Søg',
 	'home'				=> 'Hvem',
 	'local'				=> 'Lokalt',
-	'network'			=> 'Netv&aelig;rk',
+	'network'			=> 'Netværk',
 	'discover'			=> 'Opdag',
 	'viewMyProfile'		=> 'Se min profil',
 	'myProfile'			=> 'Min Profil',
