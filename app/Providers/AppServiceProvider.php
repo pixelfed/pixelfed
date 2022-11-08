@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
 		Horizon::auth(function ($request) {
 			return Auth::check() && $request->user()->is_admin;
 		});
+		Validator::includeUnvalidatedArrayKeys();
 	}
 
 	/**

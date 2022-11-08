@@ -290,7 +290,7 @@ trait AdminReportController
 				->save();
 
 			Cache::forget('profiles:private');
-			DeleteAccountPipeline::dispatch($user)->onQueue('high');
+			DeleteAccountPipeline::dispatch($user);
 			return;
 		}
 
