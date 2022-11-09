@@ -1,7 +1,9 @@
 <?php
 
 return [
-
+    'title1'            => 'Photo Sharing',
+    'title2'            => 'For Everyone',
+    'mainTitle'         => 'Photo Sharing. For Everyone',
     'about'             => 'About',
     'help'              => 'Help',
     'language'          => 'Language',

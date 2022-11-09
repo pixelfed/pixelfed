@@ -19,13 +19,13 @@
 				<ul class="navbar-nav ml-auto">
 					<li>
 						<a class="nav-link font-weight-bold text-dark" href="/login" title="Login">
-							{{ __('Login') }}
+							{{ __('auth.login') }}
 						</a>
 					</li>
 				@if(config_cache('pixelfed.open_registration') && in_array(config_cache('system.user_mode'), ['default', 'admin']))
 					<li>
 						<a class="ml-3 nav-link font-weight-bold text-dark" href="/register" title="Register">
-							{{ __('Register') }}
+							{{ __('auth.register') }}
 						</a>
 					</li>
 				@endif

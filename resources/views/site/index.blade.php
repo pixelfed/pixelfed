@@ -50,8 +50,8 @@
 			<div class="row pt-md-5 mt-5">
 				<div class="col-12 col-md-6 d-none d-md-block">
 					<div class="m-my-4">
-						<p class="display-2 font-weight-bold">Photo Sharing</p>
-						<p class="h1 font-weight-bold">For Everyone.</p>
+						<p class="display-2 font-weight-bold">{{ __('site.title1') }}</p>
+						<p class="h1 font-weight-bold">{{ __('site.title2') }}</p>
 					</div>
 				</div>
 				<div class="col-12 col-md-5 offset-md-1">
@@ -61,12 +61,12 @@
 							<span class="font-weight-bold h3 ml-2 pt-2">Pixelfed</span>
 						</div>
 						<div class="d-block d-md-none">
-							<p class="font-weight-bold mb-0 text-center">Photo Sharing. For Everyone</p>
+							<p class="font-weight-bold mb-0 text-center">__('site.mainTitle')</p>
 						</div>
 						<div class="card my-4 shadow-none border">
 							<div class="card-body px-lg-5">
 								<div class="text-center">
-									<p class="small text-uppercase font-weight-bold text-muted">Account Login</p>
+									<p class="small text-uppercase font-weight-bold text-muted">{{ __('auth.loginTitle') }} </p>
 								</div>
 								<div>
 									<form class="px-1" method="POST" action="{{ route('login') }}" id="login_form">
@@ -87,7 +87,7 @@
 										<div class="form-group row">
 
 											<div class="col-md-12">
-												<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+												<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('auth.password')}}" required>
 
 												@if ($errors->has('password'))
 													<span class="invalid-feedback">
@@ -103,7 +103,7 @@
 													<label>
 														<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
 														<span class="font-weight-bold small ml-1 text-muted">
-															{{ __('Remember Me') }}
+															{{ __('auth.remember') }}
 														</span>
 													</label>
 												</div>
@@ -117,7 +117,7 @@
 										<div class="form-group row mb-0">
 											<div class="col-md-12">
 												<button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold text-uppercase">
-													{{ __('Login') }}
+													{{ __('auth.login') }}
 												</button>
 
 											</div>
@@ -129,10 +129,10 @@
 						<div class="card shadow-none border card-body">
 							<p class="text-center mb-0 font-weight-bold">
 								@if(config_cache('pixelfed.open_registration'))
-								<a href="/register">Register</a>
+								<a href="/register">{{ __('auth.register')}}</a>
 								<span class="px-1">·</span>
 								@endif
-								<a href="/password/reset">Password Reset</a>
+								<a href="/password/reset">{{ __('auth.reset') }}</a>
 							</p>
 						</div>
 					</div>

@@ -1,7 +1,9 @@
 <?php
 
 return [
-
+	'title1'        => 'Partilha de foto',
+    'title2'        => 'Para todos',
+	'mainTitle'     => 'Partilha de foto. Para todos',
 	'about'			=> 'Sobre',
 	'help'			=> 'Ajuda',
 	'language'		=> 'Idioma',
