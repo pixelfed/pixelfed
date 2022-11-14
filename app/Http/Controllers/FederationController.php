@@ -96,17 +96,18 @@ class FederationController extends Controller
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
 		abort_if(!config('federation.activitypub.outbox'), 404);
 
-		$profile = Profile::whereNull('domain')
-			->whereNull('status')
-			->whereIsPrivate(false)
-			->whereUsername($username)
-			->firstOrFail();
+		// $profile = Profile::whereNull('domain')
+		// 	->whereNull('status')
+		// 	->whereIsPrivate(false)
+		// 	->whereUsername($username)
+		// 	->firstOrFail();
 
-		$key = 'ap:outbox:latest_10:pid:' . $profile->id;
-		$ttl = now()->addMinutes(15);
-		$res = Cache::remember($key, $ttl, function() use($profile) {
-			return Outbox::get($profile);
-		});
+		// $key = 'ap:outbox:latest_10:pid:' . $profile->id;
+		// $ttl = now()->addMinutes(15);
+		// $res = Cache::remember($key, $ttl, function() use($profile) {
+		// 	return Outbox::get($profile);
+		// });
+		$res = [];
 
 		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
 	}
@@ -124,6 +125,7 @@ class FederationController extends Controller
 			if(!isset($obj['id'])) {
 				return;
 			}
+			usleep(5000);
 			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
 			if( isset($obj['actor']) &&
 				isset($obj['object']) &&
@@ -140,6 +142,15 @@ class FederationController extends Controller
 			Cache::put($lockKey, 1, 3600);
 			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 		} else {
+			if(!isset($obj['id'])) {
+				return;
+			}
+			usleep(5000);
+			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $obj['id']);
+			if(Cache::get($lockKey) !== null) {
+				return;
+			}
+			Cache::put($lockKey, 1, 3600);
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
 		}
 		return;
