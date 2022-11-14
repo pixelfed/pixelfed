@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Admin\{
+	AdminDirectoryController,
 	AdminDiscoverController,
 	AdminInstanceController,
 	AdminReportController,
@@ -40,6 +41,7 @@ use App\Models\CustomEmoji;
 class AdminController extends Controller
 {
 	use AdminReportController, 
+	AdminDirectoryController,
 	AdminDiscoverController,
 	// AdminGroupsController,
 	AdminMediaController, 

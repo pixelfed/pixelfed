@@ -62,6 +62,13 @@
 
 				<ul class="navbar-nav mb-md-3">
 
+                    <li class="nav-item">
+                        <a class="nav-link {{request()->is('*directory*')?'active':''}}" href="{{route('admin.directory')}}">
+                            <i class="ni ni-bold-right text-primary"></i>
+                            <span class="nav-link-text">Directory <span class="badge badge-primary ml-1">NEW</span></span>
+                        </a>
+                    </li>
+
 					<li class="nav-item">
 						<a class="nav-link {{request()->is('*apps*')?'active':''}}" href="{{route('admin.apps')}}">
 							<i class="ni ni-bold-right text-primary"></i>
