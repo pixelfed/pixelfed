@@ -192,7 +192,7 @@ class Inbox
 		if(!isset($activity['to'])) {
 			return;
 		}
-		$to = $activity['to'];
+		$to = isset($activity['to']) ? $activity['to'] : [];
 		$cc = isset($activity['cc']) ? $activity['cc'] : [];
 
 		if($activity['type'] == 'Question') {
@@ -200,7 +200,9 @@ class Inbox
 			return;
 		}
 
-		if(count($to) == 1 &&
+		if( is_array($to) &&
+			is_array($cc) &&
+ 			count($to) == 1 &&
 			count($cc) == 0 &&
 			parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
 		) {
