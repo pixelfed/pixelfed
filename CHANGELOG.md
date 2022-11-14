@@ -4,6 +4,7 @@
 
 ### New Features
 - Portfolios ([#3705](https://github.com/pixelfed/pixelfed/pull/3705))
+- Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -11,6 +12,7 @@
 - Update status deletion, fix database lock issues and side effects ([04e8c96a](https://github.com/pixelfed/pixelfed/commit/04e8c96a))
 - Fix remote profile avatar urls when storing locally ([b0422d4f](https://github.com/pixelfed/pixelfed/commit/b0422d4f))
 - Enable network timeline caching by default ([c990ac2a](https://github.com/pixelfed/pixelfed/commit/c990ac2a))
+- Redirect /home to / ([97032997](https://github.com/pixelfed/pixelfed/commit/97032997))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
