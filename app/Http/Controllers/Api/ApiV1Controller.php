@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
-use Auth, Cache, DB, URL;
+use Auth, Cache, DB, Storage, URL;
 use App\{
 	Avatar,
 	Bookmark,
@@ -1375,7 +1375,7 @@ class ApiV1Controller extends Controller
 					'streaming_api' => 'wss://' . config('pixelfed.domain.app')
 				],
 				'stats' => $stats,
-				'thumbnail' => url('img/pixelfed-icon-color.png'),
+				'thumbnail' => config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg')),
 				'languages' => [config('app.locale')],
 				'registrations' => (bool) config_cache('pixelfed.open_registration'),
 				'approval_required' => false,

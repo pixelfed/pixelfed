@@ -55,6 +55,15 @@ class ConfigCacheService
 				'config.discover.features',
 
 				'instance.has_legal_notice',
+
+				'pixelfed.directory',
+				'app.banner_image',
+				'pixelfed.directory.submission-key',
+				'pixelfed.directory.submission-ts',
+				'pixelfed.directory.has_submitted',
+				'pixelfed.directory.latest_response',
+				'pixelfed.directory.is_synced',
+				'pixelfed.directory.testimonials',
 				// 'system.user_mode'
 			];
 

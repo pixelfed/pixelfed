@@ -145,6 +145,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
 			Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
 		});
+
+		Route::group(['prefix' => 'directory'], function () use($middleware) {
+			Route::get('listing', 'PixelfedDirectoryController@get');
+		});
 	});
 
 	Route::group(['prefix' => 'live'], function() use($middleware) {
