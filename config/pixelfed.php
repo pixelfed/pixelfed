@@ -14,6 +14,7 @@ return [
 	  'admin' => env('ADMIN_DOMAIN'),
 	  'app'   => env('APP_DOMAIN'),
 	],
+	'force_https' => env('FORCE_HTTPS', 'true') === 'true',
 
 	/*
 	|--------------------------------------------------------------------------
