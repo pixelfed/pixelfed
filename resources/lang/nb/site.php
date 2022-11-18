@@ -8,7 +8,7 @@ return [
     'fediverse'         => 'Fediverset',
     'opensource'        => 'Åpenkildekode',
     'terms'             => 'Vilkår',
-    'privacy'           => 'Privatliv',
+    'privacy'           => 'Personværn',
     'l10nWip'           => 'Vi jobber fremdeles på språkstøtte',
     'currentLocale'     => 'Språk som brukes',
     'selectLocale'      => 'Velg et av de støttede språkene',
