@@ -5,6 +5,7 @@
 ### New Features
 - Portfolios ([#3705](https://github.com/pixelfed/pixelfed/pull/3705))
 - Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
+- Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
