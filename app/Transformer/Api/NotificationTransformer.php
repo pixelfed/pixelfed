@@ -32,18 +32,22 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 
 		if($n->item_id && $n->item_type == 'App\ModLog') {
 			$ml = $n->item;
-			$res['modlog'] = [
-				'id' => $ml->object_uid,
-				'url' => url('/i/admin/users/modlogs/' . $ml->object_uid)
-			];
+			if($ml && $ml->object_uid) {
+				$res['modlog'] = [
+					'id' => $ml->object_uid,
+					'url' => url('/i/admin/users/modlogs/' . $ml->object_uid)
+				];
+			}
 		}
 
 		if($n->item_id && $n->item_type == 'App\MediaTag') {
 			$ml = $n->item;
-			$res['tagged'] = [
-				'username' => $ml->tagged_username,
-				'post_url' => '/p/'.HashidService::encode($ml->status_id)
-			];
+			if($ml && $ml->tagged_username) {
+				$res['tagged'] = [
+					'username' => $ml->tagged_username,
+					'post_url' => '/p/'.HashidService::encode($ml->status_id)
+				];
+			}
 		}
 
 		return $res;

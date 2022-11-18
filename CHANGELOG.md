@@ -19,6 +19,11 @@
 - Update ApiV1Controller, fix followAccountById with firstOrCreate() ([1d52ad0b](https://github.com/pixelfed/pixelfed/commit/1d52ad0b))
 - Update AccountService, fix delete status ([8b7121f9](https://github.com/pixelfed/pixelfed/commit/8b7121f9))
 - Update ap helpers, fix duplicate entry bug ([85cfa1ba](https://github.com/pixelfed/pixelfed/commit/85cfa1ba))
+- Update Inbox, fix handleUndoActivity ([d660e46b](https://github.com/pixelfed/pixelfed/commit/d660e46b))
+- Update HomeSettings controller, bail earlier when attempting to update email that already exists ([399bf5f8](https://github.com/pixelfed/pixelfed/commit/399bf5f8))
+- Update ProfileController, cache actor object and atom feed ([8665eab1](https://github.com/pixelfed/pixelfed/commit/8665eab1))
+- Update NotificationTransformer, fix mediaTag and modLog types ([b6c06c4b](https://github.com/pixelfed/pixelfed/commit/b6c06c4b))
+- Update landing view, add `app.name` and `app.short_description` for better customizability ([bda9d16b](https://github.com/pixelfed/pixelfed/commit/bda9d16b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
