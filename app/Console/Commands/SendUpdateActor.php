@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Storage;
 use App\Profile;
 use App\User;
 use App\Instance;
@@ -64,6 +65,7 @@ class SendUpdateActor extends Command
                     return;
                 }
             }
+            $this->touchStorageCache($domain);
             $this->line(' ');
             $this->error('Keep this window open during this process or it will not complete!');
             $sharedInbox = Profile::whereDomain($domain)->whereNotNull('sharedInbox')->first();
@@ -76,8 +78,13 @@ class SendUpdateActor extends Command
             $this->info('Found sharedInbox: ' . $url);
             $bar = $this->output->createProgressBar($totalUserCount);
             $bar->start();
-            User::whereNull('status')->chunk(50, function($users) use($bar, $url) {
+
+            $startCache = $this->getStorageCache($domain);
+            User::whereNull('status')->when($startCache, function($query, $startCache) {
+                return $query->where('id', '>', $startCache);
+            })->chunk(50, function($users) use($bar, $url, $domain) {
                 foreach($users as $user) {
+                    $this->updateStorageCache($domain, $user->id);
                     $profile = Profile::find($user->profile_id);
                     if(!$profile) {
                         continue;
@@ -118,6 +125,26 @@ class SendUpdateActor extends Command
             'type' => 'Update',
             'object' => $this->actorObject($profile)
         ];
+    }
+
+    protected function touchStorageCache($domain)
+    {
+        $path = 'actor-update-cache/' . $domain;
+        if(!Storage::exists($path)) {
+            Storage::put($path, "");
+        }
+    }
+
+    protected function getStorageCache($domain)
+    {
+        $path = 'actor-update-cache/' . $domain;
+        return Storage::get($path);
+    }
+
+    protected function updateStorageCache($domain, $value)
+    {
+        $path = 'actor-update-cache/' . $domain;
+        Storage::put($path, $value);
     }
 
     protected function actorObject($profile)

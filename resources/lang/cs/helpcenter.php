@@ -25,4 +25,4 @@ return [
 
 	'taggingPeople' => 'Označování lidí'
 
-]
+];

@@ -692,10 +692,10 @@ class ApiV1Controller extends Controller
 				(new FollowerController())->sendFollow($user->profile, $target);
 			}
 		} else {
-			$follower = new Follower();
-			$follower->profile_id = $user->profile_id;
-			$follower->following_id = $target->id;
-			$follower->save();
+			$follower = Follower::firstOrCreate([
+				'profile_id' => $user->profile_id,
+				'following_id' => $target->id
+			]);
 
 			if($remote == true && config('federation.activitypub.remoteFollow') == true) {
 				(new FollowerController())->sendFollow($user->profile, $target);
