@@ -159,7 +159,7 @@ trait HomeSettings
 	public function emailUpdate(Request $request)
 	{
 		$this->validate($request, [
-			'email'   => 'required|email',
+			'email'   => 'required|email|unique:users,email',
 		]);
 		$changes = false;
 		$email = $request->input('email');
