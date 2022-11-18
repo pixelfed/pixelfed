@@ -729,6 +729,9 @@ class Inbox
 		$profile = self::actorFirstOrCreate($actor);
 		$obj = $this->payload['object'];
 
+		if(!$profile) {
+			return;
+		}
 		// TODO: Some implementations do not inline the object, skip for now
 		if(!$obj || !is_array($obj) || !isset($obj['type'])) {
 			return;
@@ -788,7 +791,7 @@ class Inbox
 				Like::whereProfileId($profile->id)
 					->whereStatusId($status->id)
 					->forceDelete();
-				Notification::whereProfileId($status->profile->id)
+				Notification::whereProfileId($status->profile_id)
 					->whereActorId($profile->id)
 					->whereAction('like')
 					->whereItemId($status->id)
