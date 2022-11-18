@@ -16,7 +16,7 @@ return [
 		'inbox' => env('AP_INBOX', true),
 		'sharedInbox' => env('AP_SHAREDINBOX', true),
 
-		'remoteFollow' => env('AP_REMOTE_FOLLOW', false),
+		'remoteFollow' => env('AP_REMOTE_FOLLOW', true),
 
 		'delivery' => [
 			'timeout' => env('ACTIVITYPUB_DELIVERY_TIMEOUT', 30.0),
