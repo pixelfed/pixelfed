@@ -187,10 +187,12 @@ class ProfileController extends Controller
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
 		abort_if($user->domain, 404);
 
-		$fractal = new Fractal\Manager();
-		$resource = new Fractal\Resource\Item($user, new ProfileTransformer);
-		$res = $fractal->createData($resource)->toArray();
-		return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+		return Cache::remember('pf:activitypub:user-object:by-id:' . $user->id, 3600, function() use($user) {
+			$fractal = new Fractal\Manager();
+			$resource = new Fractal\Resource\Item($user, new ProfileTransformer);
+			$res = $fractal->createData($resource)->toArray();
+			return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+		});
 	}
 
 	public function showAtomFeed(Request $request, $user)
@@ -201,36 +203,47 @@ class ProfileController extends Controller
 
 		abort_if(!$pid, 404);
 
-		$profile = AccountService::get($pid);
+		$profile = AccountService::get($pid, true);
 
 		abort_if(!$profile || $profile['locked'] || !$profile['local'], 404);
 
-		$items = DB::table('statuses')
-			->whereProfileId($pid)
-			->whereVisibility('public')
-			->whereType('photo')
-			->orderByDesc('id')
-			->take(10)
-			->get()
-			->map(function($status) {
-				return StatusService::get($status->id);
-			})
-			->filter(function($status) {
-				return $status &&
-					isset($status['account']) &&
-					isset($status['media_attachments']) &&
-					count($status['media_attachments']);
-			})
-			->values();
-		$permalink = config('app.url') . "/users/{$profile['username']}.atom";
-		$headers = ['Content-Type' => 'application/atom+xml'];
+		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 86400, function() use($pid, $profile) {
+			$items = DB::table('statuses')
+				->whereProfileId($pid)
+				->whereVisibility('public')
+				->whereType('photo')
+				->orderByDesc('id')
+				->take(10)
+				->get()
+				->map(function($status) {
+					return StatusService::get($status->id);
+				})
+				->filter(function($status) {
+					return $status &&
+						isset($status['account']) &&
+						isset($status['media_attachments']) &&
+						count($status['media_attachments']);
+				})
+				->values();
+			$permalink = config('app.url') . "/users/{$profile['username']}.atom";
+			$headers = ['Content-Type' => 'application/atom+xml'];
 
-		if($items && $items->count()) {
-			$headers['Last-Modified'] = now()->parse($items->first()['created_at'])->toRfc7231String();
-		}
+			if($items && $items->count()) {
+				$headers['Last-Modified'] = now()->parse($items->first()['created_at'])->toRfc7231String();
+			}
+
+			return compact('items', 'permalink', 'headers');
+		});
+		abort_if(!$data, 404);
 		return response()
-			->view('atom.user', compact('profile', 'items', 'permalink'))
-			->withHeaders($headers);
+			->view('atom.user',
+				[
+					'profile' => $profile,
+					'items' => $data['items'],
+					'permalink' => $data['permalink']
+				]
+			)
+			->withHeaders($data['headers']);
 	}
 
 	public function meRedirect()
