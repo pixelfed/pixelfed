@@ -15,6 +15,9 @@
 - Enable network timeline caching by default ([c990ac2a](https://github.com/pixelfed/pixelfed/commit/c990ac2a))
 - Redirect /home to / ([97032997](https://github.com/pixelfed/pixelfed/commit/97032997))
 - Fix 2FA backup code bug ([a231b3c5](https://github.com/pixelfed/pixelfed/commit/a231b3c5))
+- Update federation config, enable remote follows by default ([59702d40](https://github.com/pixelfed/pixelfed/commit/59702d40))
+- Update ApiV1Controller, fix followAccountById with firstOrCreate() ([1d52ad0b](https://github.com/pixelfed/pixelfed/commit/1d52ad0b))
+- Update AccountService, fix delete status ([8b7121f9](https://github.com/pixelfed/pixelfed/commit/8b7121f9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

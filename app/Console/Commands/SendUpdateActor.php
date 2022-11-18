@@ -80,7 +80,8 @@ class SendUpdateActor extends Command
             $bar->start();
 
             $startCache = $this->getStorageCache($domain);
-            User::whereNull('status')->when($startCache, function($query, $startCache) {
+            User::whereNull('status')->when($startCache, function($query, $startCache) use($bar) {
+                $bar->advance($startCache);
                 return $query->where('id', '>', $startCache);
             })->chunk(50, function($users) use($bar, $url, $domain) {
                 foreach($users as $user) {
