@@ -166,7 +166,7 @@ class InboxWorker implements ShouldQueue
         if(Helpers::validateUrl($actor->remote_url) == false) {
             return;
         }
-        $res = Zttp::timeout(5)->withHeaders([
+        $res = Zttp::timeout(60)->withHeaders([
           'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
           'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
         ])->get($actor->remote_url);
