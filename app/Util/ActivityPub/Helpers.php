@@ -742,10 +742,10 @@ class Helpers {
 				[
 					'domain' => strtolower($domain),
 					'username' => Purify::clean($webfinger),
-					'webfinger' => Purify::clean($webfinger),
-					'key_id' => $res['publicKey']['id'],
 				],
 				[
+					'webfinger' => Purify::clean($webfinger),
+					'key_id' => $res['publicKey']['id'],
 					'remote_url' => $res['id'],
 					'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
 					'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
