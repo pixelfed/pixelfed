@@ -24,6 +24,7 @@
 - Update ProfileController, cache actor object and atom feed ([8665eab1](https://github.com/pixelfed/pixelfed/commit/8665eab1))
 - Update NotificationTransformer, fix mediaTag and modLog types ([b6c06c4b](https://github.com/pixelfed/pixelfed/commit/b6c06c4b))
 - Update landing view, add `app.name` and `app.short_description` for better customizability ([bda9d16b](https://github.com/pixelfed/pixelfed/commit/bda9d16b))
+- Update Profile, fix avatarUrl paths. Fixes #3559 #3634 ([989e4249](https://github.com/pixelfed/pixelfed/commit/989e4249))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

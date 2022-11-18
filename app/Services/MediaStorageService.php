@@ -246,7 +246,7 @@ class MediaStorageService {
 		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
 		$permalink = $disk->url($file);
 
-		$avatar->media_path = $base . $path;
+		$avatar->media_path = $base . '/' . $path;
 		$avatar->is_remote = true;
 		$avatar->cdn_url = $local ? config('app.url') . $permalink : $permalink;
 		$avatar->size = $head['length'];

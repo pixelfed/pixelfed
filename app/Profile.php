@@ -164,15 +164,16 @@ class Profile extends Model
 				if(substr($avatar->cdn_url, 0, 8) === 'https://') {
 					return $avatar->cdn_url;
 				} else {
-					return url($avatar->cdn_url);
+					return url('/storage/avatars/default.jpg');
 				}
 			}
 
-			if($avatar->is_remote) {
+			$path = $avatar->media_path;
+
+			if(substr($path, 0, 6) !== 'public') {
 				return url('/storage/avatars/default.jpg');
 			}
-			
-			$path = $avatar->media_path;
+
 			$path = "{$path}?v={$avatar->change_count}";
 
 			return config('app.url') . Storage::url($path);
