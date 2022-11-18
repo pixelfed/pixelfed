@@ -23,7 +23,7 @@ class AccountService
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$profile = Profile::find($id);
-			if(!$profile) {
+			if(!$profile || $profile->status === 'delete') {
 				if($softFail) {
 					return null;
 				}
