@@ -40,12 +40,12 @@ use App\Models\CustomEmoji;
 
 class AdminController extends Controller
 {
-	use AdminReportController, 
+	use AdminReportController,
 	AdminDirectoryController,
 	AdminDiscoverController,
 	// AdminGroupsController,
-	AdminMediaController, 
-	AdminSettingsController, 
+	AdminMediaController,
+	AdminSettingsController,
 	AdminInstanceController,
 	// AdminStorageController,
 	AdminUserController;
@@ -518,7 +518,7 @@ class AdminController extends Controller
 					->whereShortcode($request->input('shortcode'));
 				})
 			],
-			'emoji' => 'required|file|mimetypes:jpg,png|max:' . (config('federation.custom_emoji.max_size') / 1000)
+			'emoji' => 'required|file|mimes:jpg,png|max:' . (config('federation.custom_emoji.max_size') / 1000)
 		]);
 
 		$emoji = new CustomEmoji;
