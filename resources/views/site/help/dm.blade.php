@@ -6,7 +6,7 @@
   <h3 class="font-weight-bold">{{__('helpcenter.directMessages')}}</h3>
 </div>
 <hr>
-<p class="lead ">Send and recieve direct messages from other profiles.</p>
+<p class="lead ">Send and receive direct messages from other profiles.</p>
 <hr>
 <p>
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
@@ -44,7 +44,7 @@
 {{-- <p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="collapse2">
     <i class="fas fa-chevron-down mr-2"></i>
-    How do I manage messages I've recieved with Pixelfed Direct?
+    How do I manage messages I've received with Pixelfed Direct?
   </a>
   <div class="collapse" id="collapse2">
     <div>
@@ -77,7 +77,7 @@
 <p> 
   <a class="text-dark font-weight-bold" data-toggle="collapse" href="#collapse5" role="button" aria-expanded="false" aria-controls="collapse5">
     <i class="fas fa-chevron-down mr-2"></i>
-    How do I report content that I've recieved in a Pixelfed Direct message?
+    How do I report content that I've received in a Pixelfed Direct message?
   </a>
   <div class="collapse" id="collapse5">
     <div class="mt-2">
