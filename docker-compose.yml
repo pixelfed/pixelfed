@@ -13,7 +13,7 @@ version: '3'
 services:
 ## App and Worker
   app:
-    # Comment to use dockerhub image
+    # Comment to use docker hub image
     image: pixelfed/pixelfed:latest
     restart: unless-stopped
     env_file:
