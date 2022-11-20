@@ -96,7 +96,7 @@
 			@if($sort == 'duplicates')
 			<div class="alert alert-warning py-2 mt-4">
 				<p class="mb-0">
-					<i class="far fa-exclamation-triangle mr-2"></i> Duplicate emoji shortcodes can lead to unpredictible results
+					<i class="far fa-exclamation-triangle mr-2"></i> Duplicate emoji shortcodes can lead to unpredictable results
 				</p>
 			</div>
 			@endif
