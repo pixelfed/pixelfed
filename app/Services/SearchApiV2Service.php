@@ -32,7 +32,7 @@ class SearchApiV2Service
 		$this->query = $query;
 		$q = urldecode($query->input('q'));
 
-		if($query->has('resolve') && 
+		if($query->has('resolve') &&
 			( Str::startsWith($q, 'https://') ||
 			  Str::substrCount($q, '@') >= 1)
 		) {
