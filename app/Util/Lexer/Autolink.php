@@ -676,11 +676,11 @@ class Autolink extends Regex
             $displayURL = $entity['display_url'];
             $expandedURL = $entity['expanded_url'];
             $displayURLSansEllipses = preg_replace('/…/u', '', $displayURL);
-            $diplayURLIndexInExpandedURL = mb_strpos($expandedURL, $displayURLSansEllipses);
+            $displayURLIndexInExpandedURL = mb_strpos($expandedURL, $displayURLSansEllipses);
 
-            if ($diplayURLIndexInExpandedURL !== false) {
-                $beforeDisplayURL = mb_substr($expandedURL, 0, $diplayURLIndexInExpandedURL);
-                $afterDisplayURL = mb_substr($expandedURL, $diplayURLIndexInExpandedURL + mb_strlen($displayURLSansEllipses));
+            if ($displayURLIndexInExpandedURL !== false) {
+                $beforeDisplayURL = mb_substr($expandedURL, 0, $displayURLIndexInExpandedURL);
+                $afterDisplayURL = mb_substr($expandedURL, $displayURLIndexInExpandedURL + mb_strlen($displayURLSansEllipses));
                 $precedingEllipsis = (preg_match('/\A…/u', $displayURL)) ? '…' : '';
                 $followingEllipsis = (preg_match('/…\z/u', $displayURL)) ? '…' : '';
 
