@@ -134,13 +134,13 @@ class CustomEmojiService
 					return $q->groupBy('shortcode');
 				})
 				->get()
-				->map(function($emojo) {
-					$url = url('storage/' . $emojo->media_path);
+				->map(function($emoji) {
+					$url = url('storage/' . $emoji->media_path);
 					return [
-						'shortcode' => str_replace(':', '', $emojo->shortcode),
+						'shortcode' => str_replace(':', '', $emoji->shortcode),
 						'url' => $url,
 						'static_url' => $url,
-						'visible_in_picker' => $emojo->disabled == false
+						'visible_in_picker' => $emoji->disabled == false
 					];
 				})
 				->when($pgsql, function($collection) {
