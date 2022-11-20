@@ -22,19 +22,19 @@
 			  	<div class="collapse show" id="step1">
 				  	<p>You will need to install a compatible mobile app, we recommend the following apps:</p>
 				  	<ul>
-				  		<li><a href="https://1password.com/downloads/" rel="nooopener nofollow">1Password</a></li>
-				  		<li><a href="https://authy.com/download/" rel="nooopener nofollow">Authy</a></li>
-				  		<li><a href="https://lastpass.com/auth/" rel="nooopener nofollow">LastPass Authenticator</a></li>
+				  		<li><a href="https://1password.com/downloads/" rel="noopener nofollow">1Password</a></li>
+				  		<li><a href="https://authy.com/download/" rel="noopener nofollow">Authy</a></li>
+				  		<li><a href="https://lastpass.com/auth/" rel="noopener nofollow">LastPass Authenticator</a></li>
 				  		<li>
 				  			Google Authenticator
-				  			<a class="small" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_CA" rel="nooopener nofollow">
+				  			<a class="small" href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en_CA" rel="noopener nofollow">
 				  				(android)
 				  			</a>
-				  			<a class="small" href="https://itunes.apple.com/ca/app/google-authenticator/id388497605?mt=8" rel="nooopener nofollow">
+				  			<a class="small" href="https://itunes.apple.com/ca/app/google-authenticator/id388497605?mt=8" rel="noopener nofollow">
 				  				(iOS)
 				  			</a>
 				  		</li>
-				  		<li><a href="https://www.microsoft.com/en-us/account/authenticator" rel="nooopener nofollow">Microsoft Authenticator</a></li>
+				  		<li><a href="https://www.microsoft.com/en-us/account/authenticator" rel="noopener nofollow">Microsoft Authenticator</a></li>
 				  	</ul>
 			  	</div>
 			  </section>
