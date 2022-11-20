@@ -666,7 +666,7 @@
 - Updated video presenters, add playsinline attribute to video tags. ([0299aa5b](https://github.com/pixelfed/pixelfed/commit/0299aa5b))
 - Updated RemotePost, RemoteProfile components, add fallback avatars. ([754151dc](https://github.com/pixelfed/pixelfed/commit/754151dc))
 - Updated FederationController, move well-known to api middleware and cache webfinger lookups. ([4505d1f0](https://github.com/pixelfed/pixelfed/commit/4505d1f0))
-- Updated InstanceActorController, improve json seralization by not escaping slashes. ([0a8eb81b](https://github.com/pixelfed/pixelfed/commit/0a8eb81b))
+- Updated InstanceActorController, improve json serialization by not escaping slashes. ([0a8eb81b](https://github.com/pixelfed/pixelfed/commit/0a8eb81b))
 - Refactor following & relationship logic. Replace FollowerObserver with FollowerService and added RelationshipService to cache results. Removed NotificationTransformer includes and replaced with cached services to improve performance and reduce database queries. ([80d9b939](https://github.com/pixelfed/pixelfed/commit/80d9b939))
 - Updated PublicApiController, use AccountService in accountStatuses method. ([bef959f4](https://github.com/pixelfed/pixelfed/commit/bef959f4))
 - Updated auth config, add throttle limit to password resets. ([2609c86a](https://github.com/pixelfed/pixelfed/commit/2609c86a))
