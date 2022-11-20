@@ -654,7 +654,7 @@
 	<tr>
 		<td><span class="badge badge-primary">MEDIA</span></td>
 		<td><strong>MEDIA_EXIF_DATABASE</strong></td>
-		<td><span>{{config_cache('media.exif.batabase') ? '✅ true' : '❌ false' }}</span></td>
+		<td><span>{{config_cache('media.exif.database') ? '✅ true' : '❌ false' }}</span></td>
 	</tr>
 
 	<tr>
