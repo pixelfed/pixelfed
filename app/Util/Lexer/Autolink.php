@@ -787,8 +787,8 @@ class Autolink extends Regex
             $tweet = $this->tweet;
         }
         $attributes = [];
-        $doller = StringUtils::substr($tweet, $entity['indices'][0], 1);
-        $linkText = $doller.$entity['cashtag'];
+        $dollar = StringUtils::substr($tweet, $entity['indices'][0], 1);
+        $linkText = $dollar.$entity['cashtag'];
         $attributes['href'] = $this->url_base_cash.$entity['cashtag'];
         $attributes['title'] = $linkText;
         if (!empty($this->class_cash)) {
