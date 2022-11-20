@@ -1354,7 +1354,7 @@
 - Update DiscoverComponent, change api namespace [35275572](https://github.com/pixelfed/pixelfed/commit/35275572)
 
 ## Deprecated
-- Removed deprecated AttachmentTransformer, superceeded by MediaTransformer [9b5aac4f](https://github.com/pixelfed/pixelfed/commit/9b5aac4f)
+- Removed deprecated AttachmentTransformer, superseded by MediaTransformer [9b5aac4f](https://github.com/pixelfed/pixelfed/commit/9b5aac4f)
 
 ### To enable mobile app support
 - Run ```php artisan passport:keys```
