@@ -541,7 +541,7 @@ class Extractor extends Regex
     public function removeOverlappingEntities($entities)
     {
         $result = [];
-        usort($entities, [$this, 'sortEntites']);
+        usort($entities, [$this, 'sortEntities']);
 
         $prev = null;
         foreach ($entities as $entity) {
@@ -563,7 +563,7 @@ class Extractor extends Regex
      *
      * @return int
      */
-    protected function sortEntites($a, $b)
+    protected function sortEntities($a, $b)
     {
         if ($a['indices'][0] == $b['indices'][0]) {
             return 0;
