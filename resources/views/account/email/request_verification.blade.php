@@ -18,7 +18,7 @@
 	  <div class="card-body">
 	  	<p class="">If you are experiencing issues receiving your email address confirmation code to the email address you registered with, you can request manual verification as a last resort. An administrator will review your request.</p>
 
-	  	<p class="font-weight-bold">If you request manual email verification, you still may experience issues recieving emails from our service, including password reset requests.</p>
+	  	<p class="font-weight-bold">If you request manual email verification, you still may experience issues receiving emails from our service, including password reset requests.</p>
 
 	  	<p>In the event you need to reset your password and do not receive the password reset email, please contact the administrators.</p>
 
