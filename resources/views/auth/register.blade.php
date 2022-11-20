@@ -4,8 +4,8 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-5">
-            <div class="card">
-                <div class="card-header bg-white p-3 text-center font-weight-bold">{{ __('Register a new account') }}</div>
+            <div class="">
+                <div class="card-header bg-transparent p-3 text-center font-weight-bold h3">{{ __('Register a new account') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}" class="px-md-3">
@@ -13,7 +13,6 @@
                         <input type="hidden" name="rt" value="{{ (new \App\Http\Controllers\Auth\RegisterController())->getRegisterToken() }}">
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Name</label>
                                 <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
 
                                 @if ($errors->has('name'))
@@ -26,7 +25,6 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Username</label>
                                 <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
 
                                 @if ($errors->has('username'))
@@ -39,8 +37,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Email</label>
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('E-Mail Address') }}" required>
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('Email') }}" required>
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -52,7 +49,6 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Password</label>
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
 
                                 @if ($errors->has('password'))
@@ -65,7 +61,6 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <label class="small font-weight-bold text-lighter">Confirm Password</label>
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
                             </div>
                         </div>
@@ -91,7 +86,7 @@
                         
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold">
                                     {{ __('Register') }}
                                 </button>
                             </div>
