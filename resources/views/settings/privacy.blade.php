@@ -149,7 +149,7 @@
           <div class="form-check">
             <input class="form-check-input" type="radio" id="fm-3" name="pfType" value="only-followers">
             <label class="form-check-label pb-2 font-weight-bold" for="fm-3">
-              Only followers that have followed you for atleast <select name="pfDuration">
+              Only followers that have followed you for at least <select name="pfDuration">
                   <option value="60">1 hour</option>
                   <option value="1440">1 day</option>
                   <option value="20160">2 weeks</option>

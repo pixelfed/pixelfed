@@ -154,7 +154,7 @@
 	            				<li>Post contains one or more of: <span class="badge badge-primary">https://</span> <span class="badge badge-primary">http://</span> <span class="badge badge-primary">hxxps://</span> <span class="badge badge-primary">hxxp://</span> <span class="badge badge-primary">www.</span> <span class="badge badge-primary">.com</span> <span class="badge badge-primary">.net</span> <span class="badge badge-primary">.org</span> </li>
 	            			</ul>
 
-	            			<p>If you've marked atleast one positive detection from an account as <span class="font-weight-bold">Not spam</span>, any future posts they create will skip detection.</p>
+	            			<p>If you've marked at least one positive detection from an account as <span class="font-weight-bold">Not spam</span>, any future posts they create will skip detection.</p>
 
 	            			<hr />
 
@@ -180,7 +180,7 @@
 	            			</p>
 
 	            			<p class="mb-0 small">
-	            				We recommend atleast 200 classifications for both spam and not-spam, it is important to train Autospam on both so you get more accurate results.
+	            				We recommend at least 200 classifications for both spam and not-spam, it is important to train Autospam on both so you get more accurate results.
 	            			</p>
 	            		</div>
 	            	</div>
