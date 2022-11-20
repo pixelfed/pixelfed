@@ -823,7 +823,7 @@
 - Updated LikeController, improve query perf. ([f3d6023e](https://github.com/pixelfed/pixelfed/commit/f3d6023e))
 - Updated License util, add nameToId method. ([f6131ed7](https://github.com/pixelfed/pixelfed/commit/f6131ed7))
 - Updated RemoteProfile, add warning about potentially out of date information. ([7274574c](https://github.com/pixelfed/pixelfed/commit/7274574c))
-- Updated NotifcationCard.vue component, add refresh button for cold notification cache. ([0e178a33](https://github.com/pixelfed/pixelfed/commit/0e178a33))
+- Updated NotificationCard.vue component, add refresh button for cold notification cache. ([0e178a33](https://github.com/pixelfed/pixelfed/commit/0e178a33))
 - Updated RemoteProfile component, add follower modals. ([c4146a30](https://github.com/pixelfed/pixelfed/commit/c4146a30))
 - Updated FollowerService, cache audience. ([22257cc2](https://github.com/pixelfed/pixelfed/commit/22257cc2))
 - Updated StatusService, add non-public option and improve cache invalidation. ([15c4fdd9](https://github.com/pixelfed/pixelfed/commit/15c4fdd9))
