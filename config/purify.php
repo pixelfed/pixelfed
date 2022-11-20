@@ -111,7 +111,7 @@ return [
         | The Allowed CSS properties.
         |
         | This directive turns on auto-paragraphing, where double
-        | newlines are converted in to paragraphs whenever possible.
+        | newlines are converted into paragraphs whenever possible.
         |
         | http://htmlpurifier.org/live/configdoc/plain.html#AutoFormat.AutoParagraph
         |
