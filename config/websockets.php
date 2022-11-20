@@ -231,7 +231,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | By default, the configuration allows only on HTTP. For SSL, you need
-    | to set up the the certificate, the key, and optionally, the passphrase
+    | to set up the certificate, the key, and optionally, the passphrase
     | for the private key.
     | You will need to restart the server for the settings to take place.
     |
