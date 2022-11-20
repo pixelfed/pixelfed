@@ -19,7 +19,7 @@
 		<div class="col-12 col-md-6">
 			<div class="alert alert-warning py-2 mb-4">
 				<p class="mb-0">
-					<i class="far fa-exclamation-triangle mr-2"></i> Duplicate emoji shortcodes can lead to unpredictible results
+					<i class="far fa-exclamation-triangle mr-2"></i> Duplicate emoji shortcodes can lead to unpredictable results
 				</p>
 				<p class="mb-0 small">If you change the primary/in-use emoji, you will need to clear the cache by running the <strong>php artisan cache:clear</strong> command for the changes to take effect immediately.</p>
 			</div>
