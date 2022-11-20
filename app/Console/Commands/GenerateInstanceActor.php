@@ -39,7 +39,7 @@ class GenerateInstanceActor extends Command
 			Cache::rememberForever(InstanceActor::PKI_PRIVATE, function() use($actor) {
 				return $actor->private_key;
 			});
-			$this->info('Instance actor succesfully generated. You do not need to run this command again.');
+			$this->info('Instance actor successfully generated. You do not need to run this command again.');
 			return;
 		}
 
@@ -66,7 +66,7 @@ class GenerateInstanceActor extends Command
 			return $actor->private_key;
 		});
 
-		$this->info('Instance actor succesfully generated. You do not need to run this command again.');
+		$this->info('Instance actor successfully generated. You do not need to run this command again.');
 
 		return 0;
 	}
