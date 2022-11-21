@@ -5,6 +5,8 @@
   <div class="title">
     <h3 class="font-weight-bold">Invites</h3>
     <p class="lead">Send email invites to your friends and family!</p>
+    <p><a class="btn btn-primary btn-lg py-0 font-weight-bold" href="{{route('settings.invites.create')}}">Invite someone</a></p>
+  	<p class="font-weight-lighter text-muted">You have <b class="font-weight-bold text-dark">{{$limit - $used}}</b> invites left.</p>
   </div>
   <hr>
   @if($invites->count() > 0) 
