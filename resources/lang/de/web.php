@@ -78,6 +78,7 @@ return [
 		'liked' => 'gefällt dein',
 		'commented' => 'kommentierte dein',
 		'reacted' => 'reagierte auf dein',
+		'sharedYourPost' => 'teilte deinen Beitrag',
 		'shared' => 'teilte deine',
 		'tagged' => 'markierte dich in einem',
 
