@@ -84,6 +84,7 @@ return [
 		'updatedA' => 'aktualisierte ein',
 		'sentA' => 'sendete ein',
 
+		'followedYou' => 'folgt dir',
 		'followed' => 'gefolgt',
 		'mentioned' => 'erwähnt',
 		'you' => 'du',
