@@ -1,0 +1,19 @@
+{
+    "name": "gcs/oidc-client",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "jumbojett/openid-connect-php": "^0.8.0"
+    },
+    "authors": [
+        {
+            "name": "Cabinet Office Digital Development",
+            "email": "webmaster@cabinetoffice.gov.uk"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "GCS\\OIDCClient\\": "src/"
+        }
+    }
+}

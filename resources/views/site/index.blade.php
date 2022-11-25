@@ -66,6 +66,11 @@
 						<div class="d-block d-md-none">
 							<p class="font-weight-light mt-3 mb-5 text-center px-5">{{ config_cache('app.short_description') ?? 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.' }}</p>
 						</div>
+@if (config('oidc.enabled'))
+						<div class="card my-4 shadow-none border">
+							<a href="{{ route('oidc.signin') }}">Login with {{config('oidc.provider_name')}}</a>
+						</div>
+@else
 						<div class="card my-4 shadow-none border">
 							<div class="card-body px-lg-5">
 								<div class="text-center">
@@ -138,6 +143,7 @@
 								<a href="/password/reset">Password Reset</a>
 							</p>
 						</div>
+@endif
 					</div>
 				</div>
 			</div>

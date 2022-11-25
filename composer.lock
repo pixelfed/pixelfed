@@ -1787,6 +1787,36 @@
             "time": "2022-02-20T15:07:15+00:00"
         },
         {
+            "name": "gcs/oidc-client",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "./oidc-client",
+                "reference": "bfed1ebb0ce47c482676ef60a181a0dcd1c47a7d"
+            },
+            "require": {
+                "jumbojett/openid-connect-php": "^0.8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GCS\\OIDCClient\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cabinet Office Digital Development",
+                    "email": "webmaster@cabinetoffice.gov.uk"
+                }
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "graham-campbell/result-type",
             "version": "v1.1.0",
             "source": {
@@ -2397,6 +2427,43 @@
                 }
             ],
             "time": "2020-06-13T08:05:20+00:00"
+        },
+        {
+            "name": "jumbojett/openid-connect-php",
+            "version": "v0.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jumbojett/OpenID-Connect-PHP.git",
+                "reference": "08c29b063803538f345183b66ac05cff7ed6eb9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jumbojett/OpenID-Connect-PHP/zipball/08c29b063803538f345183b66ac05cff7ed6eb9b",
+                "reference": "08c29b063803538f345183b66ac05cff7ed6eb9b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.4",
+                "phpseclib/phpseclib": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Bare-bones OpenID Connect client",
+            "support": {
+                "issues": "https://github.com/jumbojett/OpenID-Connect-PHP/issues",
+                "source": "https://github.com/jumbojett/OpenID-Connect-PHP/tree/v0.8.0"
+            },
+            "time": "2019-01-02T19:05:13+00:00"
         },
         {
             "name": "laravel/framework",

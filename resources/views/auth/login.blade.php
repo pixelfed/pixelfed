@@ -7,6 +7,9 @@
             <div class="">
                 <div class="card-header bg-transparent p-3 text-center font-weight-bold h3">{{ __('Login') }}</div>
 
+@if (config('oidc.enabled'))
+                <a href="{{ route('oidc.signin') }}">Login with {{config('oidc.provider_name')}}</a>
+@else
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
@@ -74,6 +77,7 @@
                         </a>
                     </p>
                 </div>
+@endif
             </div>
         </div>
     </div>
