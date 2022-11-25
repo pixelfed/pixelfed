@@ -22,8 +22,7 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
+      - ./data/app-storage:/var/www/storage
       - "./.env.docker:/var/www/.env"
     networks:
       - external
@@ -43,8 +42,7 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
+      - ./data/app-storage:/var/www/storage
     networks:
       - external
       - internal
@@ -63,7 +61,7 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - "db-data:/var/lib/mysql"
+      - ./data/db-data:/var/lib/mysql
 
   redis:
     image: redis:5-alpine
@@ -71,15 +69,9 @@ services:
     env_file:
       - .env.docker
     volumes:
-      - "redis-data:/data"
+      - ./data/redis-data:/data
     networks:
       - internal
-
-volumes:
-  db-data:
-  redis-data:
-  app-storage:
-  app-bootstrap:
 
 networks:
   internal:
