@@ -322,6 +322,7 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
+                          ->where('is_nsfw', false)
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -365,6 +366,7 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
+                          ->where('is_nsfw', false)
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -620,7 +622,8 @@ class PublicApiController extends Controller
 	                        'scope',
 	                        'created_at',
 	                      )
-	                      ->where('id', $dir, $id)
+                          ->where('id', $dir, $id)
+                          ->where('is_nsfw', false)
 	                      ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                      ->whereNotIn('profile_id', $filtered)
 	                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
@@ -648,6 +651,7 @@ class PublicApiController extends Controller
 	                          )
 	                      	  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                          ->whereNotIn('profile_id', $filtered)
+                              ->where('is_nsfw', false)
 	                          ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 	                          ->whereNotNull('uri')
 	                          ->whereScope('public')

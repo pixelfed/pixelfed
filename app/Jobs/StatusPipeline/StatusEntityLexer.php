@@ -171,7 +171,8 @@ class StatusEntityLexer implements ShouldQueue
 			$status->scope == 'public' &&
 			in_array($status->type, $types) &&
 			$status->in_reply_to_id === null &&
-			$status->reblog_of_id === null
+			$status->reblog_of_id === null &&
+			$status->is_nsfw == false
 		) {
 			PublicTimelineService::add($status->id);
 		}

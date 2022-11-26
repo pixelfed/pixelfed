@@ -78,6 +78,7 @@ class NetworkTimelineService
 			Redis::del(self::CACHE_KEY);
 			$ids = Status::whereNotNull('uri')
 				->whereScope('public')
+				->where('is_nsfw', false)
 				->whereNull('in_reply_to_id')
 				->whereNull('reblog_of_id')
 				->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])

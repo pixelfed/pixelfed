@@ -78,6 +78,7 @@ class PublicTimelineService {
 			Redis::del(self::CACHE_KEY);
 			$ids = Status::whereNull('uri')
 				->whereNull('in_reply_to_id')
+				->where('is_nsfw', false)
 				->whereNull('reblog_of_id')
 				->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 				->whereScope('public')
