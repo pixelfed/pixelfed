@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-buster
+FROM php:8.1-fpm-buster
 
 # Use the default production configuration
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
