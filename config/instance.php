@@ -91,4 +91,6 @@ return [
 		'profile' => env('INSTANCE_PROFILE_EMBEDS', true),
 		'post' => env('INSTANCE_POST_EMBEDS', true),
 	],
+
+	'hide_nsfw_on_public_feeds' => env('PF_HIDE_NSFW_ON_PUBLIC_FEEDS', false),
 ];

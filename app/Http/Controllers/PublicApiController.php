@@ -307,6 +307,7 @@ class PublicApiController extends Controller
         $user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         if(config('exp.cached_public_timeline') == false) {
             if($min || $max) {
                 $dir = $min ? '>' : '<';
@@ -322,7 +323,9 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
-                          ->where('is_nsfw', false)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -366,7 +369,9 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
-                          ->where('is_nsfw', false)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -610,6 +615,7 @@ class PublicApiController extends Controller
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 
         if(config('instance.timeline.network.cached') == false) {
 	        if($min || $max) {
@@ -623,7 +629,9 @@ class PublicApiController extends Controller
 	                        'created_at',
 	                      )
                           ->where('id', $dir, $id)
-                          ->where('is_nsfw', false)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
 	                      ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                      ->whereNotIn('profile_id', $filtered)
 	                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
@@ -651,7 +659,9 @@ class PublicApiController extends Controller
 	                          )
 	                      	  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                          ->whereNotIn('profile_id', $filtered)
-                              ->where('is_nsfw', false)
+                              ->when($hideNsfw, function($q, $hideNsfw) {
+                                return $q->where('is_nsfw', false);
+                              })
 	                          ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 	                          ->whereNotNull('uri')
 	                          ->whereScope('public')
