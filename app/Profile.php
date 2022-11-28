@@ -174,9 +174,7 @@ class Profile extends Model
 				return url('/storage/avatars/default.jpg');
 			}
 
-			$path = "{$path}?v={$avatar->change_count}";
-
-			return config('app.url') . Storage::url($path);
+			return Storage::url($path) . "?v={$avatar->change_count}";
 		});
 
 		return $url;
