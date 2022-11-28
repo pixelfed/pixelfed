@@ -539,6 +539,7 @@ class ApiV1Dot1Controller extends Controller
 
         $user = User::findOrFail($verify->user_id);
         $user->email_verified_at = now();
+        $user->last_active_at = now();
         $user->save();
 
         $verify->delete();
@@ -546,7 +547,7 @@ class ApiV1Dot1Controller extends Controller
         $token = $user->createToken('Pixelfed');
 
         return response()->json([
-            'access_token' => $token->access_token
+            'access_token' => $token->accessToken
         ]);
     }
 }
