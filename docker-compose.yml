@@ -11,83 +11,93 @@ version: '3'
 # if the volumes are properly shared between cluster members.
 
 services:
-  nginx:
-    image: nginx
-    volumes:
-      - $PWD/contrib/docker-nginx.conf:/etc/nginx/nginx.conf
-    networks:
-      - external
-    ports:
-      - 443:443
-## App and Worker
-  app:
-    # Comment to use dockerhub image
-    build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
-    image: pixelfed
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
-    networks:
-      - internal
-    depends_on:
-      - db
-      - redis
+    nginx:
+        image: nginx
+        volumes:
+            - $PWD/contrib/docker-nginx.conf:/etc/nginx/nginx.conf
+            - ./data/certbot/conf:/etc/letsencrypt
+            - ./data/certbot/www:/var/www/certbot
+        networks:
+            - external
+            - internal
+        ports:
+            - "443:443"
 
-  worker:
-    build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
-    image: pixelfed
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-    networks:
-      - external
-      - internal
-    command: gosu www-data php artisan horizon
-    depends_on:
-      - db
-      - redis
+    certbot:
+        image: certbot/certbot
+        volumes:
+            - ./data/certbot/conf:/etc/letsencrypt
+            - ./data/certbot/www:/var/www/certbot
 
-## DB and Cache
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.docker
-    volumes:
-      - "db-data:/var/lib/mysql"
+    ## App and Worker
+    app:
+        # Comment to use dockerhub image
+        build:
+            context: .
+            dockerfile: contrib/docker/Dockerfile.apache
+        #image: pixelfed
+        restart: unless-stopped
+        env_file:
+            - .env.docker
+        volumes:
+            - app-storage:/var/www/storage
+            - app-bootstrap:/var/www/bootstrap
+            - "./.env.docker:/var/www/.env"
+        networks:
+            - internal
+        depends_on:
+            - db
+            - redis
 
-  redis:
-    image: redis:5-alpine
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - "redis-data:/data"
-    networks:
-      - internal
+    worker:
+        build:
+            context: .
+            dockerfile: contrib/docker/Dockerfile.apache
+        #image: pixelfed
+        restart: unless-stopped
+        env_file:
+            - .env.docker
+        volumes:
+            - app-storage:/var/www/storage
+            - app-bootstrap:/var/www/bootstrap
+        networks:
+            - external
+            - internal
+        command: gosu www-data php artisan horizon
+        depends_on:
+            - db
+            - redis
+
+    ## DB and Cache
+    db:
+        image: mysql:8.0
+        restart: unless-stopped
+        networks:
+            - internal
+        command: --default-authentication-plugin=mysql_native_password
+        env_file:
+            - .env.docker
+        volumes:
+            - "db-data:/var/lib/mysql"
+
+    redis:
+        image: redis:5-alpine
+        restart: unless-stopped
+        env_file:
+            - .env.docker
+        volumes:
+            - "redis-data:/data"
+        networks:
+            - internal
 
 volumes:
-  db-data:
-  redis-data:
-  app-storage:
-  app-bootstrap:
+    db-data:
+    redis-data:
+    app-storage:
+    app-bootstrap:
 
 networks:
-  internal:
-    internal: true
-  external:
-    driver: bridge
+    internal:
+        internal: true
+    external:
+        driver: bridge
