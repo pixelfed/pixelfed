@@ -496,7 +496,8 @@ class Helpers {
 				$status->in_reply_to_id === null &&
 				$status->reblog_of_id === null &&
 				in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old')))
+				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
+				(config('instance.hide_nsfw_on_public_feeds') == true ? $status->is_nsfw == false : true)
 			) {
 				NetworkTimelineService::add($status->id);
 			}
@@ -544,7 +545,7 @@ class Helpers {
 	public static function getScope($activity, $url)
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
-		$url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
+		$url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 		$scope = 'private';
 
