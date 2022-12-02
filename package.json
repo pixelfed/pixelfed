@@ -41,7 +41,7 @@
 		"bootstrap-vue": "^2.22.0",
 		"caniuse-lite": "^1.0.30001418",
 		"chart.js": "^2.7.2",
-		"filesize": "^3.6.1",
+		"filesize": "^10.0.5",
 		"hls.js": "^1.1.5",
 		"howler": "^2.2.0",
 		"infinite-scroll": "^3.0.6",
