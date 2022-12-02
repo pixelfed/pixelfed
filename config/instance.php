@@ -93,4 +93,8 @@ return [
 	],
 
 	'hide_nsfw_on_public_feeds' => env('PF_HIDE_NSFW_ON_PUBLIC_FEEDS', false),
+
+	'avatar' => [
+		'local_to_cloud' => env('PF_LOCAL_AVATAR_TO_CLOUD', false)
+	],
 ];
