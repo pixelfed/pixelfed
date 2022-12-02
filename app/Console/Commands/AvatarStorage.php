@@ -196,8 +196,8 @@ class AvatarStorage extends Command
                         continue;
                     }
                     $newMediaPath = $disk->put($newPath, $existing);
-                    $avatar->media_path = $newMediaPath;
-                    $avatar->cdn_url = $disk->url($newMediaPath);
+                    $avatar->media_path = $newPath;
+                    $avatar->cdn_url = $disk->url($newPath);
                     $avatar->save();
                 }
 

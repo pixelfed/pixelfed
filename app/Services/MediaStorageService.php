@@ -229,7 +229,7 @@ class MediaStorageService {
 
 		$base = ($local ? 'public/cache/' : 'cache/') . 'avatars/' . $avatar->profile_id;
 		$ext = $head['mime'] == 'image/jpeg' ? 'jpg' : 'png';
-		$path = Str::random(20) . '_avatar.' . $ext;
+		$path = 'avatar_' . strtolower(Str::random(random_int(3,6))) . '.' . $ext;
 		$tmpBase = storage_path('app/remcache/');
 		$tmpPath = 'avatar_' . $avatar->profile_id . '-' . $path;
 		$tmpName = $tmpBase . $tmpPath;
