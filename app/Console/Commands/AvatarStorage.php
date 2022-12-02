@@ -51,8 +51,8 @@ class AvatarStorage extends Command
             ],
             [
                 'Remote',
-                Avatar::whereNotNull('is_remote')->count(),
-                PrettyNumber::size(Avatar::whereNotNull('is_remote')->sum('size'))
+                Avatar::whereIsRemote(true)->count(),
+                PrettyNumber::size(Avatar::whereIsRemote(true)->sum('size'))
             ],
             [
                 'Cached (CDN)',
@@ -61,8 +61,8 @@ class AvatarStorage extends Command
             ],
             [
                 'Uncached',
-                Avatar::whereNull('is_remote')->whereNull('cdn_url')->count(),
-                PrettyNumber::size(Avatar::whereNull('is_remote')->whereNull('cdn_url')->sum('size'))
+                Avatar::whereNull('cdn_url')->count(),
+                PrettyNumber::size(Avatar::whereNull('cdn_url')->sum('size'))
             ],
             [
                 '------------',
