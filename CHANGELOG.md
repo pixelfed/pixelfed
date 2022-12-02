@@ -30,6 +30,9 @@
 - Update InboxPipeline, bump request timeout from 5s to 60s ([bb120019](https://github.com/pixelfed/pixelfed/commit/bb120019))
 - Update web routes, fix missing home route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
 - Allow forceHttps to be disabled, fixes #3710 ([a31bdec7](https://github.com/pixelfed/pixelfed/commit/a31bdec7))
+- Update MediaStorageService, fix size check bug ([319f0ba5](https://github.com/pixelfed/pixelfed/commit/319f0ba5))
+- Update AvatarSync, fix sync skipping recently fetched avatars by setting last_fetched_at to null before refetching ([a83fc798](https://github.com/pixelfed/pixelfed/commit/a83fc798))
+- Refactor AvatarStorage to support migrating avatars to cloud storage, fix remote avatar refetching and merge AvatarSync commands and add deprecation notice to avatar:sync command ([223aea47](https://github.com/pixelfed/pixelfed/commit/223aea47))
 - ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
