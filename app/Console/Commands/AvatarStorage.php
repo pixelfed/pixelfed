@@ -87,12 +87,12 @@ class AvatarStorage extends Command
             $this->line(' ');
         }
 
-        if(config_cache('instance.avatar.local_to_cloud')) {
+        if(config('instance.avatar.local_to_cloud')) {
             $this->info('✅ - Store avatars on cloud filesystem');
             $this->line(' ');
         }
 
-        if(config_cache('pixelfed.cloud_storage') && config_cache('instance.avatar.local_to_cloud')) {
+        if(config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud')) {
             $disk = Storage::disk(config_cache('filesystems.cloud'));
             $exists = $disk->exists('cache/avatars/default.jpg');
             $state = $exists ? '✅' : '❌';
@@ -100,7 +100,7 @@ class AvatarStorage extends Command
             $this->info($msg);
         }
 
-        $options = config_cache('pixelfed.cloud_storage') && config_cache('instance.avatar.local_to_cloud') ?
+        $options = config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud') ?
             [
                 'Cancel',
                 'Upload default avatar to cloud',
@@ -164,7 +164,7 @@ class AvatarStorage extends Command
 
     protected function uploadAvatarsToCloud()
     {
-        if(!config_cache('pixelfed.cloud_storage') || !config_cache('instance.avatar.local_to_cloud')) {
+        if(!config_cache('pixelfed.cloud_storage') || !config('instance.avatar.local_to_cloud')) {
             $this->error('Enable cloud storage and avatar cloud storage to perform this action');
             return;
         }
