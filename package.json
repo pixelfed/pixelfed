@@ -11,7 +11,7 @@
 	"devDependencies": {
 		"acorn": "^8.7.1",
 		"axios": "^0.21.1",
-		"bootstrap": "^4.5.2",
+		"bootstrap": "^5.2.3",
 		"cross-env": "^5.2.1",
 		"jquery": "^3.6.0",
 		"laravel-echo": "^1.12.0",
