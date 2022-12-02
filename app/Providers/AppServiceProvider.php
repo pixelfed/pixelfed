@@ -40,7 +40,10 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		URL::forceScheme('https');
+		if(config('instance.force_https_urls', true)) {
+			URL::forceScheme('https');
+		}
+
 		Schema::defaultStringLength(191);
 		Paginator::useBootstrap();
 		Avatar::observe(AvatarObserver::class);

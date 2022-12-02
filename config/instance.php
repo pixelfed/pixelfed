@@ -1,6 +1,7 @@
 <?php
 
 return [
+	'force_https_urls' => env('FORCE_HTTPS_URLS', true),
 
 	'description' => env('INSTANCE_DESCRIPTION', 'Pixelfed - Photo sharing for everyone'),
 
