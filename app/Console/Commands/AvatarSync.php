@@ -212,7 +212,9 @@ class AvatarSync extends Command
 			->with('profile')
 			->chunk(10, function($avatars) {
 				foreach($avatars as $avatar) {
-					RemoteAvatarFetch::dispatch($avatar->profile);
+					$avatar->last_fetched_at = null;
+					$avatar->save();
+					RemoteAvatarFetch::dispatch($avatar->profile)->onQueue('low');
 				}
 		});
 	}
