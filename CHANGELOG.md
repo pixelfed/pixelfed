@@ -29,6 +29,8 @@
 - Update Profile, fix avatarUrl paths. Fixes #3559 #3634 ([989e4249](https://github.com/pixelfed/pixelfed/commit/989e4249))
 - Update InboxPipeline, bump request timeout from 5s to 60s ([bb120019](https://github.com/pixelfed/pixelfed/commit/bb120019))
 - Update web routes, fix missing home route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
+- Allow forceHttps to be disabled, fixes #3710 ([a31bdec7](https://github.com/pixelfed/pixelfed/commit/a31bdec7))
+- ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 
