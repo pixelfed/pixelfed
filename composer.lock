@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd6df121d74b0e496d3b6a07309ed021",
+    "content-hash": "8f479baf51dd005c98e090a172becccf",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7678,26 +7678,27 @@
         },
         {
             "name": "stevebauman/purify",
-            "version": "v4.0.1",
+            "version": "v5.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stevebauman/purify.git",
-                "reference": "e56289062ed8a25c78c88f35e9106f00d01369c1"
+                "reference": "01e7edf997fd7f4cef7973726b5984c8ce717566"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stevebauman/purify/zipball/e56289062ed8a25c78c88f35e9106f00d01369c1",
-                "reference": "e56289062ed8a25c78c88f35e9106f00d01369c1",
+                "url": "https://api.github.com/repos/stevebauman/purify/zipball/01e7edf997fd7f4cef7973726b5984c8ce717566",
+                "reference": "01e7edf997fd7f4cef7973726b5984c8ce717566",
                 "shasum": ""
             },
             "require": {
                 "ezyang/htmlpurifier": "^4.9.0",
-                "illuminate/support": "~5.5|~6.0|~7.0|~8.0|~9.0",
-                "php": ">=7.1"
+                "illuminate/contracts": "~7.0|~8.0|~9.0",
+                "illuminate/support": "~7.0|~8.0|~9.0",
+                "php": ">=7.4"
             },
             "require-dev": {
-                "orchestra/testbench": "~3.7|~4.0|~5.0|~6.0|~7.0",
-                "phpunit/phpunit": "~7.0|~8.0|~9.0"
+                "orchestra/testbench": "~5.0|~6.0|~7.0",
+                "phpunit/phpunit": "~8.0|~9.0"
             },
             "type": "library",
             "extra": {
@@ -7737,9 +7738,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stevebauman/purify/issues",
-                "source": "https://github.com/stevebauman/purify/tree/v4.0.1"
+                "source": "https://github.com/stevebauman/purify/tree/v5.0.1"
             },
-            "time": "2022-01-21T21:41:41+00:00"
+            "time": "2022-10-07T16:06:29+00:00"
         },
         {
             "name": "symfony/cache",

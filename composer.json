@@ -38,7 +38,7 @@
 		"predis/predis": "^2.0",
 		"spatie/laravel-backup": "^8.0.0",
 		"spatie/laravel-image-optimizer": "^1.7",
-		"stevebauman/purify": "4.0.*",
+		"stevebauman/purify": "5.0.*",
 		"symfony/http-client": "^6.1",
 		"symfony/http-kernel": "^6.0.0",
 		"symfony/mailgun-mailer": "^6.1"
