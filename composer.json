@@ -15,7 +15,7 @@
 		"ext-openssl": "*",
 		"bacon/bacon-qr-code": "^2.0.3",
 		"beyondcode/laravel-websockets": "^1.13",
-		"brick/math": "^0.9.3",
+		"brick/math": "^0.10.2",
 		"buzz/laravel-h-captcha": "1.0.3",
 		"doctrine/dbal": "^2.7",
 		"fruitcake/laravel-cors": "^2.0",
