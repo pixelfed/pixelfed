@@ -17,7 +17,7 @@
 		"beyondcode/laravel-websockets": "^1.13",
 		"brick/math": "^0.9.3",
 		"buzz/laravel-h-captcha": "1.0.3",
-		"doctrine/dbal": "^2.7",
+		"doctrine/dbal": "^3.5",
 		"fruitcake/laravel-cors": "^2.0",
 		"intervention/image": "^2.4",
 		"jenssegers/agent": "^2.6",
