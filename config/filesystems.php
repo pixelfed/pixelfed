@@ -80,7 +80,7 @@ return [
             'options' => [
                 'CacheControl' => 'max-age=31536000'
             ],
-            'root' => env('DO_SPACES_ROOT','/'),
+            'root' => env('DO_SPACES_ROOT',''),
             'throw' => true,
         ],
 
