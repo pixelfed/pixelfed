@@ -81,7 +81,7 @@ class Question extends Fractal\TransformerAbstract
 			'capabilities' => [
 				'announce' => 'https://www.w3.org/ns/activitystreams#Public',
 				'like' => 'https://www.w3.org/ns/activitystreams#Public',
-				'reply' => $status->comments_disabled == true ? null : 'https://www.w3.org/ns/activitystreams#Public'
+				'reply' => $status->comments_disabled == true ? '[]' : 'https://www.w3.org/ns/activitystreams#Public'
 			],
 			'location' => $status->place_id ? [
 					'type' => 'Place',
