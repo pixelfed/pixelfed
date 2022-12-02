@@ -65,7 +65,7 @@ class AvatarOptimize implements ShouldQueue
 			Cache::forget('avatar:' . $avatar->profile_id);
 			$this->deleteOldAvatar($avatar->media_path, $this->current);
 
-			if(config_cache('pixelfed.cloud_storage') && config_cache('instance.avatar.local_to_cloud')) {
+			if(config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud')) {
 				$this->uploadToCloud($avatar);
 			} else {
 				$avatar->cdn_url = null;
