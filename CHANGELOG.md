@@ -33,7 +33,9 @@
 - Update MediaStorageService, fix size check bug ([319f0ba5](https://github.com/pixelfed/pixelfed/commit/319f0ba5))
 - Update AvatarSync, fix sync skipping recently fetched avatars by setting last_fetched_at to null before refetching ([a83fc798](https://github.com/pixelfed/pixelfed/commit/a83fc798))
 - Refactor AvatarStorage to support migrating avatars to cloud storage, fix remote avatar refetching and merge AvatarSync commands and add deprecation notice to avatar:sync command ([223aea47](https://github.com/pixelfed/pixelfed/commit/223aea47))
-- ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update AvatarStorage, improve overview calculations ([733b9fd0](https://github.com/pixelfed/pixelfed/commit/733b9fd0))
+- Update filesystem config, fix DO Spaces root default ([720b6eb3](https://github.com/pixelfed/pixelfed/commit/720b6eb3))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 
