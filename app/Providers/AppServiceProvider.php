@@ -40,9 +40,10 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (preg_match("/^https/", env('APP_URL')) || env('APP_ENV') === 'production') {
+		if(config('instance.force_https_urls')) {
 			URL::forceScheme('https');
 		}
+
 		Schema::defaultStringLength(191);
 		Paginator::useBootstrap();
 		Avatar::observe(AvatarObserver::class);
