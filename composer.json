@@ -24,7 +24,7 @@
 		"laravel/framework": "^9.0",
 		"laravel/helpers": "^1.1",
 		"laravel/horizon": "^5.0",
-		"laravel/passport": "^10.0",
+		"laravel/passport": "^11.3",
 		"laravel/tinker": "^2.0",
 		"laravel/ui": "^2.0|^3.4",
 		"league/flysystem-aws-s3-v3": "^3.0",
