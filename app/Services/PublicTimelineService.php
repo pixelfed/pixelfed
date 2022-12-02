@@ -75,9 +75,13 @@ class PublicTimelineService {
 	public static function warmCache($force = false, $limit = 100)
 	{
 		if(self::count() == 0 || $force == true) {
+			$hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 			Redis::del(self::CACHE_KEY);
 			$ids = Status::whereNull('uri')
 				->whereNull('in_reply_to_id')
+				->when($hideNsfw, function($q, $hideNsfw) {
+                  return $q->where('is_nsfw', false);
+                })
 				->whereNull('reblog_of_id')
 				->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 				->whereScope('public')

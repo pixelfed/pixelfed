@@ -166,12 +166,13 @@ class StatusEntityLexer implements ShouldQueue
 		if(config_cache('pixelfed.bouncer.enabled')) {
 			Bouncer::get($status);
 		}
-
+		$hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 		if( $status->uri == null &&
 			$status->scope == 'public' &&
 			in_array($status->type, $types) &&
 			$status->in_reply_to_id === null &&
-			$status->reblog_of_id === null
+			$status->reblog_of_id === null &&
+			($hideNsfw ? $status->is_nsfw == false : true)
 		) {
 			PublicTimelineService::add($status->id);
 		}

@@ -3,9 +3,11 @@
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.4...dev)
 
 ### New Features
+- Mobile App Registration ([#3829](https://github.com/pixelfed/pixelfed/pull/3829))
 - Portfolios ([#3705](https://github.com/pixelfed/pixelfed/pull/3705))
 - Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
+- Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -26,8 +28,7 @@
 - Update landing view, add `app.name` and `app.short_description` for better customizability ([bda9d16b](https://github.com/pixelfed/pixelfed/commit/bda9d16b))
 - Update Profile, fix avatarUrl paths. Fixes #3559 #3634 ([989e4249](https://github.com/pixelfed/pixelfed/commit/989e4249))
 - Update InboxPipeline, bump request timeout from 5s to 60s ([bb120019](https://github.com/pixelfed/pixelfed/commit/bb120019))
-- Update web routes, fix missing hom route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update web routes, fix missing home route ([a9f4ddfc](https://github.com/pixelfed/pixelfed/commit/a9f4ddfc))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 

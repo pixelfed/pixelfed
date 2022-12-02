@@ -276,4 +276,6 @@ return [
 	'media_fast_process' => env('PF_MEDIA_FAST_PROCESS', true),
 
 	'max_altext_length' => env('PF_MEDIA_MAX_ALTTEXT_LENGTH', 1000),
+
+	'allow_app_registration' => env('PF_ALLOW_APP_REGISTRATION', true),
 ];
