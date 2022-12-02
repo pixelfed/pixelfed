@@ -154,6 +154,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('iarpfc', 'Api\ApiV1Dot1Controller@inAppRegistrationPreFlightCheck');
 			Route::post('iar', 'Api\ApiV1Dot1Controller@inAppRegistration');
 			Route::post('iarc', 'Api\ApiV1Dot1Controller@inAppRegistrationConfirm');
+			Route::get('iarer', 'Api\ApiV1Dot1Controller@inAppRegistrationEmailRedirect');
 		});
 	});
 
