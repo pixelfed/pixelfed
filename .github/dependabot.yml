@@ -5,11 +5,15 @@
 
 version: 2
 updates:
-  - package-ecosystem: "composer" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "staging"
     schedule:
-      interval: "daily"
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+      interval: "weekly"
+    versioning-strategy: lockfile-only
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "staging"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    versioning-strategy: lockfile-only
