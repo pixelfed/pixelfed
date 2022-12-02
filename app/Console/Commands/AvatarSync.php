@@ -48,6 +48,18 @@ class AvatarSync extends Command
 	public function handle()
 	{
 		$this->info('Welcome to the avatar sync manager');
+		$this->line(' ');
+		$this->line(' ');
+		$this->error('This command is deprecated and will be removed in a future version');
+		$this->error('You should use the following command instead: ');
+		$this->line(' ');
+		$this->info('php artisan avatar:storage');
+		$this->line(' ');
+
+		$confirm = $this->confirm('Are you sure you want to use this deprecated command even though it is no longer supported?');
+		if(!$confirm) {
+			return;
+		}
 
 		$actions = [
 			'Analyze',
@@ -123,7 +135,7 @@ class AvatarSync extends Command
 		$bar = $this->output->createProgressBar($count);
 		$bar->start();
 
-		Profile::chunk(5000, function($profiles) use ($bar) {
+		Profile::chunk(50, function($profiles) use ($bar) {
 			foreach($profiles as $profile) {
 				if($profile->domain == null) {
 					$bar->advance();
@@ -146,41 +158,11 @@ class AvatarSync extends Command
 
 	protected function fetch()
 	{
-		$this->info('Fetching ....');
-		Avatar::whereIsRemote(true)
-			->whereNull('cdn_url')
-			// ->with('profile')
-			->chunk(10, function($avatars) {
-				foreach($avatars as $avatar) {
-					if(!$avatar || !$avatar->profile) {
-						continue;
-					}
-					$url = $avatar->profile->remote_url;
-					if(!$url || !Helpers::validateUrl($url)) {
-						continue;
-					}
-					try {
-						$res = Helpers::fetchFromUrl($url);
-						if(
-							!is_array($res) ||
-							!isset($res['@context']) ||
-							!isset($res['icon']) ||
-							!isset($res['icon']['type']) ||
-							!isset($res['icon']['url']) ||
-							!Str::endsWith($res['icon']['url'], ['.png', '.jpg', '.jpeg'])
-						) {
-							continue;
-						}
-					} catch (\GuzzleHttp\Exception\RequestException $e) {
-						continue;
-					} catch(\Illuminate\Http\Client\ConnectionException $e) {
-						continue;
-					}
-					$avatar->remote_url = $res['icon']['url'];
-					$avatar->save();
-					RemoteAvatarFetch::dispatch($avatar->profile);
-				}
-		});
+		$this->error('This action has been deprecated, please run the following command instead:');
+		$this->line(' ');
+		$this->info('php artisan avatar:storage');
+		$this->line(' ');
+		return;
 	}
 
 	protected function fix()
@@ -208,12 +190,10 @@ class AvatarSync extends Command
 
 	protected function sync()
 	{
-		Avatar::whereIsRemote(true)
-			->with('profile')
-			->chunk(10, function($avatars) {
-				foreach($avatars as $avatar) {
-					RemoteAvatarFetch::dispatch($avatar->profile);
-				}
-		});
+		$this->error('This action has been deprecated, please run the following command instead:');
+		$this->line(' ');
+		$this->info('php artisan avatar:storage');
+		$this->line(' ');
+		return;
 	}
-	}
+}
