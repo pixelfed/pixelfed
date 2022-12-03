@@ -466,6 +466,12 @@ class AccountController extends Controller
 			if($trustDevice == true) {
 				$request->session()->put('sudoTrustDevice', 1);
 			}
+
+            //Fix wrong scheme when using reverse proxy
+            if(!str_contains($next, 'https') && config('instance.force_https_urls', true)) {
+                $next = Str::of($next)->replace('http', 'https')->toString();
+            }
+
 			return redirect($next);
 		} else {
 			return redirect()
