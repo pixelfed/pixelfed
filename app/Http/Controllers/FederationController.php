@@ -56,12 +56,35 @@ class FederationController extends Controller
 		}
 
 		$resource = $request->input('resource');
+		$domain = config('pixelfed.domain.app');
+
+		if(config('federation.activitypub.sharedInbox') &&
+			$resource == 'acct:' . $domain . '@' . $domain) {
+			$res = [
+				'subject' => 'acct:' . $domain . '@' . $domain,
+				'aliases' => [
+					'https://' . $domain . '/i/actor'
+				],
+				'links' => [
+					[
+						'rel' => 'http://webfinger.net/rel/profile-page',
+						'type' => 'text/html',
+						'href' => 'https://' . $domain . '/site/kb/instance-actor'
+					],
+					[
+						'rel' => 'self',
+						'type' => 'application/activity+json',
+						'href' => 'https://' . $domain . '/i/actor'
+					]
+				]
+			];
+			return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+		}
 		$hash = hash('sha256', $resource);
 		$key = 'federation:webfinger:sha256:' . $hash;
 		if($cached = Cache::get($key)) {
 			return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
 		}
-		$domain = config('pixelfed.domain.app');
 		if(strpos($resource, $domain) == false) {
 			return response('', 400);
 		}
