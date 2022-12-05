@@ -248,10 +248,13 @@ class Helpers {
 
 		$hash = hash('sha256', $url);
 		$key = "helpers:url:fetcher:sha256-{$hash}";
-		$ttl = now()->addMinutes(5);
+		$ttl = now()->addMinutes(15);
 
 		return Cache::remember($key, $ttl, function() use($url) {
 			$res = ActivityPubFetchService::get($url);
+			if(!$res || empty($res)) {
+				return false;
+			}
 			$res = json_decode($res, true, 8);
 			if(json_last_error() == JSON_ERROR_NONE) {
 				return $res;
