@@ -49,12 +49,15 @@ class InboxValidator implements ShouldQueue
     {
         $username = $this->username;
         $headers = $this->headers;
+
+        if(empty($headers) || empty($this->payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+            return;
+        }
+
         $payload = json_decode($this->payload, true, 8);
 
-        $profile = Profile::whereNull('domain')->whereUsername($username)->first();
-
         if(isset($payload['id'])) {
-            $lockKey = hash('sha256', $payload['id']);
+            $lockKey = 'ap:icid:' . hash('sha256', $payload['id']);
             if(Cache::get($lockKey) !== null) {
                 // Job processed already
                 return 1;
@@ -62,9 +65,7 @@ class InboxValidator implements ShouldQueue
             Cache::put($lockKey, 1, 3600);
         }
 
-        if(!isset($headers['signature']) || !isset($headers['date'])) {
-            return;
-        }
+        $profile = Profile::whereNull('domain')->whereUsername($username)->first();
 
         if(empty($profile) || empty($headers) || empty($payload)) {
             return;
