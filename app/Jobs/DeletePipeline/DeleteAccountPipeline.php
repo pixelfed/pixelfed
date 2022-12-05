@@ -88,10 +88,14 @@ class DeleteAccountPipeline implements ShouldQueue
 				])) {
 					if(config('pixelfed.cloud_storage')) {
 						$disk = Storage::disk(config('filesystems.cloud'));
-						$disk->delete($path);
+						if($disk->exists($path)) {
+							$disk->delete($path);
+						}
 					}
 					$disk = Storage::disk(config('filesystems.local'));
-					$disk->delete($path);
+					if($disk->exists($path)) {
+						$disk->delete($path);
+					}
 				}
 
 				$avatar->forceDelete();
@@ -152,12 +156,20 @@ class DeleteAccountPipeline implements ShouldQueue
 			foreach($medias as $media) {
 				if(config('pixelfed.cloud_storage')) {
 					$disk = Storage::disk(config('filesystems.cloud'));
-					$disk->delete($media->media_path);
-					$disk->delete($media->thumbnail_path);
+					if($disk->exists($media->media_path)) {
+						$disk->delete($media->media_path);
+					}
+					if($disk->exists($media->thumbnail_path)) {
+						$disk->delete($media->thumbnail_path);
+					}
 				}
 				$disk = Storage::disk(config('filesystems.local'));
-				$disk->delete($media->media_path);
-				$disk->delete($media->thumbnail_path);
+				if($disk->exists($media->media_path)) {
+					$disk->delete($media->media_path);
+				}
+				if($disk->exists($media->thumbnail_path)) {
+					$disk->delete($media->thumbnail_path);
+				}
 				$media->forceDelete();
 			}
 		});
