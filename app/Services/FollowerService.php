@@ -14,6 +14,8 @@ use App\{
 class FollowerService
 {
 	const CACHE_KEY = 'pf:services:followers:';
+	const FOLLOWERS_SYNC_KEY = 'pf:services:followers:sync-followers:';
+	const FOLLOWING_SYNC_KEY = 'pf:services:followers:sync-following:';
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
 	const FOLLOWERS_KEY = 'pf:services:follow:followers:id:';
 
@@ -35,17 +37,45 @@ class FollowerService
 
 	public static function followers($id, $start = 0, $stop = 10)
 	{
+		self::cacheSyncCheck($id, 'followers');
 		return Redis::zrange(self::FOLLOWERS_KEY . $id, $start, $stop);
 	}
 
 	public static function following($id, $start = 0, $stop = 10)
 	{
+		self::cacheSyncCheck($id, 'following');
 		return Redis::zrange(self::FOLLOWING_KEY . $id, $start, $stop);
 	}
 
 	public static function follows(string $actor, string $target)
 	{
-		return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
+		self::cacheSyncCheck($target, 'followers');
+		return (bool) Redis::zScore(self::FOLLOWERS_KEY . $target, $actor);
+	}
+
+	public static function cacheSyncCheck($id, $scope = 'followers')
+	{
+		if($scope === 'followers') {
+			if(Cache::get(self::FOLLOWERS_SYNC_KEY . $id) != null) {
+				return;
+			}
+			$followers = Follower::whereFollowingId($id)->pluck('profile_id');
+			$followers->each(function($fid) use($id) {
+				self::add($fid, $id);
+			});
+			Cache::put(self::FOLLOWERS_SYNC_KEY . $id, 1, 604800);
+		}
+		if($scope === 'following') {
+			if(Cache::get(self::FOLLOWING_SYNC_KEY . $id) != null) {
+				return;
+			}
+			$followers = Follower::whereProfileId($id)->pluck('following_id');
+			$followers->each(function($fid) use($id) {
+				self::add($id, $fid);
+			});
+			Cache::put(self::FOLLOWING_SYNC_KEY . $id, 1, 604800);
+		}
+		return;
 	}
 
 	public static function audience($profile, $scope = null)
@@ -114,4 +144,12 @@ class FollowerService
 		});
 	}
 
+	public static function delCache($id)
+	{
+		Redis::del(self::CACHE_KEY . $id);
+		Redis::del(self::FOLLOWING_KEY . $id);
+		Redis::del(self::FOLLOWERS_KEY . $id);
+		Redis::del(self::FOLLOWERS_SYNC_KEY . $id);
+		Redis::del(self::FOLLOWING_SYNC_KEY . $id);
+	}
 }
