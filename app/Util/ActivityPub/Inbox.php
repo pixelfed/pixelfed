@@ -202,7 +202,7 @@ class Inbox
 
 		if( is_array($to) &&
 			is_array($cc) &&
- 			count($to) == 1 &&
+			count($to) == 1 &&
 			count($cc) == 0 &&
 			parse_url($to[0], PHP_URL_HOST) == config('pixelfed.domain.app')
 		) {
@@ -219,6 +219,7 @@ class Inbox
 			}
 			$this->handleNoteCreate();
 		}
+		return;
 	}
 
 	public function handleNoteReply()
@@ -481,10 +482,10 @@ class Inbox
 			return;
 		}
 
-        $blocks = UserFilterService::blocks($target->id);
-        if($blocks && in_array($actor->id, $blocks)) {
-            return;
-        }
+		$blocks = UserFilterService::blocks($target->id);
+		if($blocks && in_array($actor->id, $blocks)) {
+			return;
+		}
 
 		if($target->is_private == true) {
 			FollowRequest::updateOrCreate([
@@ -522,6 +523,8 @@ class Inbox
 			Cache::forget('profile:following_count:'.$target->id);
 			Cache::forget('profile:following_count:'.$actor->id);
 		}
+
+		return;
 	}
 
 	public function handleAnnounceActivity()
@@ -543,10 +546,10 @@ class Inbox
 			return;
 		}
 
-        $blocks = UserFilterService::blocks($parent->profile_id);
-        if($blocks && in_array($actor->id, $blocks)) {
-            return;
-        }
+		$blocks = UserFilterService::blocks($parent->profile_id);
+		if($blocks && in_array($actor->id, $blocks)) {
+			return;
+		}
 
 		$status = Status::firstOrCreate([
 			'profile_id' => $actor->id,
@@ -564,8 +567,10 @@ class Inbox
 			'item_type' => 'App\Status'
 		]);
 
-		$parent->reblogs_count = $parent->shares()->count();
+		$parent->reblogs_count = $parent->reblogs_count + 1;
 		$parent->save();
+
+		return;
 	}
 
 	public function handleAcceptActivity()
@@ -608,6 +613,8 @@ class Inbox
 		FollowPipeline::dispatch($follower);
 
 		$request->delete();
+
+		return;
 	}
 
 	public function handleDeleteActivity()
@@ -673,6 +680,7 @@ class Inbox
 					if($story) {
 						StoryExpire::dispatch($story)->onQueue('story');
 					}
+					return;
 					break;
 
 				default:
@@ -680,6 +688,7 @@ class Inbox
 					break;
 			}
 		}
+		return;
 	}
 
 	public function handleLikeActivity()
@@ -700,10 +709,10 @@ class Inbox
 			return;
 		}
 
-        $blocks = UserFilterService::blocks($status->profile_id);
-        if($blocks && in_array($profile->id, $blocks)) {
-            return;
-        }
+		$blocks = UserFilterService::blocks($status->profile_id);
+		if($blocks && in_array($profile->id, $blocks)) {
+			return;
+		}
 
 		$like = Like::firstOrCreate([
 			'profile_id' => $profile->id,
@@ -711,7 +720,7 @@ class Inbox
 		]);
 
 		if($like->wasRecentlyCreated == true) {
-			$status->likes_count = $status->likes()->count();
+			$status->likes_count = $status->likes_count + 1;
 			$status->save();
 			LikePipeline::dispatch($like);
 		}
@@ -854,6 +863,8 @@ class Inbox
 			$story->view_count++;
 			$story->save();
 		}
+
+		return;
 	}
 
 	public function handleStoryReactionActivity()
@@ -963,6 +974,8 @@ class Inbox
 		$n->message = "{$actorProfile->username} reacted to your story";
 		$n->rendered = "{$actorProfile->username} reacted to your story";
 		$n->save();
+
+		return;
 	}
 
 	public function handleStoryReplyActivity()
@@ -1072,5 +1085,7 @@ class Inbox
 		$n->message = "{$actorProfile->username} commented on story";
 		$n->rendered = "{$actorProfile->username} commented on story";
 		$n->save();
+
+		return;
 	}
 }
