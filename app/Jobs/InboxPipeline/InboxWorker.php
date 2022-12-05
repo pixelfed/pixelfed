@@ -14,8 +14,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Zttp\Zttp;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 class InboxWorker implements ShouldQueue
 {
@@ -26,6 +27,7 @@ class InboxWorker implements ShouldQueue
 
     public $timeout = 60;
     public $tries = 1;
+    public $maxExceptions = 1;
 
     /**
      * Create a new job instance.
@@ -163,10 +165,20 @@ class InboxWorker implements ShouldQueue
         if(Helpers::validateUrl($actor->remote_url) == false) {
             return;
         }
-        $res = Zttp::timeout(60)->withHeaders([
-          'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-          'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
-        ])->get($actor->remote_url);
+
+        try {
+            $res = Http::timeout(20)->withHeaders([
+              'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+              'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
+            ])->get($actor->remote_url);
+        } catch (ConnectionException $e) {
+            return false;
+        }
+
+        if(!$res->ok()) {
+            return false;
+        }
+
         $res = json_decode($res->body(), true, 8);
         if(!$res || empty($res) || !isset($res['publicKey']) || !isset($res['publicKey']['id'])) {
         	return;
