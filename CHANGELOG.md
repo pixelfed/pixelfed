@@ -37,6 +37,10 @@
 - Update filesystem config, fix DO Spaces root default ([720b6eb3](https://github.com/pixelfed/pixelfed/commit/720b6eb3))
 - Update Avatar pipeline, fix cloud storage media_path ([02edd19d](https://github.com/pixelfed/pixelfed/commit/02edd19d))
 - Update FederationController, add instance actor profile to webfinger ([6e3c8097](https://github.com/pixelfed/pixelfed/commit/6e3c8097))
+- Update MediaService, add summary attribute for better alt text federation ([a12712cc](https://github.com/pixelfed/pixelfed/commit/a12712cc))
+- Update AvatarObserver, fix cloud delete bug by checking if cloud storage is enabled ([9f7672f5](https://github.com/pixelfed/pixelfed/commit/9f7672f5))
+- Update DeleteAccountPipeline, dispatch on low queue ([6eabe07c](https://github.com/pixelfed/pixelfed/commit/6eabe07c))
+- Update DeleteAccountPipeline, handle flysystem v3 changes by checking files exist before attempting to delete ([23e2998f](https://github.com/pixelfed/pixelfed/commit/23e2998f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
