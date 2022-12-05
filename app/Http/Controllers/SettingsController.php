@@ -23,6 +23,7 @@ use App\Http\Controllers\Settings\{
 };
 use App\Jobs\DeletePipeline\DeleteAccountPipeline;
 use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
+use App\Services\AccountService;
 
 class SettingsController extends Controller
 {
@@ -136,6 +137,8 @@ class SettingsController extends Controller
 		abort_if($user->is_admin, 403);
 		$profile = $user->profile;
 		$ts = Carbon::now()->addMonth();
+		$user->email = $user->id;
+		$user->password = '';
 		$user->status = 'delete';
 		$profile->status = 'delete';
 		$user->delete_after = $ts;
@@ -143,8 +146,9 @@ class SettingsController extends Controller
 		$user->save();
 		$profile->save();
 		Cache::forget('profiles:private');
+		AccountService::del($profile->id);
 		Auth::logout();
-		DeleteAccountPipeline::dispatch($user)->onQueue('high');
+		DeleteAccountPipeline::dispatch($user)->onQueue('low');
 		return redirect('/');
 	}
 
