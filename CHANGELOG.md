@@ -36,6 +36,7 @@
 - Update AvatarStorage, improve overview calculations ([733b9fd0](https://github.com/pixelfed/pixelfed/commit/733b9fd0))
 - Update filesystem config, fix DO Spaces root default ([720b6eb3](https://github.com/pixelfed/pixelfed/commit/720b6eb3))
 - Update Avatar pipeline, fix cloud storage media_path ([02edd19d](https://github.com/pixelfed/pixelfed/commit/02edd19d))
+- Update FederationController, add instance actor profile to webfinger ([6e3c8097](https://github.com/pixelfed/pixelfed/commit/6e3c8097))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
