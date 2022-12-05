@@ -47,23 +47,20 @@ class InboxWorker implements ShouldQueue
     {
         $profile = null;
         $headers = $this->headers;
+
+        if(empty($headers) || empty($this->payload) || !isset($headers['signature']) || !isset($headers['date'])) {
+            return;
+        }
+
         $payload = json_decode($this->payload, true, 8);
 
         if(isset($payload['id'])) {
-            $lockKey = hash('sha256', $payload['id']);
+            $lockKey = 'ap:icid:' . hash('sha256', $payload['id']);
             if(Cache::get($lockKey) !== null) {
                 // Job processed already
                 return 1;
             }
             Cache::put($lockKey, 1, 3600);
-        }
-
-        if(!isset($headers['signature']) || !isset($headers['date'])) {
-            return;
-        }
-
-        if(empty($headers) || empty($payload)) {
-            return;
         }
 
         if($this->verifySignature($headers, $payload) == true) {

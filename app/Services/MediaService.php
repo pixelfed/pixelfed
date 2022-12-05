@@ -79,6 +79,7 @@ class MediaService
 				'mediaType' => $s['mime'],
 				'url'       => $s['url'],
 				'name'      => $s['description'],
+				'summary'   => $s['description'],
 				'blurhash'  => $s['blurhash'],
 				'license'   => $license
 			];
