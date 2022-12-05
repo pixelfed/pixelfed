@@ -57,6 +57,8 @@ class DeleteAccountPipeline implements ShouldQueue
 
 	protected $user;
 
+	public $timeout = 900;
+
 	public function __construct(User $user)
 	{
 		$this->user = $user;
