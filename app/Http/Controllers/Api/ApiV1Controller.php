@@ -650,7 +650,6 @@ class ApiV1Controller extends Controller
 			->whereNull('status')
 			->findOrFail($id);
 
-
 		$private = (bool) $target->is_private;
 		$remote = (bool) $target->domain;
 		$blocked = UserFilter::whereUserId($target->id)
@@ -701,6 +700,7 @@ class ApiV1Controller extends Controller
 				(new FollowerController())->sendFollow($user->profile, $target);
 			}
 			FollowPipeline::dispatch($follower);
+			$target->increment('followers_count');
 		}
 
 		RelationshipService::refresh($user->profile_id, $target->id);
@@ -777,6 +777,10 @@ class ApiV1Controller extends Controller
 		Follower::whereProfileId($user->profile_id)
 			->whereFollowingId($target->id)
 			->delete();
+
+		FollowerService::remove($user->profile_id, $target->id);
+
+		$target->decrement('followers_count');
 
 		if($remote == true && config('federation.activitypub.remoteFollow') == true) {
 			(new FollowerController())->sendUndoFollow($user->profile, $target);

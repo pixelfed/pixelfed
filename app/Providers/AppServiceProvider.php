@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Observers\{
 	AvatarObserver,
+	FollowerObserver,
 	LikeObserver,
 	NotificationObserver,
 	ModLogObserver,
@@ -15,6 +16,7 @@ use App\Observers\{
 };
 use App\{
 	Avatar,
+	Follower,
 	Like,
 	Notification,
 	ModLog,
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
 		Schema::defaultStringLength(191);
 		Paginator::useBootstrap();
 		Avatar::observe(AvatarObserver::class);
+		Follower::observe(FollowerObserver::class);
 		Like::observe(LikeObserver::class);
 		Notification::observe(NotificationObserver::class);
 		ModLog::observe(ModLogObserver::class);

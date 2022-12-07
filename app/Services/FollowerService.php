@@ -23,18 +23,21 @@ class FollowerService
 
 	public static function add($actor, $target)
 	{
+		$ts = (int) microtime(true);
 		RelationshipService::refresh($actor, $target);
-		Redis::zadd(self::FOLLOWING_KEY . $actor, $target, $target);
-		Redis::zadd(self::FOLLOWERS_KEY . $target, $actor, $actor);
+		Redis::zadd(self::FOLLOWING_KEY . $actor, $ts, $target);
+		Redis::zadd(self::FOLLOWERS_KEY . $target, $ts, $actor);
 	}
 
 	public static function remove($actor, $target)
 	{
-		RelationshipService::refresh($actor, $target);
 		Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
 		Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
 		Cache::forget('pf:services:follow:audience:' . $actor);
 		Cache::forget('pf:services:follow:audience:' . $target);
+		AccountService::del($actor);
+		AccountService::del($target);
+		RelationshipService::refresh($actor, $target);
 	}
 
 	public static function followers($id, $start = 0, $stop = 10)
