@@ -41,6 +41,9 @@
 - Update AvatarObserver, fix cloud delete bug by checking if cloud storage is enabled ([9f7672f5](https://github.com/pixelfed/pixelfed/commit/9f7672f5))
 - Update DeleteAccountPipeline, dispatch on low queue ([6eabe07c](https://github.com/pixelfed/pixelfed/commit/6eabe07c))
 - Update DeleteAccountPipeline, handle flysystem v3 changes by checking files exist before attempting to delete ([23e2998f](https://github.com/pixelfed/pixelfed/commit/23e2998f))
+- Update FollowerService, use redis sorted sets for follower relations ([356cc277](https://github.com/pixelfed/pixelfed/commit/356cc277))
+- Update FollowerService, use redis sorted sets for following relations ([f46b01af](https://github.com/pixelfed/pixelfed/commit/f46b01af))
+- Update PublicApiController, refactor follower/following api endpoints to consume FollowerService instead of querying database ([b39f91b4](https://github.com/pixelfed/pixelfed/commit/b39f91b4))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
