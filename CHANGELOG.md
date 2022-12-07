@@ -44,6 +44,8 @@
 - Update FollowerService, use redis sorted sets for follower relations ([356cc277](https://github.com/pixelfed/pixelfed/commit/356cc277))
 - Update FollowerService, use redis sorted sets for following relations ([f46b01af](https://github.com/pixelfed/pixelfed/commit/f46b01af))
 - Update PublicApiController, refactor follower/following api endpoints to consume FollowerService instead of querying database ([b39f91b4](https://github.com/pixelfed/pixelfed/commit/b39f91b4))
+- Update follower/following profile layout, optimized for mobile devices and use FollowerService ([78a5575d](https://github.com/pixelfed/pixelfed/commit/78a5575d))
+- Update sidebar menu, when clicking on the active feed/timeline buttons force a reload and scroll to top of feed ([78a5575d](https://github.com/pixelfed/pixelfed/commit/78a5575d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
