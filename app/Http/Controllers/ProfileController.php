@@ -191,7 +191,7 @@ class ProfileController extends Controller
 			$fractal = new Fractal\Manager();
 			$resource = new Fractal\Resource\Item($user, new ProfileTransformer);
 			$res = $fractal->createData($resource)->toArray();
-			return response(json_encode($res['data']))->header('Content-Type', 'application/activity+json');
+			return response(json_encode($res['data']))->header('Content-Type', 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"');
 		});
 	}
 
