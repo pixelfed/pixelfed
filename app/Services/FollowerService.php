@@ -10,10 +10,12 @@ use App\{
 	Profile,
 	User
 };
+use App\Jobs\FollowPipeline\FollowServiceWarmCache;
 
 class FollowerService
 {
 	const CACHE_KEY = 'pf:services:followers:';
+	const FOLLOWERS_SYNC_ACTIVE = 'pf:services:followers:sync-active:';
 	const FOLLOWERS_SYNC_KEY = 'pf:services:followers:sync-followers:';
 	const FOLLOWING_SYNC_KEY = 'pf:services:followers:sync-following:';
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
@@ -38,19 +40,59 @@ class FollowerService
 	public static function followers($id, $start = 0, $stop = 10)
 	{
 		self::cacheSyncCheck($id, 'followers');
-		return Redis::zrange(self::FOLLOWERS_KEY . $id, $start, $stop);
+		return Redis::zrevrange(self::FOLLOWERS_KEY . $id, $start, $stop);
 	}
 
 	public static function following($id, $start = 0, $stop = 10)
 	{
 		self::cacheSyncCheck($id, 'following');
-		return Redis::zrange(self::FOLLOWING_KEY . $id, $start, $stop);
+		return Redis::zrevrange(self::FOLLOWING_KEY . $id, $start, $stop);
+	}
+
+	public static function followersPaginate($id, $page = 1, $limit = 10)
+	{
+		$start = $page == 1 ? 0 : $page * $limit - $limit;
+		$end = $start + ($limit - 1);
+		return self::followers($id, $start, $end);
+	}
+
+	public static function followingPaginate($id, $page = 1, $limit = 10)
+	{
+		$start = $page == 1 ? 0 : $page * $limit - $limit;
+		$end = $start + ($limit - 1);
+		return self::following($id, $start, $end);
+	}
+
+	public static function followerCount($id, $warmCache = true)
+	{
+		if($warmCache) {
+			self::cacheSyncCheck($id, 'followers');
+		}
+		return Redis::zCard(self::FOLLOWERS_KEY . $id);
+	}
+
+	public static function followingCount($id, $warmCache = true)
+	{
+		if($warmCache) {
+			self::cacheSyncCheck($id, 'following');
+		}
+		return Redis::zCard(self::FOLLOWING_KEY . $id);
 	}
 
 	public static function follows(string $actor, string $target)
 	{
-		self::cacheSyncCheck($target, 'followers');
-		return (bool) Redis::zScore(self::FOLLOWERS_KEY . $target, $actor);
+		if($actor == $target) {
+			return false;
+		}
+
+		if(self::followerCount($target, false) && self::followingCount($actor, false)) {
+			self::cacheSyncCheck($target, 'followers');
+			return (bool) Redis::zScore(self::FOLLOWERS_KEY . $target, $actor);
+		} else {
+			self::cacheSyncCheck($target, 'followers');
+			self::cacheSyncCheck($actor, 'following');
+			return Follower::whereProfileId($actor)->whereFollowingId($target)->exists();
+		}
 	}
 
 	public static function cacheSyncCheck($id, $scope = 'followers')
@@ -59,21 +101,25 @@ class FollowerService
 			if(Cache::get(self::FOLLOWERS_SYNC_KEY . $id) != null) {
 				return;
 			}
-			$followers = Follower::whereFollowingId($id)->pluck('profile_id');
-			$followers->each(function($fid) use($id) {
-				self::add($fid, $id);
-			});
-			Cache::put(self::FOLLOWERS_SYNC_KEY . $id, 1, 604800);
+
+			if(Cache::get(self::FOLLOWERS_SYNC_ACTIVE . $id) != null) {
+				return;
+			}
+
+			FollowServiceWarmCache::dispatch($id)->onQueue('low');
+			Cache::put(self::FOLLOWERS_SYNC_ACTIVE . $id, 1, 604800);
 		}
 		if($scope === 'following') {
 			if(Cache::get(self::FOLLOWING_SYNC_KEY . $id) != null) {
 				return;
 			}
-			$followers = Follower::whereProfileId($id)->pluck('following_id');
-			$followers->each(function($fid) use($id) {
-				self::add($id, $fid);
-			});
-			Cache::put(self::FOLLOWING_SYNC_KEY . $id, 1, 604800);
+
+			if(Cache::get(self::FOLLOWERS_SYNC_ACTIVE . $id) != null) {
+				return;
+			}
+
+			FollowServiceWarmCache::dispatch($id)->onQueue('low');
+			Cache::put(self::FOLLOWERS_SYNC_ACTIVE . $id, 1, 604800);
 		}
 		return;
 	}
@@ -149,7 +195,8 @@ class FollowerService
 		Redis::del(self::CACHE_KEY . $id);
 		Redis::del(self::FOLLOWING_KEY . $id);
 		Redis::del(self::FOLLOWERS_KEY . $id);
-		Redis::del(self::FOLLOWERS_SYNC_KEY . $id);
-		Redis::del(self::FOLLOWING_SYNC_KEY . $id);
+		Cache::forget(self::FOLLOWERS_SYNC_KEY . $id);
+		Cache::forget(self::FOLLOWING_SYNC_KEY . $id);
+		Cache::forget(self::FOLLOWERS_SYNC_ACTIVE . $id);
 	}
 }

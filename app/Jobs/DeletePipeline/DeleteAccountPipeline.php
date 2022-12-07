@@ -138,6 +138,7 @@ class DeleteAccountPipeline implements ShouldQueue
 					FollowerService::remove($follow->profile_id, $follow->following_id);
 					$follow->delete();
 				});
+			FollowerService::delCache($id);
 			Like::whereProfileId($id)->forceDelete();
 		});
 
