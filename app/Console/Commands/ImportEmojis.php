@@ -52,7 +52,7 @@ class ImportEmojis extends Command
 
         foreach (new \RecursiveIteratorIterator($tar) as $entry) {
             $this->line("Processing {$entry->getFilename()}");
-            if (!$entry->isFile() || !$this->isImage($entry)) {
+            if (!$entry->isFile() || !$this->isImage($entry) || !$this->isEmoji($entry->getPathname())) {
                 $failed++;
                 continue;
             }
@@ -106,5 +106,13 @@ class ImportEmojis extends Command
     {
         $image = getimagesize($file->getPathname());
         return $image !== false;
+    }
+
+    private function isEmoji($filename)
+    {
+        $allowedMimeTypes = ['image/png', 'image/jpeg', 'image/webp'];
+        $mimeType = mime_content_type($filename);
+
+        return in_array($mimeType, $allowedMimeTypes);
     }
 }
