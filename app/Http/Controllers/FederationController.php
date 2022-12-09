@@ -29,6 +29,7 @@ use App\Util\ActivityPub\{
 	Outbox
 };
 use Zttp\Zttp;
+use App\Services\InstanceService;
 
 class FederationController extends Controller
 {
@@ -56,12 +57,35 @@ class FederationController extends Controller
 		}
 
 		$resource = $request->input('resource');
+		$domain = config('pixelfed.domain.app');
+
+		if(config('federation.activitypub.sharedInbox') &&
+			$resource == 'acct:' . $domain . '@' . $domain) {
+			$res = [
+				'subject' => 'acct:' . $domain . '@' . $domain,
+				'aliases' => [
+					'https://' . $domain . '/i/actor'
+				],
+				'links' => [
+					[
+						'rel' => 'http://webfinger.net/rel/profile-page',
+						'type' => 'text/html',
+						'href' => 'https://' . $domain . '/site/kb/instance-actor'
+					],
+					[
+						'rel' => 'self',
+						'type' => 'application/activity+json',
+						'href' => 'https://' . $domain . '/i/actor'
+					]
+				]
+			];
+			return response()->json($res, 200, [], JSON_UNESCAPED_SLASHES);
+		}
 		$hash = hash('sha256', $resource);
 		$key = 'federation:webfinger:sha256:' . $hash;
 		if($cached = Cache::get($key)) {
 			return response()->json($cached, 200, [], JSON_UNESCAPED_SLASHES);
 		}
-		$domain = config('pixelfed.domain.app');
 		if(strpos($resource, $domain) == false) {
 			return response('', 400);
 		}
@@ -94,22 +118,20 @@ class FederationController extends Controller
 	public function userOutbox(Request $request, $username)
 	{
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
-		abort_if(!config('federation.activitypub.outbox'), 404);
 
-		// $profile = Profile::whereNull('domain')
-		// 	->whereNull('status')
-		// 	->whereIsPrivate(false)
-		// 	->whereUsername($username)
-		// 	->firstOrFail();
+		if(!$request->wantsJson()) {
+			return redirect('/' . $username);
+		}
 
-		// $key = 'ap:outbox:latest_10:pid:' . $profile->id;
-		// $ttl = now()->addMinutes(15);
-		// $res = Cache::remember($key, $ttl, function() use($profile) {
-		// 	return Outbox::get($profile);
-		// });
-		$res = [];
+		$res = [
+			'@context' => 'https://www.w3.org/ns/activitystreams',
+			'id' => 'https://' . config('pixelfed.domain.app') . '/users/' . $username . '/outbox',
+			'type' => 'OrderedCollection',
+			'totalItems' => 0,
+			'orderedItems' => []
+		];
 
-		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
+		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"');
 	}
 
 	public function userInbox(Request $request, $username)
@@ -119,13 +141,19 @@ class FederationController extends Controller
 
 		$headers = $request->headers->all();
 		$payload = $request->getContent();
+		if(!$payload || empty($payload)) {
+			return;
+		}
 		$obj = json_decode($payload, true, 8);
+		if(!isset($obj['id'])) {
+			return;
+		}
+		$domain = parse_url($obj['id'], PHP_URL_HOST);
+		if(in_array($domain, InstanceService::getBannedDomains())) {
+			return;
+		}
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
-			if(!isset($obj['id'])) {
-				return;
-			}
-			usleep(5000);
 			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
 			if( isset($obj['actor']) &&
 				isset($obj['object']) &&
@@ -137,20 +165,19 @@ class FederationController extends Controller
 			) {
 				if(Cache::get($lockKey) !== null) {
 					return;
+				} else {
+					Cache::put($lockKey, 1, 3600);
+					usleep(5000);
 				}
 			}
-			Cache::put($lockKey, 1, 3600);
 			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
 		} else {
-			if(!isset($obj['id'])) {
-				return;
-			}
-			usleep(5000);
 			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $obj['id']);
 			if(Cache::get($lockKey) !== null) {
 				return;
 			}
 			Cache::put($lockKey, 1, 3600);
+			usleep(5000);
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
 		}
 		return;
@@ -163,12 +190,22 @@ class FederationController extends Controller
 
 		$headers = $request->headers->all();
 		$payload = $request->getContent();
+
+		if(!$payload || empty($payload)) {
+			return;
+		}
+
 		$obj = json_decode($payload, true, 8);
+		if(!isset($obj['id'])) {
+			return;
+		}
+
+		$domain = parse_url($obj['id'], PHP_URL_HOST);
+		if(in_array($domain, InstanceService::getBannedDomains())) {
+			return;
+		}
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
-			if(!isset($obj['id'])) {
-				return;
-			}
 			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
 			if( isset($obj['actor']) &&
 				isset($obj['object']) &&
@@ -194,15 +231,6 @@ class FederationController extends Controller
 	{
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
 
-		$profile = Profile::whereNull('remote_url')
-			->whereUsername($username)
-			->whereIsPrivate(false)
-			->firstOrFail();
-
-		if($profile->status != null) {
-			abort(404);
-		}
-
 		$obj = [
 			'@context' => 'https://www.w3.org/ns/activitystreams',
 			'id'       => $request->getUri(),
@@ -216,15 +244,6 @@ class FederationController extends Controller
 	public function userFollowers(Request $request, $username)
 	{
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
-
-		$profile = Profile::whereNull('remote_url')
-			->whereUsername($username)
-			->whereIsPrivate(false)
-			->firstOrFail();
-
-		if($profile->status != null) {
-			abort(404);
-		}
 
 		$obj = [
 			'@context' => 'https://www.w3.org/ns/activitystreams',

@@ -14,8 +14,8 @@ class RelationshipService
 
 	public static function get($aid, $tid)
 	{
-		$actor = AccountService::get($aid);
-		$target = AccountService::get($tid);
+		$actor = AccountService::get($aid, true);
+		$target = AccountService::get($tid, true);
 		if(!$actor || !$target) {
 			return self::defaultRelation($tid);
 		}

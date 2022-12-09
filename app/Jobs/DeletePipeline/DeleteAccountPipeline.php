@@ -11,6 +11,7 @@ use DB;
 use Storage;
 use Illuminate\Support\Str;
 use App\Services\AccountService;
+use App\Services\FollowerService;
 use App\Services\PublicTimelineService;
 use App\{
 	AccountInterstitial,
@@ -57,6 +58,8 @@ class DeleteAccountPipeline implements ShouldQueue
 
 	protected $user;
 
+	public $timeout = 900;
+
 	public function __construct(User $user)
 	{
 		$this->user = $user;
@@ -86,10 +89,14 @@ class DeleteAccountPipeline implements ShouldQueue
 				])) {
 					if(config('pixelfed.cloud_storage')) {
 						$disk = Storage::disk(config('filesystems.cloud'));
-						$disk->delete($path);
+						if($disk->exists($path)) {
+							$disk->delete($path);
+						}
 					}
 					$disk = Storage::disk(config('filesystems.local'));
-					$disk->delete($path);
+					if($disk->exists($path)) {
+						$disk->delete($path);
+					}
 				}
 
 				$avatar->forceDelete();
@@ -127,7 +134,11 @@ class DeleteAccountPipeline implements ShouldQueue
 				->forceDelete();
 			Follower::whereProfileId($id)
 				->orWhere('following_id', $id)
-				->forceDelete();
+				->each(function($follow) {
+					FollowerService::remove($follow->profile_id, $follow->following_id);
+					$follow->delete();
+				});
+			FollowerService::delCache($id);
 			Like::whereProfileId($id)->forceDelete();
 		});
 
@@ -150,12 +161,20 @@ class DeleteAccountPipeline implements ShouldQueue
 			foreach($medias as $media) {
 				if(config('pixelfed.cloud_storage')) {
 					$disk = Storage::disk(config('filesystems.cloud'));
-					$disk->delete($media->media_path);
-					$disk->delete($media->thumbnail_path);
+					if($disk->exists($media->media_path)) {
+						$disk->delete($media->media_path);
+					}
+					if($disk->exists($media->thumbnail_path)) {
+						$disk->delete($media->thumbnail_path);
+					}
 				}
 				$disk = Storage::disk(config('filesystems.local'));
-				$disk->delete($media->media_path);
-				$disk->delete($media->thumbnail_path);
+				if($disk->exists($media->media_path)) {
+					$disk->delete($media->media_path);
+				}
+				if($disk->exists($media->thumbnail_path)) {
+					$disk->delete($media->thumbnail_path);
+				}
 				$media->forceDelete();
 			}
 		});

@@ -12,6 +12,7 @@ use App\Media;
 use App\Profile;
 use App\User;
 use GuzzleHttp\Client;
+use App\Services\AccountService;
 use App\Http\Controllers\AvatarController;
 use GuzzleHttp\Exception\RequestException;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
@@ -226,13 +227,9 @@ class MediaStorageService {
 			return;
 		}
 
-		if($avatar->size && $head['length'] == $avatar->size) {
-			return;
-		}
-
 		$base = ($local ? 'public/cache/' : 'cache/') . 'avatars/' . $avatar->profile_id;
 		$ext = $head['mime'] == 'image/jpeg' ? 'jpg' : 'png';
-		$path = Str::random(20) . '_avatar.' . $ext;
+		$path = 'avatar_' . strtolower(Str::random(random_int(3,6))) . '.' . $ext;
 		$tmpBase = storage_path('app/remcache/');
 		$tmpPath = 'avatar_' . $avatar->profile_id . '-' . $path;
 		$tmpName = $tmpBase . $tmpPath;
@@ -255,6 +252,7 @@ class MediaStorageService {
 		$avatar->save();
 
 		Cache::forget('avatar:' . $avatar->profile_id);
+		Cache::forget(AccountService::CACHE_KEY . $avatar->profile_id);
 
 		unlink($tmpName);
 	}

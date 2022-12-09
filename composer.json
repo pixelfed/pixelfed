@@ -35,7 +35,7 @@
 		"pixelfed/laravel-snowflake": "^2.0",
 		"pixelfed/zttp": "^0.5",
 		"pragmarx/google2fa": "^8.0",
-		"predis/predis": "^1.1",
+		"predis/predis": "^2.0",
 		"spatie/laravel-backup": "^8.0.0",
 		"spatie/laravel-image-optimizer": "^1.7",
 		"stevebauman/purify": "4.0.*",
@@ -45,6 +45,7 @@
 	},
 	"require-dev": {
 		"brianium/paratest": "^6.1",
+		"fakerphp/faker": "^1.20",
 		"laravel/telescope": "^4.9",
 		"mockery/mockery": "^1.0",
 		"nunomaduro/collision": "^6.1",

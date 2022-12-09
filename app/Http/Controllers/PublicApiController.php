@@ -307,6 +307,7 @@ class PublicApiController extends Controller
         $user = $request->user();
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
         if(config('exp.cached_public_timeline') == false) {
             if($min || $max) {
                 $dir = $min ? '>' : '<';
@@ -322,6 +323,9 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -365,6 +369,9 @@ class PublicApiController extends Controller
                           ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                           ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                           ->whereLocal(true)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
                           ->whereScope('public')
                           ->orderBy('id', 'desc')
                           ->limit($limit)
@@ -608,6 +615,7 @@ class PublicApiController extends Controller
         $amin = SnowflakeService::byDate(now()->subDays(config('federation.network_timeline_days_falloff')));
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+        $hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 
         if(config('instance.timeline.network.cached') == false) {
 	        if($min || $max) {
@@ -620,7 +628,10 @@ class PublicApiController extends Controller
 	                        'scope',
 	                        'created_at',
 	                      )
-	                      ->where('id', $dir, $id)
+                          ->where('id', $dir, $id)
+                          ->when($hideNsfw, function($q, $hideNsfw) {
+                            return $q->where('is_nsfw', false);
+                          })
 	                      ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                      ->whereNotIn('profile_id', $filtered)
 	                      ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
@@ -648,6 +659,9 @@ class PublicApiController extends Controller
 	                          )
 	                      	  ->whereNull(['in_reply_to_id', 'reblog_of_id'])
 	                          ->whereNotIn('profile_id', $filtered)
+                              ->when($hideNsfw, function($q, $hideNsfw) {
+                                return $q->where('is_nsfw', false);
+                              })
 	                          ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 	                          ->whereNotNull('uri')
 	                          ->whereScope('public')
@@ -733,7 +747,7 @@ class PublicApiController extends Controller
     public function accountFollowers(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id);
+		$account = AccountService::get($id, true);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
 
@@ -748,24 +762,15 @@ class PublicApiController extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
+			if($request->has('page') && $request->page >= 10) {
 				return [];
 			}
 		}
 
-		$res = DB::table('followers')
-			->select('id', 'profile_id', 'following_id')
-			->whereFollowingId($account['id'])
-			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::get($follower->profile_id);
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values()
-			->toArray();
+        $res = collect(FollowerService::followersPaginate($account['id'], $request->input('page', 1)))
+            ->map(fn($id) => AccountService::get($id, true))
+            ->filter()
+            ->values();
 
 		return response()->json($res);
     }
@@ -773,7 +778,7 @@ class PublicApiController extends Controller
     public function accountFollowing(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id);
+		$account = AccountService::get($id, true);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
 
@@ -788,24 +793,15 @@ class PublicApiController extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
+			if($request->has('page') && $request->page >= 10) {
 				return [];
 			}
 		}
 
-		$res = DB::table('followers')
-			->select('id', 'profile_id', 'following_id')
-			->whereProfileId($account['id'])
-			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::get($follower->following_id);
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values()
-			->toArray();
+        $res = collect(FollowerService::followingPaginate($account['id'], $request->input('page', 1)))
+            ->map(fn($id) => AccountService::get($id, true))
+            ->filter()
+            ->values();
 
 		return response()->json($res);
     }

@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Image as Intervention;
+use Storage;
 
 class AvatarOptimize implements ShouldQueue
 {
@@ -63,6 +64,13 @@ class AvatarOptimize implements ShouldQueue
 			$avatar->save();
 			Cache::forget('avatar:' . $avatar->profile_id);
 			$this->deleteOldAvatar($avatar->media_path, $this->current);
+
+			if(config_cache('pixelfed.cloud_storage') && config('instance.avatar.local_to_cloud')) {
+				$this->uploadToCloud($avatar);
+			} else {
+				$avatar->cdn_url = null;
+				$avatar->save();
+			}
 		} catch (Exception $e) {
 		}
 	}
@@ -78,5 +86,19 @@ class AvatarOptimize implements ShouldQueue
 		if (is_file($current)) {
 			@unlink($current);
 		}
+	}
+
+	protected function uploadToCloud($avatar)
+	{
+		$base = 'cache/avatars/' . $avatar->profile_id;
+		$disk = Storage::disk(config('filesystems.cloud'));
+		$disk->deleteDirectory($base);
+		$path = $base . '/' . 'avatar_' . strtolower(Str::random(random_int(3,6))) . $avatar->change_count . '.' . pathinfo($avatar->media_path, PATHINFO_EXTENSION);
+		$url = $disk->put($path, Storage::get($avatar->media_path));
+		$avatar->media_path = $path;
+		$avatar->cdn_url = $disk->url($path);
+		$avatar->save();
+		Storage::delete($avatar->media_path);
+		Cache::forget('avatar:' . $avatar->profile_id);
 	}
 }

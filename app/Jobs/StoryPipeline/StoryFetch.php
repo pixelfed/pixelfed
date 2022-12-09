@@ -69,7 +69,7 @@ class StoryFetch implements ShouldQueue
 		$version = config('pixelfed.version');
 		$appUrl = config('app.url');
 		$headers = [
-			'Accept'     	=> 'application/json',
+			'Accept'     	=> 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"',
 			'Authorization' => 'Bearer ' . $token,
 			'User-Agent' 	=> "(Pixelfed/{$version}; +{$appUrl})",
 		];

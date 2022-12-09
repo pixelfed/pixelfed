@@ -475,8 +475,6 @@ class ApiV1Dot1Controller extends Controller
                 },
             ],
             'password' => 'required|string|min:8',
-            // 'avatar' => 'required|mimetypes:image/jpeg,image/png|max:15000',
-            // 'bio' => 'required|max:140'
         ]);
 
         $email = $request->input('email');
@@ -507,13 +505,25 @@ class ApiV1Dot1Controller extends Controller
         $verify->random_token = $rtoken;
         $verify->save();
 
-        $appUrl = 'pixelfed://confirm-account/'. $user->app_register_token . '?rt=' . $rtoken;
+        $appUrl = url('/api/v1.1/auth/iarer?ut=' . $user->app_register_token . '&rt=' . $rtoken);
 
         Mail::to($user->email)->send(new ConfirmAppEmail($verify, $appUrl));
 
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    public function inAppRegistrationEmailRedirect(Request $request)
+    {
+        $this->validate($request, [
+            'ut' => 'required',
+            'rt' => 'required'
+        ]);
+        $ut = $request->input('ut');
+        $rt = $request->input('rt');
+        $url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt;
+        return redirect()->away($url);
     }
 
     public function inAppRegistrationConfirm(Request $request)
@@ -539,6 +549,7 @@ class ApiV1Dot1Controller extends Controller
 
         $user = User::findOrFail($verify->user_id);
         $user->email_verified_at = now();
+        $user->last_active_at = now();
         $user->save();
 
         $verify->delete();
@@ -546,7 +557,7 @@ class ApiV1Dot1Controller extends Controller
         $token = $user->createToken('Pixelfed');
 
         return response()->json([
-            'access_token' => $token->access_token
+            'access_token' => $token->accessToken
         ]);
     }
 }

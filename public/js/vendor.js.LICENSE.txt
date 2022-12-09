@@ -1,6 +1,6 @@
 /*!
-  * Bootstrap v4.6.1 (https://getbootstrap.com/)
-  * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap v4.6.2 (https://getbootstrap.com/)
+  * Copyright 2011-2022 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -31,13 +31,13 @@
  */
 
 /*!
- * Cropper.js v1.5.12
+ * Cropper.js v1.5.13
  * https://fengyuanchen.github.io/cropperjs
  *
  * Copyright 2015-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2021-06-12T08:00:17.411Z
+ * Date: 2022-11-20T05:30:46.114Z
  */
 
 /*!
@@ -49,7 +49,7 @@
  */
 
 /*!
- * Pusher JavaScript Library v7.1.1-beta
+ * Pusher JavaScript Library v7.5.0
  * https://pusher.com/
  *
  * Copyright 2020, Pusher
@@ -76,13 +76,13 @@
  */
 
 /*!
- * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
+ * Vue.js v2.7.14
+ * (c) 2014-2022 Evan You
  * Released under the MIT License.
  */
 
 /*!
- * jQuery JavaScript Library v3.6.0
+ * jQuery JavaScript Library v3.6.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -92,7 +92,7 @@
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2021-03-02T17:08Z
+ * Date: 2022-08-26T17:52Z
  */
 
 /*!
@@ -114,7 +114,7 @@
  */
 
 /*!
- * vue-i18n v8.27.1 
+ * vue-i18n v8.28.2 
  * (c) 2022 kazuya kawaguchi
  * Released under the MIT License.
  */
@@ -191,6 +191,8 @@ and limitations under the License.
 
 /*! ../is-supported */
 
+/*! ../loader/date-range */
+
 /*! ../loader/fragment */
 
 /*! ../loader/fragment-loader */
@@ -204,6 +206,8 @@ and limitations under the License.
 /*! ../task-loop */
 
 /*! ../types/cmcd */
+
+/*! ../types/demuxer */
 
 /*! ../types/level */
 
@@ -265,8 +269,6 @@ and limitations under the License.
 
 /*! ./buffer-operation-queue */
 
-/*! ./chunk-cache */
-
 /*! ./config */
 
 /*! ./controller/abr-controller */
@@ -301,6 +303,8 @@ and limitations under the License.
 
 /*! ./controller/timeline-controller */
 
+/*! ./date-range */
+
 /*! ./dummy-demuxed-track */
 
 /*! ./errors */
@@ -318,8 +322,6 @@ and limitations under the License.
 /*! ./fragment-tracker */
 
 /*! ./gap-controller */
-
-/*! ./id3 */
 
 /*! ./is-supported */
 
@@ -341,6 +343,8 @@ and limitations under the License.
 
 /*! ./mp4-generator */
 
+/*! ./mp4-remuxer */
+
 /*! ./mp4-tools */
 
 /*! ./mpegaudio */
@@ -352,8 +356,6 @@ and limitations under the License.
 /*! ./texttrack-utils */
 
 /*! ./timescale-conversion */
-
-/*! ./tsdemuxer */
 
 /*! ./typed-array */
 
@@ -375,109 +377,13 @@ and limitations under the License.
 
 /*! ./webvtt-parser */
 
+/*! ./webworkify-webpack */
+
 /*! eventemitter3 */
-
-/*! exports provided: AttrList */
-
-/*! exports provided: BufferHelper */
-
-/*! exports provided: CMCDVersion, CMCDObjectType, CMCDStreamingFormat, CMCDStreamType */
-
-/*! exports provided: ChunkMetadata */
-
-/*! exports provided: ElementaryStreamTypes, BaseSegment, Fragment, Part */
-
-/*! exports provided: ErrorTypes, ErrorDetails */
-
-/*! exports provided: Events */
-
-/*! exports provided: FragmentState, FragmentTracker */
-
-/*! exports provided: HlsSkip, getSkipValue, HlsUrlParameters, Level */
-
-/*! exports provided: IMSC1_CODEC, parseIMSC1 */
-
-/*! exports provided: KeySystems, requestMediaKeySystemAccess */
-
-/*! exports provided: LevelDetails */
-
-/*! exports provided: LevelKey */
-
-/*! exports provided: LoadStats */
-
-/*! exports provided: PlaylistContextType, PlaylistLevelType */
-
-/*! exports provided: Row, CaptionScreen, default */
-
-/*! exports provided: STALL_MINIMUM_DURATION_MS, MAX_START_GAP_JUMP, SKIP_BUFFER_HOLE_STEP_SECONDS, SKIP_BUFFER_RANGE_START, default */
-
-/*! exports provided: State, default */
-
-/*! exports provided: SubtitleStreamController */
-
-/*! exports provided: TimelineController */
-
-/*! exports provided: addGroupId, assignTrackIdsByGroup, updatePTS, updateFragPTSDTS, mergeDetails, mapPartIntersection, mapFragmentIntersection, adjustSliding, addSliding, computeReloadInterval, getFragmentWithSN, getPartWith */
-
-/*! exports provided: appendFrame, parseHeader, isHeaderPattern, isHeader, canParse, probe */
-
-/*! exports provided: bin2str, readUint16, readUint32, writeUint32, findBox, parseSegmentIndex, parseInitSegment, getStartDTS, getDuration, computeRawDurationFromSamples, offsetStartDTS, segmentValidRange, appendUint8Array */
-
-/*! exports provided: default */
-
-/*! exports provided: default, LoadError */
-
-/*! exports provided: default, isPromise, TransmuxConfig, TransmuxState */
-
-/*! exports provided: default, normalizePts */
-
-/*! exports provided: discardEPB, default */
-
-/*! exports provided: dummyTrack */
-
-/*! exports provided: enableLogs, logger */
-
-/*! exports provided: fetchSupported, default */
-
-/*! exports provided: findFirstFragWithCC, shouldAlignOnDiscontinuities, findDiscontinuousReferenceFrag, adjustSlidingStart, alignStream, alignPDT, alignFragmentByPDTDelta, alignMediaPlaylistByPDT */
-
-/*! exports provided: findFragmentByPDT, findFragmentByPTS, fragmentWithinToleranceTest, pdtWithinToleranceTest, findFragWithCC */
-
-/*! exports provided: generateCueId, parseWebVTT */
-
-/*! exports provided: getAudioConfig, isHeaderPattern, getHeaderLength, getFullFrameLength, canGetFrameLength, isHeader, canParse, probe, initTrackConfig, getFrameDuration, parseFrameHeader, appendFrame */
-
-/*! exports provided: getMediaSource */
-
-/*! exports provided: hlsDefaultConfig, mergeConfig, enableStreamingMode */
-
-/*! exports provided: initPTSFn, default */
-
-/*! exports provided: isCodecType, isCodecSupportedInMp4 */
-
-/*! exports provided: isFiniteNumber, MAX_SAFE_INTEGER */
-
-/*! exports provided: isHeader, isFooter, getID3Data, canParse, getTimeStamp, isTimeStampFrame, getID3Frames, decodeFrame, utf8ArrayToStr, testables */
-
-/*! exports provided: isSupported, changeTypeSupported */
-
-/*! exports provided: parseTimeStamp, fixLineBreaks, VTTParser */
-
-/*! exports provided: removePadding, default */
-
-/*! exports provided: sendAddTrackEvent, addCueToTrack, clearCurrentCues, removeCuesInRange, getCuesInRange */
-
-/*! exports provided: sliceUint8 */
-
-/*! exports provided: toTimescaleFromBase, toTimescaleFromScale, toMsFromMpegTsClock, toMpegTsClockFromTimescale */
 
 /*! https://mths.be/punycode v1.4.1 by @mathias */
 
-/*! no static exports found */
-
 /*! url-toolkit */
-
-/*! webworkify-webpack */
 
 /*!********************!*\
   !*** ./src/hls.ts ***!
@@ -542,6 +448,10 @@ and limitations under the License.
 /*!*****************************!*\
   !*** ./src/utils/vttcue.ts ***!
   \*****************************/
+
+/*!******************************!*\
+  !*** ./src/types/demuxer.ts ***!
+  \******************************/
 
 /*!********************************!*\
   !*** ./src/crypt/decrypter.ts ***!
@@ -621,6 +531,10 @@ and limitations under the License.
 
 /*!**********************************!*\
   !*** ./src/demux/chunk-cache.ts ***!
+  \**********************************/
+
+/*!**********************************!*\
+  !*** ./src/loader/date-range.ts ***!
   \**********************************/
 
 /*!**********************************!*\
@@ -724,6 +638,10 @@ and limitations under the License.
   \*****************************************/
 
 /*!*****************************************!*\
+  !*** ./src/demux/webworkify-webpack.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
   !*** ./src/utils/mediasource-helper.ts ***!
   \*****************************************/
 
@@ -806,10 +724,6 @@ and limitations under the License.
 /*!************************************************!*\
   !*** ./src/controller/id3-track-controller.ts ***!
   \************************************************/
-
-/*!**************************************************!*\
-  !*** ./node_modules/webworkify-webpack/index.js ***!
-  \**************************************************/
 
 /*!**************************************************!*\
   !*** ./src/controller/audio-track-controller.ts ***!

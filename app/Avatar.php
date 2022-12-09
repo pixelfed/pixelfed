@@ -20,7 +20,7 @@ class Avatar extends Model
         'last_processed_at'
     ];
     
-    protected $fillable = ['profile_id'];
+    protected $guarded = [];
 
     protected $visible = [
         'id',

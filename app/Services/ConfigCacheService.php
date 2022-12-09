@@ -55,6 +55,7 @@ class ConfigCacheService
 				'config.discover.features',
 
 				'instance.has_legal_notice',
+				'instance.avatar.local_to_cloud',
 
 				'pixelfed.directory',
 				'app.banner_image',

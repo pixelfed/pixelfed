@@ -14,8 +14,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Zttp\Zttp;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\ConnectionException;
 
 class DeleteWorker implements ShouldQueue
 {
@@ -106,9 +107,6 @@ class DeleteWorker implements ShouldQueue
 		if($this->verifySignature($headers, $payload) == true) {
 			(new Inbox($headers, $profile, $payload))->handle();
 			return 1;
-		} else if($this->blindKeyRotation($headers, $payload) == true) {
-			(new Inbox($headers, $profile, $payload))->handle();
-			return 1;
 		} else {
 			return 1;
 		}
@@ -121,15 +119,15 @@ class DeleteWorker implements ShouldQueue
 		$signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
 		$date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
 		if(!$signature) {
-			return;
+			return false;
 		}
 		if(!$date) {
-			return;
+			return false;
 		}
 		if(!now()->parse($date)->gt(now()->subDays(1)) ||
 		   !now()->parse($date)->lt(now()->addDays(1))
 	   ) {
-			return;
+			return false;
 		}
 		$signatureData = HttpSignature::parseSignatureHeader($signature);
 		$keyId = Helpers::validateUrl($signatureData['keyId']);
@@ -149,11 +147,11 @@ class DeleteWorker implements ShouldQueue
                 }
             }
             if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
-                return;
+                return false;
             }
 		}
 		if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
-			return;
+			return false;
 		}
 		$actor = Profile::whereKeyId($keyId)->first();
 		if(!$actor) {
@@ -161,11 +159,11 @@ class DeleteWorker implements ShouldQueue
 			$actor = Helpers::profileFirstOrNew($actorUrl);
 		}
 		if(!$actor) {
-			return;
+			return false;
 		}
 		$pkey = openssl_pkey_get_public($actor->public_key);
 		if(!$pkey) {
-			return 0;
+			return false;
 		}
 		$inboxPath = "/f/inbox";
 		list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
@@ -200,10 +198,20 @@ class DeleteWorker implements ShouldQueue
 		if(Helpers::validateUrl($actor->remote_url) == false) {
 			return;
 		}
-		$res = Zttp::timeout(60)->withHeaders([
-		  'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-		  'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
-		])->get($actor->remote_url);
+
+        try {
+            $res = Http::timeout(20)->withHeaders([
+              'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+              'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
+            ])->get($actor->remote_url);
+        } catch (ConnectionException $e) {
+            return false;
+        }
+
+        if(!$res->ok()) {
+            return false;
+        }
+
 		$res = json_decode($res->body(), true, 8);
 		if(!isset($res['publicKey'], $res['publicKey']['id'])) {
 			return;

@@ -293,7 +293,7 @@ class StatusController extends Controller
 		$resource = new Fractal\Resource\Item($status, $object);
 		$res = $fractal->createData($resource)->toArray();
 
-		return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		return response()->json($res['data'], 200, ['Content-Type' => 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 	}
 
 	public function edit(Request $request, $username, $id)
