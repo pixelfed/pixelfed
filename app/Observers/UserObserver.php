@@ -9,6 +9,7 @@ use App\User;
 use App\UserSetting;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use DB;
+use App\Services\FollowerService;
 
 class UserObserver
 {
@@ -85,6 +86,16 @@ class UserObserver
 				]);
 			});
 		}
-
 	}
+
+    /**
+     * Handle the user "deleted" event.
+     *
+     * @param  \App\User $user
+     * @return void
+     */
+    public function deleted(User $user)
+    {
+        FollowerService::delCache($user->profile_id);
+    }
 }

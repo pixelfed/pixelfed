@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Story;
 use App\StoryView;
@@ -51,7 +50,7 @@ class StoryGC extends Command
 	protected function archiveExpiredStories()
 	{
 		$stories = Story::whereActive(true)
-		->where('created_at', '<', now()->subHours(24))
+		->where('expires_at', '<', now())
 		->get();
 
 		foreach($stories as $story) {
@@ -79,6 +78,7 @@ class StoryGC extends Command
 				}
 				StoryRotateMedia::dispatch($story)->onQueue('story');
 				StoryService::removeRotateQueue($id);
+				return;
 			});
 	}
 }

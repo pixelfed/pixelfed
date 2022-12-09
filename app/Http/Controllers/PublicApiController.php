@@ -747,7 +747,7 @@ class PublicApiController extends Controller
     public function accountFollowers(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id);
+		$account = AccountService::get($id, true);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
 
@@ -762,24 +762,15 @@ class PublicApiController extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
+			if($request->has('page') && $request->page >= 10) {
 				return [];
 			}
 		}
 
-		$res = DB::table('followers')
-			->select('id', 'profile_id', 'following_id')
-			->whereFollowingId($account['id'])
-			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::get($follower->profile_id);
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values()
-			->toArray();
+        $res = collect(FollowerService::followersPaginate($account['id'], $request->input('page', 1)))
+            ->map(fn($id) => AccountService::get($id, true))
+            ->filter()
+            ->values();
 
 		return response()->json($res);
     }
@@ -787,7 +778,7 @@ class PublicApiController extends Controller
     public function accountFollowing(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id);
+		$account = AccountService::get($id, true);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
 
@@ -802,24 +793,15 @@ class PublicApiController extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
+			if($request->has('page') && $request->page >= 10) {
 				return [];
 			}
 		}
 
-		$res = DB::table('followers')
-			->select('id', 'profile_id', 'following_id')
-			->whereProfileId($account['id'])
-			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::get($follower->following_id);
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values()
-			->toArray();
+        $res = collect(FollowerService::followingPaginate($account['id'], $request->input('page', 1)))
+            ->map(fn($id) => AccountService::get($id, true))
+            ->filter()
+            ->values();
 
 		return response()->json($res);
     }

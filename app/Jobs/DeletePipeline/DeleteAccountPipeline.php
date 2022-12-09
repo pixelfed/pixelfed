@@ -11,6 +11,7 @@ use DB;
 use Storage;
 use Illuminate\Support\Str;
 use App\Services\AccountService;
+use App\Services\FollowerService;
 use App\Services\PublicTimelineService;
 use App\{
 	AccountInterstitial,
@@ -133,7 +134,11 @@ class DeleteAccountPipeline implements ShouldQueue
 				->forceDelete();
 			Follower::whereProfileId($id)
 				->orWhere('following_id', $id)
-				->forceDelete();
+				->each(function($follow) {
+					FollowerService::remove($follow->profile_id, $follow->following_id);
+					$follow->delete();
+				});
+			FollowerService::delCache($id);
 			Like::whereProfileId($id)->forceDelete();
 		});
 
