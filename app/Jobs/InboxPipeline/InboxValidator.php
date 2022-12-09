@@ -80,9 +80,6 @@ class InboxValidator implements ShouldQueue
         if($this->verifySignature($headers, $profile, $payload) == true) {
             (new Inbox($headers, $profile, $payload))->handle();
             return;
-        } else if($this->blindKeyRotation($headers, $profile, $payload) == true) {
-            (new Inbox($headers, $profile, $payload))->handle();
-            return;
         } else {
             return;
         }
@@ -96,18 +93,18 @@ class InboxValidator implements ShouldQueue
         $signature = is_array($headers['signature']) ? $headers['signature'][0] : $headers['signature'];
         $date = is_array($headers['date']) ? $headers['date'][0] : $headers['date'];
         if(!$signature) {
-            return;
+            return false;
         }
         if(!$date) {
-            return;
+            return false;
         }
         if(!now()->parse($date)->gt(now()->subDays(1)) || 
            !now()->parse($date)->lt(now()->addDays(1))
        ) {
-            return;
+            return false;
         }
         if(!isset($bodyDecoded['id'])) {
-        	return;
+        	return false;
         }
         $signatureData = HttpSignature::parseSignatureHeader($signature);
         $keyId = Helpers::validateUrl($signatureData['keyId']);
@@ -127,12 +124,11 @@ class InboxValidator implements ShouldQueue
                 }
             }
             if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
-                return;
+                return false;
             }
         }
         if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
-            return;
-            abort(400, 'Invalid request');
+            return false;
         }
         $actor = Profile::whereKeyId($keyId)->first();
         if(!$actor) {
@@ -140,11 +136,11 @@ class InboxValidator implements ShouldQueue
             $actor = Helpers::profileFirstOrNew($actorUrl);
         }
         if(!$actor) {
-            return;
+            return false;
         }
         $pkey = openssl_pkey_get_public($actor->public_key);
         if(!$pkey) {
-            return 0;
+            return false;
         }
         $inboxPath = "/users/{$profile->username}/inbox";
         list($verified, $headers) = HttpSignature::verify($pkey, $signatureData, $headers, $inboxPath, $body);
