@@ -17,7 +17,7 @@ class SharedInboxWorker implements ShouldQueue
     protected $profile;
     protected $payload;
 
-    public $timeout = 60;
+    public $timeout = 300;
     public $tries = 1;
 
     /**

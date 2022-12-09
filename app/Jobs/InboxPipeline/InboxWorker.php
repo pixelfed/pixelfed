@@ -25,7 +25,7 @@ class InboxWorker implements ShouldQueue
     protected $headers;
     protected $payload;
 
-    public $timeout = 60;
+    public $timeout = 300;
     public $tries = 1;
     public $maxExceptions = 1;
 
