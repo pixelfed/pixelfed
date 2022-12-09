@@ -118,20 +118,18 @@ class FederationController extends Controller
 	public function userOutbox(Request $request, $username)
 	{
 		abort_if(!config_cache('federation.activitypub.enabled'), 404);
-		abort_if(!config('federation.activitypub.outbox'), 404);
 
-		// $profile = Profile::whereNull('domain')
-		// 	->whereNull('status')
-		// 	->whereIsPrivate(false)
-		// 	->whereUsername($username)
-		// 	->firstOrFail();
+		if(!$request->wantsJson()) {
+			return redirect('/' . $username);
+		}
 
-		// $key = 'ap:outbox:latest_10:pid:' . $profile->id;
-		// $ttl = now()->addMinutes(15);
-		// $res = Cache::remember($key, $ttl, function() use($profile) {
-		// 	return Outbox::get($profile);
-		// });
-		$res = [];
+		$res = [
+			'@context' => 'https://www.w3.org/ns/activitystreams',
+			'id' => 'https://' . config('pixelfed.domain.app') . '/users/' . $username . '/outbox',
+			'type' => 'OrderedCollection',
+			'totalItems' => 0,
+			'orderedItems' => []
+		];
 
 		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"');
 	}
