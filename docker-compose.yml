@@ -24,7 +24,7 @@ services:
     volumes:
       - app-storage:/var/www/storage
       - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
+      - "./.env.docker:/var/www/.env:Z"
     networks:
       - external
       - internal
