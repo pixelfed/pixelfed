@@ -673,13 +673,8 @@ class ApiV1Controller extends Controller
 		}
 
 		// Rate limits, max 7500 followers per account
-		if($user->profile->following()->count() >= Follower::MAX_FOLLOWING) {
+		if($user->profile->following_count && $user->profile->following_count >= Follower::MAX_FOLLOWING) {
 			abort(400, 'You cannot follow more than ' . Follower::MAX_FOLLOWING . ' accounts');
-		}
-
-		// Rate limits, follow 30 accounts per hour max
-		if($user->profile->following()->where('followers.created_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
-			abort(400, 'You can only follow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
 		}
 
 		if($private == true) {
@@ -759,11 +754,6 @@ class ApiV1Controller extends Controller
 			$res = $this->fractal->createData($resource)->toArray();
 
 			return $this->json($res);
-		}
-
-		// Rate limits, follow 30 accounts per hour max
-		if($user->profile->following()->where('followers.updated_at', '>', now()->subHour())->count() >= Follower::FOLLOW_PER_HOUR) {
-			abort(400, 'You can only follow or unfollow ' . Follower::FOLLOW_PER_HOUR . ' users per hour');
 		}
 
 		if($user->profile->following_count) {
@@ -1266,7 +1256,7 @@ class ApiV1Controller extends Controller
 		AccountService::del($profile->id);
 
 		if($follower->domain != null && $follower->private_key === null) {
-			FollowAcceptPipeline::dispatch($followRequest);
+			FollowAcceptPipeline::dispatch($followRequest)->onQueue('follow');
 		} else {
 			FollowPipeline::dispatch($follow);
 			$followRequest->delete();
@@ -1304,7 +1294,7 @@ class ApiV1Controller extends Controller
 		$follower = $followRequest->follower;
 
 		if($follower->domain != null && $follower->private_key === null) {
-			FollowRejectPipeline::dispatch($followRequest);
+			FollowRejectPipeline::dispatch($followRequest)->onQueue('follow');
 		} else {
 			$followRequest->delete();
 		}
@@ -2511,6 +2501,7 @@ class ApiV1Controller extends Controller
 
 		$ids = $request->input('media_ids');
 		$in_reply_to_id = $request->input('in_reply_to_id');
+
 		$user = $request->user();
 		$profile = $user->profile;
 
