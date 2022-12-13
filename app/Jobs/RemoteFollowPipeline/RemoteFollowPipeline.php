@@ -97,7 +97,7 @@ class RemoteFollowPipeline implements ShouldQueue
         $res = $this->response;
         $url = $res['inbox'];
 
-        $activity = Zttp::withHeaders(['Content-Type' => 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"'])->post($url, [
+        $activity = Zttp::withHeaders(['Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'])->post($url, [
             'type'   => 'Follow',
             'object' => $this->follower->url(),
         ]);

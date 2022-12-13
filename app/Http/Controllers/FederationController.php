@@ -131,7 +131,7 @@ class FederationController extends Controller
 			'orderedItems' => []
 		];
 
-		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/ld+json; profile="http://www.w3.org/ns/activitystreams"');
+		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"');
 	}
 
 	public function userInbox(Request $request, $username)
