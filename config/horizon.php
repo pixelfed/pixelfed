@@ -83,6 +83,7 @@ return [
 		'redis:follow' => 30,
 		'redis:shared' => 30,
 		'redis:default' => 30,
+		'redis:inbox' => 30,
 		'redis:low' => 30,
 		'redis:high' => 30,
 		'redis:delete' => 30,
@@ -171,7 +172,7 @@ return [
 		'production' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'follow', 'shared', 'feed', 'low', 'story', 'delete', 'mmo'],
+				'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo'],
 				'balance'       => env('HORIZON_BALANCE_STRATEGY', 'auto'),
 				'minProcesses'  => env('HORIZON_MIN_PROCESSES', 1),
 				'maxProcesses'  => env('HORIZON_MAX_PROCESSES', 20),
@@ -185,7 +186,7 @@ return [
 		'local' => [
 			'supervisor-1' => [
 				'connection'    => 'redis',
-				'queue'         => ['high', 'default', 'follow', 'shared', 'feed', 'low', 'story', 'delete', 'mmo'],
+				'queue'         => ['high', 'default', 'follow', 'shared', 'inbox', 'feed', 'low', 'story', 'delete', 'mmo'],
 				'balance'       => 'auto',
 				'minProcesses' => 1,
 				'maxProcesses'  => 20,

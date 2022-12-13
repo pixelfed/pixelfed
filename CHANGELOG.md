@@ -52,6 +52,7 @@
 - Dispatch follow accept/reject pipeline jobs to follow queue ([aaed2bf6](https://github.com/pixelfed/pixelfed/commit/aaed2bf6))
 - Update MediaStorageService, improve support for pleroma .blob avatars ([66226658](https://github.com/pixelfed/pixelfed/commit/66226658))
 - Update ApiV1Controller, remove min avatar size limit, fixes #3715 ([2b0db812](https://github.com/pixelfed/pixelfed/commit/2b0db812))
+- Update InboxPipeline, add inbox job queue and separate http sig validation from activity handling ([e6c1604d](https://github.com/pixelfed/pixelfed/commit/e6c1604d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
