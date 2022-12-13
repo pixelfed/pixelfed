@@ -25,8 +25,8 @@ class DeleteWorker implements ShouldQueue
 	protected $headers;
 	protected $payload;
 
-	public $timeout = 120;
-	public $tries = 3;
+	public $timeout = 300;
+	public $tries = 1;
 	public $maxExceptions = 1;
 
 	/**

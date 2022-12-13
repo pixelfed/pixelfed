@@ -203,6 +203,7 @@ class MediaStorageService {
 		}
 
 		$mimes = [
+			'application/octet-stream',
 			'image/jpeg',
 			'image/png',
 		];
@@ -238,6 +239,15 @@ class MediaStorageService {
 			return;
 		}
 		file_put_contents($tmpName, $data);
+
+		$mimeCheck = Storage::mimeType('remcache/' . $tmpPath);
+
+		if(!$mimeCheck || !in_array($mimeCheck, ['image/png', 'image/jpeg'])) {
+			$avatar->last_fetched_at = now();
+			$avatar->save();
+			unlink($tmpName);
+			return;
+		}
 
 		$disk = Storage::disk($driver);
 		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');

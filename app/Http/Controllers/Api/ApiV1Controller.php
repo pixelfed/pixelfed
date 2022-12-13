@@ -221,7 +221,7 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'avatar'			=> 'sometimes|mimetypes:image/jpeg,image/png|min:10|max:' . config('pixelfed.max_avatar_size'),
+			'avatar'			=> 'sometimes|mimetypes:image/jpeg,image/png|max:' . config('pixelfed.max_avatar_size'),
 			'display_name'      => 'nullable|string|max:30',
 			'note'              => 'nullable|string|max:200',
 			'locked'            => 'nullable',

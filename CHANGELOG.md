@@ -49,6 +49,9 @@
 - Update InboxPipeline, increase timeout from 60s to 300s ([d1b888b5](https://github.com/pixelfed/pixelfed/commit/d1b888b5))
 - Update backup config, fixes #3793, #3920, #3931 ([b0c4cc30](https://github.com/pixelfed/pixelfed/commit/b0c4cc30))
 - Update FederationController, add two new queues (follow, shared) to prioritize follow request handling ([8ba33864](https://github.com/pixelfed/pixelfed/commit/8ba33864))
+- Dispatch follow accept/reject pipeline jobs to follow queue ([aaed2bf6](https://github.com/pixelfed/pixelfed/commit/aaed2bf6))
+- Update MediaStorageService, improve support for pleroma .blob avatars ([66226658](https://github.com/pixelfed/pixelfed/commit/66226658))
+- Update ApiV1Controller, remove min avatar size limit, fixes #3715 ([2b0db812](https://github.com/pixelfed/pixelfed/commit/2b0db812))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
