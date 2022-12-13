@@ -38,6 +38,8 @@ class RemoteAvatarFetch implements ShouldQueue
 	 * @var int
 	 */
 	public $tries = 1;
+	public $timeout = 300;
+	public $maxExceptions = 1;
 
 	/**
 	* Create a new job instance.
