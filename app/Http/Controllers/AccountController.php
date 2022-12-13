@@ -409,7 +409,7 @@ class AccountController extends Controller
 				AccountService::del($profile->id);
 
 				if($follower->domain != null && $follower->private_key === null) {
-					FollowAcceptPipeline::dispatch($followRequest);
+					FollowAcceptPipeline::dispatch($followRequest)->onQueue('follow');
 				} else {
 					FollowPipeline::dispatch($follow);
 					$followRequest->delete();
@@ -418,7 +418,7 @@ class AccountController extends Controller
 
 			case 'reject':
 				if($follower->domain != null && $follower->private_key === null) {
-					FollowRejectPipeline::dispatch($followRequest);
+					FollowRejectPipeline::dispatch($followRequest)->onQueue('follow');
 				} else {
 					$followRequest->delete();
 				}
