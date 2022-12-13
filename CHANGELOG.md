@@ -48,6 +48,7 @@
 - Update sidebar menu, when clicking on the active feed/timeline buttons force a reload and scroll to top of feed ([78a5575d](https://github.com/pixelfed/pixelfed/commit/78a5575d))
 - Update InboxPipeline, increase timeout from 60s to 300s ([d1b888b5](https://github.com/pixelfed/pixelfed/commit/d1b888b5))
 - Update backup config, fixes #3793, #3920, #3931 ([b0c4cc30](https://github.com/pixelfed/pixelfed/commit/b0c4cc30))
+- Update FederationController, add two new queues (follow, shared) to prioritize follow request handling ([8ba33864](https://github.com/pixelfed/pixelfed/commit/8ba33864))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
