@@ -105,7 +105,7 @@ class DeleteWorker implements ShouldQueue
 		$profile = null;
 
 		if($this->verifySignature($headers, $payload) == true) {
-			(new Inbox($headers, $profile, $payload))->handle();
+			ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
 			return 1;
 		} else {
 			return 1;
