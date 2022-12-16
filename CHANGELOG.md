@@ -8,6 +8,7 @@
 - Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
 - Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
+- Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))

@@ -61,6 +61,7 @@ use App\Jobs\VideoPipeline\{
 
 use App\Services\{
 	AccountService,
+	BookmarkService,
 	CollectionService,
 	FollowerService,
 	InstanceService,
@@ -767,6 +768,10 @@ class ApiV1Controller extends Controller
 		Follower::whereProfileId($user->profile_id)
 			->whereFollowingId($target->id)
 			->delete();
+
+		if(config('instance.timeline.home.cached')) {
+            Cache::forget('pf:timelines:home:' . $user->profile_id);
+        }
 
 		FollowerService::remove($user->profile_id, $target->id);
 
@@ -1935,10 +1940,79 @@ class ApiV1Controller extends Controller
 		$limit = $request->input('limit') ?? 20;
 		$pid = $request->user()->profile_id;
 
-		$following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+		$following = Cache::remember('profile:following:'.$pid, 1209600, function() use($pid) {
 			$following = Follower::whereProfileId($pid)->pluck('following_id');
 			return $following->push($pid)->toArray();
 		});
+
+		if(config('instance.timeline.home.cached') && (!$min && !$max)) {
+            $ttl = config('instance.timeline.home.cache_ttl');
+            $res = Cache::remember(
+                'pf:timelines:home:' . $pid,
+                $ttl,
+                function() use(
+                $following,
+                $limit,
+                $pid
+                ) {
+                return Status::select(
+                    'id',
+                    'uri',
+                    'caption',
+                    'rendered',
+                    'profile_id',
+                    'type',
+                    'in_reply_to_id',
+                    'reblog_of_id',
+                    'is_nsfw',
+                    'scope',
+                    'local',
+                    'reply_count',
+                    'comments_disabled',
+                    'place_id',
+                    'likes_count',
+                    'reblogs_count',
+                    'created_at',
+                    'updated_at'
+                  )
+                  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                  ->whereIn('profile_id', $following)
+                  ->whereIn('visibility',['public', 'unlisted', 'private'])
+                  ->orderBy('created_at', 'desc')
+                  ->limit($limit)
+                  ->get()
+                  ->map(function($s) {
+                       $status = StatusService::get($s->id, false);
+                       if(!$status) {
+                            return false;
+                       }
+                       return $status;
+                  })
+                  ->filter(function($s) {
+                        return $s && isset($s['account']['id']);
+                  })
+                  ->values()
+                  ->toArray();
+            });
+
+            $res = collect($res)
+                ->map(function($s) use ($pid) {
+                    $status = StatusService::get($s['id'], false);
+                    if(!$status) {
+                        return false;
+                    }
+                    $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $s['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($pid, $s['id']);
+                    return $status;
+                })
+                ->filter(function($s) {
+                    return $s && isset($s['account']['id']);
+                })
+                ->values()
+                ->take($limit)
+                ->toArray();
+		}
 
 		if($min || $max) {
 			$dir = $min ? '>' : '<';

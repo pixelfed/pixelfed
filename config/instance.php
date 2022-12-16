@@ -23,6 +23,11 @@ return [
 	'email' => env('INSTANCE_CONTACT_EMAIL'),
 
 	'timeline' => [
+		'home' => [
+			'cached' => env('PF_HOME_TIMELINE_CACHE', false),
+			'cache_ttl' => env('PF_HOME_TIMELINE_CACHE_TTL', 900)
+		],
+
 		'local' => [
 			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
 		],

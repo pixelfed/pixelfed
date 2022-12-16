@@ -27,6 +27,7 @@ class FollowerService
 		RelationshipService::refresh($actor, $target);
 		Redis::zadd(self::FOLLOWING_KEY . $actor, $ts, $target);
 		Redis::zadd(self::FOLLOWERS_KEY . $target, $ts, $actor);
+		Cache::forget('profile:following:' . $actor);
 	}
 
 	public static function remove($actor, $target)
@@ -38,6 +39,7 @@ class FollowerService
 		AccountService::del($actor);
 		AccountService::del($target);
 		RelationshipService::refresh($actor, $target);
+		Cache::forget('profile:following:' . $actor);
 	}
 
 	public static function followers($id, $start = 0, $stop = 10)
