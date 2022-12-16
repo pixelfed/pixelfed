@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Follower;
 use App\Services\FollowerService;
+use Cache;
 
 class FollowerObserver
 {
@@ -15,6 +16,10 @@ class FollowerObserver
      */
     public function created(Follower $follower)
     {
+        if(config('instance.timeline.home.cached')) {
+            Cache::forget('pf:timelines:home:' . $follower->profile_id);
+        }
+
         FollowerService::add($follower->profile_id, $follower->following_id);
     }
 

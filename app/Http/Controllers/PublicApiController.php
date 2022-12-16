@@ -454,28 +454,18 @@ class PublicApiController extends Controller
         $user = $request->user();
 
         $key = 'user:last_active_at:id:'.$user->id;
-        $ttl = now()->addMinutes(20);
-        Cache::remember($key, $ttl, function() use($user) {
+        if(Cache::get($key) == null) {
             $user->last_active_at = now();
             $user->save();
-            return;
-        });
+            Cache::put($key, true, 43200);
+        }
 
         $pid = $user->profile_id;
 
-        $following = Cache::remember('profile:following:'.$pid, now()->addMinutes(1440), function() use($pid) {
+        $following = Cache::remember('profile:following:'.$pid, 1209600, function() use($pid) {
             $following = Follower::whereProfileId($pid)->pluck('following_id');
             return $following->push($pid)->toArray();
         });
-
-        if($recentFeed == true) {
-            $key = 'profile:home-timeline-cursor:'.$user->id;
-            $ttl = now()->addMinutes(30);
-            $min = Cache::remember($key, $ttl, function() use($pid) {
-                $res = StatusView::whereProfileId($pid)->orderByDesc('status_id')->first();
-                return $res ? $res->status_id : null;
-            });
-        }
 
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         $types = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
@@ -494,6 +484,83 @@ class PublicApiController extends Controller
 
         if(config('exp.polls') == true) {
             array_push($types, 'poll');
+        }
+
+        if(config('instance.timeline.home.cached') && $limit == 6 && (!$min && !$max)) {
+            $ttl = config('instance.timeline.home.cache_ttl');
+            $res = Cache::remember(
+                'pf:timelines:home:' . $pid,
+                $ttl,
+                function() use(
+                $types,
+                $textOnlyReplies,
+                $following,
+                $limit,
+                $filtered,
+                $user
+                ) {
+                return Status::select(
+                    'id',
+                    'uri',
+                    'caption',
+                    'rendered',
+                    'profile_id',
+                    'type',
+                    'in_reply_to_id',
+                    'reblog_of_id',
+                    'is_nsfw',
+                    'scope',
+                    'local',
+                    'reply_count',
+                    'comments_disabled',
+                    'place_id',
+                    'likes_count',
+                    'reblogs_count',
+                    'created_at',
+                    'updated_at'
+                  )
+                  ->whereIn('type', $types)
+                  ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
+                    return $q->whereNull('in_reply_to_id');
+                  })
+                  ->whereIn('profile_id', $following)
+                  ->whereIn('visibility',['public', 'unlisted', 'private'])
+                  ->orderBy('created_at', 'desc')
+                  ->limit($limit)
+                  ->get()
+                  ->map(function($s) use ($user) {
+                       $status = StatusService::get($s->id, false);
+                       if(!$status) {
+                            return false;
+                       }
+                       return $status;
+                  })
+                  ->filter(function($s) use($filtered) {
+                        return $s && in_array($s['account']['id'], $filtered) == false;
+                  })
+                  ->values()
+                  ->toArray();
+            });
+
+            $res = collect($res)
+                ->map(function($s) use ($user) {
+                    $status = StatusService::get($s['id'], false);
+                    if(!$status) {
+                        return false;
+                    }
+                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s['id']);
+                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s['id']);
+                    return $status;
+                })
+                ->filter(function($s) use($filtered) {
+                    return $s && in_array($s['account']['id'], $filtered) == false;
+                })
+                ->values()
+                ->take($limit)
+                ->toArray();
+
+            return $res;
         }
 
         if($min || $max) {

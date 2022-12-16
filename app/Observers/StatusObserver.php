@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Status;
 use App\Services\ProfileStatusService;
+use Cache;
 
 class StatusObserver
 {
@@ -33,6 +34,10 @@ class StatusObserver
      */
     public function updated(Status $status)
     {
+        if(config('instance.timeline.home.cached')) {
+            Cache::forget('pf:timelines:home:' . $status->profile_id);
+        }
+
         if(in_array($status->scope, ['public', 'unlisted']) && in_array($status->type, ['photo', 'photo:album', 'video'])) {
             ProfileStatusService::add($status->profile_id, $status->id);
         }
@@ -46,6 +51,10 @@ class StatusObserver
      */
     public function deleted(Status $status)
     {
+        if(config('instance.timeline.home.cached')) {
+            Cache::forget('pf:timelines:home:' . $status->profile_id);
+        }
+
         ProfileStatusService::delete($status->profile_id, $status->id);
     }
 
