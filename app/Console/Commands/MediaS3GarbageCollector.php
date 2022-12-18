@@ -7,6 +7,8 @@ use App\Media;
 use App\Status;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Services\MediaService;
+use App\Services\StatusService;
 
 class MediaS3GarbageCollector extends Command
 {
@@ -94,6 +96,8 @@ class MediaS3GarbageCollector extends Command
                     $media->version = 4;
                     $media->save();
                     $totalSize = $totalSize + $media->size;
+                    MediaService::del($media->status_id);
+                    StatusService::del($media->status_id, false);
                 } else {
                     $media->version = 4;
                     $media->save();
@@ -133,6 +137,8 @@ class MediaS3GarbageCollector extends Command
                             $localDisk->delete($media->media_path);
                             $media->version = 4;
                             $media->save();
+                            MediaService::del($media->status_id);
+                            StatusService::del($media->status_id, false);
                         } else {
                             $media->version = 4;
                             $media->save();
