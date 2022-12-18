@@ -69,7 +69,7 @@ class CloudMediaMigrate extends Command
                         return;
                     } catch (NotFoundHttpException $e) {
                         return;
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         return;
                     }
                 }
