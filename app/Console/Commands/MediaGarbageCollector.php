@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\{Media, Status};
-use Carbon\Carbon;
 use App\Services\MediaStorageService;
 
 class MediaGarbageCollector extends Command
@@ -40,11 +39,10 @@ class MediaGarbageCollector extends Command
 	 */
 	public function handle()
 	{
-		$limit = 20000;
+		$limit = 500;
 
 		$gc = Media::whereNull('status_id')
-		->where('created_at', '<', Carbon::now()->subHours(12)->toDateTimeString())
-		->orderBy('created_at','asc')
+		->where('created_at', '<', now()->subHours(2)->toDateTimeString())
 		->take($limit)
 		->get();
 
