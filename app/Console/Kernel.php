@@ -32,6 +32,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('gc:failedjobs')->dailyAt(3);
         $schedule->command('gc:passwordreset')->dailyAt('09:41');
         $schedule->command('gc:sessions')->twiceDaily(13, 23);
+
+        if(config('pixelfed.cloud_storage') && config('media.delete_local_after_cloud')) {
+            $schedule->command('media:s3gc')->hourlyAt(15);
+        }
     }
 
     /**
