@@ -41,7 +41,7 @@ class VideoThumbnail implements ShouldQueue
     public function handle()
     {
         $media = $this->media;
-        if($media->mime != 'video/mp4') {
+        if($media->mime != 'video/mp4' && $media->mime != 'video/quicktime') {
             return;
         }
         $base = $media->media_path;
@@ -69,7 +69,7 @@ class VideoThumbnail implements ShouldQueue
             }
 
         } catch (Exception $e) {
-            
+
         }
 
         if($media->status_id) {

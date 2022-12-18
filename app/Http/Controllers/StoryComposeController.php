@@ -40,7 +40,7 @@ class StoryComposeController extends Controller
 			'file' => function() {
 				return [
 					'required',
-					'mimetypes:image/jpeg,image/png,video/mp4',
+					'mimetypes:image/jpeg,image/png,video/mp4,video/quicktime',
 					'max:' . config_cache('pixelfed.max_photo_size'),
 				];
 			},
@@ -104,7 +104,8 @@ class StoryComposeController extends Controller
 		if(in_array($photo->getMimeType(), [
 			'image/jpeg',
 			'image/png',
-			'video/mp4'
+			'video/mp4',
+            'video/quicktime'
 		]) == false) {
 			abort(400, 'Invalid media type');
 			return;

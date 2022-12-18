@@ -350,7 +350,7 @@ class StatusController extends Controller
 		$photos = 0;
 		$videos = 0;
 		foreach($mimes as $mime) {
-			if(in_array($mime, $allowed) == false && $mime !== 'video/mp4') {
+			if(in_array($mime, $allowed) == false && $mime !== 'video/mp4' && $mime !== 'video/quicktime') {
 				continue;
 			}
 			if(str_contains($mime, 'image/')) {

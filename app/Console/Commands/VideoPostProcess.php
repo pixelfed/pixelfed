@@ -5,23 +5,23 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Media;
-use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
+use App\Jobs\VideoPipeline\VideoPostProcess as Pipeline;
 
-class VideoThumbnail extends Command
+class VideoPostProcess extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'video:thumbnail';
+    protected $signature = 'video:postprocess';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate missing video thumbnails';
+    protected $description = 'Apply required postprocessing (convert video/quicktime to video/mp4)';
 
     /**
      * Create a new command instance.
@@ -41,9 +41,7 @@ class VideoThumbnail extends Command
     public function handle()
     {
         $limit = 10;
-        $videos = Media::whereMime('video/mp4')
-                        ->orWhere('mime', 'video/quicktime')
-                        ->whereNull('thumbnail_path')
+        $videos = Media::whereMime('video/quicktime')
                         ->take($limit)
                         ->get();
         foreach($videos as $video) {

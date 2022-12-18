@@ -11,7 +11,7 @@ class Blurhash {
 
 	public static function generate(Media $media)
 	{
-		if(!in_array($media->mime, ['image/png', 'image/jpeg', 'video/mp4'])) {
+		if(!in_array($media->mime, ['image/png', 'image/jpeg', 'video/mp4', 'video/quicktime'])) {
 			return self::DEFAULT_HASH;
 		}
 

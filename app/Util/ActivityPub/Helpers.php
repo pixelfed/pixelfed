@@ -74,7 +74,7 @@ class Helpers {
 		$activity = $data['object'];
 
 		$mimeTypes = explode(',', config_cache('pixelfed.media_types'));
-		$mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
+		$mediaTypes = in_array('video/mp4', $mimeTypes) || in_array('video/quicktime', $mimeTypes) ? ['Document', 'Image', 'Video'] : ['Document', 'Image'];
 
 		// Peertube
 		// $mediaTypes = in_array('video/mp4', $mimeTypes) ? ['Document', 'Image', 'Video', 'Link'] : ['Document', 'Image'];

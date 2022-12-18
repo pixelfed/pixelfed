@@ -149,7 +149,9 @@ class ComposeController extends Controller
 			break;
 
 			case 'video/mp4':
+			case 'video/quicktime':
 			VideoThumbnail::dispatch($media);
+			VideoPostProcess::dispatch($media);
 			$preview_url = '/storage/no-preview.png';
 			$url = '/storage/no-preview.png';
 			break;
@@ -709,6 +711,7 @@ class ComposeController extends Controller
 			case 'image/jpeg':
 			case 'image/png':
 			case 'video/mp4':
+            case 'video/quicktime':
 				$finished = config_cache('pixelfed.cloud_storage') ? (bool) $media->cdn_url : (bool) $media->processed_at;
 				break;
 

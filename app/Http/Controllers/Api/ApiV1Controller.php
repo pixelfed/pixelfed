@@ -1550,7 +1550,9 @@ class ApiV1Controller extends Controller
 				break;
 
 			case 'video/mp4':
+            case 'video/quicktime':
 				VideoThumbnail::dispatch($media);
+				VideoPostProcess::dispatch($media);
 				$preview_url = '/storage/no-preview.png';
 				$url = '/storage/no-preview.png';
 				break;
@@ -1720,7 +1722,9 @@ class ApiV1Controller extends Controller
 				break;
 
 			case 'video/mp4':
+			case 'video/quicktime':
 				VideoThumbnail::dispatch($media);
+				VideoPostProcess::dispatch($media);
 				$preview_url = '/storage/no-preview.png';
 				$url = '/storage/no-preview.png';
 				break;
