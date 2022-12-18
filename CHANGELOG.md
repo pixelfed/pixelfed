@@ -57,6 +57,8 @@
 - Update InboxPipeline, dispatch Follow/Accept Follow jobs to follow queue ([f62d2494](https://github.com/pixelfed/pixelfed/commit/f62d2494))
 - Add MediaS3GarbageCollector command to clear local media after uploaded to S3 disks after 12 hours ([b8c3f153](https://github.com/pixelfed/pixelfed/commit/b8c3f153))
 - Update MediaS3GarbageCollector command, disable logging by default and optimize huge invocations ([a14af93b](https://github.com/pixelfed/pixelfed/commit/a14af93b))
+- Update MediaStorageService, clear MediaService and StatusService caches after localToCloud ([de56b0f0](https://github.com/pixelfed/pixelfed/commit/de56b0f0))
+- Add CloudMediaMigrate command to migrate older local media to cloud storage ([382d00d9](https://github.com/pixelfed/pixelfed/commit/382d00d9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
