@@ -133,7 +133,6 @@ class MediaS3GarbageCollector extends Command
                             $localDisk->delete($media->media_path);
                             $media->version = 4;
                             $media->save();
-                            $totalSize = $totalSize + $media->size;
                         } else {
                             $media->version = 4;
                             $media->save();
