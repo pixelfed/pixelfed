@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\MediaService;
 use App\Services\StatusService;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MediaS3GarbageCollector extends Command
 {
@@ -88,26 +90,37 @@ class MediaS3GarbageCollector extends Command
         $localDisk = Storage::disk('local');
 
         foreach($gc as $media) {
-            if(
-                $cloudDisk->exists($media->media_path)
-            ) {
-                if( $localDisk->exists($media->media_path)) {
-                    $localDisk->delete($media->media_path);
-                    $media->version = 4;
-                    $media->save();
-                    $totalSize = $totalSize + $media->size;
-                    MediaService::del($media->status_id);
-                    StatusService::del($media->status_id, false);
+            try {
+                if(
+                    $cloudDisk->exists($media->media_path)
+                ) {
+                    if( $localDisk->exists($media->media_path)) {
+                        $localDisk->delete($media->media_path);
+                        $media->version = 4;
+                        $media->save();
+                        $totalSize = $totalSize + $media->size;
+                        MediaService::del($media->status_id);
+                        StatusService::del($media->status_id, false);
+                    } else {
+                        $media->version = 4;
+                        $media->save();
+                    }
                 } else {
-                    $media->version = 4;
-                    $media->save();
+                    if($log) {
+                        Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
+                    }
                 }
-            } else {
-                if($log) {
-                    Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
-                }
+                $bar->advance();
+            } catch (FileNotFoundException $e) {
+                $bar->advance();
+                continue;
+            } catch (NotFoundHttpException $e) {
+                $bar->advance();
+                continue;
+            } catch (\Exception $e) {
+                $bar->advance();
+                continue;
             }
-            $bar->advance();
         }
         $bar->finish();
         $this->line(' ');
@@ -132,23 +145,34 @@ class MediaS3GarbageCollector extends Command
             ->where('id', '<', $minId)
             ->chunk(50, function($medias) use($cloudDisk, $localDisk, $bar, $log) {
                 foreach($medias as $media) {
-                    if($cloudDisk->exists($media->media_path)) {
-                        if( $localDisk->exists($media->media_path)) {
-                            $localDisk->delete($media->media_path);
-                            $media->version = 4;
-                            $media->save();
-                            MediaService::del($media->status_id);
-                            StatusService::del($media->status_id, false);
+                    try {
+                        if($cloudDisk->exists($media->media_path)) {
+                            if( $localDisk->exists($media->media_path)) {
+                                $localDisk->delete($media->media_path);
+                                $media->version = 4;
+                                $media->save();
+                                MediaService::del($media->status_id);
+                                StatusService::del($media->status_id, false);
+                            } else {
+                                $media->version = 4;
+                                $media->save();
+                            }
                         } else {
-                            $media->version = 4;
-                            $media->save();
+                            if($log) {
+                                Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
+                            }
                         }
-                    } else {
-                        if($log) {
-                            Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
-                        }
+                        $bar->advance();
+                    } catch (FileNotFoundException $e) {
+                        $bar->advance();
+                        continue;
+                    } catch (NotFoundHttpException $e) {
+                        $bar->advance();
+                        continue;
+                    } catch (\Exception $e) {
+                        $bar->advance();
+                        continue;
                     }
-                    $bar->advance();
                 }
         });
 
