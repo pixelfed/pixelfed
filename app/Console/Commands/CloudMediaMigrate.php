@@ -8,6 +8,7 @@ use App\Services\MediaStorageService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CloudMediaMigrate extends Command
 {
@@ -65,6 +66,8 @@ class CloudMediaMigrate extends Command
                     try {
                         MediaStorageService::store($media);
                     } catch (FileNotFoundException $e) {
+                        return;
+                    } catch (NotFoundHttpException $e) {
                         return;
                     } catch (Exception $e) {
                         return;
