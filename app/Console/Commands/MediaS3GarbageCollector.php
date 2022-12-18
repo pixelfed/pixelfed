@@ -101,6 +101,9 @@ class MediaS3GarbageCollector extends Command
                         $totalSize = $totalSize + $media->size;
                         MediaService::del($media->status_id);
                         StatusService::del($media->status_id, false);
+                        if($localDisk->exists($media->thumbnail_path)) {
+                            $localDisk->delete($media->thumbnail_path);
+                        }
                     } else {
                         $media->version = 4;
                         $media->save();
@@ -153,6 +156,9 @@ class MediaS3GarbageCollector extends Command
                                 $media->save();
                                 MediaService::del($media->status_id);
                                 StatusService::del($media->status_id, false);
+                                if($localDisk->exists($media->thumbnail_path)) {
+                                    $localDisk->delete($media->thumbnail_path);
+                                }
                             } else {
                                 $media->version = 4;
                                 $media->save();
