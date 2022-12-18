@@ -7,6 +7,7 @@ use App\Media;
 use App\Services\MediaStorageService;
 use App\Util\Lexer\PrettyNumber;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class CloudMediaMigrate extends Command
 {
@@ -61,7 +62,13 @@ class CloudMediaMigrate extends Command
             ->each(function($media) use($bar) {
                 if(Storage::disk('local')->exists($media->media_path)) {
                     $this->totalSize = $this->totalSize + $media->size;
-                    MediaStorageService::store($media);
+                    try {
+                        MediaStorageService::store($media);
+                    } catch (FileNotFoundException $e) {
+                        return;
+                    } catch (Exception $e) {
+                        return;
+                    }
                 }
                 $bar->advance();
             });
