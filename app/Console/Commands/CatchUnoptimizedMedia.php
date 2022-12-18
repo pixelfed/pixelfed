@@ -40,22 +40,20 @@ class CatchUnoptimizedMedia extends Command
      */
     public function handle()
     {
-        DB::transaction(function() {
-            Media::whereNull('processed_at')
-                ->where('skip_optimize', '!=', true)
-                ->whereNull('remote_url')
-                ->whereNotNull('status_id')
-                ->whereNotNull('media_path')
-                ->where('created_at', '>', now()->subHours(1))
-                ->whereIn('mime', [
-                    'image/jpeg',
-                    'image/png',
-                ])
-                ->chunk(50, function($medias) {
-                    foreach ($medias as $media) {
-                        ImageOptimize::dispatch($media);
-                    }
-                });
-         });
+        Media::whereNull('processed_at')
+            ->where('created_at', '>', now()->subHours(1))
+            ->where('skip_optimize', '!=', true)
+            ->whereNull('remote_url')
+            ->whereNotNull('status_id')
+            ->whereNotNull('media_path')
+            ->whereIn('mime', [
+                'image/jpeg',
+                'image/png',
+            ])
+            ->chunk(50, function($medias) {
+                foreach ($medias as $media) {
+                    ImageOptimize::dispatch($media);
+                }
+            });
     }
 }
