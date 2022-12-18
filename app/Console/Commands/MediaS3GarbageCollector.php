@@ -56,12 +56,13 @@ class MediaS3GarbageCollector extends Command
         $limit = $this->option('limit');
         $minId = Media::orderByDesc('id')->where('created_at', '<', now()->subHours(12))->first()->id;
 
-        $gc = Media::whereNotNull(['status_id', 'cdn_url', 'replicated_at'])
-        ->whereNot('version', '4')
-        ->where('id', '<', $minId)
-        ->inRandomOrder()
-        ->take($limit)
-        ->get();
+        $gc = Media::whereRemoteMedia(false)
+            ->whereNotNull(['status_id', 'cdn_url', 'replicated_at'])
+            ->whereNot('version', '4')
+            ->where('id', '<', $minId)
+            ->inRandomOrder()
+            ->take($limit)
+            ->get();
 
         $totalSize = 0;
         $bar = $this->output->createProgressBar($gc->count());
