@@ -15,7 +15,7 @@ class MediaS3GarbageCollector extends Command
     *
     * @var string
     */
-    protected $signature = 'media:s3gc {--limit=200}';
+    protected $signature = 'media:s3gc {--limit=200} {--huge} {--log-errors}';
 
     /**
     * The console command description.
@@ -54,8 +54,23 @@ class MediaS3GarbageCollector extends Command
         }
 
         $limit = $this->option('limit');
+        $hugeMode = $this->option('huge');
+        $log = $this->option('log-errors');
+
+        if($limit > 2000 && !$hugeMode) {
+            $this->error('Limit exceeded, please use a limit under 2000 or run again with the --huge flag');
+            return;
+        }
+
         $minId = Media::orderByDesc('id')->where('created_at', '<', now()->subHours(12))->first()->id;
 
+        return $hugeMode ?
+            $this->hugeMode($minId, $limit, $log) :
+            $this->regularMode($minId, $limit, $log);
+    }
+
+    protected function regularMode($minId, $limit, $log)
+    {
         $gc = Media::whereRemoteMedia(false)
             ->whereNotNull(['status_id', 'cdn_url', 'replicated_at'])
             ->whereNot('version', '4')
@@ -84,7 +99,9 @@ class MediaS3GarbageCollector extends Command
                     $media->save();
                 }
             } else {
-                Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
+                if($log) {
+                    Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
+                }
             }
             $bar->advance();
         }
@@ -95,5 +112,43 @@ class MediaS3GarbageCollector extends Command
             $this->info('Cleared ' . $totalSize . ' bytes of media from local disk!');
         }
         return 0;
+    }
+
+    protected function hugeMode($minId, $limit, $log)
+    {
+        $cloudDisk = Storage::disk(config('filesystems.cloud'));
+        $localDisk = Storage::disk('local');
+
+        $bar = $this->output->createProgressBar($limit);
+        $bar->start();
+
+        Media::whereRemoteMedia(false)
+            ->whereNotNull(['status_id', 'cdn_url', 'replicated_at'])
+            ->whereNot('version', '4')
+            ->where('id', '<', $minId)
+            ->chunk(50, function($medias) use($cloudDisk, $localDisk, $bar, $log) {
+                foreach($medias as $media) {
+                    if($cloudDisk->exists($media->media_path)) {
+                        if( $localDisk->exists($media->media_path)) {
+                            $localDisk->delete($media->media_path);
+                            $media->version = 4;
+                            $media->save();
+                            $totalSize = $totalSize + $media->size;
+                        } else {
+                            $media->version = 4;
+                            $media->save();
+                        }
+                    } else {
+                        if($log) {
+                            Log::channel('media')->info('[GC] Local media not properly persisted to cloud storage', ['media_id' => $media->id]);
+                        }
+                    }
+                    $bar->advance();
+                }
+        });
+
+        $bar->finish();
+        $this->line(' ');
+        $this->info('Finished!');
     }
 }
