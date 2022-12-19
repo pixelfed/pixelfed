@@ -66,7 +66,7 @@ class InboxWorker implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $payload) == true) {
-            (new Inbox($headers, $profile, $payload))->handle();
+            ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('inbox');
             return;
         } else {
             return;

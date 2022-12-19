@@ -8,6 +8,7 @@
 - Server Directory ([#3762](https://github.com/pixelfed/pixelfed/pull/3762))
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
 - Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
+- Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -46,6 +47,18 @@
 - Update PublicApiController, refactor follower/following api endpoints to consume FollowerService instead of querying database ([b39f91b4](https://github.com/pixelfed/pixelfed/commit/b39f91b4))
 - Update follower/following profile layout, optimized for mobile devices and use FollowerService ([78a5575d](https://github.com/pixelfed/pixelfed/commit/78a5575d))
 - Update sidebar menu, when clicking on the active feed/timeline buttons force a reload and scroll to top of feed ([78a5575d](https://github.com/pixelfed/pixelfed/commit/78a5575d))
+- Update InboxPipeline, increase timeout from 60s to 300s ([d1b888b5](https://github.com/pixelfed/pixelfed/commit/d1b888b5))
+- Update backup config, fixes #3793, #3920, #3931 ([b0c4cc30](https://github.com/pixelfed/pixelfed/commit/b0c4cc30))
+- Update FederationController, add two new queues (follow, shared) to prioritize follow request handling ([8ba33864](https://github.com/pixelfed/pixelfed/commit/8ba33864))
+- Dispatch follow accept/reject pipeline jobs to follow queue ([aaed2bf6](https://github.com/pixelfed/pixelfed/commit/aaed2bf6))
+- Update MediaStorageService, improve support for pleroma .blob avatars ([66226658](https://github.com/pixelfed/pixelfed/commit/66226658))
+- Update ApiV1Controller, remove min avatar size limit, fixes #3715 ([2b0db812](https://github.com/pixelfed/pixelfed/commit/2b0db812))
+- Update InboxPipeline, add inbox job queue and separate http sig validation from activity handling ([e6c1604d](https://github.com/pixelfed/pixelfed/commit/e6c1604d))
+- Update InboxPipeline, dispatch Follow/Accept Follow jobs to follow queue ([f62d2494](https://github.com/pixelfed/pixelfed/commit/f62d2494))
+- Add MediaS3GarbageCollector command to clear local media after uploaded to S3 disks after 12 hours ([b8c3f153](https://github.com/pixelfed/pixelfed/commit/b8c3f153))
+- Update MediaS3GarbageCollector command, disable logging by default and optimize huge invocations ([a14af93b](https://github.com/pixelfed/pixelfed/commit/a14af93b))
+- Update MediaStorageService, clear MediaService and StatusService caches after localToCloud ([de56b0f0](https://github.com/pixelfed/pixelfed/commit/de56b0f0))
+- Add CloudMediaMigrate command to migrate older local media to cloud storage ([382d00d9](https://github.com/pixelfed/pixelfed/commit/382d00d9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

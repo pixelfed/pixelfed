@@ -25,8 +25,8 @@ class DeleteWorker implements ShouldQueue
 	protected $headers;
 	protected $payload;
 
-	public $timeout = 120;
-	public $tries = 3;
+	public $timeout = 300;
+	public $tries = 1;
 	public $maxExceptions = 1;
 
 	/**
@@ -105,7 +105,7 @@ class DeleteWorker implements ShouldQueue
 		$profile = null;
 
 		if($this->verifySignature($headers, $payload) == true) {
-			(new Inbox($headers, $profile, $payload))->handle();
+			ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
 			return 1;
 		} else {
 			return 1;

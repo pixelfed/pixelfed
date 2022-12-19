@@ -106,6 +106,8 @@ class MediaStorageService {
 		$media->save();
 		if($media->status_id) {
 			Cache::forget('status:transformer:media:attachments:' . $media->status_id);
+			MediaService::del($media->status_id);
+			StatusService::del($media->status_id, false);
 		}
 	}
 
@@ -203,6 +205,7 @@ class MediaStorageService {
 		}
 
 		$mimes = [
+			'application/octet-stream',
 			'image/jpeg',
 			'image/png',
 		];
@@ -238,6 +241,15 @@ class MediaStorageService {
 			return;
 		}
 		file_put_contents($tmpName, $data);
+
+		$mimeCheck = Storage::mimeType('remcache/' . $tmpPath);
+
+		if(!$mimeCheck || !in_array($mimeCheck, ['image/png', 'image/jpeg'])) {
+			$avatar->last_fetched_at = now();
+			$avatar->save();
+			unlink($tmpName);
+			return;
+		}
 
 		$disk = Storage::disk($driver);
 		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');

@@ -78,7 +78,11 @@ class InboxValidator implements ShouldQueue
         }
 
         if($this->verifySignature($headers, $profile, $payload) == true) {
-            (new Inbox($headers, $profile, $payload))->handle();
+            if(isset($payload['type']) && in_array($payload['type'], ['Follow', 'Accept']) ) {
+                ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('follow');
+            } else {
+                ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('inbox');
+            }
             return;
         } else {
             return;

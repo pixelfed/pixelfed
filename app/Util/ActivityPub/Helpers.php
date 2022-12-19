@@ -400,6 +400,11 @@ class Helpers {
 		}
 
 		$profile = self::profileFirstOrNew($attributedTo);
+
+		if(!$profile) {
+			return;
+		}
+
 		if(isset($activity['object']['inReplyTo']) && !empty($activity['object']['inReplyTo']) || $replyTo == true) {
 			$reply_to = self::statusFirstOrFetch(self::pluckval($activity['object']['inReplyTo']), false);
 			if($reply_to) {
