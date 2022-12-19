@@ -5081,16 +5081,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.39",
+            "version": "2.0.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "f3a0e2b715c40cf1fd270d444901b63311725d63"
+                "reference": "5ef6f8376ddad21f3ce1da429950f7e00ec2292c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/f3a0e2b715c40cf1fd270d444901b63311725d63",
-                "reference": "f3a0e2b715c40cf1fd270d444901b63311725d63",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/5ef6f8376ddad21f3ce1da429950f7e00ec2292c",
+                "reference": "5ef6f8376ddad21f3ce1da429950f7e00ec2292c",
                 "shasum": ""
             },
             "require": {
@@ -5171,7 +5171,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.39"
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.40"
             },
             "funding": [
                 {
@@ -5187,7 +5187,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-24T10:49:03+00:00"
+            "time": "2022-12-17T17:22:59+00:00"
         },
         {
             "name": "pixelfed/fractal",
