@@ -103,4 +103,8 @@ return [
 	'avatar' => [
 		'local_to_cloud' => env('PF_LOCAL_AVATAR_TO_CLOUD', false)
 	],
+
+	'admin_invites' => [
+		'enabled' => env('PF_ADMIN_INVITES_ENABLED', true)
+	],
 ];

@@ -9,6 +9,7 @@
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
 - Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
 - Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
+- Admin Invites ([b73ca9a1](https://github.com/pixelfed/pixelfed/commit/b73ca9a1))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -59,6 +60,7 @@
 - Update MediaS3GarbageCollector command, disable logging by default and optimize huge invocations ([a14af93b](https://github.com/pixelfed/pixelfed/commit/a14af93b))
 - Update MediaStorageService, clear MediaService and StatusService caches after localToCloud ([de56b0f0](https://github.com/pixelfed/pixelfed/commit/de56b0f0))
 - Add CloudMediaMigrate command to migrate older local media to cloud storage ([382d00d9](https://github.com/pixelfed/pixelfed/commit/382d00d9))
+- Update MediaS3GarbageCollector command, handle thumbnail deletion ([95bbcc38](https://github.com/pixelfed/pixelfed/commit/95bbcc38))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

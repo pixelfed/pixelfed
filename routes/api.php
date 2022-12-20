@@ -155,6 +155,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::post('iar', 'Api\ApiV1Dot1Controller@inAppRegistration');
 			Route::post('iarc', 'Api\ApiV1Dot1Controller@inAppRegistrationConfirm');
 			Route::get('iarer', 'Api\ApiV1Dot1Controller@inAppRegistrationEmailRedirect');
+
+			Route::post('invite/admin/verify', 'AdminInviteController@apiVerifyCheck')->middleware('throttle:20,120');
+			Route::post('invite/admin/uc', 'AdminInviteController@apiUsernameCheck')->middleware('throttle:20,120');
+			Route::post('invite/admin/ec', 'AdminInviteController@apiEmailCheck')->middleware('throttle:10,1440');
 		});
 	});
 
