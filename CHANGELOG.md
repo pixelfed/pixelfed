@@ -63,6 +63,7 @@
 - Update MediaS3GarbageCollector command, handle thumbnail deletion ([95bbcc38](https://github.com/pixelfed/pixelfed/commit/95bbcc38))
 - Update StatusReplyPipeline, remove expensive reply count re-calculation query ([a2f8aad1](https://github.com/pixelfed/pixelfed/commit/a2f8aad1))
 - Update CommentPipeline, remove expensive reply count re-calculation query ([b457a446](https://github.com/pixelfed/pixelfed/commit/b457a446))
+- Update FederationController, improve inbox/sharedInbox delete handling ([2180a2de](https://github.com/pixelfed/pixelfed/commit/2180a2de))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
