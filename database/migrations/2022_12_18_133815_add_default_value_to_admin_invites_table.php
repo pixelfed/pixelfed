@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('admin_invites', function (Blueprint $table) {
-            $table->unsignedInteger('uses')->default(0)->after('max_uses');
+            $table->unsignedInteger('uses')->default(0)->after('max_uses')->change();
         });
     }
 
@@ -26,7 +26,6 @@ return new class extends Migration
     public function down()
     {
         Schema::table('admin_invites', function (Blueprint $table) {
-            $table->dropColumn('uses');
         });
     }
 };
