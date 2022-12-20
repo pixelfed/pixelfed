@@ -61,6 +61,8 @@
 - Update MediaStorageService, clear MediaService and StatusService caches after localToCloud ([de56b0f0](https://github.com/pixelfed/pixelfed/commit/de56b0f0))
 - Add CloudMediaMigrate command to migrate older local media to cloud storage ([382d00d9](https://github.com/pixelfed/pixelfed/commit/382d00d9))
 - Update MediaS3GarbageCollector command, handle thumbnail deletion ([95bbcc38](https://github.com/pixelfed/pixelfed/commit/95bbcc38))
+- Update StatusReplyPipeline, remove expensive reply count re-calculation query ([a2f8aad1](https://github.com/pixelfed/pixelfed/commit/a2f8aad1))
+- Update CommentPipeline, remove expensive reply count re-calculation query ([b457a446](https://github.com/pixelfed/pixelfed/commit/b457a446))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
