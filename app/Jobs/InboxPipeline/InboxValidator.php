@@ -17,6 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Lottery;
 
 class InboxValidator implements ShouldQueue
 {
@@ -81,7 +82,8 @@ class InboxValidator implements ShouldQueue
             if(isset($payload['type']) && in_array($payload['type'], ['Follow', 'Accept']) ) {
                 ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('follow');
             } else {
-                ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('inbox');
+                $onQueue = Lottery::odds(1, 12)->winner(fn () => 'high')->loser(fn () => 'inbox')->choose();
+                ActivityHandler::dispatch($headers, $profile, $payload)->onQueue($onQueue);
             }
             return;
         } else {
