@@ -136,6 +136,11 @@ class AdminInviteCommand extends Command
     {
         $this->info('View Invites');
         $this->line('=============');
+        if(AdminInvite::count() == 0) {
+            $this->line(' ');
+            $this->error('No invites found!');
+            return;
+        }
         $this->table(
             ['Invite Code', 'Uses Left', 'Expires'],
             AdminInvite::all(['invite_code', 'max_uses', 'uses', 'expires_at'])->map(function($invite) {
@@ -151,13 +156,24 @@ class AdminInviteCommand extends Command
     protected function expire()
     {
         $token = $this->anticipate('Enter invite code to expire', function($val) {
+            if(!$val || empty($val)) {
+                return [];
+            }
             return AdminInvite::where('invite_code', 'like', '%' . $val . '%')->pluck('invite_code')->toArray();
         });
 
-       $invite = AdminInvite::whereInviteCode($token)->firstOrFail();
-       $invite->max_uses = 1;
-       $invite->expires_at = now()->subHours(2);
-       $invite->save();
-       $this->info('Expired the following invite: ' . $invite->url());
+        if(!$token || empty($token)) {
+            $this->error('Invalid invite code');
+            return;
+        }
+        $invite = AdminInvite::whereInviteCode($token)->first();
+        if(!$invite) {
+            $this->error('Invalid invite code');
+            return;
+        }
+        $invite->max_uses = 1;
+        $invite->expires_at = now()->subHours(2);
+        $invite->save();
+        $this->info('Expired the following invite: ' . $invite->url());
     }
 }
