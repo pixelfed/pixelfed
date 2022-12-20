@@ -14,7 +14,15 @@
                         @csrf
 
                         <div class="form-group">
-                            <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+                            <input
+                                id="password"
+                                type="password"
+                                class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                name="password"
+                                placeholder="{{ __('Password') }}"
+                                aria-label="{{ __('Password') }}"
+                                required
+                            >
 
                             @if ($errors->has('password'))
                                 <span class="invalid-feedback">
@@ -28,7 +36,7 @@
                               <input type="checkbox" class="custom-control-input" id="trusted-device" name="trustDevice">
                               <label class="custom-control-label text-muted" for="trusted-device">Trust this device and don't ask again</label>
                             </div>
-                        </div>  
+                        </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-md-12">

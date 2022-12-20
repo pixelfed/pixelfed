@@ -15,7 +15,17 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ $email ?? old('email') }}" placeholder="{{ __('E-Mail Address') }}" required autofocus>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                    name="email"
+                                    value="{{ $email ?? old('email') }}"
+                                    placeholder="{{ __('E-Mail Address') }}"
+                                    aria-label="{{ __('E-Mail Address') }}"
+                                    required
+                                    autofocus
+                                >
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
                                         <strong>{{ $errors->first('email') }}</strong>
@@ -26,7 +36,15 @@
                         <hr>
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                    name="password"
+                                    placeholder="{{ __('Password') }}"
+                                    aria-label="{{ __('Password') }}"
+                                    required
+                                >
 
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback">
@@ -38,7 +56,15 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="password-confirm" type="password" class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
+                                <input
+                                    id="password-confirm"
+                                    type="password"
+                                    class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}"
+                                    name="password_confirmation"
+                                    placeholder="{{ __('Confirm Password') }}"
+                                    aria-label="{{ __('Confirm Password') }}"
+                                    required
+                                >
 
                                 @if ($errors->has('password_confirmation'))
                                     <span class="invalid-feedback">

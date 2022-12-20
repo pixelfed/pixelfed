@@ -19,7 +19,16 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control" name="email" placeholder="{{ __('E-Mail Address') }}" value="{{ old('email') }}" required>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    class="form-control"
+                                    name="email"
+                                    placeholder="{{ __('E-Mail Address') }}"
+                                    aria-label="{{ __('E-Mail Address') }}"
+                                    value="{{ old('email') }}"
+                                    required
+                                >
                             </div>
                         </div>
 

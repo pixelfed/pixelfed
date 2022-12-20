@@ -14,7 +14,17 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">Name</label>
-                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
+                                    name="name"
+                                    value="{{ old('name') }}"
+                                    placeholder="{{ __('Name') }}"
+                                    aria-label="{{ __('Name') }}"
+                                    required
+                                    autofocus
+                                >
 
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback">
@@ -27,7 +37,16 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <label class="small font-weight-bold text-lighter">Username</label>
-                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
+                                <input
+                                    id="username"
+                                    type="text"
+                                    class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}"
+                                    name="username"
+                                    value="{{ old('username') }}"
+                                    placeholder="{{ __('Username') }}"
+                                    aria-label="{{ __('Username') }}"
+                                    required
+                                >
 
                                 @if ($errors->has('username'))
                                     <span class="invalid-feedback">
@@ -88,7 +107,7 @@
                         @endif
 
                         <p class="small">By signing up, you agree to our <a href="{{route('site.terms')}}" class="font-weight-bold text-dark">Terms of Use</a> and <a href="{{route('site.privacy')}}" class="font-weight-bold text-dark">Privacy Policy</a>.</p>
-                        
+
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary btn-block py-0 font-weight-bold">

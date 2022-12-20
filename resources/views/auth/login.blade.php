@@ -14,7 +14,17 @@
                         <div class="form-group row">
 
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                    name="email"
+                                    value="{{ old('email') }}"
+                                    placeholder="{{ __('Email') }}"
+                                    aria-label="{{ __('Email') }}"
+                                    required
+                                    autofocus
+                                >
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -27,7 +37,15 @@
                         <div class="form-group row">
 
                             <div class="col-md-12">
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                    name="password"
+                                    placeholder="{{ __('Password') }}"
+                                    aria-label="{{ __('Password') }}"
+                                    required
+                                >
 
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback">
@@ -41,7 +59,7 @@
                             <div class="col-md-12">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
+                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                                         <span class="font-weight-bold ml-1 text-muted">
                                             {{ __('Remember Me') }}
                                         </span>
