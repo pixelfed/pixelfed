@@ -119,7 +119,7 @@ class AdminInviteCommand extends Command
         $invite->description = $description;
         $invite->message = $message;
         $invite->max_uses = $max_uses;
-        $invite->skip_email_verification = $skipEmailVerification;
+        $invite->skip_email_verification = $skipEmailVerification === 'Yes';
         $invite->expires_at = $expires;
         $invite->invite_code = Str::uuid() . Str::random(random_int(1,6));
         $invite->save();
