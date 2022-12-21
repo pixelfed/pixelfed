@@ -24,16 +24,6 @@ class CatchUnoptimizedMedia extends Command
     protected $description = 'Find and optimize media that has not yet been optimized.';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(Media $media)
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

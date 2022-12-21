@@ -24,16 +24,6 @@ class StatusDedupe extends Command
     protected $description = 'Removes duplicate statuses from before unique uri migration';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

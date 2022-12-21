@@ -24,16 +24,6 @@ class AvatarDefaultMigration extends Command
     protected $description = 'Replace old svg identicon avatars with default png avatar';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -53,9 +43,9 @@ class AvatarDefaultMigration extends Command
 
         Avatar::whereChangeCount(0)->chunk(50, function($avatars) use ($bar) {
             foreach($avatars as $avatar) {
-                if( $avatar->media_path == 'public/avatars/default.png' || 
+                if( $avatar->media_path == 'public/avatars/default.png' ||
                     $avatar->thumb_path == 'public/avatars/default.png' ||
-                    $avatar->media_path == 'public/avatars/default.jpg' || 
+                    $avatar->media_path == 'public/avatars/default.jpg' ||
                     $avatar->thumb_path == 'public/avatars/default.jpg'
                 ) {
                     continue;
@@ -65,7 +55,7 @@ class AvatarDefaultMigration extends Command
                     // do not modify non-default avatars
                     continue;
                 }
-                
+
                 DB::transaction(function() use ($avatar, $bar) {
 
                     if(is_file(storage_path('app/' . $avatar->media_path))) {

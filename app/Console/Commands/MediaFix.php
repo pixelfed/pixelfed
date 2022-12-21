@@ -23,16 +23,6 @@ class MediaFix extends Command
     protected $description = 'Fix media on v0.10.8+';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

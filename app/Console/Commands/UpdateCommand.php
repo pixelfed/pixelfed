@@ -23,16 +23,6 @@ class UpdateCommand extends Command
     protected $description = 'Run pixelfed schema updates between versions.';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -68,7 +58,7 @@ class UpdateCommand extends Command
     protected function getVersionFile()
     {
         $path = storage_path('app/version.json');
-        return is_file($path) ? 
+        return is_file($path) ?
             json_decode(file_get_contents($path), true) :
             false;
     }

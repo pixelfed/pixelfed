@@ -22,16 +22,6 @@ class UserTable extends Command
     protected $description = 'Display latest users';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

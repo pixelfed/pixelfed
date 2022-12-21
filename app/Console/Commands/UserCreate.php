@@ -22,16 +22,6 @@ class UserCreate extends Command
     protected $description = 'Create a new user';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -83,19 +73,19 @@ class UserCreate extends Command
             $this->error('Password mismatch, please try again...');
             exit;
         }
-        
+
         if (strlen($password) < 6) {
             $this->error('Must be 6 or more characters, please try again...');
             exit;
         }
-        
+
         $is_admin = $this->confirm('Make this user an admin?');
         $confirm_email = $this->confirm('Manually verify email address?');
 
-        if($this->confirm('Are you sure you want to create this user?') && 
+        if($this->confirm('Are you sure you want to create this user?') &&
             $username &&
-            $name && 
-            $email && 
+            $name &&
+            $email &&
             $password
         ) {
             $user = new User;

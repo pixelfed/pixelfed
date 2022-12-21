@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\Media;
-use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline; 
+use App\Jobs\VideoPipeline\VideoThumbnail as Pipeline;
 
 class VideoThumbnail extends Command
 {
@@ -22,16 +22,6 @@ class VideoThumbnail extends Command
      * @var string
      */
     protected $description = 'Generate missing video thumbnails';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.

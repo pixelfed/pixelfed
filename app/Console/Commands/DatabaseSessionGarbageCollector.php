@@ -22,16 +22,6 @@ class DatabaseSessionGarbageCollector extends Command
     protected $description = 'Database sessions garbage collector';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int

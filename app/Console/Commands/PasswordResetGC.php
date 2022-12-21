@@ -22,16 +22,6 @@ class PasswordResetGC extends Command
     protected $description = 'Delete password reset tokens over 24 hours old';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

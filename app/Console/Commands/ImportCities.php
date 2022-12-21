@@ -58,16 +58,6 @@ class ImportCities extends Command
     ];
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -103,19 +93,19 @@ class ImportCities extends Command
         $this->line('');
         $this->info("Found {$cityCount} cities to insert ...");
         $this->line('');
-        
+
         $bar = $this->output->createProgressBar($cityCount);
         $bar->start();
-        
+
         $buffer = [];
         $count = 0;
-        
+
         foreach ($cities as $city) {
             $buffer[] = [
-                "name" => $city->name, 
-                "slug" => Str::slug($city->name), 
-                "country" => $this->codeToCountry($city->country), 
-                "lat" => $city->lat, 
+                "name" => $city->name,
+                "slug" => Str::slug($city->name),
+                "country" => $this->codeToCountry($city->country),
+                "lat" => $city->lat,
                 "long" => $city->lng
             ];
 

@@ -22,16 +22,6 @@ class FailedJobGC extends Command
     protected $description = 'Delete failed jobs over 1 month old';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed

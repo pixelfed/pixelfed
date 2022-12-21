@@ -24,16 +24,6 @@ class FixUsernames extends Command
     protected $description = 'Fix invalid usernames';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -67,7 +57,7 @@ class FixUsernames extends Command
                 }
             }
         });
-        
+
         if($affected->count() > 0) {
             $this->info('Found: ' . $affected->count() . ' affected usernames');
 
@@ -105,7 +95,7 @@ class FixUsernames extends Command
                     case $opts[3]:
                         $new = false;
                         break;
-                    
+
                     default:
                         $new = "user_" . str_random(6);
                         break;

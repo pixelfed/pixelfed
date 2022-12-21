@@ -29,16 +29,6 @@ class FixDuplicateProfiles extends Command
     protected $description = 'Fix duplicate profiles';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -59,9 +49,9 @@ class FixDuplicateProfiles extends Command
             $dup = Profile::whereUserId($profile->user_id)->get();
 
             if(
-                $dup->first()->username === $dup->last()->username && 
-                $dup->last()->statuses()->count() == 0 && 
-                $dup->last()->followers()->count() == 0 && 
+                $dup->first()->username === $dup->last()->username &&
+                $dup->last()->statuses()->count() == 0 &&
+                $dup->last()->followers()->count() == 0 &&
                 $dup->last()->likes()->count() == 0 &&
                 $dup->last()->media()->count() == 0
             ) {

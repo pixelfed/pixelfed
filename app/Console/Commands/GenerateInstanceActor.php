@@ -13,11 +13,6 @@ class GenerateInstanceActor extends Command
 	protected $signature = 'instance:actor';
 	protected $description = 'Generate instance actor';
 
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
 	public function handle()
 	{
 		if(Schema::hasTable('instance_actors') == false) {

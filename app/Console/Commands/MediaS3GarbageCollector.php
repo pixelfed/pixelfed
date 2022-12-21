@@ -29,16 +29,6 @@ class MediaS3GarbageCollector extends Command
     protected $description = 'Delete (local) media uploads that exist on S3';
 
     /**
-    * Create a new command instance.
-    *
-    * @return void
-    */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
     * Execute the console command.
     *
     * @return int

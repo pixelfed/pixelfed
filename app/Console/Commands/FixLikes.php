@@ -23,16 +23,6 @@ class FixLikes extends Command
     protected $description = 'Fix Like counts';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -41,7 +31,7 @@ class FixLikes extends Command
     {
         $chunk = 100;
         $limit = Like::select('status_id')->groupBy('status_id')->get()->count();
-        
+
         if($limit > 1000) {
             if($this->confirm('We have found more than 1000 records to update, this may take a few moments. Are you sure you want to continue?') == false) {
                 $this->error('Cancelling command...');

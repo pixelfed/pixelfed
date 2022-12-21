@@ -27,16 +27,6 @@ class FixHashtags extends Command
     protected $description = 'Fix Hashtags';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return mixed
@@ -72,7 +62,7 @@ class FixHashtags extends Command
             $this->info(' ');
             $this->info('Found no orphaned hashtags to delete!');
         }
-        
+
 
         $this->info(' ');
 
