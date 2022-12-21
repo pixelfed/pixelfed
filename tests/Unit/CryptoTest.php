@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use phpseclib\Crypt\RSA;
 use Tests\TestCase;
 
 class CryptoTest extends TestCase
@@ -18,7 +19,7 @@ class CryptoTest extends TestCase
 
     public function testRSASigning()
     {
-        $rsa = new \phpseclib\Crypt\RSA();
+        $rsa = new RSA();
         extract($rsa->createKey());
         $rsa->loadKey($privatekey);
         $plaintext = 'pixelfed rsa test';
