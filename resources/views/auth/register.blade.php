@@ -13,7 +13,7 @@
                         <input type="hidden" name="rt" value="{{ (new \App\Http\Controllers\Auth\RegisterController())->getRegisterToken() }}">
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus>
+                                <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" placeholder="{{ __('Name') }}" required autofocus aria-label="name">
 
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback">
@@ -25,7 +25,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required>
+                                <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required aria-label="username">
 
                                 @if ($errors->has('username'))
                                     <span class="invalid-feedback">
@@ -37,7 +37,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('Email') }}" required>
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{ __('Email') }}" required aria-label="email">
 
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
@@ -49,7 +49,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required>
+                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{ __('Password') }}" required aria-label="password">
 
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback">
@@ -61,7 +61,7 @@
 
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required>
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="{{ __('Confirm Password') }}" required aria-label="confirm password">
                             </div>
                         </div>
 
@@ -86,7 +86,7 @@
                         
                         <div class="form-group row">
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold" aria-label="submit registration form">
                                     {{ __('Register') }}
                                 </button>
                             </div>
