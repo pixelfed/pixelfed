@@ -157,7 +157,7 @@ class FederationController extends Controller
 			if(isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
 				if($obj['object']['type'] === 'Person') {
 					if(Profile::whereRemoteUrl($obj['object']['id'])->exists()) {
-						dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
 						return;
 					}
 				}
@@ -170,7 +170,7 @@ class FederationController extends Controller
 				}
 
 				if($obj['object']['type'] === 'Story') {
-					dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+					dispatch(new DeleteWorker($headers, $payload))->onQueue('story');
 					return;
 				}
 			}
@@ -215,7 +215,7 @@ class FederationController extends Controller
 			if(isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
 				if($obj['object']['type'] === 'Person') {
 					if(Profile::whereRemoteUrl($obj['object']['id'])->exists()) {
-						dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
 						return;
 					}
 				}
@@ -228,7 +228,7 @@ class FederationController extends Controller
 				}
 
 				if($obj['object']['type'] === 'Story') {
-					dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+					dispatch(new DeleteWorker($headers, $payload))->onQueue('story');
 					return;
 				}
 			}
