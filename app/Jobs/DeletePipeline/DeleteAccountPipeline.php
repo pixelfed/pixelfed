@@ -50,6 +50,10 @@ use App\{
 	UserFilter,
 	UserSetting,
 };
+use App\Models\Conversation;
+use App\Models\Poll;
+use App\Models\PollVote;
+use App\Models\Portfolio;
 use App\Models\UserPronoun;
 
 class DeleteAccountPipeline implements ShouldQueue
@@ -59,6 +63,9 @@ class DeleteAccountPipeline implements ShouldQueue
 	protected $user;
 
 	public $timeout = 900;
+    public $tries = 3;
+    public $maxExceptions = 1;
+    public $deleteWhenMissingModels = true;
 
 	public function __construct(User $user)
 	{
@@ -68,160 +75,108 @@ class DeleteAccountPipeline implements ShouldQueue
 	public function handle()
 	{
 		$user = $this->user;
+        $profile = $user->profile;
+		$id = $user->profile_id;
 		$this->deleteUserColumns($user);
 		AccountService::del($user->profile_id);
 
-		DB::transaction(function() use ($user) {
-			AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
-		});
+		AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
 
-		DB::transaction(function() use ($user) {
-			AccountInterstitial::whereUserId($user->id)->delete();
-		});
+		AccountInterstitial::whereUserId($user->id)->delete();
 
-		DB::transaction(function() use ($user) {
-			if($user->profile) {
-				$avatar = $user->profile->avatar;
-				$path = $avatar->media_path;
-				if(!in_array($path, [
-					'public/avatars/default.jpg',
-					'public/avatars/default.png'
-				])) {
-					if(config('pixelfed.cloud_storage')) {
-						$disk = Storage::disk(config('filesystems.cloud'));
-						if($disk->exists($path)) {
-							$disk->delete($path);
-						}
-					}
-					$disk = Storage::disk(config('filesystems.local'));
-					if($disk->exists($path)) {
-						$disk->delete($path);
-					}
-				}
+		// Delete Avatar
+        $profile->avatar->forceDelete();
 
-				$avatar->forceDelete();
-			}
+        // Delete Poll Votes
+        PollVote::whereProfileId($id)->delete();
 
-			$id = $user->profile_id;
+        // Delete Polls
+        Poll::whereProfileId($id)->delete();
 
-			ImportData::whereProfileId($id)
-				->cursor()
-				->each(function($data) {
-					$path = storage_path('app/'.$data->path);
-					if(is_file($path)) {
-						unlink($path);
-					}
-					$data->delete();
-			});
-			ImportJob::whereProfileId($id)
-				->cursor()
-				->each(function($data) {
-					$path = storage_path('app/'.$data->media_json);
-					if(is_file($path)) {
-						unlink($path);
-					}
-					$data->delete();
-			});
-			MediaTag::whereProfileId($id)->delete();
-			Bookmark::whereProfileId($id)->forceDelete();
-			EmailVerification::whereUserId($user->id)->forceDelete();
-			StatusHashtag::whereProfileId($id)->delete();
-			DirectMessage::whereFromId($id)->orWhere('to_id', $id)->delete();
-			StatusArchived::whereProfileId($id)->delete();
-			UserPronoun::whereProfileId($id)->delete();
-			FollowRequest::whereFollowingId($id)
-				->orWhere('follower_id', $id)
-				->forceDelete();
-			Follower::whereProfileId($id)
-				->orWhere('following_id', $id)
-				->each(function($follow) {
-					FollowerService::remove($follow->profile_id, $follow->following_id);
-					$follow->delete();
-				});
-			FollowerService::delCache($id);
-			Like::whereProfileId($id)->forceDelete();
-		});
+        // Delete Portfolio
+        Portfolio::whereProfileId($id)->delete();
 
-		DB::transaction(function() use ($user) {
-			$pid = $this->user->profile_id;
-
-			StoryView::whereProfileId($pid)->delete();
-			$stories = Story::whereProfileId($pid)->get();
-			foreach($stories as $story) {
-				$path = storage_path('app/'.$story->path);
+		ImportData::whereProfileId($id)
+			->cursor()
+			->each(function($data) {
+				$path = storage_path('app/'.$data->path);
 				if(is_file($path)) {
 					unlink($path);
 				}
-				$story->forceDelete();
-			}
+				$data->delete();
 		});
 
-		DB::transaction(function() use ($user) {
-			$medias = Media::whereUserId($user->id)->get();
-			foreach($medias as $media) {
-				if(config('pixelfed.cloud_storage')) {
-					$disk = Storage::disk(config('filesystems.cloud'));
-					if($disk->exists($media->media_path)) {
-						$disk->delete($media->media_path);
-					}
-					if($disk->exists($media->thumbnail_path)) {
-						$disk->delete($media->thumbnail_path);
-					}
+		ImportJob::whereProfileId($id)
+			->cursor()
+			->each(function($data) {
+				$path = storage_path('app/'.$data->media_json);
+				if(is_file($path)) {
+					unlink($path);
 				}
-				$disk = Storage::disk(config('filesystems.local'));
-				if($disk->exists($media->media_path)) {
-					$disk->delete($media->media_path);
-				}
-				if($disk->exists($media->thumbnail_path)) {
-					$disk->delete($media->thumbnail_path);
-				}
-				$media->forceDelete();
+				$data->delete();
+		});
+
+		MediaTag::whereProfileId($id)->delete();
+		Bookmark::whereProfileId($id)->forceDelete();
+		EmailVerification::whereUserId($user->id)->forceDelete();
+		StatusHashtag::whereProfileId($id)->delete();
+		DirectMessage::whereFromId($id)->orWhere('to_id', $id)->delete();
+        Conversation::whereFromId($id)->orWhere('to_id', $id)->delete();
+		StatusArchived::whereProfileId($id)->delete();
+		UserPronoun::whereProfileId($id)->delete();
+		FollowRequest::whereFollowingId($id)
+			->orWhere('follower_id', $id)
+			->forceDelete();
+		Follower::whereProfileId($id)
+			->orWhere('following_id', $id)
+			->each(function($follow) {
+				FollowerService::remove($follow->profile_id, $follow->following_id);
+				$follow->delete();
+			});
+		FollowerService::delCache($id);
+		Like::whereProfileId($id)->forceDelete();
+        Mention::whereProfileId($id)->forceDelete();
+
+		StoryView::whereProfileId($id)->delete();
+		$stories = Story::whereProfileId($id)->get();
+		foreach($stories as $story) {
+			$path = storage_path('app/'.$story->path);
+			if(is_file($path)) {
+				unlink($path);
 			}
-		});
+			$story->forceDelete();
+		}
 
-		DB::transaction(function() use ($user) {
-			Mention::whereProfileId($user->profile_id)->forceDelete();
-			Notification::whereProfileId($user->profile_id)
-				->orWhere('actor_id', $user->profile_id)
-				->forceDelete();
-		});
+        UserDevice::whereUserId($user->id)->forceDelete();
+        UserFilter::whereUserId($user->id)->forceDelete();
+        UserSetting::whereUserId($user->id)->forceDelete();
 
-		DB::transaction(function() use ($user) {
-			$collections = Collection::whereProfileId($user->profile_id)->get();
-			foreach ($collections as $collection) {
-				$collection->items()->delete();
-				$collection->delete();
-			}
-			Contact::whereUserId($user->id)->delete();
-			HashtagFollow::whereUserId($user->id)->delete();
-			OauthClient::whereUserId($user->id)->delete();
-			DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
-			DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
-			ProfileSponsor::whereProfileId($user->profile_id)->delete();
-		});
+		Mention::whereProfileId($id)->forceDelete();
+		Notification::whereProfileId($id)
+			->orWhere('actor_id', $id)
+			->forceDelete();
 
-		DB::transaction(function() use ($user) {
-			Status::whereProfileId($user->profile_id)->forceDelete();
-			Report::whereUserId($user->id)->forceDelete();
-			PublicTimelineService::warmCache(true, 400);
-			$this->deleteProfile($user);
-		});
-	}
+		$collections = Collection::whereProfileId($id)->get();
+		foreach ($collections as $collection) {
+			$collection->items()->delete();
+			$collection->delete();
+		}
+		Contact::whereUserId($user->id)->delete();
+		HashtagFollow::whereUserId($user->id)->delete();
+		OauthClient::whereUserId($user->id)->delete();
+		DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
+		DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
+		ProfileSponsor::whereProfileId($id)->delete();
 
-	protected function deleteProfile($user) {
-		DB::transaction(function() use ($user) {
-			Profile::whereUserId($user->id)->delete();
-			$this->deleteUserSettings($user);
-		});
-	}
+		Status::whereProfileId($id)->chunk(50, function($statuses) {
+            foreach($statuses as $status) {
+                StatusDelete::dispatch($status)->onQueue('high');
+            }
+        });
 
-	protected function deleteUserSettings($user) {
-
-		DB::transaction(function() use ($user) {
-			UserDevice::whereUserId($user->id)->forceDelete();
-			UserFilter::whereUserId($user->id)->forceDelete();
-			UserSetting::whereUserId($user->id)->forceDelete();
-		});
+		Report::whereUserId($user->id)->forceDelete();
+		PublicTimelineService::warmCache(true, 400);
+		Profile::whereUserId($user->id)->delete();
 	}
 
 	protected function deleteUserColumns($user)

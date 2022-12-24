@@ -19,10 +19,12 @@ use App\Status;
 use App\StatusHashtag;
 use App\StatusView;
 use App\Notification;
+use App\Services\AccountService;
 use App\Services\NetworkTimelineService;
 use App\Services\StatusService;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
+use Cache;
 
 class DeleteRemoteStatusPipeline implements ShouldQueue
 {
@@ -30,9 +32,10 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
 
     protected $status;
 
-    public $timeout = 300;
-    public $tries = 3;
+    public $timeout = 30;
+    public $tries = 2;
     public $maxExceptions = 1;
+    public $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -41,7 +44,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
      */
     public function __construct(Status $status)
     {
-        $this->status = $status->withoutRelations();
+        $this->status = $status;
     }
 
     /**
@@ -53,9 +56,12 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
     {
         $status = $this->status;
 
+        if(AccountService::get($status->profile_id, true)) {
+            DecrementPostCount::dispatch($status->profile_id)->onQueue('feed');
+        }
+
         NetworkTimelineService::del($status->id);
-        StatusService::del($status->id, true);
-        DecrementPostCount::dispatchNow($status->profile_id);
+        Cache::forget(StatusService::key($status->id));
         Bookmark::whereStatusId($status->id)->delete();
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)
@@ -73,6 +79,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         StatusHashtag::whereStatusId($status->id)->delete();
         StatusView::whereStatusId($status->id)->delete();
         Status::whereReblogOfId($status->id)->forceDelete();
-        $status->delete();
+        $status->forceDelete();
+        return 1;
     }
 }

@@ -39,6 +39,7 @@ use App\{
 	ReportLog,
 	StatusHashtag,
 	Status,
+	StatusView,
 	Story,
 	StoryView,
 	User,
@@ -46,12 +47,21 @@ use App\{
 	UserFilter,
 	UserSetting,
 };
+use App\Models\Conversation;
+use App\Models\Poll;
+use App\Models\PollVote;
+use App\Services\AccountService;
 
 class DeleteRemoteProfilePipeline implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 	protected $profile;
+
+	public $timeout = 900;
+	public $tries = 3;
+	public $maxExceptions = 1;
+	public $deleteWhenMissingModels = true;
 
 	public function __construct(Profile $profile)
 	{
@@ -61,80 +71,85 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 	public function handle()
 	{
 		$profile = $this->profile;
+		$pid = $profile->id;
 
 		if($profile->domain == null || $profile->private_key) {
 			return;
 		}
 
-		DB::transaction(function() use ($profile) {
-			$profile->avatar->forceDelete();
+		$profile->status = 'delete';
+		$profile->save();
 
-			$id = $profile->id;
+		AccountService::del($pid);
 
-			MediaTag::whereProfileId($id)->delete();
-			StatusHashtag::whereProfileId($id)->delete();
-			DirectMessage::whereFromId($id)->delete();
-			FollowRequest::whereFollowingId($id)
-				->orWhere('follower_id', $id)
-				->forceDelete();
-			Follower::whereProfileId($id)
-				->orWhere('following_id', $id)
-				->forceDelete();
-			Like::whereProfileId($id)->forceDelete();
+		// Delete statuses
+		Status::whereProfileId($pid)
+			->chunk(50, function($statuses) {
+				foreach($statuses as $status) {
+					DeleteRemoteStatusPipeline::dispatch($status)->onQueue('delete');
+				}
 		});
 
-		DB::transaction(function() use ($profile) {
-			$pid = $profile->id;
-			StoryView::whereProfileId($pid)->delete();
-			$stories = Story::whereProfileId($pid)->get();
-			foreach($stories as $story) {
-				$path = storage_path('app/'.$story->path);
-				if(is_file($path)) {
-					unlink($path);
-				}
-				$story->forceDelete();
+		// Delete Poll Votes
+		PollVote::whereProfileId($pid)->delete();
+
+		// Delete Polls
+		Poll::whereProfileId($pid)->delete();
+
+		// Delete Avatar
+		$profile->avatar->forceDelete();
+
+		// Delete media tags
+		MediaTag::whereProfileId($pid)->delete();
+
+		// Delete DMs
+		DirectMessage::whereFromId($pid)->orWhere('to_id', $pid)->delete();
+		Conversation::whereFromId($pid)->orWhere('to_id', $pid)->delete();
+
+		// Delete FollowRequests
+		FollowRequest::whereFollowingId($pid)
+			->orWhere('follower_id', $pid)
+			->delete();
+
+		// Delete relationships
+		Follower::whereProfileId($pid)
+			->orWhere('following_id', $pid)
+			->delete();
+
+		// Delete likes
+		Like::whereProfileId($pid)->forceDelete();
+
+		// Delete Story Views + Stories
+		StoryView::whereProfileId($pid)->delete();
+		$stories = Story::whereProfileId($pid)->get();
+		foreach($stories as $story) {
+			$path = storage_path('app/'.$story->path);
+			if(is_file($path)) {
+				unlink($path);
 			}
-		});
+			$story->forceDelete();
+		}
 
-		DB::transaction(function() use ($profile) {
-			$medias = Media::whereProfileId($profile->id)->get();
-			foreach($medias as $media) {
-				$path = storage_path('app/'.$media->media_path);
-				$thumb = storage_path('app/'.$media->thumbnail_path);
-				if(is_file($path)) {
-					unlink($path);
+		// Delete mutes/blocks
+		UserFilter::whereFilterableType('App\Profile')->whereFilterableId($pid)->delete();
+
+		// Delete mentions
+		Mention::whereProfileId($pid)->forceDelete();
+
+		// Delete notifications
+		Notification::whereProfileId($pid)
+			->orWhere('actor_id', $pid)
+			->chunk(50, function($notifications) {
+				foreach($notifications as $n) {
+					$n->forceDelete();
 				}
-				if(is_file($thumb)) {
-					unlink($thumb);
-				}
-				$media->forceDelete();
-			}
-		});
+			});
 
-		DB::transaction(function() use ($profile) {
-			Mention::whereProfileId($profile->id)->forceDelete();
-			Notification::whereProfileId($profile->id)
-				->orWhere('actor_id', $profile->id)
-				->forceDelete();
-		});
+		// Delete reports
+		Report::whereProfileId($profile->id)->orWhere('reported_profile_id')->forceDelete();
 
-		DB::transaction(function() use ($profile) {
-			Status::whereProfileId($profile->id)
-				->cursor()
-				->each(function($status) {
-					AccountInterstitial::where('item_type', 'App\Status')
-						->where('item_id', $status->id)
-						->delete();
-					$status->forceDelete();
-				});
-			Report::whereProfileId($profile->id)->forceDelete();
-			$this->deleteProfile($profile);
-		});
-	}
-
-	protected function deleteProfile($profile) {
-		DB::transaction(function() use ($profile) {
-			Profile::findOrFail($profile->id)->delete();
-		});
+		// Delete profile
+		Profile::findOrFail($profile->id)->delete();
+		return;
 	}
 }

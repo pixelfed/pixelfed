@@ -274,6 +274,6 @@ class MediaStorageService {
 		if(!$confirm) {
 			return;
 		}
-		MediaDeletePipeline::dispatch($media);
+		MediaDeletePipeline::dispatch($media)->onQueue('mmo');
 	}
 }
