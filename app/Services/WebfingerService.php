@@ -48,9 +48,11 @@ class WebfingerService
 		$link = collect($webfinger['links'])
 			->filter(function($link) {
 				return $link &&
+					isset($link['rel']) &&
 					isset($link['type']) &&
 					isset($link['href']) &&
-					$link['type'] == 'application/activity+json';
+					$link['rel'] == 'self' &&
+					$link['type'] == 'application/activity+json' || $link['type'] == 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
 			})
 			->pluck('href')
 			->first();
