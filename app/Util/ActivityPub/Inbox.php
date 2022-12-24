@@ -191,6 +191,13 @@ class Inbox
 		if(!$actor || $actor->domain == null) {
 			return;
 		}
+
+		if($actor->followers_count == 0) {
+			if(FollowerService::followerCount($actor->id, true) == 0) {
+				return;
+			}
+		}
+
 		if(!isset($activity['to'])) {
 			return;
 		}
