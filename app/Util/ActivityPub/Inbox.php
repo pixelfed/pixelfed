@@ -180,6 +180,8 @@ class Inbox
 				StoryFetch::dispatchNow($this->payload);
 			break;
 		}
+
+		return;
 	}
 
 	public function handleCreateActivity()
@@ -267,14 +269,23 @@ class Inbox
 			return;
 		}
 
-		if($actor->followers()->count() == 0) {
-			return;
+		if($actor->followers_count == 0) {
+			if(FollowerService::followerCount($actor->id, true) == 0) {
+				return;
+			}
 		}
 
+		$hasUrl = isset($activity['url']);
 		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
 
-		if(Status::whereUrl($url)->exists()) {
-			return;
+		if($hasUrl) {
+			if(Status::whereUri($url)->exists()) {
+				return;
+			}
+		} else {
+			if(Status::whereObjectUrl($url)->exists()) {
+				return;
+			}
 		}
 
 		Helpers::storeStatus(
