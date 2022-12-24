@@ -65,6 +65,7 @@
 - Update CommentPipeline, remove expensive reply count re-calculation query ([b457a446](https://github.com/pixelfed/pixelfed/commit/b457a446))
 - Update FederationController, improve inbox/sharedInbox delete handling ([2180a2de](https://github.com/pixelfed/pixelfed/commit/2180a2de))
 - Update HashtagController, improve trending hashtag endpoint ([4873c7dd](https://github.com/pixelfed/pixelfed/commit/4873c7dd))
+- Fix CustomEmoji, properly handle shortcode updates and delete old copy in case the extension changes ([bc29073a](https://github.com/pixelfed/pixelfed/commit/bc29073a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
