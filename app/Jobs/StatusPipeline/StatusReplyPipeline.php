@@ -68,6 +68,12 @@ class StatusReplyPipeline implements ShouldQueue
             return 1;
         }
 
+        if(config('database.default') === 'mysql') {
+            $count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $reply->id]);
+            $reply->reply_count = count($count);
+            $reply->save();
+        }
+
         DB::transaction(function() use($target, $actor, $status) {
             $notification = new Notification();
             $notification->profile_id = $target->id;
