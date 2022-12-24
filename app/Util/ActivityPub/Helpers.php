@@ -453,7 +453,7 @@ class Helpers {
 	public static function storeStatus($url, $profile, $activity)
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
-		$url = isset($activity['url']) && is_string($activity['url']) ? $activity['url'] : $id;
+		$url = isset($activity['url']) && is_string($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
 		$idDomain = parse_url($id, PHP_URL_HOST);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 		if(!self::validateUrl($id) || !self::validateUrl($url)) {
@@ -556,7 +556,7 @@ class Helpers {
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
-		$urlDomain = parse_url($url, PHP_URL_HOST);
+		$urlDomain = parse_url(self::pluckval($url), PHP_URL_HOST);
 		$scope = 'private';
 
 		if(isset($activity['to']) == true) {
