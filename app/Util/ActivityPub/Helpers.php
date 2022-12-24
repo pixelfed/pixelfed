@@ -373,6 +373,10 @@ class Helpers {
 			return;
 		}
 
+		if(!isset($activity['object']['attributedTo'])) {
+			return;
+		}
+
 		$attributedTo = is_string($activity['object']['attributedTo']) ?
 			$activity['object']['attributedTo'] :
 			(is_array($activity['object']['attributedTo']) ?

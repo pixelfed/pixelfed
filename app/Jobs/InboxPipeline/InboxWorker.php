@@ -57,7 +57,7 @@ class InboxWorker implements ShouldQueue
         $payload = json_decode($this->payload, true, 8);
 
         if(isset($payload['id'])) {
-            $lockKey = 'ap:icid:' . hash('sha256', $payload['id']);
+            $lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $payload['id']);
             if(Cache::get($lockKey) !== null) {
                 // Job processed already
                 return 1;
