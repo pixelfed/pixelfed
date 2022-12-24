@@ -30,6 +30,10 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
 
     protected $status;
 
+    public $timeout = 300;
+    public $tries = 3;
+    public $maxExceptions = 1;
+
     /**
      * Create a new job instance.
      *
@@ -62,7 +66,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         Media::whereStatusId($status->id)
             ->get()
             ->each(function($media) {
-                MediaDeletePipeline::dispatchNow($media);
+                MediaDeletePipeline::dispatch($media)->onQueue('mmo');
             });
         Mention::whereStatusId($status->id)->forceDelete();
         Report::whereObjectType('App\Status')->whereObjectId($status->id)->delete();

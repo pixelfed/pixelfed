@@ -681,7 +681,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
-						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('delete');
+						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('high');
 						return;
 					break;
 

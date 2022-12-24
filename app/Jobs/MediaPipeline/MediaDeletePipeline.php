@@ -17,6 +17,10 @@ class MediaDeletePipeline implements ShouldQueue
 
 	protected $media;
 
+    public $timeout = 300;
+    public $tries = 3;
+    public $maxExceptions = 1;
+
 	public function __construct(Media $media)
 	{
 		$this->media = $media;
