@@ -181,22 +181,32 @@ class DiscoverController extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$res = Cache::remember('api:discover:v1.1:trending:hashtags', 3600, function() {
+		$res = Cache::remember('api:discover:v1.1:trending:hashtags', 43200, function() {
+			$minId = StatusHashtag::where('created_at', '>', now()->subDays(14))->first();
+			if(!$minId) {
+				return [];
+			}
 			return StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
+				->where('id', '>', $minId->id)
 				->groupBy('hashtag_id')
 				->orderBy('total','desc')
-				->where('created_at', '>', now()->subDays(90))
-				->take(9)
+				->take(20)
 				->get()
 				->map(function($h) {
-					$hashtag = $h->hashtag;
+					$hashtag = Hashtag::find($h->hashtag_id);
+					if(!$hashtag) {
+						return;
+					}
 					return [
-						'id' => $hashtag->id,
+						'id' => $h->hashtag_id,
 						'total' => $h->total,
 						'name' => '#'.$hashtag->name,
+						'hashtag' => $hashtag->name,
 						'url' => $hashtag->url()
 					];
-				});
+				})
+				->filter()
+				->values();
 		});
 		return $res;
 	}

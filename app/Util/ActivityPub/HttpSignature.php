@@ -132,7 +132,6 @@ class HttpSignature {
       '(request-target)' => 'post '.parse_url($url, PHP_URL_PATH),
       'Date' => $date->format('D, d M Y H:i:s \G\M\T'),
       'Host' => parse_url($url, PHP_URL_HOST),
-      'Accept' => 'application/activity+json, application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
     ];
 
     if($digest) {

@@ -14,7 +14,7 @@ class InstanceActorController extends Controller
 			$res = (new InstanceActor())->first()->getActor();
 			return json_encode($res, JSON_UNESCAPED_SLASHES);
 		});
-		return response($res)->header('Content-Type', 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"');
+		return response($res)->header('Content-Type', 'application/activity+json');
 	}
 
 	public function inbox()
@@ -32,6 +32,6 @@ class InstanceActorController extends Controller
 			'first' => config('app.url') . '/i/actor/outbox?page=true',
 			'last' =>  config('app.url') . '/i/actor/outbox?min_id=0page=true'
 		], JSON_UNESCAPED_SLASHES);
-		return response($res)->header('Content-Type', 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"');
+		return response($res)->header('Content-Type', 'application/activity+json');
 	}
 }
