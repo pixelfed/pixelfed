@@ -66,6 +66,7 @@
 - Update FederationController, improve inbox/sharedInbox delete handling ([2180a2de](https://github.com/pixelfed/pixelfed/commit/2180a2de))
 - Update HashtagController, improve trending hashtag endpoint ([4873c7dd](https://github.com/pixelfed/pixelfed/commit/4873c7dd))
 - Fix CustomEmoji, properly handle shortcode updates and delete old copy in case the extension changes ([bc29073a](https://github.com/pixelfed/pixelfed/commit/bc29073a))
+- Update reply pipelines, restore reply_count logic ([0d780ffb](https://github.com/pixelfed/pixelfed/commit/0d780ffb))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
