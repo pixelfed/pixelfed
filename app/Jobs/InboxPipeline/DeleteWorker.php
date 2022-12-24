@@ -87,7 +87,7 @@ class DeleteWorker implements ShouldQueue
 						->whereRemoteUrl($actor)
 						->first();
 					if($profile) {
-						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
+						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 					}
 					return 1;
 				} else {
@@ -105,7 +105,7 @@ class DeleteWorker implements ShouldQueue
 		$profile = null;
 
 		if($this->verifySignature($headers, $payload) == true) {
-			ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
+			ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('inbox');
 			return 1;
 		} else {
 			return 1;
