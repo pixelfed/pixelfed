@@ -646,7 +646,12 @@ class Inbox
 			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
 			return;
 		} else {
-			if(!isset($obj['id'], $this->payload['object'], $this->payload['object']['id'])) {
+			if(!isset(
+				$obj['id'],
+				$this->payload['object'],
+				$this->payload['object']['id'],
+				$this->payload['object']['type']
+			)) {
 				return;
 			}
 			$type = $this->payload['object']['type'];
@@ -664,7 +669,7 @@ class Inbox
 						if(!$profile || $profile->private_key != null) {
 							return;
 						}
-						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
+						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 						return;
 					break;
 
