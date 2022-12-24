@@ -687,8 +687,6 @@ class Inbox
 						}
 						$status = Status::whereProfileId($profile->id)
 							->whereUri($id)
-							->orWhere('url', $id)
-							->orWhere('object_url', $id)
 							->first();
 						if(!$status) {
 							return;
