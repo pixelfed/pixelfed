@@ -69,47 +69,43 @@ class DeleteWorker implements ShouldQueue
 			))
 		) {
 			$actor = $payload['actor'];
-			$hash = strlen($actor) <= 48 ?
-				'b:' . base64_encode($actor) :
-				'h:' . hash('sha256', $actor);
-
-			$key = 'ap:inbox:actor-delete-exists:' . $hash;
-			$actorDelete = Cache::remember($key, now()->addMinutes(15), function() use($actor) {
-				return Profile::whereRemoteUrl($actor)
-					->whereNotNull('domain')
-					->exists();
-			});
-			if($actorDelete) {
-				if($this->verifySignature($headers, $payload) == true) {
-					Cache::set($key, false);
-					$profile = Profile::whereNotNull('domain')
-						->whereNull('status')
-						->whereRemoteUrl($actor)
-						->first();
-					if($profile) {
-						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
+			if($this->verifySignature($headers, $payload) == true) {
+				$actorDelete = Profile::whereRemoteUrl($actor)->exists();
+				if($actorDelete) {
+					if($this->verifySignature($headers, $payload) == true) {
+						Cache::set($key, false);
+						$profile = Profile::whereNotNull('domain')
+							->whereNull('status')
+							->whereRemoteUrl($actor)
+							->first();
+						if($profile) {
+							DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
+						}
+						return 1;
+					} else {
+						// Signature verification failed, exit.
+						return 1;
 					}
-					return 1;
 				} else {
-					// Signature verification failed, exit.
+					// Remote user doesn't exist, exit early.
 					return 1;
 				}
+
+				return 1;
 			} else {
-				// Remote user doesn't exist, exit early.
 				return 1;
 			}
-
-			return 1;
-		}
-
-		$profile = null;
-
-		if($this->verifySignature($headers, $payload) == true) {
-			ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('inbox');
-			return 1;
 		} else {
-			return 1;
+			$profile = null;
+
+			if($this->verifySignature($headers, $payload) == true) {
+				ActivityHandler::dispatch($headers, $profile, $payload)->onQueue('delete');
+				return 1;
+			} else {
+				return 1;
+			}
 		}
+
 	}
 
 	protected function verifySignature($headers, $payload)
@@ -138,17 +134,17 @@ class DeleteWorker implements ShouldQueue
 			&& is_array($bodyDecoded['object'])
 			&& isset($bodyDecoded['object']['attributedTo'])
 		) {
-            $attr = Helpers::pluckval($bodyDecoded['object']['attributedTo']);
-            if(is_array($attr)) {
-                if(isset($attr['id'])) {
-                    $attr = $attr['id'];
-                } else {
-                    $attr = "";
-                }
-            }
-            if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
-                return false;
-            }
+			$attr = Helpers::pluckval($bodyDecoded['object']['attributedTo']);
+			if(is_array($attr)) {
+				if(isset($attr['id'])) {
+					$attr = $attr['id'];
+				} else {
+					$attr = "";
+				}
+			}
+			if(parse_url($attr, PHP_URL_HOST) !== $keyDomain) {
+				return false;
+			}
 		}
 		if(!$keyDomain || !$idDomain || $keyDomain !== $idDomain) {
 			return false;
@@ -199,18 +195,18 @@ class DeleteWorker implements ShouldQueue
 			return;
 		}
 
-        try {
-            $res = Http::timeout(20)->withHeaders([
-              'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-              'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
-            ])->get($actor->remote_url);
-        } catch (ConnectionException $e) {
-            return false;
-        }
+		try {
+			$res = Http::timeout(20)->withHeaders([
+			  'Accept'     => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
+			  'User-Agent' => 'PixelfedBot v0.1 - https://pixelfed.org',
+			])->get($actor->remote_url);
+		} catch (ConnectionException $e) {
+			return false;
+		}
 
-        if(!$res->ok()) {
-            return false;
-        }
+		if(!$res->ok()) {
+			return false;
+		}
 
 		$res = json_decode($res->body(), true, 8);
 		if(!isset($res['publicKey'], $res['publicKey']['id'])) {
