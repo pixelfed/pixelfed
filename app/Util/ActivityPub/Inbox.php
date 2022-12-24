@@ -643,7 +643,7 @@ class Inbox
 			if(!$profile || $profile->private_key != null) {
 				return;
 			}
-			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
+			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 			return;
 		} else {
 			if(!isset(
