@@ -1,11 +1,11 @@
-FROM php:8.0-apache
+FROM php:8.1-apache
 
 ENV COMPOSER_MEMORY_LIMIT=-1
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /var/www/
 
 # Get Composer binary
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.4.4 /usr/bin/composer /usr/bin/composer
 
 # Install package dependencies
 RUN apt-get update \
