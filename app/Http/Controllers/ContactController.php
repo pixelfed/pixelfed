@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use App\Contact;
 use App\Jobs\ContactPipeline\ContactPipeline;
+use App\Rules\MaxMultiLine;
 
 class ContactController extends Controller
 {
@@ -21,7 +22,7 @@ class ContactController extends Controller
 		abort_if(!Auth::check(), 403);
 
 		$this->validate($request, [
-			'message' => 'required|string|min:5|max:500',
+			'message' => ['required', 'string', 'min:5', new MaxMultiLine('500')],
 			'request_response' => 'string|max:3'
 		]);
 
