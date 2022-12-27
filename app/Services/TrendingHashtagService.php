@@ -16,10 +16,17 @@ class TrendingHashtagService
         return self::CACHE_KEY . $k;
     }
 
-    public static function getBlockedHashtags()
+    public static function getBannedHashtags()
     {
         return Cache::remember(self::key(':is_banned'), 1209600, function() {
             return Hashtag::whereIsBanned(true)->pluck('id')->toArray();
+        });
+    }
+
+    public static function getBannedHashtagNames()
+    {
+        return Cache::remember(self::key(':is_banned:names'), 1209600, function() {
+            return Hashtag::find(self::getBannedHashtags())->pluck('name')->toArray();
         });
     }
 
@@ -52,7 +59,7 @@ class TrendingHashtagService
     {
         $minId = self::getMinRecentId();
 
-        $skipIds = array_merge(self::getBlockedHashtags(), self::getNonTrendingHashtags(), self::getNsfwHashtags());
+        $skipIds = array_merge(self::getBannedHashtags(), self::getNonTrendingHashtags(), self::getNsfwHashtags());
 
         return Cache::remember(self::CACHE_KEY, config('trending.hashtags.ttl'), function() use($minId, $skipIds) {
             return StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))

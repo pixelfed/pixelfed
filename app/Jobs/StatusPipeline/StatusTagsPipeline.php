@@ -15,6 +15,7 @@ use App\Mention;
 use App\Services\AccountService;
 use App\Hashtag;
 use App\StatusHashtag;
+use App\Services\TrendingHashtagService;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -60,6 +61,14 @@ class StatusTagsPipeline implements ShouldQueue
 		->map(function($tag) use($status) {
 			$name = substr($tag['name'], 0, 1) == '#' ?
 				substr($tag['name'], 1) : $tag['name'];
+
+			$banned = TrendingHashtagService::getBannedHashtagNames();
+
+			if(count($banned)) {
+                if(in_array(strtolower($name), array_map('strtolower', $banned))) {
+                    continue;
+                }
+            }
 
 			$hashtag = Hashtag::firstOrCreate([
 				'slug' => str_slug($name)
