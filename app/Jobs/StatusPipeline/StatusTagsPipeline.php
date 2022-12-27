@@ -66,7 +66,7 @@ class StatusTagsPipeline implements ShouldQueue
 
 			if(count($banned)) {
                 if(in_array(strtolower($name), array_map('strtolower', $banned))) {
-                    continue;
+                   	return;
                 }
             }
 
