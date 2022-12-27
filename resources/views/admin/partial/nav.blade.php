@@ -35,7 +35,7 @@
 						<a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<div class="media align-items-center">
 								<span class="avatar avatar-sm rounded-circle">
-									<img alt="avatar" src="{{request()->user()->profile->avatarUrl()}}">
+									<img alt="avatar" src="{{request()->user()->profile->avatarUrl()}}" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 								</span>
 								<div class="media-body  ml-2  d-none d-lg-block">
 									<span class="mb-0 text-sm  font-weight-bold">{{request()->user()->username}}</span>
