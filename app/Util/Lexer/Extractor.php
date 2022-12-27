@@ -268,7 +268,7 @@ class Extractor extends Regex
             return [];
         }
 
-        $bannedTags = TrendingHashtagService::getBannedHashtagNames();
+        $bannedTags = config('app.env') === 'production' ? TrendingHashtagService::getBannedHashtagNames() : [];
 
         preg_match_all(self::$patterns['valid_hashtag'], $tweet, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
         $tags = [];
