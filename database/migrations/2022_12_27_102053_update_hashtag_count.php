@@ -19,6 +19,8 @@ return new class extends Migration
             foreach($hashtags as $hashtag) {
                 $count = DB::table('status_hashtags')->whereHashtagId($hashtag->id)->count();
                 $hashtag->cached_count = $count;
+                $hashtag->can_trend = true;
+                $hashtag->can_search = true;
                 $hashtag->save();
             }
         });
