@@ -225,7 +225,7 @@ class StatusController extends Controller
 		StatusService::del($status->id, true);
 		if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
 			Cache::forget('profile:status_count:'.$status->profile_id);
-			StatusDelete::dispatchNow($status);
+			StatusDelete::dispatch($status);
 		}
 
 		if($request->wantsJson()) {
