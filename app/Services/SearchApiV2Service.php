@@ -96,16 +96,9 @@ class SearchApiV2Service
 			$query = substr($rawQuery, 1) . '%';
 		}
 		$banned = InstanceService::getBannedDomains();
-		$results = Profile::select('profiles.*', 'followers.profile_id', 'followers.created_at')
-			->whereNull('status')
-			->leftJoin('followers', function($join) use($user) {
-				return $join->on('profiles.id', '=', 'followers.following_id')
-					->where('followers.profile_id', $user->profile_id);
-			})
+		$results = Profile::select('username', 'id', 'followers_count', 'domain')
 			->where('username', 'like', $query)
-			->orderBy('domain')
 			->orderByDesc('profiles.followers_count')
-			->orderByDesc('followers.created_at')
 			->offset($offset)
 			->limit($limit)
 			->get()
@@ -131,7 +124,7 @@ class SearchApiV2Service
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
 		$query = '%' . $this->query->input('q') . '%';
-		return Hashtag::whereIsBanned(false)
+		return Hashtag::where('can_search', true)
 			->where('name', 'like', $query)
 			->offset($offset)
 			->limit($limit)

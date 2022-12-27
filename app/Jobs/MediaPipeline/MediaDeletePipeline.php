@@ -41,7 +41,7 @@ class MediaDeletePipeline implements ShouldQueue
 		array_pop($e);
 		$i = implode('/', $e);
 
-		if(config('pixelfed.cloud_storage') == true) {
+		if(config_cache('pixelfed.cloud_storage') == true) {
 			$disk = Storage::disk(config('filesystems.cloud'));
 
 			if($path && $disk->exists($path)) {
@@ -63,9 +63,9 @@ class MediaDeletePipeline implements ShouldQueue
 			$disk->delete($thumb);
 		}
 
-		$media->forceDelete();
+		$media->delete();
 
-		return;
+		return 1;
 	}
 
 }

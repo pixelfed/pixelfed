@@ -10,6 +10,7 @@
 - Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
 - Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
 - Admin Invites ([b73ca9a1](https://github.com/pixelfed/pixelfed/commit/b73ca9a1))
+- Hashtag administration ([84872311](https://github.com/pixelfed/pixelfed/commit/84872311))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -69,6 +70,8 @@
 - Update reply pipelines, restore reply_count logic ([0d780ffb](https://github.com/pixelfed/pixelfed/commit/0d780ffb))
 - Update StatusTagsPipeline, reject if `type` not set ([91085c45](https://github.com/pixelfed/pixelfed/commit/91085c45))
 - Update ReplyPipelines, use more efficent reply count calculation ([d4dfa95c](https://github.com/pixelfed/pixelfed/commit/d4dfa95c))
+- Update StatusDelete pipeline, dispatch async ([257c0949](https://github.com/pixelfed/pixelfed/commit/257c0949))
+- Update lexer/extractor to handle banned hashtags ([909a8a5a](https://github.com/pixelfed/pixelfed/commit/909a8a5a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

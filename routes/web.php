@@ -108,6 +108,11 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::post('directory/testimonial/save', 'AdminController@directorySaveTestimonial');
 		Route::post('directory/testimonial/delete', 'AdminController@directoryDeleteTestimonial');
 		Route::post('directory/testimonial/update', 'AdminController@directoryUpdateTestimonial');
+		Route::get('hashtags/stats', 'AdminController@hashtagsStats');
+		Route::get('hashtags/query', 'AdminController@hashtagsApi');
+		Route::get('hashtags/get', 'AdminController@hashtagsGet');
+		Route::post('hashtags/update', 'AdminController@hashtagsUpdate');
+		Route::post('hashtags/clear-trending-cache', 'AdminController@hashtagsClearTrendingCache');
 	});
 });
 

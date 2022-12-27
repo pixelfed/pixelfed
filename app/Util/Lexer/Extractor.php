@@ -12,6 +12,7 @@ namespace App\Util\Lexer;
 use Illuminate\Support\Str;
 use App\Status;
 use App\Services\AutolinkService;
+use App\Services\TrendingHashtagService;
 
 /**
  * Twitter Extractor Class.
@@ -267,6 +268,8 @@ class Extractor extends Regex
             return [];
         }
 
+        $bannedTags = config('app.env') === 'production' ? TrendingHashtagService::getBannedHashtagNames() : [];
+
         preg_match_all(self::$patterns['valid_hashtag'], $tweet, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
         $tags = [];
 
@@ -278,7 +281,12 @@ class Extractor extends Regex
             if (preg_match(self::$patterns['end_hashtag_match'], $outer[0])) {
                 continue;
             }
-            if(mb_strlen($hashtag[0]) > 124) {
+            if (count($bannedTags)) {
+                if(in_array(strtolower($hashtag[0]), array_map('strtolower', $bannedTags))) {
+                    continue;
+                }
+            }
+            if (mb_strlen($hashtag[0]) > 124) {
                 continue;
             }
             $tags[] = [

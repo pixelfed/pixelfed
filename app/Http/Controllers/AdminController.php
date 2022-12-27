@@ -12,6 +12,7 @@ use App\{
 	Profile,
 	Report,
 	Status,
+	StatusHashtag,
 	Story,
 	User
 };
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Admin\{
 	AdminDirectoryController,
 	AdminDiscoverController,
+	AdminHashtagsController,
 	AdminInstanceController,
 	AdminReportController,
 	// AdminGroupsController,
@@ -43,6 +45,7 @@ class AdminController extends Controller
 	use AdminReportController, 
 	AdminDirectoryController,
 	AdminDiscoverController,
+	AdminHashtagsController,
 	// AdminGroupsController,
 	AdminMediaController, 
 	AdminSettingsController, 
@@ -199,12 +202,6 @@ class AdminController extends Controller
 			->paginate(10);
 		}
 		return view('admin.apps.home', compact('apps'));
-	}
-
-	public function hashtagsHome(Request $request)
-	{
-		$hashtags = Hashtag::orderByDesc('id')->paginate(10);
-		return view('admin.hashtags.home', compact('hashtags'));
 	}
 
 	public function messagesHome(Request $request)

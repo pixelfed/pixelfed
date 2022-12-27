@@ -22193,7 +22193,7 @@ textarea[resize='horizontal']
 
 .sidenav
 {
-	z-index: 1050;
+	z-index: 1040;
 
 	transition: all .4s ease;
 }

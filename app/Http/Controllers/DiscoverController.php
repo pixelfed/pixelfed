@@ -24,6 +24,7 @@ use App\Services\ReblogService;
 use App\Services\StatusHashtagService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
+use App\Services\TrendingHashtagService;
 use App\Services\UserFilterService;
 
 class DiscoverController extends Controller
@@ -181,33 +182,7 @@ class DiscoverController extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$res = Cache::remember('api:discover:v1.1:trending:hashtags', 43200, function() {
-			$minId = StatusHashtag::where('created_at', '>', now()->subDays(14))->first();
-			if(!$minId) {
-				return [];
-			}
-			return StatusHashtag::select('hashtag_id', \DB::raw('count(*) as total'))
-				->where('id', '>', $minId->id)
-				->groupBy('hashtag_id')
-				->orderBy('total','desc')
-				->take(20)
-				->get()
-				->map(function($h) {
-					$hashtag = Hashtag::find($h->hashtag_id);
-					if(!$hashtag) {
-						return;
-					}
-					return [
-						'id' => $h->hashtag_id,
-						'total' => $h->total,
-						'name' => '#'.$hashtag->name,
-						'hashtag' => $hashtag->name,
-						'url' => $hashtag->url()
-					];
-				})
-				->filter()
-				->values();
-		});
+		$res = TrendingHashtagService::getTrending();
 		return $res;
 	}
 

@@ -50,6 +50,9 @@ class StatusDelete implements ShouldQueue
 	 */
 	public $deleteWhenMissingModels = true;
 
+    public $timeout = 900;
+    public $tries = 2;
+
 	/**
 	 * Create a new job instance.
 	 *
@@ -131,7 +134,7 @@ class StatusDelete implements ShouldQueue
 			->where('item_id', $status->id)
 			->delete();
 
-		$status->forceDelete();
+		$status->delete();
 
 		return 1;
 	}
