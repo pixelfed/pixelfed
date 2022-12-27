@@ -24,7 +24,7 @@
       @csrf
   		<div class="form-group">
   			<label for="input1" class="font-weight-bold">Message</label>
-  			<textarea class="form-control" id="input1" name="message" rows="6" placeholder=""></textarea>
+  			<textarea class="form-control" id="input1" name="message" rows="6" placeholder="" maxlength="500" required>{{old('message')}}</textarea>
   			<span class="form-text text-muted text-right msg-counter">0/500</span>
   		</div>
 		<div class="form-group form-check">
