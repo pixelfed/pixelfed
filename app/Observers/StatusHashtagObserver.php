@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use DB;
 use App\StatusHashtag;
 use App\Services\StatusHashtagService;
 
@@ -23,6 +24,7 @@ class StatusHashtagObserver
     public function created(StatusHashtag $hashtag)
     {
         StatusHashtagService::set($hashtag->hashtag_id, $hashtag->status_id);
+        DB::table('hashtags')->where('id', $hashtag->hashtag_id)->increment('cached_count');
     }
 
     /**
@@ -45,6 +47,7 @@ class StatusHashtagObserver
     public function deleted(StatusHashtag $hashtag)
     {
         StatusHashtagService::del($hashtag->hashtag_id, $hashtag->status_id);
+        DB::table('hashtags')->where('id', $hashtag->hashtag_id)->decrement('cached_count');
     }
 
     /**
