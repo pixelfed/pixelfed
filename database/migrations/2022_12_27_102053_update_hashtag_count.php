@@ -16,7 +16,7 @@ return new class extends Migration
     public function up()
     {
         Hashtag::withoutEvents(function() {
-            Hashtag::chunkById(50, function($hashtags) {
+            Hashtag::whereNotNull('cached_count')->chunkById(50, function($hashtags) {
                 foreach($hashtags as $hashtag) {
                     $count = DB::table('status_hashtags')->whereHashtagId($hashtag->id)->count();
                     $hashtag->cached_count = $count;
