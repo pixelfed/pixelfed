@@ -3,8 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Hashtag;
-use App\StatusHashtag;
 
 return new class extends Migration
 {
@@ -22,12 +20,6 @@ return new class extends Migration
             $table->index('is_nsfw');
             $table->index('is_banned');
         });
-
-        foreach(Hashtag::cursor() as $hashtag) {
-            $count = StatusHashtag::whereHashtagId($hashtag->id)->count();
-            $hashtag->cached_count = $count;
-            $hashtag->save();
-        }
     }
 
     /**
