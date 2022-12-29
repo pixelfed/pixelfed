@@ -178,12 +178,6 @@ class FederationController extends Controller
 		} else if( isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('follow');
 		} else {
-			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $obj['id']);
-			if(Cache::get($lockKey) !== null) {
-				return;
-			}
-			Cache::put($lockKey, 1, 43200);
-			usleep(5000);
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
 		}
 		return;

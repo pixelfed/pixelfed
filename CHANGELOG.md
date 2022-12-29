@@ -72,6 +72,7 @@
 - Update ReplyPipelines, use more efficent reply count calculation ([d4dfa95c](https://github.com/pixelfed/pixelfed/commit/d4dfa95c))
 - Update StatusDelete pipeline, dispatch async ([257c0949](https://github.com/pixelfed/pixelfed/commit/257c0949))
 - Update lexer/extractor to handle banned hashtags ([909a8a5a](https://github.com/pixelfed/pixelfed/commit/909a8a5a))
+- Update FederationController, fix double lock bug ([9fcccca9](https://github.com/pixelfed/pixelfed/commit/9fcccca9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
