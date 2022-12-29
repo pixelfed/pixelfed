@@ -131,7 +131,7 @@ class FederationController extends Controller
 			'orderedItems' => []
 		];
 
-		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"');
+		return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
 	}
 
 	public function userInbox(Request $request, $username)
@@ -154,32 +154,30 @@ class FederationController extends Controller
 		}
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
-			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
-			if( isset($obj['actor']) &&
-				isset($obj['object']) &&
-				isset($obj['id']) &&
-				is_string($obj['id']) &&
-				is_string($obj['actor']) &&
-				is_string($obj['object']) &&
-				$obj['actor'] == $obj['object']
-			) {
-				if(Cache::get($lockKey) !== null) {
+			if(isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
+				if($obj['object']['type'] === 'Person') {
+					if(Profile::whereRemoteUrl($obj['object']['id'])->exists()) {
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
+						return;
+					}
+				}
+
+				if($obj['object']['type'] === 'Tombstone') {
+					if(Status::whereObjectUrl($obj['object']['id'])->exists()) {
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+						return;
+					}
+				}
+
+				if($obj['object']['type'] === 'Story') {
+					dispatch(new DeleteWorker($headers, $payload))->onQueue('story');
 					return;
-				} else {
-					Cache::put($lockKey, 1, 43200);
-					usleep(5000);
 				}
 			}
-			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+			return;
 		} else if( isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('follow');
 		} else {
-			$lockKey = 'pf:ap:user-inbox:activity:' . hash('sha256', $obj['id']);
-			if(Cache::get($lockKey) !== null) {
-				return;
-			}
-			Cache::put($lockKey, 1, 43200);
-			usleep(5000);
 			dispatch(new InboxValidator($username, $headers, $payload))->onQueue('high');
 		}
 		return;
@@ -208,21 +206,27 @@ class FederationController extends Controller
 		}
 
 		if(isset($obj['type']) && $obj['type'] === 'Delete') {
-			$lockKey = 'pf:ap:del-lock:' . hash('sha256', $obj['id']);
-			if( isset($obj['actor']) &&
-				isset($obj['object']) &&
-				isset($obj['id']) &&
-				is_string($obj['id']) &&
-				is_string($obj['actor']) &&
-				is_string($obj['object']) &&
-				$obj['actor'] == $obj['object']
-			) {
-				if(Cache::get($lockKey) !== null) {
+			if(isset($obj['object']) && isset($obj['object']['type']) && isset($obj['object']['id'])) {
+				if($obj['object']['type'] === 'Person') {
+					if(Profile::whereRemoteUrl($obj['object']['id'])->exists()) {
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('inbox');
+						return;
+					}
+				}
+
+				if($obj['object']['type'] === 'Tombstone') {
+					if(Status::whereObjectUrl($obj['object']['id'])->exists()) {
+						dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+						return;
+					}
+				}
+
+				if($obj['object']['type'] === 'Story') {
+					dispatch(new DeleteWorker($headers, $payload))->onQueue('story');
 					return;
 				}
 			}
-			Cache::put($lockKey, 1, 43200);
-			dispatch(new DeleteWorker($headers, $payload))->onQueue('delete');
+			return;
 		} else if( isset($obj['type']) && in_array($obj['type'], ['Follow', 'Accept'])) {
 			dispatch(new InboxWorker($headers, $payload))->onQueue('follow');
 		} else {

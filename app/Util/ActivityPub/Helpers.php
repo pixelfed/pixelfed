@@ -373,6 +373,10 @@ class Helpers {
 			return;
 		}
 
+		if(!isset($activity['object']['attributedTo'])) {
+			return;
+		}
+
 		$attributedTo = is_string($activity['object']['attributedTo']) ?
 			$activity['object']['attributedTo'] :
 			(is_array($activity['object']['attributedTo']) ?
@@ -440,8 +444,8 @@ class Helpers {
 			);
 			return $status;
 		} else {
-            $status = self::storeStatus($url, $profile, $res);
-        }
+			$status = self::storeStatus($url, $profile, $res);
+		}
 
 		return $status;
 	}
@@ -449,7 +453,7 @@ class Helpers {
 	public static function storeStatus($url, $profile, $activity)
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
-		$url = isset($activity['url']) && is_string($activity['url']) ? $activity['url'] : $id;
+		$url = isset($activity['url']) && is_string($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
 		$idDomain = parse_url($id, PHP_URL_HOST);
 		$urlDomain = parse_url($url, PHP_URL_HOST);
 		if(!self::validateUrl($id) || !self::validateUrl($url)) {
@@ -458,62 +462,60 @@ class Helpers {
 
 		$reply_to = self::getReplyTo($activity);
 
-		return DB::transaction(function() use($url, $profile, $activity, $reply_to, $id) {
-			$ts = self::pluckval($activity['published']);
-			$scope = self::getScope($activity, $url);
-			$cw = self::getSensitive($activity, $url);
-			$pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
-            $commentsDisabled = isset($activity['commentsEnabled']) ? !boolval($activity['commentsEnabled']) : false;
+		$ts = self::pluckval($activity['published']);
+		$scope = self::getScope($activity, $url);
+		$cw = self::getSensitive($activity, $url);
+		$pid = is_object($profile) ? $profile->id : (is_array($profile) ? $profile['id'] : null);
+		$commentsDisabled = isset($activity['commentsEnabled']) ? !boolval($activity['commentsEnabled']) : false;
 
-			if(!$pid) {
-				return;
-			}
+		if(!$pid) {
+			return;
+		}
 
-            $status = Status::updateOrCreate(
-                [
-                    'uri' => $url
-                ], [
-                    'profile_id' => $pid,
-                    'url' => $url,
-                    'object_url' => $id,
-                    'caption' => strip_tags($activity['content']),
-                    'rendered' => Purify::clean($activity['content']),
-                    'created_at' => Carbon::parse($ts)->tz('UTC'),
-                    'in_reply_to_id' => $reply_to,
-                    'local' => false,
-                    'is_nsfw' => $cw,
-                    'scope' => $scope,
-                    'visibility' => $scope,
-                    'cw_summary' => ($cw == true && isset($activity['summary']) ?
-                        Purify::clean(strip_tags($activity['summary'])) : null),
-                    'comments_disabled' => $commentsDisabled
-                ]
-            );
+		$status = Status::updateOrCreate(
+			[
+				'uri' => $url
+			], [
+				'profile_id' => $pid,
+				'url' => $url,
+				'object_url' => $id,
+				'caption' => strip_tags($activity['content']),
+				'rendered' => Purify::clean($activity['content']),
+				'created_at' => Carbon::parse($ts)->tz('UTC'),
+				'in_reply_to_id' => $reply_to,
+				'local' => false,
+				'is_nsfw' => $cw,
+				'scope' => $scope,
+				'visibility' => $scope,
+				'cw_summary' => ($cw == true && isset($activity['summary']) ?
+					Purify::clean(strip_tags($activity['summary'])) : null),
+				'comments_disabled' => $commentsDisabled
+			]
+		);
 
-			if($reply_to == null) {
-				self::importNoteAttachment($activity, $status);
-			} else {
-				StatusReplyPipeline::dispatch($status);
-			}
+		if($reply_to == null) {
+			self::importNoteAttachment($activity, $status);
+		} else {
+			StatusReplyPipeline::dispatch($status);
+		}
 
-			if(isset($activity['tag']) && is_array($activity['tag']) && !empty($activity['tag'])) {
-				StatusTagsPipeline::dispatch($activity, $status);
-			}
+		if(isset($activity['tag']) && is_array($activity['tag']) && !empty($activity['tag'])) {
+			StatusTagsPipeline::dispatch($activity, $status);
+		}
 
-			if( config('instance.timeline.network.cached') &&
-				$status->in_reply_to_id === null &&
-				$status->reblog_of_id === null &&
-				in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
-				$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
-				(config('instance.hide_nsfw_on_public_feeds') == true ? $status->is_nsfw == false : true)
-			) {
-				NetworkTimelineService::add($status->id);
-			}
+		if( config('instance.timeline.network.cached') &&
+			$status->in_reply_to_id === null &&
+			$status->reblog_of_id === null &&
+			in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album']) &&
+			$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
+			(config('instance.hide_nsfw_on_public_feeds') == true ? $status->is_nsfw == false : true)
+		) {
+			NetworkTimelineService::add($status->id);
+		}
 
-			IncrementPostCount::dispatch($pid)->onQueue('low');
+		IncrementPostCount::dispatch($pid)->onQueue('low');
 
-			return $status;
-		});
+		return $status;
 	}
 
 	public static function getSensitive($activity, $url)
@@ -554,7 +556,7 @@ class Helpers {
 	{
 		$id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
 		$url = isset($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
-		$urlDomain = parse_url($url, PHP_URL_HOST);
+		$urlDomain = parse_url(self::pluckval($url), PHP_URL_HOST);
 		$scope = 'private';
 
 		if(isset($activity['to']) == true) {
@@ -733,50 +735,45 @@ class Helpers {
 		$webfinger = "@{$username}@{$domain}";
 
 		if(!self::validateUrl($res['inbox'])) {
-            return;
-        }
+			return;
+		}
 		if(!self::validateUrl($res['id'])) {
-            return;
-        }
+			return;
+		}
 
-		$profile = DB::transaction(function() use($domain, $webfinger, $res) {
-			$instance = Instance::updateOrCreate([
-				'domain' => $domain
-			]);
-			if($instance->wasRecentlyCreated == true) {
-				\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
-			}
+		$instance = Instance::updateOrCreate([
+			'domain' => $domain
+		]);
+		if($instance->wasRecentlyCreated == true) {
+			\App\Jobs\InstancePipeline\FetchNodeinfoPipeline::dispatch($instance)->onQueue('low');
+		}
 
-			$profile = Profile::updateOrCreate(
-				[
-					'domain' => strtolower($domain),
-					'username' => Purify::clean($webfinger),
-				],
-				[
-					'webfinger' => Purify::clean($webfinger),
-					'key_id' => $res['publicKey']['id'],
-					'remote_url' => $res['id'],
-					'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
-					'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
-					'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
-					'inbox_url' => $res['inbox'],
-					'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
-					'public_key' => $res['publicKey']['publicKeyPem'],
-				]
-			);
+		$profile = Profile::updateOrCreate(
+			[
+				'domain' => strtolower($domain),
+				'username' => Purify::clean($webfinger),
+			],
+			[
+				'webfinger' => Purify::clean($webfinger),
+				'key_id' => $res['publicKey']['id'],
+				'remote_url' => $res['id'],
+				'name' => isset($res['name']) ? Purify::clean($res['name']) : 'user',
+				'bio' => isset($res['summary']) ? Purify::clean($res['summary']) : null,
+				'sharedInbox' => isset($res['endpoints']) && isset($res['endpoints']['sharedInbox']) ? $res['endpoints']['sharedInbox'] : null,
+				'inbox_url' => $res['inbox'],
+				'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
+				'public_key' => $res['publicKey']['publicKeyPem'],
+			]
+		);
 
-			if( $profile->last_fetched_at == null ||
-				$profile->last_fetched_at->lt(now()->subHours(24))
-			) {
-				RemoteAvatarFetch::dispatch($profile);
-			}
-			$profile->last_fetched_at = now();
-			$profile->save();
-			return $profile;
-		});
-
+		if( $profile->last_fetched_at == null ||
+			$profile->last_fetched_at->lt(now()->subHours(24))
+		) {
+			RemoteAvatarFetch::dispatch($profile);
+		}
+		$profile->last_fetched_at = now();
+		$profile->save();
 		return $profile;
-
 	}
 
 	public static function profileFetch($url)

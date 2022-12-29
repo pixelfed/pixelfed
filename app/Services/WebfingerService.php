@@ -28,13 +28,17 @@ class WebfingerService
 			return [];
 		}
 
-		$res = Http::retry(3, 100)
-			->acceptJson()
-			->withHeaders([
-				'User-Agent' => '(Pixelfed/' . config('pixelfed.version') . '; +' . config('app.url') . ')'
-			])
-			->timeout(20)
-			->get($url);
+		try {
+			$res = Http::retry(3, 100)
+				->acceptJson()
+				->withHeaders([
+					'User-Agent' => '(Pixelfed/' . config('pixelfed.version') . '; +' . config('app.url') . ')'
+				])
+				->timeout(20)
+				->get($url);
+		} catch (\Illuminate\Http\Client\ConnectionException $e) {
+			return [];
+		}
 
 		if(!$res->successful()) {
 			return [];
@@ -48,9 +52,9 @@ class WebfingerService
 		$link = collect($webfinger['links'])
 			->filter(function($link) {
 				return $link &&
-					isset($link['type']) &&
-					isset($link['href']) &&
-					$link['type'] == 'application/activity+json';
+					isset($link['rel'], $link['type'], $link['href']) &&
+					$link['rel'] === 'self' &&
+					in_array($link['type'], ['application/activity+json','application/ld+json; profile="https://www.w3.org/ns/activitystreams"']);
 			})
 			->pluck('href')
 			->first();

@@ -50,6 +50,9 @@ class StatusDelete implements ShouldQueue
 	 */
 	public $deleteWhenMissingModels = true;
 
+    public $timeout = 900;
+    public $tries = 2;
+
 	/**
 	 * Create a new job instance.
 	 *
@@ -89,7 +92,7 @@ class StatusDelete implements ShouldQueue
         Media::whereStatusId($status->id)
         ->get()
         ->each(function($media) {
-            MediaDeletePipeline::dispatchNow($media);
+            MediaDeletePipeline::dispatch($media)->onQueue('mmo');
         });
 
 		if($status->in_reply_to_id) {
@@ -131,7 +134,7 @@ class StatusDelete implements ShouldQueue
 			->where('item_id', $status->id)
 			->delete();
 
-		$status->forceDelete();
+		$status->delete();
 
 		return 1;
 	}

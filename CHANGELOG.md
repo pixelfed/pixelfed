@@ -9,6 +9,8 @@
 - Manually verify email address (php artisan user:verifyemail) ([682f5f0f](https://github.com/pixelfed/pixelfed/commit/682f5f0f))
 - Manually generate in-app registration confirmation links (php artisan user:app-magic-link) ([73eb9e36](https://github.com/pixelfed/pixelfed/commit/73eb9e36))
 - Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
+- Admin Invites ([b73ca9a1](https://github.com/pixelfed/pixelfed/commit/b73ca9a1))
+- Hashtag administration ([84872311](https://github.com/pixelfed/pixelfed/commit/84872311))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -59,6 +61,19 @@
 - Update MediaS3GarbageCollector command, disable logging by default and optimize huge invocations ([a14af93b](https://github.com/pixelfed/pixelfed/commit/a14af93b))
 - Update MediaStorageService, clear MediaService and StatusService caches after localToCloud ([de56b0f0](https://github.com/pixelfed/pixelfed/commit/de56b0f0))
 - Add CloudMediaMigrate command to migrate older local media to cloud storage ([382d00d9](https://github.com/pixelfed/pixelfed/commit/382d00d9))
+- Update MediaS3GarbageCollector command, handle thumbnail deletion ([95bbcc38](https://github.com/pixelfed/pixelfed/commit/95bbcc38))
+- Update StatusReplyPipeline, remove expensive reply count re-calculation query ([a2f8aad1](https://github.com/pixelfed/pixelfed/commit/a2f8aad1))
+- Update CommentPipeline, remove expensive reply count re-calculation query ([b457a446](https://github.com/pixelfed/pixelfed/commit/b457a446))
+- Update FederationController, improve inbox/sharedInbox delete handling ([2180a2de](https://github.com/pixelfed/pixelfed/commit/2180a2de))
+- Update HashtagController, improve trending hashtag endpoint ([4873c7dd](https://github.com/pixelfed/pixelfed/commit/4873c7dd))
+- Fix CustomEmoji, properly handle shortcode updates and delete old copy in case the extension changes ([bc29073a](https://github.com/pixelfed/pixelfed/commit/bc29073a))
+- Update reply pipelines, restore reply_count logic ([0d780ffb](https://github.com/pixelfed/pixelfed/commit/0d780ffb))
+- Update StatusTagsPipeline, reject if `type` not set ([91085c45](https://github.com/pixelfed/pixelfed/commit/91085c45))
+- Update ReplyPipelines, use more efficent reply count calculation ([d4dfa95c](https://github.com/pixelfed/pixelfed/commit/d4dfa95c))
+- Update StatusDelete pipeline, dispatch async ([257c0949](https://github.com/pixelfed/pixelfed/commit/257c0949))
+- Update lexer/extractor to handle banned hashtags ([909a8a5a](https://github.com/pixelfed/pixelfed/commit/909a8a5a))
+- Update FederationController, fix double lock bug ([9fcccca9](https://github.com/pixelfed/pixelfed/commit/9fcccca9))
+- Update AdminInvite component, fix email regex ([2aea77d3](https://github.com/pixelfed/pixelfed/commit/2aea77d3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)

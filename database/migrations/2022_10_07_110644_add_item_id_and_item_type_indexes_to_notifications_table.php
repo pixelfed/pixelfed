@@ -27,7 +27,8 @@ class AddItemIdAndItemTypeIndexesToNotificationsTable extends Migration
     public function down()
     {
         Schema::table('notifications', function (Blueprint $table) {
-            //
+            $table->dropIndex('notifications_item_id_index');
+            $table->dropIndex('notifications_item_type_index');
         });
     }
 }

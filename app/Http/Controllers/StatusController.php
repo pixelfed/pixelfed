@@ -225,7 +225,7 @@ class StatusController extends Controller
 		StatusService::del($status->id, true);
 		if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
 			Cache::forget('profile:status_count:'.$status->profile_id);
-			StatusDelete::dispatchNow($status);
+			StatusDelete::dispatch($status);
 		}
 
 		if($request->wantsJson()) {
@@ -293,7 +293,7 @@ class StatusController extends Controller
 		$resource = new Fractal\Resource\Item($status, $object);
 		$res = $fractal->createData($resource)->toArray();
 
-		return response()->json($res['data'], 200, ['Content-Type' => 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+		return response()->json($res['data'], 200, ['Content-Type' => 'application/activity+json'], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 	}
 
 	public function edit(Request $request, $username, $id)

@@ -180,6 +180,8 @@ class Inbox
 				StoryFetch::dispatchNow($this->payload);
 			break;
 		}
+
+		return;
 	}
 
 	public function handleCreateActivity()
@@ -189,6 +191,13 @@ class Inbox
 		if(!$actor || $actor->domain == null) {
 			return;
 		}
+
+		if($actor->followers_count == 0) {
+			if(FollowerService::followerCount($actor->id, true) == 0) {
+				return;
+			}
+		}
+
 		if(!isset($activity['to'])) {
 			return;
 		}
@@ -267,14 +276,23 @@ class Inbox
 			return;
 		}
 
-		if($actor->followers()->count() == 0) {
-			return;
+		if($actor->followers_count == 0) {
+			if(FollowerService::followerCount($actor->id, true) == 0) {
+				return;
+			}
 		}
 
+		$hasUrl = isset($activity['url']);
 		$url = isset($activity['url']) ? $activity['url'] : $activity['id'];
 
-		if(Status::whereUrl($url)->exists()) {
-			return;
+		if($hasUrl) {
+			if(Status::whereUri($url)->exists()) {
+				return;
+			}
+		} else {
+			if(Status::whereObjectUrl($url)->exists()) {
+				return;
+			}
 		}
 
 		Helpers::storeStatus(
@@ -289,10 +307,20 @@ class Inbox
 	{
 		$activity = $this->payload['object'];
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+
+		if(!$actor) {
+			return;
+		}
+
 		$status = Helpers::statusFetch($activity['inReplyTo']);
+
+		if(!$status) {
+			return;
+		}
+
 		$poll = $status->poll;
 
-		if(!$status || !$poll) {
+		if(!$poll) {
 			return;
 		}
 
@@ -468,9 +496,14 @@ class Inbox
 	{
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
 		$target = $this->actorFirstOrCreate($this->payload['object']);
-		if(!$actor || $actor->domain == null || $target->domain !== null) {
+		if(!$actor || !$target) {
 			return;
 		}
+
+		if($actor->domain == null || $target->domain !== null) {
+			return;
+		}
+
 		if(
 			Follower::whereProfileId($actor->id)
 				->whereFollowingId($target->id)
@@ -632,10 +665,15 @@ class Inbox
 			if(!$profile || $profile->private_key != null) {
 				return;
 			}
-			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
+			DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 			return;
 		} else {
-			if(!isset($obj['id'], $this->payload['object'], $this->payload['object']['id'])) {
+			if(!isset(
+				$obj['id'],
+				$this->payload['object'],
+				$this->payload['object']['id'],
+				$this->payload['object']['type']
+			)) {
 				return;
 			}
 			$type = $this->payload['object']['type'];
@@ -653,7 +691,7 @@ class Inbox
 						if(!$profile || $profile->private_key != null) {
 							return;
 						}
-						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('delete');
+						DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('inbox');
 						return;
 					break;
 
@@ -664,13 +702,11 @@ class Inbox
 						}
 						$status = Status::whereProfileId($profile->id)
 							->whereUri($id)
-							->orWhere('url', $id)
-							->orWhere('object_url', $id)
 							->first();
 						if(!$status) {
 							return;
 						}
-						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('delete');
+						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('high');
 						return;
 					break;
 
@@ -793,7 +829,15 @@ class Inbox
 				break;
 
 			case 'Like':
-				$status = Helpers::statusFirstOrFetch($obj['object']);
+				$objectUri = $obj['object'];
+				if(!is_string($objectUri)) {
+					if(is_array($objectUri) && isset($objectUri['id']) && is_string($objectUri['id'])) {
+						$objectUri = $objectUri['id'];
+					} else {
+						return;
+					}
+				}
+				$status = Helpers::statusFirstOrFetch($objectUri);
 				if(!$status) {
 					return;
 				}

@@ -108,6 +108,11 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::post('directory/testimonial/save', 'AdminController@directorySaveTestimonial');
 		Route::post('directory/testimonial/delete', 'AdminController@directoryDeleteTestimonial');
 		Route::post('directory/testimonial/update', 'AdminController@directoryUpdateTestimonial');
+		Route::get('hashtags/stats', 'AdminController@hashtagsStats');
+		Route::get('hashtags/query', 'AdminController@hashtagsApi');
+		Route::get('hashtags/get', 'AdminController@hashtagsGet');
+		Route::post('hashtags/update', 'AdminController@hashtagsUpdate');
+		Route::post('hashtags/clear-trending-cache', 'AdminController@hashtagsClearTrendingCache');
 	});
 });
 
@@ -586,6 +591,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('terms', 'MobileController@terms');
 		Route::get('privacy', 'MobileController@privacy');
 	});
+
+	Route::get('auth/invite/a/{code}', 'AdminInviteController@index');
+	Route::post('api/v1.1/auth/invite/admin/re', 'AdminInviteController@apiRegister')->middleware('throttle:5,1440');
 
 	Route::get('stories/{username}', 'ProfileController@stories');
 	Route::get('p/{id}', 'StatusController@shortcodeRedirect');

@@ -17,6 +17,7 @@ class MediaStoragePipeline implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $media;
+    public $deleteWhenMissingModels = true;
 
     public function __construct(Media $media)
     {
