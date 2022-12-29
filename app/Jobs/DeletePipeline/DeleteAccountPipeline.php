@@ -55,6 +55,7 @@ use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\Portfolio;
 use App\Models\UserPronoun;
+use App\Jobs\StatusPipeline\StatusDelete;
 
 class DeleteAccountPipeline implements ShouldQueue
 {
@@ -77,6 +78,11 @@ class DeleteAccountPipeline implements ShouldQueue
 		$user = $this->user;
         $profile = $user->profile;
 		$id = $user->profile_id;
+		Status::whereProfileId($id)->chunk(50, function($statuses) {
+            foreach($statuses as $status) {
+                StatusDelete::dispatchNow($status);
+            }
+        });
 		$this->deleteUserColumns($user);
 		AccountService::del($user->profile_id);
 
@@ -167,12 +173,6 @@ class DeleteAccountPipeline implements ShouldQueue
 		DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
 		DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
 		ProfileSponsor::whereProfileId($id)->delete();
-
-		Status::whereProfileId($id)->chunk(50, function($statuses) {
-            foreach($statuses as $status) {
-                StatusDelete::dispatch($status)->onQueue('high');
-            }
-        });
 
 		Report::whereUserId($user->id)->forceDelete();
 		PublicTimelineService::warmCache(true, 400);
