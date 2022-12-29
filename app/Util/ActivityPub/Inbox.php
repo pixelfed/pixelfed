@@ -307,10 +307,20 @@ class Inbox
 	{
 		$activity = $this->payload['object'];
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+
+		if(!$actor) {
+			return;
+		}
+
 		$status = Helpers::statusFetch($activity['inReplyTo']);
+
+		if(!$status) {
+			return;
+		}
+
 		$poll = $status->poll;
 
-		if(!$status || !$poll) {
+		if(!$poll) {
 			return;
 		}
 
@@ -486,9 +496,14 @@ class Inbox
 	{
 		$actor = $this->actorFirstOrCreate($this->payload['actor']);
 		$target = $this->actorFirstOrCreate($this->payload['object']);
-		if(!$actor || $actor->domain == null || $target->domain !== null) {
+		if(!$actor || !$target) {
 			return;
 		}
+
+		if($actor->domain == null || $target->domain !== null) {
+			return;
+		}
+
 		if(
 			Follower::whereProfileId($actor->id)
 				->whereFollowingId($target->id)
