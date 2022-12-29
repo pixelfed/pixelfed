@@ -829,7 +829,15 @@ class Inbox
 				break;
 
 			case 'Like':
-				$status = Helpers::statusFirstOrFetch($obj['object']);
+				$objectUri = $obj['object'];
+				if(!is_string($objectUri)) {
+					if(is_array($objectUri) && isset($objectUri['id']) && is_string($objectUri['id'])) {
+						$objectUri = $objectUri['id'];
+					} else {
+						return;
+					}
+				}
+				$status = Helpers::statusFirstOrFetch($objectUri);
 				if(!$status) {
 					return;
 				}
