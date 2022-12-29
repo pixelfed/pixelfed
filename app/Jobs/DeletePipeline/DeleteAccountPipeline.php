@@ -55,6 +55,7 @@ use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\Portfolio;
 use App\Models\UserPronoun;
+use App\Jobs\StatusPipeline\StatusDelete;
 
 class DeleteAccountPipeline implements ShouldQueue
 {
