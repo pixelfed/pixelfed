@@ -141,7 +141,7 @@
 					<p class="h4 font-weight-light">Share posts with up to {{config_cache('pixelfed.max_album_length')}} photos</p>
 				</div>
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/1.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/1.jpeg" alt="" width="720">
 				</div>
 			</div>
 		</div>
@@ -149,7 +149,7 @@
 		<div class="container my-5">
 			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/2.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/2.jpeg" alt="" width="720">
 				</div>
 				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
 					<h1 class="display-4 font-weight-bold lh-1">Comments</h1>
@@ -165,7 +165,7 @@
 					<p class="h4 font-weight-light text-justify">Organize and share collections of multiple posts</p>
 				</div>
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/3.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/3.jpeg" alt="" width="720">
 				</div>
 			</div>
 		</div>
@@ -173,7 +173,7 @@
 		<div class="container my-5">
 			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/4.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/4.jpeg" alt="" width="720">
 				</div>
 				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
 					<h1 class="display-4 font-weight-bold lh-1">Discover</h1>
@@ -189,7 +189,7 @@
 					<p class="h4 font-weight-light text-justify">Add a special touch to your photos</p>
 				</div>
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/5.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/5.jpeg" alt="" width="720">
 				</div>
 			</div>
 		</div>
@@ -197,7 +197,7 @@
 		<div class="container my-5">
 			<div class="row p-4 pb-0 pt-lg-5 align-items-center rounded-3">
 				<div class="col-lg-6 overflow-hidden">
-					<img class="rounded-lg img-fluid filter-inkwell" src="/_landing/6.jpeg" alt="" width="720">
+					<img class="rounded-lg img-fluid filter-quill" src="/_landing/6.jpeg" alt="" width="720">
 				</div>
 				<div class="col-lg-6 p-3 p-lg-5 pt-lg-3">
 					<h1 class="display-4 font-weight-bold lh-1">Stories</h1>
