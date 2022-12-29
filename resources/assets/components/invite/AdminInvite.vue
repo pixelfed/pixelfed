@@ -372,7 +372,7 @@
                     return false;
                 }
 
-                return /^[a-z0-9.]{1,64}@[a-z0-9.]{1,64}$/i.test(this.form.email);
+                return /^[a-zA-Z]+[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+[a-zA-Z]$/i.test(this.form.email);
             },
 
             handleRegistration() {
