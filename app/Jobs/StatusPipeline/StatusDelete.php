@@ -74,10 +74,11 @@ class StatusDelete implements ShouldQueue
 		$profile = $this->status->profile;
 
 		StatusService::del($status->id, true);
-
-		if(in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
-			$profile->status_count = $profile->status_count - 1;
-			$profile->save();
+		if($profile) {
+			if(in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+				$profile->status_count = $profile->status_count - 1;
+				$profile->save();
+			}
 		}
 
 		if(config_cache('federation.activitypub.enabled') == true) {
@@ -143,6 +144,10 @@ class StatusDelete implements ShouldQueue
 	{
 		$audience = $status->profile->getAudienceInbox();
 		$profile = $status->profile;
+
+		if(!$profile) {
+			return;
+		}
 
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
