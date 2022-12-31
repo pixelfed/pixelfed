@@ -172,7 +172,7 @@ window.App.util = {
 			['Chill','filter-lofi'],
 			['Van','filter-ludwig'],
 			['Apache','filter-maven'],
-			['Mayflower','filter-mayfair'],
+			['May','filter-mayfair'],
 			['Ceres','filter-moon'],
 			['Knoxville','filter-nashville'],
 			['Felicity','filter-perpetua'],
