@@ -76,6 +76,8 @@
 - Update AdminInvite component, fix email regex ([2aea77d3](https://github.com/pixelfed/pixelfed/commit/2aea77d3))
 - Update database config, use single transaction and skip lock tables for mysql dump ([936f1e7a](https://github.com/pixelfed/pixelfed/commit/936f1e7a))
 - Update database config, add sticky flag https://laravel.com/docs/9.x/database#the-sticky-option ([10b65980](https://github.com/pixelfed/pixelfed/commit/10b65980))
+- Update profile audience to filter blocked instances ([e0c3dae3](https://github.com/pixelfed/pixelfed/commit/e0c3dae3))
+- Update SearchApiV2Service, improve query performance ([4d1f2811](https://github.com/pixelfed/pixelfed/commit/4d1f2811))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
