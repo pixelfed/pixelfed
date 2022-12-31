@@ -137,7 +137,6 @@ class StatusService
 
 	public static function del($id, $purge = false)
 	{
-
 		if($purge) {
 			$status = self::get($id);
 			if($status && isset($status['account']) && isset($status['account']['id'])) {

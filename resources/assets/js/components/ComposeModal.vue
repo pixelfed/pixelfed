@@ -370,7 +370,7 @@
 										<div class="p-1 pt-3">
 											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 										</div>
-										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">i{{filter[0]}}</a>
+										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 									</li>
 								</ul>
 							</div>
@@ -407,7 +407,7 @@
 										<div class="p-1 pt-3">
 											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
 										</div>
-										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">i{{filter[0]}}</a>
+										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 									</li>
 								</ul>
 							</div>
@@ -1033,7 +1033,7 @@ export default {
 	},
 
 	beforeMount() {
-		this.filters = window.App.util.filters;
+		this.filters = window.App.util.filters.sort();
 		axios.get('/api/compose/v0/settings')
 		.then(res => {
 			this.composeSettings = res.data;
