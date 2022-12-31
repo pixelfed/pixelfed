@@ -53,6 +53,10 @@ return [
             'prefix'      => '',
             'strict'      => false,
             'engine'      => null,
+            'dump' => [
+                'use_single_transaction',
+                'skip_lock_tables',
+            ]
         ],
 
         'pgsql' => [
