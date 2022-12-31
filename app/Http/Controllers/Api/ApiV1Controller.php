@@ -2855,6 +2855,8 @@ class ApiV1Controller extends Controller
 	 */
 	public function timelineHashtag(Request $request, $hashtag)
 	{
+		abort_if(!$request->user(), 403);
+
 		$this->validate($request,[
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
@@ -2868,6 +2870,10 @@ class ApiV1Controller extends Controller
 
 		if(!$tag) {
 			return response()->json([]);
+		}
+
+		if($tag->is_banned == true) {
+			return $this->json([]);
 		}
 
 		$min = $request->input('min_id');
