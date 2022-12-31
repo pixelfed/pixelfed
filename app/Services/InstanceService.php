@@ -20,21 +20,21 @@ class InstanceService
 
 	public static function getBannedDomains()
 	{
-		return Cache::remember(self::CACHE_KEY_BANNED_DOMAINS, now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_BANNED_DOMAINS, 1209600, function() {
 			return Instance::whereBanned(true)->pluck('domain')->toArray();
 		});
 	}
 
 	public static function getUnlistedDomains()
 	{
-		return Cache::remember(self::CACHE_KEY_UNLISTED_DOMAINS, now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_UNLISTED_DOMAINS, 1209600, function() {
 			return Instance::whereUnlisted(true)->pluck('domain')->toArray();
 		});
 	}
 
 	public static function getNsfwDomains()
 	{
-		return Cache::remember(self::CACHE_KEY_NSFW_DOMAINS, now()->addHours(12), function() {
+		return Cache::remember(self::CACHE_KEY_NSFW_DOMAINS, 1209600, function() {
 			return Instance::whereAutoCw(true)->pluck('domain')->toArray();
 		});
 	}

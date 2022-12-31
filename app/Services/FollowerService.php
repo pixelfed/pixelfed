@@ -34,8 +34,8 @@ class FollowerService
 	{
 		Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
 		Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
-		Cache::forget('pf:services:follow:audience:' . $actor);
-		Cache::forget('pf:services:follow:audience:' . $target);
+		Cache::forget('pf:services:follower:audience:' . $actor);
+		Cache::forget('pf:services:follower:audience:' . $target);
 		AccountService::del($actor);
 		AccountService::del($target);
 		RelationshipService::refresh($actor, $target);
@@ -151,9 +151,9 @@ class FollowerService
 
 	protected function getAudienceInboxes($pid, $scope = null)
 	{
-		$key = 'pf:services:follow:audience:' . $pid;
-		return Cache::remember($key, 86400, function() use($pid) {
-			$profile = Profile::find($pid);
+		$key = 'pf:services:follower:audience:' . $pid;
+		$domains = Cache::remember($key, 432000, function() use($pid) {
+			$profile = Profile::whereNull(['status', 'domain'])->find($pid);
 			if(!$profile) {
 				return [];
 			}
@@ -165,9 +165,27 @@ class FollowerService
 				})
 				->filter()
 				->unique()
-				->values()
-				->toArray();
+				->values();
 		});
+
+		if(!$domains || !$domains->count()) {
+			return [];
+		}
+
+		$banned = InstanceService::getBannedDomains();
+
+		if(!$banned || count($banned) === 0) {
+			return $domains->toArray();
+		}
+
+		$res = $domains->filter(function($domain) use($banned) {
+			$parsed = parse_url($domain, PHP_URL_HOST);
+			return !in_array($parsed, $banned);
+		})
+		->values()
+		->toArray();
+
+		return $res;
 	}
 
 	public static function mutualCount($pid, $mid)
