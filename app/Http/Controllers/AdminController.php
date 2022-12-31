@@ -264,6 +264,10 @@ class AdminController extends Controller
 		]);
 		$changed = false;
 		$changedFields = [];
+		$slug = str_slug($request->input('title'));
+		if(Newsroom::whereSlug($slug)->exists()) {
+			$slug = $slug . '-' . str_random(4);
+		}
 		$news = Newsroom::findOrFail($id);
 		$fields = [
 			'title' => 'string',
@@ -281,7 +285,7 @@ class AdminController extends Controller
 				case 'string':
 				if($request->{$field} != $news->{$field}) {
 					if($field == 'title') {
-						$news->slug = str_slug($request->{$field});
+						$news->slug = $slug;
 					}
 					$news->{$field} = $request->{$field};
 					$changed = true;
@@ -327,6 +331,10 @@ class AdminController extends Controller
 		]);
 		$changed = false;
 		$changedFields = [];
+		$slug = str_slug($request->input('title'));
+		if(Newsroom::whereSlug($slug)->exists()) {
+			$slug = $slug . '-' . str_random(4);
+		}
 		$news = new Newsroom();
 		$fields = [
 			'title' => 'string',
@@ -344,7 +352,7 @@ class AdminController extends Controller
 				case 'string':
 				if($request->{$field} != $news->{$field}) {
 					if($field == 'title') {
-						$news->slug = str_slug($request->{$field});
+						$news->slug = $slug;
 					}
 					$news->{$field} = $request->{$field};
 					$changed = true;
