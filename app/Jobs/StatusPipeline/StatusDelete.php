@@ -93,7 +93,7 @@ class StatusDelete implements ShouldQueue
         Media::whereStatusId($status->id)
         ->get()
         ->each(function($media) {
-            MediaDeletePipeline::dispatch($media)->onQueue('mmo');
+            MediaDeletePipeline::dispatchNow($media);
         });
 
 		if($status->in_reply_to_id) {
@@ -142,12 +142,13 @@ class StatusDelete implements ShouldQueue
 
 	public function fanoutDelete($status)
 	{
-		$audience = $status->profile->getAudienceInbox();
 		$profile = $status->profile;
 
 		if(!$profile) {
 			return;
 		}
+
+		$audience = $status->profile->getAudienceInbox();
 
 		$fractal = new Fractal\Manager();
 		$fractal->setSerializer(new ArraySerializer());
