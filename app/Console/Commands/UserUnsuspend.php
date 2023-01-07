@@ -39,7 +39,11 @@ class UserUnsuspend extends Command
     public function handle()
     {
         $id = $this->argument('id');
-        $user = User::whereUsername($id)->orWhere('id', $id)->first();
+        if(ctype_digit($id) == true) {
+            $user = User::find($id);
+        } else {
+            $user = User::whereUsername($id)->first();
+        }
         if(!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
