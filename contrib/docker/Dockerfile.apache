@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-apache-bullseye
 
 ENV COMPOSER_MEMORY_LIMIT=-1
 ARG DEBIAN_FRONTEND=noninteractive
@@ -18,8 +18,8 @@ RUN apt-get update \
       git \
       gosu \
       zip \
-      unzip \ 
-      libzip-dev \ 
+      unzip \
+      libzip-dev \
       libcurl4-openssl-dev \
 ## Image Optimization
       optipng \
