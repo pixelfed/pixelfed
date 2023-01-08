@@ -30,7 +30,7 @@
 		</content>
 		<link rel="alternate" href="{{ $item['url'] }}" />
 		<summary type="html">{{ $item['content'] }}</summary>
-		<media:content url="{{ $item['media_attachments'][0]['url'] }}" type="image/png" medium="image" />
+		<media:content url="{{ $item['media_attachments'][0]['url'] }}" type="{{ $item['media_attachments'][0]['mime'] }}" medium="image" />
 	</entry>
 	@endforeach
 </feed>
