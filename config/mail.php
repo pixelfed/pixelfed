@@ -85,8 +85,21 @@ return [
     */
 
     'username' => env('MAIL_USERNAME'),
-
     'password' => env('MAIL_PASSWORD'),
+    
+    
+    /*
+    |--------------------------------------------------------------------------
+    | SMTP EHLO Domain
+    |--------------------------------------------------------------------------
+    |
+    | Some SMTP servers require to present a known domain in order to 
+    | allow sending through its relay. (ie: Google Workspace)
+    | This will use the MAIL_SMTP_EHLO env variable to avoid the 421 error
+    | if not present by authenticating the sender domain instead the host.
+    |
+    */
+    'local_domain' => env('MAIL_SMTP_EHLO'),
 
     /*
     |--------------------------------------------------------------------------
