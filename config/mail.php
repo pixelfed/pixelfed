@@ -99,7 +99,7 @@ return [
     | if not present by authenticating the sender domain instead the host.
     |
     */
-    'local_domain' => env('MAIL_SMTP_EHLO'),
+    'local_domain' => env('MAIL_EHLO_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------
