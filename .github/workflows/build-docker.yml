@@ -38,6 +38,7 @@ jobs:
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
+        secrets: inherit
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -45,6 +46,7 @@ jobs:
 
       - name: Fetch tags
         uses: docker/metadata-action@v4
+        secrets: inherit
         id: meta
         with:
           images: ${{ secrets.DOCKER_HUB_ORGANISATION }}/pixelfed
@@ -90,6 +92,7 @@ jobs:
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
+        secrets: inherit
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -97,6 +100,7 @@ jobs:
 
       - name: Fetch tags
         uses: docker/metadata-action@v4
+        secrets: inherit
         id: meta
         with:
           images: ${{ secrets.DOCKER_HUB_ORGANISATION }}/pixelfed
