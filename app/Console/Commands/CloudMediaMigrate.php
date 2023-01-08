@@ -66,10 +66,13 @@ class CloudMediaMigrate extends Command
                     try {
                         MediaStorageService::store($media);
                     } catch (FileNotFoundException $e) {
+                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
                         return;
                     } catch (NotFoundHttpException $e) {
+                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
                         return;
                     } catch (\Exception $e) {
+                        $this->error('Error migrating media ' . $media->id . ' to cloud storage: ' . $e->getMessage());
                         return;
                     }
                 }
