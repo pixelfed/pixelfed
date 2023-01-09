@@ -13,9 +13,9 @@ version: '3.7'
 #
 # Run with `docker-compose --env-file=.env.docker up`
 #
-# Comment the `build` property in the `pixelfed` and `pixelfed_worker`
-# services to use `image` (https://hub.docker.com/r/pixelfed/pixelfed)
-# instead.
+# Uncomment the `build` property in the `pixelfed` and `pixelfed_worker`
+# services to build the image yourself, instead of using
+# https://hub.docker.com/r/pixelfed/pixelfed
 
 networks:
   external:
@@ -29,9 +29,9 @@ networks:
 services:
   # App (https://hub.docker.com/r/pixelfed/pixelfed)
   pixelfed:
-    build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
+    #build:
+    #  context: .
+    #  dockerfile: contrib/docker/Dockerfile.apache
     container_name: pixelfed
     depends_on:
       pixelfed_db:
@@ -53,9 +53,9 @@ services:
 
   # Worker (https://hub.docker.com/r/pixelfed/pixelfed)
   pixelfed_worker:
-    build:
-      context: .
-      dockerfile: contrib/docker/Dockerfile.apache
+    #build:
+    #  context: .
+    #  dockerfile: contrib/docker/Dockerfile.apache
     container_name: pixelfed_worker
     depends_on:
       pixelfed:
