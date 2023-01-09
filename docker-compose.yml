@@ -1,6 +1,7 @@
----
-version: '3'
+version: '3.7'
 
+# https://github.com/pixelfed/pixelfed
+#
 # In order to set configuration, please use a .env file in
 # your compose project directory (the same directory as your
 # docker-compose.yml), and set database options, application
@@ -9,74 +10,112 @@ version: '3'
 #
 # The services should scale properly across a swarm cluster
 # if the volumes are properly shared between cluster members.
-
-services:
-## App and Worker
-  app:
-    # Comment to use dockerhub image
-    image: pixelfed/pixelfed:latest
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
-    networks:
-      - external
-      - internal
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-      - redis
-
-  worker:
-    image: pixelfed/pixelfed:latest
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-    networks:
-      - external
-      - internal
-    command: gosu www-data php artisan horizon
-    depends_on:
-      - db
-      - redis
-
-## DB and Cache
-  db:
-    image: mariadb:jammy
-    restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.docker
-    volumes:
-      - "db-data:/var/lib/mysql"
-
-  redis:
-    image: redis:5-alpine
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - "redis-data:/data"
-    networks:
-      - internal
-
-volumes:
-  db-data:
-  redis-data:
-  app-storage:
-  app-bootstrap:
+#
+# Run with `docker-compose --env-file=.env.docker up`
+#
+# Comment the `build` property in the `pixelfed` and `pixelfed_worker`
+# services to use `image` (https://hub.docker.com/r/pixelfed/pixelfed)
+# instead.
 
 networks:
-  internal:
-    internal: true
   external:
     driver: bridge
+    name: external
+  pixelfed:
+    driver: bridge
+    internal: true
+    name: pixelfed
+
+services:
+  # App (https://hub.docker.com/r/pixelfed/pixelfed)
+  pixelfed:
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
+    container_name: pixelfed
+    depends_on:
+      pixelfed_db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    env_file: .env.docker
+    image: pixelfed/pixelfed:latest
+    networks:
+      - external
+      - pixelfed
+    ports:
+      - 8080:80
+    restart: unless-stopped
+    volumes:
+      - pixelfed_storage:/var/www/storage
+      - pixelfed_bootstrap:/var/www/bootstrap
+      - ./.env.docker:/var/www/.env
+
+  # Worker (https://hub.docker.com/r/pixelfed/pixelfed)
+  pixelfed_worker:
+    build:
+      context: .
+      dockerfile: contrib/docker/Dockerfile.apache
+    container_name: pixelfed_worker
+    depends_on:
+      pixelfed:
+        condition: service_started
+      pixelfed_db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    entrypoint: [ /var/www/contrib/docker/worker.apache.sh ]
+    env_file: .env.docker
+    image: pixelfed/pixelfed:latest
+    networks:
+      - pixelfed
+    restart: unless-stopped
+    volumes:
+      - pixelfed_storage:/var/www/storage
+      - pixelfed_bootstrap:/var/www/bootstrap
+
+  # DB (https://hub.docker.com/_/mariadb)
+  pixelfed_db:
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --log-bin=false # https://mariadb.com/kb/en/replication-and-binary-log-system-variables/#log_bin
+      - --log-warnings=1 # To disable "Access denied" errors from `healthcheck`
+    container_name: pixelfed_db
+    env_file: .env.docker
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+    healthcheck:
+      # https://github.com/MariaDB/mariadb-docker/blob/45bb36b2292191a93d2b7a0a4d0eafaa554ba8d5/10.10/healthcheck.sh
+      test: [ CMD, /usr/local/bin/healthcheck.sh, --connect ]
+      interval: 5s
+      timeout: 5s
+      retries: 4
+      start_period: 10s
+    image: mariadb:10.10
+    networks:
+      - pixelfed
+    restart: unless-stopped
+    volumes:
+      - pixelfed_db:/var/lib/mysql
+
+  # Cache (https://hub.docker.com/_/redis)
+  redis:
+    command:
+      - --requirepass ${REDIS_PASSWORD}
+    container_name: redis
+    env_file: .env.docker
+    image: redis:7.0
+    networks:
+      - pixelfed
+    restart: unless-stopped
+    volumes:
+      - pixelfed_redis:/data
+
+volumes:
+  pixelfed_bootstrap:
+  pixelfed_db:
+  pixelfed_redis:
+  pixelfed_storage:
