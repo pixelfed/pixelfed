@@ -41,6 +41,7 @@ class DiscoverController extends Controller
 
 			$tag = Hashtag::whereName($hashtag)
 				->orWhere('slug', $hashtag)
+				->where('is_banned', '!=', true)
 				->firstOrFail();
 			$tagCount = StatusHashtagService::count($tag->id);
 			return view('discover.tags.show', compact('tag', 'tagCount'));
@@ -53,7 +54,7 @@ class DiscoverController extends Controller
 
 		$this->validate($request, [
 			'hashtag' => 'required|string|min:1|max:124',
-			'page' => 'nullable|integer|min:1|max:' . ($user ? 29 : 10)
+			'page' => 'nullable|integer|min:1|max:' . ($user ? 29 : 3)
 		]);
 
 		$page = $request->input('page') ?? '1';
@@ -61,6 +62,9 @@ class DiscoverController extends Controller
 		$tag = $request->input('hashtag');
 
 		$hashtag = Hashtag::whereName($tag)->firstOrFail();
+		if($hashtag->is_banned == true) {
+			return [];
+		}
 		if($user) {
 			$res['follows'] = HashtagService::isFollowing($user->profile_id, $hashtag->id);
 		}

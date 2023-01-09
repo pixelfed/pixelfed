@@ -83,8 +83,6 @@ class DeleteAccountPipeline implements ShouldQueue
                 StatusDelete::dispatchNow($status);
             }
         });
-		$this->deleteUserColumns($user);
-		AccountService::del($user->profile_id);
 
 		AccountLog::whereItemType('App\User')->whereItemId($user->id)->forceDelete();
 
@@ -176,6 +174,8 @@ class DeleteAccountPipeline implements ShouldQueue
 
 		Report::whereUserId($user->id)->forceDelete();
 		PublicTimelineService::warmCache(true, 400);
+		$this->deleteUserColumns($user);
+		AccountService::del($user->profile_id);
 		Profile::whereUserId($user->id)->delete();
 	}
 
