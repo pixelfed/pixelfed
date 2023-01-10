@@ -12,33 +12,38 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
 ## Standard
-    dumb-init \
-    git \
-    gosu \
-    libcurl4-openssl-dev \
-    libzip-dev \
-    locales \
-    locales-all \
-    unzip \
-    zip \
+        dumb-init \
+        git \
+        gosu \
+        libcurl4-openssl-dev \
+        libzip-dev \
+        locales \
+        locales-all \
+        unzip \
+        zip \
 ## Image Optimization
-    gifsicle \
-    jpegoptim \
-    optipng \
-    pngquant \
+        gifsicle \
+        jpegoptim \
+        optipng \
+        pngquant \
 ## Image Processing
-    libjpeg62-turbo-dev \
-    libmagickwand-dev \
-    libpng-dev \
+        libjpeg62-turbo-dev \
+        libmagickwand-dev \
+        libpng-dev \
 # Required for GD
-    libwebp-dev \
-    libwebp6 \
-    libxpm-dev \
-    libxpm4 \
+        libwebp-dev \
+        libwebp6 \
+        libxpm-dev \
+        libxpm4 \
 ## Video Processing
-    ffmpeg \
+        ffmpeg \
 ## Database
-    mariadb-client
+        mariadb-client \
+## Clean up, to reduce cache size
+    && apt-get autoremove --purge -y \
+    && apt-get clean \
+    && rm -rf /var/cache/apt \
+    && rm -rf /var/lib/apt/lists/
 
 # Locales Update
 RUN sed -i '/en_US/s/^#//g' /etc/locale.gen \
@@ -64,7 +69,12 @@ RUN docker-php-source extract \
     && docker-php-ext-install pdo_mysql \
 ## PHP extensions (dependencies)
     && docker-php-ext-configure intl \
-    && docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl
+    && docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl \
+## Clean up, to reduce cache size
+    && docker-php-source delete
+
+# Use the default production configuration
+COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # APACHE Bootstrap
 RUN a2enmod rewrite remoteip \
@@ -77,28 +87,15 @@ RUN a2enmod rewrite remoteip \
     } > /etc/apache2/conf-available/remoteip.conf \
     && a2enconf remoteip
 
-# Cleanup
-RUN docker-php-source delete \
-    && apt-get autoremove --purge -y \
-    && apt-get clean \
-    && rm -rf /var/cache/apt \
-    && rm -rf /var/lib/apt/lists/
-
 # Copy everything from the repository to the image
 # See `.dockerignore` for what is excluded
 COPY . /var/www/
-
-# Use the default production configuration
-COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN cp -r storage storage.skel \
     && composer install --prefer-dist --no-interaction --no-ansi --optimize-autoloader \
     && rm -rf html && ln -s public html \
     && chown -R www-data:www-data /var/www
-
-# TODO Not sure why this is here, and in `start.apache.sh`
-# RUN php artisan horizon:publish
 
 VOLUME /var/www/storage /var/www/bootstrap
 
