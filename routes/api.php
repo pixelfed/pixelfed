@@ -193,5 +193,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('users/list', 'Api\AdminApiController@getUsers')->middleware($middleware);
 		Route::get('users/get', 'Api\AdminApiController@getUser')->middleware($middleware);
 		Route::post('users/action', 'Api\AdminApiController@userAdminAction')->middleware($middleware);
+		Route::get('instances/list', 'Api\AdminApiController@instances')->middleware($middleware);
+		Route::get('instances/get', 'Api\AdminApiController@getInstance')->middleware($middleware);
+		Route::post('instances/moderate', 'Api\AdminApiController@moderateInstance')->middleware($middleware);
+		Route::post('instances/refresh-stats', 'Api\AdminApiController@refreshInstanceStats')->middleware($middleware);
 	});
 });
