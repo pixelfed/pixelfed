@@ -77,6 +77,11 @@ class NetworkTimelineService
 		if(self::count() == 0 || $force == true) {
 			$hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 			Redis::del(self::CACHE_KEY);
+            $filteredDomains = collect(InstanceService::getBannedDomains())
+                ->merge(InstanceService::getUnlistedDomains())
+                ->unique()
+                ->values()
+                ->toArray();
 			$ids = Status::whereNotNull('uri')
 				->whereScope('public')
 				->when($hideNsfw, function($q, $hideNsfw) {
@@ -88,7 +93,13 @@ class NetworkTimelineService
 				->where('created_at', '>', now()->subHours(config('instance.timeline.network.max_hours_old')))
 				->orderByDesc('created_at')
 				->limit($limit)
-				->pluck('id');
+				->pluck('uri', 'id');
+            $ids = $ids->filter(function($k, $v) use($filteredDomains) {
+                $domain = parse_url($k, PHP_URL_HOST);
+                return !in_array($domain, $filteredDomains);
+            })->map(function($k, $v) {
+                return $v;
+            })->flatten();
 			foreach($ids as $id) {
 				self::add($id);
 			}
