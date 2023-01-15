@@ -179,4 +179,19 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish');
 		Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish');
 	});
+
+	Route::group(['prefix' => 'admin'], function() use($middleware) {
+		Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
+		Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
+
+		Route::get('autospam/list', 'Api\AdminApiController@autospam')->middleware($middleware);
+		Route::post('autospam/handle', 'Api\AdminApiController@autospamHandle')->middleware($middleware);
+		Route::get('mod-reports/list', 'Api\AdminApiController@modReports')->middleware($middleware);
+		Route::post('mod-reports/handle', 'Api\AdminApiController@modReportHandle')->middleware($middleware);
+		Route::get('config', 'Api\AdminApiController@getConfiguration')->middleware($middleware);
+		Route::post('config/update', 'Api\AdminApiController@updateConfiguration')->middleware($middleware);
+		Route::get('users/list', 'Api\AdminApiController@getUsers')->middleware($middleware);
+		Route::get('users/get', 'Api\AdminApiController@getUser')->middleware($middleware);
+		Route::post('users/action', 'Api\AdminApiController@userAdminAction')->middleware($middleware);
+	});
 });
