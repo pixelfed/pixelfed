@@ -547,12 +547,15 @@ class ApiV1Dot1Controller extends Controller
             return response()->json(['error' => 'Invalid tokens'], 403);
         }
 
+        if($verify->created_at->lt(now()->subHours(24))) {
+            $verify->delete();
+            return response()->json(['error' => 'Invalid tokens'], 403);
+        }
+
         $user = User::findOrFail($verify->user_id);
         $user->email_verified_at = now();
         $user->last_active_at = now();
         $user->save();
-
-        $verify->delete();
 
         $token = $user->createToken('Pixelfed');
 
