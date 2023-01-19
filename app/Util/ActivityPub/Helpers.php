@@ -510,7 +510,14 @@ class Helpers {
 			$status->created_at->gt(now()->subHours(config('instance.timeline.network.max_hours_old'))) &&
 			(config('instance.hide_nsfw_on_public_feeds') == true ? $status->is_nsfw == false : true)
 		) {
-			NetworkTimelineService::add($status->id);
+			$filteredDomains = collect(InstanceService::getBannedDomains())
+                ->merge(InstanceService::getUnlistedDomains())
+                ->unique()
+                ->values()
+                ->toArray();
+            if(!in_array($urlDomain, $filteredDomains)) {
+				NetworkTimelineService::add($status->id);
+            }
 		}
 
 		IncrementPostCount::dispatch($pid)->onQueue('low');
