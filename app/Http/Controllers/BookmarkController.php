@@ -7,6 +7,7 @@ use App\Status;
 use Auth;
 use Illuminate\Http\Request;
 use App\Services\BookmarkService;
+use App\Services\FollowerService;
 
 class BookmarkController extends Controller
 {
@@ -23,6 +24,16 @@ class BookmarkController extends Controller
 
         $profile = Auth::user()->profile;
         $status = Status::findOrFail($request->input('item'));
+
+        abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+
+        if($status->scope == 'private') {
+            abort_if(
+                $profile->id !== $status->profile_id && !FollowerService::follows($profile->id, $status->profile_id),
+                404,
+                'Error: Cannot bookmark private posts from accounts you do not follow.'
+            );
+        }
 
         $bookmark = Bookmark::firstOrCreate(
             ['status_id' => $status->id], ['profile_id' => $profile->id]
