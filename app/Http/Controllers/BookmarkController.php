@@ -31,7 +31,7 @@ class BookmarkController extends Controller
             abort_if(
                 $profile->id !== $status->profile_id && !FollowerService::follows($profile->id, $status->profile_id),
                 404,
-                'Error: Cannot bookmark private posts from accounts you do not follow.'
+                'Error: You cannot bookmark private posts from accounts you do not follow.'
             );
         }
 
