@@ -155,8 +155,8 @@ class FixDuplicateProfiles extends Command
 
     protected function checkFollowers($id, $oid)
     {
-        Follower::whereProfileId($oid)->update(['profile_id' => $id]);
-        Follower::whereFollowingId($oid)->update(['following_id' => $id]);
+        Follower::whereProfileId($oid)->where('profile_id', '!=', $id)->update(['profile_id' => $id]);
+        Follower::whereFollowingId($oid)->where('following_id', '!=', $id)->update(['following_id' => $id]);
     }
 
     protected function checkHashtagFollow($id, $oid)
