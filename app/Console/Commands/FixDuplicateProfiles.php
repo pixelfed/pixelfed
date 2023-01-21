@@ -5,12 +5,36 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 use App\{
+    Avatar,
+    Bookmark,
+    Collection,
+    DirectMessage,
+    FollowRequest,
+    Follower,
+    HashtagFollow,
     Like,
     Media,
+    MediaTag,
+    Mention,
     Profile,
+    Report,
+    ReportComment,
+    ReportLog,
+    StatusArchived,
+    StatusHashtag,
+    StatusView,
     Status,
-    User
+    Story,
+    StoryView,
+    User,
+    UserFilter
 };
+use App\Models\{
+    Conversation,
+    Portfolio,
+    UserPronoun
+};
+use DB, Cache;
 
 class FixDuplicateProfiles extends Command
 {
@@ -45,31 +69,174 @@ class FixDuplicateProfiles extends Command
      */
     public function handle()
     {
-        $profiles = Profile::selectRaw('count(user_id) as count,user_id')->whereNotNull('user_id')->groupBy('user_id')->orderBy('user_id', 'desc')->get()->where('count', '>', 1);
-        $count = $profiles->count();
-        if($count == 0) {
-            $this->info("No duplicate profiles found!");
-            return;
-        }
-        $this->info("Found {$count} accounts with duplicate profiles...");
-        $bar = $this->output->createProgressBar($count);
-        $bar->start();
+        $duplicates = DB::table('profiles')
+            ->whereNull('domain')
+            ->select('username', DB::raw('COUNT(*) as `count`'))
+            ->groupBy('username')
+            ->havingRaw('COUNT(*) > 1')
+            ->pluck('username');
 
-        foreach ($profiles as $profile) {
-            $dup = Profile::whereUserId($profile->user_id)->get();
-
-            if(
-                $dup->first()->username === $dup->last()->username && 
-                $dup->last()->statuses()->count() == 0 && 
-                $dup->last()->followers()->count() == 0 && 
-                $dup->last()->likes()->count() == 0 &&
-                $dup->last()->media()->count() == 0
-            ) {
-                $dup->last()->avatar->forceDelete();
-                $dup->last()->forceDelete();
+        foreach($duplicates as $dupe) {
+            $ids = Profile::whereNull('domain')->whereUsername($dupe)->pluck('id');
+            if(!$ids || $ids->count() != 2) {
+                continue;
             }
-            $bar->advance();
+            $id = $ids->first();
+            $oid = $ids->last();
+
+            $user = User::whereUsername($dupe)->first();
+            if($user) {
+                $user->profile_id = $id;
+                $user->save();
+            } else {
+                continue;
+            }
+
+            $this->checkAvatar($id, $oid);
+            $this->checkBookmarks($id, $oid);
+            $this->checkCollections($id, $oid);
+            $this->checkConversations($id, $oid);
+            $this->checkDirectMessages($id, $oid);
+            $this->checkFollowRequest($id, $oid);
+            $this->checkFollowers($id, $oid);
+            $this->checkHashtagFollow($id, $oid);
+            $this->checkLikes($id, $oid);
+            $this->checkMedia($id, $oid);
+            $this->checkMediaTag($id, $oid);
+            $this->checkMention($id, $oid);
+            $this->checkPortfolio($id, $oid);
+            $this->checkReport($id, $oid);
+            $this->checkStatusArchived($id, $oid);
+            $this->checkStatusHashtag($id, $oid);
+            $this->checkStatusView($id, $oid);
+            $this->checkStatus($id, $oid);
+            $this->checkStory($id, $oid);
+            $this->checkStoryView($id, $oid);
+            $this->checkUserFilter($id, $oid);
+            $this->checkUserPronoun($id, $oid);
+            Profile::find($oid)->forceDelete();
         }
-        $bar->finish();
+
+        Cache::clear();
     }
+
+    protected function checkAvatar($id, $oid)
+    {
+        Avatar::whereProfileId($oid)->forceDelete();
+    }
+
+    protected function checkBookmarks($id, $oid)
+    {
+        Bookmark::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkCollections($id, $oid)
+    {
+        Collection::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkConversations($id, $oid)
+    {
+        Conversation::whereToId($oid)->update(['to_id' => $id]);
+        Conversation::whereFromId($oid)->update(['from_id' => $id]);
+    }
+
+    protected function checkDirectMessages($id, $oid)
+    {
+        DirectMessage::whereToId($oid)->update(['to_id' => $id]);
+        DirectMessage::whereFromId($oid)->update(['from_id' => $id]);
+    }
+
+    protected function checkFollowRequest($id, $oid)
+    {
+        FollowRequest::whereFollowerId($oid)->update(['follower_id' => $id]);
+        FollowRequest::whereFollowingId($oid)->update(['following_id' => $id]);
+    }
+
+    protected function checkFollowers($id, $oid)
+    {
+        Follower::whereProfileId($oid)->update(['profile_id' => $id]);
+        Follower::whereFollowingId($oid)->update(['following_id' => $id]);
+    }
+
+    protected function checkHashtagFollow($id, $oid)
+    {
+        HashtagFollow::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkLikes($id, $oid)
+    {
+        Like::whereStatusProfileId($oid)->update(['status_profile_id' => $id]);
+        Like::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkMedia($id, $oid)
+    {
+        Media::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkMediaTag($id, $oid)
+    {
+        MediaTag::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkMention($id, $oid)
+    {
+        Mention::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkPortfolio($id, $oid)
+    {
+        Portfolio::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkReport($id, $oid)
+    {
+        ReportComment::whereProfileId($oid)->update(['profile_id' => $id]);
+        ReportLog::whereProfileId($oid)->update(['profile_id' => $id]);
+        Report::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStatusArchived($id, $oid)
+    {
+        StatusArchived::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStatusHashtag($id, $oid)
+    {
+        StatusHashtag::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStatusView($id, $oid)
+    {
+        StatusView::whereStatusProfileId($oid)->update(['profile_id' => $id]);
+        StatusView::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStatus($id, $oid)
+    {
+        Status::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStory($id, $oid)
+    {
+        Story::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkStoryView($id, $oid)
+    {
+        StoryView::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
+    protected function checkUserFilter($id, $oid)
+    {
+        UserFilter::whereUserId($oid)->update(['user_id' => $id]);
+        UserFilter::whereFilterableType('App\Profile')->whereFilterableId($oid)->update(['filterable_id' => $id]);
+    }
+
+    protected function checkUserPronoun($id, $oid)
+    {
+        UserPronoun::whereProfileId($oid)->update(['profile_id' => $id]);
+    }
+
 }
