@@ -26,6 +26,10 @@ class UserObserver
 			return;
 		}
 
+        if(Profile::whereUsername($user->username)->exists()) {
+            return;
+        }
+
 		if (empty($user->profile)) {
 			$profile = DB::transaction(function() use($user) {
 				$profile = new Profile();
