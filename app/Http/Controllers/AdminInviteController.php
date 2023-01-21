@@ -167,6 +167,9 @@ class AdminInviteController extends Controller
             'email'    => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ])));
+
+        sleep(5);
+
         $invite->used_by = array_merge($invite->used_by ?? [], [[
             'user_id' => $user->id,
             'username' => $user->username
