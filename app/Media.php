@@ -19,6 +19,8 @@ class Media extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $guarded = [];
+
     protected $casts = [
     	'srcset' => 'array'
     ];

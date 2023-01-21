@@ -11,6 +11,7 @@ class Portfolio extends Model
     use HasFactory;
 
     public $fillable = [
+        'profile_id',
         'active',
         'show_captions',
         'show_license',

@@ -8,6 +8,8 @@ class Report extends Model
 {
     protected $dates = ['admin_seen'];
 
+    protected $guarded = [];
+
     public function url()
     {
         return url('/i/admin/reports/show/'.$this->id);
