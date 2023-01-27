@@ -2935,24 +2935,20 @@ class ApiV1Controller extends Controller
 		$dir = $min_id ? '>' : '<';
 		$id = $min_id ?? $max_id;
 
-		if($id) {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->where('status_id', $dir, $id)
-				->limit($limit)
-				->pluck('status_id');
-		} else {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->latest()
-				->limit($limit)
-				->pluck('status_id');
-		}
+		$bookmarks = Bookmark::whereProfileId($pid)
+			->when($id, function($id, $query) use($dir) {
+				return $query->where('status_id', $dir, $id);
+			})
+			->limit($limit)
+			->pluck('status_id')
+			->map(function($id) {
+				return \App\Services\StatusService::getMastodon($id);
+			})
+			->filter()
+			->values()
+			->toArray();
 
-		$res = [];
-		foreach($bookmarks as $id) {
-			$res[] = \App\Services\StatusService::getMastodon($id);
-		}
-
-		return $this->json($res);
+		return $this->json($bookmarks);
 	}
 
 	/**
