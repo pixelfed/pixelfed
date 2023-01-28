@@ -14,6 +14,7 @@ use App\EmailVerification;
 use App\Status;
 use App\Report;
 use App\Profile;
+use App\StatusArchived;
 use App\User;
 use App\Services\AccountService;
 use App\Services\StatusService;
@@ -26,6 +27,7 @@ use Jenssegers\Agent\Agent;
 use Mail;
 use App\Mail\PasswordChange;
 use App\Mail\ConfirmAppEmail;
+use App\Http\Resources\StatusStateless;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -562,5 +564,73 @@ class ApiV1Dot1Controller extends Controller
         return response()->json([
             'access_token' => $token->accessToken
         ]);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope === 'archived') {
+            return [200];
+        }
+
+        $archive = new StatusArchived;
+        $archive->status_id = $status->id;
+        $archive->profile_id = $status->profile_id;
+        $archive->original_scope = $status->scope;
+        $archive->save();
+
+        $status->scope = 'archived';
+        $status->visibility = 'draft';
+        $status->save();
+        StatusService::del($status->id, true);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+
+    public function unarchive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope !== 'archived') {
+            return [200];
+        }
+
+        $archive = StatusArchived::whereStatusId($status->id)
+            ->whereProfileId($status->profile_id)
+            ->firstOrFail();
+
+        $status->scope = $archive->original_scope;
+        $status->visibility = $archive->original_scope;
+        $status->save();
+        $archive->delete();
+        StatusService::del($status->id, true);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+    public function archivedPosts(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $statuses = Status::whereProfileId($request->user()->profile_id)
+            ->whereScope('archived')
+            ->orderByDesc('id')
+            ->cursorPaginate(10);
+
+        return StatusStateless::collection($statuses);
     }
 }
