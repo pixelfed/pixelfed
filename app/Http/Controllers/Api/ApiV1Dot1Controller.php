@@ -11,6 +11,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\AccountLog;
 use App\EmailVerification;
+use App\Place;
 use App\Status;
 use App\Report;
 use App\Profile;
@@ -632,5 +633,36 @@ class ApiV1Dot1Controller extends Controller
             ->cursorPaginate(10);
 
         return StatusStateless::collection($statuses);
+    }
+
+    public function placesById(Request $request, $id, $slug)
+    {
+        abort_if(!$request->user(), 403);
+
+        $place = Place::whereSlug($slug)->findOrFail($id);
+
+        $posts = Cache::remember('pf-api:v1.1:places-by-id:' . $place->id, 3600, function() use($place) {
+            return Status::wherePlaceId($place->id)
+                ->whereNull('uri')
+                ->whereScope('public')
+                ->orderByDesc('created_at')
+                ->limit(60)
+                ->pluck('id');
+        });
+
+        $posts = $posts->map(function($id) {
+            return StatusService::get($id);
+        })
+        ->filter()
+        ->values();
+
+        return ['place' => [
+            'id' => $place->id,
+            'name' => $place->name,
+            'slug' => $place->slug,
+            'country' => $place->country,
+            'lat' => $place->lat,
+            'long' => $place->long
+        ], 'posts' => $posts];
     }
 }
