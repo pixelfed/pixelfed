@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Redis;
 use App\Services\NotificationService;
+use App\Services\StatusService;
 
 class StatusReplyPipeline implements ShouldQueue
 {
@@ -69,9 +70,22 @@ class StatusReplyPipeline implements ShouldQueue
         }
 
         if(config('database.default') === 'mysql') {
+            $count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where deleted_at IS NULL and reblog_of_id IS NULL and id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $reply->id]);
+            $reply->reply_count = count($count);
+            $reply->save();
+
+            $count = DB::select( DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where deleted_at IS NULL and reblog_of_id IS NULL and id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $status->id]);
+            $status->reply_count = count($count);
+            $status->save();
+        } else {
             $reply->reply_count = $reply->reply_count + 1;
             $reply->save();
         }
+
+        StatusService::del($reply->id);
+        StatusService::del($status->id);
+        Cache::forget('status:replies:all:' . $reply->id);
+        Cache::forget('status:replies:all:' . $status->id);
 
         DB::transaction(function() use($target, $actor, $status) {
             $notification = new Notification();

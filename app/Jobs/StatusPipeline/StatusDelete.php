@@ -100,6 +100,7 @@ class StatusDelete implements ShouldQueue
 			$parent = Status::findOrFail($status->in_reply_to_id);
 			--$parent->reply_count;
 			$parent->save();
+			StatusService::del($parent->id);
 		}
 
         Bookmark::whereStatusId($status->id)->delete();
