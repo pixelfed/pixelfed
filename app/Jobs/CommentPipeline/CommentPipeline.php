@@ -60,14 +60,6 @@ class CommentPipeline implements ShouldQueue
         $actor = $comment->profile;
 
         if(config('database.default') === 'mysql') {
-            $count = DB::select(DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where deleted_at IS NULL and reblog_of_id IS NULL and id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $status->id]);
-            $status->reply_count = count($count);
-            $status->save();
-
-            $count = DB::select(DB::raw("select id, in_reply_to_id from statuses, (select @pv := :kid) initialisation where deleted_at IS NULL and reblog_of_id IS NULL and id > @pv and find_in_set(in_reply_to_id, @pv) > 0 and @pv := concat(@pv, ',', id)"), [ 'kid' => $comment->id]);
-            $comment->reply_count = count($count);
-            $comment->save();
-        } else {
             $status->reply_count = $status->reply_count + 1;
             $status->save();
         }
