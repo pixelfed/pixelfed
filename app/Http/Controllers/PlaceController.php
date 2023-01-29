@@ -17,6 +17,10 @@ class PlaceController extends Controller
 
     public function show(Request $request, $id, $slug)
     {
+        $this->validate($request, [
+            'page' => 'sometimes|max:10'
+        ]);
+
     	$place = Place::whereSlug($slug)->findOrFail($id);
     	$posts = Status::wherePlaceId($place->id)
             ->whereNull('uri')

@@ -131,6 +131,16 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
 		});
 
+		Route::group(['prefix' => 'archive'], function () use($middleware) {
+			Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
+			Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
+			Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
+		});
+
+		Route::group(['prefix' => 'places'], function () use($middleware) {
+			Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
+		});
+
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
 		});
