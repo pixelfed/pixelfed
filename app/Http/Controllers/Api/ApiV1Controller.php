@@ -68,6 +68,7 @@ use App\Services\{
 	LikeService,
 	NetworkTimelineService,
 	NotificationService,
+	MediaService,
 	MediaPathService,
     ProfileStatusService,
 	PublicTimelineService,
@@ -90,6 +91,8 @@ use App\Services\MarkerService;
 use App\Models\Conversation;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
+use Illuminate\Support\Facades\RateLimiter;
+use Purify;
 
 class ApiV1Controller extends Controller
 {
@@ -1582,15 +1585,33 @@ class ApiV1Controller extends Controller
 		$user = $request->user();
 
 		$media = Media::whereUserId($user->id)
-			->whereNull('status_id')
+			->whereProfileId($user->profile_id)
 			->findOrFail($id);
 
-		$media->caption = $request->input('description');
-		$media->save();
+		$executed = RateLimiter::attempt(
+			'media:update:'.$user->id,
+			10,
+			function() use($media, $request) {
+				$caption = Purify::clean($request->input('description'));
 
-		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return $this->json($res);
+				if($caption != $media->caption) {
+					$media->caption = $caption;
+					$media->save();
+
+					if($media->status_id) {
+						MediaService::del($media->status_id);
+						StatusService::del($media->status_id);
+					}
+				}
+		});
+
+		if(!$executed) {
+			return response()->json([
+				'error' => 'Too many attempts. Try again in a few minutes.'
+			], 429);
+		};
+
+		return $this->json(MediaService::get($media->status_id));
 	}
 
 	/**
