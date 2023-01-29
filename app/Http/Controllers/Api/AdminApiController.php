@@ -33,7 +33,7 @@ class AdminApiController extends Controller
     public function supported(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         return response()->json(['supported' => true]);
     }
@@ -41,7 +41,8 @@ class AdminApiController extends Controller
     public function getStats(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
+
         $res = AdminStatsService::summary();
         $res['autospam_count'] = AccountInterstitial::whereType('post.autospam')
             ->whereNull('appeal_handled_at')
@@ -52,7 +53,7 @@ class AdminApiController extends Controller
     public function autospam(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $appeals = AccountInterstitial::whereType('post.autospam')
             ->whereNull('appeal_handled_at')
@@ -87,7 +88,7 @@ class AdminApiController extends Controller
     public function autospamHandle(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
             'action' => 'required|in:dismiss,approve,dismiss-all,approve-all',
@@ -176,7 +177,7 @@ class AdminApiController extends Controller
     public function modReports(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $reports = Report::whereNull('admin_seen')
             ->orderBy('created_at','desc')
@@ -222,7 +223,7 @@ class AdminApiController extends Controller
     public function modReportHandle(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
             'action'    => 'required|string',
@@ -280,7 +281,7 @@ class AdminApiController extends Controller
     public function getConfiguration(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
         abort_unless(config('instance.enable_cc'), 400);
 
         return collect([
@@ -323,7 +324,7 @@ class AdminApiController extends Controller
     public function updateConfiguration(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
         abort_unless(config('instance.enable_cc'), 400);
 
         $this->validate($request, [
@@ -385,7 +386,7 @@ class AdminApiController extends Controller
     public function getUsers(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
         $q = $request->input('q');
         $sort = $request->input('sort', 'desc') === 'asc' ? 'asc' : 'desc';
         $res = User::whereNull('status')
@@ -400,7 +401,7 @@ class AdminApiController extends Controller
     public function getUser(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $id = $request->input('user_id');
         $user = User::findOrFail($id);
@@ -419,7 +420,7 @@ class AdminApiController extends Controller
     public function userAdminAction(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
             'id' => 'required',
@@ -494,7 +495,8 @@ class AdminApiController extends Controller
     public function instances(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
+
         $this->validate($request, [
             'q' => 'sometimes',
             'sort' => 'sometimes|in:asc,desc',
@@ -531,7 +533,7 @@ class AdminApiController extends Controller
     public function getInstance(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $id = $request->input('id');
         $res = Instance::findOrFail($id);
@@ -542,7 +544,7 @@ class AdminApiController extends Controller
     public function moderateInstance(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
             'id' => 'required',
@@ -566,7 +568,7 @@ class AdminApiController extends Controller
     public function refreshInstanceStats(Request $request)
     {
         abort_if(!$request->user(), 404);
-        abort_unless($request->user()->is_admin === 1, 404);
+        abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
             'id' => 'required',
