@@ -71,7 +71,7 @@ class FixDuplicateProfiles extends Command
     {
         $duplicates = DB::table('profiles')
             ->whereNull('domain')
-            ->select('username', DB::raw('COUNT(*) as `count`'))
+            ->select('username', DB::raw('COUNT(*) as "count"'))
             ->groupBy('username')
             ->havingRaw('COUNT(*) > 1')
             ->pluck('username');
