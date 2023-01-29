@@ -80,6 +80,8 @@
 - Update SearchApiV2Service, improve query performance ([4d1f2811](https://github.com/pixelfed/pixelfed/commit/4d1f2811))
 - Update InstanceService, improve unlisted/banned network post filtering ([a0da6ec3](https://github.com/pixelfed/pixelfed/commit/a0da6ec3))
 - Update ApiV1DotController, fix inAppRegistrationConfirm logic ([6cfbedd9](https://github.com/pixelfed/pixelfed/commit/6cfbedd9))
+- Update ApiV1Controller, allow description (alt text) updates after status is published ([869c3ed1](https://github.com/pixelfed/pixelfed/commit/869c3ed1))
+- Update AdminApiController, fix postgres support ([84fb59d0](https://github.com/pixelfed/pixelfed/commit/84fb59d0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
