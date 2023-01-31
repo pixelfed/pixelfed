@@ -57,7 +57,11 @@ return [
             'dump' => [
                 'use_single_transaction',
                 'skip_lock_tables',
-            ]
+	    ],
+	    'sslmode' => env('DB_SSLMODE', 'prefer'),
+	    'options'   => array(
+		PDO::MYSQL_ATTR_SSL_CA      => '/usr/share/webapps/pixelfed/veryphotos-db-ca-certificate.crt',
+	    ),
         ],
 
         'pgsql' => [
