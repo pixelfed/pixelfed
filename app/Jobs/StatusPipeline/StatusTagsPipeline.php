@@ -8,14 +8,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Services\AccountService;
 use App\Services\CustomEmojiService;
 use App\Services\StatusService;
 use App\Jobs\MentionPipeline\MentionPipeline;
 use App\Mention;
-use App\Services\AccountService;
 use App\Hashtag;
 use App\StatusHashtag;
 use App\Services\TrendingHashtagService;
+use App\Util\ActivityPub\Helpers;
 
 class StatusTagsPipeline implements ShouldQueue
 {
@@ -89,17 +90,24 @@ class StatusTagsPipeline implements ShouldQueue
 			return $tag &&
 				$tag['type'] == 'Mention' &&
 				isset($tag['href']) &&
-				substr($tag['href'], 0, 8) === 'https://' &&
-				parse_url($tag['href'], PHP_URL_HOST) == config('pixelfed.domain.app');
+				substr($tag['href'], 0, 8) === 'https://';
 		})
 		->map(function($tag) use($status) {
-			$parts = explode('/', $status['href']);
-			if(!$parts) {
-				return;
-			}
-			$pid = AccountService::usernameToId(end($parts));
-			if(!$pid) {
-				return;
+			if(Helpers::validateLocalUrl($tag['href'])) {
+				$parts = explode('/', $tag['href']);
+				if(!$parts) {
+					return;
+				}
+				$pid = AccountService::usernameToId(end($parts));
+				if(!$pid) {
+					return;
+				}
+			} else {
+				$acct = Helpers::profileFetch($tag['href']);
+				if(!$acct) {
+					return;
+				}
+				$pid = $acct->id;
 			}
 			$mention = new Mention;
 			$mention->status_id = $status->id;
