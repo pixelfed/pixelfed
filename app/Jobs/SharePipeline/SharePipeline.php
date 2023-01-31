@@ -127,13 +127,15 @@ class SharePipeline implements ShouldQueue
 			'timeout'  => config('federation.activitypub.delivery.timeout')
 		]);
 
-		$requests = function($audience) use ($client, $activity, $profile, $payload) {
+		$version = config('pixelfed.version');
+		$appUrl = config('app.url');
+		$userAgent = "(Pixelfed/{$version}; +{$appUrl})";
+
+		$requests = function($audience) use ($client, $activity, $profile, $payload, $userAgent) {
 			foreach($audience as $url) {
-				$version = config('pixelfed.version');
-				$appUrl = config('app.url');
 				$headers = HttpSignature::sign($profile, $url, $activity, [
 					'Content-Type'	=> 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-					'User-Agent'	=> "(Pixelfed/{$version}; +{$appUrl})",
+					'User-Agent'	=> $userAgent,
 				]);
 				yield function() use ($client, $url, $headers, $payload) {
 					return $client->postAsync($url, [
