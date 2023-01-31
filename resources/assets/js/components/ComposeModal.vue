@@ -432,10 +432,19 @@
 								</div>
 							</div>
 						</div>
+						<div class="border-bottom">
+							<p class="px-4 mb-0 py-2 cursor-pointer d-flex justify-content-between" @click="showMediaDescriptionsCard()">
+								<span>Alt Text</span>
+								<span>
+									<i v-if="media && media.filter(m => m.alt).length == media.length" class="fas fa-check-circle fa-lg text-success"></i>
+									<i v-else class="fas fa-chevron-right fa-lg text-lighter"></i>
+								</span>
+							</p>
+						</div>
 						<div class="border-bottom px-4 mb-0 py-2">
 							<div class="d-flex justify-content-between">
 								<div>
-									<div class="text-dark ">Contains NSFW Media</div>
+									<div class="text-dark ">Sensitive/NSFW Media</div>
 								</div>
 								<div>
 									<div class="custom-control custom-switch" style="z-index: 9999;">

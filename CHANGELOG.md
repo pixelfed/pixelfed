@@ -83,6 +83,7 @@
 - Update ApiV1Controller, allow description (alt text) updates after status is published ([869c3ed1](https://github.com/pixelfed/pixelfed/commit/869c3ed1))
 - Update AdminApiController, fix postgres support ([84fb59d0](https://github.com/pixelfed/pixelfed/commit/84fb59d0))
 - Update StatusReplyPipeline, fix comment counts ([164aa577](https://github.com/pixelfed/pixelfed/commit/164aa577))
+- Update ComposeModal, add Alt Text button to caption screen ([4db48188](https://github.com/pixelfed/pixelfed/commit/4db48188))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
