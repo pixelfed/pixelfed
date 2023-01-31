@@ -58,47 +58,32 @@ class SharePipeline implements ShouldQueue
 			return;
 		}
 
-		$exists = Notification::whereProfileId($target->id)
-				  ->whereActorId($status->profile_id)
-				  ->whereAction('share')
-				  ->whereItemId($status->reblog_of_id)
-				  ->whereItemType('App\Status')
-				  ->exists();
-
 		if($target->id === $status->profile_id) {
 			$this->remoteAnnounceDeliver();
 			return true;
 		}
 
-		if($exists === true) {
-			return true;
-		}
-
-		$this->remoteAnnounceDeliver();
-
 		ReblogService::addPostReblog($parent->id, $status->id);
 
-		$parent->reblogs_count = $parent->shares()->count();
+		$parent->reblogs_count = $parent->reblogs_count + 1;
 		$parent->save();
 		StatusService::del($parent->id);
 
-		try {
-			$notification = new Notification;
-			$notification->profile_id = $target->id;
-			$notification->actor_id = $actor->id;
-			$notification->action = 'share';
-			$notification->message = $status->shareToText();
-			$notification->rendered = $status->shareToHtml();
-			$notification->item_id = $status->reblog_of_id ?? $status->id;
-			$notification->item_type = "App\Status";
-			$notification->save();
+		Notification::firstOrCreate(
+			[
+				'profile_id' => $target->id,
+				'actor_id' => $actor->id,
+				'action' => 'share',
+				'item_type' => 'App\Status',
+				'item_id' => $status->reblog_of_id ?? $status->id,
+			],
+			[
+				'message' => $status->shareToText(),
+				'rendered' => $status->shareToHtml()
+			]
+		);
 
-			$redis = Redis::connection();
-			$key = config('cache.prefix').':user.'.$status->profile_id.'.notifications';
-			$redis->lpush($key, $notification->id);
-		} catch (Exception $e) {
-			Log::error($e);
-		}
+		return $this->remoteAnnounceDeliver();
 	}
 
 	public function remoteAnnounceDeliver()

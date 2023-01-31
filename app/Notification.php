@@ -16,7 +16,7 @@ class Notification extends Model
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['*'];
+    protected $guarded = [];
 
     public function actor()
     {
