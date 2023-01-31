@@ -569,13 +569,9 @@ class Inbox
 			return;
 		}
 
-		if(Helpers::validateLocalUrl($activity) == false) {
-			return;
-		}
-
 		$parent = Helpers::statusFetch($activity);
 
-		if(empty($parent)) {
+		if(!$parent || empty($parent)) {
 			return;
 		}
 
@@ -590,15 +586,18 @@ class Inbox
 			'type' => 'share'
 		]);
 
-		Notification::firstOrCreate([
-			'profile_id' => $parent->profile->id,
-			'actor_id' => $actor->id,
-			'action' => 'share',
-			'message' => $status->replyToText(),
-			'rendered' => $status->replyToHtml(),
-			'item_id' => $parent->id,
-			'item_type' => 'App\Status'
-		]);
+		Notification::firstOrCreate(
+			[
+				'profile_id' => $parent->profile_id,
+				'actor_id' => $actor->id,
+				'action' => 'share',
+				'item_id' => $parent->id,
+				'item_type' => 'App\Status',
+			], [
+				'message' => $status->replyToText(),
+				'rendered' => $status->replyToHtml(),
+			]
+		);
 
 		$parent->reblogs_count = $parent->reblogs_count + 1;
 		$parent->save();

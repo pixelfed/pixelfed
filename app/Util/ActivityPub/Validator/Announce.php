@@ -11,15 +11,12 @@ class Announce {
 	{
 		$valid = Validator::make($payload, [
 			'@context' => 'required',
-			'id' => 'required|string',
+			'id' => 'required|url',
 			'type' => [
 				'required',
 				Rule::in(['Announce'])
 			],
 			'actor' => 'required|url',
-			'published' => 'required|date',
-			'to'	=> 'required',
-			'cc'	=> 'required',
 			'object' => 'required|url'
 		])->passes();
 
