@@ -37,6 +37,7 @@ use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 
 use App\Services\PollService;
 use App\Services\FollowerService;
+use App\Services\ReblogService;
 use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\NetworkTimelineService;
@@ -602,6 +603,8 @@ class Inbox
 		$parent->reblogs_count = $parent->reblogs_count + 1;
 		$parent->save();
 
+		ReblogService::addPostReblog($parent->profile_id, $status->id);
+
 		return;
 	}
 
@@ -789,17 +792,23 @@ class Inbox
 				if(is_array($obj) && isset($obj['object'])) {
 					$obj = $obj['object'];
 				}
-				if(!is_string($obj) || !Helpers::validateLocalUrl($obj)) {
+				if(!is_string($obj)) {
 					return;
 				}
-				$status = Status::whereUri($obj)->exists();
+				if(Helpers::validateLocalUrl($obj)) {
+					$parsedId = last(explode('/', $obj));
+					$status = Status::find($parsedId);
+				} else {
+					$status = Status::whereUri($obj)->first();
+				}
 				if(!$status) {
 					return;
 				}
 				Status::whereProfileId($profile->id)
 					->whereReblogOfId($status->id)
-					->forceDelete();
-				Notification::whereProfileId($status->profile->id)
+					->delete();
+				ReblogService::removePostReblog($profile->id, $status->id);
+				Notification::whereProfileId($status->profile_id)
 					->whereActorId($profile->id)
 					->whereAction('share')
 					->whereItemId($status->reblog_of_id)

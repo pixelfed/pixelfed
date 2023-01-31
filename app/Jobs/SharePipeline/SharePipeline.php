@@ -63,7 +63,7 @@ class SharePipeline implements ShouldQueue
 			return true;
 		}
 
-		ReblogService::addPostReblog($parent->id, $status->id);
+		ReblogService::addPostReblog($parent->profile_id, $status->id);
 
 		$parent->reblogs_count = $parent->reblogs_count + 1;
 		$parent->save();
