@@ -2814,9 +2814,7 @@ class ApiV1Controller extends Controller
 			'visibility' => 'public'
 		]);
 
-		if($share->wasRecentlyCreated == true) {
-			SharePipeline::dispatch($share);
-		}
+		SharePipeline::dispatch($share)->onQueue('low');
 
 		StatusService::del($status->id);
 		ReblogService::add($user->profile_id, $status->id);
@@ -2858,7 +2856,7 @@ class ApiV1Controller extends Controller
 			return $this->json($res);
 		}
 
-		UndoSharePipeline::dispatch($reblog);
+		UndoSharePipeline::dispatch($reblog)->onQueue('low');
 		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);

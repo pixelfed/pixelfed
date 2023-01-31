@@ -17,6 +17,7 @@ use Mail;
 use Purify;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
+use App\Services\AccountService;
 use App\Services\PronounService;
 
 trait HomeSettings
@@ -99,10 +100,10 @@ trait HomeSettings
 		}
 
 		if ($changes === true) {
-			Cache::forget('user:account:id:'.$user->id);
 			$user->save();
 			$profile->save();
-
+			Cache::forget('user:account:id:'.$user->id);
+			AccountService::del($profile->id);
 			return redirect('/settings/home')->with('status', 'Profile successfully updated!');
 		}
 

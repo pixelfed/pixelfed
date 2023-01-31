@@ -101,13 +101,13 @@ class Helpers {
 				'string',
 				Rule::in($mediaTypes)
 			],
-			'*.url' => 'required|url|max:255',
+			'*.url' => 'required|url',
 			'*.mediaType'  => [
 				'required',
 				'string',
 				Rule::in($mimeTypes)
 			],
-			'*.name' => 'sometimes|nullable|string|max:255'
+			'*.name' => 'sometimes|nullable|string'
 		])->passes();
 
 		return $valid;
@@ -665,12 +665,13 @@ class Helpers {
 		foreach($attachments as $media) {
 			$type = $media['mediaType'];
 			$url = $media['url'];
-			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
-			$license = isset($media['license']) ? License::nameToId($media['license']) : null;
 			$valid = self::validateUrl($url);
 			if(in_array($type, $allowed) == false || $valid == false) {
 				continue;
 			}
+			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
+			$license = isset($media['license']) ? License::nameToId($media['license']) : null;
+			$caption = $media['name'] ? Purify::clean($media['name']) : null;
 
 			$media = new Media();
 			$media->blurhash = $blurhash;
@@ -680,6 +681,7 @@ class Helpers {
 			$media->user_id = null;
 			$media->media_path = $url;
 			$media->remote_url = $url;
+			$media->caption = $caption;
 			if($license) {
 				$media->license = $license;
 			}
