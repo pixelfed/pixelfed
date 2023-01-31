@@ -37,7 +37,7 @@ class UndoSharePipeline implements ShouldQueue
 
 		if($parent) {
 			$target = $parent->profile_id;
-			ReblogService::removePostReblog($parent->id, $status->id);
+			ReblogService::removePostReblog($parent->profile_id, $status->id);
 
 			if($parent->reblogs_count > 0) {
 				$parent->reblogs_count = $parent->reblogs_count - 1;
