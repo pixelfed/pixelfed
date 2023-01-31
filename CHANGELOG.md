@@ -86,6 +86,8 @@
 - Update ComposeModal, add Alt Text button to caption screen ([4db48188](https://github.com/pixelfed/pixelfed/commit/4db48188))
 - Update AccountService, fix actor cache invalidation ([498b46f7](https://github.com/pixelfed/pixelfed/commit/498b46f7))
 - Update SharePipeline, fix share handling and notification generation ([83e1e203](https://github.com/pixelfed/pixelfed/commit/83e1e203))
+- Update SharePipeline, fix ReblogService and undo handling ([016c6e41](https://github.com/pixelfed/pixelfed/commit/016c6e41))
+- Update AP Helpers, fix media validation bug that would reject media with alttext/name longer than 255 chars and store remote alt text if set ([a7f58349](https://github.com/pixelfed/pixelfed/commit/a7f58349))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
