@@ -95,9 +95,9 @@ class MediaStorageService {
 		$storagePath = implode('/', $p);
 
 		$disk = Storage::disk(config('filesystems.cloud'));
-		$file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
+		$file = $disk->putFileAs($storagePath, new File($path), $name, 'private');
 		$url = $disk->url($file);
-		$thumbFile = $disk->putFileAs($storagePath, new File($thumb), $thumbname, 'public');
+		$thumbFile = $disk->putFileAs($storagePath, new File($thumb), $thumbname, 'private');
 		$thumbUrl = $disk->url($thumbFile);
 		$media->thumbnail_url = $thumbUrl;
 		$media->cdn_url = $url;
@@ -173,7 +173,7 @@ class MediaStorageService {
 		$hash = hash_file('sha256', $tmpName);
 
 		$disk = Storage::disk(config('filesystems.cloud'));
-		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
+		$file = $disk->putFileAs($base, new File($tmpName), $path, 'private');
 		$permalink = $disk->url($file);
 
 		$media->media_path = $base . $path;
@@ -252,7 +252,7 @@ class MediaStorageService {
 		}
 
 		$disk = Storage::disk($driver);
-		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
+		$file = $disk->putFileAs($base, new File($tmpName), $path, 'private');
 		$permalink = $disk->url($file);
 
 		$avatar->media_path = $base . '/' . $path;
