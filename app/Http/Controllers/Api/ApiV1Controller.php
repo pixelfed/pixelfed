@@ -644,7 +644,7 @@ class ApiV1Controller extends Controller
 	 *
 	 * @return \App\Transformer\Api\RelationshipTransformer
 	 */
-	public function accountFollowById(Request $request, $id)
+	public function accountFollowById(Request $request, int $id)
 	{
 		abort_if(!$request->user(), 403);
 
