@@ -91,6 +91,7 @@
 - Update MentionPipeline, store non-local mentions ([17149230](https://github.com/pixelfed/pixelfed/commit/17149230))
 - Update Like model, increase rate limit to 500 likes per day ([ab7676f9](https://github.com/pixelfed/pixelfed/commit/ab7676f9))
 - Update ComposeController, fix validation issue ([80e6a5a9](https://github.com/pixelfed/pixelfed/commit/80e6a5a9))
+- Update reply view, fix visibility filtering ([d419af4b](https://github.com/pixelfed/pixelfed/commit/d419af4b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
