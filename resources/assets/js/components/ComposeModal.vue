@@ -1192,6 +1192,13 @@ export default {
 							self.page = 2;
 						break;
 
+						case 500:
+							self.uploading = false;
+							io.value = null;
+							swal('Error', e.response.data.message, 'error');
+							self.page = 2;
+						break;
+
 						default:
 							self.uploading = false;
 							io.value = null;

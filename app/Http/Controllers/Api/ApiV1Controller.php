@@ -1449,13 +1449,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+			'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
@@ -1647,13 +1650,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+		  	'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')

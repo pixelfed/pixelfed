@@ -89,8 +89,9 @@
 - Update SharePipeline, fix ReblogService and undo handling ([016c6e41](https://github.com/pixelfed/pixelfed/commit/016c6e41))
 - Update AP Helpers, fix media validation bug that would reject media with alttext/name longer than 255 chars and store remote alt text if set ([a7f58349](https://github.com/pixelfed/pixelfed/commit/a7f58349))
 - Update MentionPipeline, store non-local mentions ([17149230](https://github.com/pixelfed/pixelfed/commit/17149230))
-- Update Like model, increase rate limit to 500 likes per day ([ab7676f9](https://github.com/pixelfed/pixelfed/commit/))
--  ([](https://github.com/pixelfed/pixelfed/commit/ab7676f9))
+- Update Like model, increase rate limit to 500 likes per day ([ab7676f9](https://github.com/pixelfed/pixelfed/commit/ab7676f9))
+- Update ComposeController, fix validation issue ([80e6a5a9](https://github.com/pixelfed/pixelfed/commit/80e6a5a9))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 
