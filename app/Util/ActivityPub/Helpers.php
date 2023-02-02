@@ -496,6 +496,9 @@ class Helpers {
 		if($reply_to == null) {
 			self::importNoteAttachment($activity, $status);
 		} else {
+			if(isset($activity['attachment']) && !empty($activity['attachment'])) {
+				self::importNoteAttachment($activity, $status);
+			}
 			StatusReplyPipeline::dispatch($status);
 		}
 
