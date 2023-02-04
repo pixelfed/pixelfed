@@ -674,7 +674,7 @@ class Helpers {
 			}
 			$blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
 			$license = isset($media['license']) ? License::nameToId($media['license']) : null;
-			$caption = $media['name'] ? Purify::clean($media['name']) : null;
+			$caption = isset($media['name']) ? Purify::clean($media['name']) : null;
 
 			$media = new Media();
 			$media->blurhash = $blurhash;
