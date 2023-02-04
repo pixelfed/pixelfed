@@ -93,6 +93,7 @@
 - Update ComposeController, fix validation issue ([80e6a5a9](https://github.com/pixelfed/pixelfed/commit/80e6a5a9))
 - Update reply view, fix visibility filtering ([d419af4b](https://github.com/pixelfed/pixelfed/commit/d419af4b))
 - Update AP helpers, ingest attachments in replies ([c504e643](https://github.com/pixelfed/pixelfed/commit/c504e643))
+- Update Media model, use cloud filesystem url if enabled instead of cdn_url to easily update S3 media urls ([e6bc57d7](https://github.com/pixelfed/pixelfed/commit/e6bc57d7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
