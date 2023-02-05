@@ -68,6 +68,7 @@ use App\Services\{
 	LikeService,
 	NetworkTimelineService,
 	NotificationService,
+	MediaService,
 	MediaPathService,
     ProfileStatusService,
 	PublicTimelineService,
@@ -90,6 +91,8 @@ use App\Services\MarkerService;
 use App\Models\Conversation;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
+use Illuminate\Support\Facades\RateLimiter;
+use Purify;
 
 class ApiV1Controller extends Controller
 {
@@ -1446,13 +1449,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+			'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
@@ -1582,15 +1588,33 @@ class ApiV1Controller extends Controller
 		$user = $request->user();
 
 		$media = Media::whereUserId($user->id)
-			->whereNull('status_id')
+			->whereProfileId($user->profile_id)
 			->findOrFail($id);
 
-		$media->caption = $request->input('description');
-		$media->save();
+		$executed = RateLimiter::attempt(
+			'media:update:'.$user->id,
+			10,
+			function() use($media, $request) {
+				$caption = Purify::clean($request->input('description'));
 
-		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return $this->json($res);
+				if($caption != $media->caption) {
+					$media->caption = $caption;
+					$media->save();
+
+					if($media->status_id) {
+						MediaService::del($media->status_id);
+						StatusService::del($media->status_id);
+					}
+				}
+		});
+
+		if(!$executed) {
+			return response()->json([
+				'error' => 'Too many attempts. Try again in a few minutes.'
+			], 429);
+		};
+
+		return $this->json(MediaService::get($media->status_id));
 	}
 
 	/**
@@ -1626,13 +1650,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+		  	'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
@@ -2793,9 +2820,7 @@ class ApiV1Controller extends Controller
 			'visibility' => 'public'
 		]);
 
-		if($share->wasRecentlyCreated == true) {
-			SharePipeline::dispatch($share);
-		}
+		SharePipeline::dispatch($share)->onQueue('low');
 
 		StatusService::del($status->id);
 		ReblogService::add($user->profile_id, $status->id);
@@ -2837,7 +2862,7 @@ class ApiV1Controller extends Controller
 			return $this->json($res);
 		}
 
-		UndoSharePipeline::dispatch($reblog);
+		UndoSharePipeline::dispatch($reblog)->onQueue('low');
 		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
@@ -2935,24 +2960,20 @@ class ApiV1Controller extends Controller
 		$dir = $min_id ? '>' : '<';
 		$id = $min_id ?? $max_id;
 
-		if($id) {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->where('status_id', $dir, $id)
-				->limit($limit)
-				->pluck('status_id');
-		} else {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->latest()
-				->limit($limit)
-				->pluck('status_id');
-		}
+		$bookmarks = Bookmark::whereProfileId($pid)
+			->when($id, function($id, $query) use($dir) {
+				return $query->where('status_id', $dir, $id);
+			})
+			->limit($limit)
+			->pluck('status_id')
+			->map(function($id) {
+				return \App\Services\StatusService::getMastodon($id);
+			})
+			->filter()
+			->values()
+			->toArray();
 
-		$res = [];
-		foreach($bookmarks as $id) {
-			$res[] = \App\Services\StatusService::getMastodon($id);
-		}
-
-		return $this->json($res);
+		return $this->json($bookmarks);
 	}
 
 	/**

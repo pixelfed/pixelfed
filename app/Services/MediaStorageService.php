@@ -176,7 +176,7 @@ class MediaStorageService {
 		$file = $disk->putFileAs($base, new File($tmpName), $path, 'public');
 		$permalink = $disk->url($file);
 
-		$media->media_path = $base . $path;
+		$media->media_path = $file;
 		$media->cdn_url = $permalink;
 		$media->original_sha256 = $hash;
 		$media->replicated_at = now();

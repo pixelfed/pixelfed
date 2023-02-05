@@ -16,6 +16,8 @@ class Mention extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $guarded = [];
+
     public function profile()
     {
         return $this->belongsTo(Profile::class, 'profile_id', 'id');

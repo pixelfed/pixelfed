@@ -33,35 +33,39 @@ class UndoSharePipeline implements ShouldQueue
 	{
 		$status = $this->status;
 		$actor = $status->profile;
-		$parent = $status->parent();
-		$target = $status->parent()->profile;
+		$parent = Status::find($status->reblog_of_id);
 
-		ReblogService::removePostReblog($parent->id, $status->id);
+		if($parent) {
+			$target = $parent->profile_id;
+			ReblogService::removePostReblog($parent->profile_id, $status->id);
 
-		if ($status->uri !== null) {
+			if($parent->reblogs_count > 0) {
+				$parent->reblogs_count = $parent->reblogs_count - 1;
+				$parent->save();
+				StatusService::del($parent->id);
+			}
+
+			$notification = Notification::whereProfileId($target)
+				->whereActorId($status->profile_id)
+				->whereAction('share')
+				->whereItemId($status->reblog_of_id)
+				->whereItemType('App\Status')
+				->first();
+
+			if($notification) {
+				$notification->forceDelete();
+			}
+		}
+
+		if ($status->uri != null) {
 			return;
 		}
 
-		if($target->domain === null) {
-			Notification::whereProfileId($target->id)
-			->whereActorId($status->profile_id)
-			->whereAction('share')
-			->whereItemId($status->reblog_of_id)
-			->whereItemType('App\Status')
-			->delete();
+		if(config_cache('federation.activitypub.enabled') == false) {
+			return $status->delete();
+		} else {
+			return $this->remoteAnnounceDeliver();
 		}
-
-		$this->remoteAnnounceDeliver();
-
-		if($parent->reblogs_count > 0) {
-			$parent->reblogs_count = $parent->reblogs_count - 1;
-			$parent->save();
-			StatusService::del($parent->id);
-		}
-
-		$status->forceDelete();
-
-		return 1;
 	}
 
 	public function remoteAnnounceDeliver()
@@ -90,13 +94,15 @@ class UndoSharePipeline implements ShouldQueue
 			'timeout'  => config('federation.activitypub.delivery.timeout')
 		]);
 
-		$requests = function($audience) use ($client, $activity, $profile, $payload) {
+		$version = config('pixelfed.version');
+		$appUrl = config('app.url');
+		$userAgent = "(Pixelfed/{$version}; +{$appUrl})";
+
+		$requests = function($audience) use ($client, $activity, $profile, $payload, $userAgent) {
 			foreach($audience as $url) {
-				$version = config('pixelfed.version');
-				$appUrl = config('app.url');
 				$headers = HttpSignature::sign($profile, $url, $activity, [
 					'Content-Type'	=> 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"',
-					'User-Agent'	=> "(Pixelfed/{$version}; +{$appUrl})",
+					'User-Agent'	=> $userAgent,
 				]);
 				yield function() use ($client, $url, $headers, $payload) {
 					return $client->postAsync($url, [
@@ -122,5 +128,8 @@ class UndoSharePipeline implements ShouldQueue
 
 		$promise->wait();
 
+		$status->delete();
+
+		return 1;
 	}
 }
