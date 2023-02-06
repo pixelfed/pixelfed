@@ -38,7 +38,8 @@ class Media extends Model
     public function url()
     {
         if($this->cdn_url) {
-            return Storage::disk(config('filesystems.cloud'))->url($this->media_path);
+            // return Storage::disk(config('filesystems.cloud'))->url($this->media_path);
+            return $this->cdn_url;
         }
 
         if($this->remote_media && $this->remote_url) {
