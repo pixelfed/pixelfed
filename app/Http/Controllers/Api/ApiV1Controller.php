@@ -1972,6 +1972,11 @@ class ApiV1Controller extends Controller
 			return $following->push($pid)->toArray();
 		});
 
+		$includeReplies = false;
+		if(config('exp.top')) {
+            $includeReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
+        }
+
 		if(config('instance.timeline.home.cached') && (!$min && !$max)) {
             $ttl = config('instance.timeline.home.cache_ttl');
             $res = Cache::remember(
@@ -1980,7 +1985,8 @@ class ApiV1Controller extends Controller
                 function() use(
                 $following,
                 $limit,
-                $pid
+                $pid,
+                $includeReplies
                 ) {
                 return Status::select(
                     'id',
@@ -2002,6 +2008,11 @@ class ApiV1Controller extends Controller
                     'created_at',
                     'updated_at'
                   )
+                  ->when($includeReplies, function($q, $includeReplies) {
+                    return $q;
+                  }, function($q, $includeReplies) {
+                    return $q->whereNull('in_reply_to_id');
+                  })
                   ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                   ->whereIn('profile_id', $following)
                   ->whereIn('visibility',['public', 'unlisted', 'private'])
@@ -2053,6 +2064,11 @@ class ApiV1Controller extends Controller
 			)
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->where('id', $dir, $id)
+            ->when($includeReplies, function($q, $includeReplies) {
+                return $q;
+            }, function($q, $includeReplies) {
+                return $q->whereNull('in_reply_to_id');
+            })
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->latest()
