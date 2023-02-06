@@ -2008,9 +2008,7 @@ class ApiV1Controller extends Controller
                     'created_at',
                     'updated_at'
                   )
-                  ->when($includeReplies, function($q, $includeReplies) {
-                    return $q;
-                  }, function($q, $includeReplies) {
+                  ->when(!$includeReplies, function($q, $includeReplies) {
                     return $q->whereNull('in_reply_to_id');
                   })
                   ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
@@ -2064,9 +2062,7 @@ class ApiV1Controller extends Controller
 			)
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->where('id', $dir, $id)
-            ->when($includeReplies, function($q, $includeReplies) {
-                return $q;
-            }, function($q, $includeReplies) {
+            ->when(!$includeReplies, function($q, $includeReplies) {
                 return $q->whereNull('in_reply_to_id');
             })
 			->whereIn('profile_id', $following)
@@ -2099,6 +2095,9 @@ class ApiV1Controller extends Controller
 				'visibility',
 				'created_at'
 			)
+            ->when(!$includeReplies, function($q, $includeReplies) {
+                return $q->whereNull('in_reply_to_id');
+            })
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
@@ -2977,7 +2976,7 @@ class ApiV1Controller extends Controller
 		$id = $min_id ?? $max_id;
 
 		$bookmarks = Bookmark::whereProfileId($pid)
-			->when($id, function($id, $query) use($dir) {
+			->when($id, function($query, $id) use($dir) {
 				return $query->where('status_id', $dir, $id);
 			})
 			->limit($limit)
