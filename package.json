@@ -35,6 +35,7 @@
 	"dependencies": {
 		"@fancyapps/fancybox": "^3.5.7",
 		"@trevoreyre/autocomplete-vue": "^2.2.0",
+		"@web3-storage/parse-link-header": "^3.1.0",
 		"animate.css": "^4.1.0",
 		"bigpicture": "^2.6.2",
 		"blurhash": "^1.1.3",
