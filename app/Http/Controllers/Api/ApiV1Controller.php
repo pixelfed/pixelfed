@@ -622,7 +622,7 @@ class ApiV1Controller extends Controller
             try {
                 $status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
             } catch (\Exception $e) {
-                $status = false;
+                return false;
             }
 
 			if($profile) {
