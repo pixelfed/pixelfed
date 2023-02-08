@@ -619,13 +619,20 @@ class ApiV1Controller extends Controller
 		->orderByDesc('id')
 		->get()
 		->map(function($s) use($user, $napi, $profile) {
-			$status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
+            try {
+                $status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
+            } catch (\Exception $e) {
+                $status = false;
+            }
+
 			if($profile) {
 				$status['account'] = $profile;
 			}
 
 			if($user && $status) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
 			}
 			return $status;
 		})
@@ -2975,20 +2982,36 @@ class ApiV1Controller extends Controller
 		$dir = $min_id ? '>' : '<';
 		$id = $min_id ?? $max_id;
 
-		$bookmarks = Bookmark::whereProfileId($pid)
-			->when($id, function($query, $id) use($dir) {
-				return $query->where('status_id', $dir, $id);
-			})
-			->limit($limit)
-			->pluck('status_id')
-			->map(function($id) {
-				return \App\Services\StatusService::getMastodon($id);
+		$bookmarkQuery = Bookmark::whereProfileId($pid)
+            ->orderByDesc('id')
+            ->cursorPaginate($limit);
+
+        $bookmarks = $bookmarkQuery->map(function($bookmark) {
+				return \App\Services\StatusService::getMastodon($bookmark->status_id);
 			})
 			->filter()
 			->values()
 			->toArray();
 
-		return $this->json($bookmarks);
+        $links = null;
+        $headers = [];
+
+        if($bookmarkQuery->nextCursor()) {
+            $links .= '<'.$bookmarkQuery->nextPageUrl().'&limit='.$limit.'>; rel="next"';
+        }
+
+        if($bookmarkQuery->previousCursor()) {
+            if($links != null) {
+                $links .= ', ';
+            }
+            $links .= '<'.$bookmarkQuery->previousPageUrl().'&limit='.$limit.'>; rel="prev"';
+        }
+
+        if($links) {
+            $headers = ['Link' => $links];
+        }
+
+		return $this->json($bookmarks, 200, $headers);
 	}
 
 	/**
