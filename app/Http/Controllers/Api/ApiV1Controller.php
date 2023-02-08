@@ -2471,15 +2471,21 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'page'  => 'nullable|integer|min:1|max:40',
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$limit = $request->input('limit') ?? 40;
+		$limit = $request->input('limit') ?? 10;
 		$user = $request->user();
 		$status = Status::findOrFail($id);
+		$author = intval($status->profile_id) === intval($user->profile_id) || $user->is_admin;
 
-		if(intval($status->profile_id) !== intval($user->profile_id)) {
+		abort_if(
+			!$status->type ||
+			!in_array($status->type, ['photo','photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+			404,
+		);
+
+		if(!$author) {
 			if($status->scope == 'private') {
 				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
@@ -2487,35 +2493,41 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		$page = $request->input('page', 1);
-		$start = $page == 1 ? 0 : (($page * $limit) - $limit);
-		$end = $start + $limit - 1;
+		$res = Status::where('reblog_of_id', $status->id)
+		->orderByDesc('id')
+		->cursorPaginate($limit)
+		->withQueryString();
 
-		$ids = ReblogService::getPostReblogs($id, $start, $end);
-		if(empty($ids)) {
-			return [];
+		if(!$res) {
+			return $this->json([]);
 		}
 
-		$res = collect($ids)
-			->map(function($id) {
-				$status = StatusService::get($id);
-				if($status) {
-					return AccountService::get($status['account']['id']);
+		$headers = [];
+		if($author && $res->hasPages()) {
+			$links = '';
+			if($res->previousPageUrl()) {
+				$links = '<' . $res->previousPageUrl() .'>; rel="prev"';
+			}
+
+			if($res->nextPageUrl()) {
+				if(!empty($links)) {
+					$links .= ', ';
 				}
-				return;
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values();
+				$links .= '<' . $res->nextPageUrl() .'>; rel="next"';
+			}
 
-		$url = $request->url();
-		$page = $request->input('page', 1);
-		$next = $page < 40 ? $page + 1 : 40;
-		$prev = $page > 1 ? $page - 1 : 1;
-		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+			$headers = ['Link' => $links];
+		}
 
-		return $this->json($res, 200, ['Link' => $links]);
+		$res = $res->map(function($status) {
+			return AccountService::get($status->profile_id);
+		})
+		->filter(function($account) {
+			return $account && isset($account['id']);
+		})
+		->values();
+
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
@@ -2530,58 +2542,69 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'page'  => 'nullable|integer|min:1|max:40',
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$page = $request->input('page', 1);
-		$limit = $request->input('limit') ?? 40;
+		$limit = $request->input('limit') ?? 10;
 		$user = $request->user();
 		$status = Status::findOrFail($id);
-		$offset = $page == 1 ? 0 : ($page * $limit - $limit);
-		if($offset > 100) {
-			if($user->profile_id != $status->profile_id) {
-				return [];
-			}
-		}
+		$author = intval($status->profile_id) === intval($user->profile_id) || $user->is_admin;
 
-		if(intval($status->profile_id) !== intval($user->profile_id)) {
+		abort_if(
+			!$status->type ||
+			!in_array($status->type, ['photo','photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+			404,
+		);
+
+		if(!$author) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
+
+			if($request->has('cursor')) {
+				return $this->json([]);
+			}
 		}
 
-		$res = DB::table('likes')
-			->select('likes.id', 'likes.profile_id', 'likes.status_id', 'followers.created_at')
-			->leftJoin('followers', function($join) use($user, $status) {
-				return $join->on('likes.profile_id', '=', 'followers.following_id')
-					->where('followers.profile_id', $user->profile_id)
-					->where('likes.status_id', $status->id);
-			})
-			->whereStatusId($status->id)
-			->orderByDesc('followers.created_at')
-			->offset($offset)
-			->limit($limit)
-			->get()
-			->map(function($like) {
-				$account = AccountService::getMastodon($like->profile_id, true);
-				$account['follows'] = isset($like->created_at);
-				return $account;
-			})
-			->filter(function($account) use($user) {
-				return $account && isset($account['id']);
-			})
-			->values();
+		$res = Like::where('status_id', $status->id)
+		->orderByDesc('id')
+		->cursorPaginate($limit)
+		->withQueryString();
 
-		$url = $request->url();
-		$page = $request->input('page', 1);
-		$next = $page < 40 ? $page + 1 : 40;
-		$prev = $page > 1 ? $page - 1 : 1;
-		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+		if(!$res) {
+			return $this->json([]);
+		}
 
-		return $this->json($res, 200, ['Link' => $links]);
+		$headers = [];
+		if($author && $res->hasPages()) {
+			$links = '';
+			if($res->previousPageUrl()) {
+				$links = '<' . $res->previousPageUrl() .'>; rel="prev"';
+			}
+
+			if($res->nextPageUrl()) {
+				if(!empty($links)) {
+					$links .= ', ';
+				}
+				$links .= '<' . $res->nextPageUrl() .'>; rel="next"';
+			}
+
+			$headers = ['Link' => $links];
+		}
+
+		$res = $res->map(function($like) {
+			$account = AccountService::getMastodon($like->profile_id, true);
+			$account['follows'] = isset($like->created_at);
+			return $account;
+		})
+		->filter(function($account) use($user) {
+			return $account && isset($account['id']);
+		})
+		->values();
+
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
