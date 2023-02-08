@@ -2519,8 +2519,13 @@ class ApiV1Controller extends Controller
 			$headers = ['Link' => $links];
 		}
 
-		$res = $res->map(function($status) {
-			return AccountService::get($status->profile_id);
+		$res = $res->map(function($status) use($user) {
+			$account = AccountService::getMastodon($status->profile_id, true);
+			if(!$account) {
+				return false;
+			}
+			$account['follows'] = $status->profile_id == $user->profile_id ? null : FollowerService::follows($user->profile_id, $status->profile_id);
+			return $account;
 		})
 		->filter(function($account) {
 			return $account && isset($account['id']);
@@ -2594,9 +2599,12 @@ class ApiV1Controller extends Controller
 			$headers = ['Link' => $links];
 		}
 
-		$res = $res->map(function($like) {
+		$res = $res->map(function($like) use($user) {
 			$account = AccountService::getMastodon($like->profile_id, true);
-			$account['follows'] = isset($like->created_at);
+			if(!$account) {
+				return false;
+			}
+			$account['follows'] = $like->profile_id == $user->profile_id ? null : FollowerService::follows($user->profile_id, $like->profile_id);
 			return $account;
 		})
 		->filter(function($account) use($user) {
