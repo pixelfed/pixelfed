@@ -2376,6 +2376,7 @@ class ApiV1Controller extends Controller
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
 		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
+		$res['bookmarked'] = BookmarkService::get($user->profile_id, $res['id']);
 
 		return $this->json($res);
 	}
@@ -3064,7 +3065,10 @@ class ApiV1Controller extends Controller
 			'status_id' => $status->id,
 			'profile_id' => $request->user()->profile_id
 		]);
+
+		BookmarkService::add($request->user()->profile_id, $status->id);
 		$res = StatusService::getMastodon($status->id);
+		$res['bookmarked'] = true;
 
 		return $this->json($res);
 	}
@@ -3086,9 +3090,14 @@ class ApiV1Controller extends Controller
 
 		$bookmark = Bookmark::whereStatusId($status->id)
 			->whereProfileId($request->user()->profile_id)
-			->firstOrFail();
-		$bookmark->delete();
+			->first();
+
+		if($bookmark) {
+			BookmarkService::del($request->user()->profile_id, $status->id);
+			$bookmark->delete();
+		}
 		$res = StatusService::getMastodon($status->id);
+		$res['bookmarked'] = false;
 
 		return $this->json($res);
 	}
