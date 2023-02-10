@@ -71,7 +71,7 @@
 				</button>
 
 				<button
-					v-if="status.visibility === 'public'"
+					v-if="!status.in_reply_to_id && !status.reblog_of_id"
 					type="button"
 					class="btn btn-light font-weight-bold rounded-pill ml-3"
 					:disabled="isBookmarking"
