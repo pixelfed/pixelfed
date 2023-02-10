@@ -2335,7 +2335,7 @@ class ApiV1Controller extends Controller
 				return $res;
 			})
 			->filter(function($dm) {
-				return isset($dm['accounts']) && count($dm['accounts']);
+				return isset($dm['accounts']) && count($dm['accounts']) && !empty($dm['last_status']);
 			})
 			->unique(function($item, $key) {
 				return $item['accounts'][0]['id'];
@@ -2376,6 +2376,7 @@ class ApiV1Controller extends Controller
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
 		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
+		$res['bookmarked'] = BookmarkService::get($user->profile_id, $res['id']);
 
 		return $this->json($res);
 	}
@@ -3004,6 +3005,7 @@ class ApiV1Controller extends Controller
 			'min_id' => 'nullable|integer|min:0'
 		]);
 
+		$pe = $request->has('_pe');
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit') ?? 20;
 		$max_id = $request->input('max_id');
@@ -3017,8 +3019,15 @@ class ApiV1Controller extends Controller
             ->orderByDesc('id')
             ->cursorPaginate($limit);
 
-        $bookmarks = $bookmarkQuery->map(function($bookmark) {
-				return \App\Services\StatusService::getMastodon($bookmark->status_id);
+        $bookmarks = $bookmarkQuery->map(function($bookmark) use($pid, $pe) {
+				$status = $pe ? StatusService::get($bookmark->status_id, false) : StatusService::getMastodon($bookmark->status_id, false);
+
+				if($status) {
+					$status['bookmarked'] = true;
+					$status['favourited'] = LikeService::liked($pid, $status['id']);
+					$status['reblogged'] = ReblogService::get($pid, $status['id']);
+				}
+				return $status;
 			})
 			->filter()
 			->values()
@@ -3056,15 +3065,30 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$status = Status::whereNull('uri')
-			->whereScope('public')
-			->findOrFail($id);
+		$status = Status::findOrFail($id);
+		$pid = $request->user()->profile_id;
+
+		abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
+		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+		abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
+
+		if($status->scope == 'private') {
+			abort_if(
+				$pid !== $status->profile_id && !FollowerService::follows($pid, $status->profile_id),
+				404,
+				'Error: You cannot bookmark private posts from accounts you do not follow.'
+			);
+		}
 
 		Bookmark::firstOrCreate([
 			'status_id' => $status->id,
-			'profile_id' => $request->user()->profile_id
+			'profile_id' => $pid
 		]);
-		$res = StatusService::getMastodon($status->id);
+
+		BookmarkService::add($pid, $status->id);
+
+		$res = StatusService::getMastodon($status->id, false);
+		$res['bookmarked'] = true;
 
 		return $this->json($res);
 	}
@@ -3080,15 +3104,23 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$status = Status::whereNull('uri')
-			->whereScope('public')
-			->findOrFail($id);
+		$status = Status::findOrFail($id);
+		$pid = $request->user()->profile_id;
+
+		abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
+		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+		abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
 
 		$bookmark = Bookmark::whereStatusId($status->id)
-			->whereProfileId($request->user()->profile_id)
-			->firstOrFail();
-		$bookmark->delete();
-		$res = StatusService::getMastodon($status->id);
+			->whereProfileId($pid)
+			->first();
+
+		if($bookmark) {
+			BookmarkService::del($pid, $status->id);
+			$bookmark->delete();
+		}
+		$res = StatusService::getMastodon($status->id, false);
+		$res['bookmarked'] = false;
 
 		return $this->json($res);
 	}
