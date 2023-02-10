@@ -104,6 +104,11 @@
 - Update notifications component, improve UX with exponential retry and loading state ([937e6d07](https://github.com/pixelfed/pixelfed/commit/937e6d07))
 - Update likeModal and shareModal components, use new pagination logic and re-add Follow/Unfollow buttons ([b565ead6](https://github.com/pixelfed/pixelfed/commit/b565ead6))
 - Update profileFeed component, fix pagination ([7cf41628](https://github.com/pixelfed/pixelfed/commit/7cf41628))
+- Update ApiV1Controller, add BookmarkService logic to bookmark endpoints ([29b1af10](https://github.com/pixelfed/pixelfed/commit/29b1af10))
+- Update ApiV1Controller, filter conversations without last_status ([e8a6a8c7](https://github.com/pixelfed/pixelfed/commit/e8a6a8c7))
+- Update ApiV1Controller and BookmarkController, fix api differences and allow unbookmarking regardless of relationship ([e343061a](https://github.com/pixelfed/pixelfed/commit/e343061a))
+- Update ApiV1Controller, add pixelfed entity support to bookmarks endpoint ([94069db9](https://github.com/pixelfed/pixelfed/commit/94069db9))
+- Update PostReactions, reduce bookmark timeout to 2s from 5s ([a8094e6c](https://github.com/pixelfed/pixelfed/commit/a8094e6c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
