@@ -2335,7 +2335,7 @@ class ApiV1Controller extends Controller
 				return $res;
 			})
 			->filter(function($dm) {
-				return isset($dm['accounts']) && count($dm['accounts']);
+				return isset($dm['accounts']) && count($dm['accounts']) && !empty($dm['last_status']);
 			})
 			->unique(function($item, $key) {
 				return $item['accounts'][0]['id'];
