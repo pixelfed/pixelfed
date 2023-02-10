@@ -3005,6 +3005,7 @@ class ApiV1Controller extends Controller
 			'min_id' => 'nullable|integer|min:0'
 		]);
 
+		$pe = $request->has('_pe');
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit') ?? 20;
 		$max_id = $request->input('max_id');
@@ -3018,8 +3019,8 @@ class ApiV1Controller extends Controller
             ->orderByDesc('id')
             ->cursorPaginate($limit);
 
-        $bookmarks = $bookmarkQuery->map(function($bookmark) use($pid) {
-				$status = StatusService::getMastodon($bookmark->status_id, false);
+        $bookmarks = $bookmarkQuery->map(function($bookmark) use($pid, $pe) {
+				$status = $pe ? StatusService::get($bookmark->status_id, false) : StatusService::getMastodon($bookmark->status_id, false);
 
 				if($status) {
 					$status['bookmarked'] = true;
