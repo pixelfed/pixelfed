@@ -472,9 +472,9 @@ class PublicApiController extends Controller
         // $types = ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'text'];
 
         $textOnlyReplies = false;
-        $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
 
         if(config('exp.top')) {
+            $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
             $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
 
             if($textOnlyPosts) {
