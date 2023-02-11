@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: "0 0 * * 0"
 
+permissions:
+  packages: write
+
 jobs:
   sync_with_upstream:
     runs-on: ubuntu-latest
