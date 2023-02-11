@@ -21,7 +21,7 @@ jobs:
         git remote add upstream https://github.com/pixelfed/pixelfed.git
 
         git fetch upstream
-        git merge origin/dev
+        git merge upstream/dev
         git log -n 3 --oneline
 
     - name: setup qemu
