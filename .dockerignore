@@ -1,8 +1,15 @@
-data
-Dockerfile
-contrib/docker/Dockerfile.*
-docker-compose*.yml
+# Ignore all markdown files
+*.md
+
+# And these files and folders
+.circleci
+.ddev
 .dockerignore
-.git
-.gitignore
-.env
+.editorconfig
+.env*
+.git*
+.node-version
+contrib/docker/Dockerfile.*
+data
+docker-compose*.yml
+LICENSE
