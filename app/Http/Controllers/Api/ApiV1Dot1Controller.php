@@ -11,9 +11,11 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\AccountLog;
 use App\EmailVerification;
+use App\Place;
 use App\Status;
 use App\Report;
 use App\Profile;
+use App\StatusArchived;
 use App\User;
 use App\Services\AccountService;
 use App\Services\StatusService;
@@ -26,6 +28,7 @@ use Jenssegers\Agent\Agent;
 use Mail;
 use App\Mail\PasswordChange;
 use App\Mail\ConfirmAppEmail;
+use App\Http\Resources\StatusStateless;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -547,17 +550,119 @@ class ApiV1Dot1Controller extends Controller
             return response()->json(['error' => 'Invalid tokens'], 403);
         }
 
+        if($verify->created_at->lt(now()->subHours(24))) {
+            $verify->delete();
+            return response()->json(['error' => 'Invalid tokens'], 403);
+        }
+
         $user = User::findOrFail($verify->user_id);
         $user->email_verified_at = now();
         $user->last_active_at = now();
         $user->save();
-
-        $verify->delete();
 
         $token = $user->createToken('Pixelfed');
 
         return response()->json([
             'access_token' => $token->accessToken
         ]);
+    }
+
+    public function archive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope === 'archived') {
+            return [200];
+        }
+
+        $archive = new StatusArchived;
+        $archive->status_id = $status->id;
+        $archive->profile_id = $status->profile_id;
+        $archive->original_scope = $status->scope;
+        $archive->save();
+
+        $status->scope = 'archived';
+        $status->visibility = 'draft';
+        $status->save();
+        StatusService::del($status->id, true);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+
+    public function unarchive(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+
+        $status = Status::whereNull('in_reply_to_id')
+            ->whereNull('reblog_of_id')
+            ->whereProfileId($request->user()->profile_id)
+            ->findOrFail($id);
+
+        if($status->scope !== 'archived') {
+            return [200];
+        }
+
+        $archive = StatusArchived::whereStatusId($status->id)
+            ->whereProfileId($status->profile_id)
+            ->firstOrFail();
+
+        $status->scope = $archive->original_scope;
+        $status->visibility = $archive->original_scope;
+        $status->save();
+        $archive->delete();
+        StatusService::del($status->id, true);
+        AccountService::syncPostCount($status->profile_id);
+
+        return [200];
+    }
+
+    public function archivedPosts(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+
+        $statuses = Status::whereProfileId($request->user()->profile_id)
+            ->whereScope('archived')
+            ->orderByDesc('id')
+            ->cursorPaginate(10);
+
+        return StatusStateless::collection($statuses);
+    }
+
+    public function placesById(Request $request, $id, $slug)
+    {
+        abort_if(!$request->user(), 403);
+
+        $place = Place::whereSlug($slug)->findOrFail($id);
+
+        $posts = Cache::remember('pf-api:v1.1:places-by-id:' . $place->id, 3600, function() use($place) {
+            return Status::wherePlaceId($place->id)
+                ->whereNull('uri')
+                ->whereScope('public')
+                ->orderByDesc('created_at')
+                ->limit(60)
+                ->pluck('id');
+        });
+
+        $posts = $posts->map(function($id) {
+            return StatusService::get($id);
+        })
+        ->filter()
+        ->values();
+
+        return ['place' => [
+            'id' => $place->id,
+            'name' => $place->name,
+            'slug' => $place->slug,
+            'country' => $place->country,
+            'lat' => $place->lat,
+            'long' => $place->long
+        ], 'posts' => $posts];
     }
 }

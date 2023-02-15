@@ -5,10 +5,16 @@
 <div class="container reply-container">
   <div class="col-12 col-md-8 offset-md-2 mt-4">
       <div class="card shadow-none border">
+        @php($authed = request()->user())
+        @php($pid = $authed ? request()->user()->profile_id : null)
         @php($gp = $status->parent()->parent())
         @if($gp)
         <div class="card-body p-0 m-0 bg-light border-bottom">
-        	@if($gp->scope == 'archived')
+        	@if(
+                !in_array($gp->scope, ['public', 'unlisted', 'private']) ||
+                ($gp->scope == 'private' && !$authed) ||
+                ($gp->scope == 'private' && ($gp->profile_id != $pid && \App\Services\FollowerService::follows($pid, $gp->profile_id) == false))
+            )
         		<p class="text-center mb-0 py-5 font-weight-bold">This status cannot be viewed at this time.</p>
         	@else
           <div class="d-flex p-0 m-0 align-items-center">
@@ -41,8 +47,11 @@
 
         @php($parent = $status->parent())
         <div class="card-body p-0 m-0 bg-light border-bottom">
-
-        	@if($parent->scope == 'archived')
+            @if(
+                !in_array($parent->scope, ['public', 'unlisted', 'private']) ||
+                ($parent->scope == 'private' && !$authed) ||
+                ($parent->scope == 'private' && ($parent->profile_id != $pid && \App\Services\FollowerService::follows($pid, $parent->profile_id) == false))
+            )
         		<p class="text-center mb-0 py-5 font-weight-bold">This status cannot be viewed at this time.</p>
         	@else
           <div class="d-flex p-0 m-0 align-items-center">

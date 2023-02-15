@@ -474,8 +474,8 @@ class PublicApiController extends Controller
         $textOnlyReplies = false;
 
         if(config('exp.top')) {
-            $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
             $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
+            $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
 
             if($textOnlyPosts) {
                 array_push($types, 'text');
@@ -587,7 +587,7 @@ class PublicApiController extends Controller
                         'updated_at'
                       )
                       ->whereIn('type', $types)
-                      ->when($textOnlyReplies != true, function($q, $textOnlyReplies) {
+                      ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
                         return $q->whereNull('in_reply_to_id');
                       })
                       ->where('id', $dir, $id)

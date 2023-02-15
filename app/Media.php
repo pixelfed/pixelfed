@@ -19,6 +19,8 @@ class Media extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $guarded = [];
+
     protected $casts = [
     	'srcset' => 'array'
     ];
@@ -36,6 +38,7 @@ class Media extends Model
     public function url()
     {
         if($this->cdn_url) {
+            // return Storage::disk(config('filesystems.cloud'))->url($this->media_path);
             return $this->cdn_url;
         }
 

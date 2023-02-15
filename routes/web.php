@@ -286,9 +286,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('compose/location/search', 'ApiController@composeLocationSearch');
 			Route::post('compose/tag/untagme', 'MediaTagController@untagProfile');
 		});
-		Route::group(['prefix' => 'admin'], function () {
-			Route::post('moderate', 'Api\AdminApiController@moderate');
-		});
 
 		Route::group(['prefix' => 'web/stories'], function () {
 			Route::get('v1/recent', 'StoryController@recent');

@@ -131,6 +131,16 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::post('lookup', 'DirectMessageController@composeLookup')->middleware($middleware);
 		});
 
+		Route::group(['prefix' => 'archive'], function () use($middleware) {
+			Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
+			Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
+			Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
+		});
+
+		Route::group(['prefix' => 'places'], function () use($middleware) {
+			Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
+		});
+
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
 			Route::get('recent', 'StoryController@recent')->middleware($middleware);
 		});
@@ -178,5 +188,24 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('config', 'LiveStreamController@getConfig');
 		Route::post('broadcast/publish', 'LiveStreamController@clientBroadcastPublish');
 		Route::post('broadcast/finish', 'LiveStreamController@clientBroadcastFinish');
+	});
+
+	Route::group(['prefix' => 'admin'], function() use($middleware) {
+		Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
+		Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
+
+		Route::get('autospam/list', 'Api\AdminApiController@autospam')->middleware($middleware);
+		Route::post('autospam/handle', 'Api\AdminApiController@autospamHandle')->middleware($middleware);
+		Route::get('mod-reports/list', 'Api\AdminApiController@modReports')->middleware($middleware);
+		Route::post('mod-reports/handle', 'Api\AdminApiController@modReportHandle')->middleware($middleware);
+		Route::get('config', 'Api\AdminApiController@getConfiguration')->middleware($middleware);
+		Route::post('config/update', 'Api\AdminApiController@updateConfiguration')->middleware($middleware);
+		Route::get('users/list', 'Api\AdminApiController@getUsers')->middleware($middleware);
+		Route::get('users/get', 'Api\AdminApiController@getUser')->middleware($middleware);
+		Route::post('users/action', 'Api\AdminApiController@userAdminAction')->middleware($middleware);
+		Route::get('instances/list', 'Api\AdminApiController@instances')->middleware($middleware);
+		Route::get('instances/get', 'Api\AdminApiController@getInstance')->middleware($middleware);
+		Route::post('instances/moderate', 'Api\AdminApiController@moderateInstance')->middleware($middleware);
+		Route::post('instances/refresh-stats', 'Api\AdminApiController@refreshInstanceStats')->middleware($middleware);
 	});
 });

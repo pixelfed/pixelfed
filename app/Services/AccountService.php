@@ -71,6 +71,7 @@ class AccountService
 
 	public static function del($id)
 	{
+		Cache::forget('pf:activitypub:user-object:by-id:' . $id);
 		return Cache::forget(self::CACHE_KEY . $id);
 	}
 

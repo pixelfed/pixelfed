@@ -9,6 +9,7 @@ use App\Util\ActivityPub\Helpers;
 use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
 use Auth, Cache, DB, Storage, URL;
+use Illuminate\Support\Facades\Redis;
 use App\{
 	Avatar,
 	Bookmark,
@@ -68,6 +69,7 @@ use App\Services\{
 	LikeService,
 	NetworkTimelineService,
 	NotificationService,
+	MediaService,
 	MediaPathService,
     ProfileStatusService,
 	PublicTimelineService,
@@ -90,6 +92,8 @@ use App\Services\MarkerService;
 use App\Models\Conversation;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
+use Illuminate\Support\Facades\RateLimiter;
+use Purify;
 
 class ApiV1Controller extends Controller
 {
@@ -616,13 +620,20 @@ class ApiV1Controller extends Controller
 		->orderByDesc('id')
 		->get()
 		->map(function($s) use($user, $napi, $profile) {
-			$status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
+            try {
+                $status = $napi ? StatusService::get($s->id, false) : StatusService::getMastodon($s->id, false);
+            } catch (\Exception $e) {
+                return false;
+            }
+
 			if($profile) {
 				$status['account'] = $profile;
 			}
 
 			if($user && $status) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
+                $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
+                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
 			}
 			return $status;
 		})
@@ -1446,13 +1457,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+			'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
@@ -1582,15 +1596,33 @@ class ApiV1Controller extends Controller
 		$user = $request->user();
 
 		$media = Media::whereUserId($user->id)
-			->whereNull('status_id')
+			->whereProfileId($user->profile_id)
 			->findOrFail($id);
 
-		$media->caption = $request->input('description');
-		$media->save();
+		$executed = RateLimiter::attempt(
+			'media:update:'.$user->id,
+			10,
+			function() use($media, $request) {
+				$caption = Purify::clean($request->input('description'));
 
-		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
-		$res = $this->fractal->createData($resource)->toArray();
-		return $this->json($res);
+				if($caption != $media->caption) {
+					$media->caption = $caption;
+					$media->save();
+
+					if($media->status_id) {
+						MediaService::del($media->status_id);
+						StatusService::del($media->status_id);
+					}
+				}
+		});
+
+		if(!$executed) {
+			return response()->json([
+				'error' => 'Too many attempts. Try again in a few minutes.'
+			], 429);
+		};
+
+		return $this->json(MediaService::get($media->status_id));
 	}
 
 	/**
@@ -1626,13 +1658,16 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-		  'file.*'      => function() {
-			return [
-				'required',
+		  	'file.*' => [
+				'required_without:file',
 				'mimetypes:' . config_cache('pixelfed.media_types'),
 				'max:' . config_cache('pixelfed.max_photo_size'),
-			];
-		  },
+			],
+			'file' => [
+				'required_without:file.*',
+				'mimetypes:' . config_cache('pixelfed.media_types'),
+				'max:' . config_cache('pixelfed.max_photo_size'),
+			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
 		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
@@ -1945,6 +1980,11 @@ class ApiV1Controller extends Controller
 			return $following->push($pid)->toArray();
 		});
 
+		$includeReplies = false;
+		if(config('exp.top')) {
+            $includeReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
+        }
+
 		if(config('instance.timeline.home.cached') && (!$min && !$max)) {
             $ttl = config('instance.timeline.home.cache_ttl');
             $res = Cache::remember(
@@ -1953,7 +1993,8 @@ class ApiV1Controller extends Controller
                 function() use(
                 $following,
                 $limit,
-                $pid
+                $pid,
+                $includeReplies
                 ) {
                 return Status::select(
                     'id',
@@ -1975,6 +2016,9 @@ class ApiV1Controller extends Controller
                     'created_at',
                     'updated_at'
                   )
+                  ->when(!$includeReplies, function($q, $includeReplies) {
+                    return $q->whereNull('in_reply_to_id');
+                  })
                   ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                   ->whereIn('profile_id', $following)
                   ->whereIn('visibility',['public', 'unlisted', 'private'])
@@ -2026,6 +2070,9 @@ class ApiV1Controller extends Controller
 			)
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->where('id', $dir, $id)
+            ->when(!$includeReplies, function($q, $includeReplies) {
+                return $q->whereNull('in_reply_to_id');
+            })
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->latest()
@@ -2056,6 +2103,9 @@ class ApiV1Controller extends Controller
 				'visibility',
 				'created_at'
 			)
+            ->when(!$includeReplies, function($q, $includeReplies) {
+                return $q->whereNull('in_reply_to_id');
+            })
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
@@ -2286,7 +2336,7 @@ class ApiV1Controller extends Controller
 				return $res;
 			})
 			->filter(function($dm) {
-				return isset($dm['accounts']) && count($dm['accounts']);
+				return isset($dm['accounts']) && count($dm['accounts']) && !empty($dm['last_status']);
 			})
 			->unique(function($item, $key) {
 				return $item['accounts'][0]['id'];
@@ -2327,6 +2377,7 @@ class ApiV1Controller extends Controller
 
 		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
 		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
+		$res['bookmarked'] = BookmarkService::get($user->profile_id, $res['id']);
 
 		return $this->json($res);
 	}
@@ -2422,15 +2473,21 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'page'  => 'nullable|integer|min:1|max:40',
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$limit = $request->input('limit') ?? 40;
+		$limit = $request->input('limit') ?? 10;
 		$user = $request->user();
 		$status = Status::findOrFail($id);
+		$author = intval($status->profile_id) === intval($user->profile_id) || $user->is_admin;
 
-		if(intval($status->profile_id) !== intval($user->profile_id)) {
+		abort_if(
+			!$status->type ||
+			!in_array($status->type, ['photo','photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+			404,
+		);
+
+		if(!$author) {
 			if($status->scope == 'private') {
 				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
@@ -2438,35 +2495,46 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		$page = $request->input('page', 1);
-		$start = $page == 1 ? 0 : (($page * $limit) - $limit);
-		$end = $start + $limit - 1;
+		$res = Status::where('reblog_of_id', $status->id)
+		->orderByDesc('id')
+		->cursorPaginate($limit)
+		->withQueryString();
 
-		$ids = ReblogService::getPostReblogs($id, $start, $end);
-		if(empty($ids)) {
-			return [];
+		if(!$res) {
+			return $this->json([]);
 		}
 
-		$res = collect($ids)
-			->map(function($id) {
-				$status = StatusService::get($id);
-				if($status) {
-					return AccountService::get($status['account']['id']);
+		$headers = [];
+		if($author && $res->hasPages()) {
+			$links = '';
+			if($res->previousPageUrl()) {
+				$links = '<' . $res->previousPageUrl() .'>; rel="prev"';
+			}
+
+			if($res->nextPageUrl()) {
+				if(!empty($links)) {
+					$links .= ', ';
 				}
-				return;
-			})
-			->filter(function($account) {
-				return $account && isset($account['id']);
-			})
-			->values();
+				$links .= '<' . $res->nextPageUrl() .'>; rel="next"';
+			}
 
-		$url = $request->url();
-		$page = $request->input('page', 1);
-		$next = $page < 40 ? $page + 1 : 40;
-		$prev = $page > 1 ? $page - 1 : 1;
-		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+			$headers = ['Link' => $links];
+		}
 
-		return $this->json($res, 200, ['Link' => $links]);
+		$res = $res->map(function($status) use($user) {
+			$account = AccountService::getMastodon($status->profile_id, true);
+			if(!$account) {
+				return false;
+			}
+			$account['follows'] = $status->profile_id == $user->profile_id ? null : FollowerService::follows($user->profile_id, $status->profile_id);
+			return $account;
+		})
+		->filter(function($account) {
+			return $account && isset($account['id']);
+		})
+		->values();
+
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
@@ -2481,58 +2549,72 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'page'  => 'nullable|integer|min:1|max:40',
 			'limit' => 'nullable|integer|min:1|max:100'
 		]);
 
-		$page = $request->input('page', 1);
-		$limit = $request->input('limit') ?? 40;
+		$limit = $request->input('limit') ?? 10;
 		$user = $request->user();
 		$status = Status::findOrFail($id);
-		$offset = $page == 1 ? 0 : ($page * $limit - $limit);
-		if($offset > 100) {
-			if($user->profile_id != $status->profile_id) {
-				return [];
-			}
-		}
+		$author = intval($status->profile_id) === intval($user->profile_id) || $user->is_admin;
 
-		if(intval($status->profile_id) !== intval($user->profile_id)) {
+		abort_if(
+			!$status->type ||
+			!in_array($status->type, ['photo','photo:album', 'photo:video:album', 'reply', 'text', 'video', 'video:album']),
+			404,
+		);
+
+		if(!$author) {
 			if($status->scope == 'private') {
-				abort_if(!$status->profile->followedBy($user->profile), 403);
+				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
+
+			if($request->has('cursor')) {
+				return $this->json([]);
+			}
 		}
 
-		$res = DB::table('likes')
-			->select('likes.id', 'likes.profile_id', 'likes.status_id', 'followers.created_at')
-			->leftJoin('followers', function($join) use($user, $status) {
-				return $join->on('likes.profile_id', '=', 'followers.following_id')
-					->where('followers.profile_id', $user->profile_id)
-					->where('likes.status_id', $status->id);
-			})
-			->whereStatusId($status->id)
-			->orderByDesc('followers.created_at')
-			->offset($offset)
-			->limit($limit)
-			->get()
-			->map(function($like) {
-				$account = AccountService::getMastodon($like->profile_id, true);
-				$account['follows'] = isset($like->created_at);
-				return $account;
-			})
-			->filter(function($account) use($user) {
-				return $account && isset($account['id']);
-			})
-			->values();
+		$res = Like::where('status_id', $status->id)
+		->orderByDesc('id')
+		->cursorPaginate($limit)
+		->withQueryString();
 
-		$url = $request->url();
-		$page = $request->input('page', 1);
-		$next = $page < 40 ? $page + 1 : 40;
-		$prev = $page > 1 ? $page - 1 : 1;
-		$links = '<'.$url.'?page='.$next.'&limit='.$limit.'>; rel="next", <'.$url.'?page='.$prev.'&limit='.$limit.'>; rel="prev"';
+		if(!$res) {
+			return $this->json([]);
+		}
 
-		return $this->json($res, 200, ['Link' => $links]);
+		$headers = [];
+		if($author && $res->hasPages()) {
+			$links = '';
+			if($res->previousPageUrl()) {
+				$links = '<' . $res->previousPageUrl() .'>; rel="prev"';
+			}
+
+			if($res->nextPageUrl()) {
+				if(!empty($links)) {
+					$links .= ', ';
+				}
+				$links .= '<' . $res->nextPageUrl() .'>; rel="next"';
+			}
+
+			$headers = ['Link' => $links];
+		}
+
+		$res = $res->map(function($like) use($user) {
+			$account = AccountService::getMastodon($like->profile_id, true);
+			if(!$account) {
+				return false;
+			}
+			$account['follows'] = $like->profile_id == $user->profile_id ? null : FollowerService::follows($user->profile_id, $like->profile_id);
+			return $account;
+		})
+		->filter(function($account) use($user) {
+			return $account && isset($account['id']);
+		})
+		->values();
+
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
@@ -2793,9 +2875,7 @@ class ApiV1Controller extends Controller
 			'visibility' => 'public'
 		]);
 
-		if($share->wasRecentlyCreated == true) {
-			SharePipeline::dispatch($share);
-		}
+		SharePipeline::dispatch($share)->onQueue('low');
 
 		StatusService::del($status->id);
 		ReblogService::add($user->profile_id, $status->id);
@@ -2837,7 +2917,7 @@ class ApiV1Controller extends Controller
 			return $this->json($res);
 		}
 
-		UndoSharePipeline::dispatch($reblog);
+		UndoSharePipeline::dispatch($reblog)->onQueue('low');
 		ReblogService::del($user->profile_id, $status->id);
 
 		$res = StatusService::getMastodon($status->id);
@@ -2926,6 +3006,7 @@ class ApiV1Controller extends Controller
 			'min_id' => 'nullable|integer|min:0'
 		]);
 
+		$pe = $request->has('_pe');
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit') ?? 20;
 		$max_id = $request->input('max_id');
@@ -2935,24 +3016,43 @@ class ApiV1Controller extends Controller
 		$dir = $min_id ? '>' : '<';
 		$id = $min_id ?? $max_id;
 
-		if($id) {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->where('status_id', $dir, $id)
-				->limit($limit)
-				->pluck('status_id');
-		} else {
-			$bookmarks = Bookmark::whereProfileId($pid)
-				->latest()
-				->limit($limit)
-				->pluck('status_id');
-		}
+		$bookmarkQuery = Bookmark::whereProfileId($pid)
+            ->orderByDesc('id')
+            ->cursorPaginate($limit);
 
-		$res = [];
-		foreach($bookmarks as $id) {
-			$res[] = \App\Services\StatusService::getMastodon($id);
-		}
+        $bookmarks = $bookmarkQuery->map(function($bookmark) use($pid, $pe) {
+				$status = $pe ? StatusService::get($bookmark->status_id, false) : StatusService::getMastodon($bookmark->status_id, false);
 
-		return $this->json($res);
+				if($status) {
+					$status['bookmarked'] = true;
+					$status['favourited'] = LikeService::liked($pid, $status['id']);
+					$status['reblogged'] = ReblogService::get($pid, $status['id']);
+				}
+				return $status;
+			})
+			->filter()
+			->values()
+			->toArray();
+
+        $links = null;
+        $headers = [];
+
+        if($bookmarkQuery->nextCursor()) {
+            $links .= '<'.$bookmarkQuery->nextPageUrl().'&limit='.$limit.'>; rel="next"';
+        }
+
+        if($bookmarkQuery->previousCursor()) {
+            if($links != null) {
+                $links .= ', ';
+            }
+            $links .= '<'.$bookmarkQuery->previousPageUrl().'&limit='.$limit.'>; rel="prev"';
+        }
+
+        if($links) {
+            $headers = ['Link' => $links];
+        }
+
+		return $this->json($bookmarks, 200, $headers);
 	}
 
 	/**
@@ -2966,15 +3066,30 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$status = Status::whereNull('uri')
-			->whereScope('public')
-			->findOrFail($id);
+		$status = Status::findOrFail($id);
+		$pid = $request->user()->profile_id;
+
+		abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
+		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+		abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
+
+		if($status->scope == 'private') {
+			abort_if(
+				$pid !== $status->profile_id && !FollowerService::follows($pid, $status->profile_id),
+				404,
+				'Error: You cannot bookmark private posts from accounts you do not follow.'
+			);
+		}
 
 		Bookmark::firstOrCreate([
 			'status_id' => $status->id,
-			'profile_id' => $request->user()->profile_id
+			'profile_id' => $pid
 		]);
-		$res = StatusService::getMastodon($status->id);
+
+		BookmarkService::add($pid, $status->id);
+
+		$res = StatusService::getMastodon($status->id, false);
+		$res['bookmarked'] = true;
 
 		return $this->json($res);
 	}
@@ -2990,15 +3105,23 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$status = Status::whereNull('uri')
-			->whereScope('public')
-			->findOrFail($id);
+		$status = Status::findOrFail($id);
+		$pid = $request->user()->profile_id;
+
+		abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
+		abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
+		abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
 
 		$bookmark = Bookmark::whereStatusId($status->id)
-			->whereProfileId($request->user()->profile_id)
-			->firstOrFail();
-		$bookmark->delete();
-		$res = StatusService::getMastodon($status->id);
+			->whereProfileId($pid)
+			->first();
+
+		if($bookmark) {
+			BookmarkService::del($pid, $status->id);
+			$bookmark->delete();
+		}
+		$res = StatusService::getMastodon($status->id, false);
+		$res['bookmarked'] = false;
 
 		return $this->json($res);
 	}

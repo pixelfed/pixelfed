@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Services\StatusService;
 
 class MentionPipeline implements ShouldQueue
 {
@@ -59,17 +60,20 @@ class MentionPipeline implements ShouldQueue
             return true;
         }
 
-        try {
-            $notification = new Notification();
-            $notification->profile_id = $target;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'mention';
-            $notification->message = $mention->toText();
-            $notification->rendered = $mention->toHtml();
-            $notification->item_id = $status->id;
-            $notification->item_type = "App\Status";
-            $notification->save();
-        } catch (Exception $e) {
-        }
+        Notification::firstOrCreate(
+            [
+                'profile_id' => $target,
+                'actor_id' => $actor->id,
+                'action' => 'mention',
+                'item_type' => 'App\Status',
+                'item_id' => $status->id,
+            ],
+            [
+                'message' => $mention->toText(),
+                'rendered' => $mention->toHtml()
+            ]
+        );
+
+        StatusService::del($status->id);
     }
 }
