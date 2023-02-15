@@ -1,8 +1,17 @@
 root = true
 
 [*]
-indent_size = 4
-end_of_line = lf
 charset = utf-8
-trim_trailing_whitespace = true
+end_of_line = lf
+indent_size = 4
+indent_style = space
 insert_final_newline = true
+max_line_length = 80
+quote_style = single
+trim_trailing_whitespace = true
+
+[*.php]
+indent_style = tab
+
+[*.yml]
+indent_size = 2
