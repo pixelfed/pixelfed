@@ -42,7 +42,7 @@ services:
     networks:
       - external
       - internal
-    command: gosu www-data php artisan horizon
+    entrypoint: [ /var/www/contrib/docker/worker.apache.sh ]
     depends_on:
       - db
       - redis

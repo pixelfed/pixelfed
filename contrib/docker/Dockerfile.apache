@@ -97,4 +97,4 @@ RUN php artisan horizon:publish
 
 VOLUME /var/www/storage /var/www/bootstrap
 
-CMD ["/var/www/contrib/docker/start.apache.sh"]
+ENTRYPOINT ["/var/www/contrib/docker/start.apache.sh"]
