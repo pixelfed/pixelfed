@@ -28,6 +28,7 @@ return [
                  */
                 'exclude' => [
                     base_path('.git'),
+                    base_path('cache'),
                     base_path('vendor'),
                     base_path('node_modules'),
                 ],
