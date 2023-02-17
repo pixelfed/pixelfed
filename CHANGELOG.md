@@ -109,6 +109,8 @@
 - Update ApiV1Controller and BookmarkController, fix api differences and allow unbookmarking regardless of relationship ([e343061a](https://github.com/pixelfed/pixelfed/commit/e343061a))
 - Update ApiV1Controller, add pixelfed entity support to bookmarks endpoint ([94069db9](https://github.com/pixelfed/pixelfed/commit/94069db9))
 - Update PostReactions, reduce bookmark timeout to 2s from 5s ([a8094e6c](https://github.com/pixelfed/pixelfed/commit/a8094e6c))
+- Update CollectionController, fixes #3946 ([abd52f4d](https://github.com/pixelfed/pixelfed/commit/abd52f4d))
+- Update ComposeController, fix add to collection logic ([9f8957b9](https://github.com/pixelfed/pixelfed/commit/9f8957b9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
