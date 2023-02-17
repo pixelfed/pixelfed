@@ -41,6 +41,7 @@ use App\Jobs\VideoPipeline\{
 	VideoThumbnail
 };
 use App\Services\AccountService;
+use App\Services\CollectionService;
 use App\Services\NotificationService;
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
@@ -585,13 +586,24 @@ class ComposeController extends Controller
 			$collections = Collection::whereProfileId($profile->id)
 				->find($request->input('collections'))
 				->each(function($collection) use($status) {
+					$count = $collection->items()->count();
 					CollectionItem::firstOrCreate([
 						'collection_id' => $collection->id,
 						'object_type' => 'App\Status',
 						'object_id' => $status->id
 					], [
-						'order' => $collection->items()->count()
+						'order' => $count
 					]);
+
+					CollectionService::addItem(
+						$collection->id,
+						$status->id,
+						$count
+					);
+
+					$collection->updated_at = now();
+                    $collection->save();
+                    CollectionService::setCollection($collection->id, $collection);
 				});
 		}
 
