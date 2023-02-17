@@ -135,7 +135,6 @@ class CollectionController extends Controller
 
         $collection = Collection::whereProfileId($profileId)->findOrFail($collectionId);
         $count = $collection->items()->count();
-        CollectionService::deleteCollection($collection->id);
 
         if($count) {
             CollectionItem::whereCollectionId($collection->id)
