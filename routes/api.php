@@ -191,6 +191,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	});
 
 	Route::group(['prefix' => 'admin'], function() use($middleware) {
+		Route::post('moderate/post/{id}', 'Api\ApiV1Dot1Controller@moderatePost')->middleware($middleware);
 		Route::get('supported', 'Api\AdminApiController@supported')->middleware($middleware);
 		Route::get('stats', 'Api\AdminApiController@getStats')->middleware($middleware);
 
