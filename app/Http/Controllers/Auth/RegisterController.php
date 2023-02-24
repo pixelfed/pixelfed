@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use Purify;
 use App\Util\Lexer\RestrictedNames;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -157,7 +158,7 @@ class RegisterController extends Controller
 		}
 
 		return User::create([
-			'name'     => $data['name'],
+			'name'     => Purify::clean($data['name']),
 			'username' => $data['username'],
 			'email'    => $data['email'],
 			'password' => Hash::make($data['password']),
