@@ -14,7 +14,7 @@ class UserFilterService
 	public static function mutes(int $profile_id)
 	{
 		$key = self::USER_MUTES_KEY . $profile_id;
-		$warm = Cache::has($key . ':cached');
+		$warm = Cache::has($key . ':cached-v0');
 		if($warm) {
 			return Redis::zrevrange($key, 0, -1) ?? [];
 		} else {
@@ -24,11 +24,22 @@ class UserFilterService
 			$ids = UserFilter::whereFilterType('mute')
 				->whereUserId($profile_id)
 				->pluck('filterable_id')
+				->map(function($id) {
+					$acct = AccountService::get($id, true);
+					if(!$acct) {
+						return false;
+					}
+					return $acct['id'];
+				})
+				->filter(function($res) {
+					return $res;
+				})
+				->values()
 				->toArray();
 			foreach ($ids as $muted_id) {
 				Redis::zadd($key, (int) $muted_id, (int) $muted_id);
 			}
-			Cache::set($key . ':cached', 1, 7776000);
+			Cache::set($key . ':cached-v0', 1, 7776000);
 			return $ids;
 		}
 	}
@@ -36,7 +47,7 @@ class UserFilterService
 	public static function blocks(int $profile_id)
 	{
 		$key = self::USER_BLOCKS_KEY . $profile_id;
-		$warm = Cache::has($key . ':cached');
+		$warm = Cache::has($key . ':cached-v0');
 		if($warm) {
 			return Redis::zrevrange($key, 0, -1) ?? [];
 		} else {
@@ -46,11 +57,22 @@ class UserFilterService
 			$ids = UserFilter::whereFilterType('block')
 				->whereUserId($profile_id)
 				->pluck('filterable_id')
+				->map(function($id) {
+					$acct = AccountService::get($id, true);
+					if(!$acct) {
+						return false;
+					}
+					return $acct['id'];
+				})
+				->filter(function($res) {
+					return $res;
+				})
+				->values()
 				->toArray();
 			foreach ($ids as $blocked_id) {
 				Redis::zadd($key, (int) $blocked_id, (int) $blocked_id);
 			}
-			Cache::set($key . ':cached', 1, 7776000);
+			Cache::set($key . ':cached-v0', 1, 7776000);
 			return $ids;
 		}
 	}
@@ -62,6 +84,9 @@ class UserFilterService
 
 	public static function mute(int $profile_id, int $muted_id)
 	{
+		if($profile_id == $muted_id) {
+			return false;
+		}
 		$key = self::USER_MUTES_KEY . $profile_id;
 		$mutes = self::mutes($profile_id);
 		$exists = in_array($muted_id, $mutes);
@@ -73,6 +98,9 @@ class UserFilterService
 
 	public static function unmute(int $profile_id, string $muted_id)
 	{
+		if($profile_id == $muted_id) {
+			return false;
+		}
 		$key = self::USER_MUTES_KEY . $profile_id;
 		$mutes = self::mutes($profile_id);
 		$exists = in_array($muted_id, $mutes);
@@ -84,6 +112,9 @@ class UserFilterService
 
 	public static function block(int $profile_id, int $blocked_id)
 	{
+		if($profile_id == $blocked_id) {
+			return false;
+		}
 		$key = self::USER_BLOCKS_KEY . $profile_id;
 		$exists = in_array($blocked_id, self::blocks($profile_id));
 		if(!$exists) {
@@ -94,6 +125,9 @@ class UserFilterService
 
 	public static function unblock(int $profile_id, string $blocked_id)
 	{
+		if($profile_id == $blocked_id) {
+			return false;
+		}
 		$key = self::USER_BLOCKS_KEY . $profile_id;
 		$exists = in_array($blocked_id, self::blocks($profile_id));
 		if($exists) {
