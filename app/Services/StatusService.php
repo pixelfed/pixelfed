@@ -148,6 +148,7 @@ class StatusService
 			Cache::forget('status:thumb:nsfw1' . $id);
 			Cache::forget('pf:services:sh:id:' . $id);
 			PublicTimelineService::rem($id);
+			NetworkTimelineService::rem($id);
 		}
 
 		Cache::forget(self::key($id, false));
