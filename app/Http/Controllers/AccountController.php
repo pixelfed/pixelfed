@@ -17,16 +17,20 @@ use App\{
 	EmailVerification,
 	Follower,
 	FollowRequest,
+	Media,
 	Notification,
 	Profile,
 	User,
-	UserFilter
+	UserDevice,
+	UserFilter,
+	UserSetting
 };
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Services\AccountService;
+use App\Services\NotificationService;
 use App\Services\UserFilterService;
 use App\Services\RelationshipService;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
@@ -39,7 +43,8 @@ class AccountController extends Controller
 		'user.block',
 	];
 
-	const FILTER_LIMIT = 'You cannot block or mute more than 100 accounts';
+	const FILTER_LIMIT_MUTE_TEXT = 'You cannot mute more than ';
+	const FILTER_LIMIT_BLOCK_TEXT = 'You cannot block more than ';
 
 	public function __construct()
 	{
@@ -145,16 +150,17 @@ class AccountController extends Controller
 	public function mute(Request $request)
 	{
 		$this->validate($request, [
-			'type' => 'required|alpha_dash',
+			'type' => 'required|string|in:user',
 			'item' => 'required|integer|min:1',
 		]);
 
-		$user = Auth::user()->profile;
-		$count = UserFilterService::muteCount($user->id);
-		abort_if($count >= 100, 422, self::FILTER_LIMIT);
+		$pid = $request->user()->profile_id;
+		$count = UserFilterService::muteCount($pid);
+		$maxLimit = intval(config('instance.user_filters.max_user_mutes'));
+		abort_if($count >= $maxLimit, 422, self::FILTER_LIMIT_MUTE_TEXT . $maxLimit . ' accounts');
 		if($count == 0) {
-			$filterCount = UserFilter::whereUserId($user->id)->count();
-			abort_if($filterCount >= 100, 422, self::FILTER_LIMIT);
+			$filterCount = UserFilter::whereUserId($pid)->count();
+			abort_if($filterCount >= $maxLimit, 422, self::FILTER_LIMIT_MUTE_TEXT . $maxLimit . ' accounts');
 		}
 		$type = $request->input('type');
 		$item = $request->input('item');
@@ -167,7 +173,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id) {
+			if ($profile->id == $pid) {
 				return abort(403);
 			}
 			$class = get_class($profile);
@@ -177,29 +183,30 @@ class AccountController extends Controller
 		}
 
 		$filter = UserFilter::firstOrCreate([
-			'user_id'         => $user->id,
+			'user_id'         => $pid,
 			'filterable_id'   => $filterable['id'],
 			'filterable_type' => $filterable['type'],
 			'filter_type'     => 'mute',
 		]);
 
-		$pid = $user->id;
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("feature:discover:posts:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
-		RelationshipService::refresh($pid, $profile->id);
+		UserFilterService::mute($pid, $filterable['id']);
+		$res = RelationshipService::refresh($pid, $profile->id);
 
-		return redirect()->back();
+		if($request->wantsJson()) {
+			return response()->json($res);
+		} else {
+			return redirect()->back();
+		}
 	}
 
 	public function unmute(Request $request)
 	{
 		$this->validate($request, [
-			'type' => 'required|alpha_dash',
+			'type' => 'required|string|in:user',
 			'item' => 'required|integer|min:1',
 		]);
 
-		$user = Auth::user()->profile;
+		$pid = $request->user()->profile_id;
 		$type = $request->input('type');
 		$item = $request->input('item');
 		$action = $type . '.mute';
@@ -211,7 +218,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id) {
+			if ($profile->id == $pid) {
 				return abort(403);
 			}
 			$class = get_class($profile);
@@ -224,24 +231,21 @@ class AccountController extends Controller
 			break;
 		}
 
-		$filter = UserFilter::whereUserId($user->id)
+		$filter = UserFilter::whereUserId($pid)
 		->whereFilterableId($filterable['id'])
 		->whereFilterableType($filterable['type'])
 		->whereFilterType('mute')
 		->first();
 
 		if($filter) {
+			UserFilterService::unmute($pid, $filterable['id']);
 			$filter->delete();
 		}
 
-		$pid = $user->id;
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("feature:discover:posts:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
-		RelationshipService::refresh($pid, $profile->id);
+		$res = RelationshipService::refresh($pid, $profile->id);
 
 		if($request->wantsJson()) {
-			return response()->json([200]);
+			return response()->json($res);
 		} else {
 			return redirect()->back();
 		}
@@ -250,16 +254,16 @@ class AccountController extends Controller
 	public function block(Request $request)
 	{
 		$this->validate($request, [
-			'type' => 'required|alpha_dash',
+			'type' => 'required|string|in:user',
 			'item' => 'required|integer|min:1',
 		]);
-
-		$user = Auth::user()->profile;
-		$count = UserFilterService::blockCount($user->id);
-		abort_if($count >= 100, 422, self::FILTER_LIMIT);
+		$pid = $request->user()->profile_id;
+		$count = UserFilterService::blockCount($pid);
+		$maxLimit = intval(config('instance.user_filters.max_user_blocks'));
+		abort_if($count >= $maxLimit, 422, self::FILTER_LIMIT_BLOCK_TEXT . $maxLimit . ' accounts');
 		if($count == 0) {
-			$filterCount = UserFilter::whereUserId($user->id)->count();
-			abort_if($filterCount >= 100, 422, self::FILTER_LIMIT);
+			$filterCount = UserFilter::whereUserId($pid)->whereFilterType('block')->count();
+			abort_if($filterCount >= $maxLimit, 422, self::FILTER_LIMIT_BLOCK_TEXT . $maxLimit . ' accounts');
 		}
 		$type = $request->input('type');
 		$item = $request->input('item');
@@ -271,41 +275,49 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id || ($profile->user && $profile->user->is_admin == true)) {
+			if ($profile->id == $pid || ($profile->user && $profile->user->is_admin == true)) {
 				return abort(403);
 			}
 			$class = get_class($profile);
 			$filterable['id'] = $profile->id;
 			$filterable['type'] = $class;
 
-			Follower::whereProfileId($profile->id)->whereFollowingId($user->id)->delete();
-			Notification::whereProfileId($user->id)->whereActorId($profile->id)->delete();
+			Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
+			Notification::whereProfileId($pid)
+				->whereActorId($profile->id)
+				->get()
+				->map(function($n) use($pid) {
+					NotificationService::del($pid, $n['id']);
+					$n->forceDelete();
+				});
 			break;
 		}
 
 		$filter = UserFilter::firstOrCreate([
-			'user_id'         => $user->id,
+			'user_id'         => $pid,
 			'filterable_id'   => $filterable['id'],
 			'filterable_type' => $filterable['type'],
 			'filter_type'     => 'block',
 		]);
 
-		$pid = $user->id;
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
-		RelationshipService::refresh($pid, $profile->id);
+		UserFilterService::block($pid, $filterable['id']);
+		$res = RelationshipService::refresh($pid, $profile->id);
 
-		return redirect()->back();
+		if($request->wantsJson()) {
+			return response()->json($res);
+		} else {
+			return redirect()->back();
+		}
 	}
 
 	public function unblock(Request $request)
 	{
 		$this->validate($request, [
-			'type' => 'required|alpha_dash',
+			'type' => 'required|string|in:user',
 			'item' => 'required|integer|min:1',
 		]);
 
-		$user = Auth::user()->profile;
+		$pid = $request->user()->profile_id;
 		$type = $request->input('type');
 		$item = $request->input('item');
 		$action = $type . '.block';
@@ -316,7 +328,7 @@ class AccountController extends Controller
 		switch ($type) {
 			case 'user':
 			$profile = Profile::findOrFail($item);
-			if ($profile->id == $user->id) {
+			if ($profile->id == $pid) {
 				return abort(403);
 			}
 			$class = get_class($profile);
@@ -330,23 +342,24 @@ class AccountController extends Controller
 		}
 
 
-		$filter = UserFilter::whereUserId($user->id)
+		$filter = UserFilter::whereUserId($pid)
 		->whereFilterableId($filterable['id'])
 		->whereFilterableType($filterable['type'])
 		->whereFilterType('block')
 		->first();
 
 		if($filter) {
+			UserFilterService::unblock($pid, $filterable['id']);
 			$filter->delete();
 		}
 
-		$pid = $user->id;
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("feature:discover:posts:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
-		RelationshipService::refresh($pid, $profile->id);
+		$res = RelationshipService::refresh($pid, $profile->id);
 
-		return redirect()->back();
+		if($request->wantsJson()) {
+			return response()->json($res);
+		} else {
+			return redirect()->back();
+		}
 	}
 
 	public function followRequests(Request $request)
@@ -513,25 +526,25 @@ class AccountController extends Controller
 		}
 	}
 
-    protected function twoFactorBackupCheck($request, $code, User $user)
-    {
-        $backupCodes = $user->{'2fa_backup_codes'};
-        if($backupCodes) {
-            $codes = json_decode($backupCodes, true);
-            foreach ($codes as $c) {
-                if(hash_equals($c, $code)) {
-                    $codes = array_flatten(array_diff($codes, [$code]));
-                    $user->{'2fa_backup_codes'} = json_encode($codes);
-                    $user->save();
-                    $request->session()->push('2fa.session.active', true);
-                    return true;
-                }
-            }
+	protected function twoFactorBackupCheck($request, $code, User $user)
+	{
+		$backupCodes = $user->{'2fa_backup_codes'};
+		if($backupCodes) {
+			$codes = json_decode($backupCodes, true);
+			foreach ($codes as $c) {
+				if(hash_equals($c, $code)) {
+					$codes = array_flatten(array_diff($codes, [$code]));
+					$user->{'2fa_backup_codes'} = json_encode($codes);
+					$user->save();
+					$request->session()->push('2fa.session.active', true);
+					return true;
+				}
+			}
             return false;
-        } else {
-            return false;
-        }
-    }
+		} else {
+			return false;
+		}
+	}
 
 	public function accountRestored(Request $request)
 	{

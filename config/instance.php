@@ -107,4 +107,9 @@ return [
 	'admin_invites' => [
 		'enabled' => env('PF_ADMIN_INVITES_ENABLED', true)
 	],
+
+	'user_filters' => [
+		'max_user_blocks' => env('PF_MAX_USER_BLOCKS', 50),
+		'max_user_mutes' => env('PF_MAX_USER_MUTES', 50)
+	]
 ];

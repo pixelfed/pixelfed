@@ -43,6 +43,7 @@ use App\Transformer\Api\{
 use App\Http\Controllers\FollowerController;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\StatusController;
 
 use App\Jobs\AvatarPipeline\AvatarOptimize;
@@ -939,6 +940,25 @@ class ApiV1Controller extends Controller
 			abort(400, 'You cannot block an admin');
 		}
 
+		$count = UserFilterService::blockCount($pid);
+		$maxLimit = intval(config('instance.user_filters.max_user_blocks'));
+		if($count == 0) {
+			$filterCount = UserFilter::whereUserId($pid)
+				->whereFilterType('block')
+				->get()
+				->map(function($rec) {
+					return AccountService::get($rec->filterable_id, true);
+				})
+				->filter(function($account) {
+					return $account && isset($account['id']);
+				})
+				->values()
+				->count();
+			abort_if($filterCount >= $maxLimit, 422, AccountController::FILTER_LIMIT_BLOCK_TEXT . $maxLimit . ' accounts');
+		} else {
+			abort_if($count >= $maxLimit, 422, AccountController::FILTER_LIMIT_BLOCK_TEXT . $maxLimit . ' accounts');
+		}
+
 		Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
 		Follower::whereProfileId($pid)->whereFollowingId($profile->id)->delete();
 		Notification::whereProfileId($pid)->whereActorId($profile->id)->delete();
@@ -950,8 +970,6 @@ class ApiV1Controller extends Controller
 			'filter_type'     => 'block',
 		]);
 
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
 		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
@@ -980,15 +998,17 @@ class ApiV1Controller extends Controller
 
 		$profile = Profile::findOrFail($id);
 
-		UserFilter::whereUserId($pid)
+		$filter = UserFilter::whereUserId($pid)
 			->whereFilterableId($profile->id)
 			->whereFilterableType('App\Profile')
 			->whereFilterType('block')
-			->delete();
+			->first();
 
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
-		RelationshipService::refresh($pid, $id);
+		if($filter) {
+			$filter->delete();
+			UserFilterService::unblock($pid, $profile->id);
+			RelationshipService::refresh($pid, $id);
+		}
 
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
@@ -1823,6 +1843,25 @@ class ApiV1Controller extends Controller
 
 		$account = Profile::findOrFail($id);
 
+		$count = UserFilterService::muteCount($pid);
+		$maxLimit = intval(config('instance.user_filters.max_user_mutes'));
+		if($count == 0) {
+			$filterCount = UserFilter::whereUserId($pid)
+				->whereFilterType('mute')
+				->get()
+				->map(function($rec) {
+					return AccountService::get($rec->filterable_id, true);
+				})
+				->filter(function($account) {
+					return $account && isset($account['id']);
+				})
+				->values()
+				->count();
+			abort_if($filterCount >= $maxLimit, 422, AccountController::FILTER_LIMIT_MUTE_TEXT . $maxLimit . ' accounts');
+		} else {
+			abort_if($count >= $maxLimit, 422, AccountController::FILTER_LIMIT_MUTE_TEXT . $maxLimit . ' accounts');
+		}
+
 		$filter = UserFilter::firstOrCreate([
 			'user_id'         => $pid,
 			'filterable_id'   => $account->id,
@@ -1830,9 +1869,6 @@ class ApiV1Controller extends Controller
 			'filter_type'     => 'mute',
 		]);
 
-		Cache::forget("user:filter:list:$pid");
-		Cache::forget("feature:discover:posts:$pid");
-		Cache::forget("api:local:exp:rec:$pid");
 		RelationshipService::refresh($pid, $id);
 
 		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
@@ -1858,23 +1894,21 @@ class ApiV1Controller extends Controller
             return $this->json(['error' => 'You cannot unmute yourself'], 500);
         }
 
-		$account = Profile::findOrFail($id);
+		$profile = Profile::findOrFail($id);
 
 		$filter = UserFilter::whereUserId($pid)
-			->whereFilterableId($account->id)
+			->whereFilterableId($profile->id)
 			->whereFilterableType('App\Profile')
 			->whereFilterType('mute')
 			->first();
 
 		if($filter) {
 			$filter->delete();
-			Cache::forget("user:filter:list:$pid");
-			Cache::forget("feature:discover:posts:$pid");
-			Cache::forget("api:local:exp:rec:$pid");
+			UserFilterService::unmute($pid, $profile->id);
 			RelationshipService::refresh($pid, $id);
 		}
 
-		$resource = new Fractal\Resource\Item($account, new RelationshipTransformer());
+		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 		return $this->json($res);
 	}
