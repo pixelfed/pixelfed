@@ -16,72 +16,72 @@ use App\Profile;
 
 class FollowServiceWarmCache implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $profileId;
-    public $tries = 5;
-    public $timeout = 300;
-    public $failOnTimeout = true;
+	public $profileId;
+	public $tries = 5;
+	public $timeout = 5000;
+	public $failOnTimeout = false;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct($profileId)
-    {
-        $this->profileId = $profileId;
-    }
+	/**
+	 * Create a new job instance.
+	 *
+	 * @return void
+	 */
+	public function __construct($profileId)
+	{
+		$this->profileId = $profileId;
+	}
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $id = $this->profileId;
+	/**
+	 * Execute the job.
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$id = $this->profileId;
 
-        $account = AccountService::get($id, true);
+		$account = AccountService::get($id, true);
 
-        if(!$account) {
-            Cache::put(FollowerService::FOLLOWERS_SYNC_KEY . $id, 1);
-            Cache::put(FollowerService::FOLLOWING_SYNC_KEY . $id, 1);
-            return;
-        }
+		if(!$account) {
+			Cache::put(FollowerService::FOLLOWERS_SYNC_KEY . $id, 1, 604800);
+			Cache::put(FollowerService::FOLLOWING_SYNC_KEY . $id, 1, 604800);
+			return;
+		}
 
-        DB::table('followers')
-            ->select('id', 'following_id', 'profile_id')
-            ->whereFollowingId($id)
-            ->orderBy('id')
-            ->chunk(200, function($followers) use($id) {
-            foreach($followers as $follow) {
-                FollowerService::add($follow->profile_id, $id);
-            }
-        });
+		DB::table('followers')
+			->select('id', 'following_id', 'profile_id')
+			->whereFollowingId($id)
+			->orderBy('id')
+			->chunk(200, function($followers) use($id) {
+			foreach($followers as $follow) {
+				FollowerService::add($follow->profile_id, $id);
+			}
+		});
 
-        DB::table('followers')
-            ->select('id', 'following_id', 'profile_id')
-            ->whereProfileId($id)
-            ->orderBy('id')
-            ->chunk(200, function($followers) use($id) {
-            foreach($followers as $follow) {
-                FollowerService::add($id, $follow->following_id);
-            }
-        });
+		DB::table('followers')
+			->select('id', 'following_id', 'profile_id')
+			->whereProfileId($id)
+			->orderBy('id')
+			->chunk(200, function($followers) use($id) {
+			foreach($followers as $follow) {
+				FollowerService::add($id, $follow->following_id);
+			}
+		});
 
-        Cache::put(FollowerService::FOLLOWERS_SYNC_KEY . $id, 1);
-        Cache::put(FollowerService::FOLLOWING_SYNC_KEY . $id, 1);
+		Cache::put(FollowerService::FOLLOWERS_SYNC_KEY . $id, 1, 604800);
+		Cache::put(FollowerService::FOLLOWING_SYNC_KEY . $id, 1, 604800);
 
-        $profile = Profile::find($id);
-        if($profile) {
-            $profile->following_count = DB::table('followers')->whereProfileId($id)->count();
-            $profile->followers_count = DB::table('followers')->whereFollowingId($id)->count();
-            $profile->save();
-        }
+		$profile = Profile::find($id);
+		if($profile) {
+			$profile->following_count = DB::table('followers')->whereProfileId($id)->count();
+			$profile->followers_count = DB::table('followers')->whereFollowingId($id)->count();
+			$profile->save();
+		}
 
-        AccountService::del($id);
+		AccountService::del($id);
 
-        return;
-    }
+		return;
+	}
 }

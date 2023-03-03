@@ -54,6 +54,7 @@ use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\FollowPipeline\FollowPipeline;
+use App\Jobs\FollowPipeline\UnfollowPipeline;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\VideoPipeline\{
 	VideoOptimize,
@@ -707,8 +708,7 @@ class ApiV1Controller extends Controller
 			if($remote == true && config('federation.activitypub.remoteFollow') == true) {
 				(new FollowerController())->sendFollow($user->profile, $target);
 			}
-			FollowPipeline::dispatch($follower);
-			$target->increment('followers_count');
+			FollowPipeline::dispatch($follower)->onQueue('high');
 		}
 
 		RelationshipService::refresh($user->profile_id, $target->id);
@@ -769,25 +769,11 @@ class ApiV1Controller extends Controller
 			return $this->json($res);
 		}
 
-		if($user->profile->following_count) {
-			$user->profile->decrement('following_count');
-		}
-
-		FollowRequest::whereFollowerId($user->profile_id)
-			->whereFollowingId($target->id)
-			->delete();
-
 		Follower::whereProfileId($user->profile_id)
 			->whereFollowingId($target->id)
 			->delete();
 
-		if(config('instance.timeline.home.cached')) {
-            Cache::forget('pf:timelines:home:' . $user->profile_id);
-        }
-
-		FollowerService::remove($user->profile_id, $target->id);
-
-		$target->decrement('followers_count');
+		UnfollowPipeline::dispatch($user->profile_id, $target->id)->onQueue('high');
 
 		if($remote == true && config('federation.activitypub.remoteFollow') == true) {
 			(new FollowerController())->sendUndoFollow($user->profile, $target);

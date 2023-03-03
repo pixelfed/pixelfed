@@ -15,7 +15,6 @@ use App\Jobs\FollowPipeline\FollowServiceWarmCache;
 class FollowerService
 {
 	const CACHE_KEY = 'pf:services:followers:';
-	const FOLLOWERS_SYNC_ACTIVE = 'pf:services:followers:sync-active:';
 	const FOLLOWERS_SYNC_KEY = 'pf:services:followers:sync-followers:';
 	const FOLLOWING_SYNC_KEY = 'pf:services:followers:sync-following:';
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
@@ -106,25 +105,13 @@ class FollowerService
 			if(Cache::get(self::FOLLOWERS_SYNC_KEY . $id) != null) {
 				return;
 			}
-
-			if(Cache::get(self::FOLLOWERS_SYNC_ACTIVE . $id) != null) {
-				return;
-			}
-
 			FollowServiceWarmCache::dispatch($id)->onQueue('low');
-			Cache::put(self::FOLLOWERS_SYNC_ACTIVE . $id, 1, 604800);
 		}
 		if($scope === 'following') {
 			if(Cache::get(self::FOLLOWING_SYNC_KEY . $id) != null) {
 				return;
 			}
-
-			if(Cache::get(self::FOLLOWERS_SYNC_ACTIVE . $id) != null) {
-				return;
-			}
-
 			FollowServiceWarmCache::dispatch($id)->onQueue('low');
-			Cache::put(self::FOLLOWERS_SYNC_ACTIVE . $id, 1, 604800);
 		}
 		return;
 	}
@@ -220,6 +207,5 @@ class FollowerService
 		Redis::del(self::FOLLOWERS_KEY . $id);
 		Cache::forget(self::FOLLOWERS_SYNC_KEY . $id);
 		Cache::forget(self::FOLLOWING_SYNC_KEY . $id);
-		Cache::forget(self::FOLLOWERS_SYNC_ACTIVE . $id);
 	}
 }
