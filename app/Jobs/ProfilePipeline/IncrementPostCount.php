@@ -14,45 +14,47 @@ use App\Services\AccountService;
 
 class IncrementPostCount implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $id;
+	public $id;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct($id)
-    {
-        $this->id = $id;
-    }
+	/**
+	 * Create a new job instance.
+	 *
+	 * @return void
+	 */
+	public function __construct($id)
+	{
+		$this->id = $id;
+	}
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        $id = $this->id;
+	/**
+	 * Execute the job.
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$id = $this->id;
 
-        $profile = Profile::find($id);
+		$profile = Profile::find($id);
 
-        if(!$profile) {
-            return 1;
-        }
+		if(!$profile) {
+			return 1;
+		}
 
-        if($profile->updated_at && $profile->updated_at->lt(now()->subDays(30))) {
-            $profile->status_count = Status::whereProfileId($id)->whereNull(['in_reply_to_id', 'reblog_of_id'])->count();
-            $profile->save();
-            AccountService::del($id);
-        } else {
-            $profile->status_count = $profile->status_count + 1;
-            $profile->save();
-            AccountService::del($id);
-        }
+		if($profile->updated_at && $profile->updated_at->lt(now()->subDays(30))) {
+			$profile->status_count = Status::whereProfileId($id)->whereNull(['in_reply_to_id', 'reblog_of_id'])->count();
+			$profile->last_status_at = now();
+			$profile->save();
+			AccountService::del($id);
+		} else {
+			$profile->status_count = $profile->status_count + 1;
+			$profile->last_status_at = now();
+			$profile->save();
+			AccountService::del($id);
+		}
 
-        return 1;
-    }
+		return 1;
+	}
 }
