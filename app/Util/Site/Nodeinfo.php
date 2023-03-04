@@ -56,10 +56,10 @@ class Nodeinfo {
 					'version'       => config('pixelfed.version'),
 				],
 				'usage' => [
-					'localPosts'    => $statuses,
+					'localPosts'    => (int) $statuses,
 					'localComments' => 0,
 					'users'         => [
-						'total'          => $users,
+						'total'          => (int) $users,
 						'activeHalfyear' => (int) $activeHalfYear,
 						'activeMonth'    => (int) $activeMonth,
 					],

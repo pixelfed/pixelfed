@@ -3172,7 +3172,8 @@ class ApiV1Controller extends Controller
 			'following' => 'nullable'
 		]);
 
-		return $this->json(SearchApiV2Service::query($request, true));
+		$mastodonMode = !$request->has('_pe');
+		return $this->json(SearchApiV2Service::query($request, $mastodonMode));
 	}
 
 	/**

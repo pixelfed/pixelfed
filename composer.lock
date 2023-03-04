@@ -114,16 +114,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.261.1",
+            "version": "3.261.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "cb7f6d7ca313bfd3135ff23c49d734c1a7616d6a"
+                "reference": "31bc1e2a528c0f0881e4366d8ee0fa729cd42b00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cb7f6d7ca313bfd3135ff23c49d734c1a7616d6a",
-                "reference": "cb7f6d7ca313bfd3135ff23c49d734c1a7616d6a",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/31bc1e2a528c0f0881e4366d8ee0fa729cd42b00",
+                "reference": "31bc1e2a528c0f0881e4366d8ee0fa729cd42b00",
                 "shasum": ""
             },
             "require": {
@@ -202,9 +202,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.261.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.261.4"
             },
-            "time": "2023-02-28T19:22:11+00:00"
+            "time": "2023-03-03T19:22:53+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -538,21 +538,24 @@
         },
         {
             "name": "dasprid/enum",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DASPRiD/Enum.git",
-                "reference": "5abf82f213618696dda8e3bf6f64dd042d8542b2"
+                "reference": "8e6b6ea76eabbf19ea2bf5b67b98e1860474012f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DASPRiD/Enum/zipball/5abf82f213618696dda8e3bf6f64dd042d8542b2",
-                "reference": "5abf82f213618696dda8e3bf6f64dd042d8542b2",
+                "url": "https://api.github.com/repos/DASPRiD/Enum/zipball/8e6b6ea76eabbf19ea2bf5b67b98e1860474012f",
+                "reference": "8e6b6ea76eabbf19ea2bf5b67b98e1860474012f",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1 <9.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7 | ^8 | ^9",
-                "squizlabs/php_codesniffer": "^3.4"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -579,9 +582,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DASPRiD/Enum/issues",
-                "source": "https://github.com/DASPRiD/Enum/tree/1.0.3"
+                "source": "https://github.com/DASPRiD/Enum/tree/1.0.4"
             },
-            "time": "2020-10-02T16:03:48+00:00"
+            "time": "2023-03-01T18:44:03+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -5521,33 +5524,27 @@
         },
         {
             "name": "predis/predis",
-            "version": "v2.1.1",
+            "version": "v2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/predis/predis.git",
-                "reference": "c5b60884e89630f9518a7919f0566db438f0fc9a"
+                "reference": "a77a43913a74f9331f637bb12867eb8e274814e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/c5b60884e89630f9518a7919f0566db438f0fc9a",
-                "reference": "c5b60884e89630f9518a7919f0566db438f0fc9a",
+                "url": "https://api.github.com/repos/predis/predis/zipball/a77a43913a74f9331f637bb12867eb8e274814e5",
+                "reference": "a77a43913a74f9331f637bb12867eb8e274814e5",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "phpstan/phpstan": "^1.9",
                 "phpunit/phpunit": "^8.0 || ~9.4.4"
             },
-            "suggest": {
-                "ext-curl": "Allows access to Webdis when paired with phpiredis"
-            },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "2.0-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Predis\\": "src/"
@@ -5562,12 +5559,6 @@
                     "name": "Till Krüss",
                     "homepage": "https://till.im",
                     "role": "Maintainer"
-                },
-                {
-                    "name": "Daniele Alessandri",
-                    "email": "suppakilla@gmail.com",
-                    "homepage": "http://clorophilla.net",
-                    "role": "Creator"
                 }
             ],
             "description": "A flexible and feature-complete Redis client for PHP.",
@@ -5579,7 +5570,7 @@
             ],
             "support": {
                 "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v2.1.1"
+                "source": "https://github.com/predis/predis/tree/v2.1.2"
             },
             "funding": [
                 {
@@ -5587,7 +5578,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-01-17T20:57:35+00:00"
+            "time": "2023-03-02T18:32:04+00:00"
         },
         {
             "name": "psr/cache",
@@ -10899,16 +10890,16 @@
     "packages-dev": [
         {
             "name": "brianium/paratest",
-            "version": "v6.9.0",
+            "version": "v6.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "6f90dcaf14077a64c966936584b301dd4d01a440"
+                "reference": "51691208db882922c55d6c465be3e7d95028c449"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/6f90dcaf14077a64c966936584b301dd4d01a440",
-                "reference": "6f90dcaf14077a64c966936584b301dd4d01a440",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/51691208db882922c55d6c465be3e7d95028c449",
+                "reference": "51691208db882922c55d6c465be3e7d95028c449",
                 "shasum": ""
             },
             "require": {
@@ -10919,22 +10910,22 @@
                 "fidry/cpu-core-counter": "^0.4.1 || ^0.5.1",
                 "jean85/pretty-package-versions": "^2.0.5",
                 "php": "^7.3 || ^8.0",
-                "phpunit/php-code-coverage": "^9.2.24",
+                "phpunit/php-code-coverage": "^9.2.25",
                 "phpunit/php-file-iterator": "^3.0.6",
                 "phpunit/php-timer": "^5.0.3",
-                "phpunit/phpunit": "^9.6.3",
-                "sebastian/environment": "^5.1.4",
-                "symfony/console": "^5.4.16 || ^6.2.5",
-                "symfony/process": "^5.4.11 || ^6.2.5"
+                "phpunit/phpunit": "^9.6.4",
+                "sebastian/environment": "^5.1.5",
+                "symfony/console": "^5.4.21 || ^6.2.7",
+                "symfony/process": "^5.4.21 || ^6.2.7"
             },
             "require-dev": {
                 "doctrine/coding-standard": "^10.0.0",
                 "ext-pcov": "*",
                 "ext-posix": "*",
                 "infection/infection": "^0.26.19",
-                "squizlabs/php_codesniffer": "^3.7.1",
-                "symfony/filesystem": "^5.4.13 || ^6.2.5",
-                "vimeo/psalm": "^5.6"
+                "squizlabs/php_codesniffer": "^3.7.2",
+                "symfony/filesystem": "^5.4.21 || ^6.2.7",
+                "vimeo/psalm": "^5.7.7"
             },
             "bin": [
                 "bin/paratest",
@@ -10975,7 +10966,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v6.9.0"
+                "source": "https://github.com/paratestphp/paratest/tree/v6.9.1"
             },
             "funding": [
                 {
@@ -10987,7 +10978,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2023-02-07T10:03:32+00:00"
+            "time": "2023-03-03T09:35:17+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -11190,16 +11181,16 @@
         },
         {
             "name": "filp/whoops",
-            "version": "2.14.6",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "f7948baaa0330277c729714910336383286305da"
+                "reference": "3e8aebbca9f0ae6f618962c4ad514077fd365ab3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/f7948baaa0330277c729714910336383286305da",
-                "reference": "f7948baaa0330277c729714910336383286305da",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/3e8aebbca9f0ae6f618962c4ad514077fd365ab3",
+                "reference": "3e8aebbca9f0ae6f618962c4ad514077fd365ab3",
                 "shasum": ""
             },
             "require": {
@@ -11249,7 +11240,7 @@
             ],
             "support": {
                 "issues": "https://github.com/filp/whoops/issues",
-                "source": "https://github.com/filp/whoops/tree/2.14.6"
+                "source": "https://github.com/filp/whoops/tree/2.15.0"
             },
             "funding": [
                 {
@@ -11257,7 +11248,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-11-02T16:23:29+00:00"
+            "time": "2023-03-03T12:00:00+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
