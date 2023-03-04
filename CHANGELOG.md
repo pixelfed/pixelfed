@@ -117,6 +117,7 @@
 - Update FollowPipeline, fix followers_count and following_count counters ([6153b620](https://github.com/pixelfed/pixelfed/commit/6153b620))
 - Update ApiV1Controller, fix media update. Fixes #4196 ([f3164650](https://github.com/pixelfed/pixelfed/commit/f3164650))
 - Update SearchApiV2Service, fix hashtag search. ([1992b5bc](https://github.com/pixelfed/pixelfed/commit/1992b5bc))
+- Update ApiV1Controller, allow optional mastodonMode on v2/search endpoint. ([f4a69631](https://github.com/pixelfed/pixelfed/commit/f4a69631))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
