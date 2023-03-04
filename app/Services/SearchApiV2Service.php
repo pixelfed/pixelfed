@@ -131,6 +131,7 @@ class SearchApiV2Service
 				return $q->where('can_search', true)
 						->orWhereNull('can_search');
 			})
+			->orderByDesc('cached_count')
 			->offset($offset)
 			->limit($limit)
 			->get()
