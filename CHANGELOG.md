@@ -111,6 +111,11 @@
 - Update PostReactions, reduce bookmark timeout to 2s from 5s ([a8094e6c](https://github.com/pixelfed/pixelfed/commit/a8094e6c))
 - Update CollectionController, fixes #3946 ([abd52f4d](https://github.com/pixelfed/pixelfed/commit/abd52f4d))
 - Update ComposeController, fix add to collection logic ([9f8957b9](https://github.com/pixelfed/pixelfed/commit/9f8957b9))
+- Update v1.1 api, add post moderation endpoint ([9bbd6dcd](https://github.com/pixelfed/pixelfed/commit/9bbd6dcd))
+- Update StatusService, on purge remove from NetworkTimelineService cache ([18940cb2](https://github.com/pixelfed/pixelfed/commit/18940cb2))
+- Update mute/block logic with admin defined limits and improved filtering to skip deleted accounts ([5b879f01](https://github.com/pixelfed/pixelfed/commit/5b879f01))
+- Update FollowPipeline, fix followers_count and following_count counters ([6153b620](https://github.com/pixelfed/pixelfed/commit/6153b620))
+- Update ApiV1Controller, fix media update. Fixes #4196 ([f3164650](https://github.com/pixelfed/pixelfed/commit/f3164650))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
