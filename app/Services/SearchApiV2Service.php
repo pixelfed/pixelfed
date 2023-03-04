@@ -122,11 +122,15 @@ class SearchApiV2Service
 	protected function hashtags()
 	{
 		$mastodonMode = self::$mastodonMode;
+		$q = $this->query->input('q');
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
-        $query = $this->query->input('q') . '%';
-		return Hashtag::where('can_search', true)
-			->where('name', 'like', $query)
+		$query = Str::startsWith($q, '#') ? substr($q, 1) . '%' : $q . '%';
+		return Hashtag::where('name', 'like', $query)
+			->where(function($q) {
+				return $q->where('can_search', true)
+						->orWhereNull('can_search');
+			})
 			->offset($offset)
 			->limit($limit)
 			->get()
