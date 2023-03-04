@@ -1628,7 +1628,10 @@ class ApiV1Controller extends Controller
 			], 429);
 		};
 
-		return $this->json(MediaService::get($media->status_id));
+		$fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+		$resource = new Fractal\Resource\Item($media, new MediaTransformer());
+		return $this->json($fractal->createData($resource)->toArray());
 	}
 
 	/**
