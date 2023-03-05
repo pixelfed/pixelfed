@@ -189,8 +189,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
 			Route::get('profile/{username}/status/{postid}/state', 'PublicApiController@statusState');
 			Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
-			Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
-			Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
 			Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
 			Route::post('moderator/action', 'InternalApiController@modAction');
 			Route::get('discover/categories', 'InternalApiController@discoverCategories');
@@ -234,8 +232,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('discover/profiles', 'DiscoverController@profilesDirectoryApi');
 				Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
 				Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
-				Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
-				Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
 				Route::post('moderator/action', 'InternalApiController@modAction');
 				Route::get('discover/categories', 'InternalApiController@discoverCategories');
 				Route::get('loops', 'DiscoverController@loopsApi');

@@ -62,36 +62,6 @@ class PublicApiController extends Controller
         }
     }
 
-    protected function getLikes($status)
-    {
-        if(false == Auth::check()) {
-            return [];
-        } else {
-            $profile = Auth::user()->profile;
-            if($profile->status) {
-                return [];
-            }
-            $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
-            $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
-            return $this->fractal->createData($collection)->toArray();
-        }
-    }
-
-    protected function getShares($status)
-    {
-        if(false == Auth::check()) {
-            return [];
-        } else {
-            $profile = Auth::user()->profile;
-            if($profile->status) {
-                return [];
-            }
-            $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
-            $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
-            return $this->fractal->createData($collection)->toArray();
-        }
-    }
-
     public function getStatus(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
@@ -214,41 +184,6 @@ class PublicApiController extends Controller
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
-    public function statusLikes(Request $request, $username, $id)
-    {
-        abort_if(!$request->user(), 404);
-        $status = Status::findOrFail($id);
-        $this->scopeCheck($status->profile, $status);
-        $page = $request->input('page');
-        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
-            return response()->json([
-                'data' => []
-            ]);
-        }
-        $likes = $this->getLikes($status);
-        return response()->json([
-            'data' => $likes
-        ]);
-    }
-
-    public function statusShares(Request $request, $username, $id)
-    {
-        abort_if(!$request->user(), 404);
-        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
-        $status = Status::whereProfileId($profile->id)->findOrFail($id);
-        $this->scopeCheck($profile, $status);
-        $page = $request->input('page');
-        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
-            return response()->json([
-                'data' => []
-            ]);
-        }
-        $shares = $this->getShares($status);
-        return response()->json([
-            'data' => $shares
-        ]);
     }
 
     protected function scopeCheck(Profile $profile, Status $status)
