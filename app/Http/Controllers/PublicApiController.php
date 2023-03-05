@@ -811,68 +811,6 @@ class PublicApiController extends Controller
         return response()->json($res);
     }
 
-    public function accountFollowers(Request $request, $id)
-    {
-		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id, true);
-		abort_if(!$account, 404);
-		$pid = $request->user()->profile_id;
-
-		if($pid != $account['id']) {
-			if($account['locked']) {
-				if(!FollowerService::follows($pid, $account['id'])) {
-					return [];
-				}
-			}
-
-			if(AccountService::hiddenFollowers($id)) {
-				return [];
-			}
-
-			if($request->has('page') && $request->page >= 10) {
-				return [];
-			}
-		}
-
-        $res = collect(FollowerService::followersPaginate($account['id'], $request->input('page', 1)))
-            ->map(fn($id) => AccountService::get($id, true))
-            ->filter()
-            ->values();
-
-		return response()->json($res);
-    }
-
-    public function accountFollowing(Request $request, $id)
-    {
-		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id, true);
-		abort_if(!$account, 404);
-		$pid = $request->user()->profile_id;
-
-		if($pid != $account['id']) {
-			if($account['locked']) {
-				if(!FollowerService::follows($pid, $account['id'])) {
-					return [];
-				}
-			}
-
-			if(AccountService::hiddenFollowing($id)) {
-				return [];
-			}
-
-			if($request->has('page') && $request->page >= 10) {
-				return [];
-			}
-		}
-
-        $res = collect(FollowerService::followingPaginate($account['id'], $request->input('page', 1)))
-            ->map(fn($id) => AccountService::get($id, true))
-            ->filter()
-            ->values();
-
-		return response()->json($res);
-    }
-
     public function accountStatuses(Request $request, $id)
     {
         $this->validate($request, [
