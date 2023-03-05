@@ -1084,7 +1084,8 @@
 					axios.get('/api/v1/accounts/'+this.profileId+'/following', {
 						params: {
 							cursor: this.followingCursor,
-							limit: 40
+							limit: 40,
+							'_pe': 1
 						}
 					})
 					.then(res => {
@@ -1125,7 +1126,8 @@
 					axios.get('/api/v1/accounts/'+this.profileId+'/followers', {
 						params: {
 							cursor: this.followerCursor,
-							limit: 40
+							limit: 40,
+							'_pe': 1
 						}
 					})
 					.then(res => {
@@ -1158,7 +1160,8 @@
 				axios.get('/api/v1/accounts/'+this.profile.id+'/following', {
 					params: {
 						cursor: this.followingCursor,
-						limit: 40
+						limit: 40,
+						'_pe': 1
 					}
 				})
 				.then(res => {
@@ -1187,7 +1190,8 @@
 				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
 						cursor: this.followerCursor,
-						limit: 40
+						limit: 40,
+						'_pe': 1
 					}
 				})
 				.then(res => {

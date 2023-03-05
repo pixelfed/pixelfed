@@ -471,6 +471,7 @@ class ApiV1Controller extends Controller
 			'limit' => 'sometimes|integer|min:1|max:80'
 		]);
 		$limit = $request->input('limit', 10);
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 
 		if(intval($pid) !== intval($account['id'])) {
 			if($account['locked']) {
@@ -496,8 +497,8 @@ class ApiV1Controller extends Controller
 				->whereFollowingId($account['id'])
 				->orderByDesc('id')
 				->simplePaginate($limit)
-				->map(function($follower) {
-					return AccountService::getMastodon($follower->profile_id, true);
+				->map(function($follower) use($napi) {
+					return $napi ? AccountService::get($follower->profile_id, true) : AccountService::getMastodon($follower->profile_id, true);
 				})
 				->filter(function($account) {
 					return $account && isset($account['id']);
@@ -531,8 +532,8 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		$res = $paginator->map(function($follower) {
-				return AccountService::get($follower->profile_id, true);
+		$res = $paginator->map(function($follower) use($napi) {
+				return $napi ? AccountService::get($follower->profile_id, true) : AccountService::getMastodon($follower->profile_id, true);
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
@@ -561,6 +562,7 @@ class ApiV1Controller extends Controller
 			'limit' => 'sometimes|integer|min:1|max:80'
 		]);
 		$limit = $request->input('limit', 10);
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 
 		if(intval($pid) !== intval($account['id'])) {
 			if($account['locked']) {
@@ -587,8 +589,8 @@ class ApiV1Controller extends Controller
 				->whereProfileId($account['id'])
 				->orderByDesc('id')
 				->simplePaginate($limit)
-				->map(function($follower) {
-					return AccountService::get($follower->following_id, true);
+				->map(function($follower) use($napi) {
+					return $napi ? AccountService::get($follower->following_id, true) : AccountService::getMastodon($follower->following_id, true);
 				})
 				->filter(function($account) {
 					return $account && isset($account['id']);
@@ -621,8 +623,8 @@ class ApiV1Controller extends Controller
 			}
 		}
 
-		$res = $paginator->map(function($follower) {
-				return AccountService::get($follower->following_id, true);
+		$res = $paginator->map(function($follower) use($napi) {
+				return $napi ? AccountService::get($follower->following_id, true) : AccountService::getMastodon($follower->following_id, true);
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);

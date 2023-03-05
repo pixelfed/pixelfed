@@ -131,7 +131,8 @@
 			fetchFollowers() {
 				axios.get('/api/v1/accounts/'+this.profile.id+'/followers', {
 					params: {
-						cursor: this.cursor
+						cursor: this.cursor,
+						'_pe': 1
 					}
 				}).then(res => {
 					if(!res.data.length) {
