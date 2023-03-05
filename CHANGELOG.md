@@ -118,6 +118,13 @@
 - Update ApiV1Controller, fix media update. Fixes #4196 ([f3164650](https://github.com/pixelfed/pixelfed/commit/f3164650))
 - Update SearchApiV2Service, fix hashtag search. ([1992b5bc](https://github.com/pixelfed/pixelfed/commit/1992b5bc))
 - Update ApiV1Controller, allow optional mastodonMode on v2/search endpoint. ([f4a69631](https://github.com/pixelfed/pixelfed/commit/f4a69631))
+- Update ApiV1Controller, add cursor pagination and pagination link headers to account/{id}/followers and account/{id}/following endpoints with legacy support for `page=` simple pagination ([713aa5fd](https://github.com/pixelfed/pixelfed/commit/713aa5fd))
+- Update legacy Profile component to use new cursor pagination for following/follower modals ([7a1495e6](https://github.com/pixelfed/pixelfed/commit/7a1495e6))
+- Update ApiV1Controller, fix link header pagination in /api/v1/statuses/{id}/favourited_by ([adc82eca](https://github.com/pixelfed/pixelfed/commit/adc82eca))
+- Update ApiV1Controller, fix link header pagination in /api/v1/statuses/{id}/reblogged_by ([e346b675](https://github.com/pixelfed/pixelfed/commit/e346b675))
+- Update ApiV1Controller, fix following/follower entities, use masto schema by default and update components accordingly ([4716c280](https://github.com/pixelfed/pixelfed/commit/4716c280))
+- Update FollowerController, remove deprecated /i/follow endpoint ([4739d614](https://github.com/pixelfed/pixelfed/commit/4739d614))
+- Update queue config, set "after_commit" to true ([304ea956](https://github.com/pixelfed/pixelfed/commit/304ea956))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
