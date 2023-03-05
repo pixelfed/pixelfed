@@ -467,6 +467,10 @@ class ApiV1Controller extends Controller
 		$account = AccountService::get($id);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
+		$this->validate($request, [
+			'limit' => 'sometimes|integer|min:1|max:80'
+		]);
+		$limit = $request->input('limit', 10);
 
 		if(intval($pid) !== intval($account['id'])) {
 			if($account['locked']) {
@@ -479,18 +483,56 @@ class ApiV1Controller extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
-				return [];
+			if($request->has('page') && $request->user()->is_admin == false) {
+				$page = (int) $request->input('page');
+				if(($page * $limit) >= 100) {
+					return [];
+				}
 			}
 		}
+		if($request->has('page')) {
+			$res = DB::table('followers')
+				->select('id', 'profile_id', 'following_id')
+				->whereFollowingId($account['id'])
+				->orderByDesc('id')
+				->simplePaginate($limit)
+				->map(function($follower) {
+					return AccountService::getMastodon($follower->profile_id, true);
+				})
+				->filter(function($account) {
+					return $account && isset($account['id']);
+				})
+				->values()
+				->toArray();
 
-		$res = DB::table('followers')
+			return $this->json($res);
+		}
+
+		$paginator = DB::table('followers')
 			->select('id', 'profile_id', 'following_id')
 			->whereFollowingId($account['id'])
 			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::getMastodon($follower->profile_id);
+			->cursorPaginate($limit)
+			->withQueryString();
+
+		$link = null;
+
+		if($paginator->onFirstPage()) {
+			if($paginator->hasMorePages()) {
+				$link = '<'.$paginator->nextPageUrl().'>; rel="prev"';
+			}
+		} else {
+			if($paginator->previousPageUrl()) {
+				$link = '<'.$paginator->previousPageUrl().'>; rel="next"';
+			}
+
+			if($paginator->hasMorePages()) {
+				$link .= ($link ? ',' : '') . '<'.$paginator->nextPageUrl().'>; rel="prev"';
+			}
+		}
+
+		$res = $paginator->map(function($follower) {
+				return AccountService::get($follower->profile_id, true);
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
@@ -498,7 +540,8 @@ class ApiV1Controller extends Controller
 			->values()
 			->toArray();
 
-		return $this->json($res);
+		$headers = isset($link) ? ['Link' => $link] : [];
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
@@ -514,6 +557,10 @@ class ApiV1Controller extends Controller
 		$account = AccountService::get($id);
 		abort_if(!$account, 404);
 		$pid = $request->user()->profile_id;
+		$this->validate($request, [
+			'limit' => 'sometimes|integer|min:1|max:80'
+		]);
+		$limit = $request->input('limit', 10);
 
 		if(intval($pid) !== intval($account['id'])) {
 			if($account['locked']) {
@@ -526,18 +573,56 @@ class ApiV1Controller extends Controller
 				return [];
 			}
 
-			if($request->has('page') && $request->page >= 5) {
-				return [];
+			if($request->has('page') && $request->user()->is_admin == false) {
+				$page = (int) $request->input('page');
+				if(($page * $limit) >= 100) {
+					return [];
+				}
 			}
 		}
 
-		$res = DB::table('followers')
+		if($request->has('page')) {
+			$res = DB::table('followers')
+				->select('id', 'profile_id', 'following_id')
+				->whereProfileId($account['id'])
+				->orderByDesc('id')
+				->simplePaginate($limit)
+				->map(function($follower) {
+					return AccountService::get($follower->following_id, true);
+				})
+				->filter(function($account) {
+					return $account && isset($account['id']);
+				})
+				->values()
+				->toArray();
+			return $this->json($res);
+		}
+
+		$paginator = DB::table('followers')
 			->select('id', 'profile_id', 'following_id')
 			->whereProfileId($account['id'])
 			->orderByDesc('id')
-			->simplePaginate(10)
-			->map(function($follower) {
-				return AccountService::get($follower->following_id);
+			->cursorPaginate($limit)
+			->withQueryString();
+
+		$link = null;
+
+		if($paginator->onFirstPage()) {
+			if($paginator->hasMorePages()) {
+				$link = '<'.$paginator->nextPageUrl().'>; rel="prev"';
+			}
+		} else {
+			if($paginator->previousPageUrl()) {
+				$link = '<'.$paginator->previousPageUrl().'>; rel="next"';
+			}
+
+			if($paginator->hasMorePages()) {
+				$link .= ($link ? ',' : '') . '<'.$paginator->nextPageUrl().'>; rel="prev"';
+			}
+		}
+
+		$res = $paginator->map(function($follower) {
+				return AccountService::get($follower->following_id, true);
 			})
 			->filter(function($account) {
 				return $account && isset($account['id']);
@@ -545,7 +630,8 @@ class ApiV1Controller extends Controller
 			->values()
 			->toArray();
 
-		return $this->json($res);
+		$headers = isset($link) ? ['Link' => $link] : [];
+		return $this->json($res, 200, $headers);
 	}
 
 	/**
