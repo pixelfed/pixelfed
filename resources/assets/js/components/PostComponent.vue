@@ -371,7 +371,7 @@
 			centered
 			title="Likes"
 			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
+			<div v-if="likedLoaded" class="list-group">
 				<div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
 					<div class="media">
 						<a :href="user.url">
@@ -392,10 +392,13 @@
 						</div>
 					</div>
 				</div>
-				<infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
+				<infinite-loading v-if="likesCanLoadMore" @infinite="infiniteLikesHandler" spinner="spiral">
 					<div slot="no-more"></div>
 					<div slot="no-results"></div>
 				</infinite-loading>
+			</div>
+			<div v-else class="d-flex justify-content-center align-items-center h-100">
+				<b-spinner />
 			</div>
 		</b-modal>
 		<b-modal ref="sharesModal"
@@ -667,6 +670,7 @@ import VueTribute from 'vue-tribute';
 import PollCard from './partials/PollCard.vue';
 import CommentFeed from './partials/CommentFeed.vue';
 import StatusCard from './partials/StatusCard.vue';
+import { parseLinkHeader } from '@web3-storage/parse-link-header';
 
 pixelfed.postComponent = {};
 
@@ -702,7 +706,9 @@ export default {
 							shared: false
 						},
 						likes: [],
-						likesPage: 1,
+						likesCursor: null,
+						likesCanLoadMore: true,
+						likedLoaded: false,
 						shares: [],
 						sharesPage: 1,
 						lightboxMedia: false,
@@ -847,7 +853,6 @@ export default {
 									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 								});
-								self.likesPage = 2;
 								self.sharesPage = 2;
 								self.showCaption = !response.data.status.sensitive;
 								if(self.status.comments_disabled == false) {
@@ -886,15 +891,35 @@ export default {
 					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
 					return;
 				}
-				if(this.likes.length) {
+				if(this.likes && this.likes.length) {
 					this.$refs.likesModal.show();
 					return;
 				}
-				axios.get('/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId)
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
+					params: {
+						limit: 40,
+						'_pe': 1
+					}
+				})
 				.then(res => {
-					this.likes = res.data.data;
+					this.likes = res.data;
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
 					this.$refs.likesModal.show();
-				});
+				})
+				.then(() => {
+					setTimeout(() => { this.likedLoaded = true }, 1000);
+				})
 			},
 
 			sharesModal() {
@@ -914,15 +939,36 @@ export default {
 			},
 
 			infiniteLikesHandler($state) {
-				let api = '/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId;
-				axios.get(api, {
+				if(!this.likesCanLoadMore) {
+					$state.complete();
+					return;
+				}
+
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
 					params: {
-						page: this.likesPage,
+						cursor: this.likesCursor,
+						limit: 20,
+						'_pe': 1
 					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.likes.push(...data.data);
-						this.likesPage++;
+				}).then(res => {
+					if (res && res.data.length) {
+						this.likes.push(...res.data);
+					}
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
+					return this.likesCanLoadMore;
+				}).then(res => {
+					if(res) {
 						$state.loaded();
 					} else {
 						$state.complete();

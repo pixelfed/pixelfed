@@ -151,6 +151,8 @@
 						} else {
 							this.canLoadMore = false;
 						}
+					} else {
+						this.canLoadMore = false;
 					}
 					this.feed.push(...res.data);
 					this.isLoaded = true;

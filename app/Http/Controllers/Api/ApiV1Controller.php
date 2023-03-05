@@ -2658,13 +2658,17 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$this->validate($request, [
-			'limit' => 'nullable|integer|min:1|max:100'
+			'limit' => 'nullable|integer|min:1|max:80'
 		]);
 
-		$limit = $request->input('limit') ?? 10;
+		$limit = $request->input('limit', 10);
 		$user = $request->user();
+		$pid = $user->profile_id;
 		$status = Status::findOrFail($id);
-		$author = intval($status->profile_id) === intval($user->profile_id) || $user->is_admin;
+		$account = AccountService::get($status->profile_id, true);
+		abort_if(!$account, 404);
+		$author = intval($status->profile_id) === intval($pid) || $user->is_admin;
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 
 		abort_if(
 			!$status->type ||
@@ -2674,7 +2678,7 @@ class ApiV1Controller extends Controller
 
 		if(!$author) {
 			if($status->scope == 'private') {
-				abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
+				abort_if(!FollowerService::follows($pid, $status->profile_id), 403);
 			} else {
 				abort_if(!in_array($status->scope, ['public','unlisted']), 403);
 			}
@@ -2696,29 +2700,39 @@ class ApiV1Controller extends Controller
 		$headers = [];
 		if($author && $res->hasPages()) {
 			$links = '';
-			if($res->previousPageUrl()) {
-				$links = '<' . $res->previousPageUrl() .'>; rel="prev"';
-			}
 
-			if($res->nextPageUrl()) {
-				if(!empty($links)) {
-					$links .= ', ';
+			if($res->onFirstPage()) {
+				if($res->nextPageUrl()) {
+					$links = '<' . $res->nextPageUrl() .'>; rel="prev"';
 				}
-				$links .= '<' . $res->nextPageUrl() .'>; rel="next"';
+			} else {
+				if($res->previousPageUrl()) {
+					$links = '<' . $res->previousPageUrl() .'>; rel="next"';
+				}
+
+				if($res->nextPageUrl()) {
+					if(!empty($links)) {
+						$links .= ', ';
+					}
+					$links .= '<' . $res->nextPageUrl() .'>; rel="prev"';
+				}
 			}
 
 			$headers = ['Link' => $links];
 		}
 
-		$res = $res->map(function($like) use($user) {
-			$account = AccountService::getMastodon($like->profile_id, true);
+		$res = $res->map(function($like) use($pid, $napi) {
+			$account = $napi ? AccountService::get($like->profile_id, true) : AccountService::getMastodon($like->profile_id, true);
 			if(!$account) {
 				return false;
 			}
-			$account['follows'] = $like->profile_id == $user->profile_id ? null : FollowerService::follows($user->profile_id, $like->profile_id);
+
+			if($napi) {
+				$account['follows'] = $like->profile_id == $pid ? null : FollowerService::follows($pid, $like->profile_id);
+			}
 			return $account;
 		})
-		->filter(function($account) use($user) {
+		->filter(function($account) {
 			return $account && isset($account['id']);
 		})
 		->values();
