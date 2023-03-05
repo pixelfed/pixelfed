@@ -11,25 +11,35 @@
 				</div>
 				<div class="card-body">
 					<div class="text-center mt-n5 mb-4">
-						<img class="rounded-circle p-1 border mt-n4 bg-white shadow" src="{{$profile->avatarUrl()}}" width="90px" height="90px;">
+						<img
+							class="rounded-circle p-1 border mt-n4 bg-white shadow"
+							src="{{$profile->avatarUrl()}}"
+							width="90"
+							height="90"
+							loading="lazy"
+							onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;">
 					</div>
 					<p class="text-center lead font-weight-bold mb-1">{{$profile->username}}</p>
 					<p class="text-center text-muted small text-uppercase mb-4">{{$profile->followerCount()}} followers</p>
 					<div class="d-flex justify-content-center">
 					@if($following == true)
-						<form class="d-inline-block" action="/i/follow" method="post">
-							@csrf
-							<input type="hidden" name="item" value="{{(string)$profile->id}}">
-							<input type="hidden" name="force" value="0">
-							<button type="submit" class="btn btn-outline-secondary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3" style="font-weight: 500">Unfollow</button>
-						</form>
+						<button
+							id="unfollow"
+							type="button"
+							class="btn btn-outline-secondary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3"
+							style="font-weight: 500"
+							onclick="unfollowProfile()">
+							Unfollow
+						</button>
 					@else
-						<form class="d-inline-block" action="/i/follow" method="post">
-							@csrf
-							<input type="hidden" name="item" value="{{(string)$profile->id}}">
-							<input type="hidden" name="force" value="0">
-							<button type="submit" class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3" style="font-weight: 500">Follow</button>
-						</form>
+						<button
+							id="follow"
+							type="button"
+							class="btn btn-primary btn-sm py-1 px-4 text-uppercase font-weight-bold mr-3"
+							style="font-weight: 500"
+							onclick="followProfile()">
+							Follow
+						</button>
 					@endif
 						<a class="btn btn-outline-primary btn-sm py-1 px-4 text-uppercase font-weight-bold" href="{{$profile->url()}}" style="font-weight: 500">View Profile</a>
 					</div>
@@ -51,3 +61,32 @@
 	</div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+	function followProfile() {
+		let btn = document.querySelector('#follow');
+		btn.setAttribute('disabled', 'disabled');
+		axios.post('/api/v1/accounts/{{$profile->id}}/follow')
+		.then(res => {
+			setTimeout(() => location.reload(), 1000);
+		})
+		.catch(err => {
+			location.href = '/login?next=' + encodeURI(location.href);
+		})
+	}
+
+	function unfollowProfile() {
+		let btn = document.querySelector('#unfollow');
+		btn.setAttribute('disabled', 'disabled');
+		axios.post('/api/v1/accounts/{{$profile->id}}/unfollow')
+		.then(res => {
+			setTimeout(() => location.reload(), 1000);
+		})
+		.catch(err => {
+			location.href = '/login?next=' + encodeURI(location.href);
+		})
+	}
+
+</script>
+@endpush
