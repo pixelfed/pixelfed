@@ -401,40 +401,6 @@
 				<b-spinner />
 			</div>
 		</b-modal>
-		<b-modal ref="sharesModal"
-			id="s-modal"
-			hide-footer
-			centered
-			title="Shares"
-			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
-				<div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
-					<div class="media">
-						<a :href="user.url">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-						</a>
-						<div class="media-body">
-							<div class="d-inline-block">
-								<p class="mb-0" style="font-size: 14px">
-									<a :href="user.url" class="font-weight-bold text-dark">
-										{{user.username}}
-									</a>
-								</p>
-								<p class="text-muted mb-0" style="font-size: 14px">
-										{{user.display_name}}
-									</a>
-								</p>
-							</div>
-							<p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
-						</div>
-					</div>
-				</div>
-				<infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
-					<div slot="no-more"></div>
-					<div slot="no-results"></div>
-				</infinite-loading>
-			</div>
-		</b-modal>
 		<b-modal ref="lightboxModal"
 			id="lightbox"
 			:hide-header="true"
@@ -710,7 +676,6 @@ export default {
 						likesCanLoadMore: true,
 						likedLoaded: false,
 						shares: [],
-						sharesPage: 1,
 						lightboxMedia: false,
 						replyText: '',
 						replyStatus: {},
@@ -853,7 +818,6 @@ export default {
 									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 								});
-								self.sharesPage = 2;
 								self.showCaption = !response.data.status.sensitive;
 								if(self.status.comments_disabled == false) {
 									self.showComments = true;
@@ -922,22 +886,6 @@ export default {
 				})
 			},
 
-			sharesModal() {
-				if(this.status.reblogs_count == 0 || $('body').hasClass('loggedIn') == false) {
-					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
-					return;
-				}
-				if(this.shares.length) {
-					this.$refs.sharesModal.show();
-					return;
-				}
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId)
-				.then(res => {
-					this.shares = res.data.data;
-					this.$refs.sharesModal.show();
-				});
-			},
-
 			infiniteLikesHandler($state) {
 				if(!this.likesCanLoadMore) {
 					$state.complete();
@@ -969,22 +917,6 @@ export default {
 					return this.likesCanLoadMore;
 				}).then(res => {
 					if(res) {
-						$state.loaded();
-					} else {
-						$state.complete();
-					}
-				});
-			},
-
-			infiniteSharesHandler($state) {
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId, {
-					params: {
-						page: this.sharesPage,
-					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.shares.push(...data.data);
-						this.sharesPage++;
 						$state.loaded();
 					} else {
 						$state.complete();

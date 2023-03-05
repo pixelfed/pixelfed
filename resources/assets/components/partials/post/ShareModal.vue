@@ -104,7 +104,7 @@
 				isFetchingMore: false,
 				likes: [],
 				ids: [],
-				page: undefined,
+				cursor: undefined,
 				isUpdatingFollowState: false,
 				followStateIndex: undefined,
 				user: window._sharedData.user
@@ -119,13 +119,14 @@
 				this.isFetchingMore = false;
 				this.likes = [];
 				this.ids = [];
-				this.page = undefined;
+				this.cursor = undefined;
 			},
 
 			fetchShares() {
 				axios.get('/api/v1/statuses/'+this.status.id+'/reblogged_by', {
 					params: {
-						limit: 40
+						limit: 40,
+						'_pe': 1
 					}
 				})
 				.then(res => {
@@ -133,19 +134,21 @@
 					this.likes = res.data;
 					if(res.headers && res.headers.link) {
 						const links = parseLinkHeader(res.headers.link);
-						if(links.next) {
-							this.page = links.next.cursor;
+						if(links.prev) {
+							this.cursor = links.prev.cursor;
 							this.canLoadMore = true;
 						} else {
 							this.canLoadMore = false;
 						}
+					} else {
+						this.canLoadMore = false;
 					}
 					this.isLoading = false;
 				});
 			},
 
 			open() {
-				if(this.page) {
+				if(this.cursor) {
 					this.clear();
 				}
 				this.isOpen = true;
@@ -163,7 +166,8 @@
 				axios.get('/api/v1/statuses/'+this.status.id+'/reblogged_by', {
 					params: {
 						limit: 10,
-						cursor: this.page
+						cursor: this.cursor,
+						'_pe': 1
 					}
 				}).then(res => {
 					if(!res.data || !res.data.length) {
@@ -179,11 +183,13 @@
 					})
 					if(res.headers && res.headers.link) {
 						const links = parseLinkHeader(res.headers.link);
-						if(links.next) {
-							this.page = links.next.cursor;
+						if(links.prev) {
+							this.cursor = links.prev.cursor;
 						} else {
 							this.canLoadMore = false;
 						}
+					} else {
+						this.canLoadMore = false;
 					}
 					this.isFetchingMore = false;
 				})
