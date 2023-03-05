@@ -484,8 +484,6 @@
 			size="sm"
 			body-class="list-group-flush p-0 rounded">
 			<div class="list-group text-center">
-				<!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-				<div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
 				<div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
 				<div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
@@ -1603,34 +1601,6 @@ export default {
 				navigator.clipboard.writeText(status.url);
 				this.closeCtxMenu();
 				return;
-			},
-
-			ctxMenuFollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = true;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
-					}, 500);
-				});
-			},
-
-			ctxMenuUnfollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = false;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
-					}, 500);
-				});
 			},
 
 			archivePost(status) {

@@ -71,14 +71,7 @@
 						<a v-if="status.place" class="small text-decoration-none text-muted" :href="'/discover/places/'+status.place.id+'/'+status.place.slug" title="Location" data-toggle="tooltip"><i class="fas fa-map-marked-alt"></i> {{status.place.name}}, {{status.place.country}}</a>
 					</div>
 				</div>
-				<div v-if="canFollow(status)">
-					<span class="px-2"></span>
-					<button class="btn btn-primary btn-sm font-weight-bold py-1 px-3 rounded-lg" @click="follow(status.account.id)"><i class="far fa-user-plus mr-1"></i> Follow</button>
-				</div>
-				<div v-if="status.hasOwnProperty('relationship') && status.relationship.hasOwnProperty('following') && status.relationship.following">
-					<span class="px-2"></span>
-					<button class="btn btn-outline-primary btn-sm font-weight-bold py-1 px-3 rounded-lg" @click="unfollow(status.account.id)"><i class="far fa-user-check mr-1"></i> Following</button>
-				</div>
+
 				<div class="text-right" style="flex-grow:1;">
 					<button class="btn btn-link text-dark py-0" type="button" @click="ctxMenu()">
 						<span class="fas fa-ellipsis-h text-lighter"></span>
@@ -397,52 +390,6 @@
 
 			statusDeleted(status) {
 				this.$emit('status-delete', status);
-			},
-
-			canFollow(status) {
-				if(!status.hasOwnProperty('relationship')) {
-					return false;
-				}
-
-				if(!status.hasOwnProperty('account') || !status.account.hasOwnProperty('id')) {
-					return false;
-				}
-
-				if(status.account.id == this.profile.id) {
-					return false;
-				}
-
-				return !status.relationship.following;
-			},
-
-			follow(id) {
-				event.currentTarget.blur();
-
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					this.status.relationship.following = true;
-					this.$emit('followed', id);
-				}).catch(err => {
-					if(err.response.data.message) {
-						swal('Error', err.response.data.message, 'error');
-					}
-				});
-			},
-
-			unfollow(id) {
-				event.currentTarget.blur();
-
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					this.status.relationship.following = false;
-					this.$emit('unfollowed', id);
-				}).catch(err => {
-					if(err.response.data.message) {
-						swal('Error', err.response.data.message, 'error');
-					}
-				});
 			}
 		}
 	}

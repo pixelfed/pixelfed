@@ -342,7 +342,7 @@
 				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in following" :key="'following_'+index">
 					<div class="media">
 						<a :href="profileUrlRedirect(user)">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;" v-once>
 						</a>
 						<div class="media-body text-truncate">
 							<p class="mb-0" style="font-size: 14px">
@@ -397,7 +397,7 @@
 				<div class="list-group-item border-0 py-1 mb-1" v-for="(user, index) in followers" :key="'follower_'+index">
 					<div class="media mb-0">
 						<a :href="profileUrlRedirect(user)">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null">
+							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px" height="30px" loading="lazy" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;" v-once>
 						</a>
 						<div class="media-body mb-0">
 							<p class="mb-0" style="font-size: 14px">
@@ -1049,19 +1049,22 @@
 				if($('body').hasClass('loggedIn') == false) {
 					return;
 				}
-				axios.post('/i/follow', {
-					item: this.profileId
-				}).then(res => {
-					this.$refs.visitorContextMenu.hide();
-					if(this.relationship.following) {
+				this.$refs.visitorContextMenu.hide();
+				const curState = this.relationship.following;
+				const apiUrl = curState ?
+					'/api/v1/accounts/' + this.profileId + '/unfollow' :
+					'/api/v1/accounts/' + this.profileId + '/follow';
+				axios.post(apiUrl)
+				.then(res => {
+					if(curState) {
 						this.profile.followers_count--;
-						if(this.profile.locked == true) {
-							window.location.href = '/';
+						if(this.profile.locked) {
+							location.reload();
 						}
 					} else {
 						this.profile.followers_count++;
 					}
-					this.relationship.following = !this.relationship.following;
+					this.relationship = res.data;
 				}).catch(err => {
 					if(err.response.data.message) {
 						swal('Error', err.response.data.message, 'error');
@@ -1218,9 +1221,11 @@
 			},
 
 			followModalAction(id, index, type = 'following') {
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
+				const apiUrl = type === 'following' ?
+					'/api/v1/accounts/' + id + '/unfollow' :
+					'/api/v1/accounts/' + id + '/follow';
+				axios.post(apiUrl)
+				.then(res => {
 					if(type == 'following') {
 						this.following.splice(index, 1);
 						this.profile.following_count--;

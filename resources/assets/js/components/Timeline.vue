@@ -283,21 +283,21 @@
 								</div> -->
 							</div>
 							<div class="card-footer bg-transparent border-0 pt-0 pb-1">
-                                <div class="d-flex justify-content-between text-center">
-                                    <span class="cursor-pointer" @click="redirect(profile.url)">
-                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
-                                        <p class="mb-0 small text-muted">Posts</p>
-                                    </span>
-                                    <span class="cursor-pointer" @click="redirect(profile.url+'?md=followers')">
-                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.followers_count)}}</p>
-                                        <p class="mb-0 small text-muted">Followers</p>
-                                    </span>
-                                    <span class="cursor-pointer" @click="redirect(profile.url+'?md=following')">
-                                        <p class="mb-0 font-weight-bold">{{formatCount(profile.following_count)}}</p>
-                                        <p class="mb-0 small text-muted">Following</p>
-                                    </span>
-                                </div>
-                            </div>
+								<div class="d-flex justify-content-between text-center">
+									<span class="cursor-pointer" @click="redirect(profile.url)">
+										<p class="mb-0 font-weight-bold">{{formatCount(profile.statuses_count)}}</p>
+										<p class="mb-0 small text-muted">Posts</p>
+									</span>
+									<span class="cursor-pointer" @click="redirect(profile.url+'?md=followers')">
+										<p class="mb-0 font-weight-bold">{{formatCount(profile.followers_count)}}</p>
+										<p class="mb-0 small text-muted">Followers</p>
+									</span>
+									<span class="cursor-pointer" @click="redirect(profile.url+'?md=following')">
+										<p class="mb-0 font-weight-bold">{{formatCount(profile.following_count)}}</p>
+										<p class="mb-0 small text-muted">Following</p>
+									</span>
+								</div>
+							</div>
 						</div>
 
 						<div v-show="modes.notify == true && !loading" class="mb-4">
@@ -324,7 +324,6 @@
 											</p>
 											<p class="mb-0 small text-muted">{{rec.message}}</p>
 										</div>
-										<a class="font-weight-bold small" href="#" @click.prevent="expRecFollow(rec.id, index)">Follow</a>
 									</div>
 								</div>
 							</div>
@@ -761,24 +760,6 @@
 				})
 			},
 
-			expRecFollow(id, index) {
-				return;
-
-				if(this.config.ab.rec == false) {
-					return;
-				}
-
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					this.suggestions.splice(index, 1);
-				}).catch(err => {
-					if(err.response.data.message) {
-						swal('Error', err.response.data.message, 'error');
-					}
-				});
-			},
-
 			owner(status) {
 				return this.profile.id === status.account.id;
 			},
@@ -865,34 +846,34 @@
 			},
 
 			commentFocus(status, $event) {
-                if(status.comments_disabled) {
-                    return;
-                }
+				if(status.comments_disabled) {
+					return;
+				}
 
-                // if(this.status && this.status.id == status.id) {
-                //  this.$refs.replyModal.show();
-                //  return;
-                // }
+				// if(this.status && this.status.id == status.id) {
+				//  this.$refs.replyModal.show();
+				//  return;
+				// }
 
-                this.status = status;
-                this.replies = {};
-                this.replyStatus = {};
-                this.replyText = '';
-                this.replyId = status.id;
-                this.replyStatus = status;
-                // this.$refs.replyModal.show();
-                this.fetchStatusComments(status, '');
+				this.status = status;
+				this.replies = {};
+				this.replyStatus = {};
+				this.replyText = '';
+				this.replyId = status.id;
+				this.replyStatus = status;
+				// this.$refs.replyModal.show();
+				this.fetchStatusComments(status, '');
 
-                $('nav').hide();
-                $('footer').hide();
-                $('.mobile-footer-spacer').attr('style', 'display:none !important');
-                $('.mobile-footer').attr('style', 'display:none !important');
-                this.currentLayout = 'comments';
-                window.history.pushState({}, '', this.statusUrl(status));
-                return;
-            },
+				$('nav').hide();
+				$('footer').hide();
+				$('.mobile-footer-spacer').attr('style', 'display:none !important');
+				$('.mobile-footer').attr('style', 'display:none !important');
+				this.currentLayout = 'comments';
+				window.history.pushState({}, '', this.statusUrl(status));
+				return;
+			},
 
-            fetchStatusComments(status, card) {
+			fetchStatusComments(status, card) {
 				let url = '/api/v2/comments/'+status.account.id+'/status/'+status.id;
 				axios.get(url)
 				.then(response => {
