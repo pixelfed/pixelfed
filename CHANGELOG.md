@@ -125,6 +125,7 @@
 - Update ApiV1Controller, fix following/follower entities, use masto schema by default and update components accordingly ([4716c280](https://github.com/pixelfed/pixelfed/commit/4716c280))
 - Update FollowerController, remove deprecated /i/follow endpoint ([4739d614](https://github.com/pixelfed/pixelfed/commit/4739d614))
 - Update queue config, set "after_commit" to true ([304ea956](https://github.com/pixelfed/pixelfed/commit/304ea956))
+- Update ApiV1Controller, fix home timeline bug ([a8ec8445](https://github.com/pixelfed/pixelfed/commit/a8ec8445))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
