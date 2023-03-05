@@ -131,13 +131,19 @@
 				break;
 
 				case 'unfollow':
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
+				axios.post('/api/v1/accounts/' + id + '/unfollow')
+				.then(res => {
 					swal(
 						'Unfollow Successful',
 						'You have successfully unfollowed that user',
 						'success'
+						);
+				})
+				.catch(err => {
+					swal(
+						'Error',
+						'An error occured when attempting to unfollow this user',
+						'error'
 						);
 				});
 				break;

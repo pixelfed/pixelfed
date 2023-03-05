@@ -62,36 +62,6 @@ class PublicApiController extends Controller
         }
     }
 
-    protected function getLikes($status)
-    {
-        if(false == Auth::check()) {
-            return [];
-        } else {
-            $profile = Auth::user()->profile;
-            if($profile->status) {
-                return [];
-            }
-            $likes = $status->likedBy()->orderBy('created_at','desc')->paginate(10);
-            $collection = new Fractal\Resource\Collection($likes, new AccountTransformer());
-            return $this->fractal->createData($collection)->toArray();
-        }
-    }
-
-    protected function getShares($status)
-    {
-        if(false == Auth::check()) {
-            return [];
-        } else {
-            $profile = Auth::user()->profile;
-            if($profile->status) {
-                return [];
-            }
-            $shares = $status->sharedBy()->orderBy('created_at','desc')->paginate(10);
-            $collection = new Fractal\Resource\Collection($shares, new AccountTransformer());
-            return $this->fractal->createData($collection)->toArray();
-        }
-    }
-
     public function getStatus(Request $request, $id)
     {
 		abort_if(!$request->user(), 403);
@@ -214,41 +184,6 @@ class PublicApiController extends Controller
         $resource->setPaginator(new IlluminatePaginatorAdapter($replies));
         $res = $this->fractal->createData($resource)->toArray();
         return response()->json($res, 200, [], JSON_PRETTY_PRINT);
-    }
-
-    public function statusLikes(Request $request, $username, $id)
-    {
-        abort_if(!$request->user(), 404);
-        $status = Status::findOrFail($id);
-        $this->scopeCheck($status->profile, $status);
-        $page = $request->input('page');
-        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
-            return response()->json([
-                'data' => []
-            ]);
-        }
-        $likes = $this->getLikes($status);
-        return response()->json([
-            'data' => $likes
-        ]);
-    }
-
-    public function statusShares(Request $request, $username, $id)
-    {
-        abort_if(!$request->user(), 404);
-        $profile = Profile::whereUsername($username)->whereNull('status')->firstOrFail();
-        $status = Status::whereProfileId($profile->id)->findOrFail($id);
-        $this->scopeCheck($profile, $status);
-        $page = $request->input('page');
-        if($page && $page >= 3 && $request->user()->profile_id != $status->profile_id) {
-            return response()->json([
-                'data' => []
-            ]);
-        }
-        $shares = $this->getShares($status);
-        return response()->json([
-            'data' => $shares
-        ]);
     }
 
     protected function scopeCheck(Profile $profile, Status $status)
@@ -809,68 +744,6 @@ class PublicApiController extends Controller
     {
         $res = AccountService::get($id);
         return response()->json($res);
-    }
-
-    public function accountFollowers(Request $request, $id)
-    {
-		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id, true);
-		abort_if(!$account, 404);
-		$pid = $request->user()->profile_id;
-
-		if($pid != $account['id']) {
-			if($account['locked']) {
-				if(!FollowerService::follows($pid, $account['id'])) {
-					return [];
-				}
-			}
-
-			if(AccountService::hiddenFollowers($id)) {
-				return [];
-			}
-
-			if($request->has('page') && $request->page >= 10) {
-				return [];
-			}
-		}
-
-        $res = collect(FollowerService::followersPaginate($account['id'], $request->input('page', 1)))
-            ->map(fn($id) => AccountService::get($id, true))
-            ->filter()
-            ->values();
-
-		return response()->json($res);
-    }
-
-    public function accountFollowing(Request $request, $id)
-    {
-		abort_if(!$request->user(), 403);
-		$account = AccountService::get($id, true);
-		abort_if(!$account, 404);
-		$pid = $request->user()->profile_id;
-
-		if($pid != $account['id']) {
-			if($account['locked']) {
-				if(!FollowerService::follows($pid, $account['id'])) {
-					return [];
-				}
-			}
-
-			if(AccountService::hiddenFollowing($id)) {
-				return [];
-			}
-
-			if($request->has('page') && $request->page >= 10) {
-				return [];
-			}
-		}
-
-        $res = collect(FollowerService::followingPaginate($account['id'], $request->input('page', 1)))
-            ->map(fn($id) => AccountService::get($id, true))
-            ->filter()
-            ->values();
-
-		return response()->json($res);
     }
 
     public function accountStatuses(Request $request, $id)

@@ -10,28 +10,20 @@
 				<div class="profile-details">
 					<div class="username-bar pb-2 d-flex align-items-center">
 						<span class="font-weight-ultralight h3">{{$user->username}}</span>
-						@if(Auth::check() && $is_following == true)
+						@auth
+						@if($is_following == true)
 						<span class="pl-4">
-							<form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="unfollow">
-								@csrf
-								<input type="hidden" name="item" value="{{$user->id}}">
-								<button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="submit">Unfollow</button>
-							</form>
+							<button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="button" onclick="unfollowProfile()">Unfollow</button>
 						</span>
-						@elseif(Auth::check() && $requested == true)
+						@elseif($requested == true)
 						<span class="pl-4">
-							<button class="btn btn-outline-secondary font-weight-bold px-4 py-0 disabled" disabled type="button">Follow Requested</button>
+							<button class="btn btn-outline-secondary font-weight-bold px-4 py-0" type="button" onclick="unfollowProfile()">Follow Requested</button>
 						</span>
-						@elseif(Auth::check() && $is_following == false)
+						@elseif($is_following == false)
 						<span class="pl-4">
-							<form class="follow-form" method="post" action="/i/follow" style="display: inline;" data-id="{{$user->id}}" data-action="follow">
-								@csrf
-								<input type="hidden" name="item" value="{{$user->id}}">
-								<button class="btn btn-primary font-weight-bold px-4 py-0" type="submit">Follow</button>
-							</form>
+							<button class="btn btn-primary font-weight-bold px-4 py-0" type="button" onclick="followProfile()">Follow</button>
 						</span>
 						@endif
-						@auth
 						<span class="pl-4">
 							<i class="fas fa-cog fa-lg text-muted cursor-pointer" data-toggle="modal" data-target="#ctxProfileMenu"></i>
 							<div class="modal" tabindex="-1" role="dialog" id="ctxProfileMenu">
@@ -81,6 +73,7 @@
 				swal('Muted Profile', 'You have successfully muted this profile.', 'success');
 			});
 	}
+
 	function blockProfile() {
 			axios.post('/i/block', {
 				type: 'user',
@@ -90,6 +83,20 @@
 				$('#ctxProfileMenu').hide();
 				swal('Blocked Profile', 'You have successfully blocked this profile.', 'success');
 			});
+	}
+
+	function followProfile() {
+		axios.post('/api/v1/accounts/{{$user->id}}/follow')
+		.then(res => {
+			location.reload();
+		})
+	}
+
+	function unfollowProfile() {
+		axios.post('/api/v1/accounts/{{$user->id}}/unfollow')
+		.then(res => {
+			location.reload();
+		})
 	}
 
 </script>

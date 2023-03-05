@@ -122,12 +122,6 @@
 								</a>
 							</div> -->
 
-							<!-- <div v-else-if="n.type == 'follow' && n.relationship.following == false">
-								<a href="#" class="btn btn-primary py-0 font-weight-bold" @click.prevent="followProfile(n);">
-									Follow
-								</a>
-							</div> -->
-
 							<!-- <div v-else-if="n.status && n.status.parent && !n.status.parent.media_attachments && n.type == 'like' && n.relationship.following == false">
 								<a href="#" class="btn btn-primary py-0 font-weight-bold">
 									Follow
@@ -288,24 +282,6 @@ export default {
 			let username = status.account.username;
 			let id = status.id;
 			return '/p/' + username + '/' + id;
-		},
-
-		followProfile(n) {
-			let self = this;
-			let id = n.account.id;
-			axios.post('/i/follow', {
-					item: id
-			}).then(res => {
-				self.notifications.map(notification => {
-					if(notification.account.id === id) {
-						notification.relationship.following = true;
-					}
-				});
-			}).catch(err => {
-				if(err.response.data.message) {
-					swal('Error', err.response.data.message, 'error');
-				}
-			});
 		},
 
 		viewContext(n) {

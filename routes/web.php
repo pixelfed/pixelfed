@@ -189,8 +189,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
 			Route::get('profile/{username}/status/{postid}/state', 'PublicApiController@statusState');
 			Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
-			Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
-			Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
 			Route::get('status/{id}/replies', 'InternalApiController@statusReplies');
 			Route::post('moderator/action', 'InternalApiController@modAction');
 			Route::get('discover/categories', 'InternalApiController@discoverCategories');
@@ -207,8 +205,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById');
 				Route::get('accounts/search', 'Api\ApiV1Controller@accountSearch');
 				Route::get('accounts/{id}/statuses', 'PublicApiController@accountStatuses');
-				Route::get('accounts/{id}/following', 'PublicApiController@accountFollowing');
-				Route::get('accounts/{id}/followers', 'PublicApiController@accountFollowers');
 				Route::post('accounts/{id}/block', 'Api\ApiV1Controller@accountBlockById');
 				Route::post('accounts/{id}/unblock', 'Api\ApiV1Controller@accountUnblockById');
 				Route::get('statuses/{id}', 'PublicApiController@getStatus');
@@ -236,8 +232,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('discover/profiles', 'DiscoverController@profilesDirectoryApi');
 				Route::get('profile/{username}/status/{postid}', 'PublicApiController@status');
 				Route::get('comments/{username}/status/{postId}', 'PublicApiController@statusComments');
-				Route::get('likes/profile/{username}/status/{id}', 'PublicApiController@statusLikes');
-				Route::get('shares/profile/{username}/status/{id}', 'PublicApiController@statusShares');
 				Route::post('moderator/action', 'InternalApiController@modAction');
 				Route::get('discover/categories', 'InternalApiController@discoverCategories');
 				Route::get('loops', 'DiscoverController@loopsApi');

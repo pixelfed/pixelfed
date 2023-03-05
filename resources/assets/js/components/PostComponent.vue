@@ -371,7 +371,7 @@
 			centered
 			title="Likes"
 			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
+			<div v-if="likedLoaded" class="list-group">
 				<div class="list-group-item border-0 py-1" v-for="(user, index) in likes" :key="'modal_likes_'+index">
 					<div class="media">
 						<a :href="user.url">
@@ -392,44 +392,13 @@
 						</div>
 					</div>
 				</div>
-				<infinite-loading @infinite="infiniteLikesHandler" spinner="spiral">
+				<infinite-loading v-if="likesCanLoadMore" @infinite="infiniteLikesHandler" spinner="spiral">
 					<div slot="no-more"></div>
 					<div slot="no-results"></div>
 				</infinite-loading>
 			</div>
-		</b-modal>
-		<b-modal ref="sharesModal"
-			id="s-modal"
-			hide-footer
-			centered
-			title="Shares"
-			body-class="list-group-flush py-3 px-0">
-			<div class="list-group">
-				<div class="list-group-item border-0 py-1" v-for="(user, index) in shares" :key="'modal_shares_'+index">
-					<div class="media">
-						<a :href="user.url">
-							<img class="mr-3 rounded-circle box-shadow" :src="user.avatar" :alt="user.username + '’s avatar'" width="30px">
-						</a>
-						<div class="media-body">
-							<div class="d-inline-block">
-								<p class="mb-0" style="font-size: 14px">
-									<a :href="user.url" class="font-weight-bold text-dark">
-										{{user.username}}
-									</a>
-								</p>
-								<p class="text-muted mb-0" style="font-size: 14px">
-										{{user.display_name}}
-									</a>
-								</p>
-							</div>
-							<p class="float-right"><!-- <a class="btn btn-primary font-weight-bold py-1" href="#">Follow</a> --></p>
-						</div>
-					</div>
-				</div>
-				<infinite-loading @infinite="infiniteSharesHandler" spinner="spiral">
-					<div slot="no-more"></div>
-					<div slot="no-results"></div>
-				</infinite-loading>
+			<div v-else class="d-flex justify-content-center align-items-center h-100">
+				<b-spinner />
 			</div>
 		</b-modal>
 		<b-modal ref="lightboxModal"
@@ -515,8 +484,6 @@
 			size="sm"
 			body-class="list-group-flush p-0 rounded">
 			<div class="list-group text-center">
-				<!-- <div v-if="user && user.id != status.account.id && relationship && relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-danger" @click="ctxMenuUnfollow()">Unfollow</div>
-				<div v-if="user && user.id != status.account.id && relationship && !relationship.following" class="list-group-item rounded cursor-pointer font-weight-bold text-primary" @click="ctxMenuFollow()">Follow</div> -->
 				<div v-if="status && status.local == true" class="list-group-item rounded cursor-pointer" @click="showEmbedPostModal()">Embed</div>
 				<div class="list-group-item rounded cursor-pointer" @click="ctxMenuCopyLink()">Copy Link</div>
 				<div v-if="status && user.id == status.account.id" class="list-group-item rounded cursor-pointer" @click="toggleCommentVisibility">{{ showComments ? 'Disable' : 'Enable'}} Comments</div>
@@ -667,6 +634,7 @@ import VueTribute from 'vue-tribute';
 import PollCard from './partials/PollCard.vue';
 import CommentFeed from './partials/CommentFeed.vue';
 import StatusCard from './partials/StatusCard.vue';
+import { parseLinkHeader } from '@web3-storage/parse-link-header';
 
 pixelfed.postComponent = {};
 
@@ -702,9 +670,10 @@ export default {
 							shared: false
 						},
 						likes: [],
-						likesPage: 1,
+						likesCursor: null,
+						likesCanLoadMore: true,
+						likedLoaded: false,
 						shares: [],
-						sharesPage: 1,
 						lightboxMedia: false,
 						replyText: '',
 						replyStatus: {},
@@ -847,8 +816,6 @@ export default {
 									let img = `<img draggable="false" class="emojione custom-emoji" alt="${emoji.shortcode}" title="${emoji.shortcode}" src="${emoji.url}" data-original="${emoji.url}" data-static="${emoji.static_url}" width="18" height="18" onerror="this.onerror=null;this.src='/storage/emoji/missing.png';" />`;
 									self.content = self.content.replace(`:${emoji.shortcode}:`, img);
 								});
-								self.likesPage = 2;
-								self.sharesPage = 2;
 								self.showCaption = !response.data.status.sensitive;
 								if(self.status.comments_disabled == false) {
 									self.showComments = true;
@@ -886,59 +853,68 @@ export default {
 					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
 					return;
 				}
-				if(this.likes.length) {
+				if(this.likes && this.likes.length) {
 					this.$refs.likesModal.show();
 					return;
 				}
-				axios.get('/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId)
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
+					params: {
+						limit: 40,
+						'_pe': 1
+					}
+				})
 				.then(res => {
-					this.likes = res.data.data;
-					this.$refs.likesModal.show();
-				});
-			},
+					this.likes = res.data;
 
-			sharesModal() {
-				if(this.status.reblogs_count == 0 || $('body').hasClass('loggedIn') == false) {
-					window.location.href = '/login?next=' + encodeURIComponent('/p/' + this.status.shortcode);
-					return;
-				}
-				if(this.shares.length) {
-					this.$refs.sharesModal.show();
-					return;
-				}
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId)
-				.then(res => {
-					this.shares = res.data.data;
-					this.$refs.sharesModal.show();
-				});
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
+					this.$refs.likesModal.show();
+				})
+				.then(() => {
+					setTimeout(() => { this.likedLoaded = true }, 1000);
+				})
 			},
 
 			infiniteLikesHandler($state) {
-				let api = '/api/v2/likes/profile/'+this.statusUsername+'/status/'+this.statusId;
-				axios.get(api, {
-					params: {
-						page: this.likesPage,
-					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.likes.push(...data.data);
-						this.likesPage++;
-						$state.loaded();
-					} else {
-						$state.complete();
-					}
-				});
-			},
+				if(!this.likesCanLoadMore) {
+					$state.complete();
+					return;
+				}
 
-			infiniteSharesHandler($state) {
-				axios.get('/api/v2/shares/profile/'+this.statusUsername+'/status/'+this.statusId, {
+				axios.get('/api/v1/statuses/'+ this.statusId + '/favourited_by', {
 					params: {
-						page: this.sharesPage,
+						cursor: this.likesCursor,
+						limit: 20,
+						'_pe': 1
 					},
-				}).then(({ data }) => {
-					if (data.data.length > 0) {
-						this.shares.push(...data.data);
-						this.sharesPage++;
+				}).then(res => {
+					if (res && res.data.length) {
+						this.likes.push(...res.data);
+					}
+
+					if(res.headers && res.headers.link) {
+						const links = parseLinkHeader(res.headers.link);
+						if(links.prev) {
+							this.likesCursor = links.prev.cursor;
+							this.likesCanLoadMore = true;
+						} else {
+							this.likesCanLoadMore = false;
+						}
+					} else {
+						this.likesCanLoadMore = false;
+					}
+					return this.likesCanLoadMore;
+				}).then(res => {
+					if(res) {
 						$state.loaded();
 					} else {
 						$state.complete();
@@ -1625,34 +1601,6 @@ export default {
 				navigator.clipboard.writeText(status.url);
 				this.closeCtxMenu();
 				return;
-			},
-
-			ctxMenuFollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = true;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Follow successful!', 'You are now following ' + username, 'success');
-					}, 500);
-				});
-			},
-
-			ctxMenuUnfollow() {
-				let id = this.status.account.id;
-				axios.post('/i/follow', {
-					item: id
-				}).then(res => {
-					let username = this.status.account.acct;
-					this.relationship.following = false;
-					this.$refs.ctxModal.hide();
-					setTimeout(function() {
-						swal('Unfollow successful!', 'You are no longer following ' + username, 'success');
-					}, 500);
-				});
 			},
 
 			archivePost(status) {
