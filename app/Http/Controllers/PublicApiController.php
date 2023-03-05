@@ -408,96 +408,6 @@ class PublicApiController extends Controller
 
         $textOnlyReplies = false;
 
-        if(config('exp.top')) {
-            $textOnlyReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
-            $textOnlyPosts = (bool) Redis::zscore('pf:tl:top', $pid);
-
-            if($textOnlyPosts) {
-                array_push($types, 'text');
-            }
-        }
-
-        if(config('exp.polls') == true) {
-            array_push($types, 'poll');
-        }
-
-        if(config('instance.timeline.home.cached') && $limit == 6 && (!$min && !$max)) {
-            $ttl = config('instance.timeline.home.cache_ttl');
-            $res = Cache::remember(
-                'pf:timelines:home:' . $pid,
-                $ttl,
-                function() use(
-                $types,
-                $textOnlyReplies,
-                $following,
-                $limit,
-                $filtered,
-                $user
-                ) {
-                return Status::select(
-                    'id',
-                    'uri',
-                    'caption',
-                    'rendered',
-                    'profile_id',
-                    'type',
-                    'in_reply_to_id',
-                    'reblog_of_id',
-                    'is_nsfw',
-                    'scope',
-                    'local',
-                    'reply_count',
-                    'comments_disabled',
-                    'place_id',
-                    'likes_count',
-                    'reblogs_count',
-                    'created_at',
-                    'updated_at'
-                  )
-                  ->whereIn('type', $types)
-                  ->when(!$textOnlyReplies, function($q, $textOnlyReplies) {
-                    return $q->whereNull('in_reply_to_id');
-                  })
-                  ->whereIn('profile_id', $following)
-                  ->whereIn('visibility',['public', 'unlisted', 'private'])
-                  ->orderBy('created_at', 'desc')
-                  ->limit($limit)
-                  ->get()
-                  ->map(function($s) use ($user) {
-                       $status = StatusService::get($s->id, false);
-                       if(!$status) {
-                            return false;
-                       }
-                       return $status;
-                  })
-                  ->filter(function($s) use($filtered) {
-                        return $s && in_array($s['account']['id'], $filtered) == false;
-                  })
-                  ->values()
-                  ->toArray();
-            });
-
-            $res = collect($res)
-                ->map(function($s) use ($user) {
-                    $status = StatusService::get($s['id'], false);
-                    if(!$status) {
-                        return false;
-                    }
-                    $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s['id']);
-                    $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s['id']);
-                    return $status;
-                })
-                ->filter(function($s) use($filtered) {
-                    return $s && in_array($s['account']['id'], $filtered) == false;
-                })
-                ->values()
-                ->take($limit)
-                ->toArray();
-
-            return $res;
-        }
-
         if($min || $max) {
             $dir = $min ? '>' : '<';
             $id = $min ?? $max;
@@ -532,10 +442,14 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get()
                       ->map(function($s) use ($user) {
+                      	try {
                            $status = StatusService::get($s->id, false);
                            if(!$status) {
                            		return false;
                            }
+                       } catch(\Exception $e) {
+                       	 return false;
+                       }
                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
                            $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);
@@ -577,10 +491,14 @@ class PublicApiController extends Controller
                       ->limit($limit)
                       ->get()
                       ->map(function($s) use ($user) {
-                           $status = StatusService::get($s->id, false);
-                           if(!$status) {
-                           		return false;
-                           }
+	                      	try {
+	                           $status = StatusService::get($s->id, false);
+	                           if(!$status) {
+	                           		return false;
+	                           }
+	                       } catch(\Exception $e) {
+	                       		return false;
+	                       }
                            $status['favourited'] = (bool) LikeService::liked($user->profile_id, $s->id);
                            $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $s->id);
                            $status['reblogged'] = (bool) ReblogService::get($user->profile_id, $s->id);

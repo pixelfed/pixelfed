@@ -2073,10 +2073,10 @@ class ApiV1Controller extends Controller
 	public function timelineHome(Request $request)
 	{
 		$this->validate($request,[
-		  'page'        => 'nullable|integer|max:40',
-		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
+		  'page'        => 'sometimes|integer|max:40',
+		  'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
+		  'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
+		  'limit'       => 'sometimes|integer|min:1|max:80'
 		]);
 
 		$napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -2091,84 +2091,6 @@ class ApiV1Controller extends Controller
 			return $following->push($pid)->toArray();
 		});
 
-		$includeReplies = false;
-		if(config('exp.top')) {
-            $includeReplies = (bool) Redis::zscore('pf:tl:replies', $pid);
-        }
-
-		if(config('instance.timeline.home.cached') && (!$min && !$max)) {
-            $ttl = config('instance.timeline.home.cache_ttl');
-            $res = Cache::remember(
-                'pf:timelines:home:' . $pid,
-                $ttl,
-                function() use(
-                $following,
-                $limit,
-                $pid,
-                $includeReplies
-                ) {
-                return Status::select(
-                    'id',
-                    'uri',
-                    'caption',
-                    'rendered',
-                    'profile_id',
-                    'type',
-                    'in_reply_to_id',
-                    'reblog_of_id',
-                    'is_nsfw',
-                    'scope',
-                    'local',
-                    'reply_count',
-                    'comments_disabled',
-                    'place_id',
-                    'likes_count',
-                    'reblogs_count',
-                    'created_at',
-                    'updated_at'
-                  )
-                  ->when(!$includeReplies, function($q, $includeReplies) {
-                    return $q->whereNull('in_reply_to_id');
-                  })
-                  ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-                  ->whereIn('profile_id', $following)
-                  ->whereIn('visibility',['public', 'unlisted', 'private'])
-                  ->orderBy('created_at', 'desc')
-                  ->limit($limit)
-                  ->get()
-                  ->map(function($s) {
-                       $status = StatusService::get($s->id, false);
-                       if(!$status) {
-                            return false;
-                       }
-                       return $status;
-                  })
-                  ->filter(function($s) {
-                        return $s && isset($s['account']['id']);
-                  })
-                  ->values()
-                  ->toArray();
-            });
-
-            $res = collect($res)
-                ->map(function($s) use ($pid) {
-                    $status = StatusService::get($s['id'], false);
-                    if(!$status) {
-                        return false;
-                    }
-                    $status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $s['id']);
-                    $status['reblogged'] = (bool) ReblogService::get($pid, $s['id']);
-                    return $status;
-                })
-                ->filter(function($s) {
-                    return $s && isset($s['account']['id']);
-                })
-                ->values()
-                ->take($limit)
-                ->toArray();
-		}
-
 		if($min || $max) {
 			$dir = $min ? '>' : '<';
 			$id = $min ?? $max;
@@ -2177,21 +2099,24 @@ class ApiV1Controller extends Controller
 				'profile_id',
 				'type',
 				'visibility',
-				'created_at'
+				'in_reply_to_id',
+				'reblog_of_id'
 			)
-			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->where('id', $dir, $id)
-            ->when(!$includeReplies, function($q, $includeReplies) {
-                return $q->whereNull('in_reply_to_id');
-            })
-			->whereIn('profile_id', $following)
+			->whereNull(['in_reply_to_id', 'reblog_of_id'])
+			->whereIntegerInRaw('profile_id', $following)
+			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
 			->whereIn('visibility',['public', 'unlisted', 'private'])
-			->latest()
+			->orderByDesc('id')
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid, $napi) {
-				$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+				try {
+					$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
+					if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+						return false;
+					}
+				} catch(\Exception $e) {
 					return false;
 				}
 
@@ -2212,20 +2137,27 @@ class ApiV1Controller extends Controller
 				'profile_id',
 				'type',
 				'visibility',
-				'created_at'
+				'in_reply_to_id',
+				'reblog_of_id',
 			)
-            ->when(!$includeReplies, function($q, $includeReplies) {
-                return $q->whereNull('in_reply_to_id');
-            })
+			->whereNull(['in_reply_to_id', 'reblog_of_id'])
+			->whereIntegerInRaw('profile_id', $following)
 			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
-			->whereIn('profile_id', $following)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
-			->latest()
+			->orderByDesc('id')
 			->take(($limit * 2))
 			->get()
 			->map(function($s) use($pid, $napi) {
-				$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
-				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+				try {
+					$account = AccountService::get($s['profile_id'], true);
+					if(!$account) {
+						return false;
+					}
+					$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
+					if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+						return false;
+					}
+				} catch(\Exception $e) {
 					return false;
 				}
 
