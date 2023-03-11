@@ -2819,6 +2819,7 @@ class ApiV1Controller extends Controller
 				if($m->profile_id !== $user->profile_id || $m->status_id) {
 					abort(403, 'Invalid media id');
 				}
+				$m->order = $k + 1;
 				$m->status_id = $status->id;
 				$m->save();
 				array_push($mimes, $m->mime);
