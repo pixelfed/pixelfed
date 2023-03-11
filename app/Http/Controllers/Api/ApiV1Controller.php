@@ -2076,7 +2076,7 @@ class ApiV1Controller extends Controller
 		  'page'        => 'sometimes|integer|max:40',
 		  'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'sometimes|integer|min:1|max:80'
+		  'limit'       => 'sometimes|integer|min:1|max:100'
 		]);
 
 		$napi = $request->has(self::PF_API_ENTITY_KEY);
