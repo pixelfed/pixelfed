@@ -126,6 +126,8 @@
 - Update FollowerController, remove deprecated /i/follow endpoint ([4739d614](https://github.com/pixelfed/pixelfed/commit/4739d614))
 - Update queue config, set "after_commit" to true ([304ea956](https://github.com/pixelfed/pixelfed/commit/304ea956))
 - Update ApiV1Controller, fix home timeline bug ([a8ec8445](https://github.com/pixelfed/pixelfed/commit/a8ec8445))
+- Update ApiV1Controller, increase home timeline max limit to 100 to fix compatibility with mastoapi ([5cf9ba78](https://github.com/pixelfed/pixelfed/commit/5cf9ba78))
+- Update ApiV1Controller, preserve album order. Fixes #3708 ([deb26971](https://github.com/pixelfed/pixelfed/commit/deb26971))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
