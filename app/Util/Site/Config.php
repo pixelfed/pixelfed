@@ -7,24 +7,26 @@ use Illuminate\Support\Str;
 
 class Config {
 
-	const CACHE_KEY = 'api:site:configuration:_v0.6';
+	const CACHE_KEY = 'api:site:configuration:_v0.7';
 
 	public static function get() {
 		return Cache::remember(self::CACHE_KEY, 900, function() {
 			return [
 				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
-					'max_photo_size' => config('pixelfed.max_photo_size'),
-					'max_caption_length' => config('pixelfed.max_caption_length'),
-					'album_limit' => config_cache('pixelfed.max_album_length'),
-					'image_quality' => config_cache('pixelfed.image_quality'),
+					'max_photo_size' => (int) config('pixelfed.max_photo_size'),
+					'max_caption_length' => (int) config('pixelfed.max_caption_length'),
+					'max_altext_length' => (int) config('pixelfed.max_altext_length', 150),
+					'album_limit' => (int) config_cache('pixelfed.max_album_length'),
+					'image_quality' => (int) config_cache('pixelfed.image_quality'),
 
-					'max_collection_length' => config('pixelfed.max_collection_length', 18),
+					'max_collection_length' => (int) config('pixelfed.max_collection_length', 18),
 
 					'optimize_image' => (bool) config('pixelfed.optimize_image'),
 					'optimize_video' => (bool) config('pixelfed.optimize_video'),
 
 					'media_types' => config_cache('pixelfed.media_types'),
+					'mime_types' => config_cache('pixelfed.media_types') ? explode(',', config_cache('pixelfed.media_types')) : [],
 					'enforce_account_limit' => (bool) config_cache('pixelfed.enforce_account_limit')
 				],
 
