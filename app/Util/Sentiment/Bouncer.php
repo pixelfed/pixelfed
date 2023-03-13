@@ -7,6 +7,7 @@ use App\Status;
 use Cache;
 use Illuminate\Support\Str;
 use App\Services\StatusService;
+use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
 
 class Bouncer {
 
@@ -125,6 +126,10 @@ class Bouncer {
 			'reblogs_count' => $status->reblogs_count,
 		]);
 		$ai->save();
+
+		if(config('instance.reports.email.enabled') && config('instance.reports.email.autospam')) {
+			AutospamNotifyAdminViaEmail::dispatch($ai);
+		}
 
 		$u = $status->profile->user;
 		$u->has_interstitial = true;

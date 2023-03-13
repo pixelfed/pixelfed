@@ -32,6 +32,7 @@ use App\Mail\PasswordChange;
 use App\Mail\ConfirmAppEmail;
 use App\Http\Resources\StatusStateless;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -143,6 +144,10 @@ class ApiV1Dot1Controller extends Controller
 		$report->reported_profile_id = $rpid;
 		$report->type = $report_type;
 		$report->save();
+
+		if(config('instance.reports.email.enabled')) {
+			ReportNotifyAdminViaEmail::dispatch($report)->onQueue('default');
+		}
 
 		$res = [
 			"msg" => "Successfully sent report",
@@ -399,10 +404,10 @@ class ApiV1Dot1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
-		$res = $user->tokens->sortByDesc('created_at')->take(10)->map(function($token, $key) {
+		$res = $user->tokens->sortByDesc('created_at')->take(10)->map(function($token, $key) use($request) {
 			return [
-				'id' => $key + 1,
-				'did' => encrypt($token->id),
+				'id' => $token->id,
+				'current_session' => $request->user()->token()->id == $token->id,
 				'name' => $token->client->name,
 				'scopes' => $token->scopes,
 				'revoked' => $token->revoked,
