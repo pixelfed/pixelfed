@@ -1,10 +1,10 @@
 <?php
 return [
-    'about'             => 'Sobre... ',
+    'about'             => 'Quant a…',
     'help'              => 'Suport',
     'language'          => 'Llengua',
     'fediverse'         => 'Fediverse',
-    'opensource'        => 'Codi Obert',
+    'opensource'        => 'Codi obert',
     'terms'             => 'Condicions',
     'privacy'           => 'Privacitat',
     'l10nWip'           => 'Estem treballant en el suport local',
