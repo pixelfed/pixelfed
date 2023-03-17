@@ -111,5 +111,13 @@ return [
 	'user_filters' => [
 		'max_user_blocks' => env('PF_MAX_USER_BLOCKS', 50),
 		'max_user_mutes' => env('PF_MAX_USER_MUTES', 50)
+	],
+
+	'reports' => [
+		'email' => [
+			'enabled' => env('INSTANCE_REPORTS_EMAIL_ENABLED', false),
+			'to' => env('INSTANCE_REPORTS_EMAIL_ADDRESSES'),
+			'autospam' => env('INSTANCE_REPORTS_EMAIL_AUTOSPAM', false)
+		]
 	]
 ];
