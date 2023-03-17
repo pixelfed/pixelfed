@@ -172,7 +172,7 @@ class PortfolioController extends Controller
     }
 
     protected function getCustomFeed($portfolio) {
-        if(!$portfolio->metadata['posts']) {
+        if(!isset($portfolio->metadata['posts']) || !$portfolio->metadata['posts']) {
             return response()->json([], 400);
         }
 

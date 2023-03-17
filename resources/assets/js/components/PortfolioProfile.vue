@@ -216,6 +216,9 @@
                 		this.bootIntersectors()
                 	}, 500);
                 })
+                .catch(err => {
+                    this.loading = false;
+                })
             },
 
             postUrl(res) {
