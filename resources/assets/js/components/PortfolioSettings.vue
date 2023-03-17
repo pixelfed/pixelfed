@@ -55,10 +55,10 @@
 
                     <template v-else>
                         <div class="mt-n2 mb-4">
-                            <p class="text-muted small">Select up to 24 photos from your 100 most recent posts. You can only select public photo posts, videos are not supported at this time.</p>
+                            <p class="text-muted small">Select up to 100 photos from your 100 most recent posts. You can only select public photo posts, videos are not supported at this time.</p>
 
                             <div class="d-flex align-items-center justify-content-between">
-                                <p class="font-weight-bold mb-0">Selected {{ selectedRecentPosts.length }}/24</p>
+                                <p class="font-weight-bold mb-0">Selected {{ selectedRecentPosts.length }}/100</p>
                                 <div>
                                     <button
                                         class="btn btn-link font-weight-bold mr-3 text-decoration-none"
@@ -90,11 +90,13 @@
                                             <transition name="fade">
                                                 <img
                                                     :key="post.id"
-                                                    :src="post.media_attachments[0].url"
+                                                    :src="getPreviewUrl(post)"
                                                     width="100%"
                                                     height="300"
                                                     style="overflow: hidden;object-fit: cover;"
                                                     :draggable="false"
+                                                    loading="lazy"
+                                                    onerror="this.src='/storage/no-preview.png';this.onerror=null;"
                                                     class="square-content pr-1">
                                             </transition>
 
@@ -112,45 +114,128 @@
                     </template>
                 </div>
 
-                <div v-else-if="tabIndex === 'Customize'" class="col-12 col-md-8 mt-3 py-2" key="2">
-                    <div v-for="setting in customizeSettings" class="card bg-dark mb-5">
-                        <div class="card-header">{{ setting.title }}</div>
-                        <div class="list-group bg-dark">
-                            <div v-for="item in setting.items" class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center py-2">
-                                    <div class="setting-label">
-                                        <p class="mb-0">{{ item.label }}</p>
-                                        <p v-if="item.description" class="small text-muted mb-0">{{ item.description }}</p>
-                                    </div>
+                <div v-else-if="tabIndex === 'Customize'" class="col-12 mt-3 py-2" key="2">
+                	<div class="row">
+                		<div class="col-12 col-md-6">
+		                    <div v-for="setting in customizeSettings" class="card bg-dark mb-5">
+		                        <div class="card-header">{{ setting.title }}</div>
+		                        <div class="list-group bg-dark">
+		                            <div v-for="item in setting.items" class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">{{ item.label }}</p>
+		                                        <p v-if="item.description" class="small text-muted mb-0">{{ item.description }}</p>
+		                                    </div>
 
-                                    <div class="setting-switch mt-n1">
-                                        <b-form-checkbox
-                                            v-model="settings[item.model]"
-                                            name="check-button"
-                                            size="lg"
-                                            switch
-                                            :disabled="item.requiredWithTrue && !settings[item.requiredWithTrue]" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card bg-dark mb-5">
-                        <div class="card-header">Portfolio</div>
-                        <div class="list-group bg-dark">
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center py-2">
-                                    <div class="setting-label">
-                                        <p class="mb-0">Layout</p>
-                                    </div>
+		                                    <div class="setting-switch mt-n1">
+		                                        <b-form-checkbox
+		                                            v-model="settings[item.model]"
+		                                            name="check-button"
+		                                            size="lg"
+		                                            switch
+		                                            :disabled="item.requiredWithTrue && !settings[item.requiredWithTrue]" />
+		                                    </div>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+                		</div>
 
-                                    <div>
-                                        <b-form-select v-model="settings.profile_layout" :options="profileLayoutOptions" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                		<div class="col-12 col-md-6">
+		                    <div class="card bg-dark mb-5">
+		                        <div class="card-header">Portfolio</div>
+		                        <div class="list-group bg-dark">
+		                            <div class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">Layout</p>
+		                                    </div>
+
+		                                    <div>
+		                                        <b-form-select v-model="settings.profile_layout" :options="profileLayoutOptions" />
+		                                    </div>
+		                                </div>
+		                            </div>
+
+		                            <div v-if="settings.profile_source === 'custom'" class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">Order</p>
+		                                    </div>
+
+		                                    <div>
+		                                        <b-form-select
+		                                        	v-model="settings.feed_order"
+		                                        	:options="profileLayoutFeedOrder" />
+		                                    </div>
+		                                </div>
+		                            </div>
+
+		                            <div class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">Color Scheme</p>
+		                                    </div>
+
+		                                    <div>
+		                                        <b-form-select
+		                                        	v-model="settings.color_scheme"
+		                                        	:options="profileLayoutColorSchemeOptions"
+		                                        	:disabled="settings.color_scheme === 'custom'"
+		                                        	@change="updateColorScheme" />
+		                                    </div>
+		                                </div>
+		                            </div>
+
+		                            <div class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">Background Color</p>
+		                                    </div>
+
+		                                	<b-col sm="2">
+		                                    	<b-form-input
+		                                    		v-model="settings.background_color"
+		                                    		debounce="1000"
+		                                    		type="color"
+		                                    		@change="updateBackgroundColor" />
+
+		                                		<b-button
+		                                			v-if="!['#000000', null].includes(settings.background_color)"
+		                                			variant="link"
+		                                			@click="resetBackgroundColor">
+		                                			Reset
+		                                		</b-button>
+		                                	</b-col>
+		                                </div>
+		                            </div>
+
+		                            <div class="list-group-item">
+		                                <div class="d-flex justify-content-between align-items-center py-2">
+		                                    <div class="setting-label">
+		                                        <p class="mb-0">Text Color</p>
+		                                    </div>
+
+		                                	<b-col sm="2">
+		                                    	<b-form-input
+		                                    		v-model="settings.text_color"
+		                                    		debounce="1000"
+		                                    		type="color"
+		                                    		@change="updateTextColor" />
+
+		                                    	<b-button
+		                                			v-if="!['#d4d4d8', null].includes(settings.text_color)"
+		                                			variant="link"
+		                                			@click="resetTextColor">
+		                                			Reset
+		                                		</b-button>
+		                                	</b-col>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+                		</div>
+                	</div>
                 </div>
 
                 <div v-else-if="tabIndex === 'Share'" class="col-12 col-md-8 bg-dark mt-3 py-2 rounded" key="0">
@@ -185,6 +270,7 @@
                 isSavingCurated: false,
                 canSaveCurated: false,
                 customizeSettings: [],
+                skipWatch: false,
                 profileSourceOptions: [
                     { value: null, text: 'Please select an option', disabled: true },
                     { value: 'recent', text: 'Most recent posts' },
@@ -194,6 +280,16 @@
                     { value: 'grid', text: 'Grid' },
                     { value: 'masonry', text: 'Masonry' },
                     { value: 'album', text: 'Album' },
+                ],
+                profileLayoutColorSchemeOptions: [
+                    { value: null, text: 'Please select an option', disabled: true },
+                	{ value: 'light', text: 'Light mode' },
+                	{ value: 'dark', text: 'Dark mode' },
+                	{ value: 'custom', text: 'Custom color scheme', disabled: true },
+                ],
+                profileLayoutFeedOrder: [
+                	{ value: 'oldest', text: 'Oldest first' },
+                	{ value: 'recent', text: 'Recent first' }
                 ]
             }
         },
@@ -217,7 +313,7 @@
                 deep: true,
                 immediate: true,
                 handler: function(o, n) {
-                    if(this.loading) {
+                    if(this.loading || this.skipWatch) {
                         return;
                     }
                     if(!n.show_timestamp) {
@@ -259,6 +355,20 @@
                     this.updateTabs();
                     if(res.data.metadata && res.data.metadata.posts) {
                         this.selectedRecentPosts = res.data.metadata.posts;
+                    }
+
+                    if(res.data.color_scheme != 'dark') {
+                    	if(res.data.color_scheme === 'light') {
+	                    	this.updateBackgroundColor('#ffffff');
+                    	} else {
+	                    	if(res.data.hasOwnProperty('background_color')) {
+		                    	this.updateBackgroundColor(res.data.background_color);
+		                    }
+
+		                    if(res.data.hasOwnProperty('text_color')) {
+		                    	this.updateTextColor(res.data.text_color);
+		                    }
+	                    }
                     }
                 })
                 .then(() => {
@@ -325,16 +435,22 @@
                 }
             },
 
-            updateSettings() {
+            updateSettings(silent = false) {
+            	if(this.skipWatch) {
+            		return;
+            	}
+
                 axios.post(this.apiPath('/api/portfolio/self/update-settings.json'), this.settings)
                 .then(res => {
                     this.updateTabs();
-                    this.$bvToast.toast(`Your settings have been successfully updated!`, {
-                        variant: 'dark',
-                        title: 'Settings Updated',
-                        autoHideDelay: 2000,
-                        appendToast: false
-                    })
+                    if(!silent) {
+	                    this.$bvToast.toast(`Your settings have been successfully updated!`, {
+	                        variant: 'dark',
+	                        title: 'Settings Updated',
+	                        autoHideDelay: 2000,
+	                        appendToast: false
+	                    })
+                    }
                 })
             },
 
@@ -354,7 +470,7 @@
 
             toggleRecentPost(id) {
                 if(this.selectedRecentPosts.indexOf(id) == -1) {
-                    if(this.selectedRecentPosts.length === 24) {
+                    if(this.selectedRecentPosts.length === 100) {
                         return;
                     }
                     this.selectedRecentPosts.push(id);
@@ -449,10 +565,105 @@
                             {
                                 label: "Show Bio",
                                 model: "show_bio"
-                            }
+                            },
+                            {
+                            	label: "Show View Profile Button",
+                            	model: "show_profile_button"
+                            },
+                            {
+                            	label: "Enable RSS Feed",
+                            	description: "Enable your RSS feed with the 10 most recent portfolio items",
+                            	model: "rss_enabled"
+                            },
+                            {
+                            	label: "Show RSS Feed Button",
+                            	model: "show_rss_button",
+                            	requiredWithTrue: "rss_enabled"
+                            },
                         ]
                     },
                 ]
+
+            },
+
+            updateBackgroundColor(e) {
+            	this.skipWatch = true;
+            	let rs = document.querySelector(':root');
+            	rs.style.setProperty('--body-bg', e);
+
+            	if(e !== '#000000' && e !== '#ffffff') {
+            		this.settings.color_scheme = 'custom';
+            	}
+
+            	this.$nextTick(() => {
+            		this.skipWatch = false;
+            	});
+            },
+
+            updateTextColor(e) {
+            	this.skipWatch = true;
+            	let rs = document.querySelector(':root');
+            	rs.style.setProperty('--text-color', e);
+
+            	if(e !== '#d4d4d8') {
+            		this.settings.color_scheme = 'custom';
+            	}
+
+            	this.$nextTick(() => {
+            		this.skipWatch = false;
+            	});
+            },
+
+            resetBackgroundColor() {
+            	this.skipWatch = true;
+
+            	this.$nextTick(() => {
+	            	this.updateBackgroundColor('#000000');
+	            	this.settings.color_scheme = 'dark';
+	            	this.settings.background_color = '#000000';
+		            this.updateSettings(true);
+
+	            	setTimeout(() => {
+	            		this.skipWatch = false;
+	            	}, 1000);
+            	});
+
+            },
+
+            resetTextColor() {
+            	this.skipWatch = true;
+
+            	this.$nextTick(() => {
+	            	this.updateTextColor('#d4d4d8');
+	            	this.settings.color_scheme = 'dark';
+	            	this.settings.text_color = '#d4d4d8';
+	            	this.updateSettings(true);
+
+            		setTimeout(() => {
+	            		this.skipWatch = false;
+	            	}, 1000);
+            	});
+            },
+
+            updateColorScheme(e) {
+            	if(e === 'light') {
+            		this.updateBackgroundColor('#ffffff');
+            	}
+
+            	if(e === 'dark') {
+            		this.updateBackgroundColor('#000000');
+            	}
+            },
+
+            getPreviewUrl(post) {
+            	let media = post.media_attachments[0];
+            	if(!media) { return '/storage/no-preview.png'; }
+
+            	if(media.preview_url && !media.preview_url.endsWith('/no-preview.png')) {
+            		return media.preview_url;
+            	}
+
+            	return media.url;
             }
         }
     }

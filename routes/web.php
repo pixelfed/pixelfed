@@ -407,6 +407,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('follow-requests', 'AccountController@followRequests')->name('follow-requests');
 		Route::post('follow-requests', 'AccountController@followRequestHandle');
 		Route::get('follow-requests.json', 'AccountController@followRequestsJson');
+		Route::get('portfolio/{username}.json', 'PortfolioController@getApFeed');
+		Route::get('portfolio/{username}.rss', 'PortfolioController@getRssFeed');
 	});
 
 	Route::group(['prefix' => 'settings'], function () {

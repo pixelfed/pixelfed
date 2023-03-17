@@ -1,14 +1,58 @@
 @import "lib/inter";
 
+:root {
+	--body-bg: #000000;
+	--text-color: #d4d4d8;
+	--link-color: #3B82F6;
+};
+
 body {
-    background: #000000;
+    background: var(--body-bg);
     font-family: 'Inter', sans-serif;
     font-weight: 400 !important;
-    color: #d4d4d8;
+    color: var(--text-color);
 }
 
 .text-primary {
     color: #3B82F6 !important;
+}
+
+.text-color {
+	color: var(--text-color);
+}
+
+.text-color-lighter {
+	color: var(--text-color);
+	opacity: 0.3;
+}
+
+.btn-custom-color {
+	border-color: var(--link-color);
+	color: var(--link-color);
+	font-weight: bold;
+	padding: 7px 30px;
+	border-radius: 20px;
+	font-size: 13px;
+
+	&:active,
+	&:hover,
+	&:focus {
+		border-color: var(--link-color) !important;
+		color: var(--link-color) !important;
+		background-color: transparent !important;
+		opacity: 0.5;
+	}
+}
+
+.link-color {
+	color: var(--link-color);
+
+	&:active,
+	&:hover,
+	&:focus {
+		color: var(--link-color);
+		opacity: 0.5;
+	}
 }
 
 .lead,
@@ -17,7 +61,7 @@ body {
 }
 
 a {
-    color: #3B82F6;
+    color: var(--link-color);
     text-decoration: none;
 }
 
