@@ -455,10 +455,10 @@
             },
 
             loadRecentPosts() {
-                axios.get('/api/v1/accounts/' + this.user.id + '/statuses?only_media=1&media_types=photo&limit=100')
+                axios.get('/api/v1/accounts/' + this.user.id + '/statuses?only_media=1&media_types=photo&limit=100&_pe=1')
                 .then(res => {
                     if(res.data.length) {
-                        this.recentPosts = res.data.filter(p => p.visibility === "public");
+                        this.recentPosts = res.data.filter(p => ['photo', 'photo:album'].includes(p.pf_type) && p.visibility === "public");
                     }
                 })
                 .then(() => {
