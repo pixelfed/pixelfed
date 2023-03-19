@@ -421,8 +421,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::delete('avatar', 'AvatarController@deleteAvatar');
 		Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
 		Route::post('password', 'SettingsController@passwordUpdate')->middleware('dangerzone');
-		Route::get('email', 'SettingsController@email')->name('settings.email');
-		Route::post('email', 'SettingsController@emailUpdate');
+		Route::get('email', 'SettingsController@email')->name('settings.email')->middleware('dangerzone');
+		Route::post('email', 'SettingsController@emailUpdate')->middleware('dangerzone');
 		Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
 		Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
 		Route::post('privacy', 'SettingsController@privacyStore');
