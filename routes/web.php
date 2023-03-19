@@ -211,9 +211,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('accounts/{id}', 'PublicApiController@account');
 				Route::post('avatar/update', 'ApiController@avatarUpdate');
 				Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
-				Route::get('likes', 'ApiController@hydrateLikes');
-				Route::post('media', 'ApiController@uploadMedia');
-				Route::delete('media', 'ApiController@deleteMedia');
 				Route::get('notifications', 'ApiController@notifications');
 				Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
 				Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
@@ -277,7 +274,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::post('collection/{id}/publish', 'CollectionController@publish');
 			Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
 
-			Route::get('compose/location/search', 'ApiController@composeLocationSearch');
 			Route::post('compose/tag/untagme', 'MediaTagController@untagProfile');
 		});
 
@@ -339,8 +335,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('auth/sudo', 'AccountController@sudoModeVerify');
 		Route::get('auth/checkpoint', 'AccountController@twoFactorCheckpoint');
 		Route::post('auth/checkpoint', 'AccountController@twoFactorVerify');
-
-		Route::get('media/preview/{profileId}/{mediaId}/{timestamp}', 'ApiController@showTempMedia')->name('temp-media');
 
 		Route::get('results', 'SearchController@results');
 		Route::post('visibility', 'StatusController@toggleVisibility');

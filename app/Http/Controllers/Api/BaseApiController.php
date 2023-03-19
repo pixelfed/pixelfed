@@ -96,89 +96,6 @@ class BaseApiController extends Controller
         return response()->json($res);
     }
 
-    public function accounts(Request $request, $id)
-    {
-        abort_if(!$request->user(), 403);
-        $profile = Profile::findOrFail($id);
-        $resource = new Fractal\Resource\Item($profile, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
-    public function accountFollowers(Request $request, $id)
-    {
-        abort_if(!$request->user(), 403);
-        $profile = Profile::findOrFail($id);
-        $followers = $profile->followers;
-        $resource = new Fractal\Resource\Collection($followers, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
-    public function accountFollowing(Request $request, $id)
-    {
-        abort_if(!$request->user(), 403);
-        $profile = Profile::findOrFail($id);
-        $following = $profile->following;
-        $resource = new Fractal\Resource\Collection($following, new AccountTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
-    public function accountStatuses(Request $request, $id)
-    {
-        abort_if(!$request->user(), 403);
-        $this->validate($request, [
-            'only_media' => 'nullable',
-            'pinned' => 'nullable',
-            'exclude_replies' => 'nullable',
-            'max_id' => 'nullable|integer|min:1',
-            'since_id' => 'nullable|integer|min:1',
-            'min_id' => 'nullable|integer|min:1',
-            'limit' => 'nullable|integer|min:1|max:24'
-        ]);
-        $limit = $request->limit ?? 20;
-        $max_id = $request->max_id ?? false;
-        $min_id = $request->min_id ?? false;
-        $since_id = $request->since_id ?? false;
-        $only_media = $request->only_media ?? false;
-        $user = Auth::user();
-        $account = Profile::whereNull('status')->findOrFail($id);
-        $statuses = $account->statuses()->getQuery(); 
-        if($only_media == true) {
-            $statuses = $statuses
-                ->whereIn('scope', ['public','unlisted'])
-                ->whereHas('media')
-                ->whereNull('in_reply_to_id')
-                ->whereNull('reblog_of_id');
-        }
-        if($id == $account->id && !$max_id && !$min_id && !$since_id) {
-            $statuses = $statuses->orderBy('id', 'desc')
-                ->paginate($limit);
-        } else if($since_id) {
-            $statuses = $statuses->where('id', '>', $since_id)
-                ->orderBy('id', 'DESC')
-                ->paginate($limit);
-        } else if($min_id) {
-            $statuses = $statuses->where('id', '>', $min_id)
-                ->orderBy('id', 'ASC')
-                ->paginate($limit);
-        } else if($max_id) {
-            $statuses = $statuses->where('id', '<', $max_id)
-                ->orderBy('id', 'DESC')
-                ->paginate($limit);
-        } else {
-            $statuses = $statuses->whereScope('public')->orderBy('id', 'desc')->paginate($limit);
-        }
-        $resource = new Fractal\Resource\Collection($statuses, new StatusTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-
-        return response()->json($res);
-    }
-
     public function avatarUpdate(Request $request)
     {
         abort_if(!$request->user(), 403);
@@ -215,21 +132,6 @@ class BaseApiController extends Controller
         ]);
     }
 
-    public function showTempMedia(Request $request, $profileId, $mediaId, $timestamp)
-    {
-        abort(400, 'Endpoint deprecated');
-    }
-
-    public function uploadMedia(Request $request)
-    {
-        abort(400, 'Endpoint deprecated');
-    }
-
-    public function deleteMedia(Request $request)
-    {
-        abort(400, 'Endpoint deprecated');
-    }
-
     public function verifyCredentials(Request $request)
     {
         $user = $request->user();
@@ -240,21 +142,6 @@ class BaseApiController extends Controller
         }
         $res = AccountService::get($user->profile_id);
         return response()->json($res);
-    }
-
-    public function drafts(Request $request)
-    {
-        $user = $request->user();
-        abort_if(!$request->user(), 403);
-
-        $medias = Media::whereUserId($user->id)
-            ->whereNull('status_id')
-            ->latest()
-            ->take(13)
-            ->get();
-        $resource = new Fractal\Resource\Collection($medias, new MediaDraftTransformer());
-        $res = $this->fractal->createData($resource)->toArray();
-        return response()->json($res, 200, [], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 
     public function accountLikes(Request $request)
