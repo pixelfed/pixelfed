@@ -113,6 +113,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::get('hashtags/get', 'AdminController@hashtagsGet');
 		Route::post('hashtags/update', 'AdminController@hashtagsUpdate');
 		Route::post('hashtags/clear-trending-cache', 'AdminController@hashtagsClearTrendingCache');
+		Route::get('instances/get', 'AdminController@getInstancesApi');
+		Route::get('instances/stats', 'AdminController@getInstancesStatsApi');
+		Route::get('instances/query', 'AdminController@getInstancesQueryApi');
+		Route::post('instances/update', 'AdminController@postInstanceUpdateApi');
+		Route::post('instances/create', 'AdminController@postInstanceCreateNewApi');
+		Route::post('instances/delete', 'AdminController@postInstanceDeleteApi');
+		Route::post('instances/refresh-stats', 'AdminController@postInstanceRefreshStatsApi');
 	});
 });
 
@@ -211,9 +218,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 				Route::get('accounts/{id}', 'PublicApiController@account');
 				Route::post('avatar/update', 'ApiController@avatarUpdate');
 				Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
-				Route::get('likes', 'ApiController@hydrateLikes');
-				Route::post('media', 'ApiController@uploadMedia');
-				Route::delete('media', 'ApiController@deleteMedia');
 				Route::get('notifications', 'ApiController@notifications');
 				Route::get('timelines/public', 'PublicApiController@publicTimelineApi');
 				Route::get('timelines/home', 'PublicApiController@homeTimelineApi');
@@ -277,7 +281,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::post('collection/{id}/publish', 'CollectionController@publish');
 			Route::get('profile/collections/{id}', 'CollectionController@getUserCollections');
 
-			Route::get('compose/location/search', 'ApiController@composeLocationSearch');
 			Route::post('compose/tag/untagme', 'MediaTagController@untagProfile');
 		});
 
@@ -339,8 +342,6 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('auth/sudo', 'AccountController@sudoModeVerify');
 		Route::get('auth/checkpoint', 'AccountController@twoFactorCheckpoint');
 		Route::post('auth/checkpoint', 'AccountController@twoFactorVerify');
-
-		Route::get('media/preview/{profileId}/{mediaId}/{timestamp}', 'ApiController@showTempMedia')->name('temp-media');
 
 		Route::get('results', 'SearchController@results');
 		Route::post('visibility', 'StatusController@toggleVisibility');
@@ -421,8 +422,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::delete('avatar', 'AvatarController@deleteAvatar');
 		Route::get('password', 'SettingsController@password')->name('settings.password')->middleware('dangerzone');
 		Route::post('password', 'SettingsController@passwordUpdate')->middleware('dangerzone');
-		Route::get('email', 'SettingsController@email')->name('settings.email');
-		Route::post('email', 'SettingsController@emailUpdate');
+		Route::get('email', 'SettingsController@email')->name('settings.email')->middleware('dangerzone');
+		Route::post('email', 'SettingsController@emailUpdate')->middleware('dangerzone');
 		Route::get('notifications', 'SettingsController@notifications')->name('settings.notifications');
 		Route::get('privacy', 'SettingsController@privacy')->name('settings.privacy');
 		Route::post('privacy', 'SettingsController@privacyStore');
@@ -549,6 +550,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::view('data-policy', 'site.help.data-policy')->name('help.data-policy');
 			Route::view('labs-deprecation', 'site.help.labs-deprecation')->name('help.labs-deprecation');
 			Route::view('tagging-people', 'site.help.tagging-people')->name('help.tagging-people');
+			Route::view('licenses', 'site.help.licenses')->name('help.licenses');
 		});
 		Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
 		Route::get('newsroom/archive', 'NewsroomController@archive');

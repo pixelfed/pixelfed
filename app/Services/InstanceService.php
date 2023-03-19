@@ -11,6 +11,7 @@ class InstanceService
 	const CACHE_KEY_BANNED_DOMAINS = 'instances:banned:domains';
 	const CACHE_KEY_UNLISTED_DOMAINS = 'instances:unlisted:domains';
 	const CACHE_KEY_NSFW_DOMAINS = 'instances:auto_cw:domains';
+	const CACHE_KEY_STATS = 'pf:services:instances:stats';
 
 	public static function getByDomain($domain)
 	{
@@ -52,11 +53,24 @@ class InstanceService
 		});
 	}
 
+	public static function stats()
+	{
+		return Cache::remember(self::CACHE_KEY_STATS, 86400, function() {
+			return [
+				'total_count' => Instance::count(),
+				'new_count' => Instance::where('created_at', '>', now()->subDays(14))->count(),
+				'banned_count' => Instance::whereBanned(true)->count(),
+				'nsfw_count' => Instance::whereAutoCw(true)->count()
+			];
+		});
+	}
+
     public static function refresh()
     {
         Cache::forget(self::CACHE_KEY_BANNED_DOMAINS);
         Cache::forget(self::CACHE_KEY_UNLISTED_DOMAINS);
         Cache::forget(self::CACHE_KEY_NSFW_DOMAINS);
+        Cache::forget(self::CACHE_KEY_STATS);
 
         self::getBannedDomains();
         self::getUnlistedDomains();

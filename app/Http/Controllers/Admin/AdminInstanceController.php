@@ -8,66 +8,13 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Services\InstanceService;
+use App\Http\Resources\AdminInstance;
 
 trait AdminInstanceController
 {
-
 	public function instances(Request $request)
 	{
-		$this->validate($request, [
-
-			'filter' => [
-				'nullable',
-				'string',
-				'min:1',
-				'max:20',
-				Rule::in([
-					'cw',
-					'unlisted',
-					'banned',
-					// 'popular',
-					'new',
-					'all'
-				])
-			],
-		]);
-		if($request->has('q') && $request->filled('q')) {
-			$instances = Instance::where('domain', 'like', '%' . $request->input('q') . '%')->simplePaginate(10);
-		} else if($request->has('filter') && $request->filled('filter')) {
-			switch ($request->filter) {
-				case 'cw':
-					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereAutoCw(true)->orderByDesc('id')->simplePaginate(10);
-					break;
-				case 'unlisted':
-					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereUnlisted(true)->orderByDesc('id')->simplePaginate(10);
-					break;
-				case 'banned':
-					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->whereBanned(true)->orderByDesc('id')->simplePaginate(10);
-					break;
-				case 'new':
-					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->latest()->simplePaginate(10);
-					break;
-				// case 'popular':
-				// 	$popular = Profile::selectRaw('*, count(domain) as count')
-				// 		->whereNotNull('domain')
-				// 		->groupBy('domain')
-				// 		->orderByDesc('count')
-				// 		->take(10)
-				// 		->get()
-				// 		->pluck('domain')
-				// 		->toArray();
-				// 	$instances = Instance::whereIn('domain', $popular)->simplePaginate(10);
-				// 	break;
-
-				default:
-					$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->orderByDesc('id')->simplePaginate(10);
-				break;
-			}
-		} else {
-			$instances = Instance::select('id', 'domain', 'unlisted', 'auto_cw', 'banned')->orderByDesc('id')->simplePaginate(10);
-		}
-
-		return view('admin.instances.home', compact('instances'));
+		return view('admin.instances.home');
 	}
 
 	public function instanceScan(Request $request)
@@ -132,5 +79,147 @@ trait AdminInstanceController
 		Cache::forget(InstanceService::CACHE_KEY_NSFW_DOMAINS);
 
 		return response()->json([]);
+	}
+
+	public function getInstancesStatsApi(Request $request)
+	{
+		return InstanceService::stats();
+	}
+
+	public function getInstancesQueryApi(Request $request)
+	{
+		$this->validate($request, [
+			'q' => 'required'
+		]);
+
+		$q = $request->input('q');
+
+		return AdminInstance::collection(
+			Instance::where('domain', 'like', '%' . $q . '%')
+			->orderByDesc('user_count')
+			->cursorPaginate(20)
+			->withQueryString()
+		);
+	}
+
+	public function getInstancesApi(Request $request)
+	{
+		$this->validate($request, [
+			'filter' => [
+				'nullable',
+				'string',
+				'min:1',
+				'max:20',
+				Rule::in([
+					'cw',
+					'unlisted',
+					'banned',
+					'popular_users',
+					'popular_statuses',
+					'new',
+					'all'
+				])
+			],
+		]);
+		$filter = $request->input('filter');
+		$query = $request->input('q');
+
+		return AdminInstance::collection(Instance::when($query, function($q, $qq) use($query) {
+				return $q->where('domain', 'like', '%' . $query . '%');
+			})
+			->when($filter, function($q, $f) use($filter) {
+				if($filter == 'cw') { return $q->whereAutoCw(true)->orderByDesc('id'); }
+				if($filter == 'unlisted') { return $q->whereUnlisted(true)->orderByDesc('id'); }
+				if($filter == 'banned') { return $q->whereBanned(true)->orderByDesc('id'); }
+				if($filter == 'new') { return $q->orderByDesc('id'); }
+				if($filter == 'popular_users') { return $q->orderByDesc('user_count'); }
+				if($filter == 'popular_statuses') { return $q->orderByDesc('status_count'); }
+				return $q->orderByDesc('id');
+			}, function($q) {
+				return $q->orderByDesc('id');
+			})
+			->cursorPaginate(10)
+			->withQueryString());
+	}
+
+	public function postInstanceUpdateApi(Request $request)
+	{
+		$this->validate($request, [
+			'id' => 'required',
+			'banned' => 'boolean',
+			'auto_cw' => 'boolean',
+			'unlisted' => 'boolean',
+			'notes' => 'nullable|string|max:500',
+		]);
+
+		$id = $request->input('id');
+		$instance = Instance::findOrFail($id);
+		$instance->update($request->only([
+			'banned',
+			'auto_cw',
+			'unlisted',
+			'notes'
+		]));
+
+		InstanceService::refresh();
+
+		return new AdminInstance($instance);
+	}
+
+	public function postInstanceCreateNewApi(Request $request)
+	{
+		$this->validate($request, [
+			'domain' => 'required|string',
+			'banned' => 'boolean',
+			'auto_cw' => 'boolean',
+			'unlisted' => 'boolean',
+			'notes' => 'nullable|string|max:500'
+		]);
+
+		$domain = $request->input('domain');
+
+		abort_if(!strpos($domain, '.'), 400, 'Invalid domain');
+		abort_if(!filter_var($domain, FILTER_VALIDATE_DOMAIN), 400, 'Invalid domain');
+
+		$instance = new Instance;
+		$instance->domain = $request->input('domain');
+		$instance->banned = $request->input('banned');
+		$instance->auto_cw = $request->input('auto_cw');
+		$instance->unlisted = $request->input('unlisted');
+		$instance->manually_added = true;
+		$instance->notes = $request->input('notes');
+		$instance->save();
+
+		InstanceService::refresh();
+
+		return new AdminInstance($instance);
+	}
+
+	public function postInstanceRefreshStatsApi(Request $request)
+	{
+		$this->validate($request, [
+			'id' => 'required'
+		]);
+
+		$instance = Instance::findOrFail($request->input('id'));
+		$instance->user_count = Profile::whereDomain($instance->domain)->count();
+        $instance->status_count = Profile::whereDomain($instance->domain)->leftJoin('statuses', 'profiles.id', '=', 'statuses.profile_id')->count();
+        $instance->save();
+
+        return new AdminInstance($instance);
+	}
+
+	public function postInstanceDeleteApi(Request $request)
+	{
+		$this->validate($request, [
+			'id' => 'required'
+		]);
+
+		$instance = Instance::findOrFail($request->input('id'));
+		$instance->delete();
+
+		InstanceService::refresh();
+
+		return 200;
 	}
 }

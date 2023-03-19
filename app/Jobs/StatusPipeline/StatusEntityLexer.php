@@ -12,6 +12,7 @@ use App\Services\PublicTimelineService;
 use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use App\Util\Sentiment\Bouncer;
+use Cache;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -166,6 +167,8 @@ class StatusEntityLexer implements ShouldQueue
 		if(config_cache('pixelfed.bouncer.enabled')) {
 			Bouncer::get($status);
 		}
+
+		Cache::forget('pf:atom:user-feed:by-id:' . $status->profile_id);
 		$hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 		if( $status->uri == null &&
 			$status->scope == 'public' &&
