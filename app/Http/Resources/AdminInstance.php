@@ -24,6 +24,9 @@ class AdminInstance extends JsonResource
             'user_count' => $this->user_count,
             'status_count' => $this->status_count,
             'last_crawled_at' => $this->last_crawled_at,
+            'notes' => $this->notes,
+            'base_domain' => $this->base_domain,
+            'ban_subdomains' => $this->ban_subdomains,
             'actors_last_synced_at' => $this->actors_last_synced_at,
             'created_at' => $this->created_at,
         ];

@@ -27,6 +27,11 @@ Vue.component(
 );
 
 Vue.component(
+    'instances-component',
+    require('./../components/admin/AdminInstances.vue').default
+);
+
+Vue.component(
     'hashtag-component',
     require('./../components/admin/AdminHashtags.vue').default
 );

@@ -113,6 +113,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::get('hashtags/get', 'AdminController@hashtagsGet');
 		Route::post('hashtags/update', 'AdminController@hashtagsUpdate');
 		Route::post('hashtags/clear-trending-cache', 'AdminController@hashtagsClearTrendingCache');
+		Route::get('instances/get', 'AdminController@getInstancesApi');
+		Route::get('instances/stats', 'AdminController@getInstancesStatsApi');
+		Route::get('instances/query', 'AdminController@getInstancesQueryApi');
+		Route::post('instances/update', 'AdminController@postInstanceUpdateApi');
+		Route::post('instances/create', 'AdminController@postInstanceCreateNewApi');
+		Route::post('instances/delete', 'AdminController@postInstanceDeleteApi');
+		Route::post('instances/refresh-stats', 'AdminController@postInstanceRefreshStatsApi');
 	});
 });
 

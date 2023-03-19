@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Instance extends Model
 {
-	protected $fillable = ['domain'];
+	protected $fillable = ['domain', 'banned', 'auto_cw', 'unlisted', 'notes'];
 
 	public function profiles()
 	{
