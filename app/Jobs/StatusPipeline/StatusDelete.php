@@ -2,7 +2,7 @@
 
 namespace App\Jobs\StatusPipeline;
 
-use DB, Storage;
+use DB, Cache, Storage;
 use App\{
 	AccountInterstitial,
     Bookmark,
@@ -80,6 +80,8 @@ class StatusDelete implements ShouldQueue
 				$profile->save();
 			}
 		}
+
+		Cache::forget('pf:atom:user-feed:by-id:' . $status->profile_id);
 
 		if(config_cache('federation.activitypub.enabled') == true) {
 			return $this->fanoutDelete($status);

@@ -24,12 +24,14 @@
 		</author>
 		<content type="html">
 			<![CDATA[
-			<img id="rss_item_{{$loop->iteration}}" src="{{ $item['media_attachments'][0]['url'] }}" alt="{{ $item['media_attachments'][0]['description'] }}">
-			<p style="padding:10px;">{{ $item['content'] }}</p>
+			<img id="rss_item_{{$item['id']}}" src="{{ $item['media_attachments'][0]['url'] }}" alt="{{ $item['media_attachments'][0]['description'] }}">
+			<p style="padding:10px;">{!! $item['content'] !!}</p>
 			]]>
 		</content>
 		<link rel="alternate" href="{{ $item['url'] }}" />
+		@if($item['content'] && strlen($item['content']))
 		<summary type="html">{{ $item['content'] }}</summary>
+		@endif
 		<media:content url="{{ $item['media_attachments'][0]['url'] }}" type="{{ $item['media_attachments'][0]['mime'] }}" medium="image" />
 	</entry>
 	@endforeach

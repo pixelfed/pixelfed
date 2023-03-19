@@ -207,7 +207,7 @@ class ProfileController extends Controller
 
 		abort_if(!$profile || $profile['locked'] || !$profile['local'], 404);
 
-		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 86400, function() use($pid, $profile) {
+		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 43200, function() use($pid, $profile) {
 			$items = DB::table('statuses')
 				->whereProfileId($pid)
 				->whereVisibility('public')
