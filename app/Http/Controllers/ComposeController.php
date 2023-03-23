@@ -149,11 +149,11 @@ class ComposeController extends Controller
 			case 'image/jpeg':
 			case 'image/png':
 			case 'image/webp':
-			ImageOptimize::dispatch($media);
+			ImageOptimize::dispatch($media)->onQueue('mmo');
 			break;
 
 			case 'video/mp4':
-			VideoThumbnail::dispatch($media);
+			VideoThumbnail::dispatch($media)->onQueue('mmo');
 			$preview_url = '/storage/no-preview.png';
 			$url = '/storage/no-preview.png';
 			break;
@@ -213,7 +213,7 @@ class ComposeController extends Controller
 		$res = [
 			'url' => $media->url() . '?v=' . time()
 		];
-		ImageOptimize::dispatch($media);
+		ImageOptimize::dispatch($media)->onQueue('mmo');
 		Cache::forget($limitKey);
 		return $res;
 	}
@@ -512,12 +512,7 @@ class ComposeController extends Controller
 			$m->license = $license;
 			$m->caption = isset($media['alt']) ? strip_tags($media['alt']) : null;
 			$m->order = isset($media['cursor']) && is_int($media['cursor']) ? (int) $media['cursor'] : $k;
-			// if($optimize_media == false) {
-			// 	$m->skip_optimize = true;
-			// 	ImageThumbnail::dispatch($m);
-			// } else {
-			// 	ImageOptimize::dispatch($m);
-			// }
+
 			if($cw == true || $profile->cw == true) {
 				$m->is_nsfw = $cw;
 				$status->is_nsfw = $cw;

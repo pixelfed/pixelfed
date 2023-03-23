@@ -49,6 +49,7 @@ use App\Http\Controllers\StatusController;
 use App\Jobs\AvatarPipeline\AvatarOptimize;
 use App\Jobs\CommentPipeline\CommentPipeline;
 use App\Jobs\LikePipeline\LikePipeline;
+use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
@@ -96,6 +97,7 @@ use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use Illuminate\Support\Facades\RateLimiter;
 use Purify;
+use Carbon\Carbon;
 
 class ApiV1Controller extends Controller
 {
@@ -1654,11 +1656,11 @@ class ApiV1Controller extends Controller
 		switch ($media->mime) {
 			case 'image/jpeg':
 			case 'image/png':
-				ImageOptimize::dispatch($media);
+				ImageOptimize::dispatch($media)->onQueue('mmo');
 				break;
 
 			case 'video/mp4':
-				VideoThumbnail::dispatch($media);
+				VideoThumbnail::dispatch($media)->onQueue('mmo');
 				$preview_url = '/storage/no-preview.png';
 				$url = '/storage/no-preview.png';
 				break;
@@ -1767,7 +1769,8 @@ class ApiV1Controller extends Controller
 			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
-		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length')
+		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length'),
+		  'replace_id' => 'sometimes'
 		]);
 
 		$user = $request->user();
@@ -1829,6 +1832,21 @@ class ApiV1Controller extends Controller
 
 		abort_if(MediaBlocklistService::exists($hash) == true, 451);
 
+		if($request->has('replace_id')) {
+			$rpid = $request->input('replace_id');
+			$removeMedia = Media::whereNull('status_id')
+				->whereUserId($user->id)
+				->whereProfileId($profile->id)
+				->where('created_at', '>', now()->subHours(2))
+				->find($rpid);
+			if($removeMedia) {
+				$dateTime = Carbon::now();
+				MediaDeletePipeline::dispatch($removeMedia)
+					->onQueue('mmo')
+					->delay($dateTime->addMinutes(15));
+			}
+		}
+
 		$media = new Media();
 		$media->status_id = null;
 		$media->profile_id = $profile->id;
@@ -1848,11 +1866,11 @@ class ApiV1Controller extends Controller
 		switch ($media->mime) {
 			case 'image/jpeg':
 			case 'image/png':
-				ImageOptimize::dispatch($media);
+				ImageOptimize::dispatch($media)->onQueue('mmo');
 				break;
 
 			case 'video/mp4':
-				VideoThumbnail::dispatch($media);
+				VideoThumbnail::dispatch($media)->onQueue('mmo');
 				$preview_url = '/storage/no-preview.png';
 				$url = '/storage/no-preview.png';
 				break;

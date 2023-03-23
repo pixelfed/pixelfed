@@ -49,6 +49,6 @@ class ImageOptimize implements ShouldQueue
             return;
         }
 
-        ImageResize::dispatch($media);
+        ImageResize::dispatch($media)->onQueue('mmo');
     }
 }

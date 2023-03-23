@@ -665,7 +665,7 @@ class Helpers {
 		$storagePath = MediaPathService::get($user, 2);
 		$allowed = explode(',', config_cache('pixelfed.media_types'));
 
-		foreach($attachments as $media) {
+		foreach($attachments as $key => $media) {
 			$type = $media['mediaType'];
 			$url = $media['url'];
 			$valid = self::validateUrl($url);
@@ -685,6 +685,7 @@ class Helpers {
 			$media->media_path = $url;
 			$media->remote_url = $url;
 			$media->caption = $caption;
+			$media->order = $key + 1;
 			if($license) {
 				$media->license = $license;
 			}

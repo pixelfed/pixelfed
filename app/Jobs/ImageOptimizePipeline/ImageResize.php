@@ -55,6 +55,6 @@ class ImageResize implements ShouldQueue
         } catch (Exception $e) {
         }
 
-        ImageThumbnail::dispatch($media);
+        ImageThumbnail::dispatch($media)->onQueue('mmo');
     }
 }
