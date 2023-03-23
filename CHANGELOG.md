@@ -11,6 +11,8 @@
 - Optional home feed caching ([3328b367](https://github.com/pixelfed/pixelfed/commit/3328b367))
 - Admin Invites ([b73ca9a1](https://github.com/pixelfed/pixelfed/commit/b73ca9a1))
 - Hashtag administration ([84872311](https://github.com/pixelfed/pixelfed/commit/84872311))
+- Admin report email notifications ([4e1d0ed5](https://github.com/pixelfed/pixelfed/commit/4e1d0ed5))
+- Add Licenses help page, fixes #4238 ([3c712a70](https://github.com/pixelfed/pixelfed/commit/3c712a70))
 
 ### Updates
 - Update ApiV1Controller, include self likes in favourited_by endpoint ([58b331d2](https://github.com/pixelfed/pixelfed/commit/58b331d2))
@@ -129,6 +131,13 @@
 - Update ApiV1Controller, increase home timeline max limit to 100 to fix compatibility with mastoapi ([5cf9ba78](https://github.com/pixelfed/pixelfed/commit/5cf9ba78))
 - Update ApiV1Controller, preserve album order. Fixes #3708 ([deb26971](https://github.com/pixelfed/pixelfed/commit/deb26971))
 - Update site config endpoint ([f9be48d6](https://github.com/pixelfed/pixelfed/commit/f9be48d6))
+- Update Portfolios, add ActivityPub + RSS support, light mode, style customization and more ([5ad0d883](https://github.com/pixelfed/pixelfed/commit/5ad0d883))
+- Update atom feed, improve cache expiry and fix double encoding bug. Fixes #4121 ([467c9d75](https://github.com/pixelfed/pixelfed/commit/467c9d75))
+- Update email settings, add dangerzone middleware to prompt for password before you can change your email address. Fixes #4101 ([186ba7f0](https://github.com/pixelfed/pixelfed/commit/186ba7f0))
+- Update InboxPipelines, improve handling of missing signature validation headers ([419c0fb0](https://github.com/pixelfed/pixelfed/commit/419c0fb0))
+- Update admin instances dashboard ([ecfc0766](https://github.com/pixelfed/pixelfed/commit/ecfc0766))
+- Update ap helpers, fix album order bug by setting media order ([871f798c](https://github.com/pixelfed/pixelfed/commit/871f798c))
+- Update image pipeline, dispatch jobs to mmo queue and add "replace_id" param to v2/media endpoint to dispatch delayed MediaDeletePipeline job for original media id to improve media gc on supported clients ([5a67e9f9](https://github.com/pixelfed/pixelfed/commit/5a67e9f9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
