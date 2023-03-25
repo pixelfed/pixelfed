@@ -1,6 +1,9 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.4...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.5...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
 
 ### New Features
 - Mobile App Registration ([#3829](https://github.com/pixelfed/pixelfed/pull/3829))
@@ -144,7 +147,6 @@
 - Update settings, set maxlength on name and bio inputs. Fixes #4248 ([558700fc](https://github.com/pixelfed/pixelfed/commit/558700fc))
 - Update api routes, add post method support to /api/v1/accounts/update_credentials to properly handle binary form data (avatars). Fixes #4250 ([1ae19ea5](https://github.com/pixelfed/pixelfed/commit/1ae19ea5))
 - Update ApiV1Controller, improve timeline account hydration ([4e79c772](https://github.com/pixelfed/pixelfed/commit/4e79c772))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
 
