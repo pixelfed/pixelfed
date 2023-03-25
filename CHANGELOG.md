@@ -139,6 +139,8 @@
 - Update ap helpers, fix album order bug by setting media order ([871f798c](https://github.com/pixelfed/pixelfed/commit/871f798c))
 - Update image pipeline, dispatch jobs to mmo queue and add "replace_id" param to v2/media endpoint to dispatch delayed MediaDeletePipeline job for original media id to improve media gc on supported clients ([5a67e9f9](https://github.com/pixelfed/pixelfed/commit/5a67e9f9))
 - Update admin instance management, improve filtering/sorting and add import/export support ([d5d9500d](https://github.com/pixelfed/pixelfed/commit/d5d9500d))
+- Update Post component, show state error when status account is null or missing ([e6dc6234](https://github.com/pixelfed/pixelfed/commit/e6dc6234))
+- Update private profile view, add rel=me support, hide avatar/bio when not logged in and add robots meta tag to block search engine indexing on private profiles ([ab4bb9a0](https://github.com/pixelfed/pixelfed/commit/ab4bb9a0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
