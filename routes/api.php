@@ -26,7 +26,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('bookmarks', 'Api\ApiV1Controller@bookmarks')->middleware($middleware);
 
 		Route::get('accounts/verify_credentials', 'Api\ApiV1Controller@verifyCredentials')->middleware($middleware);
-		Route::patch('accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware($middleware);
+		Route::match(['post', 'patch'], 'accounts/update_credentials', 'Api\ApiV1Controller@accountUpdateCredentials')->middleware($middleware);
 		Route::get('accounts/relationships', 'Api\ApiV1Controller@accountRelationshipsById')->middleware($middleware);
 		Route::get('accounts/search', 'Api\ApiV1Controller@accountSearch')->middleware($middleware);
 		Route::get('accounts/{id}/statuses', 'Api\ApiV1Controller@accountStatusesById')->middleware($middleware);
