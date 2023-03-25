@@ -61,7 +61,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         }
 
         NetworkTimelineService::del($status->id);
-        Cache::forget(StatusService::key($status->id));
+        StatusService::del($status->id, true);
         Bookmark::whereStatusId($status->id)->delete();
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)

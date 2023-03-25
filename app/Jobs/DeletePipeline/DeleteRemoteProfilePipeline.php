@@ -150,6 +150,6 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 
 		// Delete profile
 		Profile::findOrFail($profile->id)->delete();
-		return;
+		return 1;
 	}
 }
