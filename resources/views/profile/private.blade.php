@@ -1,4 +1,4 @@
-@extends('layouts.app',['title' => $user->username . " on " . config('app.name')])
+@extends('layouts.app-guest',['title' => $user->username . " on " . config('app.name')])
 
 @section('content')
 @if (session('error'))
@@ -7,7 +7,9 @@
 		</div>
 @endif
 @include('profile.partial.private-info')
-
+@if($user->website)
+<a class="d-none" href="{{$user->website}}" rel="me external nofollow noopener">{{$user->website}}</a>
+@endif
 <div class="container">
 	<div class="profile-timeline mt-2 mt-md-4">
 		<div class="">
@@ -29,9 +31,5 @@
 @endsection
 
 @push('meta')
-<meta property="og:description" content="{{$user->bio}}">
-<meta property="og:image" content="{{$user->avatarUrl()}}">
-@if($user->remote_url)
 <meta name="robots" content="noindex, nofollow">
-@endif
 @endpush
