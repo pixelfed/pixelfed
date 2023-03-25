@@ -39,7 +39,7 @@
 		<div class="form-group row">
 			<label for="name" class="col-sm-3 col-form-label font-weight-bold">Name</label>
 			<div class="col-sm-9">
-				<input type="text" class="form-control" id="name" name="name" placeholder="Your Name" value="{{Auth::user()->profile->name}}" v-pre>
+				<input type="text" class="form-control" id="name" name="name" placeholder="Your Name" maxlength="30" value="{{Auth::user()->profile->name}}" v-pre>
 			</div>
 		</div>
 		<div class="form-group row">
@@ -51,7 +51,15 @@
 		<div class="form-group row">
 			<label for="bio" class="col-sm-3 col-form-label font-weight-bold">Bio</label>
 			<div class="col-sm-9">
-				<textarea class="form-control" id="bio" name="bio" placeholder="Add a bio here" rows="2" data-max-length="{{config('pixelfed.max_bio_length')}}" v-pre>{{strip_tags(Auth::user()->profile->bio)}}</textarea>
+				<textarea
+					class="form-control"
+					id="bio"
+					name="bio"
+					placeholder="Add a bio here"
+					rows="2"
+					data-max-length="{{config('pixelfed.max_bio_length')}}"
+					maxlength="{{config('pixelfed.max_bio_length')}}"
+					v-pre>{{strip_tags(Auth::user()->profile->bio)}}</textarea>
 				<p class="form-text">
 					<span class="bio-counter float-right small text-muted">0/{{config('pixelfed.max_bio_length')}}</span>
 				</p>

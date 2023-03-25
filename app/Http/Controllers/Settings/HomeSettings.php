@@ -22,7 +22,6 @@ use App\Services\PronounService;
 
 trait HomeSettings
 {
-
 	public function home()
 	{
 		$id = Auth::user()->profile->id;
@@ -41,7 +40,7 @@ trait HomeSettings
 	public function homeUpdate(Request $request)
 	{
 		$this->validate($request, [
-			'name'    => 'required|string|max:'.config('pixelfed.max_name_length'),
+			'name'    => 'nullable|string|max:'.config('pixelfed.max_name_length'),
 			'bio'     => 'nullable|string|max:'.config('pixelfed.max_bio_length'),
 			'website' => 'nullable|url',
 			'language' => 'nullable|string|min:2|max:5',
