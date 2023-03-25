@@ -120,6 +120,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::post('instances/create', 'AdminController@postInstanceCreateNewApi');
 		Route::post('instances/delete', 'AdminController@postInstanceDeleteApi');
 		Route::post('instances/refresh-stats', 'AdminController@postInstanceRefreshStatsApi');
+		Route::get('instances/download-backup', 'AdminController@downloadBackup');
+		Route::post('instances/import-data', 'AdminController@importBackup');
 	});
 });
 

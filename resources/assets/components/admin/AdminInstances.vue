@@ -39,6 +39,21 @@
 					<div class="col-xl-2 col-md-6">
 						<div class="mb-3">
 							<button class="btn btn-outline-white btn-block btn-sm mt-1" @click.prevent="showAddModal = true">Create New Instance</button>
+							<div v-if="showImportForm">
+								<div class="form-group mt-3">
+									<div class="custom-file">
+										<input ref="importInput" type="file" class="custom-file-input" id="customFile" v-on:change="onImportUpload">
+										<label class="custom-file-label" for="customFile">Choose file</label>
+									</div>
+								</div>
+								<p class="mb-0 mt-n3">
+									<a href="#" class="text-white font-weight-bold small" @click.prevent="showImportForm = false">Cancel</a>
+								</p>
+							</div>
+							<div v-else class="d-flex mt-1">
+								<button class="btn btn-outline-white btn-sm mt-1" @click="openImportForm">Import</button>
+								<button class="btn btn-outline-white btn-block btn-sm mt-1" @click="downloadBackup()">Download Backup</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -111,7 +126,7 @@
 					<thead class="thead-dark">
 						<tr>
 							<th scope="col" class="cursor-pointer" v-html="buildColumn('ID', 'id')" @click="toggleCol('id')"></th>
-							<th scope="col" class="cursor-pointer" v-html="buildColumn('Domain', 'name')" @click="toggleCol('name')"></th>
+							<th scope="col" class="cursor-pointer" v-html="buildColumn('Domain', 'domain')" @click="toggleCol('domain')"></th>
 							<th scope="col" class="cursor-pointer" v-html="buildColumn('Software', 'software')" @click="toggleCol('software')"></th>
 							<th scope="col" class="cursor-pointer" v-html="buildColumn('User Count', 'user_count')" @click="toggleCol('user_count')"></th>
 							<th scope="col" class="cursor-pointer" v-html="buildColumn('Status Count', 'status_count')" @click="toggleCol('status_count')"></th>
@@ -293,7 +308,62 @@
 				</div>
 			</div>
 		</div>
+	</b-modal>
 
+	<b-modal
+		v-model="showImportModal"
+		title="Import Instance Backup"
+		ok-title="Import"
+		scrollable
+		:ok-disabled="!importData || (!importData.banned.length && !importData.unlisted.length && !importData.auto_cw.length)"
+		@ok="completeImport"
+		@cancel="cancelImport">
+		<div v-if="showImportModal && importData">
+			<div v-if="importData.auto_cw && importData.auto_cw.length" class="mb-5">
+				<p class="font-weight-bold text-center my-0">NSFW Instances ({{importData.auto_cw.length}})</p>
+				<p class="small text-center text-muted mb-1">Tap on an instance to remove it.</p>
+				<div class="list-group">
+					<a v-for="(instance, idx) in importData.auto_cw" class="list-group-item d-flex align-items-center justify-content-between" href="#" @click.prevent="filterImportData('auto_cw', idx)">
+						{{ instance }}
+
+						<span class="badge badge-warning">Auto CW</span>
+					</a>
+				</div>
+			</div>
+
+			<div v-if="importData.unlisted && importData.unlisted.length" class="mb-5">
+				<p class="font-weight-bold text-center my-0">Unlisted Instances ({{importData.unlisted.length}})</p>
+				<p class="small text-center text-muted mb-1">Tap on an instance to remove it.</p>
+				<div class="list-group">
+					<a v-for="(instance, idx) in importData.unlisted" class="list-group-item d-flex align-items-center justify-content-between" href="#" @click.prevent="filterImportData('unlisted', idx)">
+						{{ instance }}
+
+						<span class="badge badge-primary">Unlisted</span>
+					</a>
+				</div>
+			</div>
+
+			<div v-if="importData.banned && importData.banned.length" class="mb-5">
+				<p class="font-weight-bold text-center my-0">Banned Instances ({{importData.banned.length}})</p>
+				<p class="small text-center text-muted mb-1">Review instances, tap on an instance to remove it.</p>
+				<div class="list-group">
+					<a v-for="(instance, idx) in importData.banned" class="list-group-item d-flex align-items-center justify-content-between" href="#" @click.prevent="filterImportData('banned', idx)">
+						{{ instance }}
+
+						<span class="badge badge-danger">Banned</span>
+					</a>
+				</div>
+			</div>
+
+			<div v-if="!importData.banned.length && !importData.unlisted.length && !importData.auto_cw.length">
+				<div class="text-center">
+					<p>
+						<i class="far fa-check-circle fa-4x text-success"></i>
+					</p>
+					<p class="lead">Nothing to import!</p>
+				</div>
+			</div>
+		</div>
 	</b-modal>
 </div>
 </template>
@@ -347,7 +417,10 @@
 					auto_cw: false,
 					unlisted: false,
 					notes: undefined
-				}
+				},
+				showImportForm: false,
+				showImportModal: false,
+				importData: undefined,
 			}
 		},
 
@@ -355,31 +428,47 @@
 			this.fetchStats();
 
 			let u = new URLSearchParams(window.location.search);
-			if(u.has('filter') || u.has('cursor') && !u.has('q')) {
-				let url = '/i/admin/api/instances/get?';
+			if(u.has('filter') && !u.has('q') && !u.has('sort')) {
+				const url = new URL(window.location.origin + '/i/admin/api/instances/get');
 
-				let filter = u.get('filter');
-				if(filter) {
-					this.tabIndex = this.filterMap.indexOf(filter);
-					url = url + 'filter=' + filter + '&';
+				if(u.has('filter')) {
+					this.tabIndex = this.filterMap.indexOf(u.get('filter'));
+					url.searchParams.set('filter', u.get('filter'));
+				}
+				if(u.has('cursor')) {
+					url.searchParams.set('cursor', u.get('cursor'));
 				}
 
-				let cursor = u.get('cursor');
-				if(cursor) {
-					url = url + 'cursor=' + cursor;
+				this.fetchInstances(url.toString());
+			} else if(u.has('sort') && !u.has('q')) {
+				const url = new URL(window.location.origin + '/i/admin/api/instances/get');
+				url.searchParams.set('sort', u.get('sort'));
+
+				if(u.has('dir')) {
+					url.searchParams.set('dir', u.get('dir'));
 				}
 
-				this.fetchInstances(url);
+				if(u.has('filter')) {
+					url.searchParams.set('filter', u.get('filter'));
+				}
+
+				if(u.has('cursor')) {
+					url.searchParams.set('cursor', u.get('cursor'));
+				}
+
+				this.fetchInstances(url.toString());
 			} else if(u.has('q')) {
 				this.tabIndex = -1;
 				this.searchQuery = u.get('q');
-				let cursor = u.has('cursor');
-				let q = u.get('q');
-				let url = '/i/admin/api/instances/query?q=' + q;
-				if(cursor) {
-					url = url + '&cursor=' + u.get('cursor');
+
+				const url = new URL(window.location.origin + '/i/admin/api/instances/query');
+				url.searchParams.set('q', u.get('q'));
+
+				if(u.has('cursor')) {
+					url.searchParams.set('cursor', u.get('cursor'));
 				}
-				this.fetchInstances(url);
+
+				this.fetchInstances(url.toString());
 			} else {
 				this.fetchInstances();
 			}
@@ -470,19 +559,52 @@
 			},
 
 			toggleCol(col) {
-				// this.sortCol = col;
+				if(this.filterMap[this.tabIndex] == col || this.searchQuery) {
+					return;
+				}
+				this.sortCol = col;
 
-				// if(!this.sortDir) {
-				//     this.sortDir = 'desc';
-				// } else {
-				//     this.sortDir = this.sortDir == 'asc' ? 'desc' : 'asc';
-				// }
+				if(!this.sortDir) {
+				    this.sortDir = 'desc';
+				} else {
+				    this.sortDir = this.sortDir == 'asc' ? 'desc' : 'asc';
+				}
 
-				// let url = '/i/admin/api/hashtags/query?sort=' + col + '&dir=' + this.sortDir;
-				// this.fetchHashtags(url);
+				const url = new URL(window.location.origin + '/i/admin/instances');
+				url.searchParams.set('sort', col);
+				url.searchParams.set('dir', this.sortDir);
+				if(this.tabIndex != 0) {
+					url.searchParams.set('filter', this.filterMap[this.tabIndex]);
+				}
+				history.pushState(null, '', url);
+
+				const apiUrl = new URL(window.location.origin + '/i/admin/api/instances/get');
+				apiUrl.searchParams.set('sort', col);
+				apiUrl.searchParams.set('dir', this.sortDir);
+				if(this.tabIndex != 0) {
+					apiUrl.searchParams.set('filter', this.filterMap[this.tabIndex]);
+				}
+
+				this.fetchInstances(apiUrl.toString());
 			},
 
 			buildColumn(name, col) {
+				if([1, 5, 6].indexOf(this.tabIndex) != -1 || (this.searchQuery && this.searchQuery.length)) {
+					return name;
+				}
+
+				if(this.tabIndex === 2 && col === 'banned') {
+					return name;
+				}
+
+				if(this.tabIndex === 3 && col === 'auto_cw') {
+					return name;
+				}
+
+				if(this.tabIndex === 4 && col === 'unlisted') {
+					return name;
+				}
+
 				let icon = `<i class="far fa-sort"></i>`;
 				if(col == this.sortCol) {
 					icon = this.sortDir == 'desc' ?
@@ -496,17 +618,26 @@
 				event.currentTarget.blur();
 				let apiUrl = dir == 'next' ? this.pagination.next : this.pagination.prev;
 				let cursor = dir == 'next' ? this.pagination.next_cursor : this.pagination.prev_cursor;
-				let url = '/i/admin/instances?';
-				if(this.tabIndex && !this.searchQuery) {
-					url = url + 'filter=' + this.filterMap[this.tabIndex] + '&';
-				}
+
+				const url = new URL(window.location.origin + '/i/admin/instances');
+
 				if(cursor) {
-					url = url + 'cursor=' + cursor;
+					url.searchParams.set('cursor', cursor);
 				}
+
 				if(this.searchQuery) {
-					url = url + '&q=' + this.searchQuery;
+					url.searchParams.set('q', this.searchQuery);
 				}
-				history.pushState(null, '', url);
+
+				if(this.sortCol) {
+					url.searchParams.set('sort', this.sortCol);
+				}
+
+				if(this.sortDir) {
+					url.searchParams.set('dir', this.sortDir);
+				}
+
+				history.pushState(null, '', url.toString());
 				this.fetchInstances(apiUrl);
 			},
 
@@ -616,7 +747,146 @@
 					this.showInstanceModal = false;
 					this.instances = this.instances.filter(i => i.id != this.instanceModal.id);
 				})
+				.then(() => {
+					setTimeout(() => this.fetchStats(), 1000);
+				})
+			},
+
+			openImportForm() {
+				let el = document.createElement('p');
+					el.classList.add('text-left');
+					el.classList.add('mb-0');
+					el.innerHTML = '<p class="lead mb-0">Import your instance moderation backup.</span></p><br /><p>Import Instructions:</p><ol><li>Press OK</li><li>Press "Choose File" on Import form input</li><li>Select your <kbd>pixelfed-instances-mod.json</kbd> file</li><li>Review instance moderation actions. Tap on an instance to remove it</li><li>Press "Import" button to finish importing</li></ol>';
+					let wrapper = document.createElement('div');
+					wrapper.appendChild(el);
+				swal({
+					title: 'Import Backup',
+					content: wrapper,
+					icon: 'info'
+				})
+				this.showImportForm = true;
+			},
+
+			downloadBackup($event) {
+				axios.get('/i/admin/api/instances/download-backup', {
+					responseType: "blob"
+				})
+				.then(res => {
+					let el = document.createElement('a');
+					el.setAttribute('download', 'pixelfed-instances-mod.json')
+					const href = URL.createObjectURL(res.data);
+      				el.href = href;
+      				el.setAttribute('target', '_blank');
+      				el.click();
+
+      				swal(
+      					'Instance Backup Downloading',
+      					'Your instance moderation backup is downloading. Use this to import auto_cw, banned and unlisted instances to supported Pixelfed instances.',
+      					'success'
+      				)
+				})
+			},
+
+			async onImportUpload(ev) {
+				let res = await this.getParsedImport(ev.target.files[0]);
+
+				if(!res.hasOwnProperty('version') || res.version !== 1) {
+					swal('Invalid Backup', 'We cannot validate this backup. Please try again later.', 'error');
+					this.showImportForm = false;
+					this.$refs.importInput.reset();
+					return;
+				}
+				this.importData = res;
+				this.showImportModal = true;
+			},
+
+			async getParsedImport(ev) {
+				try {
+					return await this.parseJsonFile(ev);
+				} catch(err) {
+					let el = document.createElement('p');
+					el.classList.add('text-left');
+					el.classList.add('mb-0');
+					el.innerHTML = '<p class="lead">An error occured when attempting to parse the import file. <span class="font-weight-bold">Please try again later.</span></p><br /><p class="small text-danger mb-0">Error message:</p><div class="card card-body"><code>' + err.message + '</code></div>';
+					let wrapper = document.createElement('div');
+					wrapper.appendChild(el);
+					swal({
+						title: 'Import Error',
+						content: wrapper,
+						icon: 'error'
+					})
+					return;
+				}
+			},
+
+			async promisedParseJSON(json) {
+				return new Promise((resolve, reject) => {
+					try {
+						resolve(JSON.parse(json))
+					} catch (e) {
+						reject(e)
+					}
+				})
+			},
+
+			async parseJsonFile(file) {
+				return new Promise((resolve, reject) => {
+					const fileReader = new FileReader()
+					fileReader.onload = event => resolve(this.promisedParseJSON(event.target.result))
+					fileReader.onerror = error => reject(error)
+					fileReader.readAsText(file)
+				})
+			},
+
+			filterImportData(type, index) {
+				switch(type) {
+					case 'auto_cw':
+						this.importData.auto_cw.splice(index, 1);
+					break;
+
+					case 'unlisted':
+						this.importData.unlisted.splice(index, 1);
+					break;
+
+					case 'banned':
+						this.importData.banned.splice(index, 1);
+					break;
+				}
+			},
+
+			completeImport() {
+				this.showImportForm = false;
+
+				axios.post('/i/admin/api/instances/import-data', {
+					'banned': this.importData.banned,
+					'auto_cw': this.importData.auto_cw,
+					'unlisted': this.importData.unlisted,
+				})
+				.then(res => {
+					swal('Import Uploaded', 'Import successfully uploaded, please allow a few minutes to process.', 'success');
+				})
+				.then(() => {
+					setTimeout(() => this.fetchStats(), 1000);
+				})
+			},
+
+			cancelImport(bvModalEvent) {
+				if(this.importData.banned.length || this.importData.auto_cw.length || this.importData.unlisted.length) {
+					if(!window.confirm('Are you sure you want to cancel importing?')) {
+						bvModalEvent.preventDefault();
+						return;
+					} else {
+						this.showImportForm = false;
+						this.$refs.importInput.value = '';
+						this.importData = {
+							banned: [],
+							auto_cw: [],
+							unlisted: []
+						};
+					}
+				}
 			}
+
 		}
 	}
 </script>
