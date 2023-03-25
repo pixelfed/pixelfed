@@ -143,6 +143,7 @@
 - Update private profile view, add rel=me support, hide avatar/bio when not logged in and add robots meta tag to block search engine indexing on private profiles ([ab4bb9a0](https://github.com/pixelfed/pixelfed/commit/ab4bb9a0))
 - Update settings, set maxlength on name and bio inputs. Fixes #4248 ([558700fc](https://github.com/pixelfed/pixelfed/commit/558700fc))
 - Update api routes, add post method support to /api/v1/accounts/update_credentials to properly handle binary form data (avatars). Fixes #4250 ([1ae19ea5](https://github.com/pixelfed/pixelfed/commit/1ae19ea5))
+- Update ApiV1Controller, improve timeline account hydration ([4e79c772](https://github.com/pixelfed/pixelfed/commit/4e79c772))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.4 (2022-10-04)](https://github.com/pixelfed/pixelfed/compare/v0.11.3...v0.11.4)
