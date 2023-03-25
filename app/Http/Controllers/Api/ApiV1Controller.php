@@ -2299,10 +2299,11 @@ class ApiV1Controller extends Controller
 		->map(function($k) use($user, $napi) {
 			try {
 				$status = $napi ? StatusService::get($k) : StatusService::getMastodon($k);
-			} catch(\Exception $e) {
 				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 					return false;
 				}
+			} catch(\Exception $e) {
+				return false;
 			}
 
 			$account = $napi ? AccountService::get($status['account']['id'], true) : AccountService::getMastodon($status['account']['id'], true);
