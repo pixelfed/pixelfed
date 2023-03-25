@@ -197,6 +197,10 @@
 					if(!res.data || !res.data.hasOwnProperty('id')) {
 						this.$router.push('/i/web/404');
 					}
+					if(!res.data.hasOwnProperty('account') || !res.data.account) {
+						this.postStateError = true;
+						return;
+					}
 					this.post = res.data;
 					this.media = this.post.media_attachments;
 					this.profile = this.post.account;
