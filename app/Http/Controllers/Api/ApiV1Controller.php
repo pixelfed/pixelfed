@@ -2130,6 +2130,10 @@ class ApiV1Controller extends Controller
 			->get()
 			->map(function($s) use($pid, $napi) {
 				try {
+					$account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
+					if(!$account) {
+						return false;
+					}
 					$status = $napi ? StatusService::get($s['id'], false) : StatusService::getMastodon($s['id'], false);
 					if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
 						return false;
@@ -2137,6 +2141,8 @@ class ApiV1Controller extends Controller
 				} catch(\Exception $e) {
 					return false;
 				}
+
+				$status['account'] = $account;
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
@@ -2167,7 +2173,7 @@ class ApiV1Controller extends Controller
 			->get()
 			->map(function($s) use($pid, $napi) {
 				try {
-					$account = AccountService::get($s['profile_id'], true);
+					$account = $napi ? AccountService::get($s['profile_id'], true) : AccountService::getMastodon($s['profile_id'], true);
 					if(!$account) {
 						return false;
 					}
@@ -2178,6 +2184,8 @@ class ApiV1Controller extends Controller
 				} catch(\Exception $e) {
 					return false;
 				}
+
+				$status['account'] = $account;
 
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
@@ -2289,10 +2297,20 @@ class ApiV1Controller extends Controller
 			}
 		})
 		->map(function($k) use($user, $napi) {
-			$status = $napi ? StatusService::get($k) : StatusService::getMastodon($k);
-			if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+			try {
+				$status = $napi ? StatusService::get($k) : StatusService::getMastodon($k);
+			} catch(\Exception $e) {
+				if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+					return false;
+				}
+			}
+
+			$account = $napi ? AccountService::get($status['account']['id'], true) : AccountService::getMastodon($status['account']['id'], true);
+			if(!$account) {
 				return false;
 			}
+
+			$status['account'] = $account;
 
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
