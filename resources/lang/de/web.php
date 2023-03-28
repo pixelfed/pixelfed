@@ -97,6 +97,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+		'noneFound' => 'Keine Benachrichtigung vorhanden',
 	],
 
 	'post' => [
