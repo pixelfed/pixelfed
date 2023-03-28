@@ -97,6 +97,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+        "noneFound": "Keine Benachrichtigungen vorhanden"
 	],
 
 	'post' => [
@@ -176,11 +177,26 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
+		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'"
+		
+	'onboarding' => [
+			'welcome' => 'Willkommen!',
+			'thisIsYourHomeFeed' => 'Dies ist dein Heimfeed. Er zeigt dir die neuesten Posts von Leuten, denen du folgst.',
+			'letUsHelpYouFind' => 'Lass uns Leute finden, die für dich interessant sein k\u00f6nnten',
+			'refreshFeed' => 'Aktualisiere meinen Feed',
 	],
 
 	'hashtags' => [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
+	],
+
+	'report' => [
+		'report' => 'Melden',
+		'selectReason' => 'W\u00e4hle eine Begr\u00fcndung',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Meldung wird gesendet',
+		'thanksMsg' => 'Vielen Dank für Meldung, die zu einem angenehmen Aufenthalt für alle beitr\u00e4gt!',
+		'contactAdminMsg' => 'Sofern du Admins \u00fcber diese Meldung benachrichtigen m\u00f6chtest',
 	],
 
 ];
