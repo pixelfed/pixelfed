@@ -74,6 +74,7 @@
         "modlog": "modlog",
         "post": "Beitrag",
         "story": "Story"
+        "noneFound": "Keine Benachrichtigungen vorhanden"
     },
     "post": {
         "shareToFollowers": "Mit Folgenden teilen",
@@ -146,5 +147,13 @@
     },
     "hashtags": {
         "emptyFeed": "Wir k\u00f6nnen keine Beitr\u00e4ge mit diesem Hashtag finden"
+    }
+    "report": {
+        "report": "Melden",
+        "selectReason": "W\u00e4hle eine Begr\u00fcndung",
+        "reported": "Gemeldet",
+        "sendingReport": "Meldung wird gesendet",
+        "thanksMsg": "Vielen Dank für Meldung, die zu einem angenehmen Aufenthalt für alle beitr\u00e4gt!",
+        "contactAdminMsg": "Sofern du Admins \u00fcber diese Meldung benachrichtigen m\u00f6chtest"
     }
 }
