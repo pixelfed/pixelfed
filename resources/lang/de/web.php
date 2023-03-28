@@ -97,6 +97,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+		'noneFound' => 'Keine Benachrichtigung vorhanden',
 	],
 
 	'post' => [
@@ -183,4 +184,14 @@ return [
 		'emptyFeed' => 'Wir können keine Beiträge mit diesem Hashtag finden'
 	],
 
+
+	'report' => [
+		'report' => 'Melden',
+		'selectReason' => 'Wähle einen Grund aus',
+		'reported' => 'Gemeldet',
+		'sendingReport' => 'Meldung senden',
+		'thanksMsg' => 'Danke für deine Meldung, die zu einem angenehmen Aufenthalt beiträgt!',
+		'contactAdminMsg' => 'Wenn du eine:n Administator/-in über die Meldung benachrichtigen möchtest',
+	],	
+	
 ];
