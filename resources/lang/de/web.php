@@ -97,6 +97,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
+        "noneFound": "Keine Benachrichtigungen vorhanden"
 	],
 
 	'post' => [
@@ -177,6 +178,12 @@ return [
 
 	'timeline' => [
 		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst'
+
+		'onboarding' => [
+			'welcome' => 'Willkommen',
+			'thisIsYourHomeFeed' => 'Dies ist dein Heimfeed. Er zeigt dir die neuesten Posts von Leuten, denen du folgst..',
+			'letUsHelpYouFind' => 'Lass uns Leute finden, die für dich interessant sein k\u00f6nnten',
+			'refreshFeed' => 'Aktualisiere meinen Feed',
 	],
 
 	'hashtags' => [
