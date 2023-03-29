@@ -321,14 +321,30 @@ class ComposeController extends Controller
 		]);
 		$pid = $request->user()->profile_id;
 		abort_if(!$pid, 400);
-		$q = filter_var($request->input('q'), FILTER_SANITIZE_STRING);
-		$hash = hash('sha256', $q);
-		$key = 'pf:search:location:v1:id:' . $hash;
-		$popular = Cache::remember('pf:search:location:v1:popular', 86400, function() {
-			if(config('database.default') != 'mysql') {
-				return [];
-			}
+		$q = e($request->input('q'));
+
+		$popular = Cache::remember('pf:search:location:v1:popular', 1209600, function() {
 			$minId = SnowflakeService::byDate(now()->subDays(290));
+			if(config('database.default') == 'pgsql') {
+				return Status::selectRaw('id, place_id, count(place_id) as pc')
+				->whereNotNull('place_id')
+				->where('id', '>', $minId)
+				->orderByDesc('pc')
+				->groupBy(['place_id', 'id'])
+				->limit(400)
+				->get()
+				->filter(function($post) {
+					return $post;
+				})
+				->map(function($place) {
+					return [
+						'id' => $place->place_id,
+						'count' => $place->pc
+					];
+				})
+				->unique('id')
+				->values();
+			}
 			return Status::selectRaw('id, place_id, count(place_id) as pc')
 				->whereNotNull('place_id')
 				->where('id', '>', $minId)
@@ -346,30 +362,30 @@ class ComposeController extends Controller
 					];
 				});
 		});
-		$places = Cache::remember($key, 900, function() use($q, $popular) {
-			$q = '%' . $q . '%';
-			return DB::table('places')
-			->where('name', 'like', $q)
-			->limit((strlen($q) > 5 ? 360 : 180))
-			->get()
-			->sortByDesc(function($place, $key) use($popular) {
-				return $popular->filter(function($p) use($place) {
-					return $p['id'] == $place->id;
-				})->map(function($p) use($place) {
-					return in_array($place->country, ['Canada', 'USA', 'France', 'Germany', 'United Kingdom']) ? $p['count'] : 1;
-				})->values();
-			})
-			->map(function($r) {
-				return [
-					'id' => $r->id,
-					'name' => $r->name,
-					'country' => $r->country,
-					'url'   => url('/discover/places/' . $r->id . '/' . $r->slug)
-				];
-			})
-			->values()
-			->all();
-		});
+		$q = '%' . $q . '%';
+		$wildcard = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+
+		$places = DB::table('places')
+		->where('name', $wildcard, $q)
+		->limit((strlen($q) > 5 ? 360 : 30))
+		->get()
+		->sortByDesc(function($place, $key) use($popular) {
+			return $popular->filter(function($p) use($place) {
+				return $p['id'] == $place->id;
+			})->map(function($p) use($place) {
+				return in_array($place->country, ['Canada', 'USA', 'France', 'Germany', 'United Kingdom']) ? $p['count'] : 1;
+			})->values();
+		})
+		->map(function($r) {
+			return [
+				'id' => $r->id,
+				'name' => $r->name,
+				'country' => $r->country,
+				'url'   => url('/discover/places/' . $r->id . '/' . $r->slug)
+			];
+		})
+		->values()
+		->all();
 		return $places;
 	}
 
