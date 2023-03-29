@@ -1012,7 +1012,7 @@ class ApiV1Controller extends Controller
 
 		$profile = Profile::findOrFail($id);
 
-		if($profile->user->is_admin == true) {
+		if($profile->user && $profile->user->is_admin == true) {
 			abort(400, 'You cannot block an admin');
 		}
 
@@ -1047,7 +1047,7 @@ class ApiV1Controller extends Controller
 		]);
 
 		RelationshipService::refresh($pid, $id);
-
+		UserFilterService::block($pid, $id);
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 
