@@ -1,6 +1,9 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.5...dev)
+
+### Updates
+- Update ApiV1Controller, fix blocking remote accounts. Closes #4256 ([8e71e0c0](https://github.com/pixelfed/pixelfed/commit/8e71e0c0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
