@@ -142,7 +142,12 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		});
 
 		Route::group(['prefix' => 'stories'], function () use($middleware) {
-			Route::get('recent', 'StoryController@recent')->middleware($middleware);
+			Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
+			Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);
+			Route::post('publish', 'Stories\StoryApiV1Controller@publish')->middleware($middleware);
+			Route::post('seen', 'Stories\StoryApiV1Controller@viewed')->middleware($middleware);
+			Route::post('self-expire/{id}', 'Stories\StoryApiV1Controller@delete')->middleware($middleware);
+			Route::post('comment', 'Stories\StoryApiV1Controller@comment')->middleware($middleware);
 		});
 
 		Route::group(['prefix' => 'compose'], function () use($middleware) {
