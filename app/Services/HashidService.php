@@ -9,11 +9,16 @@ class HashidService {
 	public const MIN_LIMIT = 15;
 	public const CMAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
-	public static function encode($id)
+	public static function encode($id, $minLimit = true)
 	{
-		if(!is_numeric($id) || $id > PHP_INT_MAX || strlen($id) < self::MIN_LIMIT) {
+		if(!is_numeric($id) || $id > PHP_INT_MAX) {
 			return null;
 		}
+
+		if($minLimit && strlen($id) < self::MIN_LIMIT) {
+			return null;
+		}
+
 		$key = "hashids:{$id}";
 		return Cache::remember($key, now()->hours(48), function() use($id) {
 			$cmap = self::CMAP;
