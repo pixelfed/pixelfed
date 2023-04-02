@@ -830,7 +830,7 @@ export default {
 									});
 								}, 500);
 						}).catch(error => {
-							swal('Oops!', 'An error occured, please try refreshing the page.', 'error');
+							swal('Oops!', 'An error occurred, please try refreshing the page.', 'error');
 						});
 			},
 

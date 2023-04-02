@@ -516,7 +516,7 @@
                 })
                 .catch(err => {
                     this.isSavingCurated = false;
-                    this.$bvToast.toast(`An error occured while attempting to update your portfolio, please try again later and contact an admin if this problem persists.`, {
+                    this.$bvToast.toast(`An error occurred while attempting to update your portfolio, please try again later and contact an admin if this problem persists.`, {
                         variant: 'dark',
                         title: 'Error',
                         autoHideDelay: 2000,

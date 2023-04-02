@@ -222,7 +222,7 @@
 					self.feed.unshift(entity);
 					self.pagination.total++;
 				}).catch(err => {
-					swal('Oops!', 'An error occured, please try again later.', 'error');
+					swal('Oops!', 'An error occurred, please try again later.', 'error');
 					self.postingComment = false;
 				})
 			},

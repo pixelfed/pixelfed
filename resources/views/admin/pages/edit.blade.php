@@ -97,7 +97,7 @@
             }).then(res => {
                 window.location.href = '/i/admin/settings/pages';
             }).catch(err => {
-                swal('Error', 'An error occured!', 'error');
+                swal('Error', 'An error occurred!', 'error');
                 console.log(err);
             });
         }

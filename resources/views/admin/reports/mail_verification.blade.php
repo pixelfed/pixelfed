@@ -67,7 +67,7 @@
 		}).then(res => {
 			location.href = '/i/admin/reports';
 		}).catch(err => {
-			swal('Oops!', 'An error occured', 'error');
+			swal('Oops!', 'An error occurred', 'error');
 			console.log(err);
 		})
 	});

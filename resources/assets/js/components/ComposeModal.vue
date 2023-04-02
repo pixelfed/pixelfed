@@ -413,7 +413,7 @@
 							</div>
 						</div>
 						<div v-else>
-							<p class="mb-0 p-5 text-center font-weight-bold">An error occured, please refresh the page.</p>
+							<p class="mb-0 p-5 text-center font-weight-bold">An error occurred, please refresh the page.</p>
 						</div>
 					</div>
 
@@ -1238,7 +1238,7 @@ export default {
 					this.carouselCursor = 0;
 				}
 			}).catch(err => {
-				swal('Whoops!', 'An error occured when attempting to delete this, please try again', 'error');
+				swal('Whoops!', 'An error occurred when attempting to delete this, please try again', 'error');
 			});
 		},
 
@@ -1304,7 +1304,7 @@ export default {
 						}
 					}).catch(err => {
 						if(err.response) {
-							let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
+							let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occurred.'
 							swal('Oops, something went wrong!', msg, 'error');
 						} else {
 							swal('Oops, something went wrong!', err.message, 'error');
@@ -1348,7 +1348,7 @@ export default {
 						let data = res.data;
 						window.location.href = data;
 					}).catch(err => {
-						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
+						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occurred.'
 						swal('Oops, something went wrong!', msg, 'error');
 					});
 					return;
@@ -1794,7 +1794,7 @@ export default {
 				pollOptions: this.pollOptions
 			}).then(res => {
 				if(!res.data.hasOwnProperty('url')) {
-					swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+					swal('Oops!', 'An error occurred while attempting to create this poll. Please refresh the page and try again.', 'error');
 					this.postingPoll = false;
 					return;
 				}
@@ -1809,7 +1809,7 @@ export default {
 					}
 				}
 				this.postingPoll = false;
-				swal('Oops!', 'An error occured while attempting to create this poll. Please refresh the page and try again.', 'error');
+				swal('Oops!', 'An error occurred while attempting to create this poll. Please refresh the page and try again.', 'error');
 			})
 		},
 

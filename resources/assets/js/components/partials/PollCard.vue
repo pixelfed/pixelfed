@@ -298,7 +298,7 @@
 						this.refreshingResults = false;
 					}
 				}).catch(err => {
-					swal('Oops!', 'An error occured while fetching the latest poll results. Please try again later.', 'error');
+					swal('Oops!', 'An error occurred while fetching the latest poll results. Please try again later.', 'error');
 					this.setActiveRefreshTimeout();
 					this.refreshingResults = false;
 				});

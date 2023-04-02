@@ -183,7 +183,7 @@
       }).then(res => {
         window.location.href = window.location.href;
       }).catch(err => {
-        swal('Error', 'An error occured. Please try again.', 'error');
+        swal('Error', 'An error occurred. Please try again.', 'error');
       });
     });
   });

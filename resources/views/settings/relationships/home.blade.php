@@ -142,7 +142,7 @@
 				.catch(err => {
 					swal(
 						'Error',
-						'An error occured when attempting to unfollow this user',
+						'An error occurred when attempting to unfollow this user',
 						'error'
 						);
 				});

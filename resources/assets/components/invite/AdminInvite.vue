@@ -252,7 +252,7 @@
                 </div>
 
                 <div v-else class="card-body">
-                    <p>An error occured.</p>
+                    <p>An error occurred.</p>
                 </div>
             </div>
         </div>
