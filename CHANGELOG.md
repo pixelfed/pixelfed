@@ -5,6 +5,9 @@
 ### Updates
 - Update ApiV1Controller, fix blocking remote accounts. Closes #4256 ([8e71e0c0](https://github.com/pixelfed/pixelfed/commit/8e71e0c0))
 - Update ComposeController, fix postgres location search. Closes #4242 and #4239 ([64a4a006](https://github.com/pixelfed/pixelfed/commit/64a4a006))
+- Update app.js, add title attribute to iframe embeds to comply with accessibility requirements ([4d72b9e3](https://github.com/pixelfed/pixelfed/commit/4d72b9e3))
+- Update MediaPathService, fix story path ([aebbad96](https://github.com/pixelfed/pixelfed/commit/aebbad96))
+- Update Story v1.1 api endpoints ([855e9626](https://github.com/pixelfed/pixelfed/commit/855e9626))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
