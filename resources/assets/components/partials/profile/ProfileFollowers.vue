@@ -219,7 +219,7 @@
             setCacheWarmTimeout() {
                 if(this.cacheWarmInteractions >= 5) {
                     this.isWarmingCache = false;
-                    swal('Oops', 'Its taking longer than expected to collect this account followers. Please try again later', 'error');
+                    swal('Oops', 'It is taking longer than expected to collect this account followers. Please try again later', 'error');
                     return;
                 }
                 this.cacheWarmTimeout = setTimeout(() => {
