@@ -787,7 +787,7 @@
 - Updated PostComponent, fix MomentUI like counter. ([42c6121a](https://github.com/pixelfed/pixelfed/commit/42c6121a))
 - Updated status views, remove like counts from status embed. ([1a2e41b1](https://github.com/pixelfed/pixelfed/commit/1a2e41b1))
 - Updated Profile, fix unauthenticated private profiles. ([9017f7c4](https://github.com/pixelfed/pixelfed/commit/9017f7c4))
-- Updated PublicApiController, impr home timeline perf. ([4fe42e5b](https://github.com/pixelfed/pixelfed/commit/4fe42e5b))
+- Updated PublicApiController, improve home timeline perf. ([4fe42e5b](https://github.com/pixelfed/pixelfed/commit/4fe42e5b))
 - Updated Timeline.vue, fix comment button. ([b6b5ce7c](https://github.com/pixelfed/pixelfed/commit/b6b5ce7c))
 - Updated StatusEntityLexer, only add specific status types to PublicTimelineService. ([1fdcbe5b](https://github.com/pixelfed/pixelfed/commit/1fdcbe5b))
 - Updated ActivityPub helpers, fix comment threading in statusFetch() method ([26b9c140](https://github.com/pixelfed/pixelfed/commit/26b9c140))
