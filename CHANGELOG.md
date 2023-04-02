@@ -78,7 +78,7 @@
 - Fix CustomEmoji, properly handle shortcode updates and delete old copy in case the extension changes ([bc29073a](https://github.com/pixelfed/pixelfed/commit/bc29073a))
 - Update reply pipelines, restore reply_count logic ([0d780ffb](https://github.com/pixelfed/pixelfed/commit/0d780ffb))
 - Update StatusTagsPipeline, reject if `type` not set ([91085c45](https://github.com/pixelfed/pixelfed/commit/91085c45))
-- Update ReplyPipelines, use more efficent reply count calculation ([d4dfa95c](https://github.com/pixelfed/pixelfed/commit/d4dfa95c))
+- Update ReplyPipelines, use more efficient reply count calculation ([d4dfa95c](https://github.com/pixelfed/pixelfed/commit/d4dfa95c))
 - Update StatusDelete pipeline, dispatch async ([257c0949](https://github.com/pixelfed/pixelfed/commit/257c0949))
 - Update lexer/extractor to handle banned hashtags ([909a8a5a](https://github.com/pixelfed/pixelfed/commit/909a8a5a))
 - Update FederationController, fix double lock bug ([9fcccca9](https://github.com/pixelfed/pixelfed/commit/9fcccca9))
