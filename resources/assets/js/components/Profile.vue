@@ -801,7 +801,7 @@
 				return 'background-image: url(' + preview + ');';
 			},
 
-			blurhHashMedia(status) {
+			blurHashMedia(status) {
 				return status.sensitive ? null :
 					status.media_attachments[0].preview_url;
 			},
