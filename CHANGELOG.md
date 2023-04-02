@@ -346,7 +346,7 @@
 - Updated ApiV1Controller, fix search v2 entities. ([9dac861e](https://github.com/pixelfed/pixelfed/commit/9dac861e))
 - Updated ApiV1Controller, fix apps endpoint. ([50baae52](https://github.com/pixelfed/pixelfed/commit/50baae52))
 - Updated ApiV1Controller, add apps/verify_credentials endpoint. ([c4d38c20](https://github.com/pixelfed/pixelfed/commit/c4d38c20))
-- Updated ApiV1Controller, increase max limion timelines. ([df22f2e4](https://github.com/pixelfed/pixelfed/commit/df22f2e4))
+- Updated ApiV1Controller, increase max limit on timelines. ([df22f2e4](https://github.com/pixelfed/pixelfed/commit/df22f2e4))
 - Updated ApiV1Controller, add preferences endpoint. ([c3e56b87](https://github.com/pixelfed/pixelfed/commit/c3e56b87))
 - Updated ApiV1Controller, fix tag timeline limits and remove has(media) constraint. ([8c65d60b](https://github.com/pixelfed/pixelfed/commit/8c65d60b))
 - Updated ApiV1Controller, add trends endpoint. ([d40a8453](https://github.com/pixelfed/pixelfed/commit/d40a8453))
