@@ -115,7 +115,7 @@
 				isFetchingMore: false,
                 isWarmingCache: false,
                 cacheWarmTimeout: undefined,
-                cacheWarmInterations: 0,
+                cacheWarmInteractions: 0,
 			}
 		},
 
@@ -217,13 +217,13 @@
             },
 
             setCacheWarmTimeout() {
-                if(this.cacheWarmInterations >= 5) {
+                if(this.cacheWarmInteractions >= 5) {
                     this.isWarmingCache = false;
                     swal('Oops', 'Its taking longer than expected to collect this account followers. Please try again later', 'error');
                     return;
                 }
                 this.cacheWarmTimeout = setTimeout(() => {
-                    this.cacheWarmInterations++;
+                    this.cacheWarmInteractions++;
                     this.fetchFollowers();
                 }, 45000);
             }
