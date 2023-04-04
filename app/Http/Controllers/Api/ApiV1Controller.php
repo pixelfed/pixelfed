@@ -2501,6 +2501,8 @@ class ApiV1Controller extends Controller
 		}
 
 		if($status['replies_count']) {
+			$filters = UserFilterService::filters($pid);
+
 			$descendants = DB::table('statuses')
 				->where('in_reply_to_id', $id)
 				->limit(20)
@@ -2508,8 +2510,8 @@ class ApiV1Controller extends Controller
 				->map(function($sid) {
 					return StatusService::getMastodon($sid, false);
 				})
-				->filter(function($post) {
-					return $post && isset($post['account']);
+				->filter(function($post) use($filters) {
+					return $post && isset($post['account'], $post['account']['id']) && !in_array($post['account']['id'], $filters);
 				})
 				->map(function($status) use($pid) {
 					$status['favourited'] = LikeService::liked($pid, $status['id']);
@@ -3358,7 +3360,11 @@ class ApiV1Controller extends Controller
 				->cursorPaginate($limit);
 		}
 
-		$data = $ids->map(function($post) use($pid) {
+		$filters = UserFilterService::filters($pid);
+		$data = $ids->filter(function($post) use($filters) {
+			return !in_array($post->profile_id, $filters);
+		})
+		->map(function($post) use($pid) {
 			$status = StatusService::get($post->id, false);
 
 			if(!$status || !isset($status['id'])) {
