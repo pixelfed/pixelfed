@@ -602,7 +602,7 @@ class DirectMessageController extends Controller
 		}
 
 		$storagePath = MediaPathService::get($user, 2) . Str::random(8);
-		$path = $photo->store($storagePath);
+		$path = $photo->storePublicly($storagePath);
 		$hash = \hash_file('sha256', $photo);
 
 		abort_if(MediaBlocklistService::exists($hash) == true, 451);

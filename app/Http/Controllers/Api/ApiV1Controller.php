@@ -260,7 +260,7 @@ class ApiV1Controller extends Controller
 				$file = $request->file('avatar');
 				$path = "public/avatars/{$profile->id}";
 				$name = strtolower(str_random(6)). '.' . $file->guessExtension();
-				$request->file('avatar')->storeAs($path, $name);
+				$request->file('avatar')->storePubliclyAs($path, $name);
 				$av->media_path = "{$path}/{$name}";
 				$av->save();
 				Cache::forget("avatar:{$profile->id}");
@@ -1610,7 +1610,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$storagePath = MediaPathService::get($user, 2);
-		$path = $photo->store($storagePath);
+		$path = $photo->storePublicly($storagePath);
 		$hash = \hash_file('sha256', $photo);
 		$license = null;
 		$mime = $photo->getMimeType();
@@ -1815,7 +1815,7 @@ class ApiV1Controller extends Controller
 		}
 
 		$storagePath = MediaPathService::get($user, 2);
-		$path = $photo->store($storagePath);
+		$path = $photo->storePublicly($storagePath);
 		$hash = \hash_file('sha256', $photo);
 		$license = null;
 		$mime = $photo->getMimeType();
