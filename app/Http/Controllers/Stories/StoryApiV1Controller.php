@@ -354,7 +354,7 @@ class StoryApiV1Controller extends Controller
 		}
 
 		$storagePath = MediaPathService::story($user->profile);
-		$path = $photo->storeAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
+		$path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
 		return $path;
 	}
 }

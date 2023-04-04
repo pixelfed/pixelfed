@@ -532,7 +532,7 @@ class AdminController extends Controller
 		$emoji->save();
 
 		$fileName = $emoji->id . '.' . $request->emoji->extension();
-		$request->emoji->storeAs('public/emoji', $fileName);
+		$request->emoji->storePubliclyAs('public/emoji', $fileName);
 		$emoji->media_path = 'emoji/' . $fileName;
 		$emoji->save();
 		Cache::forget('pf:custom_emoji');

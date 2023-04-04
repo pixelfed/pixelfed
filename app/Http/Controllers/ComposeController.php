@@ -123,7 +123,7 @@ class ComposeController extends Controller
 		abort_if(in_array($photo->getMimeType(), $mimes) == false, 400, 'Invalid media format');
 
 		$storagePath = MediaPathService::get($user, 2);
-		$path = $photo->store($storagePath);
+		$path = $photo->storePublicly($storagePath);
 		$hash = \hash_file('sha256', $photo);
 		$mime = $photo->getMimeType();
 
@@ -209,7 +209,7 @@ class ComposeController extends Controller
 		$name = last($fragments);
 		array_pop($fragments);
 		$dir = implode('/', $fragments);
-		$path = $photo->storeAs($dir, $name);
+		$path = $photo->storePubliclyAs($dir, $name);
 		$res = [
 			'url' => $media->url() . '?v=' . time()
 		];

@@ -93,7 +93,7 @@ trait Instagram
     			continue;
     		}
             $storagePath = "import/{$job->uuid}";
-            $path = $v->store($storagePath);
+            $path = $v->storePublicly($storagePath);
             DB::transaction(function() use ($profile, $job, $path, $original) {
 		        $data = new ImportData;
 		        $data->profile_id = $profile->id;
@@ -141,7 +141,7 @@ trait Instagram
 			return abort(500);
 		}
 		$storagePath = "import/{$job->uuid}";
-        $path = $media->store($storagePath);
+        $path = $media->storePublicly($storagePath);
         $job->media_json = $path;
         $job->stage = 3;
         $job->save();
