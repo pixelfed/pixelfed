@@ -2,12 +2,19 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.5...dev)
 
+### Added
+- New media:fix-nonlocal-driver command. Fixes s3 media created with invalid FILESYSTEM_DRIVER=s3 configuration ([672cccd4](https://github.com/pixelfed/pixelfed/commit/672cccd4))
+
 ### Updates
 - Update ApiV1Controller, fix blocking remote accounts. Closes #4256 ([8e71e0c0](https://github.com/pixelfed/pixelfed/commit/8e71e0c0))
 - Update ComposeController, fix postgres location search. Closes #4242 and #4239 ([64a4a006](https://github.com/pixelfed/pixelfed/commit/64a4a006))
 - Update app.js, add title attribute to iframe embeds to comply with accessibility requirements ([4d72b9e3](https://github.com/pixelfed/pixelfed/commit/4d72b9e3))
 - Update MediaPathService, fix story path ([aebbad96](https://github.com/pixelfed/pixelfed/commit/aebbad96))
 - Update Story v1.1 api endpoints ([855e9626](https://github.com/pixelfed/pixelfed/commit/855e9626))
+- Update ApiV1Controller, filter mute/blocks on statuses/context and statuses/replies endpoints ([73aa01e8](https://github.com/pixelfed/pixelfed/commit/73aa01e8))
+- Update filesystems, store all files as public by default and add default permissions. Fixes #4273, #4275. Closes #3825 ([22da2647](https://github.com/pixelfed/pixelfed/commit/22da2647))
+- Update Profile model, fix avatar url path generation. Fixes #4041, Fixes #4031, Fixes #3523 ([28bf8649](https://github.com/pixelfed/pixelfed/commit/28bf8649))
+- Update filesystem config, change FILESYSTEM_DRIVER env variable to DANGEROUSLY_SET_FILESYSTEM_DRIVER and remove from default env configs. Changing the default filesystem should be avoided, use FILESYSTEM_CLOUD for s3 support, otherwise you can break things ([573c88d7](https://github.com/pixelfed/pixelfed/commit/573c88d7))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)

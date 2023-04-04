@@ -178,13 +178,21 @@ class Profile extends Model
 				return url('/storage/avatars/default.jpg');
 			}
 
+			if($path === 'public/avatars/default.jpg') {
+				return url('/storage/avatars/default.jpg');
+			}
+
 			if(substr($path, 0, 6) !== 'public') {
 				return url('/storage/avatars/default.jpg');
 			}
 
+			if(config('filesystems.default') !== 'local') {
+				return Storage::url($path);
+			}
+
 			$path = "{$path}?v={$avatar->change_count}";
 
-			return config('app.url') . Storage::url($path);
+			return url(Storage::url($path));
 		});
 
 		return $url;
