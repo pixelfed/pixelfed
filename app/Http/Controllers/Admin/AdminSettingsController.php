@@ -140,7 +140,9 @@ trait AdminSettingsController
 			'show_custom_css' => 'uikit.show_custom.css',
 			'show_custom_js' => 'uikit.show_custom.js',
 			'cloud_storage' => 'pixelfed.cloud_storage',
-			'account_autofollow' => 'account.autofollow'
+			'account_autofollow' => 'account.autofollow',
+			'show_directory' => 'landing.show_directory',
+			'show_explore_feed' => 'landing.show_explore_feed',
 		];
 
 		foreach ($bools as $key => $value) {
