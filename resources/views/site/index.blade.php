@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
 <head>
-
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,140 +8,47 @@
 
 	<meta name="mobile-web-app-capable" content="yes">
 
-	<title>{{ config('app.name', 'Laravel') }}</title>
+	<title>{{ config('app.name', 'Pixelfed') }}</title>
 
-	<meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:title" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:type" content="article">
-	<meta property="og:url" content="{{request()->url()}}">
-	<meta property="og:description" content="Federated Image Sharing">
+	<link rel="canonical" href="{{ request()->url() }}" />
+
+	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}" />
+	<meta property="og:title" content="{{ config_cache('app.name', 'pixelfed') }}" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="{{request()->url()}}" />
+	<meta property="og:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
+	<meta property="og:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+	<meta name="description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+	<meta name="twitter:title" content="{{ config_cache('app.name', 'pixelfed') }}" />
+    <meta name="twitter:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+    <meta name="twitter:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
+    <meta name="twitter:card" content="summary_large_image" />
 
 	<meta name="medium" content="image">
 	<meta name="theme-color" content="#10c5f8">
 	<meta name="apple-mobile-web-app-capable" content="yes">
-	<link rel="manifest" href="/manifest.json">
-	<link rel="icon" type="image/png" href="/img/favicon.png">
-	<link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
+	<link rel="manifest" href="{{url('/manifest.json')}}" />
+	<link rel="icon" type="image/png" href="{{url('/img/favicon.png')}}">
+	<link rel="apple-touch-icon" type="image/png" href="{{url('/img/favicon.png')}}">
 	<link href="{{ mix('css/landing.css') }}" rel="stylesheet">
-	<style type="text/css">
-		.feature-circle {
-			display: flex !important;
-			-webkit-box-pack: center !important;
-			justify-content: center !important;
-			-webkit-box-align: center !important;
-			align-items: center !important;
-			margin-right: 1rem !important;
-			background-color: #08d !important;
-			color: #fff;
-			border-radius: 50% !important;
-			width: 60px;
-			height:60px;
-		}
-		.section-spacer {
-			height: 13vh;
-		}
-	</style>
+	<link rel="preload" as="image" href="{{ url('/_landing/bg.jpg')}}" />
+	<script type="text/javascript">
+		window.pfl = {!! App\Services\LandingService::get() !!}
+	</script>
 </head>
-<body class="">
-	<main id="content">
-		<section class="container">
-			<div class="section-spacer"></div>
-			<div class="row pt-md-5 mt-5">
-				<div class="col-12 col-md-6 d-none d-md-block">
-					<div class="m-my-4">
-						<p class="display-2 font-weight-bold">Photo Sharing</p>
-						<p class="h1 font-weight-bold">For Everyone.</p>
-					</div>
-
-                    <p class="lead font-weight-light mt-5">{{ config_cache('app.short_description') ?? 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.' }}</p>
-                    <p><a href="https://pixelfed.org" target="_blank" class="font-weight-bold">Learn more</a></p>
+	<body>
+		<main id="content">
+			<noscript>
+				<div class="container">
+					<h1 class="pt-5 text-center">Pixelfed</h1>
+					<p class="pt-2 text-center lead">Please enable javascript to view this content.</p>
 				</div>
-				<div class="col-12 col-md-5 offset-md-1">
-					<div>
-						<div class="pt-md-3 d-flex justify-content-center align-items-center">
-							<img src="/img/pixelfed-icon-color.svg" loading="lazy" width="50px" height="50px">
-							<span class="font-weight-bold h3 ml-2 pt-2">{{ config_cache('app.name') ?? 'Pixelfed' }}</span>
-						</div>
-						<div class="d-block d-md-none">
-							<p class="font-weight-light mt-3 mb-5 text-center px-5">{{ config_cache('app.short_description') ?? 'Pixelfed is an image sharing platform, an ethical alternative to centralized platforms.' }}</p>
-						</div>
-						<div class="card my-4 shadow-none border">
-							<div class="card-body px-lg-5">
-								<div class="text-center">
-									<p class="small text-uppercase font-weight-bold text-muted">Account Login</p>
-								</div>
-								<div>
-									<form class="px-1" method="POST" action="{{ route('login') }}" id="login_form">
-										@csrf
-										<div class="form-group row">
-
-											<div class="col-md-12">
-												<input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
-
-												@if ($errors->has('email'))
-													<span class="invalid-feedback">
-														<strong>{{ $errors->first('email') }}</strong>
-													</span>
-												@endif
-											</div>
-										</div>
-
-										<div class="form-group row">
-
-											<div class="col-md-12">
-												<input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" placeholder="{{__('Password')}}" required>
-
-												@if ($errors->has('password'))
-													<span class="invalid-feedback">
-														<strong>{{ $errors->first('password') }}</strong>
-													</span>
-												@endif
-											</div>
-										</div>
-
-										<div class="form-group row">
-											<div class="col-md-12">
-												<div class="checkbox">
-													<label>
-														<input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-														<span class="font-weight-bold small ml-1 text-muted">
-															{{ __('Remember Me') }}
-														</span>
-													</label>
-												</div>
-											</div>
-										</div>
-										@if(config('captcha.enabled'))
-										<div class="d-flex justify-content-center mb-3">
-											{!! Captcha::display() !!}
-										</div>
-										@endif
-										<div class="form-group row mb-0">
-											<div class="col-md-12">
-												<button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold text-uppercase">
-													{{ __('Login') }}
-												</button>
-
-											</div>
-										</div>
-									</form>
-								</div>
-							</div>
-						</div>
-						<div class="card shadow-none border card-body">
-							<p class="text-center mb-0 font-weight-bold">
-								@if(config_cache('pixelfed.open_registration'))
-								<a href="/register">Register</a>
-								<span class="px-1">·</span>
-								@endif
-								<a href="/password/reset">Password Reset</a>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	</main>
-	@include('layouts.partial.footer')
-</body>
+			</noscript>
+			<navbar></navbar>
+			<router-view></router-view>
+		</main>
+		<script type="text/javascript" src="{{ mix('js/manifest.js') }}"></script>
+		<script type="text/javascript" src="{{ mix('js/vendor.js') }}"></script>
+		<script type="text/javascript" src="{{ mix('js/landing.js') }}"></script>
+	</body>
 </html>

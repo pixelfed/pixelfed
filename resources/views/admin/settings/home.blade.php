@@ -13,6 +13,9 @@
 			<a class="nav-link font-weight-bold active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true"><i class="fas fa-home"></i></a>
 		</li>
 		<li class="nav-item border-none">
+			<a class="nav-link font-weight-bold px-4" id="landing-tab" data-toggle="tab" href="#landing" role="tab" aria-controls="landing">Landing</a>
+		</li>
+		<li class="nav-item border-none">
 			<a class="nav-link font-weight-bold px-4" id="brand-tab" data-toggle="tab" href="#brand" role="tab" aria-controls="brand">Brand</a>
 		</li>
 		{{-- <li class="nav-item border-none">
@@ -140,6 +143,42 @@
 				<p class="help-text small text-muted mt-3 mb-0">Longer description of instance used on about page.</p>
 			</div>
 		</div> --}}
+	</div>
+
+	<div class="tab-pane" id="landing" role="tabpanel" aria-labelledby="landing-tab">
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
+				<label class="font-weight-bold text-muted">Name</label>
+				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}">
+				<p class="help-text small text-muted mt-3 mb-0">The instance name.</p>
+			</div>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
+				<label class="font-weight-bold text-muted">About</label>
+				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
+				<p class="help-text small text-muted mt-3 mb-0">Description of instance used on about section.</p>
+			</div>
+		</div>
+		<div class="form-group mb-0">
+			<div class="ml-n4 mr-n2 p-3 border-bottom">
+				<label class="font-weight-bold text-muted">Other Settings</label>
+
+				<div class="my-3">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="show_directory" name="show_directory" {{ config_cache('landing.show_directory') ? 'checked' : ''}}>
+						<label class="custom-control-label font-weight-bold" for="show_directory">Show Directory</label>
+					</div>
+				</div>
+
+				<div class="my-3">
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input" id="show_explore_feed" name="show_explore_feed" {{ config_cache('landing.show_explore_feed') ? 'checked' : ''}}>
+						<label class="custom-control-label font-weight-bold" for="show_explore_feed">Show Explore Feed</label>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="tab-pane" id="brand" role="tabpanel" aria-labelledby="brand-tab">

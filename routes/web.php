@@ -150,6 +150,8 @@ Route::domain(config('portfolio.domain'))->group(function () {
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
 	Route::get('/', 'SiteController@home')->name('timeline.personal');
 	Route::redirect('/home', '/')->name('home');
+	Route::get('web/directory', 'LandingController@directoryRedirect');
+	Route::get('web/explore', 'LandingController@exploreRedirect');
 
 	Auth::routes();
 
