@@ -66,7 +66,13 @@ class MediaS3GarbageCollector extends Command
             return;
         }
 
-        $minId = Media::orderByDesc('id')->where('created_at', '<', now()->subHours(12))->first()->id;
+        $minId = Media::orderByDesc('id')->where('created_at', '<', now()->subHours(12))->first();
+
+        if(!$minId) {
+        	return;
+        } else {
+        	$minId = $minId->id;
+        }
 
         return $hugeMode ?
             $this->hugeMode($minId, $limit, $log) :
