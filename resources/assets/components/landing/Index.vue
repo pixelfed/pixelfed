@@ -23,6 +23,7 @@
 							class="img-fluid rounded"
 							style="width: 100%;max-height: 200px;object-fit: cover;"
 							alt="Server banner image"
+							height="200"
 							onerror="this.src='/storage/headers/default.jpg';this.onerror=null;">
 					</div>
 
@@ -57,7 +58,14 @@
 									<p class="item-label">Managed By</p>
 									<a :href="config.contact.account.url" class="admin-card">
 										<div class="d-flex">
-											<img :src="config.contact.account.avatar" onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" width="45" height="45" class="avatar">
+											<img
+												:src="config.contact.account.avatar"
+												width="45"
+												height="45"
+												class="avatar"
+												:alt="`${config.contact.account.username}'s avatar`"
+												onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;"
+												>
 
 											<div class="user-info">
 												<p class="display-name">{{ config.contact.account.display_name }}</p>

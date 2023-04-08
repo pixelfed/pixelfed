@@ -10,19 +10,28 @@
 
 	<title>{{ config('app.name', 'Pixelfed') }}</title>
 
-	<meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:title" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:type" content="article">
-	<meta property="og:url" content="{{request()->url()}}">
-	<meta property="og:description" content="Federated Image Sharing">
+	<link rel="canonical" href="{{ request()->url() }}" />
+
+	<meta property="og:site_name" content="{{ config_cache('app.name', 'pixelfed') }}" />
+	<meta property="og:title" content="{{ config_cache('app.name', 'pixelfed') }}" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="{{request()->url()}}" />
+	<meta property="og:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
+	<meta property="og:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+	<meta name="description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+	<meta name="twitter:title" content="{{ config_cache('app.name', 'pixelfed') }}" />
+    <meta name="twitter:description" content="{{ config_cache('app.short_description') ?? 'Decentralized photo sharing social media powered by Pixelfed' }}" />
+    <meta name="twitter:image" content="{{ config_cache('app.banner_image') ?? url('storage/headers/default.jpg')}}" />
+    <meta name="twitter:card" content="summary_large_image" />
 
 	<meta name="medium" content="image">
 	<meta name="theme-color" content="#10c5f8">
 	<meta name="apple-mobile-web-app-capable" content="yes">
-	<link rel="manifest" href="/manifest.json">
-	<link rel="icon" type="image/png" href="/img/favicon.png">
-	<link rel="apple-touch-icon" type="image/png" href="/img/favicon.png?v=2">
+	<link rel="manifest" href="{{url('/manifest.json')}}" />
+	<link rel="icon" type="image/png" href="{{url('/img/favicon.png')}}">
+	<link rel="apple-touch-icon" type="image/png" href="{{url('/img/favicon.png')}}">
 	<link href="{{ mix('css/landing.css') }}" rel="stylesheet">
+	<link rel="preload" as="image" href="{{ url('/_landing/bg.jpg')}}" />
 	<script type="text/javascript">
 		window.pfl = {!! App\Services\LandingService::get() !!}
 	</script>
@@ -32,10 +41,6 @@
 			<noscript>
 				<div class="container">
 					<h1 class="pt-5 text-center">Pixelfed</h1>
-					<p class="text-center">Decentralized photo sharing social media</p>
-					<p class="pt-2 text-center lead">
-						<a href="{{ config('app.url') }}/login" class="btn btn-outline-light">Login</a>
-					</p>
 					<p class="pt-2 text-center lead">Please enable javascript to view this content.</p>
 				</div>
 			</noscript>

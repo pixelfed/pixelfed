@@ -10,7 +10,6 @@ import Loading from 'vue-loading-overlay';
 import VueTimeago from 'vue-timeago';
 import VueCarousel from 'vue-carousel';
 import VueBlurHash from 'vue-blurhash';
-import VueMasonry from 'vue-masonry-css';
 import VueI18n from 'vue-i18n';
 window.pftxt = require('twitter-text');
 import 'vue-blurhash/dist/vue-blurhash.css'
@@ -41,7 +40,6 @@ Vue.use(VueCarousel);
 Vue.use(BootstrapVue);
 Vue.use(InfiniteLoading);
 Vue.use(Loading);
-Vue.use(VueMasonry);
 Vue.use(VueI18n);
 Vue.use(VueTimeago, {
   name: 'Timeago',
