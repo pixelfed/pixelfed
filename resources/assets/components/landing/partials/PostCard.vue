@@ -3,18 +3,18 @@
 		<div class="card bg-bluegray-800 landing-post-card" style="border-radius: 15px;">
 			<div class="card-header border-0 bg-bluegray-700" style="border-top-left-radius: 15px;border-top-right-radius: 15px;">
 				<div class="media align-items-center">
-					<a :href="post.account.url" class="mr-2">
+					<a :href="post.account.url" class="mr-2" target="_blank">
 						<img :src="post.account.avatar" style="border-radius:30px;" width="30" height="30" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;">
 					</a>
 
 					<div class="media-body d-flex justify-content-between align-items-center">
 						<p class="font-weight-bold username mb-0">
-							<a :href="post.account.url" class="text-white">&commat;{{ post.account.username }}</a>
+							<a :href="post.account.url" class="text-white" target="_blank">&commat;{{ post.account.username }}</a>
 						</p>
 
 						<p class="font-weight-bold mb-0">
-							<a v-if="range === 'daily'" :href="post.url" class="text-bluegray-500">Posted {{ timeago(post.created_at) }} ago</a>
-							<a v-else :href="post.url" class="text-bluegray-400">View Post</a>
+							<a v-if="range === 'daily'" :href="post.url" class="text-bluegray-500" target="_blank">Posted {{ timeago(post.created_at) }} ago</a>
+							<a v-else :href="post.url" class="text-bluegray-400" target="_blank">View Post</a>
 						</p>
 					</div>
 				</div>

@@ -31,7 +31,7 @@
 						<div class="server-header">
 							<p class="server-header-domain">{{ config.domain }}</p>
 							<p class="server-header-attribution">
-								Decentralized photo sharing social media powered by <a href="https://pixelfed.org">Pixelfed</a>
+								Decentralized photo sharing social media powered by <a href="https://pixelfed.org" target="_blank">Pixelfed</a>
 							</p>
 						</div>
 
@@ -56,7 +56,7 @@
 							<div class="list-group">
 								<div v-if="config.contact.account" class="list-group-item bg-transparent">
 									<p class="item-label">Managed By</p>
-									<a :href="config.contact.account.url" class="admin-card">
+									<a :href="config.contact.account.url" class="admin-card" target="_blank">
 										<div class="d-flex">
 											<img
 												:src="config.contact.account.avatar"
@@ -77,7 +77,7 @@
 
 								<div v-if="config.contact.email" class="list-group-item bg-transparent">
 									<p class="item-label">Contact</p>
-									<a :href="`mailto:${config.contact.email}`" class="admin-email">{{ config.contact.email }}</a>
+									<a :href="`mailto:${config.contact.email}?subject=Regarding ${config.domain}`" class="admin-email" target="_blank">{{ config.contact.email }}</a>
 								</div>
 							</div>
 						</div>

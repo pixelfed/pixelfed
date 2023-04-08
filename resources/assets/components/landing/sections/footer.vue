@@ -1,21 +1,22 @@
 <template>
-	<div class="py-5">
-		<p class="text-center text-uppercase font-weight-bold small text-justify">
-			<a href="/site/help" class="text-bluegray-400 p-2">Help</a>
-			<span class="mx-2 text-muted">·</span>
-			<a href="/site/terms" class="text-bluegray-400 p-2">Terms</a>
-			<span class="mx-2 text-muted">·</span>
-			<a href="/site/privacy" class="text-bluegray-400 p-2">Privacy</a>
-			<span class="mx-2 text-muted">·</span>
-			<a href="https://pixelfed.org/mobile-apps" class="text-bluegray-400 p-2" target="_blank">Mobile Apps</a>
-		</p>
-		<p class="text-center text-bluegray-500 small mb-0">
-			<span class="text-bluegray-500">© {{ getYear() }} {{config.domain}}</span>
-			<span class="mx-2 text-muted">·</span>
-			<a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">Powered by Pixelfed</a>
-			<span class="mx-2 text-muted">·</span>
-			<span class="text-bluegray-500">v{{config.version}}</span>
-		</p>
+	<div class="footer-component">
+		<div class="footer-component-links">
+			<a href="/site/help">Help</a>
+			<div class="spacer">·</div>
+			<a href="/site/terms">Terms</a>
+			<div class="spacer">·</div>
+			<a href="/site/privacy">Privacy</a>
+			<div class="spacer">·</div>
+			<a href="https://pixelfed.org/mobile-apps" target="_blank">Mobile Apps</a>
+		</div>
+
+		<div class="footer-component-attribution">
+			<div><span>© {{ getYear() }} {{config.domain}}</span></div>
+			<div class="spacer">·</div>
+			<div><a href="https://pixelfed.org" class="text-bluegray-500 font-weight-bold">Powered by Pixelfed</a></div>
+			<div class="spacer">·</div>
+			<div><span>v{{config.version}}</span></div>
+		</div>
 	</div>
 </template>
 
