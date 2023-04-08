@@ -214,4 +214,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('instances/moderate', 'Api\AdminApiController@moderateInstance')->middleware($middleware);
 		Route::post('instances/refresh-stats', 'Api\AdminApiController@refreshInstanceStats')->middleware($middleware);
 	});
+
+	Route::group(['prefix' => 'landing/v1'], function() use($middleware) {
+		Route::get('directory', 'LandingController@getDirectoryApi');
+	});
 });
