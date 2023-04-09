@@ -61,10 +61,12 @@ class ImageUpdate implements ShouldQueue
 			return;
 		}
 
-		if (in_array($media->mime, $this->protectedMimes) == true) {
-			ImageOptimizer::optimize($thumb);
-			if(!$media->skip_optimize) {
-				ImageOptimizer::optimize($path);
+		if(config('pixelfed.optimize_image')) {
+			if (in_array($media->mime, $this->protectedMimes) == true) {
+				ImageOptimizer::optimize($thumb);
+				if(!$media->skip_optimize) {
+					ImageOptimizer::optimize($path);
+				}
 			}
 		}
 
