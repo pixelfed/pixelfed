@@ -30,7 +30,13 @@ body {
 
 		span {
 			font-weight: bold;
-			font-size: 24px;
+			font-size: 14px;
+			display: none;
+
+			@include media-breakpoint-up(sm) {
+				display: block;
+				font-size: 18px;
+			}
 		}
 	}
 

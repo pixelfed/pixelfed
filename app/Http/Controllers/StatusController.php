@@ -219,7 +219,17 @@ class StatusController extends Controller
 			$u->save();
 		}
 
-		if ($status->profile_id == $user->profile->id || $user->is_admin == true) {
+		if($status->in_reply_to_id) {
+			$parent = Status::find($status->in_reply_to_id);
+			if($parent && ($parent->profile_id == $user->profile_id) || ($status->profile_id == $user->profile_id) || $user->is_admin) {
+				Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
+				Cache::forget('profile:status_count:' . $status->profile_id);
+				Cache::forget('profile:embed:' . $status->profile_id);
+				StatusService::del($status->id, true);
+				Cache::forget('profile:status_count:'.$status->profile_id);
+				StatusDelete::dispatch($status);
+			}
+		} else if ($status->profile_id == $user->profile_id || $user->is_admin == true) {
 			Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
 			Cache::forget('profile:status_count:' . $status->profile_id);
 			Cache::forget('profile:embed:' . $status->profile_id);

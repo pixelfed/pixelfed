@@ -11,20 +11,6 @@ View Report
 <x-mail::panel>
 <p style="font-size: 13px; color: #cccccc; text-align: center; font-weight: bold;margin-bottom: 10px;">Reported Status</p>
 <div style="display: flex; align-items: center;gap: 10px;">
-@if(
-	isset($reported_status['media_attachments']) &&
-	isset($reported_status['pf_type']) &&
-	count($reported_status['media_attachments']) &&
-	in_array($reported_status['pf_type'], ['photo', 'photo:album'])
-)
-<img
-	src="{{$reported_status['media_attachments'][0]['url']}}"
-	width="100"
-	height="100"
-	alt="Media preview"
-	style="object-fit: cover; border: 1px solid #cccccc; border-radius: 10px; margin-bottom: 10px;"
-	onerror="this.src='{{url('/storage/no-preview.png')}}';this.onerror=null;" />
-@endif
 @if(isset($reported_status['content']))
 <div style="font-size: 12px !important;">{{ strip_tags(str_replace(["\n", "\r", "\r\n"], ' ', $reported_status['content'])) }}</div>
 @endif
