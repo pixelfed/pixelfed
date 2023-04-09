@@ -149,15 +149,15 @@
 		<div class="form-group mb-0">
 			<div class="ml-n4 mr-n2 p-3 border-top border-bottom">
 				<label class="font-weight-bold text-muted">Name</label>
-				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}">
-				<p class="help-text small text-muted mt-3 mb-0">The instance name.</p>
+				<input class="form-control col-8" name="name" placeholder="Pixelfed" value="{{config_cache('app.name')}}" disabled>
+				<p class="help-text small text-muted mt-3 mb-0">The instance name. Change in Brand section.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
 			<div class="ml-n4 mr-n2 p-3 border-bottom">
 				<label class="font-weight-bold text-muted">About</label>
-				<textarea class="form-control" rows="3" name="long_description">{{config_cache('app.description')}}</textarea>
-				<p class="help-text small text-muted mt-3 mb-0">Description of instance used on about section.</p>
+				<textarea class="form-control" rows="3" name="long_description" disabled>{{config_cache('app.description')}}</textarea>
+				<p class="help-text small text-muted mt-3 mb-0">Description of instance used on about section. Change in Brand section.</p>
 			</div>
 		</div>
 		<div class="form-group mb-0">
@@ -166,16 +166,18 @@
 
 				<div class="my-3">
 					<div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="show_directory" name="show_directory" {{ config_cache('landing.show_directory') ? 'checked' : ''}}>
+						<input type="checkbox" class="custom-control-input" id="show_directory" name="show_directory" {{ config('instance.landing.show_directory') ? 'checked' : ''}} disabled>
 						<label class="custom-control-label font-weight-bold" for="show_directory">Show Directory</label>
 					</div>
+					<p class="help-text small text-muted mt-3 mb-0">To disable the Directory, set <code>INSTANCE_LANDING_SHOW_DIRECTORY=false</code> in .env</p>
 				</div>
 
 				<div class="my-3">
 					<div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="show_explore_feed" name="show_explore_feed" {{ config_cache('landing.show_explore_feed') ? 'checked' : ''}}>
+						<input type="checkbox" class="custom-control-input" id="show_explore_feed" name="show_explore_feed" {{ config('instance.landing.show_explore') ? 'checked' : ''}} disabled>
 						<label class="custom-control-label font-weight-bold" for="show_explore_feed">Show Explore Feed</label>
 					</div>
+					<p class="help-text small text-muted mt-3 mb-0">To disable the Explore feed, set <code>INSTANCE_LANDING_SHOW_EXPLORE=false</code> in .env</p>
 				</div>
 			</div>
 		</div>

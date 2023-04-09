@@ -119,5 +119,10 @@ return [
 			'to' => env('INSTANCE_REPORTS_EMAIL_ADDRESSES'),
 			'autospam' => env('INSTANCE_REPORTS_EMAIL_AUTOSPAM', false)
 		]
+	],
+
+	'landing' => [
+		'show_directory' => env('INSTANCE_LANDING_SHOW_DIRECTORY', true),
+		'show_explore' => env('INSTANCE_LANDING_SHOW_EXPLORE', true),
 	]
 ];

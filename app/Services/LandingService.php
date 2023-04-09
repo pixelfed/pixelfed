@@ -53,8 +53,8 @@ class LandingService
 			'name' => config_cache('app.name'),
 			'url' => config_cache('app.url'),
 			'domain' => config('pixelfed.domain.app'),
-			'show_directory' => config_cache('landing.show_directory') == 1,
-			'show_explore_feed' => config_cache('landing.show_explore_feed') == 1,
+			'show_directory' => config('instance.landing.show_directory'),
+			'show_explore_feed' => config('instance.landing.show_explore'),
 			'open_registration' => config_cache('pixelfed.open_registration') == 1,
 			'version' => config('pixelfed.version'),
 			'about' => [
