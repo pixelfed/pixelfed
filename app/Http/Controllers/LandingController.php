@@ -26,14 +26,14 @@ class LandingController extends Controller
     		return redirect('/');
     	}
 
-    	abort_if(config_cache('landing.show_explore_feed') != 1, 404);
+    	abort_if(config('instance.landing.show_explore') == false, 404);
 
     	return view('site.index');
     }
 
     public function getDirectoryApi(Request $request)
     {
-    	abort_if(config_cache('landing.show_directory') != 1, 404);
+    	abort_if(config('instance.landing.show_directory') == false, 404);
 
     	return DirectoryProfile::collection(
     		Profile::whereNull('domain')
