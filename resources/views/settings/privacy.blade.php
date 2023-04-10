@@ -24,6 +24,7 @@
       </label>
       <p class="text-muted small help-text">When your account is private, only people you approve can see your photos and videos on pixelfed. Your existing followers won't be affected.</p>
     </div>
+
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="crawlable" id="crawlable" {{!$settings->crawlable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
       <label class="form-check-label font-weight-bold" for="crawlable">
@@ -33,13 +34,14 @@
     </div>
 
 
-    {{-- <div class="form-check pb-3">
-      <input class="form-check-input" type="checkbox" name="show_discover" id="show_discover" {{$settings->is_private ? 'disabled=""':''}} {{$settings->show_discover ? 'checked=""':''}}>
-      <label class="form-check-label font-weight-bold" for="show_discover">
-        {{__('Visible on discover')}}
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="is_suggestable" id="is_suggestable" {{$settings->is_private ? 'disabled=""':''}} {{auth()->user()->profile->is_suggestable ? 'checked=""':''}}>
+      <label class="form-check-label font-weight-bold" for="is_suggestable">
+        {{__('Show on Directory')}}
       </label>
-      <p class="text-muted small help-text">When this option is enabled, your profile and posts are used for discover recommendations. Only public profiles and posts are used.</p>
-    </div> --}}
+      <p class="text-muted small help-text">When this option is enabled, your profile is included in the Directory. Only public profiles are eligible.</p>
+    </div>
+
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" id="public_dm" {{$settings->public_dm ? 'checked=""':''}} name="public_dm">
       <label class="form-check-label font-weight-bold" for="public_dm">
