@@ -20,6 +20,8 @@
 - Update StatusController, allow users to delete replies to posts ([738925c2](https://github.com/pixelfed/pixelfed/commit/738925c2))
 - Update admin autospam/report email templates, remove image previews ([76be49ac](https://github.com/pixelfed/pixelfed/commit/76be49ac))
 - Update LandingService, enable landing directory/explore feed by default and move configuration to config/instance.php file ([780f2507](https://github.com/pixelfed/pixelfed/commit/780f2507))
+- Update ImageOptimizePipeline, improve support for disabling image optimizations ([e76289e4](https://github.com/pixelfed/pixelfed/commit/e76289e4))
+- Update LandingController, fix configonfig variable names ([b716926b](https://github.com/pixelfed/pixelfed/commit/b716926b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
