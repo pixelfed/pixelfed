@@ -38,6 +38,10 @@ trait PrivacySettings
           'show_profile_follower_count',
           'show_profile_following_count',
         ];
+
+		$profile->is_suggestable = $request->input('is_suggestable') == 'on';
+		$profile->save();
+
         foreach ($fields as $field) {
             $form = $request->input($field);
             if ($field == 'is_private') {
