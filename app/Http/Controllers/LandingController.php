@@ -15,7 +15,7 @@ class LandingController extends Controller
     		return redirect('/');
     	}
 
-    	abort_if(config_cache('landing.show_directory') != 1, 404);
+    	abort_if(config('instance.landing.show_directory') == false, 404);
 
     	return view('site.index');
     }
