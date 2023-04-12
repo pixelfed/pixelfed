@@ -12,6 +12,7 @@ class Config {
 	public static function get() {
 		return Cache::remember(self::CACHE_KEY, 900, function() {
 			return [
+				'version' => config('pixelfed.version'),
 				'open_registration' => (bool) config_cache('pixelfed.open_registration'),
 				'uploader' => [
 					'max_photo_size' => (int) config('pixelfed.max_photo_size'),
@@ -42,6 +43,14 @@ class Config {
 					'domain' => config('pixelfed.domain.app'),
 					'url'    => config('app.url'),
 					'description' => config_cache('app.short_description')
+				],
+
+				'account' => [
+					'max_avatar_size' => config('pixelfed.max_avatar_size'),
+					'max_bio_length' => config('pixelfed.max_bio_length'),
+					'max_name_length' => config('pixelfed.max_name_length'),
+					'min_password_length' => config('pixelfed.min_password_length'),
+					'max_account_size' => config('pixelfed.max_account_size')
 				],
 
 				'username' => [

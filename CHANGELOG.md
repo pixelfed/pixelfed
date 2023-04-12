@@ -22,7 +22,8 @@
 - Update LandingService, enable landing directory/explore feed by default and move configuration to config/instance.php file ([780f2507](https://github.com/pixelfed/pixelfed/commit/780f2507))
 - Update ImageOptimizePipeline, improve support for disabling image optimizations ([e76289e4](https://github.com/pixelfed/pixelfed/commit/e76289e4))
 - Update LandingController, fix config variable names ([b716926b](https://github.com/pixelfed/pixelfed/commit/b716926b))
--  Update Privacy Settings, add Directory setting ([634c15e4](https://github.com/pixelfed/pixelfed/commit/634c15e4))
+- Update Privacy Settings, add Directory setting ([634c15e4](https://github.com/pixelfed/pixelfed/commit/634c15e4))
+- Update site config ([6d59dc8e](https://github.com/pixelfed/pixelfed/commit/6d59dc8e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
