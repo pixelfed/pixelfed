@@ -826,6 +826,12 @@ class ApiV1Dot1Controller extends Controller
 				NetworkTimelineService::del($status->id);
 			}
 		} else if ($action == 'delete') {
+			// If the status hasn't already been published, stop it now
+			// This prevents an out-of-order processing where the delete runs
+			// before the publish
+			$status->publish_delayed = false;
+			$status->save();
+			StatusDelete::dispatch($status);
 			PublicTimelineService::del($status->id);
 			NetworkTimelineService::del($status->id);
 			Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
@@ -833,7 +839,6 @@ class ApiV1Dot1Controller extends Controller
 			Cache::forget('profile:embed:' . $status->profile_id);
 			StatusService::del($status->id, true);
 			Cache::forget('profile:status_count:'.$status->profile_id);
-			StatusDelete::dispatch($status);
 			return [];
 		}
 

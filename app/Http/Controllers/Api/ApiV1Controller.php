@@ -3118,6 +3118,12 @@ class ApiV1Controller extends Controller
 		$status = Status::whereProfileId($request->user()->profile->id)
 		->findOrFail($id);
 
+		// If the status hasn't already been published, stop it now
+		// This prevents an out-of-order processing where the delete runs
+		// before the publish
+		$status->publish_delayed = false;
+		$status->save();
+
 		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
 
 		Cache::forget('profile:status_count:'.$status->profile_id);

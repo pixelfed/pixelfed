@@ -184,6 +184,12 @@ class StatusController extends Controller
 		]);
 
 		$status = Status::findOrFail($request->input('item'));
+		
+		// If the status hasn't already been published, stop it now
+		// This prevents an out-of-order processing where the delete runs
+		// before the publish
+		$status->publish_delayed = false; 
+		$status->save();
 
 		$user = Auth::user();
 
