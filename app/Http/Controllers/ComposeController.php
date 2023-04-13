@@ -563,7 +563,7 @@ class ComposeController extends Controller
 		$status->scope = 'draft';
 		$status->visibility = 'draft';
 		$status->profile_id = $profile->id;
-		if (!config('pixelfed.media_fast_process')) {
+		if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
 			Log::info("aoeu ComposeController setting publishDelayed to true");
 			$status->publish_delayed = true;
 		}

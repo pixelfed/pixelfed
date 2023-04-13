@@ -2987,7 +2987,7 @@ class ApiV1Controller extends Controller
 			$status->cw_summary = $spoilerText;
 			$status->in_reply_to_id = $parent->id;
 			$status->in_reply_to_profile_id = $parent->profile_id;
-			if (!config('pixelfed.media_fast_process')) {
+			if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
 				Log::info("aoeu apiv1controller setting publish_delayed to true");
 				$status->publish_delayed = true;
 			}
