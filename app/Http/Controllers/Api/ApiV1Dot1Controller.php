@@ -831,7 +831,6 @@ class ApiV1Dot1Controller extends Controller
 			// before the publish
 			$status->publish_delayed = false;
 			$status->save();
-			StatusDelete::dispatch($status);
 			PublicTimelineService::del($status->id);
 			NetworkTimelineService::del($status->id);
 			Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
@@ -839,6 +838,7 @@ class ApiV1Dot1Controller extends Controller
 			Cache::forget('profile:embed:' . $status->profile_id);
 			StatusService::del($status->id, true);
 			Cache::forget('profile:status_count:'.$status->profile_id);
+			StatusDelete::dispatch($status);
 			return [];
 		}
 
