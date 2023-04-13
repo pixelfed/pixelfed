@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('statuses', function(Blueprint $table) {
-            $table->boolean('publish_delayed')->default(false);
+            $table->boolean('publish_delayed');
         });
     }
 
