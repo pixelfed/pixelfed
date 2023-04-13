@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
-use Auth, Cache, DB, Storage, URL;
+use Auth, Cache, DB, Log, Storage, URL;
 use Illuminate\Support\Facades\Redis;
 use App\{
 	Avatar,
@@ -2987,6 +2987,12 @@ class ApiV1Controller extends Controller
 			$status->cw_summary = $spoilerText;
 			$status->in_reply_to_id = $parent->id;
 			$status->in_reply_to_profile_id = $parent->profile_id;
+			if (!config('pixelfed.media_fast_process')) {
+				Log::info("aoeu apiv1controller setting publish_delayed to true");
+				$status->publish_delayed = true;
+			}
+			Log::info("aoeu apiv1controller saving the initial status");
+			Log::info(json_encode($status));
 			$status->save();
 			StatusService::del($parent->id);
 			Cache::forget('status:replies:all:' . $parent->id);
