@@ -5,7 +5,7 @@
 	"license": "AGPL-3.0-only",
 	"type": "project",
 	"require": {
-		"php": "^8.0.2|^8.1",
+		"php": "^8.1|^8.2",
 		"ext-bcmath": "*",
 		"ext-ctype": "*",
 		"ext-curl": "*",
@@ -16,17 +16,16 @@
 		"bacon/bacon-qr-code": "^2.0.3",
 		"beyondcode/laravel-websockets": "^1.13",
 		"brick/math": "^0.9.3",
-		"buzz/laravel-h-captcha": "1.0.3",
-		"doctrine/dbal": "^2.7",
-		"fruitcake/laravel-cors": "^2.0",
+		"buzz/laravel-h-captcha": "1.0.4",
+		"doctrine/dbal": "^3.0",
 		"intervention/image": "^2.4",
 		"jenssegers/agent": "^2.6",
-		"laravel/framework": "^9.0",
+		"laravel/framework": "^10.0",
 		"laravel/helpers": "^1.1",
 		"laravel/horizon": "^5.0",
-		"laravel/passport": "^10.0",
+		"laravel/passport": "^11.0",
 		"laravel/tinker": "^2.0",
-		"laravel/ui": "^2.0|^3.4",
+		"laravel/ui": "^4.2",
 		"league/flysystem-aws-s3-v3": "^3.0",
 		"league/iso3166": "^2.1|^4.0",
 		"pbmedia/laravel-ffmpeg": "^8.0",
@@ -38,7 +37,7 @@
 		"predis/predis": "^2.0",
 		"spatie/laravel-backup": "^8.0.0",
 		"spatie/laravel-image-optimizer": "^1.7",
-		"stevebauman/purify": "4.0.*",
+		"stevebauman/purify": "6.0.*",
 		"symfony/http-client": "^6.1",
 		"symfony/http-kernel": "^6.0.0",
 		"symfony/mailgun-mailer": "^6.1"
@@ -46,7 +45,7 @@
 	"require-dev": {
 		"brianium/paratest": "^6.1",
 		"fakerphp/faker": "^1.20",
-		"laravel/telescope": "^4.9",
+		"laravel/telescope": "^4.14",
 		"mockery/mockery": "^1.0",
 		"nunomaduro/collision": "^6.1",
 		"phpunit/phpunit": "^9.0"
@@ -95,6 +94,5 @@
 		"sort-packages": true,
 		"optimize-autoloader": true
 	},
-	"minimum-stability": "dev",
 	"prefer-stable": true
 }

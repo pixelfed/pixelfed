@@ -46,7 +46,7 @@ class VideoThumbnail extends Command
                         ->take($limit)
                         ->get();
         foreach($videos as $video) {
-            Pipeline::dispatchNow($video);
+            Pipeline::dispatchSync($video);
         }
     }
 }

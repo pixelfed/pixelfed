@@ -17,12 +17,11 @@ class Media extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
-
     protected $guarded = [];
 
     protected $casts = [
-    	'srcset' => 'array'
+    	'srcset' => 'array',
+    	'deleted_at' => 'datetime'
     ];
 
     public function status()

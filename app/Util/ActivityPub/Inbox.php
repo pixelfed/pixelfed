@@ -178,7 +178,7 @@ class Inbox
 
 		switch($obj['type']) {
 			case 'Story':
-				StoryFetch::dispatchNow($this->payload);
+				StoryFetch::dispatchSync($this->payload);
 			break;
 		}
 

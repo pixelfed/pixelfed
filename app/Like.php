@@ -16,7 +16,10 @@ class Like extends Model
      *
      * @var array
      */
-    protected $dates = ['deleted_at'];
+    protected $casts = [
+    	'deleted_at' => 'datetime'
+    ];
+
     protected $fillable = ['profile_id', 'status_id', 'status_profile_id'];
 
     public function actor()
