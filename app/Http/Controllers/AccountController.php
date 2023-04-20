@@ -30,6 +30,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\Transformer\Api\Mastodon\v1\AccountTransformer;
 use App\Services\AccountService;
+use App\Services\FollowerService;
 use App\Services\NotificationService;
 use App\Services\UserFilterService;
 use App\Services\RelationshipService;
@@ -285,10 +286,27 @@ class AccountController extends Controller
 			$followed = Follower::whereProfileId($profile->id)->whereFollowingId($pid)->first();
 			if($followed) {
 				$followed->delete();
+				$profile->following_count = Follower::whereProfileId($profile->id)->count();
+				$profile->save();
 				$selfProfile = $request->user()->profile;
 				$selfProfile->followers_count = Follower::whereFollowingId($pid)->count();
 				$selfProfile->save();
-				AccountService::del($selfProfile->id);
+				FollowerService::remove($profile->id, $pid);
+				AccountService::del($pid);
+				AccountService::del($profile->id);
+			}
+
+			$following = Follower::whereProfileId($pid)->whereFollowingId($profile->id)->first();
+			if($following) {
+				$following->delete();
+				$profile->followers_count = Follower::whereFollowingId($profile->id)->count();
+				$profile->save();
+				$selfProfile = $request->user()->profile;
+				$selfProfile->following_count = Follower::whereProfileId($pid)->count();
+				$selfProfile->save();
+				FollowerService::remove($pid, $profile->pid);
+				AccountService::del($pid);
+				AccountService::del($profile->id);
 			}
 
 			Notification::whereProfileId($pid)
@@ -357,8 +375,8 @@ class AccountController extends Controller
 		->first();
 
 		if($filter) {
-			UserFilterService::unblock($pid, $filterable['id']);
 			$filter->delete();
+			UserFilterService::unblock($pid, $filterable['id']);
 		}
 
 		$res = RelationshipService::refresh($pid, $profile->id);
