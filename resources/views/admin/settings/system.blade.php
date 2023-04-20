@@ -1,6 +1,4 @@
-@extends('admin.partial.template')
-
-@include('admin.settings.sidebar')
+@extends('admin.partial.template-full')
 
 @section('section')
   <div class="title">
@@ -8,10 +6,22 @@
     <p class="lead">System information</p>
   </div>
   <hr>
+  {{-- <div class="card shadow-none border mb-4">
+    <div class="card-body text-center">
+      <p class="lead">Update Available</p>
+      <p class="text-lighter">
+        <span class="font-weight-bold">v0.10.6</span>
+        <i class="fas fa-arrow-right mx-2"></i>
+        <span class="font-weight-bold text-primary">v0.10.7</span>
+      </p>
+      <a class="btn btn-primary font-weight-bold btn-block" href="#">Update</a>
+    </div>
+  </div>
+  <hr> --}}
   <p class="h6 text-uppercase text-center">STACK</p>
   <div class="row">
   	<div class="col-12 col-md-3">
-  		<div class="card mb-3 border-left-blue">
+  		<div class="card shadow-none border mb-3 border-left-blue">
   			<div class="card-body text-center">
   				<p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['pixelfed']}}" data-toggle="tooltip">{{$sys['pixelfed']}}</p>
   			</div>
@@ -19,7 +29,7 @@
       </div>
   	</div>
     <div class="col-12 col-md-3">
-      <div class="card mb-3 border-left-blue">
+      <div class="card shadow-none border mb-3 border-left-blue">
         <div class="card-body text-center">
           <p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['database']['version']}}" data-toggle="tooltip">{{$sys['database']['version']}}</p>
         </div>
@@ -27,7 +37,7 @@
       </div>
     </div>
     <div class="col-12 col-md-3">
-      <div class="card mb-3 border-left-blue">
+      <div class="card shadow-none border mb-3 border-left-blue">
         <div class="card-body text-center">
           <p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['php']}}" data-toggle="tooltip">{{$sys['php']}}</p>
         </div>
@@ -35,7 +45,7 @@
       </div>
     </div>
   	<div class="col-12 col-md-3">
-  		<div class="card mb-3 border-left-blue">
+  		<div class="card shadow-none border mb-3 border-left-blue">
   			<div class="card-body text-center">
   				<p class="font-weight-ultralight h2 mb-0 text-truncate" title="{{$sys['laravel']}}" data-toggle="tooltip">{{$sys['laravel']}}</p>
   			</div>
@@ -51,11 +61,12 @@
         <span class="sr-only">Loading…</span>
       </div>
     </div>
-    <div class="card card-release d-none">
+    <div class="card shadow-none border card-release d-none" style="max-height: 500px;overflow-y: auto;">
       <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="">
           <div>
             <p class="h1 latest-version mb-0 mr-4">0.0.0</p>
+            <hr>
           </div>
           <div class="text-left px-3">
             <p class="mb-0 latest-name h2 font-weight-bold"></p>
