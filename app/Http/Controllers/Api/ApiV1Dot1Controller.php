@@ -34,6 +34,7 @@ use App\Mail\ConfirmAppEmail;
 use App\Http\Resources\StatusStateless;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ApiV1Dot1Controller extends Controller
 {
@@ -452,7 +453,7 @@ class ApiV1Dot1Controller extends Controller
 	public function inAppRegistrationPreFlightCheck(Request $request)
 	{
 		return [
-			'open' => config_cache('pixelfed.open_registration'),
+			'open' => (bool) config_cache('pixelfed.open_registration'),
 			'iara' => config('pixelfed.allow_app_registration')
 		];
 	}
@@ -466,6 +467,10 @@ class ApiV1Dot1Controller extends Controller
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
+
+		$rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), 3, function(){}, 1800);
+		abort_if(!$rl, 400, 'Too many requests');
+
 		$this->validate($request, [
 			'email' => [
 				'required',
@@ -581,6 +586,10 @@ class ApiV1Dot1Controller extends Controller
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
+
+		$rl = RateLimiter::attempt('pf:apiv1.1:iarc:'.$request->ip(), 10, function(){}, 1800);
+		abort_if(!$rl, 400, 'Too many requests');
+
 		$this->validate($request, [
 			'user_token' => 'required',
 			'random_token' => 'required',

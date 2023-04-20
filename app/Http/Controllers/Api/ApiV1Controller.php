@@ -1095,9 +1095,39 @@ class ApiV1Controller extends Controller
 			abort_if($count >= $maxLimit, 422, AccountController::FILTER_LIMIT_BLOCK_TEXT . $maxLimit . ' accounts');
 		}
 
-		Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
-		Follower::whereProfileId($pid)->whereFollowingId($profile->id)->delete();
-		Notification::whereProfileId($pid)->whereActorId($profile->id)->delete();
+		$followed = Follower::whereProfileId($profile->id)->whereFollowingId($pid)->first();
+		if($followed) {
+			$followed->delete();
+			$profile->following_count = Follower::whereProfileId($profile->id)->count();
+			$profile->save();
+			$selfProfile = $user->profile;
+			$selfProfile->followers_count = Follower::whereFollowingId($pid)->count();
+			$selfProfile->save();
+			FollowerService::remove($profile->id, $pid);
+			AccountService::del($pid);
+			AccountService::del($profile->id);
+		}
+
+		$following = Follower::whereProfileId($pid)->whereFollowingId($profile->id)->first();
+		if($following) {
+			$following->delete();
+			$profile->followers_count = Follower::whereFollowingId($profile->id)->count();
+			$profile->save();
+			$selfProfile = $user->profile;
+			$selfProfile->following_count = Follower::whereProfileId($pid)->count();
+			$selfProfile->save();
+			FollowerService::remove($pid, $profile->pid);
+			AccountService::del($pid);
+			AccountService::del($profile->id);
+		}
+
+		Notification::whereProfileId($pid)
+			->whereActorId($profile->id)
+			->get()
+			->map(function($n) use($pid) {
+				NotificationService::del($pid, $n['id']);
+				$n->forceDelete();
+		});
 
 		$filter = UserFilter::firstOrCreate([
 			'user_id'         => $pid,
@@ -1106,8 +1136,8 @@ class ApiV1Controller extends Controller
 			'filter_type'     => 'block',
 		]);
 
-		RelationshipService::refresh($pid, $id);
 		UserFilterService::block($pid, $id);
+		RelationshipService::refresh($pid, $id);
 		$resource = new Fractal\Resource\Item($profile, new RelationshipTransformer());
 		$res = $this->fractal->createData($resource)->toArray();
 
