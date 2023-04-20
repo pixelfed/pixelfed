@@ -95,7 +95,7 @@ class StatusDelete implements ShouldQueue
         Media::whereStatusId($status->id)
         ->get()
         ->each(function($media) {
-            MediaDeletePipeline::dispatchNow($media);
+            MediaDeletePipeline::dispatchSync($media);
         });
 
 		if($status->in_reply_to_id) {

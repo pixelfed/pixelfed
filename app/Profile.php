@@ -19,10 +19,10 @@ class Profile extends Model
 	 */
 	public $incrementing = false;
 
-	protected $dates = [
-		'deleted_at',
-		'last_fetched_at',
-		'last_status_at'
+	protected $casts = [
+		'deleted_at' => 'datetime',
+		'last_fetched_at' => 'datetime',
+		'last_status_at' => 'datetime'
 	];
 	protected $hidden = ['private_key'];
 	protected $visible = ['id', 'user_id', 'username', 'name'];

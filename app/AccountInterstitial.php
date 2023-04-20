@@ -11,7 +11,10 @@ class AccountInterstitial extends Model
 	*
 	* @var array
 	*/
-	protected $dates = ['read_at', 'appeal_requested_at'];
+	protected $casts = [
+		'read_at' => 'datetime',
+		'appeal_requested_at' => 'datetime'
+	];
 
 	public const JSON_MESSAGE = 'Please use web browser to proceed.';
 

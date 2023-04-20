@@ -17,7 +17,11 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $dates = ['deleted_at', 'email_verified_at', '2fa_setup_at'];
+    protected $casts = [
+    	'deleted_at' => 'datetime',
+    	'email_verified_at' => 'datetime',
+    	'2fa_setup_at' => 'datetime'
+    ];
 
     /**
      * The attributes that are mass assignable.

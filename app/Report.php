@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
-    protected $dates = ['admin_seen'];
+    protected $casts = [
+    	'admin_seen' => 'datetime'
+    ];
 
     protected $guarded = [];
 

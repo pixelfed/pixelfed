@@ -22,7 +22,9 @@ class StoryItem extends Model
 	*
 	* @var array
 	*/
-	protected $dates = ['expires_at'];
+	protected $casts = [
+		'expires_at' => 'datetime'
+	];
 
 	protected $visible = ['id'];
 
