@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use App\Services\BouncerService;
+use Illuminate\Http\Request;
 
 class ForgotPasswordController extends Controller
 {
@@ -28,5 +30,34 @@ class ForgotPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Display the form to request a password reset link.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showLinkRequestForm()
+    {
+		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+			abort_if(BouncerService::checkIp(request()->ip()), 404);
+		}
+
+        return view('auth.passwords.email');
+    }
+
+    /**
+     * Validate the email for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
+        $request->validate(['email' => 'required|email']);
     }
 }

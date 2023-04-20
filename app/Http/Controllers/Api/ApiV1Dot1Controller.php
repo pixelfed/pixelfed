@@ -23,6 +23,7 @@ use App\Services\ProfileStatusService;
 use App\Services\PublicTimelineService;
 use App\Services\NetworkTimelineService;
 use App\Util\Lexer\RestrictedNames;
+use App\Services\BouncerService;
 use App\Services\EmailService;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -64,6 +65,10 @@ class ApiV1Dot1Controller extends Controller
 
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 
 		$report_type = $request->input('report_type');
 		$object_id = $request->input('object_id');
@@ -168,6 +173,10 @@ class ApiV1Dot1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$avatar = $user->profile->avatar;
 
 		if( $avatar->media_path == 'public/avatars/default.png' ||
@@ -204,6 +213,10 @@ class ApiV1Dot1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$account = AccountService::get($id);
 
 		if(!$account || $account['username'] !== $request->input('username')) {
@@ -238,6 +251,9 @@ class ApiV1Dot1Controller extends Controller
 		$user = $request->user();
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 
 		$this->validate($request, [
 			'current_password' => 'bail|required|current_password',
@@ -276,6 +292,9 @@ class ApiV1Dot1Controller extends Controller
 		$user = $request->user();
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 		$agent = new Agent();
 		$currentIp = $request->ip();
 
@@ -314,6 +333,10 @@ class ApiV1Dot1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$res = [
 			'active' => (bool) $user->{'2fa_enabled'},
 			'setup_at' => $user->{'2fa_setup_at'}
@@ -331,6 +354,9 @@ class ApiV1Dot1Controller extends Controller
 		$user = $request->user();
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 		$from = config('mail.from.address');
 
 		$emailVerifications = EmailVerification::whereUserId($user->id)
@@ -404,6 +430,10 @@ class ApiV1Dot1Controller extends Controller
 		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$res = $user->tokens->sortByDesc('created_at')->take(10)->map(function($token, $key) use($request) {
 			return [
 				'id' => $token->id,
@@ -422,7 +452,7 @@ class ApiV1Dot1Controller extends Controller
 	public function inAppRegistrationPreFlightCheck(Request $request)
 	{
 		return [
-			'open' => config('pixelfed.open_registration'),
+			'open' => config_cache('pixelfed.open_registration'),
 			'iara' => config('pixelfed.allow_app_registration')
 		];
 	}
@@ -430,9 +460,12 @@ class ApiV1Dot1Controller extends Controller
 	public function inAppRegistration(Request $request)
 	{
 		abort_if($request->user(), 404);
-		abort_unless(config('pixelfed.open_registration'), 404);
+		abort_unless(config_cache('pixelfed.open_registration'), 404);
 		abort_unless(config('pixelfed.allow_app_registration'), 404);
 		abort_unless($request->hasHeader('X-PIXELFED-APP'), 403);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 		$this->validate($request, [
 			'email' => [
 				'required',
@@ -530,6 +563,9 @@ class ApiV1Dot1Controller extends Controller
 			'ut' => 'required',
 			'rt' => 'required'
 		]);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 		$ut = $request->input('ut');
 		$rt = $request->input('rt');
 		$url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt;
@@ -539,9 +575,12 @@ class ApiV1Dot1Controller extends Controller
 	public function inAppRegistrationConfirm(Request $request)
 	{
 		abort_if($request->user(), 404);
-		abort_unless(config('pixelfed.open_registration'), 404);
+		abort_unless(config_cache('pixelfed.open_registration'), 404);
 		abort_unless(config('pixelfed.allow_app_registration'), 404);
 		abort_unless($request->hasHeader('X-PIXELFED-APP'), 403);
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 		$this->validate($request, [
 			'user_token' => 'required',
 			'random_token' => 'required',
@@ -578,6 +617,10 @@ class ApiV1Dot1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$status = Status::whereNull('in_reply_to_id')
 			->whereNull('reblog_of_id')
 			->whereProfileId($request->user()->profile_id)
@@ -606,6 +649,10 @@ class ApiV1Dot1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$status = Status::whereNull('in_reply_to_id')
 			->whereNull('reblog_of_id')
 			->whereProfileId($request->user()->profile_id)
@@ -633,6 +680,10 @@ class ApiV1Dot1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
 		$statuses = Status::whereProfileId($request->user()->profile_id)
 			->whereScope('archived')
 			->orderByDesc('id')
@@ -644,6 +695,10 @@ class ApiV1Dot1Controller extends Controller
 	public function placesById(Request $request, $id, $slug)
 	{
 		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 
 		$place = Place::whereSlug($slug)->findOrFail($id);
 
@@ -679,6 +734,10 @@ class ApiV1Dot1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 		abort_if($request->user()->is_admin != true, 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
 
 		$this->validate($request, [
 			'action' => 'required|in:cw,mark-public,mark-unlisted,mark-private,mark-spammer,delete'
