@@ -282,14 +282,22 @@ class AccountController extends Controller
 			$filterable['id'] = $profile->id;
 			$filterable['type'] = $class;
 
-			Follower::whereProfileId($profile->id)->whereFollowingId($pid)->delete();
+			$followed = Follower::whereProfileId($profile->id)->whereFollowingId($pid)->first();
+			if($followed) {
+				$followed->delete();
+				$selfProfile = $request->user()->profile;
+				$selfProfile->followers_count = Follower::whereFollowingId($pid)->count();
+				$selfProfile->save();
+				AccountService::del($selfProfile->id);
+			}
+
 			Notification::whereProfileId($pid)
 				->whereActorId($profile->id)
 				->get()
 				->map(function($n) use($pid) {
 					NotificationService::del($pid, $n['id']);
 					$n->forceDelete();
-				});
+			});
 			break;
 		}
 

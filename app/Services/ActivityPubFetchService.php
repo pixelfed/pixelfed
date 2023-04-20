@@ -7,6 +7,7 @@ use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use App\Util\ActivityPub\HttpSignature;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 
 class ActivityPubFetchService
 {
@@ -17,13 +18,16 @@ class ActivityPubFetchService
 		}
 
 		$headers = HttpSignature::instanceActorSign($url, false);
-		$headers['Accept'] = 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"';
-		$headers['User-Agent'] = '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
+		$headers['Accept'] = 'application/activity+json';
 
 		try {
 			$res = Http::withHeaders($headers)
-				->timeout(10)
+				->timeout(30)
+				->connectTimeout(5)
+				->retry(3, 500)
 				->get($url);
+		} catch (RequestException $e) {
+			return;
 		} catch (ConnectionException $e) {
 			return;
 		} catch (Exception $e) {
