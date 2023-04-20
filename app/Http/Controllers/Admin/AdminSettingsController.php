@@ -243,16 +243,20 @@ trait AdminSettingsController
 		];
 		switch (config('database.default')) {
 			case 'pgsql':
+			$exp = DB::raw('select version();');
+			$expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
 			$sys['database'] = [
 				'name' => 'Postgres',
-				'version' => explode(' ', DB::select(DB::raw('select version();'))[0]->version)[1]
+				'version' => explode(' ', DB::select($expQuery)[0]->version)[1]
 			];
 			break;
 
 			case 'mysql':
+			$exp = DB::raw('select version()');
+			$expQuery = $exp->getValue(DB::connection()->getQueryGrammar());
 			$sys['database'] = [
 				'name' => 'MySQL',
-				'version' => DB::select( DB::raw("select version()") )[0]->{'version()'}
+				'version' => DB::select($expQuery)[0]->{'version()'}
 			];
 			break;
 
