@@ -18,12 +18,12 @@ class ActivityPubFetchService
 		}
 
 		$baseHeaders = [
-			'Accept' => 'application/activity+json',
+			'Accept' => 'application/activity+json, application/ld+json',
 			'User-Agent' => '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')'
 		];
 
 		$headers = HttpSignature::instanceActorSign($url, false, $baseHeaders);
-		$headers['Accept'] = 'application/activity+json';
+		$headers['Accept'] = 'application/activity+json, application/ld+json';
 		$headers['User-Agent'] = '(Pixelfed/'.config('pixelfed.version').'; +'.config('app.url').')';
 
 		try {
