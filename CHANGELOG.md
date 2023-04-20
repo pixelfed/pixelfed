@@ -27,6 +27,7 @@
 - Update Privacy Settings, add Directory setting ([634c15e4](https://github.com/pixelfed/pixelfed/commit/634c15e4))
 - Update site config ([6d59dc8e](https://github.com/pixelfed/pixelfed/commit/6d59dc8e))
 - Update db:raw queries to support laravel v10 ([849e5103](https://github.com/pixelfed/pixelfed/commit/849e5103))
+- Update RegisterController, store client ip during registration ([d4c967de](https://github.com/pixelfed/pixelfed/commit/d4c967de))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
