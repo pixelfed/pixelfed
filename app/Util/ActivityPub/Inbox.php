@@ -8,6 +8,7 @@ use App\{
 	DirectMessage,
 	Follower,
 	FollowRequest,
+	Instance,
 	Like,
 	Notification,
 	Media,
