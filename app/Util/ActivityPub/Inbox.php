@@ -125,7 +125,7 @@ class Inbox
 
 			case 'Flag':
 				$this->handleFlagActivity();
-				break
+				break;
 
 			// case 'Update':
 			// 	(new UpdateActivity($this->payload, $this->profile))->handle();
