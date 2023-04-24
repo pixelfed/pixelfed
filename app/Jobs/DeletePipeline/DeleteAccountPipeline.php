@@ -80,7 +80,7 @@ class DeleteAccountPipeline implements ShouldQueue
 		$id = $user->profile_id;
 		Status::whereProfileId($id)->chunk(50, function($statuses) {
             foreach($statuses as $status) {
-                StatusDelete::dispatchSync($status);
+                StatusDelete::dispatch($status);
             }
         });
 
