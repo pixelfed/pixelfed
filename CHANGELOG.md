@@ -30,6 +30,7 @@
 - Update db:raw queries to support laravel v10 ([849e5103](https://github.com/pixelfed/pixelfed/commit/849e5103))
 - Update RegisterController, store client ip during registration ([d4c967de](https://github.com/pixelfed/pixelfed/commit/d4c967de))
 - Update ApiV1Controller, fix account blocks. Closes #4304 ([98739139](https://github.com/pixelfed/pixelfed/commit/98739139))
+- Update RegisterController, improve max_users calculation and add kb page to redirect to if conditions are met ([1bbee6d0](https://github.com/pixelfed/pixelfed/commit/1bbee6d0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
