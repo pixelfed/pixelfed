@@ -38,7 +38,7 @@ class AdminNewReport extends Mailable
     	$id = $this->report->id;
     	$object_type = last(explode("\\", $this->report->object_type));
         return new Envelope(
-            subject: '[' . config('pixelfed.domain.app') . '] ' . $object_type . ' Report (#' . $id . '-' . $type . ')',
+            subject: '[' . config('pixelfed.domain.app') . '] ' . $object_type . ' Report (Ref: report-' . $id . '-' . $type . ')',
         );
     }
 
