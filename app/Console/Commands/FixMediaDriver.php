@@ -102,7 +102,7 @@ class FixMediaDriver extends Command
 							'image/webp'
 						])
 					) {
-						ImageOptimize::dispatchSync($media);
+						ImageOptimize::dispatch($media);
 						sleep(3);
 					}
 				} else {
