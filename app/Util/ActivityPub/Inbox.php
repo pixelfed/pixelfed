@@ -1189,7 +1189,7 @@ class Inbox
 				if($profileId) {
 					$accountId = $profileId->id;
 				}
-			} else if(str_contains($object_url, '/p/')) {
+			} else if(str_contains($objectUrl, '/p/')) {
 				$postId = last(explode('/', $objectUrl));
 				$objects->push($postId);
 			} else {
