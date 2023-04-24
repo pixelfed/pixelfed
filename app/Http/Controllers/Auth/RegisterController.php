@@ -181,6 +181,9 @@ class RegisterController extends Controller
 			$limit = config('pixelfed.max_users');
 			if($limit) {
 				$count = User::where(function($q){ return $q->whereNull('status')->orWhereNotIn('status', ['deleted','delete']); })->count();
+				if($limit <= $count) {
+					return redirect(route('help.instance-max-users-limit'));
+				}
 				abort_if($limit <= $count, 404);
 				return view('auth.register');
 			} else {
@@ -209,7 +212,7 @@ class RegisterController extends Controller
 		$limit = config('pixelfed.max_users');
 
 		if(false == config_cache('pixelfed.open_registration') || $limit && $limit <= $count) {
-			return abort(403);
+			return redirect(route('help.instance-max-users-limit'));
 		}
 
 		$this->validator($request->all())->validate();
