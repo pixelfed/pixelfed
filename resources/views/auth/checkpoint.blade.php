@@ -24,13 +24,24 @@
 	            </div>
 	            <div class="card bg-glass">
 	                <div class="card-body">
-	                    <form method="POST">
+	                    <form method="POST" id="2faForm">
 	                        @csrf
 
 	                        <div class="form-group row">
 
 	                            <div class="col-md-12">
-	                                <input id="code" type="text" class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" placeholder="{{__('Two-Factor Authentication Code')}}" required autocomplete="off" autofocus="" inputmode="numeric" minlength="6">
+	                            	<label class="font-weight-bold small text-muted">2FA Code</label>
+	                                <input
+	                                	id="code"
+	                                	type="text"
+	                                	class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}"
+	                                	name="code"
+	                                	placeholder="{{__('Two-Factor Authentication Code')}}"
+	                                	required
+	                                	autocomplete="new-password"
+	                                	autofocus=""
+	                                	inputmode="numeric"
+	                                	minlength="6">
 
 	                                @if ($errors->has('code'))
 	                                    <span class="invalid-feedback">
@@ -42,7 +53,12 @@
 
 	                        <div class="form-group row mb-0">
 	                            <div class="col-md-12">
-	                                <button type="submit" class="btn btn-success btn-block rounded-pill font-weight-bold">
+	                                <button
+	                                	type="button"
+	                                	id="sbtn"
+	                                	class="btn btn-success btn-block rounded-pill font-weight-bold"
+	                                	onclick="event.preventDefault();handleSubmit()"
+	                                	>
 	                                    {{ __('Verify') }}
 	                                </button>
 
@@ -66,3 +82,24 @@
 	</div>
 </div>
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+	function handleSubmit() {
+		let warning = document.querySelector('.invalid-feedback');
+		if(warning) {
+			warning.style.display = 'none';
+		}
+
+		let code = document.getElementById('code');
+		code.setAttribute('readonly', 'readonly');
+		code.style.opacity = '20%';
+
+		let btn = document.getElementById('sbtn');
+		btn.classList.add('disabled');
+		btn.setAttribute('disabled', 'disabled');
+		btn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>';
+		document.getElementById('2faForm').submit()
+	}
+</script>
+@endpush
