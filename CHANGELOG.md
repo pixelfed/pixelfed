@@ -31,6 +31,11 @@
 - Update RegisterController, store client ip during registration ([d4c967de](https://github.com/pixelfed/pixelfed/commit/d4c967de))
 - Update ApiV1Controller, fix account blocks. Closes #4304 ([98739139](https://github.com/pixelfed/pixelfed/commit/98739139))
 - Update RegisterController, improve max_users calculation and add kb page to redirect to if conditions are met ([1bbee6d0](https://github.com/pixelfed/pixelfed/commit/1bbee6d0))
+- Update SecuritySettings, remove imagick depdency for 2FA qr code generation image ([506f95c6](https://github.com/pixelfed/pixelfed/commit/506f95c6))
+- Update 2fa checkpoint view design ([86c472ac](https://github.com/pixelfed/pixelfed/commit/86c472ac))
+- Update sudo mode checkpoint view design ([091e0b2c](https://github.com/pixelfed/pixelfed/commit/091e0b2c))
+- Update ForgotPasswordController, add captcha support, improve security and a new redesigned view ([f6e7ff64](https://github.com/pixelfed/pixelfed/commit/f6e7ff64))
+- Update ResetPasswordController, add captcha support, improve security and a new redesigned view ([0ab5b96a](https://github.com/pixelfed/pixelfed/commit/0ab5b96a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
