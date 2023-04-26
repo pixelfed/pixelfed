@@ -16,7 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PragmaRX\Google2FA\Google2FA;
 use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 
@@ -56,13 +56,15 @@ trait SecuritySettings
 		    $key,
 		    500
 		);
+
+
 		$writer = new Writer(
 			new ImageRenderer(
 				new RendererStyle(400),
-				new ImagickImageBackEnd()
+				new SvgImageBackEnd()
 			)
 		);
-		$qrcode = base64_encode($writer->writeString($qrcode));
+		$qrcode = $writer->writeString($qrcode);
 		$user->{'2fa_secret'} = $key;
 		$user->{'2fa_backup_codes'} = json_encode($backups);
 		$user->save();
