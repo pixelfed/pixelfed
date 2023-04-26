@@ -1153,7 +1153,6 @@ class Inbox
 			$this->payload['id'],
 			$this->payload['type'],
 			$this->payload['actor'],
-			$this->payload['content'],
 			$this->payload['object']
 		)) {
 			return;
@@ -1161,18 +1160,19 @@ class Inbox
 
 		$id = $this->payload['id'];
 		$actor = $this->payload['actor'];
-		$content = Purify::clean($this->payload['content']);
-		$object = $this->payload['object'];
 
 		if(Helpers::validateLocalUrl($id) || parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
 			return;
 		}
 
-		if(!is_array($object) || empty($object)) {
+		$content = isset($this->payload['content']) ? Purify::clean($this->payload['content']) : null;
+		$object = $this->payload['object'];
+
+		if(empty($object) || (!is_array($object) && !is_string($object))) {
 			return;
 		}
 
-		if(count($object) > 40) {
+		if(is_array($object) && count($object) > 100) {
 			return;
 		}
 
@@ -1181,7 +1181,7 @@ class Inbox
 
 		foreach($object as $objectUrl) {
 			if(!Helpers::validateLocalUrl($objectUrl)) {
-				return;
+				continue;
 			}
 
 			if(str_contains($objectUrl, '/users/')) {
@@ -1194,7 +1194,7 @@ class Inbox
 				$postId = last(explode('/', $objectUrl));
 				$objects->push($postId);
 			} else {
-				return;
+				continue;
 			}
 		}
 
