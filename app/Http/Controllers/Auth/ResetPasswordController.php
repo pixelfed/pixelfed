@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use App\Services\BouncerService;
+use Illuminate\Validation\Rules;
 
 class ResetPasswordController extends Controller
 {
@@ -41,6 +42,46 @@ class ResetPasswordController extends Controller
     }
 
     /**
+     * Get the password reset validation rules.
+     *
+     * @return array
+     */
+    protected function rules()
+    {
+    	usleep(random_int(100000, 3000000));
+
+        if(config('captcha.enabled')) {
+            return [
+	            'token' => 'required',
+	            'email' => 'required|email',
+	            'password' => ['required', 'confirmed', 'max:72', Rules\Password::defaults()],
+            	'h-captcha-response' => ['required' ,'filled', 'captcha']
+	       	];
+        }
+
+        return [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', 'max:72', Rules\Password::defaults()],
+        ];
+    }
+
+    /**
+     * Get the password reset validation error messages.
+     *
+     * @return array
+     */
+    protected function validationErrorMessages()
+    {
+        return [
+        	'password.max' => 'Passwords should not exceed 72 characters.',
+        	'h-captcha-response.required' => 'Failed to validate the captcha.',
+        	'h-captcha-response.filled' => 'Failed to validate the captcha.',
+        	'h-captcha-response.captcha' => 'Failed to validate the captcha.',
+        ];
+    }
+
+    /**
      * Display the password reset view for the given token.
      *
      * If no token is present, display the link request form.
@@ -53,6 +94,8 @@ class ResetPasswordController extends Controller
 		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
+
+		usleep(random_int(100000, 300000));
 
         $token = $request->route()->parameter('token');
 
@@ -84,6 +127,36 @@ class ResetPasswordController extends Controller
         return $response == Password::PASSWORD_RESET
                     ? $this->sendResetResponse($request, $response)
                     : $this->sendResetFailedResponse($request, $response);
+    }
+
+    /**
+     * Get the password reset credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return $request->only(
+            'email', 'password', 'password_confirmation', 'token'
+        );
+    }
+
+    /**
+     * Get the response for a failed password reset.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $response
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    protected function sendResetFailedResponse(Request $request, $response)
+    {
+        if ($request->wantsJson()) {
+            throw ValidationException::withMessages(['email' => [trans($response)]]);
+        }
+        return redirect()->back()
+            ->withInput($request->only('email'))
+            ->withErrors(['email' => [trans($response)]]);
     }
 
 }
