@@ -43,6 +43,8 @@ class ForgotPasswordController extends Controller
 			abort_if(BouncerService::checkIp(request()->ip()), 404);
 		}
 
+		usleep(random_int(100000, 300000));
+
         return view('auth.passwords.email');
     }
 
@@ -52,12 +54,51 @@ class ForgotPasswordController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return void
      */
-    protected function validateEmail(Request $request)
+    public function validateEmail(Request $request)
     {
 		if(config('pixelfed.bouncer.cloud_ips.ban_logins')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
 
-        $request->validate(['email' => 'required|email']);
+		usleep(random_int(100000, 3000000));
+
+    	if(config('captcha.enabled')) {
+            $rules = [
+	    		'email' => 'required|email',
+            	'h-captcha-response' => 'required|captcha'
+            ];
+        } else {
+	    	$rules = [
+	    		'email' => 'required|email'
+	    	];
+        }
+
+        $request->validate($rules, [
+        	'h-captcha-response' => 'Failed to validate the captcha.',
+        ]);
+    }
+
+    /**
+     * Get the response for a failed password reset link.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $response
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function sendResetLinkFailedResponse(Request $request, $response)
+    {
+        if ($request->wantsJson()) {
+            throw ValidationException::withMessages([
+                'email' => [trans($response)],
+            ]);
+        }
+
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+            	'email' => trans($response),
+            ]);
     }
 }
