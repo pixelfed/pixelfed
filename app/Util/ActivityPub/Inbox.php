@@ -8,6 +8,7 @@ use App\{
 	DirectMessage,
 	Follower,
 	FollowRequest,
+	Instance,
 	Like,
 	Notification,
 	Media,
@@ -42,6 +43,7 @@ use App\Services\StatusService;
 use App\Services\UserFilterService;
 use App\Services\NetworkTimelineService;
 use App\Models\Conversation;
+use App\Models\RemoteReport;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
 
@@ -120,6 +122,10 @@ class Inbox
 
 			case 'Story:Reply':
 				$this->handleStoryReplyActivity();
+				break;
+
+			case 'Flag':
+				$this->handleFlagActivity();
 				break;
 
 			// case 'Update':
@@ -1137,6 +1143,82 @@ class Inbox
 		$n->message = "{$actorProfile->username} commented on story";
 		$n->rendered = "{$actorProfile->username} commented on story";
 		$n->save();
+
+		return;
+	}
+
+	public function handleFlagActivity()
+	{
+		if(!isset(
+			$this->payload['id'],
+			$this->payload['type'],
+			$this->payload['actor'],
+			$this->payload['object']
+		)) {
+			return;
+		}
+
+		$id = $this->payload['id'];
+		$actor = $this->payload['actor'];
+
+		if(Helpers::validateLocalUrl($id) || parse_url($id, PHP_URL_HOST) !== parse_url($actor, PHP_URL_HOST)) {
+			return;
+		}
+
+		$content = isset($this->payload['content']) ? Purify::clean($this->payload['content']) : null;
+		$object = $this->payload['object'];
+
+		if(empty($object) || (!is_array($object) && !is_string($object))) {
+			return;
+		}
+
+		if(is_array($object) && count($object) > 100) {
+			return;
+		}
+
+		$objects = collect([]);
+		$accountId = null;
+
+		foreach($object as $objectUrl) {
+			if(!Helpers::validateLocalUrl($objectUrl)) {
+				continue;
+			}
+
+			if(str_contains($objectUrl, '/users/')) {
+				$username = last(explode('/', $objectUrl));
+				$profileId = Profile::whereUsername($username)->first();
+				if($profileId) {
+					$accountId = $profileId->id;
+				}
+			} else if(str_contains($objectUrl, '/p/')) {
+				$postId = last(explode('/', $objectUrl));
+				$objects->push($postId);
+			} else {
+				continue;
+			}
+		}
+
+		if(!$accountId || !$objects->count()) {
+			return;
+		}
+
+		$instanceHost = parse_url($id, PHP_URL_HOST);
+
+		$instance = Instance::updateOrCreate([
+			'domain' => $instanceHost
+		]);
+
+		$report = new RemoteReport;
+		$report->status_ids = $objects->toArray();
+		$report->comment = $content;
+		$report->account_id = $accountId;
+		$report->uri = $id;
+		$report->instance_id = $instance->id;
+		$report->report_meta = [
+			'actor' => $actor,
+			'object' => $object
+		];
+		$report->save();
 
 		return;
 	}
