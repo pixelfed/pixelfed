@@ -36,6 +36,7 @@
 - Update sudo mode checkpoint view design ([091e0b2c](https://github.com/pixelfed/pixelfed/commit/091e0b2c))
 - Update ForgotPasswordController, add captcha support, improve security and a new redesigned view ([f6e7ff64](https://github.com/pixelfed/pixelfed/commit/f6e7ff64))
 - Update ResetPasswordController, add captcha support, improve security and a new redesigned view ([0ab5b96a](https://github.com/pixelfed/pixelfed/commit/0ab5b96a))
+- Update Inbox, remove handleCreateActivity logic that rejected posts from accounts without followers ([a93a3efd](https://github.com/pixelfed/pixelfed/commit/a93a3efd))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
