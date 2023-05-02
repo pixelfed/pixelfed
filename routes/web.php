@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Magic;
+
 Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(function () {
 	Route::redirect('/', '/dashboard');
 	Route::redirect('timeline', config('app.url').'/timeline');
@@ -155,6 +157,7 @@ Route::domain(config('portfolio.domain'))->group(function () {
 });
 
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
+	Route::get('magic', Magic::class);
 	Route::get('/', 'SiteController@home')->name('timeline.personal');
 	Route::redirect('/home', '/')->name('home');
 	Route::get('web/directory', 'LandingController@directoryRedirect');
