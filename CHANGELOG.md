@@ -1,6 +1,9 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.5...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.6...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
 
 ### Added
 - Add php 8.2 support. Bump laravel version, v9 => v10 ([fb4ac4eb](https://github.com/pixelfed/pixelfed/commit/fb4ac4eb))
@@ -45,7 +48,6 @@
 - Update ApiV1Controller and DiscoverController, fix postgres hashtag search ([055aa6b3](https://github.com/pixelfed/pixelfed/commit/055aa6b3))
 - Update StatusTagsPipeline, deduplicate hashtags on postgres ([867cbc75](https://github.com/pixelfed/pixelfed/commit/867cbc75))
 - Update SearchApiV2Service, fix postgres hashtag search and prepend wildcard operator to improve results ([6e20d0a6](https://github.com/pixelfed/pixelfed/commit/6e20d0a6))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)
 
