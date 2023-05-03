@@ -6,8 +6,12 @@
 - Add php 8.2 support. Bump laravel version, v9 => v10 ([fb4ac4eb](https://github.com/pixelfed/pixelfed/commit/fb4ac4eb))
 - New media:fix-nonlocal-driver command. Fixes s3 media created with invalid FILESYSTEM_DRIVER=s3 configuration ([672cccd4](https://github.com/pixelfed/pixelfed/commit/672cccd4))
 - New landing page design ([09c0032b](https://github.com/pixelfed/pixelfed/commit/09c0032b))
-- Add cloud ip bans to BouncerService ([50ab2e20](https://github.com/pixelfed/pixelfed/commit/50ab2e20))
+- Add cloud ip bans to BouncerService (disabled by default) ([50ab2e20](https://github.com/pixelfed/pixelfed/commit/50ab2e20))
 - Redesigned Admin Dashboard Reports/Moderation ([c6cc6327](https://github.com/pixelfed/pixelfed/commit/c6cc6327))
+
+### Fixes
+- Fixed `violates check constraint "statuses_visibility_check"` bug affecting postgres instances + various api endpoints ([79b6a17e](https://github.com/pixelfed/pixelfed/commit/79b6a17e))
+- Fixed duplicate hashtags on postgres ([64059cb4](https://github.com/pixelfed/pixelfed/commit/64059cb4))
 
 ### Updates
 - Update ApiV1Controller, fix blocking remote accounts. Closes #4256 ([8e71e0c0](https://github.com/pixelfed/pixelfed/commit/8e71e0c0))
@@ -37,6 +41,9 @@
 - Update ForgotPasswordController, add captcha support, improve security and a new redesigned view ([f6e7ff64](https://github.com/pixelfed/pixelfed/commit/f6e7ff64))
 - Update ResetPasswordController, add captcha support, improve security and a new redesigned view ([0ab5b96a](https://github.com/pixelfed/pixelfed/commit/0ab5b96a))
 - Update Inbox, remove handleCreateActivity logic that rejected posts from accounts without followers ([a93a3efd](https://github.com/pixelfed/pixelfed/commit/a93a3efd))
+- Update ApiV1Controller and DiscoverController, fix postgres hashtag search ([055aa6b3](https://github.com/pixelfed/pixelfed/commit/055aa6b3))
+- Update StatusTagsPipeline, deduplicate hashtags on postgres ([867cbc75](https://github.com/pixelfed/pixelfed/commit/867cbc75))
+- Update SearchApiV2Service, fix postgres hashtag search and prepend wildcard operator to improve results ([6e20d0a6](https://github.com/pixelfed/pixelfed/commit/6e20d0a6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.5 (2023-03-25)](https://github.com/pixelfed/pixelfed/compare/v0.11.4...v0.11.5)

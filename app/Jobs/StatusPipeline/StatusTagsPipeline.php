@@ -71,11 +71,24 @@ class StatusTagsPipeline implements ShouldQueue
                 }
             }
 
-			$hashtag = Hashtag::firstOrCreate([
-				'slug' => str_slug($name)
-			], [
-				'name' => $name
-			]);
+            if(config('database.default') === 'pgsql') {
+            	$hashtag = Hashtag::where('name', 'ilike', $name)
+            		->orWhere('slug', 'ilike', str_slug($name))
+            		->first();
+
+            	if(!$hashtag) {
+            		$hashtag = new Hashtag;
+            		$hashtag->name = $name;
+            		$hashtag->slug = str_slug($name);
+            		$hashtag->save();
+            	}
+            } else {
+				$hashtag = Hashtag::firstOrCreate([
+					'slug' => str_slug($name)
+				], [
+					'name' => $name
+				]);
+            }
 
 			StatusHashtag::firstOrCreate([
 				'status_id' => $status->id,

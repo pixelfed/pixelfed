@@ -125,8 +125,10 @@ class SearchApiV2Service
 		$q = $this->query->input('q');
 		$limit = $this->query->input('limit') ?? 20;
 		$offset = $this->query->input('offset') ?? 0;
-		$query = Str::startsWith($q, '#') ? substr($q, 1) . '%' : $q . '%';
-		return Hashtag::where('name', 'like', $query)
+		$query = Str::startsWith($q, '#') ? '%' . substr($q, 1) . '%' : '%' . $q . '%';
+		$operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
+		return Hashtag::where('name', $operator, $query)
+			->orWhere('slug', $operator, $query)
 			->where(function($q) {
 				return $q->where('can_search', true)
 						->orWhereNull('can_search');

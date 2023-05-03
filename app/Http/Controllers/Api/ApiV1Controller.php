@@ -3245,9 +3245,15 @@ class ApiV1Controller extends Controller
 		  'limit'       => 'nullable|integer|max:100'
 		]);
 
-		$tag = Hashtag::whereName($hashtag)
-		  ->orWhere('slug', $hashtag)
-		  ->first();
+		if(config('database.default') === 'pgsql') {
+			$tag = Hashtag::where('name', 'ilike', $hashtag)
+				->orWhere('slug', 'ilike', $hashtag)
+				->first();
+		} else {
+			$tag = Hashtag::whereName($hashtag)
+			  ->orWhere('slug', $hashtag)
+			  ->first();
+		}
 
 		if(!$tag) {
 			return response()->json([]);
