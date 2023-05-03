@@ -464,7 +464,9 @@ class AdminController extends Controller
 					->where('shortcode', 'like', '%' . $request->input('q') . '%')
 					->orWhere('domain', 'like', '%' . $request->input('q') . '%');
 				if(!$request->has('dups')) {
-					$q = $q->groupBy('shortcode');
+					if(!$pg) {
+						$q = $q->groupBy('shortcode');
+					}
 				}
 				return $q;
 			}
