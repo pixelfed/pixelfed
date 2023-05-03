@@ -61,7 +61,12 @@ class DiscoverController extends Controller
 		$end = $page > 1 ? $page * 9 : 0;
 		$tag = $request->input('hashtag');
 
-		$hashtag = Hashtag::whereName($tag)->firstOrFail();
+		if(config('database.default') === 'pgsql') {
+			$hashtag = Hashtag::where('name', 'ilike', $tag)->firstOrFail();
+		} else {
+			$hashtag = Hashtag::whereName($tag)->firstOrFail();
+		}
+
 		if($hashtag->is_banned == true) {
 			return [];
 		}
