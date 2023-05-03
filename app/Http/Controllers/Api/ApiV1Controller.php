@@ -3010,9 +3010,10 @@ class ApiV1Controller extends Controller
 				$status->caption = $content;
 				$status->rendered = $rendered;
 				$status->profile_id = $user->profile_id;
-				$status->scope = 'draft';
 				$status->is_nsfw = $cw;
 				$status->cw_summary = $spoilerText;
+				$status->scope = 'draft';
+				$status->visibility = 'draft';
 				if($request->has('place_id')) {
 					$status->place_id = $request->input('place_id');
 				}

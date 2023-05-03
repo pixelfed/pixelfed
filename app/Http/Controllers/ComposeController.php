@@ -561,6 +561,7 @@ class ComposeController extends Controller
 		$status->caption = strip_tags($request->caption);
 		$status->rendered = Autolink::create()->autolink($status->caption);
 		$status->scope = 'draft';
+		$status->visibility = 'draft';
 		$status->profile_id = $profile->id;
 		$status->save();
 
