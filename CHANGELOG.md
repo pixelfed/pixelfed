@@ -12,6 +12,7 @@
 ### Fixes
 - Fixed `violates check constraint "statuses_visibility_check"` bug affecting postgres instances + various api endpoints ([79b6a17e](https://github.com/pixelfed/pixelfed/commit/79b6a17e))
 - Fixed duplicate hashtags on postgres ([64059cb4](https://github.com/pixelfed/pixelfed/commit/64059cb4))
+- Fixed custom emoji domain search on postgres. Closes #4333 ([3dac45f3](https://github.com/pixelfed/pixelfed/commit/3dac45f3))
 
 ### Updates
 - Update ApiV1Controller, fix blocking remote accounts. Closes #4256 ([8e71e0c0](https://github.com/pixelfed/pixelfed/commit/8e71e0c0))
