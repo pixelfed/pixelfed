@@ -95,7 +95,8 @@ class StoryService
 
 	public static function delLatest($pid)
 	{
-		return Cache::forget(self::STORY_KEY . 'latest:pid-' . $pid);
+		Cache::forget(self::STORY_KEY . 'latest:pid-' . $pid);
+		return Cache::forget('pf:stories:recent-self:' . $pid);
 	}
 
 	public static function addSeen($pid, $sid)
