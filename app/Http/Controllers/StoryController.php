@@ -37,28 +37,53 @@ class StoryController extends StoryComposeController
 		$pid = $request->user()->profile_id;
 
 		if(config('database.default') == 'pgsql') {
-			$s = Story::select('stories.*', 'followers.following_id')
-				->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
-				->where('followers.profile_id', $pid)
-				->where('stories.active', true)
+			$s = Cache::remember('pf:stories:recent-by-id:' . $pid, 900, function() use($pid) {
+				return Story::select('stories.*', 'followers.following_id')
+					->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
+					->where('followers.profile_id', $pid)
+					->where('stories.active', true)
+					->get()
+					->map(function($s) {
+						$r  = new \StdClass;
+						$r->id = $s->id;
+						$r->profile_id = $s->profile_id;
+						$r->type = $s->type;
+						$r->path = $s->path;
+						return $r;
+					})
+					->unique('profile_id');
+			});
+
+		} else {
+			$s = Cache::remember('pf:stories:recent-by-id:' . $pid, 900, function() use($pid) {
+				return Story::select('stories.*', 'followers.following_id')
+					->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
+					->where('followers.profile_id', $pid)
+					->where('stories.active', true)
+					->groupBy('followers.following_id')
+					->orderByDesc('id')
+					->get();
+			});
+		}
+
+		$self = Cache::remember('pf:stories:recent-self:' . $pid, 21600, function() use($pid) {
+			return Story::whereProfileId($pid)
+				->whereActive(true)
+				->orderByDesc('id')
+				->limit(1)
 				->get()
-				->map(function($s) {
+				->map(function($s) use($pid) {
 					$r  = new \StdClass;
 					$r->id = $s->id;
-					$r->profile_id = $s->profile_id;
+					$r->profile_id = $pid;
 					$r->type = $s->type;
 					$r->path = $s->path;
 					return $r;
-				})
-				->unique('profile_id');
-		} else {
-			$s = Story::select('stories.*', 'followers.following_id')
-				->leftJoin('followers', 'followers.following_id', 'stories.profile_id')
-				->where('followers.profile_id', $pid)
-				->where('stories.active', true)
-				->groupBy('followers.following_id')
-				->orderByDesc('id')
-				->get();
+				});
+		});
+
+		if($self->count()) {
+			$s->prepend($self->first());
 		}
 
 		$res = $s->map(function($s) use($pid) {
@@ -93,7 +118,7 @@ class StoryController extends StoryComposeController
 		$profile = Profile::findOrFail($id);
 
 		if($authed != $profile->id && !FollowerService::follows($authed, $profile->id)) {
-			return [];
+			return abort([], 403);
 		}
 
 		$stories = Story::whereProfileId($profile->id)
@@ -163,7 +188,6 @@ class StoryController extends StoryComposeController
 
 		$publicOnly = (bool) $profile->followedBy($authed);
 		abort_if(!$publicOnly, 403);
-
 
 		$v = StoryView::firstOrCreate([
 			'story_id' => $id,
