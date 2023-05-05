@@ -96,9 +96,10 @@ class SearchApiV2Service
 			$webfingerQuery = '@' . $webfingerQuery;
 		}
 		$banned = InstanceService::getBannedDomains();
+		$operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
 		$results = Profile::select('username', 'id', 'followers_count', 'domain')
-			->where('username', 'like', $query)
-			->orWhere('webfinger', 'like', $webfingerQuery)
+			->where('username', $operator, $query)
+			->orWhere('webfinger', $operator, $webfingerQuery)
 			->orderByDesc('profiles.followers_count')
 			->offset($offset)
 			->limit($limit)
@@ -160,23 +161,8 @@ class SearchApiV2Service
 
 	protected function statusesById()
 	{
-		$mastodonMode = self::$mastodonMode;
-		$accountId = $this->query->input('account_id');
-		$limit = $this->query->input('limit', 20);
-		$query = '%' . $this->query->input('q') . '%';
-		$results = Status::where('caption', 'like', $query)
-			->whereProfileId($accountId)
-			->limit($limit)
-			->get()
-			->map(function($status) use($mastodonMode) {
-				return $mastodonMode ?
-					StatusService::getMastodon($status->id) :
-					StatusService::get($status->id);
-			})
-			->filter(function($status) {
-				return $status && isset($status['account']);
-			});
-		return $results;
+		// Removed until we provide more relevent sorting/results
+		return [];
 	}
 
 	protected function resolveQuery()
