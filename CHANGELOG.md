@@ -1,6 +1,10 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.6...dev)
+
+### Updates
+- Update admin dashboard, fix search and dropdown menu ([dac0d083](https://github.com/pixelfed/pixelfed/commit/dac0d083))
+- Update sudo mode view, fix trusted device checkbox ([8ef900bf](https://github.com/pixelfed/pixelfed/commit/8ef900bf))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)

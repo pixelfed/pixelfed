@@ -40,9 +40,9 @@
 	                            @endif
 	                        </div>
 
-	                        <div class="form-group">
-	                            <div class="custom-control custom-checkbox" id="trusted-device">
-	                              <input type="checkbox" class="custom-control-input" name="trustDevice">
+	                        <div class="form-group" id="trusted-device-wrapper">
+	                            <div class="custom-control custom-checkbox">
+	                              <input type="checkbox" class="custom-control-input" name="trustDevice" id="trusted-device">
 	                              <label class="custom-control-label text-muted" for="trusted-device">Trust this device and don't ask again</label>
 	                            </div>
 	                        </div>
@@ -91,7 +91,7 @@
 		email.setAttribute('readonly', 'readonly');
 		email.style.opacity = '20%';
 
-		let trustedDevice = document.getElementById('trusted-device');
+		let trustedDevice = document.getElementById('trusted-device-wrapper');
 		trustedDevice.style.opacity = '20%';
 
 		let btn = document.getElementById('sbtn');
