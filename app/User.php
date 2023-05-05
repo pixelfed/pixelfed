@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Util\RateLimit\User as UserRateLimit;
+use App\Services\AvatarService;
 
 class User extends Authenticatable
 {
@@ -95,6 +96,15 @@ class User extends Authenticatable
     public function interstitials()
     {
         return $this->hasMany(AccountInterstitial::class);
+    }
+
+    public function avatarUrl()
+    {
+    	if(!$this->profile_id || $this->status) {
+    		return config('app.url') . '/storage/avatars/default.jpg';
+    	}
+
+    	return AvatarService::get($this->profile_id);
     }
 
 }
