@@ -161,23 +161,8 @@ class SearchApiV2Service
 
 	protected function statusesById()
 	{
-		$mastodonMode = self::$mastodonMode;
-		$limit = $this->query->input('limit', 20);
-		$query = '%' . $this->query->input('q') . '%';
-		$operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
-		$results = Status::where('caption', $operator, $query)
-			->whereProfileId(request()->user()->profile_id)
-			->limit($limit)
-			->get()
-			->map(function($status) use($mastodonMode) {
-				return $mastodonMode ?
-					StatusService::getMastodon($status->id) :
-					StatusService::get($status->id);
-			})
-			->filter(function($status) {
-				return $status && isset($status['account']);
-			});
-		return $results;
+		// Removed until we provide more relevent sorting/results
+		return [];
 	}
 
 	protected function resolveQuery()
