@@ -33,7 +33,7 @@ class LandingController extends Controller
 
     public function getDirectoryApi(Request $request)
     {
-    	abort_if(config('instance.landing.show_directory') == false, 404);
+    	abort_if(config_cache('instance.landing.show_directory') == false, 404);
 
     	return DirectoryProfile::collection(
     		Profile::whereNull('domain')
