@@ -77,7 +77,9 @@ class MediaStorageService {
 	protected function cloudStore($media)
 	{
 		if($media->remote_media == true) {
-			(new self())->remoteToCloud($media);
+			if(config('media.storage.remote.cloud')) {
+				(new self())->remoteToCloud($media);
+			}
 		} else {
 			(new self())->localToCloud($media);
 		}
