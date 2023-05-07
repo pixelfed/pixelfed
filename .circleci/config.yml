@@ -41,10 +41,10 @@ jobs:
             - vendor
 
       - run: cp .env.testing .env
+      - run: php artisan config:cache
       - run: php artisan route:clear
       - run: php artisan storage:link
       - run: php artisan key:generate
-      - run: php artisan config:clear
 
       # run tests with phpunit or codecept
       - run: ./vendor/bin/phpunit
