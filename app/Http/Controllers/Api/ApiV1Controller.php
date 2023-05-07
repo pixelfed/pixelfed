@@ -3675,7 +3675,8 @@ class ApiV1Controller extends Controller
                 ->filter(function($post) {
                     return $post && isset($post['id']);
                 })
-                ->take(3);
+                ->take(3)
+                ->values();
             $profile['recent_posts'] = $ids;
             return $profile;
         })

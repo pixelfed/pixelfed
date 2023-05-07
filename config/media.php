@@ -6,4 +6,19 @@ return [
 	'exif' => [
 		'database' => env('MEDIA_EXIF_DATABASE', false),
 	],
+
+	'storage' => [
+		'remote' => [
+			/*
+		    |--------------------------------------------------------------------------
+		    | Store remote media on cloud/S3
+		    |--------------------------------------------------------------------------
+		    |
+		    | Set this to cache remote media on cloud/S3 filesystem drivers.
+		    | Disabled by default.
+		    |
+		    */
+			'cloud' => env('MEDIA_REMOTE_STORE_CLOUD', false)
+		],
+	]
 ];
