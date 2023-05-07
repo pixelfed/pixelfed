@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if(config_cache('pixelfed.oauth_enabled') == true) {
+        if(config('app.env') === 'production' && config('pixelfed.oauth_enabled') == true) {
             Passport::tokensExpireIn(now()->addDays(config('instance.oauth.token_expiration', 356)));
             Passport::refreshTokensExpireIn(now()->addDays(config('instance.oauth.refresh_expiration', 400)));
             Passport::enableImplicitGrant();

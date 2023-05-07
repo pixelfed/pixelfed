@@ -10,8 +10,10 @@ use App\Models\InstanceActor;
 use App\Http\Controllers\Controller;
 use App\Util\Lexer\PrettyNumber;
 use App\Models\ConfigCache;
+use App\Services\AccountService;
 use App\Services\ConfigCacheService;
 use App\Util\Site\Config;
+use Illuminate\Support\Str;
 
 trait AdminSettingsController
 {
@@ -27,6 +29,9 @@ trait AdminSettingsController
 		$gif = in_array('image/gif', $types);
 		$mp4 = in_array('video/mp4', $types);
 		$webp = in_array('image/webp', $types);
+
+		$availableAdmins = User::whereIsAdmin(true)->get();
+		$currentAdmin = config_cache('instance.admin.pid') ? AccountService::get(config_cache('instance.admin.pid'), true) : null;
 
 		// $system = [
 		// 	'permissions' => is_writable(base_path('storage')) && is_writable(base_path('bootstrap')),
@@ -45,6 +50,8 @@ trait AdminSettingsController
 			'cloud_storage',
 			'cloud_disk',
 			'cloud_ready',
+			'availableAdmins',
+			'currentAdmin'
 			// 'system'
 		));
 	}
@@ -63,8 +70,14 @@ trait AdminSettingsController
 			'type_gif' => 'nullable',
 			'type_mp4' => 'nullable',
 			'type_webp' => 'nullable',
+			'admin_account_id' => 'nullable',
 		]);
 
+		if($request->filled('admin_account_id')) {
+			ConfigCacheService::put('instance.admin.pid', $request->admin_account_id);
+			Cache::forget('api:v1:instance-data:contact');
+			Cache::forget('api:v1:instance-data-response-v1');
+		}
 		if($request->filled('rule_delete')) {
 			$index = (int) $request->input('rule_delete');
 			$rules = ConfigCacheService::get('app.rules');
@@ -75,8 +88,8 @@ trait AdminSettingsController
 			unset($json[$index]);
 			$json = json_encode(array_values($json));
 			ConfigCacheService::put('app.rules', $json);
-            Cache::forget('api:v1:instance-data:rules');
-            Cache::forget('api:v1:instance-data-response-v1');
+			Cache::forget('api:v1:instance-data:rules');
+			Cache::forget('api:v1:instance-data-response-v1');
 			return 200;
 		}
 
@@ -124,8 +137,8 @@ trait AdminSettingsController
 			if($cc && $cc->v != $val) {
 				ConfigCacheService::put($value, $val);
 			} else if(!empty($val)) {
-                ConfigCacheService::put($value, $val);
-            }
+				ConfigCacheService::put($value, $val);
+			}
 		}
 
 		$bools = [
@@ -141,8 +154,8 @@ trait AdminSettingsController
 			'show_custom_js' => 'uikit.show_custom.js',
 			'cloud_storage' => 'pixelfed.cloud_storage',
 			'account_autofollow' => 'account.autofollow',
-			'show_directory' => 'landing.show_directory',
-			'show_explore_feed' => 'landing.show_explore_feed',
+			'show_directory' => 'instance.landing.show_directory',
+			'show_explore_feed' => 'instance.landing.show_explore',
 		];
 
 		foreach ($bools as $key => $value) {

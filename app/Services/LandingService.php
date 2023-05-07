@@ -30,6 +30,9 @@ class LandingService
 		});
 
 		$contactAccount = Cache::remember('api:v1:instance-data:contact', 604800, function () {
+			if(config_cache('instance.admin.pid')) {
+				return AccountService::getMastodon(config_cache('instance.admin.pid'), true);
+			}
 			$admin = User::whereIsAdmin(true)->first();
 			return $admin && isset($admin->profile_id) ?
 				AccountService::getMastodon($admin->profile_id, true) :
@@ -53,8 +56,8 @@ class LandingService
 			'name' => config_cache('app.name'),
 			'url' => config_cache('app.url'),
 			'domain' => config('pixelfed.domain.app'),
-			'show_directory' => config('instance.landing.show_directory'),
-			'show_explore_feed' => config('instance.landing.show_explore'),
+			'show_directory' => config_cache('instance.landing.show_directory'),
+			'show_explore_feed' => config_cache('instance.landing.show_explore'),
 			'open_registration' => config_cache('pixelfed.open_registration') == 1,
 			'version' => config('pixelfed.version'),
 			'about' => [

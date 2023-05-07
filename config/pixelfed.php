@@ -255,7 +255,7 @@ return [
 		]
 	],
 
-	'oauth_enabled' => env('OAUTH_ENABLED', false),
+	'oauth_enabled' => env('OAUTH_ENABLED', true),
 
 	'bouncer' => [
 		'enabled' => env('PF_BOUNCER_ENABLED', false),

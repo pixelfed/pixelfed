@@ -2,11 +2,18 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.6...dev)
 
+### Added
+- Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
+
 ### Updates
 - Update admin dashboard, fix search and dropdown menu ([dac0d083](https://github.com/pixelfed/pixelfed/commit/dac0d083))
 - Update sudo mode view, fix trusted device checkbox ([8ef900bf](https://github.com/pixelfed/pixelfed/commit/8ef900bf))
 - Update SearchApiV2Service, improve postgres support ([666e5732](https://github.com/pixelfed/pixelfed/commit/666e5732))
 - Update StoryController, show active self stories on home timeline ([633351f6](https://github.com/pixelfed/pixelfed/commit/633351f6))
+- Update ApiV1Controller, fix trending accounts format. Closes #4356 ([37bd2ee5](https://github.com/pixelfed/pixelfed/commit/37bd2ee5))
+- Update instance config, enable config cache by default ([970f77b0](https://github.com/pixelfed/pixelfed/commit/970f77b0))
+- Update Admin Dashboard, allow admins to designate an admin account for the landing page and instance api endpoint ([6ea2bdc7](https://github.com/pixelfed/pixelfed/commit/6ea2bdc7))
+- Update config, enable oauth by default ([6a2e9e8f](https://github.com/pixelfed/pixelfed/commit/6a2e9e8f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
