@@ -15,7 +15,7 @@ return new class extends Migration
         $type = config('database.default');
 
         if($type === 'pgsql') {
-			DB::statement("ALTER TABLE statuses DROP CONSTRAINT statuses_visibility_check");
+			DB::statement("ALTER TABLE statuses DROP CONSTRAINT IF EXISTS statuses_visibility_check");
 
 			$types = ['public', 'unlisted', 'private', 'direct', 'draft'];
 			$result = join( ', ', array_map(function ($value){
