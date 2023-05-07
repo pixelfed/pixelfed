@@ -89,7 +89,7 @@ return [
 		]
 	],
 
-	'enable_cc' => env('ENABLE_CONFIG_CACHE', false),
+	'enable_cc' => env('ENABLE_CONFIG_CACHE', true),
 
 	'has_legal_notice' => env('INSTANCE_LEGAL_NOTICE', false),
 
