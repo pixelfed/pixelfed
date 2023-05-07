@@ -1554,6 +1554,9 @@ class ApiV1Controller extends Controller
 	{
 		$res = Cache::remember('api:v1:instance-data-response-v1', 1800, function () {
 			$contact = Cache::remember('api:v1:instance-data:contact', 604800, function () {
+				if(config_cache('instance.admin.pid')) {
+					return AccountService::getMastodon(config_cache('instance.admin.pid'), true);
+				}
 				$admin = User::whereIsAdmin(true)->first();
 				return $admin && isset($admin->profile_id) ?
 					AccountService::getMastodon($admin->profile_id, true) :
