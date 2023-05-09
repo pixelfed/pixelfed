@@ -42,7 +42,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'card'                      => null,
 			'poll'                      => null,
 			'media_attachments'         => MediaService::get($status->id),
-			'account'                   => ProfileService::get($status->profile_id),
+			'account'                   => ProfileService::get($status->profile_id, true),
 			'tags'                      => StatusHashtagService::statusTags($status->id),
 		];
 	}

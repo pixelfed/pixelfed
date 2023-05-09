@@ -66,7 +66,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'label'                     => StatusLabelService::get($status),
 			'liked_by'                  => LikeService::likedBy($status),
 			'media_attachments'			=> MediaService::get($status->id),
-			'account'					=> ProfileService::get($status->profile_id),
+			'account'					=> ProfileService::get($status->profile_id, true),
 			'tags'						=> StatusHashtagService::statusTags($status->id),
 			'poll'						=> $poll,
 			'bookmarked'				=> BookmarkService::get($pid, $status->id),

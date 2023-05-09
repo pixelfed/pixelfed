@@ -28,8 +28,8 @@ class HashtagService {
 
 	public static function count($id)
 	{
-		return Cache::remember('services:hashtag:count:by_id:' . $id, 3600, function() use($id) {
-			return StatusHashtag::whereHashtagId($id)->count();
+		return Cache::remember('services:hashtag:public-count:by_id:' . $id, 86400, function() use($id) {
+			return StatusHashtag::whereHashtagId($id)->whereStatusVisibility('public')->count();
 		});
 	}
 
@@ -63,5 +63,10 @@ class HashtagService {
 	public static function unfollow($pid, $hid)
 	{
 		return Redis::zrem(self::FOLLOW_KEY . $pid, $hid);
+	}
+
+	public static function following($pid, $start = 0, $limit = 10)
+	{
+		return Redis::zrevrange(self::FOLLOW_KEY . $pid, $start, $limit);
 	}
 }

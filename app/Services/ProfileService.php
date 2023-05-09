@@ -4,9 +4,9 @@ namespace App\Services;
 
 class ProfileService
 {
-	public static function get($id)
+	public static function get($id, $softFail = false)
 	{
-		return AccountService::get($id);
+		return AccountService::get($id, $softFail);
 	}
 
 	public static function del($id)

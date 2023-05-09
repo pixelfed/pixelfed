@@ -89,6 +89,11 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::get('announcements', 'Api\ApiV1Controller@getAnnouncements')->middleware($middleware);
 		Route::get('markers', 'Api\ApiV1Controller@getMarkers')->middleware($middleware);
 		Route::post('markers', 'Api\ApiV1Controller@setMarkers')->middleware($middleware);
+
+		Route::get('followed_tags', 'Api\ApiV1Controller@getFollowedTags')->middleware($middleware);
+		Route::post('tags/{id}/follow', 'Api\ApiV1Controller@followHashtag')->middleware($middleware);
+		Route::post('tags/{id}/unfollow', 'Api\ApiV1Controller@unfollowHashtag')->middleware($middleware);
+		Route::get('tags/{id}', 'Api\ApiV1Controller@getHashtag')->middleware($middleware);
 	});
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {

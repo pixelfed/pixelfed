@@ -407,6 +407,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('web/username/{id}', 'SpaController@usernameRedirect');
 		Route::get('web/post/{id}', 'SpaController@webPost');
 		Route::get('web/profile/{id}', 'SpaController@webProfile');
+
 		Route::get('web/{q}', 'SpaController@index')->where('q', '.*');
 		Route::get('web', 'SpaController@index');
 	});

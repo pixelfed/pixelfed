@@ -19,6 +19,7 @@ use App\{
 	Follower,
 	FollowRequest,
 	Hashtag,
+	HashtagFollow,
 	Instance,
 	Like,
 	Media,
@@ -69,6 +70,7 @@ use App\Services\{
 	BouncerService,
 	CollectionService,
 	FollowerService,
+	HashtagService,
 	InstanceService,
 	LikeService,
 	NetworkTimelineService,
@@ -99,6 +101,7 @@ use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use Illuminate\Support\Facades\RateLimiter;
 use Purify;
 use Carbon\Carbon;
+use App\Http\Resources\MastoApi\FollowedTagResource;
 
 class ApiV1Controller extends Controller
 {
@@ -3245,7 +3248,9 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
+		  'limit'       => 'nullable|integer|max:100',
+		  'only_media'  => 'sometimes|boolean',
+		  '_pe'			=> 'sometimes'
 		]);
 
 		if(config('database.default') === 'pgsql') {
@@ -3269,6 +3274,18 @@ class ApiV1Controller extends Controller
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit', 20);
+		$onlyMedia = $request->input('only_media', true);
+		$pe = $request->has(self::PF_API_ENTITY_KEY);
+
+		if($min || $max) {
+			$minMax = SnowflakeService::byDate(now()->subMonths(6));
+			if($min && intval($min) < $minMax) {
+				return [];
+			}
+			if($max && intval($max) < $minMax) {
+				return [];
+			}
+		}
 
 		if(!$min && !$max) {
 			$id = 1;
@@ -3281,15 +3298,19 @@ class ApiV1Controller extends Controller
 		$res = StatusHashtag::whereHashtagId($tag->id)
 			->whereStatusVisibility('public')
 			->where('status_id', $dir, $id)
-			->latest()
+			->orderBy('status_id', 'desc')
 			->limit($limit)
 			->pluck('status_id')
-			->map(function ($i) {
-				if($i) {
-					return StatusService::getMastodon($i);
-				}
+			->map(function ($i) use($pe) {
+				return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
 			})
-			->filter(function($i) {
+			->filter(function($i) use($onlyMedia) {
+				if(!$i) {
+					return false;
+				}
+				if($onlyMedia && !isset($i['media_attachments']) || !count($i['media_attachments'])) {
+					return false;
+				}
 				return $i && isset($i['account']);
 			})
 			->values()
@@ -3636,7 +3657,7 @@ class ApiV1Controller extends Controller
 		return $this->json(StatusService::getState($status->id, $pid));
 	}
 
-   /**
+	/**
 	* GET /api/v1.1/discover/accounts/popular
 	*
 	*
@@ -3793,5 +3814,182 @@ class ApiV1Controller extends Controller
 		}
 
 		return $this->json([]);
+	}
+
+	/**
+	* GET /api/v1/followed_tags
+	*
+	*
+	* @return array
+	*/
+	public function getFollowedTags(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
+		$account = AccountService::get($request->user()->profile_id);
+
+		$this->validate($request, [
+			'cursor' => 'sometimes',
+			'limit' => 'sometimes|integer|min:1|max:200'
+		]);
+		$limit = $request->input('limit', 100);
+
+		$res = HashtagFollow::whereProfileId($account['id'])
+			->orderByDesc('id')
+			->cursorPaginate($limit)->withQueryString();
+
+		$pagination = false;
+		$prevPage = $res->nextPageUrl();
+		$nextPage = $res->previousPageUrl();
+		if($nextPage && $prevPage) {
+			$pagination = '<' . $nextPage . '>; rel="next", <' . $prevPage . '>; rel="prev"';
+		} else if($nextPage && !$prevPage) {
+			$pagination = '<' . $nextPage . '>; rel="next"';
+		} else if(!$nextPage && $prevPage) {
+			$pagination = '<' . $prevPage . '>; rel="prev"';
+		}
+
+		if($pagination) {
+			return response()->json(FollowedTagResource::collection($res)->collection)
+				->header('Link', $pagination);
+		}
+		return response()->json(FollowedTagResource::collection($res)->collection);
+	}
+
+	/**
+	* POST /api/v1/tags/:id/follow
+	*
+	*
+	* @return object
+	*/
+	public function followHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		abort_if(!$tag, 422, 'Unknown hashtag');
+
+		abort_if(
+			HashtagFollow::whereProfileId($pid)->count() >= HashtagFollow::MAX_LIMIT,
+			422,
+			'You cannot follow more than ' . HashtagFollow::MAX_LIMIT . ' hashtags.'
+		);
+
+		$follows = HashtagFollow::updateOrCreate(
+			[
+				'profile_id' => $account['id'],
+				'hashtag_id' => $tag->id
+			],
+			[
+				'user_id' => $request->user()->id
+			]
+		);
+
+		HashtagService::follow($pid, $tag->id);
+
+		return response()->json(FollowedTagResource::make($follows)->toArray($request));
+	}
+
+	/**
+	* POST /api/v1/tags/:id/unfollow
+	*
+	*
+	* @return object
+	*/
+	public function unfollowHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		abort_if(!$tag, 422, 'Unknown hashtag');
+
+		$follows = HashtagFollow::whereProfileId($pid)
+			->whereHashtagId($tag->id)
+			->first();
+
+		if(!$follows) {
+			return [
+				'name' => $tag->name,
+				'url' => config('app.url') . '/i/web/hashtag/' . $tag->slug,
+				'history' => [],
+				'following' => false
+			];
+		}
+
+		if($follows) {
+			HashtagService::unfollow($pid, $tag->id);
+			$follows->delete();
+		}
+
+		$res = FollowedTagResource::make($follows)->toArray($request);
+		$res['following'] = false;
+		return response()->json($res);
+	}
+
+	/**
+	* GET /api/v1/tags/:id
+	*
+	*
+	* @return object
+	*/
+	public function getHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		if(!$tag) {
+			return [
+				'name' => $id,
+				'url' => config('app.url') . '/i/web/hashtag/' . $id,
+				'history' => [],
+				'following' => false
+			];
+		}
+
+		$res = [
+			'name' => $tag->name,
+			'url' => config('app.url') . '/i/web/hashtag/' . $tag->slug,
+			'history' => [],
+			'following' => HashtagService::isFollowing($pid, $tag->id)
+		];
+
+		if($request->has(self::PF_API_ENTITY_KEY)) {
+			$res['count'] = HashtagService::count($tag->id);
+		}
+
+		return $this->json($res);
 	}
 }

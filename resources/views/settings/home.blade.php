@@ -8,7 +8,7 @@
 	<hr>
 	<div class="form-group row">
 		<div class="col-sm-3">
-			<img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" height="38px" class="rounded-circle float-right">
+			<img src="{{Auth::user()->profile->avatarUrl()}}" width="38px" height="38px" class="rounded-circle float-right" draggable="false" onerror="this.src='/storage/avatars/default.jpg?v=0';this.onerror=null;">
 		</div>
 		<div class="col-sm-9">
 			<p class="lead font-weight-bold mb-0">{{Auth::user()->username}}</p>

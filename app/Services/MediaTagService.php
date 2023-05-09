@@ -57,7 +57,7 @@ class MediaTagService
 
 	protected function idToUsername($id)
 	{
-		$profile = ProfileService::get($id);
+		$profile = ProfileService::get($id, true);
 
 		if(!$profile) {
 			return 'unavailable';

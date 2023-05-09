@@ -47,6 +47,10 @@ class StatusService
 			return null;
 		}
 
+		if(!isset($status['account'])) {
+			return null;
+		}
+
         $status['replies_count'] = $status['reply_count'];
 
 		if(config('exp.emc') == false) {
