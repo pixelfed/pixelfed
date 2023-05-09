@@ -70,6 +70,7 @@ use App\Services\{
 	BouncerService,
 	CollectionService,
 	FollowerService,
+	HashtagService,
 	InstanceService,
 	LikeService,
 	NetworkTimelineService,
@@ -3846,5 +3847,89 @@ class ApiV1Controller extends Controller
 				->header('Link', $pagination);
 		}
 		return response()->json(FollowedTagResource::collection($res)->collection);
+	}
+
+	/**
+	* POST /api/v1/tags/:id/follow
+	*
+	*
+	* @return object
+	*/
+	public function followHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		abort_if(!$tag, 422, 'Unknown hashtag');
+
+		$follows = HashtagFollow::updateOrCreate(
+			[
+				'profile_id' => $account['id'],
+				'hashtag_id' => $tag->id
+			],
+			[
+				'user_id' => $request->user()->id
+			]
+		);
+
+		HashtagService::follow($pid, $tag->id);
+
+		return response()->json(FollowedTagResource::make($follows)->toArray($request));
+	}
+
+	/**
+	* POST /api/v1/tags/:id/unfollow
+	*
+	*
+	* @return object
+	*/
+	public function unfollowHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		abort_if(!$tag, 422, 'Unknown hashtag');
+
+		$follows = HashtagFollow::whereProfileId($pid)
+			->whereHashtagId($tag->id)
+			->first();
+
+		if(!$follows) {
+			return [
+				'name' => $tag->name,
+				'url' => config('app.url') . '/i/web/hashtag/' . $tag->slug,
+				'history' => [],
+				'following' => false
+			];
+		}
+
+		if($follows) {
+			HashtagService::unfollow($pid, $tag->id);
+			$follows->delete();
+		}
+
+		$res = FollowedTagResource::make($follows)->toArray($request);
+		$res['following'] = false;
+		return response()->json($res);
 	}
 }

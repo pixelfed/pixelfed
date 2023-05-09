@@ -64,4 +64,9 @@ class HashtagService {
 	{
 		return Redis::zrem(self::FOLLOW_KEY . $pid, $hid);
 	}
+
+	public static function following($pid, $start = 0, $limit = 10)
+	{
+		return Redis::zrevrange(self::FOLLOW_KEY . $pid, $start, $limit);
+	}
 }
