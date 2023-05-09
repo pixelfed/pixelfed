@@ -28,8 +28,8 @@ class HashtagService {
 
 	public static function count($id)
 	{
-		return Cache::remember('services:hashtag:count:by_id:' . $id, 3600, function() use($id) {
-			return StatusHashtag::whereHashtagId($id)->count();
+		return Cache::remember('services:hashtag:public-count:by_id:' . $id, 86400, function() use($id) {
+			return StatusHashtag::whereHashtagId($id)->whereStatusVisibility('public')->count();
 		});
 	}
 

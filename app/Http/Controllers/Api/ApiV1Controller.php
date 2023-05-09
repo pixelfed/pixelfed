@@ -3249,7 +3249,8 @@ class ApiV1Controller extends Controller
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'limit'       => 'nullable|integer|max:100',
-		  'only_media'  => 'sometimes|boolean'
+		  'only_media'  => 'sometimes|boolean',
+		  '_pe'			=> 'sometimes'
 		]);
 
 		if(config('database.default') === 'pgsql') {
@@ -3274,6 +3275,7 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit', 20);
 		$onlyMedia = $request->input('only_media', true);
+		$pe = $request->has(self::PF_API_ENTITY_KEY);
 
 		if($min || $max) {
 			$minMax = SnowflakeService::byDate(now()->subMonths(6));
@@ -3294,13 +3296,13 @@ class ApiV1Controller extends Controller
 		}
 
 		$res = StatusHashtag::whereHashtagId($tag->id)
-			->where('status_id', $dir, $id)
 			->whereStatusVisibility('public')
+			->where('status_id', $dir, $id)
 			->orderBy('status_id', 'desc')
 			->limit($limit)
 			->pluck('status_id')
-			->map(function ($i) {
-				return StatusService::getMastodon($i);
+			->map(function ($i) use($pe) {
+				return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
 			})
 			->filter(function($i) use($onlyMedia) {
 				if(!$i) {
@@ -3977,11 +3979,17 @@ class ApiV1Controller extends Controller
 			];
 		}
 
-		return [
+		$res = [
 			'name' => $tag->name,
 			'url' => config('app.url') . '/i/web/hashtag/' . $tag->slug,
 			'history' => [],
 			'following' => HashtagService::isFollowing($pid, $tag->id)
 		];
+
+		if($request->has(self::PF_API_ENTITY_KEY)) {
+			$res['count'] = HashtagService::count($tag->id);
+		}
+
+		return $this->json($res);
 	}
 }
