@@ -3829,6 +3829,7 @@ class ApiV1Controller extends Controller
 		$limit = $request->input('limit', 100);
 
 		$res = HashtagFollow::whereProfileId($account['id'])
+			->orderByDesc('id')
 			->cursorPaginate($limit)->withQueryString();
 
 		$pagination = false;
@@ -3931,5 +3932,43 @@ class ApiV1Controller extends Controller
 		$res = FollowedTagResource::make($follows)->toArray($request);
 		$res['following'] = false;
 		return response()->json($res);
+	}
+
+	/**
+	* GET /api/v1/tags/:id
+	*
+	*
+	* @return object
+	*/
+	public function getHashtag(Request $request, $id)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+		$pid = $request->user()->profile_id;
+		$account = AccountService::get($pid);
+
+		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
+		$tag = Hashtag::where('name', $operator, $id)
+			->orWhere('slug', $operator, $id)
+			->first();
+
+		if(!$tag) {
+			return [
+				'name' => $id,
+				'url' => config('app.url') . '/i/web/hashtag/' . $id,
+				'history' => [],
+				'following' => false
+			];
+		}
+
+		return [
+			'name' => $tag->name,
+			'url' => config('app.url') . '/i/web/hashtag/' . $tag->slug,
+			'history' => [],
+			'following' => HashtagService::isFollowing($pid, $tag->id)
+		];
 	}
 }
