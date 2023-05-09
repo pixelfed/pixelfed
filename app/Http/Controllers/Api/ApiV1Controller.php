@@ -3270,6 +3270,16 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit', 20);
 
+		if($min || $max) {
+			$minMax = SnowflakeService::byDate(now()->subMonths(6));
+			if($min && intval($min) < $minMax) {
+				return [];
+			}
+			if($max && intval($max) < $minMax) {
+				return [];
+			}
+		}
+
 		if(!$min && !$max) {
 			$id = 1;
 			$dir = '>';
@@ -3279,15 +3289,13 @@ class ApiV1Controller extends Controller
 		}
 
 		$res = StatusHashtag::whereHashtagId($tag->id)
-			->whereStatusVisibility('public')
 			->where('status_id', $dir, $id)
-			->latest()
+			->whereStatusVisibility('public')
+			->orderBy('status_id', 'desc')
 			->limit($limit)
 			->pluck('status_id')
 			->map(function ($i) {
-				if($i) {
-					return StatusService::getMastodon($i);
-				}
+				return StatusService::getMastodon($i);
 			})
 			->filter(function($i) {
 				return $i && isset($i['account']);
