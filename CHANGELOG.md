@@ -2,6 +2,12 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.6...dev)
 
+### API Changes
+- Added [/api/v1/followed_tags](https://docs.joinmastodon.org/methods/followed_tags/) api endpoint ([175a8486](https://github.com/pixelfed/pixelfed/commit/175a8486))
+- Added [/api/v1/tags/:id/follow](https://docs.joinmastodon.org/methods/tags/#follow) and [/api/v1/tags/:id/unfollow](https://docs.joinmastodon.org/methods/tags/#unfollow) api endpoints ([4d997bb9](https://github.com/pixelfed/pixelfed/commit/4d997bb9))
+- Added [/api/v1/tags/:id](https://docs.joinmastodon.org/methods/tags/) api endpoint ([521b3b4c](https://github.com/pixelfed/pixelfed/commit/521b3b4c))
+- Added `only_media` support to /api/v1/timelines/tag/:id api endpoint ([b5fe956a](https://github.com/pixelfed/pixelfed/commit/b5fe956a))
+
 ### Added
 - Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
 
@@ -14,6 +20,14 @@
 - Update instance config, enable config cache by default ([970f77b0](https://github.com/pixelfed/pixelfed/commit/970f77b0))
 - Update Admin Dashboard, allow admins to designate an admin account for the landing page and instance api endpoint ([6ea2bdc7](https://github.com/pixelfed/pixelfed/commit/6ea2bdc7))
 - Update config, enable oauth by default ([6a2e9e8f](https://github.com/pixelfed/pixelfed/commit/6a2e9e8f))
+- Update StatusService, fix missing account condition ([f48daab3](https://github.com/pixelfed/pixelfed/commit/f48daab3))
+- Update ProfileService, add softFail param ([6bc20a37](https://github.com/pixelfed/pixelfed/commit/6bc20a37))
+- Update MediaTagService, fix ProfileService to soft fail on missing or deleted accounts ([df444851](https://github.com/pixelfed/pixelfed/commit/df444851))
+- Update LikeService, improve likedBy logic to soft fail on missing or deleted accounts ([91ba1398](https://github.com/pixelfed/pixelfed/commit/91ba1398))
+- Update StatusTransformers, fix ProfileService to soft fail on missing or deleted accounts ([43d3aa2b](https://github.com/pixelfed/pixelfed/commit/43d3aa2b))
+- Update ApiV1Controller, fix hashtag timeline ([fc1a385c](https://github.com/pixelfed/pixelfed/commit/fc1a385c))
+- Update settings view, add fallback avatar ([1a83c585](https://github.com/pixelfed/pixelfed/commit/1a83c585))
+- Update HashtagFollow model, add MAX_LIMIT of 250 tags per account ([ed352141](https://github.com/pixelfed/pixelfed/commit/ed352141))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
