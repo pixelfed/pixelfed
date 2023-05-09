@@ -3248,7 +3248,8 @@ class ApiV1Controller extends Controller
 		  'page'        => 'nullable|integer|max:40',
 		  'min_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'nullable|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'nullable|integer|max:100'
+		  'limit'       => 'nullable|integer|max:100',
+		  'only_media'  => 'sometimes|boolean'
 		]);
 
 		if(config('database.default') === 'pgsql') {
@@ -3272,6 +3273,7 @@ class ApiV1Controller extends Controller
 		$min = $request->input('min_id');
 		$max = $request->input('max_id');
 		$limit = $request->input('limit', 20);
+		$onlyMedia = $request->input('only_media', true);
 
 		if($min || $max) {
 			$minMax = SnowflakeService::byDate(now()->subMonths(6));
@@ -3300,7 +3302,13 @@ class ApiV1Controller extends Controller
 			->map(function ($i) {
 				return StatusService::getMastodon($i);
 			})
-			->filter(function($i) {
+			->filter(function($i) use($onlyMedia) {
+				if(!$i) {
+					return false;
+				}
+				if($onlyMedia && !isset($i['media_attachments']) || !count($i['media_attachments'])) {
+					return false;
+				}
 				return $i && isset($i['account']);
 			})
 			->values()
@@ -3873,6 +3881,12 @@ class ApiV1Controller extends Controller
 
 		abort_if(!$tag, 422, 'Unknown hashtag');
 
+		abort_if(
+			HashtagFollow::whereProfileId($pid)->count() >= HashtagFollow::MAX_LIMIT,
+			422,
+			'You cannot follow more than ' . HashtagFollow::MAX_LIMIT . ' hashtags.'
+		);
+
 		$follows = HashtagFollow::updateOrCreate(
 			[
 				'profile_id' => $account['id'],
@@ -3949,7 +3963,6 @@ class ApiV1Controller extends Controller
 		}
 		$pid = $request->user()->profile_id;
 		$account = AccountService::get($pid);
-
 		$operator = config('database.default') == 'pgsql' ? 'ilike' : 'like';
 		$tag = Hashtag::where('name', $operator, $id)
 			->orWhere('slug', $operator, $id)
