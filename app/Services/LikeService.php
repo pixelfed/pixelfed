@@ -85,7 +85,10 @@ class LikeService {
 				return $empty;
 			}
 			$id = $like->profile_id;
-			$profile = ProfileService::get($id);
+			$profile = ProfileService::get($id, true);
+			if(!$profile) {
+				return [];
+			}
 			$profileUrl = "/i/web/profile/{$profile['id']}";
 			$res = [
 				'id' => (string) $profile['id'],
