@@ -19,6 +19,7 @@ use App\{
 	Follower,
 	FollowRequest,
 	Hashtag,
+	HashtagFollow,
 	Instance,
 	Like,
 	Media,
@@ -99,6 +100,7 @@ use App\Jobs\FollowPipeline\FollowRejectPipeline;
 use Illuminate\Support\Facades\RateLimiter;
 use Purify;
 use Carbon\Carbon;
+use App\Http\Resources\MastoApi\FollowedTagResource;
 
 class ApiV1Controller extends Controller
 {
@@ -3644,7 +3646,7 @@ class ApiV1Controller extends Controller
 		return $this->json(StatusService::getState($status->id, $pid));
 	}
 
-   /**
+	/**
 	* GET /api/v1.1/discover/accounts/popular
 	*
 	*
@@ -3801,5 +3803,48 @@ class ApiV1Controller extends Controller
 		}
 
 		return $this->json([]);
+	}
+
+	/**
+	* GET /api/v1/followed_tags
+	*
+	*
+	* @return array
+	*/
+	public function getFollowedTags(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+
+		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
+			abort_if(BouncerService::checkIp($request->ip()), 404);
+		}
+
+		$account = AccountService::get($request->user()->profile_id);
+
+		$this->validate($request, [
+			'cursor' => 'sometimes',
+			'limit' => 'sometimes|integer|min:1|max:200'
+		]);
+		$limit = $request->input('limit', 100);
+
+		$res = HashtagFollow::whereProfileId($account['id'])
+			->cursorPaginate($limit)->withQueryString();
+
+		$pagination = false;
+		$prevPage = $res->nextPageUrl();
+		$nextPage = $res->previousPageUrl();
+		if($nextPage && $prevPage) {
+			$pagination = '<' . $nextPage . '>; rel="next", <' . $prevPage . '>; rel="prev"';
+		} else if($nextPage && !$prevPage) {
+			$pagination = '<' . $nextPage . '>; rel="next"';
+		} else if(!$nextPage && $prevPage) {
+			$pagination = '<' . $prevPage . '>; rel="prev"';
+		}
+
+		if($pagination) {
+			return response()->json(FollowedTagResource::collection($res)->collection)
+				->header('Link', $pagination);
+		}
+		return response()->json(FollowedTagResource::collection($res)->collection);
 	}
 }
