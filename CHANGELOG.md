@@ -7,6 +7,7 @@
 - Added [/api/v1/tags/:id/follow](https://docs.joinmastodon.org/methods/tags/#follow) and [/api/v1/tags/:id/unfollow](https://docs.joinmastodon.org/methods/tags/#unfollow) api endpoints ([4d997bb9](https://github.com/pixelfed/pixelfed/commit/4d997bb9))
 - Added [/api/v1/tags/:id](https://docs.joinmastodon.org/methods/tags/) api endpoint ([521b3b4c](https://github.com/pixelfed/pixelfed/commit/521b3b4c))
 - Added `only_media` support to /api/v1/timelines/tag/:id api endpoint ([b5fe956a](https://github.com/pixelfed/pixelfed/commit/b5fe956a))
+- Added /api/v2/instance api endpoint ([167dbcdd](https://github.com/pixelfed/pixelfed/commit/167dbcdd))
 
 ### Added
 - Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
