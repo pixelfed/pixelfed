@@ -97,9 +97,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 	});
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {
-		Route::get('search', 'Api\ApiV1Controller@searchV2')->middleware($middleware);
-		Route::post('media', 'Api\ApiV1Controller@mediaUploadV2')->middleware($middleware);
-		Route::get('streaming/config', 'Api\ApiV1Controller@getWebsocketConfig');
+		Route::get('search', 'Api\ApiV2Controller@search')->middleware($middleware);
+		Route::post('media', 'Api\ApiV2Controller@mediaUploadV2')->middleware($middleware);
+		Route::get('streaming/config', 'Api\ApiV2Controller@getWebsocketConfig');
+		Route::get('instance', 'Api\ApiV2Controller@instance');
 	});
 
 	Route::group(['prefix' => 'v1.1'], function() use($middleware) {
