@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Cache;
 use App\Instance;
+use App\Util\Blurhash\Blurhash;
 
 class InstanceService
 {
@@ -12,6 +13,7 @@ class InstanceService
 	const CACHE_KEY_UNLISTED_DOMAINS = 'instances:unlisted:domains';
 	const CACHE_KEY_NSFW_DOMAINS = 'instances:auto_cw:domains';
 	const CACHE_KEY_STATS = 'pf:services:instances:stats';
+	const CACHE_KEY_BANNER_BLURHASH = 'pf:services:instance:header-blurhash';
 
 	public static function getByDomain($domain)
 	{
@@ -77,5 +79,43 @@ class InstanceService
         self::getNsfwDomains();
 
         return true;
+    }
+
+    public static function headerBlurhash()
+    {
+    	return Cache::rememberForever(self::CACHE_KEY_BANNER_BLURHASH, function() {
+    		if(str_ends_with(config_cache('app.banner_image'), 'headers/default.jpg')) {
+    			return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
+    		}
+			$file = config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg'));
+
+			$image = imagecreatefromstring(file_get_contents($file));
+			if(!$image) {
+				return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
+			}
+			$width = imagesx($image);
+			$height = imagesy($image);
+
+			$pixels = [];
+			for ($y = 0; $y < $height; ++$y) {
+				$row = [];
+				for ($x = 0; $x < $width; ++$x) {
+					$index = imagecolorat($image, $x, $y);
+					$colors = imagecolorsforindex($image, $index);
+
+					$row[] = [$colors['red'], $colors['green'], $colors['blue']];
+				}
+				$pixels[] = $row;
+			}
+
+			$components_x = 4;
+			$components_y = 4;
+			$blurhash = Blurhash::encode($pixels, $components_x, $components_y);
+			if(strlen($blurhash) > 191) {
+				return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
+			}
+
+			return $blurhash;
+    	});
     }
 }

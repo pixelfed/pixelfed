@@ -119,16 +119,6 @@ class ApiV1Controller extends Controller
 		return response()->json($res, $code, $headers, JSON_UNESCAPED_SLASHES);
 	}
 
-	public function getWebsocketConfig()
-	{
-		return config('broadcasting.default') === 'pusher' ? [
-			'host' => config('broadcasting.connections.pusher.options.host'),
-			'port' => config('broadcasting.connections.pusher.options.port'),
-			'key' => config('broadcasting.connections.pusher.key'),
-			'cluster' => config('broadcasting.connections.pusher.options.cluster')
-		] : [];
-	}
-
 	public function getApp(Request $request)
 	{
 		if(!$request->user()) {
@@ -3467,37 +3457,6 @@ class ApiV1Controller extends Controller
 		$res['bookmarked'] = false;
 
 		return $this->json($res);
-	}
-
-	/**
-	 * GET /api/v2/search
-	 *
-	 *
-	 * @return array
-	 */
-	public function searchV2(Request $request)
-	{
-		abort_if(!$request->user(), 403);
-
-		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
-
-		$this->validate($request, [
-			'q' => 'required|string|min:1|max:100',
-			'account_id' => 'nullable|string',
-			'max_id' => 'nullable|string',
-			'min_id' => 'nullable|string',
-			'type' => 'nullable|in:accounts,hashtags,statuses',
-			'exclude_unreviewed' => 'nullable',
-			'resolve' => 'nullable',
-			'limit' => 'nullable|integer|max:40',
-			'offset' => 'nullable|integer',
-			'following' => 'nullable'
-		]);
-
-		$mastodonMode = !$request->has('_pe');
-		return $this->json(SearchApiV2Service::query($request, $mastodonMode));
 	}
 
 	/**
