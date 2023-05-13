@@ -74,16 +74,13 @@ class MediaTagService
 	{
 		$p = $tag->status->profile;
 		$actor = $p->username;
-		$message = "{$actor} tagged you in a post.";
-		$rendered = "<a href='/{$actor}' class='profile-link'>{$actor}</a> tagged you in a post.";
+
 		$n = new Notification;
 		$n->profile_id = $tag->profile_id;
 		$n->actor_id = $p->id;
 		$n->item_id = $tag->id;
 		$n->item_type = 'App\MediaTag';
 		$n->action = 'tagged';
-		$n->message = $message;
-		$n->rendered = $rendered;
 		$n->save();
 		return;
 	}

@@ -23,7 +23,9 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 
 		if($n->actor_id) {
 			$res['account'] = AccountService::get($n->actor_id);
-			$res['relationship'] = RelationshipService::get($n->actor_id, $n->profile_id);
+			if($n->profile_id != $n->actor_id) {
+				$res['relationship'] = RelationshipService::get($n->actor_id, $n->profile_id);
+			}
 		}
 
 		if($n->item_id && $n->item_type == 'App\Status') {
@@ -66,11 +68,8 @@ class NotificationTransformer extends Fractal\TransformerAbstract
 			'comment' => 'comment',
 			'admin.user.modlog.comment' => 'modlog',
 			'tagged' => 'tagged',
-			'group:comment' => 'group:comment',
 			'story:react' => 'story:react',
 			'story:comment' => 'story:comment',
-			'group:join:approved' => 'group:join:approved',
-			'group:join:rejected' => 'group:join:rejected'
 		];
 
 		if(!isset($verbs[$verb])) {

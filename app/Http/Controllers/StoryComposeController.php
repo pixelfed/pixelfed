@@ -442,8 +442,6 @@ class StoryComposeController extends Controller
 			$n->item_id = $dm->id;
 			$n->item_type = 'App\DirectMessage';
 			$n->action = 'story:react';
-			$n->message = "{$request->user()->username} reacted to your story";
-			$n->rendered = "{$request->user()->username} reacted to your story";
 			$n->save();
 		} else {
 			StoryReactionDeliver::dispatch($story, $status)->onQueue('story');
@@ -516,8 +514,6 @@ class StoryComposeController extends Controller
 			$n->item_id = $dm->id;
 			$n->item_type = 'App\DirectMessage';
 			$n->action = 'story:comment';
-			$n->message = "{$request->user()->username} commented on story";
-			$n->rendered = "{$request->user()->username} commented on story";
 			$n->save();
 		} else {
 			StoryReplyDeliver::dispatch($story, $status)->onQueue('story');

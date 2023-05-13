@@ -6,8 +6,10 @@ use App\AccountInterstitial;
 use App\Status;
 use Cache;
 use Illuminate\Support\Str;
+use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
+use App\Notification;
 
 class Bouncer {
 
@@ -139,6 +141,15 @@ class Bouncer {
 		$status->visibility = 'unlisted';
 		// $status->is_nsfw = true;
 		$status->save();
+
+		$notification = new Notification();
+		$notification->profile_id = $status->profile_id;
+		$notification->actor_id = $status->profile_id;
+		$notification->action = 'autospam.warning';
+		$notification->item_id = $status->id;
+		$notification->item_type = "App\Status";
+		$notification->save();
+		NotificationService::add($notification->profile_id, $notification->id);
 
 		StatusService::del($status->id);
 

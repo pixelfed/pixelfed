@@ -67,10 +67,6 @@ class MentionPipeline implements ShouldQueue
                 'action' => 'mention',
                 'item_type' => 'App\Status',
                 'item_id' => $status->id,
-            ],
-            [
-                'message' => $mention->toText(),
-                'rendered' => $mention->toHtml()
             ]
         );
 

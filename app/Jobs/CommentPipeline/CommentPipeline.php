@@ -94,8 +94,6 @@ class CommentPipeline implements ShouldQueue
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'comment';
-            $notification->message = $comment->replyToText();
-            $notification->rendered = $comment->replyToHtml();
             $notification->item_id = $comment->id;
             $notification->item_type = "App\Status";
             $notification->save();

@@ -37,6 +37,15 @@
 						<div v-for="(n, index) in feed" class="mb-2">
 							<div class="media align-items-center">
 								<img
+									v-if="n.type === 'autospam.warning'"
+									class="mr-2 rounded-circle shadow-sm p-1"
+									style="border: 2px solid var(--danger)"
+									src="/img/pixelfed-icon-color.svg"
+									width="32"
+									height="32"
+									/>
+								<img
+									v-else
 									class="mr-2 rounded-circle shadow-sm"
 									:src="n.account.avatar"
 									width="32"
@@ -56,6 +65,14 @@
 											<span v-else>
 												<a class="font-weight-bold" :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)">post</a>.
 											</span>
+										</p>
+									</div>
+									<div v-else-if="n.type == 'autospam.warning'">
+										<p class="my-0">
+											Your recent <a :href="getPostUrl(n.status)" @click.prevent="goToPost(n.status)" class="font-weight-bold">post</a> has been unlisted.
+										</p>
+										<p class="mt-n1 mb-0">
+											<span class="small text-muted"><a href="#" class="font-weight-bold" @click.prevent="showAutospamInfo(n.status)">Click here</a> for more info.</span>
 										</p>
 									</div>
 									<div v-else-if="n.type == 'comment'">
@@ -383,6 +400,20 @@
 					}
 				})
 			},
+
+			showAutospamInfo(status) {
+				let el = document.createElement('p');
+				el.classList.add('text-left');
+				el.classList.add('mb-0');
+				el.innerHTML = '<p class="">We use automated systems to help detect potential abuse and spam. Your recent <a href="/i/web/post/' + status.id + '" class="font-weight-bold">post</a> was flagged for review. <br /> <p class=""><span class="font-weight-bold">Don\'t worry! Your post will be reviewed by a human</span>, and they will restore your post if they determine it appropriate.</p><p style="font-size:12px">Once a human approves your post, any posts you create after will not be marked as unlisted. If you delete this post and share more posts before a human can approve any of them, you will need to wait for at least one unlisted post to be reviewed by a human.';
+				let wrapper = document.createElement('div');
+				wrapper.appendChild(el);
+				swal({
+					title: 'Why was my post unlisted?',
+					content: wrapper,
+					icon: 'warning'
+				})
+			}
 		}
 	}
 </script>

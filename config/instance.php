@@ -124,5 +124,9 @@ return [
 	'landing' => [
 		'show_directory' => env('INSTANCE_LANDING_SHOW_DIRECTORY', true),
 		'show_explore' => env('INSTANCE_LANDING_SHOW_EXPLORE', true),
+	],
+
+	'banner' => [
+		'blurhash' => env('INSTANCE_BANNER_BLURHASH', 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt')
 	]
 ];

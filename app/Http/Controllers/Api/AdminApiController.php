@@ -11,6 +11,7 @@ use App\{
     AccountInterstitial,
     Instance,
     Like,
+    Notification,
     Media,
     Profile,
     Report,
@@ -140,6 +141,14 @@ class AdminApiController extends Controller
 
             StatusService::del($status->id);
 
+			Notification::whereAction('autospam.warning')
+				->whereProfileId($appeal->user->profile_id)
+				->get()
+				->each(function($n) use($appeal) {
+					NotificationService::del($appeal->user->profile_id, $n->id);
+					$n->forceDelete();
+				});
+
             Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
             Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
             Cache::forget('admin-dash:reports:spam-count');
@@ -164,6 +173,14 @@ class AdminApiController extends Controller
                         $status->save();
                         StatusService::del($status->id, true);
                     }
+
+					Notification::whereAction('autospam.warning')
+						->whereProfileId($report->user->profile_id)
+						->get()
+						->each(function($n) use($report) {
+							NotificationService::del($report->user->profile_id, $n->id);
+							$n->forceDelete();
+						});
                 });
             Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
             Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);

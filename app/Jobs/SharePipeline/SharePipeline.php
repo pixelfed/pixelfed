@@ -76,10 +76,6 @@ class SharePipeline implements ShouldQueue
 				'action' => 'share',
 				'item_type' => 'App\Status',
 				'item_id' => $status->reblog_of_id ?? $status->id,
-			],
-			[
-				'message' => $status->shareToText(),
-				'rendered' => $status->shareToHtml()
 			]
 		);
 
