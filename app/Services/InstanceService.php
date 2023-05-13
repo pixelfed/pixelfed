@@ -16,6 +16,11 @@ class InstanceService
 	const CACHE_KEY_STATS = 'pf:services:instances:stats';
 	const CACHE_KEY_BANNER_BLURHASH = 'pf:services:instance:header-blurhash:v1';
 
+	public function __construct()
+	{
+		ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
+	}
+
 	public static function getByDomain($domain)
 	{
 		return Cache::remember(self::CACHE_KEY_BY_DOMAIN.$domain, 3600, function() use($domain) {
@@ -84,8 +89,6 @@ class InstanceService
 
     public static function headerBlurhash()
     {
-		ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
-
     	return Cache::rememberForever(self::CACHE_KEY_BANNER_BLURHASH, function() {
     		if(str_ends_with(config_cache('app.banner_image'), 'headers/default.jpg')) {
     			return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
