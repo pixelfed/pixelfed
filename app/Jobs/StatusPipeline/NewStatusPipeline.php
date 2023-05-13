@@ -55,13 +55,6 @@ class NewStatusPipeline implements ShouldQueue
             return;
         }
         if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
-            // N.B. In this configuration, the NewStatusPipeline is called multiple times per status
-            // Once when the media is finished, and again when the status is posted
-            // This may lead to the status being published to ActivityPub twice, with the same content.
-            // (only in a race condition, not the default flow)
-            // The race was allowed deliberately. It prevents the need for synchronization inside of the workers
-            // It is expected that ActivityPub clients handle this properly, but the solution may need
-            // to be revisited in the future.
             $still_processing_count = Media::whereStatusId($this->status->id)
                 ->whereNull('cdn_url')
                 ->count();
