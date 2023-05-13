@@ -89,10 +89,10 @@ class MediaStorageService {
     if ($media->status_id && config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
 			$still_processing_count = Media::whereStatusId($media->status_id)->whereNull('cdn_url')->count();
 			if ($still_processing_count == 0) {
-				// The final media image in the post finished processing
-				// Dispatch a job to publish the status
-				// Note that the above if condition is not exclusive, if two media workers finish at the same time
-				// Instead, it's the responsibility of NewStatusPipeline to ensure it only executes the publish once
+				// In this configuration, publishing the status is delayed until the media uploads
+				// Since all media have been processed, we can kick the NewStatusPipeline job
+				// N.B. there's a timing condition with multiple workers all hitting this line
+				// but it's not considered a problem to publish the same status multiple times
 				$status = Status::find($media->status_id);
 				NewStatusPipeline::dispatch($status);
 			}
