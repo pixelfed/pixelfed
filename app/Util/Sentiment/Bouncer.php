@@ -149,7 +149,6 @@ class Bouncer {
 		$notification->item_id = $status->id;
 		$notification->item_type = "App\Status";
 		$notification->save();
-		NotificationService::add($notification->profile_id, $notification->id);
 
 		StatusService::del($status->id);
 
