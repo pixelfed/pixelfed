@@ -95,7 +95,7 @@ class InstanceService
     		}
     		$cached = config_cache('instance.banner.blurhash');
 
-    		if($cached && $cached !== 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt') {
+    		if($cached) {
     			return $cached;
     		}
 
