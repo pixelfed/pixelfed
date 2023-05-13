@@ -14,6 +14,7 @@ use App\{
 	Contact,
 	Hashtag,
 	Newsroom,
+	Notification,
 	OauthClient,
 	Profile,
 	Report,
@@ -30,6 +31,7 @@ use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
 use App\Http\Resources\AdminReport;
 use App\Http\Resources\AdminSpamReport;
+use App\Services\NotificationService;
 use App\Services\PublicTimelineService;
 use App\Services\NetworkTimelineService;
 
@@ -1126,6 +1128,14 @@ trait AdminReportController
 			$appeal->appeal_handled_at = now();
 			$appeal->save();
 
+			Notification::whereAction('autospam.warning')
+				->whereProfileId($appeal->user->profile_id)
+				->get()
+				->each(function($n) use($appeal) {
+					NotificationService::del($appeal->user->profile_id, $n->id);
+					$n->forceDelete();
+				});
+
 			StatusService::del($status->id);
 		}
 
@@ -1157,6 +1167,13 @@ trait AdminReportController
 						$status->save();
 						StatusService::del($status->id);
 					}
+					Notification::whereAction('autospam.warning')
+						->whereProfileId($report->user->profile_id)
+						->get()
+						->each(function($n) use($report) {
+							NotificationService::del($report->user->profile_id, $n->id);
+							$n->forceDelete();
+						});
 				});
 		}
 
