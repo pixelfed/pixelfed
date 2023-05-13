@@ -6,7 +6,6 @@ use App\Media;
 use App\Status;
 use Cache;
 use DB;
-use Log;
 use InvalidArgumentException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,7 +53,6 @@ class NewStatusPipeline implements ShouldQueue
         if ($deleted_count > 0) {
             // The status has already been deleted by the time the job is running
             // Don't publish the status, and just no-op
-            Log::info("aoeu ignoring NewStatusPipeline because the status has been deleted");
             return;
         }
         if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
@@ -74,13 +72,9 @@ class NewStatusPipeline implements ShouldQueue
                 // yet known. Instead, do nothing here. The media pipeline will re-call the NewStatusPipeline
                 // once all media is finished processing
                 // When the 
-                Log::info("aoeu ignoring NewStatusPipeline because the jobs aren't finished");
                 return;
             }
         }
-        Log::info("aoeu NewStatusPipeline sending to the fediverse");
-        Log::info(json_encode($this->status->toActivityPubObject()));
-        
         StatusEntityLexer::dispatch($this->status);
     }
 }

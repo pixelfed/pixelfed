@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Log;
 use App\Util\ActivityPub\Helpers;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Cache;
@@ -94,11 +93,8 @@ class MediaStorageService {
 				// Dispatch a job to publish the status
 				// Note that the above if condition is not exclusive, if two media workers finish at the same time
 				// Instead, it's the responsibility of NewStatusPipeline to ensure it only executes the publish once
-				Log::info("aoeu MediaStorageService dispatching NewStatusPipeline now that the final media has been uploaded");
 				$status = Status::find($media->status_id);
 				NewStatusPipeline::dispatch($status);
-			} else {
-				Log::info("aoeu MediaStorageService skipping NewStatusPipeline as other media is still outstanding");
 			}
 		}
 	}
