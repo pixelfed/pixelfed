@@ -86,26 +86,19 @@ class MediaStorageService {
 		} else {
 			(new self())->localToCloud($media);
 		}
-		
-		if ($media->status_id) {
-			$status = Status::find($media->status_id);
-			if ($status && $status->publish_delayed) {
-				$still_processing_count = Media::whereStatusId($media->status_id)->whereNull('cdn_url')->count();
-				if ($still_processing_count == 0) {
-					// The final media image in the post finished processing
-					// Dispatch a job to publish the status
-					// Note that the above if condition is not exclusive, if two media workers finish at the same time
-					// Instead, it's the responsibility of NewStatusPipeline to ensure it only executes the publish once
-					Log::info("aoeu MediaStorageService dispatching NewStatusPipeline now that the final media has been uploaded");
 
-					NewStatusPipeline::dispatch($status);
-				} else {
-					Log::info("aoeu MediaStorageService skipping NewStatusPipeline as other media is still outstanding");
-
-				}
+    if ($media->status_id && config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
+			$still_processing_count = Media::whereStatusId($media->status_id)->whereNull('cdn_url')->count();
+			if ($still_processing_count == 0) {
+				// The final media image in the post finished processing
+				// Dispatch a job to publish the status
+				// Note that the above if condition is not exclusive, if two media workers finish at the same time
+				// Instead, it's the responsibility of NewStatusPipeline to ensure it only executes the publish once
+				Log::info("aoeu MediaStorageService dispatching NewStatusPipeline now that the final media has been uploaded");
+				$status = Status::find($media->status_id);
+				NewStatusPipeline::dispatch($status);
 			} else {
-				Log::info("aoeu MediaStorageService skipping NewStatusPipeline because the status is not delayed");
-				Log::info(json_encode($status));
+				Log::info("aoeu MediaStorageService skipping NewStatusPipeline as other media is still outstanding");
 			}
 		}
 	}

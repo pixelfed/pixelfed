@@ -48,40 +48,39 @@ class NewStatusPipeline implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("aoeu NewStatusPipeline");
-        Log::info(json_encode($this->status->toActivityPubObject()));
-        if ($this->status->publish_delayed === null) {
-            Log::info("aoeu dispatching status immediately");
-            StatusEntityLexer::dispatch($this->status);
-        } else if ($this->status->id) {
+        $deleted_count = Media::whereStatusId($this->status->id)
+        ->whereNotNull('deleted_at')
+        ->count();
+        if ($deleted_count > 0) {
+            // The status has already been deleted by the time the job is running
+            // Don't publish the status, and just no-op
+            Log::info("aoeu ignoring NewStatusPipeline because the status has been deleted");
+            return;
+        }
+        if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
+            // N.B. In this configuration, the NewStatusPipeline is called multiple times per status
+            // Once when the media is finished, and again when the status is posted
+            // This may lead to the status being published to ActivityPub twice, with the same content.
+            // (only in a race condition, not the default flow)
+            // The race was allowed deliberately. It prevents the need for synchronization inside of the workers
+            // It is expected that ActivityPub clients handle this properly, but the solution may need
+            // to be revisited in the future.
             $still_processing_count = Media::whereStatusId($this->status->id)
                 ->whereNull('cdn_url')
                 ->count();
-            if ($still_processing_count == 0) {
-                // The status is available to be published
-                // To prevent concurrency issues, the NewStatusPipeline job is published
-                // multiple times in this scenario (and may be running concurrently)
-                // To avoid this race condition, atomically try to set publish_delayed to false
-                // for this row. Even if two sql queries race each other, only one query will
-                // win the race and update the database. The thread that wins is responsible
-                // for updating the status
-                $rows_updated = DB::table('statuses')
-                    ->where('id', $this->status->id)
-                    ->where('publish_delayed', true)
-                    ->limit(1)
-                    ->update(array('publish_delayed' => false));
-                
-                if ($rows_updated > 0) {
-                    Log::info("aoeu Publishing the delayed status");
-                    StatusEntityLexer::dispatch($this->status);
-                } else {
-                    Log::info("aoeu Did not win the publish race - skipping");
-                }
-            } else {
-                Log::info("aoeu There are still outstanding media items - skipping");
+            if ($still_processing_count > 0) {
+                // The media items in the status are still being processed.
+                // We can't publish the status to ActivityPub because the final remote URL is not
+                // yet known. Instead, do nothing here. The media pipeline will re-call the NewStatusPipeline
+                // once all media is finished processing
+                // When the 
+                Log::info("aoeu ignoring NewStatusPipeline because the jobs aren't finished");
+                return;
             }
-        } else {
-            throw new InvalidArgumentException("A status was marked as publish_delayed, but the status_id was not passed in");
         }
+        Log::info("aoeu NewStatusPipeline sending to the fediverse");
+        Log::info(json_encode($this->status->toActivityPubObject()));
+        
+        StatusEntityLexer::dispatch($this->status);
     }
 }

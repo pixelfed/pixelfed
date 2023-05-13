@@ -2987,12 +2987,6 @@ class ApiV1Controller extends Controller
 			$status->cw_summary = $spoilerText;
 			$status->in_reply_to_id = $parent->id;
 			$status->in_reply_to_profile_id = $parent->profile_id;
-			if (config_cache('pixelfed.cloud_storage') && !config('pixelfed.media_fast_process')) {
-				Log::info("aoeu apiv1controller setting publish_delayed to true");
-				$status->publish_delayed = true;
-			}
-			Log::info("aoeu apiv1controller saving the initial status");
-			Log::info(json_encode($status));
 			$status->save();
 			StatusService::del($parent->id);
 			Cache::forget('status:replies:all:' . $parent->id);
@@ -3117,12 +3111,6 @@ class ApiV1Controller extends Controller
 
 		$status = Status::whereProfileId($request->user()->profile->id)
 		->findOrFail($id);
-
-		// If the status hasn't already been published, stop it now
-		// This prevents an out-of-order processing where the delete runs
-		// before the publish
-		$status->publish_delayed = false;
-		$status->save();
 
 		$resource = new Fractal\Resource\Item($status, new StatusTransformer());
 
