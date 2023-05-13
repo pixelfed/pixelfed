@@ -69,6 +69,7 @@ class ConfigCacheService
 				'instance.landing.show_directory',
 				'instance.landing.show_explore',
 				'instance.admin.pid',
+				'instance.banner.blurhash'
 				// 'system.user_mode'
 			];
 

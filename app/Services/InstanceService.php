@@ -5,6 +5,7 @@ namespace App\Services;
 use Cache;
 use App\Instance;
 use App\Util\Blurhash\Blurhash;
+use App\Services\ConfigCacheService;
 
 class InstanceService
 {
@@ -13,7 +14,7 @@ class InstanceService
 	const CACHE_KEY_UNLISTED_DOMAINS = 'instances:unlisted:domains';
 	const CACHE_KEY_NSFW_DOMAINS = 'instances:auto_cw:domains';
 	const CACHE_KEY_STATS = 'pf:services:instances:stats';
-	const CACHE_KEY_BANNER_BLURHASH = 'pf:services:instance:header-blurhash';
+	const CACHE_KEY_BANNER_BLURHASH = 'pf:services:instance:header-blurhash:v1';
 
 	public static function getByDomain($domain)
 	{
@@ -83,10 +84,18 @@ class InstanceService
 
     public static function headerBlurhash()
     {
+		ini_set('memory_limit', config('pixelfed.memory_limit', '1024M'));
+
     	return Cache::rememberForever(self::CACHE_KEY_BANNER_BLURHASH, function() {
     		if(str_ends_with(config_cache('app.banner_image'), 'headers/default.jpg')) {
     			return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
     		}
+    		$cached = config_cache('instance.banner.blurhash');
+
+    		if($cached && $cached !== 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt') {
+    			return $cached;
+    		}
+
 			$file = config_cache('app.banner_image') ?? url(Storage::url('public/headers/default.jpg'));
 
 			$image = imagecreatefromstring(file_get_contents($file));
@@ -114,6 +123,8 @@ class InstanceService
 			if(strlen($blurhash) > 191) {
 				return 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt';
 			}
+
+			ConfigCacheService::put('instance.banner.blurhash', $blurhash);
 
 			return $blurhash;
     	});
