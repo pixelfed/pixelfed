@@ -46,10 +46,7 @@ class NewStatusPipeline implements ShouldQueue
      */
     public function handle()
     {
-        $deleted_count = Media::whereStatusId($this->status->id)
-        ->whereNotNull('deleted_at')
-        ->count();
-        if ($deleted_count > 0) {
+        if (!Status::where('id', $this->status->id)->exists()) {
             // The status has already been deleted by the time the job is running
             // Don't publish the status, and just no-op
             return;

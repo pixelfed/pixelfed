@@ -93,8 +93,10 @@ class MediaStorageService {
 				// Since all media have been processed, we can kick the NewStatusPipeline job
 				// N.B. there's a timing condition with multiple workers all hitting this line
 				// but it's not considered a problem to publish the same status multiple times
-				$status = Status::find($media->status_id);
-				NewStatusPipeline::dispatch($status);
+				$status = Status::where('id', $media->status_id)->first(); // This could be null if the status was deleted
+				if ($status) {
+					NewStatusPipeline::dispatch($status);
+				}
 			}
 		}
 	}
