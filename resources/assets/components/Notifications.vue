@@ -54,7 +54,7 @@
 							</li>
 						</ul>
 
-						<div v-if="notificationsEmpty && followRequestsChecked && !followRequests.accounts.length && notificationRetries <= 2">
+						<div v-if="notificationsEmpty && followRequestsChecked && !followRequests.accounts.length && notificationRetries < 2">
 							<div class="row justify-content-center">
 								<div class="col-12 col-md-10 text-center">
 									<img src="/img/illustrations/dk-nature-man-monochrome.svg" class="img-fluid" style="opacity: 0.6;">
@@ -63,7 +63,7 @@
 							</div>
 						</div>
 
-						<div v-else-if="!notificationsLoaded || tabSwitching || notificationRetries != 2 || (!notifications && !followRequests && !followRequests.accounts && !followRequests.accounts.length)">
+						<div v-else-if="!notificationsLoaded || tabSwitching || ((notificationsEmpty && notificationRetries < 2 ) || !notifications && !followRequests && !followRequests.accounts && !followRequests.accounts.length)">
 							<placeholder />
 						</div>
 
@@ -315,9 +315,9 @@
 
         methods: {
         	fetchNotifications() {
+				this.notificationRetries++;
 				axios.get('/api/pixelfed/v1/notifications?pg=true')
 				.then(res => {
-					this.notificationRetries++;
 					if(!res || !res.data || !res.data.length) {
 						if(this.notificationRetries == 2) {
 							clearTimeout(this.notificationRetryTimeout);
