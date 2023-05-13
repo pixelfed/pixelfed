@@ -89,7 +89,6 @@ class StatusEntityLexer implements ShouldQueue
 		DB::transaction(function () {
 			$status = $this->status;
 			$status->rendered = nl2br($this->autolink);
-			$status->entities = json_encode($this->entities);
 			$status->save();
 		});
 	}
