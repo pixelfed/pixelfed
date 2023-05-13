@@ -90,8 +90,6 @@ class StatusReplyPipeline implements ShouldQueue
             $notification->profile_id = $target->id;
             $notification->actor_id = $actor->id;
             $notification->action = 'comment';
-            $notification->message = $status->replyToText();
-            $notification->rendered = $status->replyToHtml();
             $notification->item_id = $status->id;
             $notification->item_type = "App\Status";
             $notification->save();

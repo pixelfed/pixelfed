@@ -483,8 +483,6 @@ class Inbox
 			$notification->profile_id = $profile->id;
 			$notification->actor_id = $actor->id;
 			$notification->action = 'dm';
-			$notification->message = $dm->toText();
-			$notification->rendered = $dm->toHtml();
 			$notification->item_id = $dm->id;
 			$notification->item_type = "App\DirectMessage";
 			$notification->save();
@@ -594,9 +592,6 @@ class Inbox
 				'action' => 'share',
 				'item_id' => $parent->id,
 				'item_type' => 'App\Status',
-			], [
-				'message' => $status->replyToText(),
-				'rendered' => $status->replyToHtml(),
 			]
 		);
 
@@ -1023,8 +1018,6 @@ class Inbox
 		$n->item_id = $dm->id;
 		$n->item_type = 'App\DirectMessage';
 		$n->action = 'story:react';
-		$n->message = "{$actorProfile->username} reacted to your story";
-		$n->rendered = "{$actorProfile->username} reacted to your story";
 		$n->save();
 
 		return;
@@ -1134,8 +1127,6 @@ class Inbox
 		$n->item_id = $dm->id;
 		$n->item_type = 'App\DirectMessage';
 		$n->action = 'story:comment';
-		$n->message = "{$actorProfile->username} commented on story";
-		$n->rendered = "{$actorProfile->username} commented on story";
 		$n->save();
 
 		return;

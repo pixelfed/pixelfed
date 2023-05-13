@@ -368,8 +368,6 @@ class DirectMessageController extends Controller
 			$notification->profile_id = $recipient->id;
 			$notification->actor_id = $profile->id;
 			$notification->action = 'dm';
-			$notification->message = $dm->toText();
-			$notification->rendered = $dm->toHtml();
 			$notification->item_id = $dm->id;
 			$notification->item_type = "App\DirectMessage";
 			$notification->save();
