@@ -29,6 +29,12 @@
 - Update ApiV1Controller, fix hashtag timeline ([fc1a385c](https://github.com/pixelfed/pixelfed/commit/fc1a385c))
 - Update settings view, add fallback avatar ([1a83c585](https://github.com/pixelfed/pixelfed/commit/1a83c585))
 - Update HashtagFollow model, add MAX_LIMIT of 250 tags per account ([ed352141](https://github.com/pixelfed/pixelfed/commit/ed352141))
+- Update Notification logic, remove message and rendered fields ([6cdb5bc6](https://github.com/pixelfed/pixelfed/commit/6cdb5bc6))
+- Update InstanceService, fix banner blurhash memory bug ([3aad75ab](https://github.com/pixelfed/pixelfed/commit/3aad75ab))
+- Update models, remove deprecated toText and toHtml method ([ea943333](https://github.com/pixelfed/pixelfed/commit/ea943333))
+- Update Notification components, add autospam notification support ([0d3b4bc2](https://github.com/pixelfed/pixelfed/commit/0d3b4bc2))
+- Update AutoSpam Bouncer, generate notification on positive detections ([d5f63f8a](https://github.com/pixelfed/pixelfed/commit/d5f63f8a))
+- Update admin autospam apis, remove autospam warning notifications when appropriate ([588ca653](https://github.com/pixelfed/pixelfed/commit/588ca653))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
