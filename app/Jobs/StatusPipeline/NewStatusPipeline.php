@@ -6,7 +6,6 @@ use App\Media;
 use App\Status;
 use Cache;
 use DB;
-use InvalidArgumentException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
