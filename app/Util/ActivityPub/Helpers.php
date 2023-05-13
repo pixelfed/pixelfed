@@ -308,7 +308,7 @@ class Helpers {
 
 		$res = self::fetchFromUrl($url);
 
-		if(!$res || empty($res) || isset($res['error']) || !isset($res['@context']) ) {
+		if(!$res || empty($res) || isset($res['error']) || !isset($res['@context']) || !isset($res['published']) ) {
 			return;
 		}
 
