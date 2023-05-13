@@ -32,20 +32,4 @@ class Follower extends Model
         $path = $this->actor->permalink("#accepts/follows/{$this->id}{$append}");
         return url($path);
     }
-
-    public function toText()
-    {
-        $actorName = $this->actor->username;
-
-        return "{$actorName} ".__('notification.startedFollowingYou');
-    }
-
-    public function toHtml()
-    {
-        $actorName = $this->actor->username;
-        $actorUrl = $this->actor->url();
-
-        return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-          __('notification.startedFollowingYou');
-    }
 }

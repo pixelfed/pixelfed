@@ -285,38 +285,6 @@ class Status extends Model
 		return $obj;
 	}
 
-	public function replyToText()
-	{
-		$actorName = $this->profile->username;
-
-		return "{$actorName} ".__('notification.commented');
-	}
-
-	public function replyToHtml()
-	{
-		$actorName = $this->profile->username;
-		$actorUrl = $this->profile->url();
-
-		return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-		  __('notification.commented');
-	}
-
-	public function shareToText()
-	{
-		$actorName = $this->profile->username;
-
-		return "{$actorName} ".__('notification.shared');
-	}
-
-	public function shareToHtml()
-	{
-		$actorName = $this->profile->username;
-		$actorUrl = $this->profile->url();
-
-		return "<a href='{$actorUrl}' class='profile-link'>{$actorName}</a> ".
-		  __('notification.shared');
-	}
-
 	public function recentComments()
 	{
 		return $this->comments()->orderBy('created_at', 'desc')->take(3);

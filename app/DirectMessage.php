@@ -31,20 +31,4 @@ class DirectMessage extends Model
     {
     	return Auth::user()->profile->id === $this->from_id;
     }
-
-    public function toText()
-    {
-        $actorName = $this->author->username;
-
-        return "{$actorName} sent a direct message.";
-    }
-
-    public function toHtml()
-    {
-        $actorName = $this->author->username;
-        $actorUrl = $this->author->url();
-        $url = $this->url();
-
-        return "{$actorName} sent a direct message.";
-    }
 }
