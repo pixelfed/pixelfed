@@ -184,7 +184,7 @@ class StatusController extends Controller
 		]);
 
 		$status = Status::findOrFail($request->input('item'));
-		
+
 		$user = Auth::user();
 
 		if($status->profile_id != $user->profile->id &&

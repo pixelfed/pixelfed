@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Util\Media\Filter;
 use Laravel\Passport\Passport;
-use Auth, Cache, DB, Log, Storage, URL;
+use Auth, Cache, DB, Storage, URL;
 use Illuminate\Support\Facades\Redis;
 use App\{
 	Avatar,

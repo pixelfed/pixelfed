@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth, Cache, DB, Log, Storage, URL;
+use Auth, Cache, DB, Storage, URL;
 use Carbon\Carbon;
 use App\{
 	Avatar,
