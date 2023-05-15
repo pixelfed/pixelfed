@@ -37,6 +37,7 @@
 - Update AutoSpam Bouncer, generate notification on positive detections ([d5f63f8a](https://github.com/pixelfed/pixelfed/commit/d5f63f8a))
 - Update admin autospam apis, remove autospam warning notifications when appropriate ([588ca653](https://github.com/pixelfed/pixelfed/commit/588ca653))
 - Update StatusEntityLexer, stop saving entities ([a91a5e48](https://github.com/pixelfed/pixelfed/commit/a91a5e48))
+- Update UserCreate command, fix is_admin flag ([ad25ed67](https://github.com/pixelfed/pixelfed/commit/ad25ed67))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
