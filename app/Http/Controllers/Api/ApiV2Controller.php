@@ -150,10 +150,6 @@ class ApiV2Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
-
 		$this->validate($request, [
 			'q' => 'required|string|min:1|max:100',
 			'account_id' => 'nullable|string',
@@ -196,10 +192,6 @@ class ApiV2Controller extends Controller
 	public function mediaUploadV2(Request $request)
 	{
 		abort_if(!$request->user(), 403);
-
-		if(config('pixelfed.bouncer.cloud_ips.ban_api')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
 
 		$this->validate($request, [
 		  	'file.*' => [
