@@ -8,6 +8,7 @@
 - Added [/api/v1/tags/:id](https://docs.joinmastodon.org/methods/tags/) api endpoint ([521b3b4c](https://github.com/pixelfed/pixelfed/commit/521b3b4c))
 - Added `only_media` support to /api/v1/timelines/tag/:id api endpoint ([b5fe956a](https://github.com/pixelfed/pixelfed/commit/b5fe956a))
 - Added /api/v2/instance api endpoint ([167dbcdd](https://github.com/pixelfed/pixelfed/commit/167dbcdd))
+- Removed api endpoint cloud ip block logic ([6a2daf1f](https://github.com/pixelfed/pixelfed/commit/6a2daf1f))
 
 ### Added
 - Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
@@ -35,6 +36,7 @@
 - Update Notification components, add autospam notification support ([0d3b4bc2](https://github.com/pixelfed/pixelfed/commit/0d3b4bc2))
 - Update AutoSpam Bouncer, generate notification on positive detections ([d5f63f8a](https://github.com/pixelfed/pixelfed/commit/d5f63f8a))
 - Update admin autospam apis, remove autospam warning notifications when appropriate ([588ca653](https://github.com/pixelfed/pixelfed/commit/588ca653))
+- Update StatusEntityLexer, stop saving entities ([a91a5e48](https://github.com/pixelfed/pixelfed/commit/a91a5e48))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
