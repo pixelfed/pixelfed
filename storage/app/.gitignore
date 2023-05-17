@@ -2,5 +2,6 @@
 !backups/
 !public/
 !remcache/
+!nlp/
 !cities.json
 !.gitignore

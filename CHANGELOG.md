@@ -12,6 +12,7 @@
 
 ### Added
 - Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
+- Added Autospam Advanced Detection ([132a58de](https://github.com/pixelfed/pixelfed/commit/132a58de))
 
 ### Updates
 - Update admin dashboard, fix search and dropdown menu ([dac0d083](https://github.com/pixelfed/pixelfed/commit/dac0d083))

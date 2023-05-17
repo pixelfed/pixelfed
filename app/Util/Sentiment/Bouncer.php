@@ -10,6 +10,7 @@ use App\Services\NotificationService;
 use App\Services\StatusService;
 use App\Jobs\ReportPipeline\AutospamNotifyAdminViaEmail;
 use App\Notification;
+use App\Services\AutospamService;
 
 class Bouncer {
 
@@ -63,6 +64,12 @@ class Bouncer {
 			$status->profile->website
 		) {
 			return (new self)->handle($status);
+		}
+
+		if(AutospamService::active()) {
+			if(AutospamService::check($status->caption)) {
+				return (new self)->handle($status);
+			}
 		}
 
 		$recentKey = 'pf:bouncer_v0:recent_by_pid:' . $status->profile_id;

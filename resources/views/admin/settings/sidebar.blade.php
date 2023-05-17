@@ -1,31 +1,76 @@
-@section('menu')
-<ul class="nav flex-column settings-nav">
-  <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings') ? 'font-weight-bold':''}}" href="{{route('admin.settings')}}">Home</a>
-  </li>
-{{--   <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/backups') ? 'font-weight-bold':''}}" href="{{route('admin.settings.backups')}}">Backups</a>
-  </li> --}}
-  {{-- <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/config') ? 'font-weight-bold':''}}" href="{{route('admin.settings.config')}}">Configuration</a>
-  </li> --}}
-  {{-- <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/customize') ? 'font-weight-bold':''}}" href="{{route('admin.settings.customize')}}">Customize</a>
-  </li> --}}
-  {{-- <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/features') ? 'font-weight-bold':''}}" href="{{route('admin.settings.features')}}">Features</a>
-  </li> --}}
-  {{-- <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/maintenance') ? 'font-weight-bold':''}}" href="{{route('admin.settings.maintenance')}}">Maintenance</a>
-  </li> --}}
-  <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/page*') ? 'font-weight-bold':''}}" href="{{route('admin.settings.pages')}}">Pages</a>
-  </li>
-  {{-- <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/storage') ? 'font-weight-bold':''}}" href="{{route('admin.settings.storage')}}">Storage</a>
-  </li> --}}
-  <li class="nav-item pl-3">
-    <a class="nav-link text-muted {{request()->is('*settings/system') ? 'font-weight-bold':''}}" href="{{route('admin.settings.system')}}">System</a>
-  </li>
+  <div class="col-12 col-md-3">
+    <ul class="nav flex-column settings-nav">
+      <li class="nav-item pl-3 {{request()->is('settings/home')?'active':''}}">
+        <a class="nav-link font-weight-light  text-muted" href="{{route('settings')}}">Account</a>
+      </li>
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/accessibility')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.accessibility')}}">Accessibility</a>
+      </li>
+      <li class="nav-item pl-3 {{request()->is('settings/email')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.email')}}">Email</a>
+      </li> --}}
+      @if(config('pixelfed.user_invites.enabled'))
+      <li class="nav-item pl-3 {{request()->is('settings/invites*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.invites')}}">Invites</a>
+      </li>
+      @endif
+      <li class="nav-item pl-3 {{request()->is('settings/notifications')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.notifications')}}">Notifications</a>
+      </li>
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/password')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.password')}}">Password</a>
+      </li> --}}
+      <li class="nav-item pl-3 {{request()->is('settings/privacy*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.privacy')}}">Privacy</a>
+      </li>
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/relationships*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.relationships')}}">Relationships</a>
+      </li>
+      <li class="nav-item pl-3 {{request()->is('settings/reports*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.reports')}}">Reports</a>
+      </li> --}}
+
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/safety*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.security')}}">Safety</a>
+      </li> --}}
+      <li class="nav-item pl-3 {{request()->is('settings/security*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.security')}}">Security</a>
+      </li>
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/sponsor*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.sponsor')}}">Sponsor</a>
+      </li> --}}
+      <li class="nav-item">
+        <hr>
+      </li>
+      {{-- <li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
+      </li> --}}
+      <li class="nav-item pl-3 {{request()->is('settings/import*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
+      </li>
+      <li class="nav-item pl-3 {{request()->is('settings/data-export')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
+      </li>
+
+      @if(config('pixelfed.oauth_enabled') == true)
+      {{-- <li class="nav-item pl-3 {{request()->is('settings/applications')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.applications')}}">Applications</a>
+      </li> --}}
+      <li class="nav-item pl-3 {{request()->is('settings/developers')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.developers')}}">Developers</a>
+      </li>
+      @endif
+
+
+      <li class="nav-item pl-3 {{request()->is('settings/labs*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.labs')}}">Labs</a>
+      </li>
+
+      <li class="nav-item pl-3 {{request()->is('settings/arch*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.labs')}}">Archived Posts</a>
+      </li>
+      <li class="nav-item pl-3 {{request()->is('settings/moglod*')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('settings.labs')}}">Moderation Log</a>
+      </li>
     </ul>
-@endsection
+  </div>

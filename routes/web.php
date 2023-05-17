@@ -94,6 +94,8 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 	Route::get('directory/home', 'AdminController@directoryHome')->name('admin.directory');
 
+	Route::get('autospam/home', 'AdminController@autospamHome')->name('admin.autospam');
+
 	Route::prefix('api')->group(function() {
 		Route::get('stats', 'AdminController@getStats');
 		Route::get('accounts', 'AdminController@getAccounts');
@@ -129,6 +131,17 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 		Route::get('reports/spam/all', 'AdminController@reportsApiSpamAll');
 		Route::get('reports/spam/get/{id}', 'AdminController@reportsApiSpamGet');
 		Route::post('reports/spam/handle', 'AdminController@reportsApiSpamHandle');
+		Route::post('autospam/config', 'AdminController@getAutospamConfigApi');
+		Route::post('autospam/reports/closed', 'AdminController@getAutospamReportsClosedApi');
+		Route::post('autospam/train', 'AdminController@postAutospamTrainSpamApi');
+		Route::post('autospam/search/non-spam', 'AdminController@postAutospamTrainNonSpamSearchApi');
+		Route::post('autospam/train/non-spam', 'AdminController@postAutospamTrainNonSpamSubmitApi');
+		Route::post('autospam/tokens/custom', 'AdminController@getAutospamCustomTokensApi');
+		Route::post('autospam/tokens/store', 'AdminController@saveNewAutospamCustomTokensApi');
+		Route::post('autospam/tokens/update', 'AdminController@updateAutospamCustomTokensApi');
+		Route::post('autospam/tokens/export', 'AdminController@exportAutospamCustomTokensApi');
+		Route::post('autospam/config/enable', 'AdminController@enableAutospamApi');
+		Route::post('autospam/config/disable', 'AdminController@disableAutospamApi');
 	});
 });
 
