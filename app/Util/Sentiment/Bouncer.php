@@ -66,12 +66,6 @@ class Bouncer {
 			return (new self)->handle($status);
 		}
 
-		if(AutospamService::active()) {
-			if(AutospamService::check($status->caption)) {
-				return (new self)->handle($status);
-			}
-		}
-
 		$recentKey = 'pf:bouncer_v0:recent_by_pid:' . $status->profile_id;
 		$recentTtl = now()->addHours(28);
 
@@ -93,6 +87,12 @@ class Bouncer {
 		
 		if($status->profile->followers()->count() > 100) {
 			return;
+		}
+
+		if(AutospamService::active()) {
+			if(AutospamService::check($status->caption)) {
+				return (new self)->handle($status);
+			}
 		}
 
 		if(!Str::contains($status->caption, [
