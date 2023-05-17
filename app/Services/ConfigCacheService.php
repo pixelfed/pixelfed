@@ -69,7 +69,9 @@ class ConfigCacheService
 				'instance.landing.show_directory',
 				'instance.landing.show_explore',
 				'instance.admin.pid',
-				'instance.banner.blurhash'
+				'instance.banner.blurhash',
+
+				'autospam.nlp.enabled',
 				// 'system.user_mode'
 			];
 
