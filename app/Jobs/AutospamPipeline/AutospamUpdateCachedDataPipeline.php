@@ -52,9 +52,11 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
 			}
 		}
 		$newSpamCount = count($spam['words']['spam']);
-		$spam['documents']['spam'] = $newSpamCount;
-		arsort($spam['words']['spam']);
-		Storage::put(AutospamService::MODEL_SPAM_PATH, json_encode($spam, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+		if($newSpamCount) {
+			$spam['documents']['spam'] = $newSpamCount;
+			arsort($spam['words']['spam']);
+			Storage::put(AutospamService::MODEL_SPAM_PATH, json_encode($spam, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+		}
 
 		$hamExists = Storage::exists(AutospamService::MODEL_HAM_PATH);
 		if($hamExists) {
@@ -80,23 +82,27 @@ class AutospamUpdateCachedDataPipeline implements ShouldQueue
 		}
 
 		$newHamCount = count($ham['words']['ham']);
-		$ham['documents']['ham'] = $newHamCount;
-		arsort($ham['words']['ham']);
+		if($newHamCount) {
+			$ham['documents']['ham'] = $newHamCount;
+			arsort($ham['words']['ham']);
+			Storage::put(AutospamService::MODEL_HAM_PATH, json_encode($ham, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+		}
 
-		Storage::put(AutospamService::MODEL_HAM_PATH, json_encode($ham, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT));
+		if($newSpamCount && $newHamCount) {
+			$combined = [
+				'documents' => [
+					'spam' => $newSpamCount,
+					'ham' => $newHamCount,
+				],
+				'words' => [
+					'spam' => $spam['words']['spam'],
+					'ham' => $ham['words']['ham']
+				]
+			];
 
-		$combined = [
-			'documents' => [
-				'spam' => $newSpamCount,
-				'ham' => $newHamCount,
-			],
-			'words' => [
-				'spam' => $spam['words']['spam'],
-				'ham' => $ham['words']['ham']
-			]
-		];
+			Storage::put(AutospamService::MODEL_FILE_PATH, json_encode($combined, JSON_PRETTY_PRINT,JSON_UNESCAPED_SLASHES));
+		}
 
-		Storage::put(AutospamService::MODEL_FILE_PATH, json_encode($combined, JSON_PRETTY_PRINT,JSON_UNESCAPED_SLASHES));
 		Cache::forget(AutospamService::MODEL_CACHE_KEY);
 		Cache::forget(AutospamService::CHCKD_CACHE_KEY);
 	}
