@@ -1103,7 +1103,6 @@ trait AdminReportController
     	Cache::forget('admin-dash:reports:spam-count');
     	Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $report->user->profile_id);
 		Cache::forget('pf:bouncer_v0:recent_by_pid:' . $report->user->profile_id);
-		PublicTimelineService::warmCache(true, 400);
     	return [$action, $report];
     }
 
@@ -1115,6 +1114,7 @@ trait AdminReportController
 			$appeal->is_spam = true;
 			$appeal->appeal_handled_at = now();
 			$appeal->save();
+			PublicTimelineService::del($appeal->item_id);
 		}
 
 		if($action == 'mark-not-spam') {
@@ -1137,6 +1137,8 @@ trait AdminReportController
 				});
 
 			StatusService::del($status->id);
+			StatusService::get($status->id);
+			PublicTimelineService::add($status->id);
 		}
 
 		if($action == 'mark-all-read') {
