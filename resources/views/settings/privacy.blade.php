@@ -88,6 +88,24 @@
       <p class="text-muted small help-text">Display following count on profile</p>
     </div>
 
+    @if(!$settings->is_private)
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="show_atom" id="show_atom" {{$settings->show_atom ? 'checked=""':''}}>
+      <label class="form-check-label font-weight-bold" for="show_atom">
+        {{__('Enable Atom Feed')}}
+      </label>
+      <p class="text-muted small help-text mb-0">Enable your profile atom feed. Only public profiles are eligible.</p>
+      @if($settings->show_atom)
+      <p class="small">
+      	 <a href="{{$profile->permalink('.atom')}}" class="text-success font-weight-bold small" target="_blank">
+      	 	{{ $profile->permalink('.atom') }}
+      	 	<i class="far fa-external-link ml-1 text-muted" style="opacity: 0.5"></i>
+      	 </a>
+      </p>
+      @endif
+    </div>
+    @endif
+
     <div class="form-group row mt-5 pt-5">
       <div class="col-12 text-right">
         <hr>

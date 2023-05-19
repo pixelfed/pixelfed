@@ -43,6 +43,7 @@
 - Update atom view, fix atom feed bug ([63b72c42](https://github.com/pixelfed/pixelfed/commit/63b72c42))
 - Update StatusController, disable post embeds from spam accounts ([c167af43](https://github.com/pixelfed/pixelfed/commit/c167af43))
 - Update ProfileController, require login to view spam accounts, and disable profile embeds and atom feeds for spam accounts ([dd2f5bb9](https://github.com/pixelfed/pixelfed/commit/dd2f5bb9))
+- Update Settings, allow users to disable atom feeds ([3662d3de](https://github.com/pixelfed/pixelfed/commit/3662d3de))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
