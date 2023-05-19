@@ -6,13 +6,18 @@
 	<id>{{$permalink}}</id>
 	<title>{{$profile['username']}} on Pixelfed</title>
 	<subtitle type="html">{{$profile['note']}}</subtitle>
-	<updated>{{$items[0]['created_at']}}</updated>
+	@if($items && count($items))
+<updated>{{$items[0]['created_at']}}</updated>
+	@endif
+
 	<author>
 		<name>{{$profile['username']}}</name>
 		<uri>{{$profile['url']}}</uri>
 	</author>
+
 	<link rel="alternate" type="text/html" href="{{$profile['url']}}" />
 	<link rel="self" type="application/atom+xml" href="{{$permalink}}" />
+	@if($items && count($items))
 	@foreach($items as $item)
 	<entry>
 		<id>{{ $item['url'] }}</id>
@@ -35,4 +40,7 @@
 		<media:content url="{{ $item['media_attachments'][0]['url'] }}" type="{{ $item['media_attachments'][0]['mime'] }}" medium="image" />
 	</entry>
 	@endforeach
+
+@endif
+
 </feed>

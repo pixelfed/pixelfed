@@ -115,9 +115,24 @@ class StatusController extends Controller
 			->whereIsPrivate(false)
 			->whereUsername($username)
 			->first();
+
 		if(!$profile) {
 			$content = view('status.embed-removed');
 			return response($content)->header('X-Frame-Options', 'ALLOWALL');
+		}
+
+		$aiCheck = Cache::remember('profile:ai-check:spam-login:' . $profile->id, 86400, function() use($profile) {
+			$exists = AccountInterstitial::whereUserId($profile->user_id)->where('is_spam', 1)->count();
+			if($exists) {
+				return true;
+			}
+
+			return false;
+		});
+
+		if($aiCheck) {
+			$res = view('status.embed-removed');
+			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 		}
 		$status = Status::whereProfileId($profile->id)
 			->whereNull('uri')

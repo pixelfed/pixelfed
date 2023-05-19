@@ -40,6 +40,9 @@
 - Update StatusEntityLexer, stop saving entities ([a91a5e48](https://github.com/pixelfed/pixelfed/commit/a91a5e48))
 - Update UserCreate command, fix is_admin flag ([ad25ed67](https://github.com/pixelfed/pixelfed/commit/ad25ed67))
 - Update Bouncer, adjust advanced Autospam logic ([18cddd43](https://github.com/pixelfed/pixelfed/commit/18cddd43))
+- Update atom view, fix atom feed bug ([63b72c42](https://github.com/pixelfed/pixelfed/commit/63b72c42))
+- Update StatusController, disable post embeds from spam accounts ([c167af43](https://github.com/pixelfed/pixelfed/commit/c167af43))
+- Update ProfileController, require login to view spam accounts, and disable profile embeds and atom feeds for spam accounts ([dd2f5bb9](https://github.com/pixelfed/pixelfed/commit/dd2f5bb9))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
