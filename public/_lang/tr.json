@@ -48,7 +48,7 @@
         "language": "Dil",
         "privacy": "Gizlilik",
         "terms": "Koşullar",
-        "backToPreviousDesign": "\u00d6nceki tasar\u0131ma geri d\u00f6n"
+        "backToPreviousDesign": "Önceki tasarıma geri dön"
     },
     "directMessages": {
         "inbox": "Gelen Kutusu",
@@ -58,7 +58,7 @@
     "notifications": {
         "liked": "beğendim",
         "commented": "yorum yaptı",
-        "reacted": "reacted to your",
+        "reacted": "senin tepkin",
         "shared": "paylaştınız",
         "tagged": "sizi etiketledi",
         "updatedA": "bir güncelleme",
