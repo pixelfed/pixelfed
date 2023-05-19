@@ -13,6 +13,7 @@ use App\FollowRequest;
 use App\Profile;
 use App\Story;
 use App\User;
+use App\UserSetting;
 use App\UserFilter;
 use League\Fractal;
 use App\Services\AccountService;
@@ -235,6 +236,21 @@ class ProfileController extends Controller
 		});
 
 		abort_if($aiCheck, 404);
+
+		$enabled = Cache::remember('profile:atom:enabled:' . $profile['id'], 84600, function() use ($profile) {
+			$uid = User::whereProfileId($profile['id'])->first();
+			if(!$uid) {
+				return false;
+			}
+			$settings = UserSetting::whereUserId($uid->id)->first();
+			if(!$settings) {
+				return false;
+			}
+
+			return $settings->show_atom;
+		});
+
+		abort_if(!$enabled, 404);
 
 		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 900, function() use($pid, $profile) {
 			$items = DB::table('statuses')

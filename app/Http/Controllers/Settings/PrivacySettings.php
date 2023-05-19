@@ -20,11 +20,13 @@ trait PrivacySettings
 
     public function privacy()
     {
-        $settings = Auth::user()->settings;
-        $is_private = Auth::user()->profile->is_private;
-        $settings['is_private'] = (bool) $is_private;
+		$user = Auth::user();
+		$settings = $user->settings;
+		$profile = $user->profile;
+		$is_private = $profile->is_private;
+		$settings['is_private'] = (bool) $is_private;
 
-        return view('settings.privacy', compact('settings'));
+		return view('settings.privacy', compact('settings', 'profile'));
     }
 
     public function privacyStore(Request $request)
@@ -37,6 +39,7 @@ trait PrivacySettings
           'public_dm',
           'show_profile_follower_count',
           'show_profile_following_count',
+          'show_atom',
         ];
 
 		$profile->is_suggestable = $request->input('is_suggestable') == 'on';
@@ -80,6 +83,7 @@ trait PrivacySettings
         Cache::forget('user:account:id:' . $profile->user_id);
         Cache::forget('profile:follower_count:' . $profile->id);
         Cache::forget('profile:following_count:' . $profile->id);
+        Cache::forget('profile:atom:enabled:' . $profile->id);
         Cache::forget('profile:embed:' . $profile->id);
         Cache::forget('pf:acct:settings:hidden-followers:' . $profile->id);
         Cache::forget('pf:acct:settings:hidden-following:' . $profile->id);
