@@ -7,6 +7,7 @@ use Auth;
 use Cache;
 use DB;
 use View;
+use App\AccountInterstitial;
 use App\Follower;
 use App\FollowRequest;
 use App\Profile;
@@ -42,8 +43,21 @@ class ProfileController extends Controller
 			->whereUsername($username)
 			->firstOrFail();
 
+
 		if($request->wantsJson() && config_cache('federation.activitypub.enabled')) {
 			return $this->showActivityPub($request, $user);
+		}
+
+		$aiCheck = Cache::remember('profile:ai-check:spam-login:' . $user->id, 86400, function() use($user) {
+			$exists = AccountInterstitial::whereUserId($user->user_id)->where('is_spam', 1)->count();
+			if($exists) {
+				return true;
+			}
+
+			return false;
+		});
+		if($aiCheck) {
+			return redirect('/login');
 		}
 		return $this->buildProfile($request, $user);
 	}
@@ -207,7 +221,22 @@ class ProfileController extends Controller
 
 		abort_if(!$profile || $profile['locked'] || !$profile['local'], 404);
 
-		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 43200, function() use($pid, $profile) {
+		$aiCheck = Cache::remember('profile:ai-check:spam-login:' . $profile['id'], 86400, function() use($profile) {
+			$uid = User::whereProfileId($profile['id'])->first();
+			if(!$uid) {
+				return true;
+			}
+			$exists = AccountInterstitial::whereUserId($uid->id)->where('is_spam', 1)->count();
+			if($exists) {
+				return true;
+			}
+
+			return false;
+		});
+
+		abort_if($aiCheck, 404);
+
+		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 900, function() use($pid, $profile) {
 			$items = DB::table('statuses')
 				->whereProfileId($pid)
 				->whereVisibility('public')
@@ -234,7 +263,7 @@ class ProfileController extends Controller
 
 			return compact('items', 'permalink', 'headers');
 		});
-		abort_if(!$data, 404);
+		abort_if(!$data || !isset($data['items']) || !isset($data['permalink']), 404);
 		return response()
 			->view('atom.user',
 				[
@@ -271,6 +300,19 @@ class ProfileController extends Controller
 			->first();
 
 		if(!$profile) {
+			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
+		}
+
+		$aiCheck = Cache::remember('profile:ai-check:spam-login:' . $profile->id, 86400, function() use($profile) {
+			$exists = AccountInterstitial::whereUserId($profile->user_id)->where('is_spam', 1)->count();
+			if($exists) {
+				return true;
+			}
+
+			return false;
+		});
+
+		if($aiCheck) {
 			return response($res)->withHeaders(['X-Frame-Options' => 'ALLOWALL']);
 		}
 
