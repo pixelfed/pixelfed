@@ -45,7 +45,7 @@ class MediaS3GarbageCollector extends Command
     */
     public function handle()
     {
-        $enabled = config('pixelfed.cloud_storage');
+        $enabled = in_array(config_cache('pixelfed.cloud_storage'), ['1', true, 'true']);
         if(!$enabled) {
             $this->error('Cloud storage not enabled. Exiting...');
             return;
