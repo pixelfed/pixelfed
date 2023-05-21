@@ -1138,7 +1138,9 @@ trait AdminReportController
 
 			StatusService::del($status->id);
 			StatusService::get($status->id);
-			PublicTimelineService::add($status->id);
+			if($status->in_reply_to_id == null && $status->reblog_of_id == null) {
+				PublicTimelineService::add($status->id);
+			}
 		}
 
 		if($action == 'mark-all-read') {
