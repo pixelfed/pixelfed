@@ -3148,9 +3148,6 @@ class ApiV1Controller extends Controller
 			->map(function ($i) use($pe) {
 				return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
 			})
-			->filter(function($i) use($filters) {
-				return !in_array($i['account']['id'], $filters);
-			})
 			->filter(function($i) use($onlyMedia) {
 				if(!$i) {
 					return false;
@@ -3159,6 +3156,9 @@ class ApiV1Controller extends Controller
 					return false;
 				}
 				return $i && isset($i['account']);
+			})
+			->filter(function($i) use($filters) {
+				return !in_array($i['account']['id'], $filters);
 			})
 			->values()
 			->toArray();
