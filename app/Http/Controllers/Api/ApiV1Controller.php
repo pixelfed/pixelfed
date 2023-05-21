@@ -3129,6 +3129,8 @@ class ApiV1Controller extends Controller
 			}
 		}
 
+		$filters = UserFilterService::filters($request->user()->profile_id);
+
 		if(!$min && !$max) {
 			$id = 1;
 			$dir = '>';
@@ -3145,6 +3147,9 @@ class ApiV1Controller extends Controller
 			->pluck('status_id')
 			->map(function ($i) use($pe) {
 				return $pe ? StatusService::get($i) : StatusService::getMastodon($i);
+			})
+			->filter(function($i) use($filters) {
+				return !in_array($i['account']['id'], $filters);
 			})
 			->filter(function($i) use($onlyMedia) {
 				if(!$i) {
