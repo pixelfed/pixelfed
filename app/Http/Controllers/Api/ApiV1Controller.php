@@ -3129,6 +3129,8 @@ class ApiV1Controller extends Controller
 			}
 		}
 
+		$filters = UserFilterService::filters($request->user()->profile_id);
+
 		if(!$min && !$max) {
 			$id = 1;
 			$dir = '>';
@@ -3154,6 +3156,9 @@ class ApiV1Controller extends Controller
 					return false;
 				}
 				return $i && isset($i['account']);
+			})
+			->filter(function($i) use($filters) {
+				return !in_array($i['account']['id'], $filters);
 			})
 			->values()
 			->toArray();
