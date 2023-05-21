@@ -47,6 +47,7 @@
 - Update ApiV1Controller, filter muted/blocked accounts from tag timeline ([f42c1140](https://github.com/pixelfed/pixelfed/commit/f42c1140))
 - Update admin moderation logic, only re-add top level posts ([c6ffda96](https://github.com/pixelfed/pixelfed/commit/c6ffda96))
 - Update admin dashboard, add mass account deletes ([b8426cce](https://github.com/pixelfed/pixelfed/commit/b8426cce))
+- Update scheduler, fix S3 media garbage collection not being executed when cloud storage is enabled via dashboard without .env/config being enabled ([adb070f1](https://github.com/pixelfed/pixelfed/commit/adb070f1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
