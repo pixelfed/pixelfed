@@ -45,6 +45,7 @@
 - Update ProfileController, require login to view spam accounts, and disable profile embeds and atom feeds for spam accounts ([dd2f5bb9](https://github.com/pixelfed/pixelfed/commit/dd2f5bb9))
 - Update Settings, allow users to disable atom feeds ([3662d3de](https://github.com/pixelfed/pixelfed/commit/3662d3de))
 - Update ApiV1Controller, filter muted/blocked accounts from tag timeline ([f42c1140](https://github.com/pixelfed/pixelfed/commit/f42c1140))
+- Update admin moderation logic, only re-add top level posts ([c6ffda96](https://github.com/pixelfed/pixelfed/commit/c6ffda96))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
