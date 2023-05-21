@@ -800,9 +800,13 @@ class ApiV1Dot1Controller extends Controller
 			StatusService::del($status->id, true);
 			if($state !== 'public') {
 				if($status->uri) {
-					NetworkTimelineService::add($status->id);
+					if($status->in_reply_to_id == null && $status->reblog_of_id == null) {
+						NetworkTimelineService::add($status->id);
+					}
 				} else {
-					PublicTimelineService::add($status->id);
+					if($status->in_reply_to_id == null && $status->reblog_of_id == null) {
+						PublicTimelineService::add($status->id);
+					}
 				}
 			}
 		} else if ($action == 'mark-unlisted') {
