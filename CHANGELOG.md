@@ -53,6 +53,7 @@
 - Update PublicTimelineService, improve warmCache query ([9f901d65](https://github.com/pixelfed/pixelfed/commit/9f901d65))
 - Update AP Inbox, fix delete handling ([2800c888](https://github.com/pixelfed/pixelfed/commit/2800c888))
 - Update login/register views and captcha config, enable login or register captchas or both ([c071c719](https://github.com/pixelfed/pixelfed/commit/c071c719))
+- Update login form, allow admins to enable captcha after X failed attempts. Admins can set the number of attempts before captcha is shown, default is 2 attempts before captcha is required ([221ddce0](https://github.com/pixelfed/pixelfed/commit/221ddce0))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
