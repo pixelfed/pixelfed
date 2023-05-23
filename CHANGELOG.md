@@ -51,6 +51,7 @@
 - Update scheduler, fix S3 media garbage collection not being executed when cloud storage is enabled via dashboard without .env/config being enabled ([adb070f1](https://github.com/pixelfed/pixelfed/commit/adb070f1))
 - Update MediaController, add fallback for local files that are later stored on S3 but still are referenced in cached objects remotely ([4973cb46](https://github.com/pixelfed/pixelfed/commit/4973cb46))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update PublicTimelineService, improve warmCache query ([9f901d65](https://github.com/pixelfed/pixelfed/commit/9f901d65))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
 
