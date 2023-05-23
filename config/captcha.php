@@ -12,4 +12,9 @@ return [
     'attributes' => [
         'theme' => 'light'
     ],
+
+    'active' => [
+    	'login' => env('CAPTCHA_ENABLED_ON_LOGIN', false),
+    	'register' => env('CAPTCHA_ENABLED_ON_REGISTER', false)
+    ]
 ];

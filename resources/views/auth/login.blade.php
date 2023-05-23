@@ -50,7 +50,7 @@
                             </div>
                         </div>
 
-                        @if(config('captcha.enabled'))
+                        @if(config('captcha.enabled') || config('captcha.active.login'))
                         <div class="d-flex justify-content-center mb-3">
                             {!! Captcha::display() !!}
                         </div>
