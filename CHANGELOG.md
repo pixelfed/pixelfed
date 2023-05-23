@@ -9,6 +9,7 @@
 - Added `only_media` support to /api/v1/timelines/tag/:id api endpoint ([b5fe956a](https://github.com/pixelfed/pixelfed/commit/b5fe956a))
 - Added /api/v2/instance api endpoint ([167dbcdd](https://github.com/pixelfed/pixelfed/commit/167dbcdd))
 - Removed api endpoint cloud ip block logic ([6a2daf1f](https://github.com/pixelfed/pixelfed/commit/6a2daf1f))
+- Added idempotency-key support to /api/v1/statuses endpoint ([c54cdd3e](https://github.com/pixelfed/pixelfed/commit/c54cdd3e))
 
 ### Added
 - Added store remote media on S3 config setting, disabled by default ([51768083](https://github.com/pixelfed/pixelfed/commit/51768083))
