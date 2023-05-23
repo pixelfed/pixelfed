@@ -50,10 +50,18 @@
                             </div>
                         </div>
 
-                        @if(config('captcha.enabled') || config('captcha.active.login'))
-                        <div class="d-flex justify-content-center mb-3">
-                            {!! Captcha::display() !!}
-                        </div>
+                        @if(
+                        	config('captcha.enabled') ||
+                        	config('captcha.active.login') ||
+                        	(
+                        		config('captcha.triggers.login.enabled') &&
+                        		request()->session()->has('login_attempts') &&
+                        		request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
+                        	)
+                        )
+	                        <div class="d-flex justify-content-center mb-3">
+	                            {!! Captcha::display() !!}
+	                        </div>
                         @endif
 
                         <div class="form-group row mb-0">
