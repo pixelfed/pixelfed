@@ -2786,6 +2786,13 @@ class ApiV1Controller extends Controller
 			'comments_disabled' => 'sometimes|boolean',
 		]);
 
+		if($request->hasHeader('idempotency-key')) {
+			$key = 'pf:api:v1:status:idempotency-key:' . $request->user()->id . ':' . hash('sha1', $request->header('idempotency-key'));
+			$exists = Cache::has($key);
+			abort_if($exists, 400, 'Duplicate idempotency key.');
+			Cache::put($key, 1, 3600);
+		}
+
 		if(config('costar.enabled') == true) {
 			$blockedKeywords = config('costar.keyword.block');
 			if($blockedKeywords !== null && $request->status) {
