@@ -70,7 +70,7 @@ class LoginController extends Controller
             'password'        => 'required|string|min:6',
         ];
 
-        if(config('captcha.enabled')) {
+        if(config('captcha.enabled') || config('captcha.active.login')) {
             $rules['h-captcha-response'] = 'required|captcha';
         }
         

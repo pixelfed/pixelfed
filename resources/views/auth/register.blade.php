@@ -81,7 +81,7 @@
                             </div>
                         </div>
 
-                        @if(config('captcha.enabled'))
+                        @if(config('captcha.enabled') || config('captcha.active.register'))
                         <div class="d-flex justify-content-center my-3">
                             {!! Captcha::display() !!}
                         </div>
