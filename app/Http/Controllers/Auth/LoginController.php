@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Services\BouncerService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -70,8 +72,16 @@ class LoginController extends Controller
             'password'        => 'required|string|min:6',
         ];
 
-        if(config('captcha.enabled') || config('captcha.active.login')) {
-            $rules['h-captcha-response'] = 'required|captcha';
+        if(
+        	config('captcha.enabled') ||
+        	config('captcha.active.login') ||
+        	(
+				config('captcha.triggers.login.enabled') &&
+				request()->session()->has('login_attempts') &&
+				request()->session()->get('login_attempts') >= config('captcha.triggers.login.attempts')
+			)
+        ) {
+            $rules['h-captcha-response'] = 'required|filled|captcha|min:5';
         }
         
         $this->validate($request, $rules);
@@ -101,5 +111,29 @@ class LoginController extends Controller
         $log->ip_address = $request->ip();
         $log->user_agent = $request->userAgent();
         $log->save();
+    }
+
+    /**
+     * Get the failed login response instance.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendFailedLoginResponse(Request $request)
+    {
+    	if(config('captcha.triggers.login.enabled')) {
+			if ($request->session()->has('login_attempts')) {
+				$ct = $request->session()->get('login_attempts');
+				$request->session()->put('login_attempts', $ct + 1);
+			} else {
+				$request->session()->put('login_attempts', 1);
+			}
+    	}
+
+        throw ValidationException::withMessages([
+            $this->username() => [trans('auth.failed')],
+        ]);
     }
 }

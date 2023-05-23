@@ -16,5 +16,12 @@ return [
     'active' => [
     	'login' => env('CAPTCHA_ENABLED_ON_LOGIN', false),
     	'register' => env('CAPTCHA_ENABLED_ON_REGISTER', false)
+    ],
+
+    'triggers' => [
+    	'login' => [
+    		'enabled' => env('CAPTCHA_TRIGGERS_LOGIN_ENABLED', false),
+    		'attempts' => env('CAPTCHA_TRIGGERS_LOGIN_ATTEMPTS', 2)
+    	]
     ]
 ];
