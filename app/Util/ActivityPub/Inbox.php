@@ -698,7 +698,7 @@ class Inbox
 							return;
 						}
 						$status = Status::whereProfileId($profile->id)
-							->whereUri($id)
+							->whereObjectUrl($id)
 							->first();
 						if(!$status) {
 							return;
