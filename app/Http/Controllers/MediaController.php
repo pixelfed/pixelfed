@@ -3,18 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth, Storage, URL;
 use App\Media;
-use Image as Intervention;
-use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 
 class MediaController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware('auth');
-	}
-
 	public function index(Request $request)
 	{
 		//return view('settings.drive.index');
@@ -24,4 +16,16 @@ class MediaController extends Controller
 	{
         abort(400, 'Endpoint deprecated');
 	}	
+
+	public function fallbackRedirect(Request $request, $pid, $mhash, $uhash, $f)
+	{
+		abort_if(!config_cache('pixelfed.cloud_storage'), 404);
+		$path = 'public/m/_v2/' . $pid . '/' . $mhash . '/' . $uhash . '/' . $f;
+		$media = Media::whereProfileId($pid)
+			->whereMediaPath($path)
+			->whereNotNull('cdn_url')
+			->firstOrFail();
+
+		return redirect()->away($media->cdn_url);
+	}
 }
