@@ -74,11 +74,11 @@
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> public key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-public.key')) ? '✅ true' : '❌ false' }}</span>
+			<span>{{ file_exists(storage_path('oauth-public.key')) || config_cache('passport.public_key') ? '✅ true' : '❌ false' }}</span>
 		</li>
 		<li>
 			<strong><span class="badge badge-primary">OAUTH</span> private key exists: </strong>
-			<span>{{ file_exists(storage_path('oauth-private.key')) ? '✅ true' : '❌ false' }}</span>
+			<span>{{ file_exists(storage_path('oauth-private.key')) || config_cache('passport.private_key') ? '✅ true' : '❌ false' }}</span>
 		</li>		
 		
 		<hr>

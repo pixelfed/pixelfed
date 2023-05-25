@@ -1,6 +1,9 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.6...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.7...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)
 
 ### API Changes
 - Added [/api/v1/followed_tags](https://docs.joinmastodon.org/methods/followed_tags/) api endpoint ([175a8486](https://github.com/pixelfed/pixelfed/commit/175a8486))
