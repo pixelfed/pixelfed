@@ -39,7 +39,7 @@
 									<span class="font-weight-bold">{{ allHistory[0].account.username }}</span>
 								</div>
 
-								<div>{{ historyIndex == (allHistory.length - 1) ? 'created' : 'edited' }} {{ formatTime(allHistory[allHistory.length - 1].created_at) }}</div>
+								<div>{{ historyIndex == (allHistory.length - 1) ? 'created' : 'edited' }} {{ formatTime(allHistory[historyIndex].created_at) }}</div>
 							</div>
 						</div>
 
