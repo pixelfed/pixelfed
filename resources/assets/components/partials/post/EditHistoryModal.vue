@@ -121,7 +121,9 @@
 							</div>
 						</div>
 					</template>
-					<p class="lead my-4" v-html="allHistory[historyIndex].content"></p>
+					<div class="w-100 my-4 px-4 text-break justify-content-start">
+						<p class="mb-0" v-html="allHistory[historyIndex].content"></p>
+					</div>
 				</div>
 			</template>
 
