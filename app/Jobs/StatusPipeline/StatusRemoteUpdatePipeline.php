@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Media;
 use App\ModLog;
+use App\Profile;
 use App\Status;
 use App\Models\StatusEdit;
 use App\Services\StatusService;
