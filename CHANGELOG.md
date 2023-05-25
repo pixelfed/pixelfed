@@ -7,6 +7,7 @@
 
 ### Updates
 - Update StatusService, fix bug in getFull method ([4d8b4dcf](https://github.com/pixelfed/pixelfed/commit/4d8b4dcf))
+- Update Config, bump version for post edit support without having to clear cache ([c0190d84](https://github.com/pixelfed/pixelfed/commit/c0190d84))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)
