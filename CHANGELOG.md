@@ -1,6 +1,9 @@
 # Release Notes
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.7...dev)
+
+### Updates
+- Update StatusService, fix bug in getFull method ([4d8b4dcf](https://github.com/pixelfed/pixelfed/commit/4d8b4dcf))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)
@@ -57,7 +60,6 @@
 - Update AP Inbox, fix delete handling ([2800c888](https://github.com/pixelfed/pixelfed/commit/2800c888))
 - Update login/register views and captcha config, enable login or register captchas or both ([c071c719](https://github.com/pixelfed/pixelfed/commit/c071c719))
 - Update login form, allow admins to enable captcha after X failed attempts. Admins can set the number of attempts before captcha is shown, default is 2 attempts before captcha is required ([221ddce0](https://github.com/pixelfed/pixelfed/commit/221ddce0))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.6 (2023-05-03)](https://github.com/pixelfed/pixelfed/compare/v0.11.5...v0.11.6)
 
