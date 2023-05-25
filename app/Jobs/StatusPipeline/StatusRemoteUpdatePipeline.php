@@ -85,7 +85,6 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 
 		Media::whereProfileId($status->profile_id)
 			->whereStatusId($status->id)
-			->get()
 			->update([
 				'status_id' => null
 			]);
