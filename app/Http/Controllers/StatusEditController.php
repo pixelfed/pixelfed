@@ -44,8 +44,9 @@ class StatusEditController extends Controller
     	$cached = StatusService::get($status->id, false);
 
     	$res = $status->edits->map(function($edit) use($cached) {
+    		$caption = nl2br(strip_tags(str_replace('</p>', "\n", $edit->caption)));
     		return [
-    			'content' => Autolink::create()->autolink($edit->caption),
+    			'content' => Autolink::create()->autolink($caption),
     			'spoiler_text' => $edit->spoiler_text,
     			'sensitive' => (bool) $edit->is_nsfw,
     			'created_at' => str_replace('+00:00', 'Z', $edit->created_at->format(DATE_RFC3339_EXTENDED)),
