@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.7...dev)
 
+### Added
+- Post edits ([#4416](https://github.com/pixelfed/pixelfed/pull/4416)) ([98cf8f3](https://github.com/pixelfed/pixelfed/commit/98cf8f3))
+
 ### Updates
 - Update StatusService, fix bug in getFull method ([4d8b4dcf](https://github.com/pixelfed/pixelfed/commit/4d8b4dcf))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
