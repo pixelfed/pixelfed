@@ -94,6 +94,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 		Route::post('tags/{id}/follow', 'Api\ApiV1Controller@followHashtag')->middleware($middleware);
 		Route::post('tags/{id}/unfollow', 'Api\ApiV1Controller@unfollowHashtag')->middleware($middleware);
 		Route::get('tags/{id}', 'Api\ApiV1Controller@getHashtag')->middleware($middleware);
+
+		Route::get('statuses/{id}/history', 'StatusEditController@history')->middleware($middleware);
+		Route::put('statuses/{id}', 'StatusEditController@store')->middleware($middleware);
 	});
 
 	Route::group(['prefix' => 'v2'], function() use($middleware) {

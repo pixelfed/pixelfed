@@ -26,7 +26,7 @@
 						</p>
 					</div>
 					<status
-						:key="post.id"
+						:key="post.id + ':fui:' + forceUpdateIdx"
 						:status="post"
 						:profile="user"
 						v-on:menu="openContextMenu()"
@@ -83,6 +83,7 @@
 			:profile="user"
 			@report-modal="handleReport()"
 			@delete="deletePost()"
+			v-on:edit="handleEdit"
 		/>
 
 		<likes-modal
@@ -105,6 +106,11 @@
 			:status="post"
 		/>
 
+		<post-edit-modal
+			ref="editModal"
+			v-on:update="mergeUpdatedPost"
+		/>
+
 		<drawer />
 	</div>
 </template>
@@ -119,6 +125,7 @@
 	import LikesModal from './partials/post/LikeModal.vue';
 	import SharesModal from './partials/post/ShareModal.vue';
 	import ReportModal from './partials/modal/ReportPost.vue';
+	import PostEditModal from './partials/post/PostEditModal.vue';
 
 	export default {
 		props: {
@@ -140,7 +147,8 @@
 			"likes-modal": LikesModal,
 			"shares-modal": SharesModal,
 			"rightbar": Rightbar,
-			"report-modal": ReportModal
+			"report-modal": ReportModal,
+            "post-edit-modal": PostEditModal
 		},
 
 		data() {
@@ -156,7 +164,8 @@
 				isReply: false,
 				reply: {},
 				showSharesModal: false,
-				postStateError: false
+				postStateError: false,
+				forceUpdateIdx: 0
 			}
 		},
 
@@ -405,6 +414,17 @@
 					break;
 				}
 			},
+
+			handleEdit(status) {
+            	this.$refs.editModal.show(status);
+            },
+
+            mergeUpdatedPost(post) {
+            	this.post = post;
+            	this.$nextTick(() => {
+            		this.forceUpdateIdx++;
+            	});
+            }
 		}
 	}
 </script>

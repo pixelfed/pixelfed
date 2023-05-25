@@ -9,6 +9,7 @@ use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Poll;
 use App\Services\AccountService;
+use App\Models\StatusEdit;
 
 class Status extends Model
 {
@@ -27,7 +28,8 @@ class Status extends Model
 	 * @var array
 	 */
 	protected $casts = [
-		'deleted_at' => 'datetime'
+		'deleted_at' => 'datetime',
+		'edited_at'  => 'datetime'
 	];
 
 	protected $guarded = [];
@@ -392,5 +394,10 @@ class Status extends Model
 	public function poll()
 	{
 		return $this->hasOne(Poll::class);
+	}
+
+	public function edits()
+	{
+		return $this->hasMany(StatusEdit::class);
 	}
 }
