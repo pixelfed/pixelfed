@@ -121,6 +121,9 @@ class StatusService
 	public static function getFull($id, $pid, $publicOnly = true)
 	{
 		$res = self::get($id, $publicOnly);
+		if(!$res || !isset($res['account']) || !isset($res['account']['id'])) {
+			return $res;
+		}
 		$res['relationship'] = RelationshipService::get($pid, $res['account']['id']);
 		return $res;
 	}
