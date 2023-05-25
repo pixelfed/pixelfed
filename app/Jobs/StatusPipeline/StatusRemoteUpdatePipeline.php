@@ -75,7 +75,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 				$nm['url']
 			) &&
 			in_array($nm['type'], ['Document', 'Image', 'Video']) &&
-			in_array($nm['mediaType'], explode(',', config('pixelfed.media_types')))
+			in_array($nm['mediaType'], explode(',', config('pixelfed.media_types')));
 		});
 
 		// Skip when no media
