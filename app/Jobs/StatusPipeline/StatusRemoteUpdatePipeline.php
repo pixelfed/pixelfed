@@ -33,9 +33,12 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 	 */
 	public function handle(): void
 	{
+		$ts = (string) microtime(true);
+		\Log::info('AP:inbox Update:Job invoked ' . $ts);
 		$activity = $this->activity;
 		$status = Status::with('media')->whereObjectUrl($activity['id'])->first();
 		if(!$status) {
+			\Log::info('AP:inbox Update:Job notFound ' . $ts . ' activity: ' . $activity);
 			return;
 		}
 		$this->createPreviousEdit($status);
