@@ -13,6 +13,7 @@ use App\ModLog;
 use App\Status;
 use App\Models\StatusEdit;
 use App\Services\StatusService;
+use Purify;
 
 class StatusRemoteUpdatePipeline implements ShouldQueue
 {
