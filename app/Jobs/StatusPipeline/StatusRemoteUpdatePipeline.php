@@ -144,7 +144,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 	protected function createEdit($status, $activity)
 	{
 		$cleaned = isset($activity['content']) ? Purify::clean($activity['content']) : null;
-		$spoiler_text = isset($activity['summary']) ? Purify::clean($attributes['summary']) : null;
+		$spoiler_text = isset($activity['summary']) ? Purify::clean($activity['summary']) : null;
 		$sensitive = isset($activity['sensitive']) ? $activity['sensitive'] : null;
 		$mids = $status->media()->count() ? $status->media()->orderBy('order')->pluck('id')->toArray() : null;
 		StatusEdit::create([
