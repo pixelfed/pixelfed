@@ -28,6 +28,7 @@ use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryFetch;
+use App\Jobs\StatusPipeline\StatusRemoteUpdatePipeline;
 
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
 use App\Util\ActivityPub\Validator\Add as AddValidator;
@@ -128,9 +129,9 @@ class Inbox
 				$this->handleFlagActivity();
 				break;
 
-			// case 'Update':
-			// 	(new UpdateActivity($this->payload, $this->profile))->handle();
-			// 	break;
+			case 'Update':
+				$this->handleUpdateActivity();
+				break;
 
 			default:
 				// TODO: decide how to handle invalid verbs.
@@ -1206,5 +1207,24 @@ class Inbox
 		$report->save();
 
 		return;
+	}
+
+	public function handleUpdateActivity()
+	{
+		$activity = $this->payload['object'];
+		$actor = $this->actorFirstOrCreate($this->payload['actor']);
+		if(!$actor || $actor->domain == null) {
+			return;
+		}
+
+		if(!isset($activity['type'], $activity['id'])) {
+			return;
+		}
+
+		if($activity['type'] === 'Note') {
+			if(Status::whereObjectUrl($activity['id'])->exists()) {
+				StatusRemoteUpdatePipeline::dispatch($actor, $activity);
+			}
+		}
 	}
 }

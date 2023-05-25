@@ -25,6 +25,8 @@ return [
 	// Cached public timeline for larger instances (beta)
 	'cached_public_timeline' => env('EXP_CPT', false),
 
+	'cached_home_timeline' => env('EXP_CHT', false),
+
 	// Groups (unreleased)
 	'gps' => env('EXP_GPS', false),
 
@@ -33,4 +35,10 @@ return [
 
 	// Enforce Mastoapi Compatibility (alpha)
 	'emc' => env('EXP_EMC', true),
+
+	// HLS Live Streaming
+	'hls' => env('HLS_LIVE', false),
+
+	// Post Update/Edits
+	'pue' => env('EXP_PUE', false),
 ];

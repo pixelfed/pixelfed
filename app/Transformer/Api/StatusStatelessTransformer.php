@@ -65,7 +65,8 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'media_attachments'			=> MediaService::get($status->id),
 			'account'					=> AccountService::get($status->profile_id, true),
 			'tags'						=> StatusHashtagService::statusTags($status->id),
-			'poll'						=> $poll
+			'poll'						=> $poll,
+			'edited_at'					=> $status->edited_at ? str_replace('+00:00', 'Z', $status->edited_at->format(DATE_RFC3339_EXTENDED)) : null,
 		];
 	}
 }
