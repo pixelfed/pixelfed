@@ -1211,19 +1211,14 @@ class Inbox
 
 	public function handleUpdateActivity()
 	{
-		$ts = (string) microtime(true);
-		\Log::info('AP:inbox Update ' . $ts);
 		$activity = $this->payload['object'];
 
 		if(!isset($activity['type'], $activity['id'])) {
-			\Log::info('AP:inbox Update ma ' . $ts);
 			return;
 		}
 
 		if($activity['type'] === 'Note') {
-			\Log::info('AP:inbox Update at:Note ' . $ts);
 			if(Status::whereObjectUrl($activity['id'])->exists()) {
-				\Log::info('AP:inbox Update at:Note:exists ' . $ts);
 				StatusRemoteUpdatePipeline::dispatch($activity);
 			}
 		}
