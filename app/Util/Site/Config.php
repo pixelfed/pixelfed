@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Config {
 
-	const CACHE_KEY = 'api:site:configuration:_v0.7';
+	const CACHE_KEY = 'api:site:configuration:_v0.8';
 
 	public static function get() {
 		return Cache::remember(self::CACHE_KEY, 900, function() {
