@@ -18,15 +18,13 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	public $actor;
 	public $activity;
 
 	/**
 	 * Create a new job instance.
 	 */
-	public function __construct($actor, $activity)
+	public function __construct($activity)
 	{
-		$this->actor = $actor;
 		$this->activity = $activity;
 	}
 
@@ -36,7 +34,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 	public function handle(): void
 	{
 		$activity = $this->activity;
-		$status = Status::with('media')->whereProfileId($this->actor['id'])->whereObjectUrl($activity['id'])->first();
+		$status = Status::with('media')->whereObjectUrl($activity['id'])->first();
 		if(!$status) {
 			return;
 		}

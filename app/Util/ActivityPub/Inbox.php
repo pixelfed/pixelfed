@@ -1212,10 +1212,6 @@ class Inbox
 	public function handleUpdateActivity()
 	{
 		$activity = $this->payload['object'];
-		$actor = $this->actorFirstOrCreate($this->payload['actor']);
-		if(!$actor || $actor->domain == null) {
-			return;
-		}
 
 		if(!isset($activity['type'], $activity['id'])) {
 			return;
@@ -1223,7 +1219,7 @@ class Inbox
 
 		if($activity['type'] === 'Note') {
 			if(Status::whereObjectUrl($activity['id'])->exists()) {
-				StatusRemoteUpdatePipeline::dispatch($actor, $activity);
+				StatusRemoteUpdatePipeline::dispatch($activity);
 			}
 		}
 	}
