@@ -40,5 +40,5 @@ return [
 	'hls' => env('HLS_LIVE', false),
 
 	// Post Update/Edits
-	'pue' => env('EXP_PUE', false),
+	'pue' => env('EXP_PUE', true),
 ];
