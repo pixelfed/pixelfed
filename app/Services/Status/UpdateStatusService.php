@@ -64,7 +64,7 @@ class UpdateStatusService
 		if(isset($attributes['status'])) {
 			$cleaned = Purify::clean($attributes['status']);
 			$status->caption = $cleaned;
-			$status->rendered = Autolink::create()->autolink($cleaned);
+			$status->rendered = nl2br(Autolink::create()->autolink($cleaned));
 		} else {
 			$status->caption = null;
 			$status->rendered = null;

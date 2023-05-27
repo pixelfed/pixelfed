@@ -11,6 +11,7 @@
 - Update EditHistoryModal, fix caption rendering ([0f803446](https://github.com/pixelfed/pixelfed/commit/0f803446))
 - Update StatusRemoteUpdatePipeline, fix typo ([109d0419](https://github.com/pixelfed/pixelfed/commit/109d0419))
 - Update StatusActivityPubDeliver, fix delivery addressing ([1f2183ee](https://github.com/pixelfed/pixelfed/commit/1f2183ee))
+- Update UpdateStatusService, fix formatting issue. Fixes #4423 ([4479055e](https://github.com/pixelfed/pixelfed/commit/4479055e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)
