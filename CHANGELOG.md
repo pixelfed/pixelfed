@@ -13,6 +13,7 @@
 - Update StatusActivityPubDeliver, fix delivery addressing ([1f2183ee](https://github.com/pixelfed/pixelfed/commit/1f2183ee))
 - Update UpdateStatusService, fix formatting issue. Fixes #4423 ([4479055e](https://github.com/pixelfed/pixelfed/commit/4479055e))
 - Update nginx config ([ee3b6e09](https://github.com/pixelfed/pixelfed/commit/ee3b6e09))
+- Update Status model, increase max mentions, hashtags and links ([1430f532](https://github.com/pixelfed/pixelfed/commit/1430f532))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)

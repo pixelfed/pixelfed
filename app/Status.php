@@ -50,11 +50,11 @@ class Status extends Model
 		'loop'
 	];
 
-	const MAX_MENTIONS = 5;
+	const MAX_MENTIONS = 20;
 
-	const MAX_HASHTAGS = 30;
+	const MAX_HASHTAGS = 60;
 
-	const MAX_LINKS = 2;
+	const MAX_LINKS = 5;
 
 	public function profile()
 	{
