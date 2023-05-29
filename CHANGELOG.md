@@ -5,6 +5,9 @@
 ### Added
 - Post edits ([#4416](https://github.com/pixelfed/pixelfed/pull/4416)) ([98cf8f3](https://github.com/pixelfed/pixelfed/commit/98cf8f3))
 
+### API Changes
+- Added `following_since` attribute to `/api/v1/accounts/relationships` endpoint when `_pe=1` (pixelfed entity) parameter is present ([992d910b](https://github.com/pixelfed/pixelfed/commit/992d910b))
+
 ### Updates
 - Update StatusService, fix bug in getFull method ([4d8b4dcf](https://github.com/pixelfed/pixelfed/commit/4d8b4dcf))
 - Update Config, bump version for post edit support without having to clear cache ([c0190d84](https://github.com/pixelfed/pixelfed/commit/c0190d84))
