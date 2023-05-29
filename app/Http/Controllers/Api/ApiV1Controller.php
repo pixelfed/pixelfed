@@ -905,13 +905,16 @@ class ApiV1Controller extends Controller
 			'id'    => 'required|array|min:1|max:20',
 			'id.*'  => 'required|integer|min:1|max:' . PHP_INT_MAX
 		]);
+		$napi = $request->has(self::PF_API_ENTITY_KEY);
 		$pid = $request->user()->profile_id ?? $request->user()->profile->id;
 		$res = collect($request->input('id'))
 			->filter(function($id) use($pid) {
 				return intval($id) !== intval($pid);
 			})
-			->map(function($id) use($pid) {
-				return RelationshipService::get($pid, $id);
+			->map(function($id) use($pid, $napi) {
+				return $napi ?
+				 RelationshipService::getWithDate($pid, $id) :
+				 RelationshipService::get($pid, $id);
 		});
 		return $this->json($res);
 	}
