@@ -117,6 +117,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 			Route::get('two-factor', 'Api\ApiV1Dot1Controller@accountTwoFactor')->middleware($middleware);
 			Route::get('emails-from-pixelfed', 'Api\ApiV1Dot1Controller@accountEmailsFromPixelfed')->middleware($middleware);
 			Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
+
+			Route::get('app/settings', 'UserAppSettingsController@get')->middleware($middleware);
+			Route::post('app/settings', 'UserAppSettingsController@store')->middleware($middleware);
 		});
 
 		Route::group(['prefix' => 'collections'], function () use($middleware) {
