@@ -1,13 +1,17 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.7...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.8...dev)
 
-### Added
-- Post edits ([#4416](https://github.com/pixelfed/pixelfed/pull/4416)) ([98cf8f3](https://github.com/pixelfed/pixelfed/commit/98cf8f3))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
 
 ### API Changes
 - Added `following_since` attribute to `/api/v1/accounts/relationships` endpoint when `_pe=1` (pixelfed entity) parameter is present ([992d910b](https://github.com/pixelfed/pixelfed/commit/992d910b))
 - Added `/api/v1.1/accounts/app/settings` endpoint and UserAppSettings model to store app specific settings ([a2305d5f](https://github.com/pixelfed/pixelfed/commit/a2305d5f))
+
+### Added
+- Post edits ([#4416](https://github.com/pixelfed/pixelfed/pull/4416)) ([98cf8f3](https://github.com/pixelfed/pixelfed/commit/98cf8f3))
 
 ### Updates
 - Update StatusService, fix bug in getFull method ([4d8b4dcf](https://github.com/pixelfed/pixelfed/commit/4d8b4dcf))
@@ -18,6 +22,7 @@
 - Update UpdateStatusService, fix formatting issue. Fixes #4423 ([4479055e](https://github.com/pixelfed/pixelfed/commit/4479055e))
 - Update nginx config ([ee3b6e09](https://github.com/pixelfed/pixelfed/commit/ee3b6e09))
 - Update Status model, increase max mentions, hashtags and links ([1430f532](https://github.com/pixelfed/pixelfed/commit/1430f532))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.7 (2023-05-24)](https://github.com/pixelfed/pixelfed/compare/v0.11.6...v0.11.7)
 
