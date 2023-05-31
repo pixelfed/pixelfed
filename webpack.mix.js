@@ -24,8 +24,6 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/story-compose.js', 'public/js')
  .js('resources/assets/js/direct.js', 'public/js')
 .js('resources/assets/js/admin.js', 'public/js')
-.js('resources/assets/js/rempro.js', 'public/js')
-.js('resources/assets/js/rempos.js', 'public/js')
 
 .extract([
 	'lodash',
