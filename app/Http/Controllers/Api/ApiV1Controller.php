@@ -2447,14 +2447,17 @@ class ApiV1Controller extends Controller
 					'id' => $dm->id,
 					'unread' => false,
 					'accounts' => [
-						AccountService::getMastodon($from)
+						AccountService::getMastodon($from, true)
 					],
 					'last_status' => StatusService::getDirectMessage($dm->status_id)
 				];
 				return $res;
 			})
 			->filter(function($dm) {
-				return isset($dm['accounts']) && count($dm['accounts']) && !empty($dm['last_status']);
+				if(!$dm || empty($dm['last_status']) || !isset($dm['accounts']) || !count($dm['accounts']) || !isset($dm['accounts'][0]) || !isset($dm['accounts'][0]['id'])) {
+					return false;
+				}
+				return true;
 			})
 			->unique(function($item, $key) {
 				return $item['accounts'][0]['id'];
