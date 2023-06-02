@@ -2,6 +2,8 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.8...dev)
 
+### Updates
+- Update Notifications.vue component, fix filtering logic to prevent endless spinner ([3df9b53f](https://github.com/pixelfed/pixelfed/commit/3df9b53f))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)

@@ -234,16 +234,16 @@
 						return;
 					}
 					let data = res.data.filter(n => {
-						if(n.type == 'share' && !n.status) {
+						if(n.type == 'share' && (!n.status || !n.account)) {
 							return false;
 						}
-						if(n.type == 'comment' && !n.status) {
+						if(n.type == 'comment' && (!n.status || !n.account)) {
 							return false;
 						}
-						if(n.type == 'mention' && !n.status) {
+						if(n.type == 'mention' && (!n.status || !n.account)) {
 							return false;
 						}
-						if(n.type == 'favourite' && !n.status) {
+						if(n.type == 'favourite' && (!n.status || !n.account)) {
 							return false;
 						}
 						if(n.type == 'follow' && !n.account) {
