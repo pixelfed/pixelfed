@@ -191,7 +191,7 @@ class MediaStorageService {
 		unlink($tmpName);
 	}
 
-	protected function fetchAvatar($avatar, $local = false)
+	protected function fetchAvatar($avatar, $local = false, $skipRecentCheck = false)
 	{
 		$url = $avatar->remote_url;
 		$driver = $local ? 'local' : config('filesystems.cloud');
@@ -215,8 +215,10 @@ class MediaStorageService {
 		$mime = $head['mime'];
 		$max_size = (int) config('pixelfed.max_avatar_size') * 1000;
 
-		if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
-			return;
+		if(!$skipRecentCheck) {
+			if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
+				return;
+			}
 		}
 
 		// handle pleroma edge case

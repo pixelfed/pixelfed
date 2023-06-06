@@ -84,7 +84,7 @@ class RemoteAvatarFetchFromUrl implements ShouldQueue
 			$avatar->save();
 		}
 
-		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false);
+		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false, true);
 
 		return 1;
 	}
