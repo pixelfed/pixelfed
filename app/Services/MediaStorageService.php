@@ -191,7 +191,7 @@ class MediaStorageService {
 		unlink($tmpName);
 	}
 
-	protected function fetchAvatar($avatar, $local = false)
+	protected function fetchAvatar($avatar, $local = false, $skipRecentCheck = false)
 	{
 		$url = $avatar->remote_url;
 		$driver = $local ? 'local' : config('filesystems.cloud');
@@ -215,9 +215,14 @@ class MediaStorageService {
 		$mime = $head['mime'];
 		$max_size = (int) config('pixelfed.max_avatar_size') * 1000;
 
-		if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
-			return;
+		if(!$skipRecentCheck) {
+			if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
+				return;
+			}
 		}
+
+		Cache::forget('avatar:' . $avatar->profile_id);
+		AccountService::del($avatar->profile_id);
 
 		// handle pleroma edge case
 		if(Str::endsWith($mime, '; charset=utf-8')) {
@@ -266,7 +271,7 @@ class MediaStorageService {
 		$avatar->save();
 
 		Cache::forget('avatar:' . $avatar->profile_id);
-		Cache::forget(AccountService::CACHE_KEY . $avatar->profile_id);
+		AccountService::del($avatar->profile_id);
 
 		unlink($tmpName);
 	}

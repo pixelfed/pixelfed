@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class StoryValidationTest extends TestCase
 {
+	public $activity;
+
     public function setUp(): void
     {
         parent::setUp();

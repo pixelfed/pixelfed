@@ -29,6 +29,7 @@ use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryFetch;
 use App\Jobs\StatusPipeline\StatusRemoteUpdatePipeline;
+use App\Jobs\ProfilePipeline\HandleUpdateActivity;
 
 use App\Util\ActivityPub\Validator\Accept as AcceptValidator;
 use App\Util\ActivityPub\Validator\Add as AddValidator;
@@ -36,6 +37,7 @@ use App\Util\ActivityPub\Validator\Announce as AnnounceValidator;
 use App\Util\ActivityPub\Validator\Follow as FollowValidator;
 use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
+use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 
 use App\Services\PollService;
 use App\Services\FollowerService;
@@ -1217,9 +1219,17 @@ class Inbox
 			return;
 		}
 
+		if(!Helpers::validateUrl($activity['id'])) {
+			return;
+		}
+
 		if($activity['type'] === 'Note') {
 			if(Status::whereObjectUrl($activity['id'])->exists()) {
 				StatusRemoteUpdatePipeline::dispatch($activity);
+			}
+		} else if ($activity['type'] === 'Person') {
+			if(UpdatePersonValidator::validate($this->payload)) {
+				HandleUpdateActivity::dispatch($this->payload)->onQueue('low');
 			}
 		}
 	}

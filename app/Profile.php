@@ -178,6 +178,14 @@ class Profile extends Model
 				return url('/storage/avatars/default.jpg');
 			}
 
+			if( $avatar->is_remote &&
+				$avatar->remote_url &&
+				boolval(config_cache('pixelfed.cloud_storage')) == false &&
+				boolval(config_cache('federation.avatars.store_local')) == true
+			) {
+				return $avatar->remote_url;
+			}
+
 			if($path === 'public/avatars/default.jpg') {
 				return url('/storage/avatars/default.jpg');
 			}

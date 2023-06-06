@@ -13,17 +13,20 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Str;
 use Zttp\Zttp;
 use App\Http\Controllers\AvatarController;
+use Cache;
 use Storage;
 use Log;
 use Illuminate\Http\File;
+use App\Services\AccountService;
 use App\Services\MediaStorageService;
 use App\Services\ActivityPubFetchService;
 
-class RemoteAvatarFetch implements ShouldQueue
+class RemoteAvatarFetchFromUrl implements ShouldQueue
 {
 	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
 	protected $profile;
+	protected $url;
 
 	/**
 	* Delete the job if its models no longer exist.
@@ -46,9 +49,10 @@ class RemoteAvatarFetch implements ShouldQueue
 	*
 	* @return void
 	*/
-	public function __construct(Profile $profile)
+	public function __construct(Profile $profile, $url)
 	{
 		$this->profile = $profile;
+		$this->url = $url;
 	}
 
 	/**
@@ -59,6 +63,9 @@ class RemoteAvatarFetch implements ShouldQueue
 	public function handle()
 	{
 		$profile = $this->profile;
+
+		Cache::forget('avatar:' . $profile->id);
+		AccountService::del($profile->id);
 
 		if(boolval(config_cache('pixelfed.cloud_storage')) == false && boolval(config_cache('federation.avatars.store_local')) == false) {
 			return 1;
@@ -73,42 +80,17 @@ class RemoteAvatarFetch implements ShouldQueue
 		if(!$avatar) {
 			$avatar = new Avatar;
 			$avatar->profile_id = $profile->id;
+			$avatar->is_remote = true;
+			$avatar->remote_url = $this->url;
 			$avatar->save();
-		}
-
-		if($avatar->media_path == null && $avatar->remote_url == null) {
-			$avatar->media_path = 'public/avatars/default.jpg';
+		} else {
+			$avatar->remote_url = $this->url;
 			$avatar->is_remote = true;
 			$avatar->save();
 		}
 
-		$person = Helpers::fetchFromUrl($profile->remote_url);
 
-		if(!$person || !isset($person['@context'])) {
-			return 1;
-		}
-
-		if( !isset($person['icon']) ||
-			!isset($person['icon']['type']) ||
-			!isset($person['icon']['url'])
-		) {
-			return 1;
-		}
-
-		if($person['icon']['type'] !== 'Image') {
-			return 1;
-		}
-
-		if(!Helpers::validateUrl($person['icon']['url'])) {
-			return 1;
-		}
-
-		$icon = $person['icon'];
-
-		$avatar->remote_url = $icon['url'];
-		$avatar->save();
-
-		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false);
+		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false, true);
 
 		return 1;
 	}
