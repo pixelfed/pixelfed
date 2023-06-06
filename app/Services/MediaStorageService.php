@@ -221,6 +221,9 @@ class MediaStorageService {
 			}
 		}
 
+		Cache::forget('avatar:' . $avatar->profile_id);
+		AccountService::del($avatar->profile_id);
+
 		// handle pleroma edge case
 		if(Str::endsWith($mime, '; charset=utf-8')) {
 			$mime = str_replace('; charset=utf-8', '', $mime);
@@ -268,7 +271,7 @@ class MediaStorageService {
 		$avatar->save();
 
 		Cache::forget('avatar:' . $avatar->profile_id);
-		Cache::forget(AccountService::CACHE_KEY . $avatar->profile_id);
+		AccountService::del($avatar->profile_id);
 
 		unlink($tmpName);
 	}

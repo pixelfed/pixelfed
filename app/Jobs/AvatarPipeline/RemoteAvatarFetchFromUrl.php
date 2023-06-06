@@ -13,9 +13,11 @@ use App\Util\ActivityPub\Helpers;
 use Illuminate\Support\Str;
 use Zttp\Zttp;
 use App\Http\Controllers\AvatarController;
+use Cache;
 use Storage;
 use Log;
 use Illuminate\Http\File;
+use App\Services\AccountService;
 use App\Services\MediaStorageService;
 use App\Services\ActivityPubFetchService;
 
@@ -83,6 +85,9 @@ class RemoteAvatarFetchFromUrl implements ShouldQueue
 			$avatar->is_remote = true;
 			$avatar->save();
 		}
+
+		Cache::forget('avatar:' . $avatar->profile_id);
+		AccountService::del($avatar->profile_id);
 
 		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false, true);
 
