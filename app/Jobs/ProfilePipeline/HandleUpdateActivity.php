@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Avatar;
 use App\Profile;
 use App\Util\ActivityPub\Helpers;
+use Cache;
 use Purify;
 use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
 use App\Util\Lexer\Autolink;
@@ -81,7 +82,12 @@ class HandleUpdateActivity implements ShouldQueue
             $profile->save();
         }
 
-        RemoteAvatarFetch::dispatch($profile)->onQueue('low');
+        if(isset($payload['object']['icon'])) {
+            RemoteAvatarFetch::dispatch($profile)->onQueue('low');
+        } else {
+            $profile->avatar->update(['remote_url' => null]);
+            Cache::forget('avatar:' . $profile->id);
+        }
 
         return;
     }
