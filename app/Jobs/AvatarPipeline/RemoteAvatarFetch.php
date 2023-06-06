@@ -60,7 +60,7 @@ class RemoteAvatarFetch implements ShouldQueue
 	{
 		$profile = $this->profile;
 
-		if(config_cache('pixelfed.cloud_storage') == false && config_cache('federation.avatars.store_local') == false) {
+		if(boolval(config_cache('pixelfed.cloud_storage')) == false && boolval(config_cache('federation.avatars.store_local')) == false) {
 			return 1;
 		}
 
@@ -108,7 +108,7 @@ class RemoteAvatarFetch implements ShouldQueue
 		$avatar->remote_url = $icon['url'];
 		$avatar->save();
 
-		MediaStorageService::avatar($avatar, config_cache('pixelfed.cloud_storage') == false);
+		MediaStorageService::avatar($avatar, boolval(config_cache('pixelfed.cloud_storage')) == false);
 
 		return 1;
 	}
