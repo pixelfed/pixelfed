@@ -6,6 +6,7 @@
 - Update Notifications.vue component, fix filtering logic to prevent endless spinner ([3df9b53f](https://github.com/pixelfed/pixelfed/commit/3df9b53f))
 - Update Direct Messages, fix api endpoint ([fe8728c0](https://github.com/pixelfed/pixelfed/commit/fe8728c0))
 - Update nginx config ([fbdc6358](https://github.com/pixelfed/pixelfed/commit/fbdc6358))
+- Update api routes, add DeprecatedEndpoint middleware. For more info, visit [pixelfed.org/kb/10404](https://pixelfed.org/kb/10404) ([a8453e77](https://github.com/pixelfed/pixelfed/commit/a8453e77))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
