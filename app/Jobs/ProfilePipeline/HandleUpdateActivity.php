@@ -83,7 +83,7 @@ class HandleUpdateActivity implements ShouldQueue
         }
 
         if(isset($payload['object']['icon']) && isset($payload['object']['icon']['url'])) {
-            RemoteAvatarFetch::dispatch($profile, $payload['object']['icon']['url'])->onQueue('low');
+            RemoteAvatarFetchFromUrl::dispatch($profile, $payload['object']['icon']['url'])->onQueue('low');
         } else {
             $profile->avatar->update(['remote_url' => null]);
             Cache::forget('avatar:' . $profile->id);
