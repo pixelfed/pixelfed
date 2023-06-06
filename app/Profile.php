@@ -180,7 +180,6 @@ class Profile extends Model
 
 			if( $avatar->is_remote &&
 				$avatar->remote_url &&
-				boolval(config_cache('pixelfed.cloud_storage')) == false &&
 				boolval(config_cache('federation.avatars.store_local')) == true
 			) {
 				return $avatar->remote_url;
