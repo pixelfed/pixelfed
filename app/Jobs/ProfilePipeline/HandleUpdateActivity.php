@@ -13,7 +13,7 @@ use App\Profile;
 use App\Util\ActivityPub\Helpers;
 use Cache;
 use Purify;
-use App\Jobs\AvatarPipeline\RemoteAvatarFetch;
+use App\Jobs\AvatarPipeline\RemoteAvatarFetchFromUrl;
 use App\Util\Lexer\Autolink;
 
 class HandleUpdateActivity implements ShouldQueue
@@ -82,8 +82,8 @@ class HandleUpdateActivity implements ShouldQueue
             $profile->save();
         }
 
-        if(isset($payload['object']['icon'])) {
-            RemoteAvatarFetch::dispatch($profile)->onQueue('low');
+        if(isset($payload['object']['icon']) && isset($payload['object']['icon']['url'])) {
+            RemoteAvatarFetch::dispatch($profile, $payload['object']['icon']['url'])->onQueue('low');
         } else {
             $profile->avatar->update(['remote_url' => null]);
             Cache::forget('avatar:' . $profile->id);
