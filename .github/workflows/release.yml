@@ -1,0 +1,36 @@
+---
+name: Prepare a release
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Install Composer dependencies
+        run: |
+          composer install --no-dev --prefer-dist --no-ansi --no-interaction --no-progress --ignore-platform-reqs
+
+      - name: Generate release tarball
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          P="pixelfed-${VERSION}"
+
+          git archive --prefix="${P}/" -o ${P}.tar ${GITHUB_REF_NAME}
+          tar --append -f ${P}.tar --transform "s,^,${P}/," vendor
+          gzip ${P}.tar
+
+      - name: Upload release tarball
+        uses: softprops/action-gh-release@v1
+        with:
+          files: pixelfed-*.tar.gz
+          append_body: true
