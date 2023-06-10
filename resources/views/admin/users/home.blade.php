@@ -16,26 +16,33 @@
 	</form>
 </div>
 <hr>
+<div v-if="selectedAll">
+	<button class="btn btn-danger font-weight-bold mb-3" id="selectedAllInput" @@click="deleteSelected">Delete selected accounts</button>
+</div>
 <div class="table-responsive">
 	<table class="table">
 		<thead class="bg-light">
 			<tr class="text-center">
-				{{-- <th scope="col" class="border-0" width="5%">
-				</th> --}}
-				<th scope="col" class="border-0" width="10%">
+				<th scope="col" class="border-0" width="1%">
+					<div class="custom-control custom-checkbox account-select-check">
+						<input type="checkbox" class="custom-control-input" id="allCheck" v-model="selectedAll">
+						<label class="custom-control-label" for="allCheck"></label>
+					</div>
+				</th>
+				<th scope="col" class="border-0" width="5%">
 					<span>ID</span> 
 				</th>
 				<th scope="col" class="border-0" width="40%">
 					<span>Username</span>
 				</th>
 				<th scope="col" class="border-0" width="5%">
-					<span>Status<br/>Count</span>
+					<span>Statuses</span>
 				</th>
 				<th scope="col" class="border-0" width="5%">
-					<span>Followers<br/>Count</span>
+					<span>Followers</span>
 				</th>
 				<th scope="col" class="border-0" width="5%">
-					<span>Following<br/>Count</span>
+					<span>Following</span>
 				</th>
 				<th scope="col" class="border-0" width="30%">
 					<span>Actions</span>
@@ -46,15 +53,15 @@
 			@foreach($users as $key => $user)
 			@if($user->status == 'deleted')
 			<tr class="font-weight-bold text-center user-row">
-				{{-- <th scope="row">
+				<th scope="row">
 					<div class="custom-control custom-checkbox account-select-check">
 						<input type="checkbox" class="custom-control-input" disabled>
 						<label class="custom-control-label"></label>
 					</div>
-				</th> --}}
-				<th scope="row">
-					<span class="text-danger" class="text-monospace">{{$user->id}}</span>
 				</th>
+				<td>
+					<span class="text-danger" class="text-monospace">{{$user->id}}</span>
+				</td>
 				<td class="text-left">
 					<img src="/storage/avatars/default.jpg" width="20" height="20" class="rounded-circle mr-1" />
 
@@ -73,18 +80,18 @@
 			</tr>
 			@else 
 			<tr class="font-weight-bold text-center user-row">
-				{{-- <th scope="row">
-					<div class="custom-control custom-checkbox account-select-check">
-						<input type="checkbox" id="{{$key}}" class="custom-control-input">
-						<label class="custom-control-label" for={{$key}}></label>
-					</div>
-				</th> --}}
 				<th scope="row">
-					<span class="text-monospace">{{$user->id}}</span>
+					<div class="custom-control custom-checkbox account-select-check">
+						<input type="checkbox" id="{{$key}}" class="custom-control-input action-check" data-id="{{$user->id}}" data-username="{{$user->username}}">
+						<label class="custom-control-label" for="{{$key}}"></label>
+					</div>
 				</th>
-				<td class="text-left d-flex align-items-center">
+				<td>
+					<span class="text-monospace">{{$user->id}}</span>
+				</td>
+				<td class="d-flex align-items-center">
 					@if($user->account)
-					<img src="{{$user->account['avatar']}}" width="20" height="20" class="rounded-circle mr-2" />
+					<img src="{{$user->account['avatar']}}" width="20" height="20" class="rounded-circle mr-2" onerror="this.src='/storage/avatars/default.jpg';this.onerror=null;" />
 					@endif
 					<span title="{{$user->username}}" data-toggle="tooltip" data-placement="bottom">
 						<span>{{$user->username}}</span>
@@ -189,5 +196,86 @@
 			});
 		})
 	}
+
+	let app = new Vue({
+		el: '#panel',
+
+		data() {
+			return {
+				selectedAll: false
+			}
+		},
+
+		watch: {
+			selectedAll(val) {
+				if(val) {
+					if(document.querySelectorAll('.action-check').length == 0) {
+						this.selectedAll = false;
+						return;
+					}
+					document.querySelectorAll('.action-check').forEach(v => v.checked = true)
+				} else {
+					document.querySelectorAll('.action-check').forEach(v => v.checked = false)
+				}
+			}
+		},
+
+		methods: {
+			async deleteSelected() {
+				let usernames = [...document.querySelectorAll('.action-check:checked')].map(el => el.dataset.username);
+				let ids = [...document.querySelectorAll('.action-check:checked')].map(el => el.dataset.id);
+
+				swal({
+					title: 'Confirm mass deletion',
+					text: "Are you sure you want to delete the following accounts: \n\n" + usernames.join(" \n"),
+					icon: 'warning',
+					dangerMode: true,
+					buttons: {
+						cancel: {
+							text: "Cancel",
+							value: false,
+							closeModal: true,
+							visible: true,
+						},
+						delete: {
+							text: "Delete",
+							value: "delete",
+							className: "btn-danger"
+						}
+					}
+				})
+				.then(async (res) => {
+					if(res !== 'delete') {
+						swal('Mass delete cancelled', '', 'success');
+					} else {
+						swal({
+							title: 'Processing mass deletes',
+							text: 'Do not close or navigate away from this page while we process this request',
+							icon: 'warning',
+							timer: 4000
+						})
+
+						await axios.all(ids.map((acct) => this.deleteAccountById(acct)))
+						.finally(() => {
+							swal({
+								title: 'Accounts successfully deleted!',
+								text: 'This page will refresh shortly!',
+								icon: 'success',
+								timer: 1000
+							})
+							setTimeout(() => {
+								window.location.reload();
+							}, 10000)
+						})
+					}
+				})
+			},
+
+			async deleteAccountById(id) {
+				await axios.post('/i/admin/users/delete/' + id)
+			}
+		}
+	});
+
 </script>
 @endpush
