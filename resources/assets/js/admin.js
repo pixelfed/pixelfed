@@ -22,8 +22,18 @@ Array.from(document.querySelectorAll('.pagination .page-link'))
 .forEach(el => el.textContent = (el.textContent === 'Next »' ? '›' :'‹'));
 
 Vue.component(
+    'admin-autospam',
+    require('./../components/admin/AdminAutospam.vue').default
+);
+
+Vue.component(
     'admin-directory',
     require('./../components/admin/AdminDirectory.vue').default
+);
+
+Vue.component(
+    'admin-reports',
+    require('./../components/admin/AdminReports.vue').default
 );
 
 Vue.component(
