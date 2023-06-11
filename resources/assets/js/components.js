@@ -1,4 +1,5 @@
-window.Vue = require('vue');
+import Vue from 'vue';
+window.Vue = Vue;
 import BootstrapVue from 'bootstrap-vue'
 import InfiniteLoading from 'vue-infinite-loading';
 import Loading from 'vue-loading-overlay';
