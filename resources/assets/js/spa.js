@@ -116,13 +116,13 @@ const ProfileFollowersComponent = () => import(/* webpackChunkName: "profile~fol
 const ProfileFollowingComponent = () => import(/* webpackChunkName: "profile~following.bundle" */ "./../components/ProfileFollowing.vue");
 const HashtagComponent = () => import(/* webpackChunkName: "discover~hashtag.bundle" */ "./../components/Hashtag.vue");
 const NotFoundComponent = () => import(/* webpackChunkName: "error404.bundle" */ "./../components/NotFound.vue");
-const HelpComponent = () => import(/* webpackChunkName: "help.bundle" */ "./../components/HelpComponent.vue");
-const KnowledgebaseComponent = () => import(/* webpackChunkName: "kb.bundle" */ "./../components/Knowledgebase.vue");
-const AboutComponent = () => import(/* webpackChunkName: "about.bundle" */ "./../components/About.vue");
-const ContactComponent = () => import(/* webpackChunkName: "contact.bundle" */ "./../components/Contact.vue");
+// const HelpComponent = () => import(/* webpackChunkName: "help.bundle" */ "./../components/HelpComponent.vue");
+// const KnowledgebaseComponent = () => import(/* webpackChunkName: "kb.bundle" */ "./../components/Knowledgebase.vue");
+// const AboutComponent = () => import(/* webpackChunkName: "about.bundle" */ "./../components/About.vue");
+// const ContactComponent = () => import(/* webpackChunkName: "contact.bundle" */ "./../components/Contact.vue");
 const LanguageComponent = () => import(/* webpackChunkName: "i18n.bundle" */ "./../components/Language.vue");
-const PrivacyComponent = () => import(/* webpackChunkName: "static~privacy.bundle" */ "./../components/Privacy.vue");
-const TermsComponent = () => import(/* webpackChunkName: "static~tos.bundle" */ "./../components/Terms.vue");
+// const PrivacyComponent = () => import(/* webpackChunkName: "static~privacy.bundle" */ "./../components/Privacy.vue");
+// const TermsComponent = () => import(/* webpackChunkName: "static~tos.bundle" */ "./../components/Terms.vue");
 const ChangelogComponent = () => import(/* webpackChunkName: "changelog.bundle" */ "./../components/Changelog.vue");
 
 // import LiveComponent from "./../components/Live.vue";
@@ -234,42 +234,42 @@ const router = new VueRouter({
 			path: "/i/web/direct",
 			component: DirectComponent
 		},
-		{
-			path: "/i/web/kb/:id",
-			name: "kb",
-			component: KnowledgebaseComponent,
-			props: true
-		},
+		// {
+		// 	path: "/i/web/kb/:id",
+		// 	name: "kb",
+		// 	component: KnowledgebaseComponent,
+		// 	props: true
+		// },
 		{
 			path: "/i/web/hashtag/:id",
 			name: "hashtag",
 			component: HashtagComponent,
 			props: true
 		},
-		{
-			path: "/i/web/help",
-			component: HelpComponent
-		},
-		{
-			path: "/i/web/about",
-			component: AboutComponent
-		},
-		{
-			path: "/i/web/contact",
-			component: ContactComponent
-		},
+		// {
+		// 	path: "/i/web/help",
+		// 	component: HelpComponent
+		// },
+		// {
+		// 	path: "/i/web/about",
+		// 	component: AboutComponent
+		// },
+		// {
+		// 	path: "/i/web/contact",
+		// 	component: ContactComponent
+		// },
 		{
 			path: "/i/web/language",
 			component: LanguageComponent
 		},
-		{
-			path: "/i/web/privacy",
-			component: PrivacyComponent
-		},
-		{
-			path: "/i/web/terms",
-			component: TermsComponent
-		},
+		// {
+		// 	path: "/i/web/privacy",
+		// 	component: PrivacyComponent
+		// },
+		// {
+		// 	path: "/i/web/terms",
+		// 	component: TermsComponent
+		// },
 		{
 			path: "/i/web/whats-new",
 			component: ChangelogComponent
