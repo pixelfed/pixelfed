@@ -123,6 +123,7 @@
 					</template>
 					<div class="w-100 my-4 px-4 text-break justify-content-start">
 						<p class="mb-0" v-html="allHistory[historyIndex].content"></p>
+						<!-- <p class="mb-0" v-html="getDiff(historyIndex)"></p> -->
 					</div>
 				</div>
 			</template>
@@ -168,6 +169,36 @@
 				.finally(() => {
 					this.isLoading = false;
 				})
+			},
+
+			getDiff(idx) {
+				if(idx == this.allHistory.length - 1) {
+					return this.allHistory[this.allHistory.length - 1].content;
+				}
+
+				// let r = Diff.diffChars(this.allHistory[idx - 1].content.replace(/(<([^>]+)>)/gi, ""), this.allHistory[idx].content.replace(/(<([^>]+)>)/gi, ""));
+				let fragment = document.createElement('div');
+				r.forEach((part) => {
+					  // green for additions, red for deletions
+					  // grey for common parts
+					  const color = part.added ? 'green' :
+					    part.removed ? 'red' : 'grey';
+					  let span = document.createElement('span');
+					  span.style.color = color;
+					  console.log(part.value, part.value.length)
+					  if(part.added) {
+					  	let trimmed = part.value.trim();
+					  	if(!trimmed.length) {
+						  span.appendChild(document.createTextNode('·'));
+					  	} else {
+						  span.appendChild(document.createTextNode(part.value));
+					  	}
+					  } else {
+						  span.appendChild(document.createTextNode(part.value));
+					  }
+					  fragment.appendChild(span);
+				});
+				return fragment.innerHTML;
 			},
 
 			formatTime(ts) {
