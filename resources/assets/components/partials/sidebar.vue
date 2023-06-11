@@ -326,7 +326,7 @@
 
 <script type="text/javascript">
 	import { mapGetters } from 'vuex'
-	import ComposeSimple from './../sections/ComposeSimple.vue';
+	// import ComposeSimple from './../sections/ComposeSimple.vue';
 	import UpdateAvatar from './modal/UpdateAvatar.vue';
 
 	export default {
@@ -409,7 +409,7 @@
 		},
 
 		components: {
-			ComposeSimple,
+			// ComposeSimple,
 			UpdateAvatar
 		},
 
