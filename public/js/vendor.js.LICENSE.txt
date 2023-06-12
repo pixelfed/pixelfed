@@ -49,14 +49,6 @@
  */
 
 /*!
- * Pusher JavaScript Library v7.6.0
- * https://pusher.com/
- *
- * Copyright 2020, Pusher
- * Released under the MIT licence.
- */
-
-/*!
  * Scroll Lock v3.1.3
  * https://github.com/MohammadYounes/jquery-scrollLock
  *
