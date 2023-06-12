@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\DBAL\TimestampType;
+use Illuminate\Support\Str;
 
 return [
     /*
