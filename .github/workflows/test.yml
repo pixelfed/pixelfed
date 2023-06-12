@@ -1,0 +1,59 @@
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker Lint
+        uses: hadolint/hadolint-action@v3.0.0
+        with:
+          recursive: true
+          failure-threshold: error
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          extensions: pdo, sqlite, pdo_sqlite
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".node-version"
+          cache: "npm"
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Install node.js dependencies
+        run: npm ci
+
+      - run: cp .env.testing .env
+      - run: php artisan config:cache
+      - run: php artisan route:clear
+      - run: php artisan storage:link
+      - run: php artisan key:generate
+
+      # run tests with phpunit or codecept
+      - run: ./vendor/bin/phpunit
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: "Test Results"
+          path: tests/_output
+
+      # The frontend currently doesn't have tests, so we just attempt to run a build:
+      - run: npm run production
