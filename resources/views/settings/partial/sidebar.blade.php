@@ -1,5 +1,5 @@
-	<div class="col-12 col-md-3 py-3" style="border-right:1px solid #ccc;">
-		<ul class="nav flex-column settings-nav">
+	<div class="col-12 col-md-3">
+		<ul class="nav flex-column settings-nav py-3">
 			<li class="nav-item pl-3 {{request()->is('settings/home')?'active':''}}">
 				<a class="nav-link font-weight-light  text-muted" href="{{route('settings')}}">Account</a>
 			</li>
@@ -38,13 +38,11 @@
 			<li class="nav-item">
 				<hr>
 			</li>
-			@if(config_cache('pixelfed.import.instagram.enabled'))
 			<li class="nav-item pl-3 {{request()->is('*import*')?'active':''}}">
 				<a class="nav-link font-weight-light text-muted" href="{{route('settings.import')}}">Import</a>
 			</li>
-			@endif
 			<li class="nav-item pl-3 {{request()->is('settings/data-export')?'active':''}}">
-				<a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Data Export</a>
+				<a class="nav-link font-weight-light text-muted" href="{{route('settings.dataexport')}}">Export</a>
 			</li>
 
 			@if(config_cache('pixelfed.oauth_enabled') == true)
@@ -67,3 +65,13 @@
 			</li>
 		</ul>
 	</div>
+
+	@push('styles')
+	<style type="text/css">
+		.settings-nav {
+			@media only screen and (min-width: 768px) {
+				border-right: 1px solid #dee2e6 !important
+			}
+		}
+	</style>
+	@endpush
