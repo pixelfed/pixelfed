@@ -36,6 +36,11 @@ class Kernel extends ConsoleKernel
         if(in_array(config_cache('pixelfed.cloud_storage'), ['1', true, 'true']) && config('media.delete_local_after_cloud')) {
             $schedule->command('media:s3gc')->hourlyAt(15);
         }
+
+        if(config('import.instagram.enabled')) {
+            $schedule->command('app:transform-imports')->everyFourMinutes();
+            $schedule->command('app:import-upload-garbage-collection')->everyFiveMinutes();
+        }
     }
 
     /**
