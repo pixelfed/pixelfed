@@ -21,12 +21,18 @@
       {{-- <li class="nav-item {{request()->is('*/direct-messages')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.dm')}}">{{__('helpcenter.directMessages')}}</a>
       </li> --}}
+      {{-- <li class="nav-item {{request()->is('*/tagging-people')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('help.tagging-people')}}">{{__('helpcenter.taggingPeople')}}</a>
+      </li> --}}
       <li class="nav-item {{request()->is('*/timelines')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.timelines')}}">{{__('helpcenter.timelines')}}</a>
       </li>
       {{-- <li class="nav-item {{request()->is('*/embed')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.embed')}}">{{__('helpcenter.embed')}}</a>
       </li> --}}
+      <li class="nav-item {{request()->is('*/import')?'active':''}}">
+        <a class="nav-link font-weight-light text-muted" href="{{route('help.import')}}">Instagram Import</a>
+      </li>
       <li class="nav-item">
         <hr>
       </li>
@@ -37,23 +43,23 @@
       </li>
       {{-- <li class="nav-item {{request()->is('*/what-is-the-fediverse')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.what-is-fediverse')}}">{{__('helpcenter.whatIsTheFediverse')}}</a>
-      </li> --}}
-      {{-- <li class="nav-item {{request()->is('*/controlling-visibility')?'active':''}}">
+      </li>
+      <li class="nav-item {{request()->is('*/controlling-visibility')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.controlling-visibility')}}">
           {{__('helpcenter.controllingVisibility')}}
         </a>
-      </li> --}}
-      {{-- <li class="nav-item {{request()->is('*/blocking-accounts')?'active':''}}">
+      </li>
+      <li class="nav-item {{request()->is('*/blocking-accounts')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.blocking-accounts')}}">
           {{__('helpcenter.blockingAccounts')}}
         </a>
-      </li> --}}
+      </li>--}}
       <li class="nav-item {{request()->is('*/safety-tips')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.safety-tips')}}">
           {{__('helpcenter.safetyTips')}}
         </a>
       </li>
-      {{-- <li class="nav-item {{request()->is('*/report-something')?'active':''}}">
+      {{--<li class="nav-item {{request()->is('*/report-something')?'active':''}}">
         <a class="nav-link font-weight-light text-muted" href="{{route('help.report-something')}}">
           {{__('helpcenter.reportSomething')}}
         </a>

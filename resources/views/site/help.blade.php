@@ -254,6 +254,22 @@
         </div>
       </a>
     </div> --}}
+    <div class="col-12 col-md-6 mb-3">
+      <a href="{{route('help.import')}}" class="text-decoration-none">
+        <div class="card">
+          <div class="card-body">
+            <p class="py-1 text-center">
+              <i class="far fa-file-import text-lighter fa-2x"></i>
+            </p>
+            <p class="text-center text-muted font-weight-bold h4 mb-0">Import</p>
+            <div class="text-center pt-3">
+              <p class="small text-dark font-weight-bold mb-0">How to Import from Instagram</p>
+              <p class="small text-dark font-weight-bold mb-0">Troubleshooting Imports</p>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
 @endsection
 
