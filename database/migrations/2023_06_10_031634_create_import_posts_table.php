@@ -29,6 +29,7 @@ return new class extends Migration
             $table->bigInteger('status_id')->unsigned()->nullable()->unique()->index();
             $table->timestamp('creation_date')->nullable();
             $table->json('metadata')->nullable();
+            $table->boolean('skip_missing_media')->default(false)->index();
             $table->unique(['user_id', 'post_hash']);
             $table->unique(['user_id', 'creation_year', 'creation_month', 'creation_day', 'creation_id'], 'import_posts_uid_phash_unique');
             $table->timestamps();

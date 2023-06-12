@@ -25,7 +25,7 @@ class ImportService
         }
         $start = 1;
         $key = self::CACHE_KEY . 'getIdRange:incr:byUserId:' . $userId . ':y-' . $year . ':m-' . $month . ':d-' . $day;
-        $incr = Cache::increment($key, random_int(3, 19));
+        $incr = Cache::increment($key, random_int(5, 19));
         if($incr > 999) {
             $daysInMonth = now()->parse($day . '-' . $month . '-' . $year)->daysInMonth;
 
@@ -64,7 +64,7 @@ class ImportService
             Cache::forget($key);
         }
         return intval(Cache::remember($key, 21600, function() use($profileId) {
-            return ImportPost::whereProfileId($profileId)->count();
+            return ImportPost::whereProfileId($profileId)->whereSkipMissingMedia(false)->count();
         }));
     }
 
@@ -73,6 +73,7 @@ class ImportService
         $key = self::CACHE_KEY . 'attemptsByProfileId:' . $profileId;
         return intval(Cache::remember($key, 21600, function() use($profileId) {
             return ImportPost::whereProfileId($profileId)
+                ->whereSkipMissingMedia(false)
                 ->get()
                 ->groupBy(function($item) {
                     return $item->created_at->format('Y-m-d');
@@ -85,5 +86,20 @@ class ImportService
     {
         $key = self::CACHE_KEY . 'attemptsByProfileId:' . $profileId;
         return Cache::forget($key);
+    }
+
+    public static function getImportedFiles($profileId, $refresh = false)
+    {
+        $key = self::CACHE_KEY . 'importedPostsByProfileId:' . $profileId;
+        if($refresh) {
+            Cache::forget($key);
+        }
+        return Cache::remember($key, 21600, function() use($profileId) {
+            return ImportPost::whereProfileId($profileId)
+                ->get()
+                ->map(function($ip) {
+                    return collect($ip->media)->map(function($m) { return $m['uri']; });
+                })->flatten();
+        });
     }
 }
