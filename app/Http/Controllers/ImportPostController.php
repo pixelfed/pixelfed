@@ -160,7 +160,7 @@ class ImportPostController extends Controller
 
         $this->checkPermissions($request);
 
-        $mimes = config('import.allow_video_posts') ? 'mimetypes:image/png,image/jpeg,video/mp4' : 'mimetypes:image/png,image/jpeg';
+        $mimes = config('import.instagram.allow_video_posts') ? 'mimetypes:image/png,image/jpeg,video/mp4' : 'mimetypes:image/png,image/jpeg';
 
         $this->validate($request, [
             'file' => 'required|array|max:10',
