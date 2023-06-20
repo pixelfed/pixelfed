@@ -23,6 +23,7 @@ use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
 use App\Services\InstanceService;
 use App\Services\ModLogService;
+use App\Services\SnowflakeService;
 use App\Services\StatusService;
 use App\Services\NetworkTimelineService;
 use App\Services\NotificationService;
@@ -141,13 +142,13 @@ class AdminApiController extends Controller
 
             StatusService::del($status->id);
 
-			Notification::whereAction('autospam.warning')
-				->whereProfileId($appeal->user->profile_id)
-				->get()
-				->each(function($n) use($appeal) {
-					NotificationService::del($appeal->user->profile_id, $n->id);
-					$n->forceDelete();
-				});
+            Notification::whereAction('autospam.warning')
+                ->whereProfileId($appeal->user->profile_id)
+                ->get()
+                ->each(function($n) use($appeal) {
+                    NotificationService::del($appeal->user->profile_id, $n->id);
+                    $n->forceDelete();
+                });
 
             Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
             Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
@@ -174,13 +175,13 @@ class AdminApiController extends Controller
                         StatusService::del($status->id, true);
                     }
 
-					Notification::whereAction('autospam.warning')
-						->whereProfileId($report->user->profile_id)
-						->get()
-						->each(function($n) use($report) {
-							NotificationService::del($report->user->profile_id, $n->id);
-							$n->forceDelete();
-						});
+                    Notification::whereAction('autospam.warning')
+                        ->whereProfileId($report->user->profile_id)
+                        ->get()
+                        ->each(function($n) use($report) {
+                            NotificationService::del($report->user->profile_id, $n->id);
+                            $n->forceDelete();
+                        });
                 });
             Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
             Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
@@ -598,5 +599,63 @@ class AdminApiController extends Controller
         $instance->save();
 
         return new AdminInstance($instance);
+    }
+
+    public function getAllStats(Request $request)
+    {
+        abort_if(!$request->user(), 404);
+        abort_unless($request->user()->is_admin === 1, 404);
+
+        if($request->has('refresh')) {
+            Cache::forget('admin-api:instance-all-stats_v1');
+        }
+
+        return Cache::remember('admin-api:instance-all-stats-v1', 1209600, function() {
+            $days = range(0, 6);
+            $res = [
+                'cached_at' => now()->format('c'),
+            ];
+            $minStatusId = SnowflakeService::byDate(now()->subDays(8));
+
+            foreach($days as $day) {
+                $label = now()->subDays($day)->format('D');
+                $labelShort = substr($label, 0, 1);
+                $res['users']['days'][] = [
+                    'date' => now()->subDays($day)->format('M j Y'),
+                    'label_full' => $label,
+                    'label' => $labelShort,
+                    'count' => User::whereDate('created_at', now()->subDays($day))->count()
+                ];
+
+                $res['posts']['days'][] = [
+                    'date' => now()->subDays($day)->format('M j Y'),
+                    'label_full' => $label,
+                    'label' => $labelShort,
+                    'count' => Status::where('id', '>', $minStatusId)->whereNull('uri')->whereDate('created_at', now()->subDays($day))->count()
+                ];
+
+                $res['instances']['days'][] = [
+                    'date' => now()->subDays($day)->format('M j Y'),
+                    'label_full' => $label,
+                    'label' => $labelShort,
+                    'count' => Instance::whereDate('created_at', now()->subDays($day))->count()
+                ];
+            }
+
+            $res['users']['total'] = DB::table('users')->count();
+            $res['users']['min'] = collect($res['users']['days'])->min('count');
+            $res['users']['max'] = $res['users']['total'];
+            $res['users']['change'] = $res['users']['total'] - $res['users']['min'];
+            $res['posts']['total'] = DB::table('statuses')->whereNull('uri')->count();
+            $res['posts']['min'] = collect($res['posts']['days'])->min('count');
+            $res['posts']['max'] = collect($res['posts']['days'])->max('count');
+            $res['posts']['change'] = $res['posts']['total'] - $res['posts']['min'];
+            $res['instances']['total'] = DB::table('instances')->count();
+            $res['instances']['min'] = collect($res['instances']['days'])->min('count');
+            $res['instances']['max'] = collect($res['instances']['days'])->max('count');
+            $res['instances']['change'] = $res['instances']['total'] - $res['instances']['min'];
+
+            return $res;
+        });
     }
 }
