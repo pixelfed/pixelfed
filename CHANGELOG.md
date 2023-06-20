@@ -11,6 +11,9 @@
 - Update nginx config ([fbdc6358](https://github.com/pixelfed/pixelfed/commit/fbdc6358))
 - Update api routes, add DeprecatedEndpoint middleware. For more info, visit [pixelfed.org/kb/10404](https://pixelfed.org/kb/10404) ([a8453e77](https://github.com/pixelfed/pixelfed/commit/a8453e77))
 - Update admin dashboard, improve users section ([36b6bf48](https://github.com/pixelfed/pixelfed/commit/36b6bf48))
+- Update AdminApiController, add instance stats endpoint ([89c3710d](https://github.com/pixelfed/pixelfed/commit/89c3710d))
+- Update config, re-add `PF_MAX_USERS` .env variable to limit max users to 1000 by default ([a6d10f03](https://github.com/pixelfed/pixelfed/commit/a6d10f03))
+- Update AdminApiController, fix stats ([5c5541fc](https://github.com/pixelfed/pixelfed/commit/5c5541fc))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)

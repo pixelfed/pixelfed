@@ -178,8 +178,9 @@ class RegisterController extends Controller
 			if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 				abort_if(BouncerService::checkIp(request()->ip()), 404);
 			}
-			$limit = config('pixelfed.max_users');
-			if($limit) {
+			$hasLimit = config('pixelfed.enforce_max_users');
+			if($hasLimit) {
+				$limit = config('pixelfed.max_users');
 				$count = User::where(function($q){ return $q->whereNull('status')->orWhereNotIn('status', ['deleted','delete']); })->count();
 				if($limit <= $count) {
 					return redirect(route('help.instance-max-users-limit'));
@@ -208,12 +209,16 @@ class RegisterController extends Controller
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
 
-		$count = User::where(function($q){ return $q->whereNull('status')->orWhereNotIn('status', ['deleted','delete']); })->count();
-		$limit = config('pixelfed.max_users');
+		$hasLimit = config('pixelfed.enforce_max_users');
+		if($hasLimit) {
+			$count = User::where(function($q){ return $q->whereNull('status')->orWhereNotIn('status', ['deleted','delete']); })->count();
+			$limit = config('pixelfed.max_users');
 
-		if(false == config_cache('pixelfed.open_registration') || $limit && $limit <= $count) {
-			return redirect(route('help.instance-max-users-limit'));
+    		if($limit && $limit <= $count) {
+    			return redirect(route('help.instance-max-users-limit'));
+    		}
 		}
+
 
 		$this->validator($request->all())->validate();
 
