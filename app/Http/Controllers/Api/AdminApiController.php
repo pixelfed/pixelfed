@@ -607,15 +607,15 @@ class AdminApiController extends Controller
         abort_unless($request->user()->is_admin === 1, 404);
 
         if($request->has('refresh')) {
-            Cache::forget('admin-api:instance-all-stats_v1');
+            Cache::forget('admin-api:instance-all-stats-v1');
         }
 
         return Cache::remember('admin-api:instance-all-stats-v1', 1209600, function() {
-            $days = range(0, 6);
+            $days = range(1, 7);
             $res = [
                 'cached_at' => now()->format('c'),
             ];
-            $minStatusId = SnowflakeService::byDate(now()->subDays(8));
+            $minStatusId = SnowflakeService::byDate(now()->subDays(7));
 
             foreach($days as $day) {
                 $label = now()->subDays($day)->format('D');
@@ -631,7 +631,7 @@ class AdminApiController extends Controller
                     'date' => now()->subDays($day)->format('M j Y'),
                     'label_full' => $label,
                     'label' => $labelShort,
-                    'count' => Status::where('id', '>', $minStatusId)->whereNull('uri')->whereDate('created_at', now()->subDays($day))->count()
+                    'count' => Status::whereNull('uri')->where('id', '>', $minStatusId)->whereDate('created_at', now()->subDays($day))->count()
                 ];
 
                 $res['instances']['days'][] = [
@@ -644,16 +644,16 @@ class AdminApiController extends Controller
 
             $res['users']['total'] = DB::table('users')->count();
             $res['users']['min'] = collect($res['users']['days'])->min('count');
-            $res['users']['max'] = $res['users']['total'];
-            $res['users']['change'] = $res['users']['total'] - $res['users']['min'];
+            $res['users']['max'] = collect($res['users']['days'])->max('count');
+            $res['users']['change'] = collect($res['users']['days'])->sum('count');;
             $res['posts']['total'] = DB::table('statuses')->whereNull('uri')->count();
             $res['posts']['min'] = collect($res['posts']['days'])->min('count');
             $res['posts']['max'] = collect($res['posts']['days'])->max('count');
-            $res['posts']['change'] = $res['posts']['total'] - $res['posts']['min'];
+            $res['posts']['change'] = collect($res['posts']['days'])->sum('count');
             $res['instances']['total'] = DB::table('instances')->count();
             $res['instances']['min'] = collect($res['instances']['days'])->min('count');
             $res['instances']['max'] = collect($res['instances']['days'])->max('count');
-            $res['instances']['change'] = $res['instances']['total'] - $res['instances']['min'];
+            $res['instances']['change'] = collect($res['instances']['days'])->sum('count');
 
             return $res;
         });
