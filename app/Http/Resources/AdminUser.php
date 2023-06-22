@@ -23,9 +23,11 @@ class AdminUser extends JsonResource
             'name' => $this->name,
             'username' => $this->username,
             'is_admin' => (bool) $this->is_admin,
+            'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'two_factor_enabled' => (bool) $this->{'2fa_enabled'},
             'register_source' => $this->register_source,
+            'app_register_ip' => $this->app_register_ip,
             'last_active_at' => $this->last_active_at,
             'created_at' => $this->created_at,
         ];

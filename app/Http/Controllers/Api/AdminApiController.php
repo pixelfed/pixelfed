@@ -18,6 +18,8 @@ use App\{
     Status,
     User
 };
+use App\Models\Conversation;
+use App\Models\RemoteReport;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
@@ -25,10 +27,14 @@ use App\Services\InstanceService;
 use App\Services\ModLogService;
 use App\Services\SnowflakeService;
 use App\Services\StatusService;
+use App\Services\PublicTimelineService;
 use App\Services\NetworkTimelineService;
 use App\Services\NotificationService;
 use App\Http\Resources\AdminInstance;
 use App\Http\Resources\AdminUser;
+use App\Jobs\DeletePipeline\DeleteAccountPipeline;
+use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
+use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
 
 class AdminApiController extends Controller
 {
@@ -93,7 +99,7 @@ class AdminApiController extends Controller
         abort_unless($request->user()->is_admin == 1, 404);
 
         $this->validate($request, [
-            'action' => 'required|in:dismiss,approve,dismiss-all,approve-all',
+            'action' => 'required|in:dismiss,approve,dismiss-all,approve-all,delete-post,delete-account',
             'id' => 'required'
         ]);
 
@@ -105,14 +111,53 @@ class AdminApiController extends Controller
         $now = now();
         $res = ['status' => 'success'];
         $meta = json_decode($appeal->meta);
+        $user = $appeal->user;
+        $profile = $user->profile;
 
         if($action == 'dismiss') {
             $appeal->is_spam = true;
             $appeal->appeal_handled_at = $now;
             $appeal->save();
 
-            Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $appeal->user->profile_id);
-            Cache::forget('pf:bouncer_v0:recent_by_pid:' . $appeal->user->profile_id);
+            Cache::forget('pf:bouncer_v0:exemption_by_pid:' . $profile->id);
+            Cache::forget('pf:bouncer_v0:recent_by_pid:' . $profile->id);
+            Cache::forget('admin-dash:reports:spam-count');
+            return $res;
+        }
+
+        if($action == 'delete-post') {
+            $appeal->appeal_handled_at = now();
+            $appeal->is_spam = true;
+            $appeal->save();
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($appeal->status->id)
+                ->objectType('App\Status::class')
+                ->user($request->user())
+                ->action('admin.status.delete')
+                ->accessLevel('admin')
+                ->save();
+            PublicTimelineService::deleteByProfileId($profile->id);
+            StatusDelete::dispatch($appeal->status)->onQueue('high');
+            Cache::forget('admin-dash:reports:spam-count');
+            return $res;
+        }
+
+        if($action == 'delete-account') {
+            abort_if($user->is_admin, 400, 'Cannot delete an admin account.');
+            $appeal->appeal_handled_at = now();
+            $appeal->is_spam = true;
+            $appeal->save();
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($profile->id)
+                ->objectType('App\User::class')
+                ->user($request->user())
+                ->action('admin.user.delete')
+                ->accessLevel('admin')
+                ->save();
+            PublicTimelineService::deleteByProfileId($profile->id);
+            DeleteAccountPipeline::dispatch($appeal->user)->onQueue('high');
             Cache::forget('admin-dash:reports:spam-count');
             return $res;
         }
@@ -405,6 +450,9 @@ class AdminApiController extends Controller
     {
         abort_if(!$request->user(), 404);
         abort_unless($request->user()->is_admin == 1, 404);
+        $this->validate($request, [
+            'sort' => 'sometimes|in:asc,desc',
+        ]);
         $q = $request->input('q');
         $sort = $request->input('sort', 'desc') === 'asc' ? 'asc' : 'desc';
         $res = User::whereNull('status')
@@ -422,17 +470,29 @@ class AdminApiController extends Controller
         abort_unless($request->user()->is_admin == 1, 404);
 
         $id = $request->input('user_id');
-        $user = User::findOrFail($id);
-        $profile = $user->profile;
-        $account = AccountService::get($user->profile_id, true);
-        return (new AdminUser($user))->additional(['meta' => [
-            'account' => $account,
-            'moderation' => [
-                'unlisted' => (bool) $profile->unlisted,
-                'cw' => (bool) $profile->cw,
-                'no_autolink' => (bool) $profile->no_autolink
-            ]
-        ]]);
+        $key = 'pf-admin-api:getUser:byId:' . $id;
+        if($request->has('refresh')) {
+            Cache::forget($key);
+        }
+        return Cache::remember($key, 86400, function() use($id) {
+            $user = User::findOrFail($id);
+            $profile = $user->profile;
+            $account = AccountService::get($user->profile_id, true);
+            $res = (new AdminUser($user))->additional(['meta' => [
+                'cached_at' => str_replace('+00:00', 'Z', now()->format(DATE_RFC3339_EXTENDED)),
+                'account' => $account,
+                'dms_sent' => Conversation::whereFromId($profile->id)->count(),
+                'report_count' => Report::where('object_id', $profile->id)->orWhere('reported_profile_id', $profile->id)->count(),
+                'remote_report_count' => RemoteReport::whereAccountId($profile->id)->count(),
+                'moderation' => [
+                    'unlisted' => (bool) $profile->unlisted,
+                    'cw' => (bool) $profile->cw,
+                    'no_autolink' => (bool) $profile->no_autolink
+                ]
+            ]]);
+
+            return $res;
+        });
     }
 
     public function userAdminAction(Request $request)
@@ -442,7 +502,7 @@ class AdminApiController extends Controller
 
         $this->validate($request, [
             'id' => 'required',
-            'action' => 'required|in:unlisted,cw,no_autolink,refresh_stats,verify_email',
+            'action' => 'required|in:unlisted,cw,no_autolink,refresh_stats,verify_email,delete',
             'value' => 'sometimes'
         ]);
 
@@ -453,7 +513,59 @@ class AdminApiController extends Controller
 
         abort_if($user->is_admin == true && $action !== 'refresh_stats', 400, 'Cannot moderate admin accounts');
 
-        if($action === 'refresh_stats') {
+        if($action === 'delete') {
+            if(config('pixelfed.account_deletion') == false) {
+                abort(404);
+            }
+
+            abort_if($user->is_admin, 400, 'Cannot delete an admin account.');
+
+            $ts = now()->addMonth();
+
+            $user->status = 'delete';
+            $user->delete_after = $ts;
+            $user->save();
+
+            $profile->status = 'delete';
+            $profile->delete_after = $ts;
+            $profile->save();
+
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($profile->id)
+                ->objectType('App\Profile::class')
+                ->user($request->user())
+                ->action('admin.user.delete')
+                ->accessLevel('admin')
+                ->save();
+
+            PublicTimelineService::deleteByProfileId($profile->id);
+            NetworkTimelineService::deleteByProfileId($profile->id);
+
+            if($profile->user_id) {
+                DB::table('oauth_access_tokens')->whereUserId($user->id)->delete();
+                DB::table('oauth_auth_codes')->whereUserId($user->id)->delete();
+                $user->email = $user->id;
+                $user->password = '';
+                $user->status = 'delete';
+                $user->save();
+                $profile->status = 'delete';
+                $profile->delete_after = now()->addMonth();
+                $profile->save();
+                AccountService::del($profile->id);
+                DeleteAccountPipeline::dispatch($user)->onQueue('high');
+            } else {
+                $profile->status = 'delete';
+                $profile->delete_after = now()->addMonth();
+                $profile->save();
+                AccountService::del($profile->id);
+                DeleteRemoteProfilePipeline::dispatch($profile)->onQueue('high');
+            }
+            return [
+                'status' => 200,
+                'msg' => 'deleted',
+            ];
+        } else if($action === 'refresh_stats') {
             $profile->following_count = DB::table('followers')->whereProfileId($user->profile_id)->count();
             $profile->followers_count = DB::table('followers')->whereFollowingId($user->profile_id)->count();
             $statusCount = Status::whereProfileId($user->profile_id)
@@ -479,6 +591,51 @@ class AdminApiController extends Controller
                 ])
                 ->accessLevel('admin')
                 ->save();
+        } else if($action === 'unlisted') {
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($profile->id)
+                ->objectType('App\Profile::class')
+                ->user($request->user())
+                ->action('admin.user.moderate')
+                ->metadata([
+                    'action' => $action,
+                    'message' => 'Success!'
+                ])
+                ->accessLevel('admin')
+                ->save();
+            $profile->unlisted = !$profile->unlisted;
+            $profile->save();
+        } else if($action === 'cw') {
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($profile->id)
+                ->objectType('App\Profile::class')
+                ->user($request->user())
+                ->action('admin.user.moderate')
+                ->metadata([
+                    'action' => $action,
+                    'message' => 'Success!'
+                ])
+                ->accessLevel('admin')
+                ->save();
+            $profile->cw = !$profile->cw;
+            $profile->save();
+        } else if($action === 'no_autolink') {
+            ModLogService::boot()
+                ->objectUid($profile->id)
+                ->objectId($profile->id)
+                ->objectType('App\Profile::class')
+                ->user($request->user())
+                ->action('admin.user.moderate')
+                ->metadata([
+                    'action' => $action,
+                    'message' => 'Success!'
+                ])
+                ->accessLevel('admin')
+                ->save();
+            $profile->no_autolink = !$profile->no_autolink;
+            $profile->save();
         } else {
             $profile->{$action} = filter_var($request->input('value'), FILTER_VALIDATE_BOOLEAN);
             $profile->save();
