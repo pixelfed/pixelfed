@@ -18,6 +18,8 @@ use App\{
     Status,
     User
 };
+use App\Models\Conversation;
+use App\Models\RemoteReport;
 use App\Services\AccountService;
 use App\Services\AdminStatsService;
 use App\Services\ConfigCacheService;
@@ -405,6 +407,9 @@ class AdminApiController extends Controller
     {
         abort_if(!$request->user(), 404);
         abort_unless($request->user()->is_admin == 1, 404);
+        $this->validate($request, [
+            'sort' => 'sometimes|in:asc,desc',
+        ]);
         $q = $request->input('q');
         $sort = $request->input('sort', 'desc') === 'asc' ? 'asc' : 'desc';
         $res = User::whereNull('status')
@@ -422,17 +427,29 @@ class AdminApiController extends Controller
         abort_unless($request->user()->is_admin == 1, 404);
 
         $id = $request->input('user_id');
-        $user = User::findOrFail($id);
-        $profile = $user->profile;
-        $account = AccountService::get($user->profile_id, true);
-        return (new AdminUser($user))->additional(['meta' => [
-            'account' => $account,
-            'moderation' => [
-                'unlisted' => (bool) $profile->unlisted,
-                'cw' => (bool) $profile->cw,
-                'no_autolink' => (bool) $profile->no_autolink
-            ]
-        ]]);
+        $key = 'pf-admin-api:getUser:byId:' . $id;
+        if($request->has('refresh')) {
+            Cache::forget($key);
+        }
+        return Cache::remember($key, 86400, function() use($id) {
+            $user = User::findOrFail($id);
+            $profile = $user->profile;
+            $account = AccountService::get($user->profile_id, true);
+            $res = (new AdminUser($user))->additional(['meta' => [
+                'cached_at' => str_replace('+00:00', 'Z', now()->format(DATE_RFC3339_EXTENDED)),
+                'account' => $account,
+                'dms_sent' => Conversation::whereFromId($profile->id)->count(),
+                'report_count' => Report::where('object_id', $profile->id)->orWhere('reported_profile_id', $profile->id)->count(),
+                'remote_report_count' => RemoteReport::whereAccountId($profile->id)->count(),
+                'moderation' => [
+                    'unlisted' => (bool) $profile->unlisted,
+                    'cw' => (bool) $profile->cw,
+                    'no_autolink' => (bool) $profile->no_autolink
+                ]
+            ]]);
+
+            return $res;
+        });
     }
 
     public function userAdminAction(Request $request)
