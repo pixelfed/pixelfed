@@ -14,6 +14,9 @@
 - Update AdminApiController, add instance stats endpoint ([89c3710d](https://github.com/pixelfed/pixelfed/commit/89c3710d))
 - Update config, re-add `PF_MAX_USERS` .env variable to limit max users to 1000 by default ([a6d10f03](https://github.com/pixelfed/pixelfed/commit/a6d10f03))
 - Update AdminApiController, fix stats ([5c5541fc](https://github.com/pixelfed/pixelfed/commit/5c5541fc))
+- Update AdminApiController, include more data for getUser method ([4f850e54](https://github.com/pixelfed/pixelfed/commit/4f850e54))
+- Update AdminApiController, improve admin moderation tools ([763ce19a](https://github.com/pixelfed/pixelfed/commit/763ce19a))
+- Update ActivityPubFetchService, fix authorized_fetch compatibility. Closes #1850, #2713, #2935 ([63a7879c](https://github.com/pixelfed/pixelfed/commit/63a7879c))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
