@@ -102,4 +102,10 @@ class ImportService
                 })->flatten();
         });
     }
+
+    public static function clearImportedFiles($profileId)
+    {
+        $key = self::CACHE_KEY . 'importedPostsByProfileId:' . $profileId;
+        return Cache::forget($key);
+    }
 }

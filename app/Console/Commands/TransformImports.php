@@ -54,21 +54,21 @@ class TransformImports extends Command
                 continue;
             }
 
-            $idk = ImportService::getId($ip->user_id, $ip->creation_year, $ip->creation_month, $ip->creation_day);
-            $exists = ImportPost::whereUserId($id)->where('filename', $ip->filename)->first();
-            if($exists) {
-                $cYear = str_pad($exists->creation_year, 2, 0, STR_PAD_LEFT);
-                $cMonth = str_pad($exists->creation_month, 2, 0, STR_PAD_LEFT);
-                $cDay = str_pad($exists->creation_day, 2, 0, STR_PAD_LEFT);
-                if( $cYear == $idk['year'] &&
-                    $cMonth == $idk['month'] &&
-                    $cDay == $idk['day']
-                ) {
-                    $ip->skip_missing_media = true;
-                    $ip->save();
-                    continue;
-                }
+            $exists = ImportPost::whereUserId($id)
+                ->whereNotNull('status_id')
+                ->where('filename', $ip->filename)
+                ->where('creation_year', $ip->creation_year)
+                ->where('creation_month', $ip->creation_month)
+                ->where('creation_day', $ip->creation_day)
+                ->exists();
+
+            if($exists == true) {
+                $ip->skip_missing_media = true;
+                $ip->save();
+                continue;
             }
+
+            $idk = ImportService::getId($ip->user_id, $ip->creation_year, $ip->creation_month, $ip->creation_day);
 
             if(Storage::exists('imports/' . $id . '/' . $ip->filename) === false) {
                 ImportService::clearAttempts($profile->id);

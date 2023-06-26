@@ -32,7 +32,7 @@ class ImportUploadGarbageCollection extends Command
             return;
         }
 
-        $ips = ImportPost::whereNull('status_id')->whereSkipMissingMedia(true)->take(100)->get();
+        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', true)->take(100)->get();
 
         if(!$ips->count()) {
             return;
