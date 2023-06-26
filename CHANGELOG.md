@@ -19,6 +19,7 @@
 - Update ActivityPubFetchService, fix authorized_fetch compatibility. Closes #1850, #2713, #2935 ([63a7879c](https://github.com/pixelfed/pixelfed/commit/63a7879c))
 - Update IG Import commands, fix stalled import queue ([b18f3fba](https://github.com/pixelfed/pixelfed/commit/b18f3fba))
 - Update TransformImports command, improve handling of imported posts that already exist or are from deleted accounts ([892907d5](https://github.com/pixelfed/pixelfed/commit/892907d5))
+- Update console kernel, add import upload gc ([afe6948d](https://github.com/pixelfed/pixelfed/commit/afe6948d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
