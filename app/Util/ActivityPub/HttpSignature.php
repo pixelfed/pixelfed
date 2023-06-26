@@ -33,7 +33,7 @@ class HttpSignature {
     return self::_headersToCurlArray($headers);
   }
 
-  public static function instanceActorSign($url, $body = false, $addlHeaders = [])
+  public static function instanceActorSign($url, $body = false, $addlHeaders = [], $method = 'post')
   {
     $keyId = config('app.url') . '/i/actor#main-key';
     $privateKey = Cache::rememberForever(InstanceActor::PKI_PRIVATE, function() {
@@ -42,7 +42,7 @@ class HttpSignature {
     if($body) {
       $digest = self::_digest($body);
     }
-    $headers = self::_headersToSign($url, $body ? $digest : false);
+    $headers = self::_headersToSign($url, $body ? $digest : false, $method);
     $headers = array_merge($headers, $addlHeaders);
     $stringToSign = self::_headersToSigningString($headers);
     $signedHeaders = implode(' ', array_map('strtolower', array_keys($headers)));
@@ -125,11 +125,14 @@ class HttpSignature {
     return base64_encode(hash('sha256', $body, true));
   }
 
-  protected static function _headersToSign($url, $digest = false) {
+  protected static function _headersToSign($url, $digest = false, $method = 'post') {
     $date = new DateTime('UTC');
 
+    if(!in_array($method, ['post', 'get'])) {
+        throw new \Exception('Invalid method used to sign headers in HttpSignature');
+    }
     $headers = [
-      '(request-target)' => 'post '.parse_url($url, PHP_URL_PATH),
+      '(request-target)' => $method . ' '.parse_url($url, PHP_URL_PATH),
       'Host' => parse_url($url, PHP_URL_HOST),
       'Date' => $date->format('D, d M Y H:i:s \G\M\T'),
     ];
