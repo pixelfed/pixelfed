@@ -5,6 +5,8 @@ namespace App\Observers;
 use App\Status;
 use App\Services\ProfileStatusService;
 use Cache;
+use App\Models\ImportPost;
+use App\Services\ImportService;
 
 class StatusObserver
 {
@@ -56,6 +58,11 @@ class StatusObserver
         }
 
         ProfileStatusService::delete($status->profile_id, $status->id);
+
+        if($status->uri == null) {
+            ImportPost::whereProfileId($status->profile_id)->whereStatusId($status->id)->delete();
+            ImportService::clearImportedFiles($status->profile_id);
+        }
     }
 
     /**

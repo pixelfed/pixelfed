@@ -97,9 +97,18 @@ class ImportService
         return Cache::remember($key, 21600, function() use($profileId) {
             return ImportPost::whereProfileId($profileId)
                 ->get()
+                ->filter(function($ip) {
+                    return StatusService::get($ip->status_id) == null;
+                })
                 ->map(function($ip) {
                     return collect($ip->media)->map(function($m) { return $m['uri']; });
-                })->flatten();
+                })->values()->flatten();
         });
+    }
+
+    public static function clearImportedFiles($profileId)
+    {
+        $key = self::CACHE_KEY . 'importedPostsByProfileId:' . $profileId;
+        return Cache::forget($key);
     }
 }
