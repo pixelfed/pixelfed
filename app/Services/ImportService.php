@@ -97,9 +97,12 @@ class ImportService
         return Cache::remember($key, 21600, function() use($profileId) {
             return ImportPost::whereProfileId($profileId)
                 ->get()
+                ->filter(function($ip) {
+                    return StatusService::get($ip->status_id);
+                })
                 ->map(function($ip) {
                     return collect($ip->media)->map(function($m) { return $m['uri']; });
-                })->flatten();
+                })->values()->flatten();
         });
     }
 

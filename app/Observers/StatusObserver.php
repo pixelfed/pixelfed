@@ -59,6 +59,7 @@ class StatusObserver
         ProfileStatusService::delete($status->profile_id, $status->id);
 
         if($status->uri == null) {
+            ImportPost::whereProfileId($status->profile_id)->whereStatusId($status->id)->delete();
             ImportService::clearImportedFiles($status->profile_id);
         }
     }
