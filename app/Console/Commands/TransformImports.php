@@ -38,7 +38,7 @@ class TransformImports extends Command
             return;
         }
 
-        $ips = ImportPost::whereNull('status_id')->whereSkipMissingMedia(false)->take(100)->get();
+        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(200)->get();
 
         if(!$ips->count()) {
             return;
@@ -48,7 +48,27 @@ class TransformImports extends Command
             $id = $ip->user_id;
             $pid = $ip->profile_id;
             $profile = Profile::find($pid);
+            if(!$profile) {
+                $ip->skip_missing_media = true;
+                $ip->save();
+                continue;
+            }
+
             $idk = ImportService::getId($ip->user_id, $ip->creation_year, $ip->creation_month, $ip->creation_day);
+            $exists = ImportPost::whereUserId($id)->where('filename', $ip->filename)->first();
+            if($exists) {
+                $cYear = str_pad($exists->creation_year, 2, 0, STR_PAD_LEFT);
+                $cMonth = str_pad($exists->creation_month, 2, 0, STR_PAD_LEFT);
+                $cDay = str_pad($exists->creation_day, 2, 0, STR_PAD_LEFT);
+                if( $cYear == $idk['year'] &&
+                    $cMonth == $idk['month'] &&
+                    $cDay == $idk['day']
+                ) {
+                    $ip->skip_missing_media = true;
+                    $ip->save();
+                    continue;
+                }
+            }
 
             if(Storage::exists('imports/' . $id . '/' . $ip->filename) === false) {
                 ImportService::clearAttempts($profile->id);

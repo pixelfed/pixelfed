@@ -39,7 +39,8 @@ class Kernel extends ConsoleKernel
 
         if(config('import.instagram.enabled')) {
             $schedule->command('app:transform-imports')->everyFourMinutes();
-            $schedule->command('app:import-upload-garbage-collection')->everyFiveMinutes();
+            $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51);
+            $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37);
         }
     }
 
