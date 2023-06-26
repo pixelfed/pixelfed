@@ -78,7 +78,7 @@ class ImportPostController extends Controller
 
         return ImportStatus::collection(
             ImportPost::whereProfileId($request->user()->profile_id)
-                ->whereNotNull('status_id')
+                ->has('status')
                 ->cursorPaginate(9)
         );
     }

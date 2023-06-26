@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Status;
 use App\Services\ProfileStatusService;
 use Cache;
+use App\Models\ImportPost;
 use App\Services\ImportService;
 
 class StatusObserver
