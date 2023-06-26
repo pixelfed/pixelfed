@@ -98,7 +98,7 @@ class ImportService
             return ImportPost::whereProfileId($profileId)
                 ->get()
                 ->filter(function($ip) {
-                    return StatusService::get($ip->status_id);
+                    return StatusService::get($ip->status_id) == null;
                 })
                 ->map(function($ip) {
                     return collect($ip->media)->map(function($m) { return $m['uri']; });
