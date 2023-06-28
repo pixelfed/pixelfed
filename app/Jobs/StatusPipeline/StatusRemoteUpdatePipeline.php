@@ -15,6 +15,7 @@ use App\Status;
 use App\Models\StatusEdit;
 use App\Services\StatusService;
 use Purify;
+use Illuminate\Support\Facades\Http;
 
 class StatusRemoteUpdatePipeline implements ShouldQueue
 {
@@ -89,13 +90,26 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 			]);
 
 		$nm->each(function($n, $key) use($status) {
+			$res = Http::retry(3, 100, throw: false)->head($n['url']);
+
+			if(!$res->successful()) {
+				return;
+			}
+
+			if(!in_array($res->header('content-type'), explode(',',config('pixelfed.media_types')))) {
+				return;
+			}
+
 			$m = new Media;
 			$m->status_id = $status->id;
 			$m->profile_id = $status->profile_id;
 			$m->remote_media = true;
 			$m->media_path = $n['url'];
+            $m->mime = $res->header('content-type');
+            $m->size = $res->hasHeader('content-length') ? $res->header('content-length') : null;
 			$m->caption = isset($n['name']) && !empty($n['name']) ? Purify::clean($n['name']) : null;
 			$m->remote_url = $n['url'];
+            $m->blurhash = isset($n['blurhash']) && (strlen($n['blurhash']) < 50) ? $n['blurhash'] : null;
 			$m->width = isset($n['width']) && !empty($n['width']) ? $n['width'] : null;
 			$m->height = isset($n['height']) && !empty($n['height']) ? $n['height'] : null;
 			$m->skip_optimize = true;

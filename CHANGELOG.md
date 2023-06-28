@@ -22,6 +22,7 @@
 - Update console kernel, add import upload gc ([afe6948d](https://github.com/pixelfed/pixelfed/commit/afe6948d))
 - Update ImportService, filter deleted posts from getImportedPosts endpoint ([10dd348c](https://github.com/pixelfed/pixelfed/commit/10dd348c))
 - Update FixStatusCount, improve command and support remote count resync ([04f4f8ba](https://github.com/pixelfed/pixelfed/commit/04f4f8ba))
+- Update StatusRemoteUpdatePipeline, fix missing mime and size attributes that cause empty media previews on our mobile app ([ea54413e](https://github.com/pixelfed/pixelfed/commit/ea54413e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
