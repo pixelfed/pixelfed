@@ -105,6 +105,9 @@
                             <p class="small text-muted mb-0">Tap on posts to include them in your import.</p>
                         </div>
                         <p v-else class="lead mb-0"><span class="font-weight-bold">{{ selectedPostsCounter }}</span> posts selected for import</p>
+
+                        <button v-if="selectedMedia.length" class="btn btn-outline-danger font-weight-bold rounded-pill btn-sm my-1" @click="handleClearAll()">Clear all selected</button>
+                        <button v-else class="btn btn-outline-primary font-weight-bold rounded-pill" @click="handleSelectAll()">Select first 100 posts</button>
                     </div>
                 </section>
                 <section class="row mb-n5 media-selector" style="max-height: 600px;overflow-y: auto;">
@@ -590,6 +593,19 @@
                         window.location.href = '/site/contact'
                     }
                 });
+            },
+
+            handleSelectAll() {
+                let medias = this.postMeta.slice(0, 100);
+                for (var i = medias.length - 1; i >= 0; i--) {
+                    let m = medias[i];
+                    this.toggleSelectedPost(m);
+                }
+            },
+
+            handleClearAll() {
+                this.selectedMedia = []
+                this.selectedPostsCounter = 0;
             }
         }
     }
