@@ -193,7 +193,7 @@
 								class="list-group-item cursor-pointer"
 								:class="{
 									'text-primary': licenseId === item.id,
-									'font-weight-bold': licenseId === item.id
+					'font-weight-bold': licenseId === item.id
 								}"
 								@click="toggleLicense(item)">
 								{{item.name}}
@@ -1884,12 +1884,8 @@ export default {
 <style lang="scss">
 	.compose-modal-component {
 		.media-drawer-filters {
-			overflow-x: scroll;
+			overflow-x: auto;
 			flex-wrap:unset;
-		}
-		.media-drawer-filters::-webkit-scrollbar {
-			width: 0px;
-			background: transparent;
 		}
 		.media-drawer-filters .nav-link {
 			min-width:100px;
