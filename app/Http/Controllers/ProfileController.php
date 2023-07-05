@@ -256,7 +256,7 @@ class ProfileController extends Controller
 			$items = DB::table('statuses')
 				->whereProfileId($pid)
 				->whereVisibility('public')
-				->whereType('photo')
+				->whereIn('type', ['photo', 'photo:album'])
 				->orderByDesc('id')
 				->take(10)
 				->get()
