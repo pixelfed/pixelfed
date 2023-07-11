@@ -2132,7 +2132,8 @@ class ApiV1Controller extends Controller
 		  'page'        => 'sometimes|integer|max:40',
 		  'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
 		  'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'sometimes|integer|min:1|max:100'
+		  'limit'       => 'sometimes|integer|min:1|max:100',
+          'include_reblogs' => 'sometimes',
 		]);
 
 		$napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -2141,6 +2142,13 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$pid = $request->user()->profile_id;
+        $includeReblogs = $request->filled('include_reblogs');
+        $nullFields = $includeReblogs ?
+            ['in_reply_to_id'] :
+            ['in_reply_to_id', 'reblog_of_id'];
+        $inTypes = $includeReblogs ?
+            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
+            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
 
 		$following = Cache::remember('profile:following:'.$pid, 1209600, function() use($pid) {
 			$following = Follower::whereProfileId($pid)->pluck('following_id');
@@ -2159,9 +2167,9 @@ class ApiV1Controller extends Controller
 				'reblog_of_id'
 			)
 			->where('id', $dir, $id)
-			->whereNull(['in_reply_to_id', 'reblog_of_id'])
+			->whereNull($nullFields)
 			->whereIntegerInRaw('profile_id', $following)
-			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+			->whereIn('type', $inTypes)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->orderByDesc('id')
 			->take(($limit * 2))
@@ -2202,9 +2210,9 @@ class ApiV1Controller extends Controller
 				'in_reply_to_id',
 				'reblog_of_id',
 			)
-			->whereNull(['in_reply_to_id', 'reblog_of_id'])
+			->whereNull($nullFields)
 			->whereIntegerInRaw('profile_id', $following)
-			->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+			->whereIn('type', $inTypes)
 			->whereIn('visibility',['public', 'unlisted', 'private'])
 			->orderByDesc('id')
 			->take(($limit * 2))

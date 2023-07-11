@@ -25,6 +25,7 @@
 - Update StatusRemoteUpdatePipeline, fix missing mime and size attributes that cause empty media previews on our mobile app ([ea54413e](https://github.com/pixelfed/pixelfed/commit/ea54413e))
 - Update ComposeModal.vue, fix scroll issue and dont hide scrollbar ([2d959fb3](https://github.com/pixelfed/pixelfed/commit/2d959fb3))
 - Update AccountImport, add select first 100 posts button ([625a76a5](https://github.com/pixelfed/pixelfed/commit/625a76a5))
+- Update ApiV1Controller, add include_reblogs attribute to home timeline ([37fd0342](https://github.com/pixelfed/pixelfed/commit/37fd0342))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
