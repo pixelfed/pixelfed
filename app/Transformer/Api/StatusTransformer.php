@@ -10,6 +10,7 @@ use App\Services\HashidService;
 use App\Services\LikeService;
 use App\Services\MediaService;
 use App\Services\MediaTagService;
+use App\Services\StatusService;
 use App\Services\StatusHashtagService;
 use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
@@ -35,7 +36,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'url'                       => $status->url(),
 			'in_reply_to_id'            => (string) $status->in_reply_to_id,
 			'in_reply_to_account_id'    => (string) $status->in_reply_to_profile_id,
-			'reblog'                    => null,
+			'reblog'                    => $status->reblog_of_id ? StatusService::get($status->reblog_of_id) : null,
 			'content'                   => $status->rendered ?? $status->caption,
 			'content_text'              => $status->caption,
 			'created_at'                => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),
