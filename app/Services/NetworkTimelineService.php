@@ -49,9 +49,7 @@ class NetworkTimelineService
 	public static function add($val)
 	{
 		if(self::count() > config('instance.timeline.network.cache_dropoff')) {
-			if(config('database.redis.client') === 'phpredis') {
-				Redis::zpopmin(self::CACHE_KEY);
-			}
+			Redis::zpopmin(self::CACHE_KEY);
 		}
 
 		return Redis::zadd(self::CACHE_KEY, $val, $val);
