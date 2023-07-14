@@ -19,9 +19,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-    	'deleted_at' => 'datetime',
-    	'email_verified_at' => 'datetime',
-    	'2fa_setup_at' => 'datetime'
+        'deleted_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+        '2fa_setup_at' => 'datetime',
+        'last_active_at' => 'datetime',
     ];
 
     /**
@@ -30,7 +31,13 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'username', 'email', 'password', 'app_register_ip'
+        'name',
+        'username',
+        'email',
+        'password',
+        'app_register_ip',
+        'email_verified_at',
+        'last_active_at'
     ];
 
     /**
@@ -39,8 +46,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'email', 'password', 'is_admin', 'remember_token', 
-        'email_verified_at', '2fa_enabled', '2fa_secret', 
+        'email', 'password', 'is_admin', 'remember_token',
+        'email_verified_at', '2fa_enabled', '2fa_secret',
         '2fa_backup_codes', '2fa_setup_at', 'deleted_at',
         'updated_at'
     ];
@@ -100,11 +107,11 @@ class User extends Authenticatable
 
     public function avatarUrl()
     {
-    	if(!$this->profile_id || $this->status) {
-    		return config('app.url') . '/storage/avatars/default.jpg';
-    	}
+        if(!$this->profile_id || $this->status) {
+            return config('app.url') . '/storage/avatars/default.jpg';
+        }
 
-    	return AvatarService::get($this->profile_id);
+        return AvatarService::get($this->profile_id);
     }
 
 }
