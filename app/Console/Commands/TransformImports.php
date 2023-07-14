@@ -9,6 +9,7 @@ use App\Media;
 use App\Profile;
 use App\Status;
 use Storage;
+use App\Services\AccountService;
 use App\Services\MediaPathService;
 use Illuminate\Support\Str;
 use App\Util\Lexer\Autolink;
@@ -38,7 +39,7 @@ class TransformImports extends Command
             return;
         }
 
-        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(200)->get();
+        $ips = ImportPost::whereNull('status_id')->where('skip_missing_media', '!=', true)->take(500)->get();
 
         if(!$ips->count()) {
             return;
@@ -134,6 +135,11 @@ class TransformImports extends Command
             $ip->status_id = $status->id;
             $ip->creation_id = $idk['incr'];
             $ip->save();
+
+            $profile->status_count = $profile->status_count + 1;
+            $profile->save();
+
+            AccountService::del($profile->id);
 
             ImportService::clearAttempts($profile->id);
             ImportService::getPostCount($profile->id, true);
