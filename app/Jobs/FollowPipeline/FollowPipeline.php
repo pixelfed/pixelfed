@@ -17,91 +17,71 @@ use App\Services\FollowerService;
 
 class FollowPipeline implements ShouldQueue
 {
-	use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-	protected $follower;
+    protected $follower;
 
-	/**
-	 * Delete the job if its models no longer exist.
-	 *
-	 * @var bool
-	 */
-	public $deleteWhenMissingModels = true;
-	
-	/**
-	 * Create a new job instance.
-	 *
-	 * @return void
-	 */
-	public function __construct($follower)
-	{
-		$this->follower = $follower;
-	}
+    /**
+     * Delete the job if its models no longer exist.
+     *
+     * @var bool
+     */
+    public $deleteWhenMissingModels = true;
 
-	/**
-	 * Execute the job.
-	 *
-	 * @return void
-	 */
-	public function handle()
-	{
-		$follower = $this->follower;
-		$actor = $follower->actor;
-		$target = $follower->target;
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct($follower)
+    {
+        $this->follower = $follower;
+    }
 
-		if(!$actor || !$target) {
-			return;
-		}
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $follower = $this->follower;
+        $actor = $follower->actor;
+        $target = $follower->target;
 
-		Cache::forget('profile:following:' . $actor->id);
-		Cache::forget('profile:following:' . $target->id);
+        if(!$actor || !$target) {
+            return;
+        }
 
-		FollowerService::add($actor->id, $target->id);
+        if($target->domain || !$target->private_key) {
+            return;
+        }
 
-		$actorProfileSync = Cache::get(FollowerService::FOLLOWING_SYNC_KEY . $actor->id);
-		if(!$actorProfileSync) {
-			FollowServiceWarmCache::dispatch($actor->id)->onQueue('low');
-		} else {
-			if($actor->following_count) {
-				$actor->increment('following_count');
-			} else {
-				$count = Follower::whereProfileId($actor->id)->count();
-				$actor->following_count = $count;
-				$actor->save();
-			}
-			Cache::put(FollowerService::FOLLOWING_SYNC_KEY . $actor->id, 1, 604800);
-			AccountService::del($actor->id);
-		}
+        Cache::forget('profile:following:' . $actor->id);
+        Cache::forget('profile:following:' . $target->id);
 
-		$targetProfileSync = Cache::get(FollowerService::FOLLOWERS_SYNC_KEY . $target->id);
-		if(!$targetProfileSync) {
-			FollowServiceWarmCache::dispatch($target->id)->onQueue('low');
-		} else {
-			if($target->followers_count) {
-				$target->increment('followers_count');
-			} else {
-				$count = Follower::whereFollowingId($target->id)->count();
-				$target->followers_count = $count;
-				$target->save();
-			}
-			Cache::put(FollowerService::FOLLOWERS_SYNC_KEY . $target->id, 1, 604800);
-			AccountService::del($target->id);
-		}
+        FollowerService::add($actor->id, $target->id);
 
-		if($target->domain || !$target->private_key) {
-			return;
-		}
+        $count = Follower::whereProfileId($actor->id)->count();
+        $actor->following_count = $count;
+        $actor->save();
+        AccountService::del($actor->id);
 
-		try {
-			$notification = new Notification();
-			$notification->profile_id = $target->id;
-			$notification->actor_id = $actor->id;
-			$notification->action = 'follow';
-			$notification->item_id = $target->id;
-			$notification->item_type = "App\Profile";
-			$notification->save();
-		} catch (Exception $e) {
-			Log::error($e);
-		}
-	}
+        $count = Follower::whereFollowingId($target->id)->count();
+        $target->followers_count = $count;
+        $target->save();
+        AccountService::del($target->id);
+
+        try {
+            $notification = new Notification();
+            $notification->profile_id = $target->id;
+            $notification->actor_id = $actor->id;
+            $notification->action = 'follow';
+            $notification->item_id = $target->id;
+            $notification->item_type = "App\Profile";
+            $notification->save();
+        } catch (Exception $e) {
+            Log::error($e);
+        }
+    }
 }
