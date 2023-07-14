@@ -26,6 +26,13 @@
 - Update ComposeModal.vue, fix scroll issue and dont hide scrollbar ([2d959fb3](https://github.com/pixelfed/pixelfed/commit/2d959fb3))
 - Update AccountImport, add select first 100 posts button ([625a76a5](https://github.com/pixelfed/pixelfed/commit/625a76a5))
 - Update ApiV1Controller, add include_reblogs attribute to home timeline ([37fd0342](https://github.com/pixelfed/pixelfed/commit/37fd0342))
+- Update rate limits, fixes #4537 ([1cc6274a](https://github.com/pixelfed/pixelfed/commit/1cc6274a))
+- Update Services, use zpopmin on predis ([4b2c66f5](https://github.com/pixelfed/pixelfed/commit/4b2c66f5))
+- Update Inbox, allow storing Create->Note activities without any local followers, disabled by default ([9fa6b3f7](https://github.com/pixelfed/pixelfed/commit/9fa6b3f7))
+- Update AP Helpers, preserve admin unlisted state before adding to NetworkTimelineService ([0704c7e0](https://github.com/pixelfed/pixelfed/commit/0704c7e0))
+- Update SearchApiV2Service, improve resolve query logic to better handle remote posts/profiles and local posts/profiles ([c61d0b91](https://github.com/pixelfed/pixelfed/commit/c61d0b91))
+- Update FollowPipeline, improve follower/following count calculation ([0b515767](https://github.com/pixelfed/pixelfed/commit/0b515767))
+- Update TransformImports command, increment status_count on profile model ([ba7551d8](https://github.com/pixelfed/pixelfed/commit/ba7551d8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
