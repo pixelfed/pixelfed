@@ -40,6 +40,7 @@ use App\Models\Poll;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
+use App\Services\DomainService;
 use App\Services\UserFilterService;
 
 class Helpers {
@@ -168,15 +169,22 @@ class Helpers {
 
         $hash = hash('sha256', $url);
         $key = "helpers:url:valid:sha256-{$hash}";
-        $ttl = now()->addMinutes(5);
 
-        $valid = Cache::remember($key, $ttl, function() use($url) {
+        $valid = Cache::remember($key, 900, function() use($url) {
             $localhosts = [
                 '127.0.0.1', 'localhost', '::1'
             ];
 
-            if(mb_substr($url, 0, 8) !== 'https://') {
+            if(strtolower(mb_substr($url, 0, 8)) !== 'https://') {
                 return false;
+            }
+
+            if(substr_count($url, '://') !== 1) {
+                return false;
+            }
+
+            if(mb_substr($url, 0, 8) !== 'https://') {
+                $url = 'https://' . substr($url, 8);
             }
 
             $valid = filter_var($url, FILTER_VALIDATE_URL);
@@ -187,15 +195,12 @@ class Helpers {
 
             $host = parse_url($valid, PHP_URL_HOST);
 
-            // if(count(dns_get_record($host, DNS_A | DNS_AAAA)) == 0) {
-            //  return false;
-            // }
+            if(in_array($host, $localhosts)) {
+                return false;
+            }
 
-            if(config('costar.enabled') == true) {
-                if(
-                    (config('costar.domain.block') != null && Str::contains($host, config('costar.domain.block')) == true) ||
-                    (config('costar.actor.block') != null && in_array($url, config('costar.actor.block')) == true)
-                ) {
+            if(config('security.url.verify_dns')) {
+                if(DomainService::hasValidDns($host) === false) {
                     return false;
                 }
             }
@@ -205,11 +210,6 @@ class Helpers {
                 if(in_array($host, $bannedInstances)) {
                     return false;
                 }
-            }
-
-
-            if(in_array($host, $localhosts)) {
-                return false;
             }
 
             return $url;
@@ -224,7 +224,7 @@ class Helpers {
         if($url == true) {
             $domain = config('pixelfed.domain.app');
             $host = parse_url($url, PHP_URL_HOST);
-            $url = $domain === $host ? $url : false;
+            $url = strtolower($domain) === strtolower($host) ? $url : false;
             return $url;
         }
         return false;
