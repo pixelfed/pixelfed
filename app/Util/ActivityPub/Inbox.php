@@ -281,7 +281,8 @@ class Inbox
 		}
 
 		if($actor->followers_count == 0) {
-			if(FollowerService::followerCount($actor->id, true) == 0) {
+            if(config('federation.activitypub.ingest.store_notes_without_followers')) {
+            } else if(FollowerService::followerCount($actor->id, true) == 0) {
 				return;
 			}
 		}
