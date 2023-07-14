@@ -33,6 +33,8 @@
 - Update SearchApiV2Service, improve resolve query logic to better handle remote posts/profiles and local posts/profiles ([c61d0b91](https://github.com/pixelfed/pixelfed/commit/c61d0b91))
 - Update FollowPipeline, improve follower/following count calculation ([0b515767](https://github.com/pixelfed/pixelfed/commit/0b515767))
 - Update TransformImports command, increment status_count on profile model ([ba7551d8](https://github.com/pixelfed/pixelfed/commit/ba7551d8))
+- Update AP Helpers, improve url validation and add optional dns verification, disabled by default ([2bef3e41](https://github.com/pixelfed/pixelfed/commit/2bef3e41))
+- Update admin users blade view, show last_active_at and other info ([e0b48b29](https://github.com/pixelfed/pixelfed/commit/e0b48b29))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
