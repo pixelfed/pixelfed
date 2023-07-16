@@ -140,10 +140,15 @@
 		<p class="title h4 font-weight-bold mt-2 py-2">Recent Posts</p>
 		<hr>
 		<div class="row">
-			@foreach($profile->statuses()->whereHas('media')->latest()->take(9)->get() as $item)
-			<div class="col-12 col-md-4 col-sm-6 px-0" style="margin-bottom: 1px;">
+			@foreach($profile->statuses()->whereHas('media')->latest()->take(16)->get() as $item)
+            @php($post = \App\Services\StatusService::get($item->id, false))
+			<div class="col-12 col-md-3 col-sm-6 mb-3 px-0">
 				<a href="{{$item->url()}}">
-					<img src="{{$item->thumb(true)}}" width="200px" height="200px">
+                    @if($post)
+                    <img src="{{$post['media_attachments'][0]['url']}}" width="200px" height="200px" style="object-fit: cover;" onerror="this.src='/storage/no-preview.png';this.onerror=null;">
+                    @else
+					<img src="/storage/no-preview.png" width="200px" height="200px">
+                    @endif
 				</a>
 			</div>
 			@endforeach

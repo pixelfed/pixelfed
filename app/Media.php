@@ -20,8 +20,8 @@ class Media extends Model
     protected $guarded = [];
 
     protected $casts = [
-    	'srcset' => 'array',
-    	'deleted_at' => 'datetime'
+        'srcset' => 'array',
+        'deleted_at' => 'datetime'
     ];
 
     public function status()
@@ -63,7 +63,7 @@ class Media extends Model
         }
 
         if($this->media_path && $this->mime && in_array($this->mime, ['image/jpeg', 'image/png'])) {
-        	return $this->remote_media || Str::startsWith($this->media_path, 'http') ?
+            return $this->remote_media || Str::startsWith($this->media_path, 'http') ?
                 $this->media_path :
                 url(Storage::url($this->media_path));
         }
@@ -78,6 +78,9 @@ class Media extends Model
 
     public function mimeType()
     {
+        if(!$this->mime) {
+            return;
+        }
         return explode('/', $this->mime)[0];
     }
 
