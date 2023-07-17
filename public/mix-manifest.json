@@ -23,11 +23,12 @@
     "/js/account-import.js": "/js/account-import.js?id=00ea9b73c8e17dff27e4a7767d9553d7",
     "/js/admin_invite.js": "/js/admin_invite.js?id=307a53250701e3b12164af9495e88447",
     "/js/landing.js": "/js/landing.js?id=7e3ab65813c4bf28182f5bdf0825774c",
-    "/js/manifest.js": "/js/manifest.js?id=db562fad91ac15b1cf437809a28c5de7",
+    "/js/remote_auth.js": "/js/remote_auth.js?id=55a409bf33c2f1e9950e4b83dc664a2a",
+    "/js/manifest.js": "/js/manifest.js?id=1a9e092e7f4051b3ce0af3c638c8d2c5",
     "/js/home.chunk.2d93b527d492e6de.js": "/js/home.chunk.2d93b527d492e6de.js?id=809ef226cf2383e3a8973f65d4269d1c",
     "/js/compose.chunk.6464688bf5b5ef97.js": "/js/compose.chunk.6464688bf5b5ef97.js?id=45753d769a16276c2d3ad8d7d6bf3e88",
     "/js/post.chunk.cd535334efc77c34.js": "/js/post.chunk.cd535334efc77c34.js?id=73e7e49b1dbdb75d2a128d21e6e3e9f4",
-    "/js/profile.chunk.4049e1eecea398ee.js": "/js/profile.chunk.4049e1eecea398ee.js?id=9caae6c4b8b3c0ab812a077ff82c3259",
+    "/js/profile.chunk.2fefc77fa8b9e0d3.js": "/js/profile.chunk.2fefc77fa8b9e0d3.js?id=ff489b9c2880c30e5d3f993220b43305",
     "/js/discover~memories.chunk.4c0973f4400f25b4.js": "/js/discover~memories.chunk.4c0973f4400f25b4.js?id=6eb8a14fe9aa1d4fe3f0264022793b12",
     "/js/discover~myhashtags.chunk.70e91906f0ce857a.js": "/js/discover~myhashtags.chunk.70e91906f0ce857a.js?id=5639e162321efa8b13f23b125c632bab",
     "/js/daci.chunk.914d307d69fcfcd4.js": "/js/daci.chunk.914d307d69fcfcd4.js?id=c843c795b8551593eb19dffe1e08e694",
@@ -50,5 +51,5 @@
     "/css/admin.css": "/css/admin.css?id=0a66549bf79b75a0ca8cb83d11a4e2f4",
     "/css/landing.css": "/css/landing.css?id=589f3fa192867727925921b0f68ce022",
     "/css/spa.css": "/css/spa.css?id=f6bef1e343335ee2b5cf4e9fc074856f",
-    "/js/vendor.js": "/js/vendor.js?id=6c95cc6034d7ff383f4fc8d47ffcf9a9"
+    "/js/vendor.js": "/js/vendor.js?id=a0cc6867663084472494dceda20c3392"
 }

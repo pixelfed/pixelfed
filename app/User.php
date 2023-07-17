@@ -37,7 +37,8 @@ class User extends Authenticatable
         'password',
         'app_register_ip',
         'email_verified_at',
-        'last_active_at'
+        'last_active_at',
+        'register_source'
     ];
 
     /**
