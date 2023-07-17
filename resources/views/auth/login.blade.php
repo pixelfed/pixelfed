@@ -41,7 +41,7 @@
                             <div class="col-md-12">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> 
+                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                                         <span class="font-weight-bold ml-1 text-muted">
                                             {{ __('Remember Me') }}
                                         </span>
@@ -64,7 +64,7 @@
 	                        </div>
                         @endif
 
-                        <div class="form-group row mb-0">
+                        <div class="form-group row mb-4">
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary btn-block btn-lg font-weight-bold">
                                     {{ __('Login') }}
@@ -72,7 +72,21 @@
 
                             </div>
                         </div>
+
                     </form>
+                    @if(config_cache('pixelfed.open_registration') && config('remote-auth.mastodon.enabled'))
+                    <hr>
+                    <form method="POST" action="/auth/raw/mastodon/start">
+                        @csrf
+                        <div class="form-group row mb-0">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary btn-sm btn-block rounded-pill font-weight-bold" style="background: linear-gradient(#6364FF, #563ACC);">
+                                    Sign-in with Mastodon
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    @endif
 
                     <hr>
 

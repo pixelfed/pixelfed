@@ -174,6 +174,25 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 	Route::get('web/explore', 'LandingController@exploreRedirect');
 
 	Auth::routes();
+    Route::get('auth/raw/mastodon/start', 'RemoteAuthController@startRedirect');
+    Route::post('auth/raw/mastodon/config', 'RemoteAuthController@getConfig');
+    Route::post('auth/raw/mastodon/domains', 'RemoteAuthController@getAuthDomains');
+    Route::post('auth/raw/mastodon/start', 'RemoteAuthController@start');
+    Route::post('auth/raw/mastodon/redirect', 'RemoteAuthController@redirect');
+    Route::get('auth/raw/mastodon/preflight', 'RemoteAuthController@preflight');
+    Route::get('auth/mastodon/callback', 'RemoteAuthController@handleCallback');
+    Route::get('auth/mastodon/getting-started', 'RemoteAuthController@onboarding');
+    Route::post('auth/raw/mastodon/s/check', 'RemoteAuthController@sessionCheck');
+    Route::post('auth/raw/mastodon/s/prefill', 'RemoteAuthController@sessionGetMastodonData');
+    Route::post('auth/raw/mastodon/s/username-check', 'RemoteAuthController@sessionValidateUsername');
+    Route::post('auth/raw/mastodon/s/email-check', 'RemoteAuthController@sessionValidateEmail');
+    Route::post('auth/raw/mastodon/s/following', 'RemoteAuthController@sessionGetMastodonFollowers');
+    Route::post('auth/raw/mastodon/s/submit', 'RemoteAuthController@handleSubmit');
+    Route::post('auth/raw/mastodon/s/store-bio', 'RemoteAuthController@storeBio');
+    Route::post('auth/raw/mastodon/s/store-avatar', 'RemoteAuthController@storeAvatar');
+    Route::post('auth/raw/mastodon/s/account-to-id', 'RemoteAuthController@accountToId');
+    Route::post('auth/raw/mastodon/s/finish-up', 'RemoteAuthController@finishUp');
+    Route::post('auth/raw/mastodon/s/login', 'RemoteAuthController@handleLogin');
 
 	Route::get('discover', 'DiscoverController@home')->name('discover');
 

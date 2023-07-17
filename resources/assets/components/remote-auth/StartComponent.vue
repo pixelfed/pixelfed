@@ -22,11 +22,11 @@
                         type="button"
                         class="server-btn"
                         @click="handleRedirect(domain)">
-                        Sign-in with <span class="font-weight-bold">{{ domain }}</span>
+                        <span class="font-weight-bold">{{ domain }}</span>
                     </button>
                     <hr>
                     <p class="text-center">
-                        <button type="button" class="other-server-btn">Sign-in with a different server</button>
+                        <button type="button" class="other-server-btn" @click="handleOther()">Sign-in with a different server</button>
                     </p>
                     <div class="w-100">
                         <hr>
@@ -82,6 +82,26 @@
                     if(res.data.ready) {
                         window.location.href = '/auth/raw/mastodon/preflight?d=' + domain + '&dsh=' + res.data.dsh;
                     }
+                })
+            },
+
+            handleOther() {
+                swal({
+                  text: 'Enter your mastodon domain (without https://)',
+                  content: "input",
+                  button: {
+                    text: "Next",
+                    closeModal: false,
+                  },
+                })
+                .then(domain => {
+                  if (!domain) throw null;
+
+                  if(domain.startsWith('https://')) {
+                    return;
+                  }
+
+                  return this.handleRedirect(domain);
                 })
             }
         }

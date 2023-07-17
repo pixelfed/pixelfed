@@ -29,7 +29,7 @@ return [
              *
              *   Allow Sign-in with Mastodon using only the default domains
              */
-            'only_default' => env('PF_LOGIN_WITH_MASTODON_ONLY_DEFAULT', true),
+            'only_default' => env('PF_LOGIN_WITH_MASTODON_ONLY_DEFAULT', false),
 
             /*
              *   Use only custom domains

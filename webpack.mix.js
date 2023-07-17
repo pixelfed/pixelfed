@@ -37,6 +37,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
 .js('resources/assets/js/account-import.js', 'public/js')
 .js('resources/assets/js/admin_invite.js', 'public/js')
 .js('resources/assets/js/landing.js', 'public/js')
+.js('resources/assets/js/remote_auth.js', 'public/js')
 .vue({ version: 2 });
 
 mix.extract();
