@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\Account\RemoteAuthService;
 use App\Models\RemoteAuth;
 use App\Profile;
+use App\Instance;
 use App\User;
 use Purify;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,22 @@ class RemoteAuthController extends Controller
 
     public function getAuthDomains(Request $request)
     {
+        abort_unless(config_cache('pixelfed.open_registration') && config('remote-auth.mastodon.enabled'), 404);
+
         if(config('remote-auth.mastodon.domains.only_custom')) {
+            $res = config('remote-auth.mastodon.domains.custom');
+            if(!$res || !strlen($res)) {
+                return [];
+            }
+            $res = explode(',', $res);
+            return response()->json($res);
+        }
+
+        if( config('remote-auth.mastodon.domains.custom') &&
+            !config('remote-auth.mastodon.domains.only_default') &&
+            strlen(config('remote-auth.mastodon.domains.custom')) > 3 &&
+            strpos(config('remote-auth.mastodon.domains.custom'), '.') > -1
+        ) {
             $res = config('remote-auth.mastodon.domains.custom');
             if(!$res || !strlen($res)) {
                 return [];
@@ -57,6 +73,27 @@ class RemoteAuthController extends Controller
         $this->validate($request, ['domain' => 'required']);
 
         $domain = $request->input('domain');
+
+        if(str_starts_with(strtolower($domain), 'http')) {
+            $res = [
+                'domain' => $domain,
+                'ready' => false,
+                'action' => 'incompatible_domain'
+            ];
+            return response()->json($res);
+        }
+
+        $validateInstance = Helpers::validateUrl('https://' . $domain . '/?block-check=' . time());
+
+        if(!$validateInstance) {
+             $res = [
+                'domain' => $domain,
+                'ready' => false,
+                'action' => 'blocked_domain'
+            ];
+            return response()->json($res);
+        }
+
         $compatible = RemoteAuthService::isDomainCompatible($domain);
 
         if(!$compatible) {
