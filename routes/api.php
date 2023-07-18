@@ -17,6 +17,7 @@ Route::get('.well-known/nodeinfo', 'FederationController@nodeinfoWellKnown')->na
 Route::get('.well-known/host-meta', 'FederationController@hostMeta')->name('well-known.hostMeta');
 Route::redirect('.well-known/change-password', '/settings/password');
 Route::get('api/nodeinfo/2.0.json', 'FederationController@nodeinfo');
+Route::get('api/service/health-check', 'HealthCheckController@get');
 
 Route::group(['prefix' => 'api'], function() use($middleware) {
 
