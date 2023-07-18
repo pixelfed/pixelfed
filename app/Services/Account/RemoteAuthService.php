@@ -12,6 +12,14 @@ class RemoteAuthService
 {
     const CACHE_KEY = 'pf:services:remoteauth:';
 
+    public static function getConfig()
+    {
+        return json_encode([
+            'default_only' => config('remote-auth.mastodon.domains.only_default'),
+            'custom_only' => config('remote-auth.mastodon.domains.only_custom'),
+        ]);
+    }
+
     public static function getMastodonClient($domain)
     {
         if(RemoteAuthInstance::whereDomain($domain)->exists()) {

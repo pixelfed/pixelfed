@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<remote-auth-start-component />
+<remote-auth-start-component :config='{!!\App\Services\Account\RemoteAuthService::getConfig()!!}'/>
 @endsection
 
 @push('scripts')

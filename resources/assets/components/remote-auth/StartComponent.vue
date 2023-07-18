@@ -24,8 +24,8 @@
                         @click="handleRedirect(domain)">
                         <span class="font-weight-bold">{{ domain }}</span>
                     </button>
-                    <hr>
-                    <p class="text-center">
+                    <hr v-if="!config.default_only && !config.custom_only">
+                    <p v-if="!config.default_only && !config.custom_only" class="text-center">
                         <button type="button" class="other-server-btn" @click="handleOther()">Sign-in with a different server</button>
                     </p>
                     <div class="w-100">
@@ -43,6 +43,12 @@
 
 <script type="text/javascript">
     export default {
+        props: {
+            config: {
+                type: Object
+            }
+        },
+
         data() {
             return {
                 loaded: false,
@@ -79,6 +85,11 @@
                         return;
                     }
 
+                    if(res.data.hasOwnProperty('action') && res.data.action === 'blocked_domain') {
+                        swal('Server Blocked', 'This server is blocked by admins and cannot be used, please try another server!', 'error');
+                        return;
+                    }
+
                     if(res.data.ready) {
                         window.location.href = '/auth/raw/mastodon/preflight?d=' + domain + '&dsh=' + res.data.dsh;
                     }
@@ -95,9 +106,13 @@
                   },
                 })
                 .then(domain => {
-                  if (!domain) throw null;
+                  if (!domain || domain.length < 2 || domain.indexOf('.') == -1) {
+                    swal('Oops!', "Please enter a valid domain!", 'error');
+                    return;
+                  };
 
-                  if(domain.startsWith('https://')) {
+                  if(domain.startsWith('http')) {
+                    swal('Oops!', "The domain you enter should not start with http(s://)\nUse the domain format, like mastodon.social", 'error');
                     return;
                   }
 
