@@ -5,6 +5,7 @@
 ### Added
 - Import from Instagram ([#4466](https://github.com/pixelfed/pixelfed/pull/4466)) ([cf3078c5](https://github.com/pixelfed/pixelfed/commit/cf3078c5))
 - Sign-in with Mastodon ([#4545](https://github.com/pixelfed/pixelfed/pull/4545)) ([45b9404e](https://github.com/pixelfed/pixelfed/commit/45b9404e))
+- Health check endpoint at /api/service/health-check ([ff58f970](https://github.com/pixelfed/pixelfed/commit/ff58f970))
 
 ### Updates
 - Update Notifications.vue component, fix filtering logic to prevent endless spinner ([3df9b53f](https://github.com/pixelfed/pixelfed/commit/3df9b53f))
