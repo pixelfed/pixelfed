@@ -41,6 +41,7 @@
 - Update admin user view, improve previews ([ff2c16fe](https://github.com/pixelfed/pixelfed/commit/ff2c16fe))
 - Update FanoutDeletePipeline, fix AP object ([0d802c31](https://github.com/pixelfed/pixelfed/commit/0d802c31))
 - Update Remote Auth feature, fix custom domain bug and enforce banned domains ([acabf603](https://github.com/pixelfed/pixelfed/commit/acabf603))
+- Update StatusService, reduce cache ttl from 7 days to 6 hours ([59b64378](https://github.com/pixelfed/pixelfed/commit/59b64378))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
