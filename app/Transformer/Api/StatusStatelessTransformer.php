@@ -33,7 +33,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'url'                       => $status->url(),
 			'in_reply_to_id'            => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
 			'in_reply_to_account_id'    => $status->in_reply_to_profile_id ? (string) $status->in_reply_to_profile_id : null,
-			'reblog'                    => $status->reblog_of_id ? StatusService::get($status->reblog_of_id) : null,
+			'reblog'                    => $status->reblog_of_id ? StatusService::get($status->reblog_of_id, false) : null,
 			'content'                   => $status->rendered ?? $status->caption,
 			'content_text'              => $status->caption,
 			'created_at'                => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),

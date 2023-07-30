@@ -17,6 +17,7 @@ use App\Report;
 use App\Profile;
 use App\StatusArchived;
 use App\User;
+use App\UserSetting;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
@@ -845,4 +846,41 @@ class ApiV1Dot1Controller extends Controller
 
 		return StatusService::get($status->id, false);
 	}
+
+	public function getWebSettings(Request $request)
+	{
+		abort_if(!$request->user(), 403);
+        $uid = $request->user()->id;
+        $settings = UserSetting::firstOrCreate([
+            'user_id' => $uid
+        ]);
+        if(!$settings->other) {
+            return [];
+        }
+		return $settings->other;
+	}
+
+    public function setWebSettings(Request $request)
+    {
+        abort_if(!$request->user(), 403);
+        $this->validate($request, [
+            'field' => 'required|in:enable_reblogs,hide_reblog_banner',
+            'value' => 'required'
+        ]);
+        $field = $request->input('field');
+        $value = $request->input('value');
+        $settings = UserSetting::firstOrCreate([
+            'user_id' => $request->user()->id
+        ]);
+        if(!$settings->other) {
+            $other = [];
+        } else {
+            $other = $settings->other;
+        }
+        $other[$field] = $value;
+        $settings->other = $other;
+        $settings->save();
+
+        return [200];
+    }
 }
