@@ -231,43 +231,51 @@ class SettingsController extends Controller
 	public function timelineSettings(Request $request)
 	{
         $uid = $request->user()->id;
-        $pid = $request->user()->profile_id;
-        $top = Redis::zscore('pf:tl:top', $pid) != false;
-        $replies = Redis::zscore('pf:tl:replies', $pid) != false;
+		$pid = $request->user()->profile_id;
+		$top = Redis::zscore('pf:tl:top', $pid) != false;
+		$replies = Redis::zscore('pf:tl:replies', $pid) != false;
         $userSettings = UserSetting::firstOrCreate([
             'user_id' => $uid
         ]);
         if(!$userSettings || !$userSettings->other) {
             $userSettings = [
                 'enable_reblogs' => false,
+                'photo_reblogs_only' => false
             ];
         } else {
-            $userSettings = $userSettings->other;
+            $userSettings = array_merge([
+                'enable_reblogs' => false,
+                'photo_reblogs_only' => false
+            ],
+            $userSettings->other);
         }
-        return view('settings.timeline', compact('top', 'replies', 'userSettings'));
+		return view('settings.timeline', compact('top', 'replies', 'userSettings'));
 	}
 
 	public function updateTimelineSettings(Request $request)
 	{
         $pid = $request->user()->profile_id;
-        $uid = $request->user()->id;
+		$uid = $request->user()->id;
         $this->validate($request, [
-            'enable_reblogs' => 'sometimes'
+            'enable_reblogs' => 'sometimes',
+            'photo_reblogs_only' => 'sometimes'
         ]);
-        Redis::zrem('pf:tl:top', $pid);
-        Redis::zrem('pf:tl:replies', $pid);
+		Redis::zrem('pf:tl:top', $pid);
+		Redis::zrem('pf:tl:replies', $pid);
         $userSettings = UserSetting::firstOrCreate([
             'user_id' => $uid
         ]);
-        if($userSettings->other) {
+		if($userSettings->other) {
             $other = $userSettings->other;
             $other['enable_reblogs'] = $request->has('enable_reblogs');
+            $other['photo_reblogs_only'] = $request->has('photo_reblogs_only');
         } else {
             $other['enable_reblogs'] = $request->has('enable_reblogs');
+            $other['photo_reblogs_only'] = $request->has('photo_reblogs_only');
         }
         $userSettings->other = $other;
         $userSettings->save();
-        return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
+		return redirect(route('settings'))->with('status', 'Timeline settings successfully updated!');
 	}
 
 	public function mediaSettings(Request $request)
