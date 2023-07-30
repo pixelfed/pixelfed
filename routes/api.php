@@ -304,6 +304,8 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
                 Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
             });
 
+            Route::get('web/settings', 'Api\ApiV1Dot1Controller@getWebSettings')->middleware($middleware);
+            Route::post('web/settings', 'Api\ApiV1Dot1Controller@setWebSettings')->middleware($middleware);
             Route::get('app/settings', 'UserAppSettingsController@get')->middleware($middleware);
             Route::post('app/settings', 'UserAppSettingsController@store')->middleware($middleware);
 
