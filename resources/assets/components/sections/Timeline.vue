@@ -8,6 +8,30 @@
         </div>
 
         <div v-else>
+            <transition name="fade">
+                <div v-if="showReblogBanner && getScope() === 'home'" class="card bg-g-amin card-body shadow-sm mb-3" style="border-radius: 15px;">
+                    <div class="d-flex justify-content-around align-items-center">
+                        <div class="flex-grow-1 ft-std">
+                            <h2 class="font-weight-bold text-white mb-0">Introducing Reblogs in feeds</h2>
+                            <hr />
+                            <p class="lead text-white mb-0">
+                                See reblogs from accounts you follow in your home feed!
+                            </p>
+                            <p class="text-white small mb-1" style="opacity:0.6">
+                                You can disable reblogs in feeds on the Timeline Settings page.
+                            </p>
+                            <hr />
+                            <div class="d-flex">
+                                <button class="btn btn-light rounded-pill font-weight-bold btn-block mr-2" @click.prevent="enableReblogs()">
+                                    <template v-if="!enablingReblogs">Show reblogs in home feed</template>
+                                    <b-spinner small v-else />
+                                </button>
+                                <button class="btn btn-outline-light rounded-pill font-weight-bold px-5" @click.prevent="hideReblogs()">Hide</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
             <status
                 v-for="(status, index) in feed"
                 :key="'pf_feed:' + status.id + ':idx:' + index + ':fui:' + forceUpdateIdx"
@@ -140,6 +164,7 @@
 
         data() {
             return {
+                settings: [],
                 isLoaded: false,
                 feed: [],
                 ids: [],
@@ -159,7 +184,9 @@
                 reportedStatusId: 0,
                 showSharesModal: false,
                 sharesModalPost: {},
-                forceUpdateIdx: 0
+                forceUpdateIdx: 0,
+                showReblogBanner: false,
+                enablingReblogs: false
             }
         },
 
@@ -174,7 +201,7 @@
                     return;
                 };
             }
-            this.fetchTimeline();
+            this.fetchSettings();
         },
 
         methods: {
@@ -194,13 +221,48 @@
                 }
             },
 
-            fetchTimeline(scrollToTop = false) {
-                let url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
-                axios.get(url, {
-                    params: {
-                        max_id: this.max_id,
-                        limit: 6
+            fetchSettings() {
+                axios.get('/api/pixelfed/v1/web/settings')
+                .then(res => {
+                    this.settings = res.data;
+
+                    if(!res.data) {
+                        this.showReblogBanner = true;
+                    } else {
+                        if(res.data.hasOwnProperty('hide_reblog_banner')) {
+                        } else if(res.data.hasOwnProperty('enable_reblogs')) {
+                            if(!res.data.enable_reblogs) {
+                                this.showReblogBanner = true;
+                            }
+                        } else {
+                            this.showReblogBanner = true;
+                        }
                     }
+                })
+                .finally(() => {
+                    this.fetchTimeline();
+                })
+            },
+
+            fetchTimeline(scrollToTop = false) {
+                let url, params;
+                if(this.getScope() === 'home' && this.settings && this.settings.hasOwnProperty('enable_reblogs') && this.settings.enable_reblogs) {
+                    url = `/api/v1/timelines/home`;
+                    params = {
+                        '_pe': 1,
+                        max_id: this.max_id,
+                        limit: 6,
+                        include_reblogs: true,
+                    }
+                } else {
+                    url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
+                    params = {
+                        max_id: this.max_id,
+                        limit: 6,
+                    }
+                }
+                axios.get(url, {
+                    params: params
                 }).then(res => {
                     let ids = res.data.map(p => {
                         if(p && p.hasOwnProperty('relationship')) {
@@ -242,12 +304,24 @@
 
                 this.isFetchingMore = true;
 
-                let url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
-                axios.get(url, {
-                    params: {
+                let url, params;
+                if(this.getScope() === 'home' && this.settings && this.settings.hasOwnProperty('enable_reblogs') && this.settings.enable_reblogs) {
+                    url = `/api/v1/timelines/home`;
+                    params = {
+                        '_pe': 1,
                         max_id: this.max_id,
-                        limit: 6
+                        limit: 6,
+                        include_reblogs: true,
                     }
+                } else {
+                    url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
+                    params = {
+                        max_id: this.max_id,
+                        limit: 6,
+                    }
+                }
+                axios.get(url, {
+                    params: params
                 }).then(res => {
                     if(!res.data.length) {
                         this.endFeedReached = true;
@@ -568,7 +642,31 @@
                 this.$nextTick(() => {
                     this.forceUpdateIdx++;
                 });
-            }
+            },
+
+            enableReblogs() {
+                this.enablingReblogs = true;
+
+                axios.post('/api/pixelfed/v1/web/settings', {
+                    field: 'enable_reblogs',
+                    value: true
+                })
+                .then(res => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                })
+            },
+
+            hideReblogs() {
+                this.showReblogBanner = false;
+                axios.post('/api/pixelfed/v1/web/settings', {
+                    field: 'hide_reblog_banner',
+                    value: true
+                })
+                .then(res => {
+                })
+            },
         },
 
         watch: {
