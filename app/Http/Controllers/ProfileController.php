@@ -12,6 +12,7 @@ use App\Follower;
 use App\FollowRequest;
 use App\Profile;
 use App\Story;
+use App\Status;
 use App\User;
 use App\UserSetting;
 use App\UserFilter;
@@ -253,15 +254,14 @@ class ProfileController extends Controller
 		abort_if(!$enabled, 404);
 
 		$data = Cache::remember('pf:atom:user-feed:by-id:' . $profile['id'], 900, function() use($pid, $profile) {
-			$items = DB::table('statuses')
-				->whereProfileId($pid)
-				->whereVisibility('public')
-				->whereType('photo')
+			$items = Status::whereProfileId($pid)
+				->whereScope('public')
+				->whereIn('type', ['photo', 'photo:album'])
 				->orderByDesc('id')
 				->take(10)
 				->get()
 				->map(function($status) {
-					return StatusService::get($status->id);
+					return StatusService::get($status->id, true);
 				})
 				->filter(function($status) {
 					return $status &&
