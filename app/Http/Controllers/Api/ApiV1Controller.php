@@ -2199,6 +2199,14 @@ class ApiV1Controller extends Controller
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
+            ->map(function($status) use($pid) {
+                if(!empty($status['reblog'])) {
+                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                }
+
+                return $status;
+            })
 			->take($limit)
 			->values();
 		} else {
@@ -2242,6 +2250,14 @@ class ApiV1Controller extends Controller
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
+            ->map(function($status) use($pid) {
+                if(!empty($status['reblog'])) {
+                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                }
+
+                return $status;
+            })
 			->take($limit)
 			->values();
 		}

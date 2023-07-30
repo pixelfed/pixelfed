@@ -49,7 +49,10 @@ class SharePipeline implements ShouldQueue
 	public function handle()
 	{
 		$status = $this->status;
-		$parent = $this->status->parent();
+		$parent = Status::find($this->status->reblog_of_id);
+        if(!$parent) {
+            return;
+        }
 		$actor = $status->profile;
 		$target = $parent->profile;
 
@@ -84,7 +87,7 @@ class SharePipeline implements ShouldQueue
 
 	public function remoteAnnounceDeliver()
 	{
-		if(config_cache('federation.activitypub.enabled') == false) {
+		if(config('app.env') !== 'production' || config_cache('federation.activitypub.enabled') == false) {
 			return true;
 		}
 		$status = $this->status;

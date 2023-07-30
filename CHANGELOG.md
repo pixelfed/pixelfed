@@ -46,6 +46,8 @@
 - Update ProfileController, allow albums in atom feed. Closes #4561. Fixes #4526 ([1c105a6c](https://github.com/pixelfed/pixelfed/commit/1c105a6c))
 - Update admin users view, fix website value. Closes #4557 ([c469d475](https://github.com/pixelfed/pixelfed/commit/c469d475))
 - Update StatusStatelessTransformer, allow unlisted reblogs ([1c13b518](https://github.com/pixelfed/pixelfed/commit/1c13b518))
+- Update ApiV1Controller, hydrate reblog state in home timeline ([13bdaa2e](https://github.com/pixelfed/pixelfed/commit/13bdaa2e))
+- Update Timeline component, improve reblog support ([29de91e5](https://github.com/pixelfed/pixelfed/commit/29de91e5))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
