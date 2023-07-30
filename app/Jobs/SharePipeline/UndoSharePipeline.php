@@ -70,7 +70,7 @@ class UndoSharePipeline implements ShouldQueue
 
 	public function remoteAnnounceDeliver()
 	{
-		if(config_cache('federation.activitypub.enabled') == false) {
+		if(config('app.env') !== 'production' || config_cache('federation.activitypub.enabled') == false) {
 			return 1;
 		}
 
