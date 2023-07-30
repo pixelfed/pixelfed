@@ -3,18 +3,20 @@
         <div class="card shadow-sm" style="border-radius: 15px;">
             <post-header
                 :profile="profile"
-                :status="status"
+                :status="shadowStatus"
+                :is-reblog="isReblog"
+                :reblog-account="reblogAccount"
                 @menu="openMenu"
                 @follow="follow"
                 @unfollow="unfollow" />
 
             <post-content
                 :profile="profile"
-                :status="status" />
+                :status="shadowStatus" />
 
             <post-reactions
-                v-if="reactionBar"
-                :status="status"
+            	v-if="reactionBar"
+                :status="shadowStatus"
                 :profile="profile"
                 :admin="admin"
                 v-on:like="like"
@@ -29,7 +31,7 @@
 
             <div v-if="showCommentDrawer" class="card-footer rounded-bottom border-0" style="background: rgba(0,0,0,0.02);z-index: 3;">
                 <comment-drawer
-                    :status="status"
+                    :status="shadowStatus"
                     :profile="profile"
                     v-on:handle-report="handleReport"
                     v-on:counter-change="counterChange"
@@ -58,8 +60,8 @@
             },
 
             reactionBar: {
-                type: Boolean,
-                default: true
+            	type: Boolean,
+            	default: true
             },
 
             useDropdownMenu: {
@@ -90,14 +92,14 @@
         },
 
         mounted() {
-            this.license = this.status.media_attachments && this.status.media_attachments.length ?
-                this.status
+            this.license = this.shadowStatus.media_attachments && this.shadowStatus.media_attachments.length ?
+                this.shadowStatus
                 .media_attachments
                 .filter(m => m.hasOwnProperty('license') && m.license && m.license.hasOwnProperty('id'))
                 .map(m => m.license)[0] : false;
             this.admin = window._sharedData.user.is_admin;
-            this.owner = this.status.account.id == window._sharedData.user.id;
-            if(this.status.reply_count && this.autoloadComments && this.status.comments_disabled === false) {
+            this.owner = this.shadowStatus.account.id == window._sharedData.user.id;
+            if(this.shadowStatus.reply_count && this.autoloadComments && this.shadowStatus.comments_disabled === false) {
                 setTimeout(() => {
                     this.showCommentDrawer = true;
                 }, 1000);
@@ -127,6 +129,24 @@
                 get() {
                     return this.$store.state.newReactions;
                 },
+            },
+
+            isReblog: {
+                get() {
+                    return this.status.reblog != null;
+                }
+            },
+
+            reblogAccount: {
+                get() {
+                    return this.status.reblog ? this.status.account : null;
+                }
+            },
+
+            shadowStatus: {
+                get() {
+                    return this.status.reblog ? this.status.reblog : this.status;
+                }
             }
         },
 
@@ -137,7 +157,7 @@
                 handler: function(o, n) {
                     this.isBookmarking = false;
                 }
-            }
+            },
         },
 
         methods: {
