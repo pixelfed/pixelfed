@@ -6,6 +6,7 @@
 - Import from Instagram ([#4466](https://github.com/pixelfed/pixelfed/pull/4466)) ([cf3078c5](https://github.com/pixelfed/pixelfed/commit/cf3078c5))
 - Sign-in with Mastodon ([#4545](https://github.com/pixelfed/pixelfed/pull/4545)) ([45b9404e](https://github.com/pixelfed/pixelfed/commit/45b9404e))
 - Health check endpoint at /api/service/health-check ([ff58f970](https://github.com/pixelfed/pixelfed/commit/ff58f970))
+- Reblogs in home feed ([#4563](https://github.com/pixelfed/pixelfed/pull/4563)) ([b86d47bf](https://github.com/pixelfed/pixelfed/commit/b86d47bf))
 
 ### Updates
 - Update Notifications.vue component, fix filtering logic to prevent endless spinner ([3df9b53f](https://github.com/pixelfed/pixelfed/commit/3df9b53f))
@@ -42,6 +43,9 @@
 - Update FanoutDeletePipeline, fix AP object ([0d802c31](https://github.com/pixelfed/pixelfed/commit/0d802c31))
 - Update Remote Auth feature, fix custom domain bug and enforce banned domains ([acabf603](https://github.com/pixelfed/pixelfed/commit/acabf603))
 - Update StatusService, reduce cache ttl from 7 days to 6 hours ([59b64378](https://github.com/pixelfed/pixelfed/commit/59b64378))
+- Update ProfileController, allow albums in atom feed. Closes #4561. Fixes #4526 ([1c105a6c](https://github.com/pixelfed/pixelfed/commit/1c105a6c))
+- Update admin users view, fix website value. Closes #4557 ([c469d475](https://github.com/pixelfed/pixelfed/commit/c469d475))
+- Update StatusStatelessTransformer, allow unlisted reblogs ([1c13b518](https://github.com/pixelfed/pixelfed/commit/1c13b518))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
