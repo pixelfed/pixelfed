@@ -869,8 +869,10 @@ class ApiV1Dot1Controller extends Controller
         ]);
         $field = $request->input('field');
         $value = $request->input('value');
-        $settings = UserSetting::whereUserId($request->user()->id)->first();
-        if(!$settings) {
+        $settings = UserSetting::firstOrCreate([
+            'user_id' => $request->user()->id
+        ]);
+        if(!$settings->other) {
             $other = [];
         } else {
             $other = $settings->other;
