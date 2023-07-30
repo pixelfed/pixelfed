@@ -48,6 +48,7 @@
 - Update StatusStatelessTransformer, allow unlisted reblogs ([1c13b518](https://github.com/pixelfed/pixelfed/commit/1c13b518))
 - Update ApiV1Controller, hydrate reblog state in home timeline ([13bdaa2e](https://github.com/pixelfed/pixelfed/commit/13bdaa2e))
 - Update Timeline component, improve reblog support ([29de91e5](https://github.com/pixelfed/pixelfed/commit/29de91e5))
+- Update timeline settings, add photo reblogs only option ([e2705b9a](https://github.com/pixelfed/pixelfed/commit/e2705b9a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
