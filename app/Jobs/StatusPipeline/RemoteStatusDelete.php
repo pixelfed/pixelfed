@@ -54,7 +54,6 @@ class RemoteStatusDelete implements ShouldQueue
     public $timeout = 90;
     public $tries = 2;
     public $maxExceptions = 1;
-    public $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -74,6 +73,11 @@ class RemoteStatusDelete implements ShouldQueue
     public function handle()
     {
         $status = $this->status;
+
+        if($status->deleted_at) {
+            $status->forceDelete();
+            return;
+        }
         $profile = $this->status->profile;
 
         StatusService::del($status->id, true);
@@ -127,7 +131,7 @@ class RemoteStatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
-        $status->delete();
+        $status->forceDelete();
 
         StatusService::del($status->id, true);
         AccountService::del($status->profile_id);
