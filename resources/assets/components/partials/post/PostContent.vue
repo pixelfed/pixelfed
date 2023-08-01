@@ -138,7 +138,18 @@
 				<mixed-album-presenter :status="status" v-on:lightbox="toggleLightbox" v-on:togglecw="status.sensitive = false" style="border-radius:15px !important;object-fit: contain;background-color: #000;overflow: hidden;align-items:center" :class="{ fixedHeight: fixedHeight }"></mixed-album-presenter>
 			</div>
 
-			<div v-else-if="status.pf_type === 'text'"></div>
+			<div v-else-if="status.pf_type === 'text'">
+                <div v-if="status.sensitive" class="border m-3 p-5 rounded-lg">
+                    <p class="text-center">
+                        <i class="far fa-eye-slash fa-2x"></i>
+                    </p>
+                    <p class="text-center lead font-weight-bold mb-0">Sensitive Content</p>
+                    <p class="text-center">{{ status.spoiler_text && status.spoiler_text.length ? status.spoiler_text : 'This post may contain sensitive content' }}</p>
+                    <p class="text-center mb-0">
+                        <button class="btn btn-primary btn-sm font-weight-bold" @click="status.sensitive = false">See post</button>
+                    </p>
+                </div>
+            </div>
 
 			<div v-else class="bg-light rounded-lg d-flex align-items-center justify-content-center" style="height: 400px;">
 				<div>
