@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\ImageOptimizePipeline\ImageOptimize;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\SharePipeline\SharePipeline;
 use App\Jobs\SharePipeline\UndoSharePipeline;
 use App\AccountInterstitial;
@@ -242,7 +243,7 @@ class StatusController extends Controller
 				Cache::forget('profile:embed:' . $status->profile_id);
 				StatusService::del($status->id, true);
 				Cache::forget('profile:status_count:'.$status->profile_id);
-				StatusDelete::dispatch($status);
+				$status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
 			}
 		} else if ($status->profile_id == $user->profile_id || $user->is_admin == true) {
 			Cache::forget('_api:statuses:recent_9:' . $status->profile_id);
@@ -250,7 +251,7 @@ class StatusController extends Controller
 			Cache::forget('profile:embed:' . $status->profile_id);
 			StatusService::del($status->id, true);
 			Cache::forget('profile:status_count:'.$status->profile_id);
-			StatusDelete::dispatch($status);
+			$status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
 		}
 
 		if($request->wantsJson()) {
