@@ -51,8 +51,10 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 900;
+    public $timeout = 90;
     public $tries = 2;
+    public $maxExceptions = 1;
+    public $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -86,11 +88,6 @@ class RemoteStatusDelete implements ShouldQueue
 
     public function unlinkRemoveMedia($status)
     {
-        Media::whereStatusId($status->id)
-        ->get()
-        ->each(function($media) {
-            MediaDeletePipeline::dispatch($media);
-        });
 
         if($status->in_reply_to_id) {
             $parent = Status::findOrFail($status->in_reply_to_id);
@@ -99,8 +96,10 @@ class RemoteStatusDelete implements ShouldQueue
             StatusService::del($parent->id);
         }
 
+        AccountInterstitial::where('item_type', 'App\Status')
+            ->where('item_id', $status->id)
+            ->delete();
         Bookmark::whereStatusId($status->id)->delete();
-
         CollectionItem::whereObjectType('App\Status')
             ->whereObjectId($status->id)
             ->get()
@@ -108,31 +107,25 @@ class RemoteStatusDelete implements ShouldQueue
                 CollectionService::removeItem($col->collection_id, $col->object_id);
                 $col->delete();
         });
-
         DirectMessage::whereStatusId($status->id)->delete();
-
-        Like::whereStatusId($status->id)->delete();
-
+        Like::whereStatusId($status->id)->forceDelete();
+        Media::whereStatusId($status->id)
+        ->get()
+        ->each(function($media) {
+            MediaDeletePipeline::dispatch($media)->onQueue('mmo');
+        });
         MediaTag::where('status_id', $status->id)->delete();
-
         Mention::whereStatusId($status->id)->forceDelete();
-
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)
             ->forceDelete();
-
         Report::whereObjectType('App\Status')
             ->whereObjectId($status->id)
             ->delete();
-
         StatusArchived::whereStatusId($status->id)->delete();
         StatusHashtag::whereStatusId($status->id)->delete();
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
-
-        AccountInterstitial::where('item_type', 'App\Status')
-            ->where('item_id', $status->id)
-            ->delete();
 
         $status->delete();
 
