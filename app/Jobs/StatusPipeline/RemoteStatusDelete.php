@@ -75,7 +75,6 @@ class RemoteStatusDelete implements ShouldQueue
         $status = $this->status;
 
         if($status->deleted_at) {
-            $status->forceDelete();
             return;
         }
         $profile = $this->status->profile;
@@ -131,7 +130,7 @@ class RemoteStatusDelete implements ShouldQueue
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 
-        $status->forceDelete();
+        $status->delete();
 
         StatusService::del($status->id, true);
         AccountService::del($status->profile_id);
