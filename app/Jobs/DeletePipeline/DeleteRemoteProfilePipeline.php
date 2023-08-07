@@ -51,6 +51,7 @@ use App\Models\Conversation;
 use App\Models\Poll;
 use App\Models\PollVote;
 use App\Services\AccountService;
+use App\Jobs\StatusPipeline\RemoteStatusDelete;
 
 class DeleteRemoteProfilePipeline implements ShouldQueue
 {
@@ -86,7 +87,7 @@ class DeleteRemoteProfilePipeline implements ShouldQueue
 		Status::whereProfileId($pid)
 			->chunk(50, function($statuses) {
 				foreach($statuses as $status) {
-					DeleteRemoteStatusPipeline::dispatch($status)->onQueue('delete');
+					RemoteStatusDelete::dispatch($status)->onQueue('delete');
 				}
 		});
 

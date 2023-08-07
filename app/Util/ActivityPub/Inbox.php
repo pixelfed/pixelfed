@@ -25,7 +25,7 @@ use Illuminate\Support\Str;
 use App\Jobs\LikePipeline\LikePipeline;
 use App\Jobs\FollowPipeline\FollowPipeline;
 use App\Jobs\DeletePipeline\DeleteRemoteProfilePipeline;
-use App\Jobs\DeletePipeline\DeleteRemoteStatusPipeline;
+use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\StoryPipeline\StoryExpire;
 use App\Jobs\StoryPipeline\StoryFetch;
 use App\Jobs\StatusPipeline\StatusRemoteUpdatePipeline;
@@ -707,7 +707,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
-						DeleteRemoteStatusPipeline::dispatch($status)->onQueue('high');
+						RemoteStatusDelete::dispatch($status)->onQueue('high');
 						return;
 					break;
 

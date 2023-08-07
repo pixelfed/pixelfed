@@ -11,11 +11,13 @@ use Illuminate\Http\Client\RequestException;
 
 class ActivityPubFetchService
 {
-	public static function get($url)
+	public static function get($url, $validateUrl = true)
 	{
-		if(!Helpers::validateUrl($url)) {
-			return 0;
-		}
+        if($validateUrl === true) {
+    		if(!Helpers::validateUrl($url)) {
+    			return 0;
+    		}
+        }
 
 		$baseHeaders = [
 			'Accept' => 'application/activity+json, application/ld+json',

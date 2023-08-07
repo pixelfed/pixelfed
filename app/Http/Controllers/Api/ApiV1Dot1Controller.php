@@ -34,6 +34,7 @@ use App\Mail\PasswordChange;
 use App\Mail\ConfirmAppEmail;
 use App\Http\Resources\StatusStateless;
 use App\Jobs\StatusPipeline\StatusDelete;
+use App\Jobs\StatusPipeline\RemoteStatusDelete;
 use App\Jobs\ReportPipeline\ReportNotifyAdminViaEmail;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -838,7 +839,7 @@ class ApiV1Dot1Controller extends Controller
 			Cache::forget('profile:embed:' . $status->profile_id);
 			StatusService::del($status->id, true);
 			Cache::forget('profile:status_count:'.$status->profile_id);
-			StatusDelete::dispatch($status);
+			$status->uri ? RemoteStatusDelete::dispatch($status) : StatusDelete::dispatch($status);
 			return [];
 		}
 
