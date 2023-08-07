@@ -93,10 +93,12 @@ class RemoteStatusDelete implements ShouldQueue
     {
 
         if($status->in_reply_to_id) {
-            $parent = Status::findOrFail($status->in_reply_to_id);
-            --$parent->reply_count;
-            $parent->save();
-            StatusService::del($parent->id);
+            $parent = Status::find($status->in_reply_to_id);
+            if($parent) {
+                --$parent->reply_count;
+                $parent->save();
+                StatusService::del($parent->id);
+            }
         }
 
         AccountInterstitial::where('item_type', 'App\Status')
