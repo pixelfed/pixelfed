@@ -1,12 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.8...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.9...dev)
+
+## [v0.11.9 (2023-08-06)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
 
 ### Added
 - Import from Instagram ([#4466](https://github.com/pixelfed/pixelfed/pull/4466)) ([cf3078c5](https://github.com/pixelfed/pixelfed/commit/cf3078c5))
 - Sign-in with Mastodon ([#4545](https://github.com/pixelfed/pixelfed/pull/4545)) ([45b9404e](https://github.com/pixelfed/pixelfed/commit/45b9404e))
 - Health check endpoint at /api/service/health-check ([ff58f970](https://github.com/pixelfed/pixelfed/commit/ff58f970))
 - Reblogs in home feed ([#4563](https://github.com/pixelfed/pixelfed/pull/4563)) ([b86d47bf](https://github.com/pixelfed/pixelfed/commit/b86d47bf))
+- Account Migrations ([#4578](https://github.com/pixelfed/pixelfed/pull/4578)) ([a9220e4e](https://github.com/pixelfed/pixelfed/commit/a9220e4e))
 
 ### Updates
 - Update Notifications.vue component, fix filtering logic to prevent endless spinner ([3df9b53f](https://github.com/pixelfed/pixelfed/commit/3df9b53f))
@@ -50,6 +53,11 @@
 - Update Timeline component, improve reblog support ([29de91e5](https://github.com/pixelfed/pixelfed/commit/29de91e5))
 - Update timeline settings, add photo reblogs only option ([e2705b9a](https://github.com/pixelfed/pixelfed/commit/e2705b9a))
 - Update PostContent, add text cw warning ([911504fa](https://github.com/pixelfed/pixelfed/commit/911504fa))
+- Update ActivityPubFetchService, add validateUrl parameter to bypass url validation to fetch content from blocked instances ([3d1b6516](https://github.com/pixelfed/pixelfed/commit/3d1b6516))
+- Update RemoteStatusDelete pipeline ([71e92261](https://github.com/pixelfed/pixelfed/commit/71e92261))
+- Update RemoteStatusDelete pipeline ([fab8f25e](https://github.com/pixelfed/pixelfed/commit/fab8f25e))
+- Update RemoteStatusPipeline, fix reply check ([618b6727](https://github.com/pixelfed/pixelfed/commit/618b6727))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)

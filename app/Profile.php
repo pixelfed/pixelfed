@@ -7,6 +7,7 @@ use App\Util\Lexer\PrettyNumber;
 use App\HasSnowflakePrimary;
 use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use App\Services\FollowerService;
+use App\Models\ProfileAlias;
 
 class Profile extends Model
 {
@@ -369,9 +370,13 @@ class Profile extends Model
 		return $this->hasMany(Story::class);
 	}
 
-
 	public function reported()
 	{
 		return $this->hasMany(Report::class, 'object_id');
+	}
+
+	public function aliases()
+	{
+		return $this->hasMany(ProfileAlias::class);
 	}
 }

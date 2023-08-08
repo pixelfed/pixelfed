@@ -4,17 +4,26 @@ namespace App\Transformer\ActivityPub;
 
 use App\Profile;
 use League\Fractal;
+use App\Services\AccountService;
 
 class ProfileTransformer extends Fractal\TransformerAbstract
 {
     public function transform(Profile $profile)
     {
-        return [
+        $res = [
           '@context' => [
             'https://w3id.org/security/v1',
             'https://www.w3.org/ns/activitystreams',
             [
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
+              'alsoKnownAs' => [
+                    '@id' => 'as:alsoKnownAs',
+                    '@type' => '@id'
+              ],
+              'movedTo' => [
+                    '@id' => 'as:movedTo',
+                    '@type' => '@id'
+              ]
             ],
           ],
           'id'                        => $profile->permalink(),
@@ -42,5 +51,15 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'sharedInbox' => config('app.url') . '/f/inbox'
           ]
       ];
+
+      if($profile->aliases->count()) {
+        $res['alsoKnownAs'] = $profile->aliases->map(fn($alias) => $alias->uri);
+      }
+
+      if($profile->moved_to_profile_id) {
+        $res['movedTo'] = AccountService::get($profile->moved_to_profile_id)['url'];
+      }
+
+      return $res;
     }
 }
