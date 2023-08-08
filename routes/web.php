@@ -549,7 +549,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::get('invites', 'UserInviteController@show')->name('settings.invites');
 		// Route::get('sponsor', 'SettingsController@sponsor')->name('settings.sponsor');
 		// Route::post('sponsor', 'SettingsController@sponsorStore');
-		Route::prefix('import')->group(function() {
+        Route::group(['prefix' => 'import', 'middleware' => 'dangerzone'], function() {
 		  Route::get('/', 'SettingsController@dataImport')->name('settings.import');
 		  Route::prefix('instagram')->group(function() {
 			Route::get('/', 'ImportController@instagram')->name('settings.import.ig');
@@ -564,6 +564,12 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('timeline', 'SettingsController@updateTimelineSettings');
 		Route::get('media', 'SettingsController@mediaSettings')->name('settings.media');
 		Route::post('media', 'SettingsController@updateMediaSettings');
+
+        Route::group(['prefix' => 'account/aliases', 'middleware' => 'dangerzone'], function() {
+            Route::get('manage', 'ProfileAliasController@index');
+            Route::post('manage', 'ProfileAliasController@store');
+            Route::post('manage/delete', 'ProfileAliasController@delete');
+        });
 	});
 
 	Route::group(['prefix' => 'site'], function () {
