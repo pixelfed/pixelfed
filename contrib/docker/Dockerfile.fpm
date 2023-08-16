@@ -33,7 +33,7 @@ RUN apt-get update \
 # Required for GD
       libxpm4 \
       libxpm-dev \
-      libwebp6 \
+      libwebp7 \
       libwebp-dev \
 ## Video Processing
       ffmpeg \
