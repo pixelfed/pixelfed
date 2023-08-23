@@ -66,6 +66,14 @@ class RelationshipService
 		return self::get($aid, $tid);
 	}
 
+	public static function forget($aid, $tid)
+	{
+		Cache::forget('pf:services:follower:audience:' . $aid);
+		Cache::forget('pf:services:follower:audience:' . $tid);
+		self::delete($tid, $aid);
+		self::delete($aid, $tid);
+	}
+
 	public static function defaultRelation($tid)
 	{
 		return [
