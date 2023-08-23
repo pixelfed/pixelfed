@@ -28,10 +28,6 @@ class CreateGroupsTable extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
         });
-
-        Schema::table('statuses', function (Blueprint $table) {
-            $table->bigInteger('group_id')->unsigned()->nullable()->index();
-        });
     }
 
     /**
@@ -42,9 +38,5 @@ class CreateGroupsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('groups');
-
-        Schema::table('statuses', function (Blueprint $table) {
-            $table->dropColumn('group_id');
-        });
     }
 }
