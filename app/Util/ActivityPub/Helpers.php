@@ -276,7 +276,7 @@ class Helpers {
         }
 
         if(is_array($val)) {
-            return !empty($val) ? $val[0] : null;
+            return !empty($val) ? head($val) : null;
         }
 
         return null;
@@ -785,6 +785,7 @@ class Helpers {
                 'inbox_url' => $res['inbox'],
                 'outbox_url' => isset($res['outbox']) ? $res['outbox'] : null,
                 'public_key' => $res['publicKey']['publicKeyPem'],
+                'indexable' => isset($res['indexable']) && is_bool($res['indexable']) ? $res['indexable'] : false,
             ]
         );
 

@@ -16,6 +16,8 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://www.w3.org/ns/activitystreams',
             [
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
+              'pixelfed' => 'http://pixelfed.org/ns#',
+              'schema' => 'http://schema.org/',
               'alsoKnownAs' => [
                     '@id' => 'as:alsoKnownAs',
                     '@type' => '@id'
@@ -23,6 +25,10 @@ class ProfileTransformer extends Fractal\TransformerAbstract
               'movedTo' => [
                     '@id' => 'as:movedTo',
                     '@type' => '@id'
+              ],
+              'indexable' => [
+                '@id' => 'pixelfed:indexable',
+                '@type' => 'schema:Boolean'
               ]
             ],
           ],
@@ -37,6 +43,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'summary'                   => $profile->bio,
           'url'                       => $profile->url(),
           'manuallyApprovesFollowers' => (bool) $profile->is_private,
+          'indexable'                 => (bool) $profile->indexable,
           'publicKey' => [
             'id'           => $profile->permalink().'#main-key',
             'owner'        => $profile->permalink(),
