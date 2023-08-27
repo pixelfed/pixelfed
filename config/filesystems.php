@@ -63,6 +63,7 @@ return [
             'root'       => storage_path('app/public'),
             'url'        => env('APP_URL').'/storage',
             'visibility' => 'public',
+            'directory_visibility' => 'public',
             'throw' => true,
         ],
 
