@@ -171,6 +171,12 @@ class AccountService
 			if($s->contains('@') && !$s->startsWith('@')) {
 				$username = "@{$username}";
 			}
+			if(preg_match('/^@([^@]+)@'.preg_quote(config('pixelfed.domain.app')).'$/i', $username, $matches)) {
+				# The username is the fully qualified @user@example.com and the pixelfed site is example.com
+				# Normalize this username to just user
+				$username = $matches[1];
+			}
+
 			$profile = DB::table('profiles')
 				->whereUsername($username)
 				->first();

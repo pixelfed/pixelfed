@@ -142,6 +142,10 @@ class SiteController extends Controller
 
 	public function legacyWebfingerRedirect(Request $request, $username, $domain)
 	{
+		if($domain == config('pixelfed.domain.app')) {
+			# If the user visits domain/@user@domain, treat it the same as visiting domain/@user
+			return SiteController::legacyProfileRedirect($request, $username);
+		}
 		$un = '@'.$username.'@'.$domain;
 		$profile = Profile::whereUsername($un)
 			->firstOrFail();
