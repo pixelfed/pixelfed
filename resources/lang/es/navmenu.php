@@ -15,5 +15,5 @@ return [
 	'admin'				=> 'Administración',
 	'logout'			=> 'Cerrar sesión',
 	'directMessages'	        => 'Mensajes directos',
-	'composePost'		        => 'Redactar mensaje',
+	'composePost'		        => 'Crear publicación',
 ];
