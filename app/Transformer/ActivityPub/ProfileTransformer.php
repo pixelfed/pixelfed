@@ -15,7 +15,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://w3id.org/security/v1',
             'https://www.w3.org/ns/activitystreams',
             [
-              'pixelfed' => 'http://pixelfed.org/ns#',
+              'toot' => 'http://joinmastodon.org/ns#',
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
               'alsoKnownAs' => [
                     '@id' => 'as:alsoKnownAs',
@@ -25,7 +25,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
                     '@id' => 'as:movedTo',
                     '@type' => '@id'
               ],
-              'indexable' => 'pixelfed:indexable',
+              'indexable' => 'toot:indexable',
             ],
           ],
           'id'                        => $profile->permalink(),
