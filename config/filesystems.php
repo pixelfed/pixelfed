@@ -48,11 +48,11 @@ return [
             'root'   => storage_path('app'),
             'permissions' => [
                 'file' => [
-                    'public' => 0644,
+                    'public' => 0664,
                     'private' => 0600,
                 ],
                 'dir' => [
-                    'public' => 0755,
+                    'public' => 0775,
                     'private' => 0700,
                 ],
             ],
