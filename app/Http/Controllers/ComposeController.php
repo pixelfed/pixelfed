@@ -415,7 +415,7 @@ class ComposeController extends Controller
 		$results = Profile::select('id','domain','username')
 			->whereNotIn('id', $blocked)
 			->where('username','like','%'.$q.'%')
-			->groupBy('domain')
+			->groupBy('id', 'domain')
 			->limit(15)
 			->get()
 			->map(function($profile) {
