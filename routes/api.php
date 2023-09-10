@@ -316,6 +316,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
                 Route::post('seen', 'Stories\StoryApiV1Controller@viewed')->middleware($middleware);
                 Route::post('self-expire/{id}', 'Stories\StoryApiV1Controller@delete')->middleware($middleware);
                 Route::post('comment', 'Stories\StoryApiV1Controller@comment')->middleware($middleware);
+                Route::get('viewers', 'Stories\StoryApiV1Controller@viewers')->middleware($middleware);
             });
         });
     });

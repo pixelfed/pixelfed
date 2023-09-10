@@ -643,7 +643,7 @@ trait AdminReportController
 				$q->whereNull('admin_seen') :
 				$q->whereNotNull('admin_seen');
 			})
-			->groupBy(['object_id', 'object_type'])
+			->groupBy(['id', 'object_id', 'object_type'])
 			->cursorPaginate(6)
 			->withQueryString()
 		);
