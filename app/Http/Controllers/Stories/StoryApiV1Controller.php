@@ -20,6 +20,7 @@ use App\Jobs\StoryPipeline\StoryViewDeliver;
 use App\Services\AccountService;
 use App\Services\MediaPathService;
 use App\Services\StoryService;
+use App\Http\Resources\StoryView as StoryViewResource;
 
 class StoryApiV1Controller extends Controller
 {
@@ -354,5 +355,27 @@ class StoryApiV1Controller extends Controller
 		$storagePath = MediaPathService::story($user->profile);
 		$path = $photo->storePubliclyAs($storagePath, Str::random(random_int(2, 12)) . '_' . Str::random(random_int(32, 35)) . '_' . Str::random(random_int(1, 14)) . '.' . $photo->extension());
 		return $path;
+	}
+
+	public function viewers(Request $request)
+	{
+		abort_if(!config_cache('instance.stories.enabled') || !$request->user(), 404);
+
+		$this->validate($request, [
+			'sid' => 'required|string|min:1|max:50'
+		]);
+
+		$pid = $request->user()->profile_id;
+		$sid = $request->input('sid');
+
+		$story = Story::whereProfileId($pid)
+			->whereActive(true)
+			->findOrFail($sid);
+
+		$viewers = StoryView::whereStoryId($story->id)
+            ->orderByDesc('id')
+			->cursorPaginate(10);
+
+		return StoryViewResource::collection($viewers);
 	}
 }
