@@ -95,7 +95,7 @@ class PublicTimelineService {
 		if(self::count() == 0 || $force == true) {
 			$hideNsfw = config('instance.hide_nsfw_on_public_feeds');
 			Redis::del(self::CACHE_KEY);
-			$minId = SnowflakeService::byDate(now()->subDays(14));
+			$minId = SnowflakeService::byDate(now()->subDays(90));
 			$ids = Status::where('id', '>', $minId)
 				->whereNull(['uri', 'in_reply_to_id', 'reblog_of_id'])
 				->when($hideNsfw, function($q, $hideNsfw) {
@@ -105,9 +105,11 @@ class PublicTimelineService {
 				->whereScope('public')
 				->orderByDesc('id')
 				->limit($limit)
-				->pluck('id');
-			foreach($ids as $id) {
-				self::add($id);
+				->pluck('id', 'profile_id');
+			foreach($ids as $k => $id) {
+                if(AdminShadowFilterService::canAddToPublicFeedByProfileId($k)) {
+			         self::add($id);
+                }
 			}
 			return 1;
 		}
