@@ -58,6 +58,7 @@ class NotificationService {
 		$stop = $stop > 400 ? 400 : $stop;
 		$ids = Notification::where('id', '>', self::getEpochId())
 			->where('profile_id', $id)
+			->orderByDesc('id')
 			->skip($start)
 			->take($stop)
 			->pluck('id');
@@ -281,6 +282,7 @@ class NotificationService {
 		if(self::count($id) == 0 || $force == true) {
 			$ids = Notification::where('profile_id', $id)
 				->where('id', '>', self::getEpochId())
+				->orderByDesc('id')
 				->limit($stop)
 				->pluck('id');
 			foreach($ids as $key) {
