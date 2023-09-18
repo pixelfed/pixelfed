@@ -11,6 +11,8 @@
 - Update FollowerService, add forget method to RelationshipService call to reduce load when mass purging ([347e4f59](https://github.com/pixelfed/pixelfed/commit/347e4f59))
 - Update FollowServiceWarmCache, improve handling larger following/follower lists ([61a6d904](https://github.com/pixelfed/pixelfed/commit/61a6d904))
 - Update StoryApiV1Controller, add viewers route to view story viewers ([941736ce](https://github.com/pixelfed/pixelfed/commit/941736ce))
+- Update NotificationService, improve cache warming query ([2496386d](https://github.com/pixelfed/pixelfed/commit/2496386d))
+- Update StatusService, hydrate accounts on request instead of caching them along with status objects ([223661ec](https://github.com/pixelfed/pixelfed/commit/223661ec))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
