@@ -22,9 +22,9 @@ class StatusService
         return self::CACHE_KEY . $p . $id;
     }
 
-    public static function get($id, $publicOnly = true)
+    public static function get($id, $publicOnly = true, $mastodonMode = false)
     {
-        return Cache::remember(self::key($id, $publicOnly), 21600, function() use($id, $publicOnly) {
+        $res = Cache::remember(self::key($id, $publicOnly), 21600, function() use($id, $publicOnly) {
             if($publicOnly) {
                 $status = Status::whereScope('public')->find($id);
             } else {
@@ -36,13 +36,23 @@ class StatusService
             $fractal = new Fractal\Manager();
             $fractal->setSerializer(new ArraySerializer());
             $resource = new Fractal\Resource\Item($status, new StatusStatelessTransformer());
-            return $fractal->createData($resource)->toArray();
+            $res = $fractal->createData($resource)->toArray();
+            $res['_pid'] = isset($res['account']) && isset($res['account']['id']) ? $res['account']['id'] : null;
+            if(isset($res['_pid'])) {
+                unset($res['account']);
+            }
+            return $res;
         });
+        if($res) {
+            $res['account'] = $mastodonMode === true ? AccountService::getMastodon($res['_pid'], true) : AccountService::get($res['_pid'], true);
+            unset($res['_pid']);
+        }
+        return $res;
     }
 
     public static function getMastodon($id, $publicOnly = true)
     {
-        $status = self::get($id, $publicOnly);
+        $status = self::get($id, $publicOnly, true);
         if(!$status) {
             return null;
         }
