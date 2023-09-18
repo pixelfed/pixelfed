@@ -16,6 +16,8 @@ use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 class NotificationService {
 
 	const CACHE_KEY = 'pf:services:notifications:ids:';
+	const EPOCH_CACHE_KEY = 'pf:services:notifications:epoch-id:by-months:';
+	const ITEM_CACHE_TTL = 86400;
 	const MASTODON_TYPES = [
 		'follow',
 		'follow_request',
@@ -44,11 +46,18 @@ class NotificationService {
 		return $res;
 	}
 
+	public static function getEpochId($months = 6)
+	{
+		return Cache::remember(self::EPOCH_CACHE_KEY . $months, 1209600, function() use($months) {
+			return Notification::where('created_at', '>', now()->subMonths($months))->first()->id;
+		});
+	}
+
 	public static function coldGet($id, $start = 0, $stop = 400)
 	{
 		$stop = $stop > 400 ? 400 : $stop;
-		$ids = Notification::whereProfileId($id)
-			->latest()
+		$ids = Notification::where('id', '>', self::getEpochId())
+			->where('profile_id', $id)
 			->skip($start)
 			->take($stop)
 			->pluck('id');
@@ -227,7 +236,7 @@ class NotificationService {
 
 	public static function getNotification($id)
 	{
-		$notification = Cache::remember('service:notification:'.$id, 86400, function() use($id) {
+		$notification = Cache::remember('service:notification:'.$id, self::ITEM_CACHE_TTL, function() use($id) {
 			$n = Notification::with('item')->find($id);
 
 			if(!$n) {
@@ -259,19 +268,19 @@ class NotificationService {
 
 	public static function setNotification(Notification $notification)
 	{
-		return Cache::remember('service:notification:'.$notification->id, now()->addDays(3), function() use($notification) {
+		return Cache::remember('service:notification:'.$notification->id, self::ITEM_CACHE_TTL, function() use($notification) {
 			$fractal = new Fractal\Manager();
 			$fractal->setSerializer(new ArraySerializer());
 			$resource = new Fractal\Resource\Item($notification, new NotificationTransformer());
 			return $fractal->createData($resource)->toArray();
 		});
-	} 
+	}
 
 	public static function warmCache($id, $stop = 400, $force = false)
 	{
 		if(self::count($id) == 0 || $force == true) {
-			$ids = Notification::whereProfileId($id)
-				->latest()
+			$ids = Notification::where('profile_id', $id)
+				->where('id', '>', self::getEpochId())
 				->limit($stop)
 				->pluck('id');
 			foreach($ids as $key) {
