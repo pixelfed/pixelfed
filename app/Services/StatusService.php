@@ -43,7 +43,7 @@ class StatusService
             }
             return $res;
         });
-        if($res) {
+        if($res && isset($res['_pid'])) {
             $res['account'] = $mastodonMode === true ? AccountService::getMastodon($res['_pid'], true) : AccountService::get($res['_pid'], true);
             unset($res['_pid']);
         }
