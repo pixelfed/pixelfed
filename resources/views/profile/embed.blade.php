@@ -73,7 +73,9 @@
   <script type="text/javascript" src="{{mix('js/manifest.js')}}"></script>
   <script type="text/javascript" src="{{mix('js/vendor.js')}}"></script>
   <script type="text/javascript" src="{{mix('js/app.js')}}"></script>
-  <script type="text/javascript">window.addEventListener("message",e=>{const t=e.data||{};window.parent&&"setHeight"===t.type&&window.parent.postMessage({type:"setHeight",id:t.id,height:document.getElementsByTagName("html")[0].scrollHeight},"*")});</script>
+  <script type="text/javascript">
+      window.addEventListener("message", e=>{const t=e.data||{};});
+  </script>
   <script type="text/javascript">document.querySelectorAll('.caption-container a').forEach(function(i) {i.setAttribute('target', '_blank');});</script>
   <script type="text/javascript">
     document.querySelectorAll('.prettyCount').forEach(function(i) {
@@ -103,7 +105,13 @@
 			</div>`;
 			parent.append(el);
   		})
-  	});
+  	})
+    .finally(() => {
+        window.parent.postMessage({type:"setHeight",id:0,height:document.getElementsByTagName("html")[0].scrollHeight},"*");
+        setTimeout(() => {
+            window.parent.postMessage({type:"setHeight",id:0,height:document.getElementsByTagName("html")[0].scrollHeight},"*");
+        }, 5000);
+    })
   </script>
 </body>
 </html>
