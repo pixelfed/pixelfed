@@ -18,6 +18,9 @@
 - Update StatusService, hydrate accounts on request instead of caching them along with status objects ([223661ec](https://github.com/pixelfed/pixelfed/commit/223661ec))
 - Update profile embed, fix resize ([dc23c21d](https://github.com/pixelfed/pixelfed/commit/dc23c21d))
 - Update Status model, improve thumb logic ([d969a973](https://github.com/pixelfed/pixelfed/commit/d969a973))
+- Update Status model, allow unlisted thumbnails ([1f0a45b7](https://github.com/pixelfed/pixelfed/commit/1f0a45b7))
+- Update StatusTagsPipeline, fix object tags and slug normalization ([d295e605](https://github.com/pixelfed/pixelfed/commit/d295e605))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
