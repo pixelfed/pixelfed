@@ -81,16 +81,17 @@ class StatusTagsPipeline implements ShouldQueue
             		->orWhere('slug', 'ilike', str_slug($name, '-', false))
             		->first();
 
-            	if(!$hashtag) {
-            		$hashtag = new Hashtag;
-            		$hashtag->name = $name;
-            		$hashtag->slug = str_slug($name, '-', false);
-            		$hashtag->save();
-            	}
+				if(!$hashtag) {
+					$hashtag = Hashtag::updateOrCreate([
+						'slug' => str_slug($name, '-', false),
+					],[
+						'name' => $name
+					]);
+				}
             } else {
-				$hashtag = Hashtag::firstOrCreate([
+				$hashtag = Hashtag::updateOrCreate([
 					'slug' => str_slug($name, '-', false),
-                ],[
+				],[
 					'name' => $name
 				]);
             }
