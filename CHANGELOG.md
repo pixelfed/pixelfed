@@ -2,6 +2,9 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.9...dev)
 
+### Added
+- Resilient Media Storage ([#4665](https://github.com/pixelfed/pixelfed/pull/4665)) ([fb1deb6](https://github.com/pixelfed/pixelfed/commit/fb1deb6))
+
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
 - Update AP Helpers, consume actor `indexable` attribute ([fbdcdd9d](https://github.com/pixelfed/pixelfed/commit/fbdcdd9d))
