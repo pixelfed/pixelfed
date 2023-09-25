@@ -97,7 +97,7 @@ class Status extends Model
 
 	public function thumb($showNsfw = false)
 	{
-		$entity = StatusService::get($this->id);
+		$entity = StatusService::get($this->id, false);
 
 		if(!$entity || !isset($entity['media_attachments']) || empty($entity['media_attachments'])) {
 			return url(Storage::url('public/no-preview.png'));
@@ -106,6 +106,10 @@ class Status extends Model
 		if((!isset($entity['sensitive']) || $entity['sensitive']) && !$showNsfw) {
 			return url(Storage::url('public/no-preview.png'));
 		}
+
+        if(!isset($entity['visibility']) || !in_array($entity['visibility'], ['public', 'unlisted'])) {
+            return url(Storage::url('public/no-preview.png'));
+        }
 
 		return collect($entity['media_attachments'])
             ->filter(fn($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png']))
