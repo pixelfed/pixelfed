@@ -84,14 +84,12 @@ class StatusTagsPipeline implements ShouldQueue
 				if(!$hashtag) {
 					$hashtag = Hashtag::updateOrCreate([
 						'slug' => str_slug($name, '-', false),
-					],[
 						'name' => $name
 					]);
 				}
             } else {
 				$hashtag = Hashtag::updateOrCreate([
 					'slug' => str_slug($name, '-', false),
-				],[
 					'name' => $name
 				]);
             }
