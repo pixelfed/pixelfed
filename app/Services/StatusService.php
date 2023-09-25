@@ -161,8 +161,6 @@ class StatusService
             }
             Cache::forget('status:transformer:media:attachments:' . $id);
             MediaService::del($id);
-            Cache::forget('status:thumb:nsfw0' . $id);
-            Cache::forget('status:thumb:nsfw1' . $id);
             Cache::forget('pf:services:sh:id:' . $id);
             PublicTimelineService::rem($id);
             NetworkTimelineService::rem($id);
