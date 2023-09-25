@@ -86,12 +86,11 @@ class MediaStorageService {
 		$thumbname = array_pop($pt);
 		$storagePath = implode('/', $p);
 
-		$disk = Storage::disk(config('filesystems.cloud'));
-		$file = $disk->putFileAs($storagePath, new File($path), $name, 'public');
-		$url = $disk->url($file);
-		$thumbFile = $disk->putFileAs($storagePath, new File($thumb), $thumbname, 'public');
-		$thumbUrl = $disk->url($thumbFile);
-		$media->thumbnail_url = $thumbUrl;
+		$url = ResilientMediaStorageService::store($storagePath, $path, $name);
+		if($thumb) {
+			$thumbUrl = ResilientMediaStorageService::store($storagePath, $thumb, $thumbname);
+			$media->thumbnail_url = $thumbUrl;
+		}
 		$media->cdn_url = $url;
 		$media->optimized_url = $url;
 		$media->replicated_at = now();
