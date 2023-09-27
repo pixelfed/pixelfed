@@ -74,7 +74,10 @@
                         </div>
 
                     </form>
-                    @if(config_cache('pixelfed.open_registration') && config('remote-auth.mastodon.enabled'))
+                    @if(
+                        (config_cache('pixelfed.open_registration') && config('remote-auth.mastodon.enabled')) ||
+                        (config('remote-auth.mastodon.ignore_closed_state') && config('remote-auth.mastodon.enabled'))
+                    )
                     <hr>
                     <form method="POST" action="/auth/raw/mastodon/start">
                         @csrf
