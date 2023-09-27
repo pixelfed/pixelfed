@@ -82,7 +82,8 @@ class Note extends Fractal\TransformerAbstract
 						'@type' 		=> '@id'
 					],
 					'toot' 				=> 'http://joinmastodon.org/ns#',
-					'Emoji'				=> 'toot:Emoji'
+					'Emoji'				=> 'toot:Emoji',
+					'blurhash'			=> 'toot:blurhash',
 				]
 			],
 			'id' 				=> $status->url(),
@@ -97,12 +98,22 @@ class Note extends Fractal\TransformerAbstract
 			'cc' 				=> $status->scopeToAudience('cc'),
 			'sensitive'       	=> (bool) $status->is_nsfw,
 			'attachment'      	=> $status->media()->orderBy('order')->get()->map(function ($media) {
-				return [
+				$res = [
 					'type'      => $media->activityVerb(),
 					'mediaType' => $media->mime,
 					'url'       => $media->url(),
 					'name'      => $media->caption,
 				];
+				if($media->blurhash) {
+					$res['blurhash'] = $media->blurhash;
+				}
+				if($media->width) {
+					$res['width'] = $media->width;
+				}
+				if($media->height) {
+					$res['height'] = $media->height;
+				}
+				return $res;
 			})->toArray(),
 			'tag' 				=> $tags,
 			'commentsEnabled'  => (bool) !$status->comments_disabled,
