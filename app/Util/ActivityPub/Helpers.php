@@ -108,7 +108,10 @@ class Helpers {
                 'string',
                 Rule::in($mimeTypes)
             ],
-            '*.name' => 'sometimes|nullable|string'
+            '*.name' => 'sometimes|nullable|string',
+            '*.blurhash' => 'sometimes|nullable|string|min:6|max:164',
+            '*.width' => 'sometimes|nullable|integer|min:1|max:5000',
+            '*.height' => 'sometimes|nullable|integer|min:1|max:5000',
         ])->passes();
 
         return $valid;
@@ -684,6 +687,8 @@ class Helpers {
             $blurhash = isset($media['blurhash']) ? $media['blurhash'] : null;
             $license = isset($media['license']) ? License::nameToId($media['license']) : null;
             $caption = isset($media['name']) ? Purify::clean($media['name']) : null;
+            $width = isset($media['width']) ? $media['width'] : false;
+            $height = isset($media['height']) ? $media['height'] : false;
 
             $media = new Media();
             $media->blurhash = $blurhash;
@@ -695,6 +700,12 @@ class Helpers {
             $media->remote_url = $url;
             $media->caption = $caption;
             $media->order = $key + 1;
+            if($width) {
+                $media->width = $width;
+            }
+            if($height) {
+                $media->height = $height;
+            }
             if($license) {
                 $media->license = $license;
             }
