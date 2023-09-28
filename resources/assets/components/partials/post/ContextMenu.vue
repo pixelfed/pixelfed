@@ -405,6 +405,7 @@
 					type: 'user',
 					item: this.status.account.id,
 				}).then(res => {
+					this.$emit('delete-all-account', this.status.account.id);
 					swal('Success', 'You have successfully muted ' + this.status.account.acct, 'success');
 				}).catch(err => {
 					if (err.response.status == 422) {
@@ -421,6 +422,7 @@
 					type: 'user',
 					item: this.status.account.id,
 				}).then(res => {
+					this.$emit('delete-all-account', this.status.account.id);
 					swal('Success', 'You have successfully blocked ' + this.status.account.acct, 'success');
 				}).catch(err => {
 					if (err.response.status == 422) {
