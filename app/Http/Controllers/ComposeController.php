@@ -146,14 +146,7 @@ class ComposeController extends Controller
 		$url = $media->url() . '?v=' . time();
 
 		switch ($media->mime) {
-			case 'image/jpeg':
-			case 'image/png':
-			case 'image/webp':
-			ImageOptimize::dispatch($media)->onQueue('mmo');
-			break;
-
 			case 'video/mp4':
-			VideoThumbnail::dispatch($media)->onQueue('mmo');
 			$preview_url = '/storage/no-preview.png';
 			$url = '/storage/no-preview.png';
 			break;
@@ -213,7 +206,6 @@ class ComposeController extends Controller
 		$res = [
 			'url' => $media->url() . '?v=' . time()
 		];
-		ImageOptimize::dispatch($media)->onQueue('mmo');
 		Cache::forget($limitKey);
 		return $res;
 	}
@@ -536,6 +528,19 @@ class ComposeController extends Controller
 			$m->save();
 			$attachments[] = $m;
 			array_push($mimes, $m->mime);
+
+		        switch ($m->mime) {
+		            case 'image/jpeg':
+		            case 'image/png':
+		            case 'image/webp':
+		                ImageOptimize::dispatch($m)->onQueue('mmo');
+				break;
+			    case 'video/mp4':
+			        VideoThumbnail::dispatch($m)->onQueue('mmo');
+			        break;
+                            default:
+                                break;
+	                }
 		}
 
 		abort_if(empty($attachments), 422);
