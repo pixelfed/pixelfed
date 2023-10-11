@@ -25,8 +25,11 @@
 - Update ap helpers, store media attachment width and height if present ([8c969191](https://github.com/pixelfed/pixelfed/commit/8c969191))
 - Update Sign-in with Mastodon, allow usage when registrations are closed ([895dc4fa](https://github.com/pixelfed/pixelfed/commit/895dc4fa))
 - Update profile embeds, filter sensitive posts ([ede5ec3b](https://github.com/pixelfed/pixelfed/commit/ede5ec3b))
-- Update ApiV1Controller, hydrate reblog interactions. Fixes #4686 ([135798eb](https://github.com/pixelfed/pixelfed/commit/135798eb))
-- Update AdminReportController, add `profile_id` to group by. Fixes #4685 ([e4d3b196](https://github.com/pixelfed/pixelfed/commit/e4d3b196))
+- Update ApiV1Controller, hydrate reblog interactions. Fixes ([#4686](https://github.com/pixelfed/pixelfed/issues/4686)) ([135798eb](https://github.com/pixelfed/pixelfed/commit/135798eb))
+- Update AdminReportController, add `profile_id` to group by. Fixes ([#4685](https://github.com/pixelfed/pixelfed/issues/4685)) ([e4d3b196](https://github.com/pixelfed/pixelfed/commit/e4d3b196))
+- Update user:admin command, improve logic. Fixes ([#2465](https://github.com/pixelfed/pixelfed/issues/2465)) ([01bac511](https://github.com/pixelfed/pixelfed/commit/01bac511))
+- Update AP helpers, adjust RemoteAvatarFetch ttl from 24h to 3 months ([36b23fe3](https://github.com/pixelfed/pixelfed/commit/36b23fe3))
+- Update AvatarPipeline, improve refresh logic and garbage collection to purge old avatars ([82798b5e](https://github.com/pixelfed/pixelfed/commit/82798b5e))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
