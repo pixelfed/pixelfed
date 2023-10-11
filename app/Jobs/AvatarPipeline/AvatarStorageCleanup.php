@@ -9,25 +9,18 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use App\Services\AvatarService;
 use App\Avatar;
-use App\Profile;
 
-class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class AvatarStorageCleanup implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $profile;
+    public $avatar;
     public $tries = 3;
     public $maxExceptions = 3;
     public $timeout = 900;
     public $failOnTimeout = true;
-
-    /**
-     * Delete the job if its models no longer exist.
-     *
-     * @var bool
-     */
-    public $deleteWhenMissingModels = true;
 
     /**
      * The number of seconds after which the job's unique lock will be released.
@@ -41,7 +34,7 @@ class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'avatar:create:' . $this->profile->id;
+        return 'avatar:storage:cleanup:' . $this->avatar->profile_id;
     }
 
     /**
@@ -51,39 +44,24 @@ class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("avatar-create:{$this->profile->id}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("avatar-storage-cleanup:{$this->avatar->profile_id}"))->shared()->dontRelease()];
     }
-    
+
     /**
      * Create a new job instance.
-     *
-     * @return void
      */
-    public function __construct(Profile $profile)
+    public function __construct(Avatar $avatar)
     {
-        $this->profile = $profile->withoutRelations();
+        $this->avatar = $avatar->withoutRelations();
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $profile = $this->profile;
-        $isRemote = (bool) $profile->private_key == null;
-        $path = 'public/avatars/default.jpg';
-        Avatar::updateOrCreate(
-            [
-                'profile_id' => $profile->id,
-            ],
-            [
-                'media_path' => $path,
-                'change_count' => 0,
-                'is_remote' => $isRemote,
-                'last_processed_at' => now()
-            ]
-        );
+        AvatarService::cleanup($this->avatar, true);
+
+        return;
     }
 }
