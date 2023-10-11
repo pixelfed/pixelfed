@@ -801,7 +801,7 @@ class Helpers {
         );
 
         if( $profile->last_fetched_at == null ||
-            $profile->last_fetched_at->lt(now()->subHours(24))
+            $profile->last_fetched_at->lt(now()->subMonths(3))
         ) {
             RemoteAvatarFetch::dispatch($profile);
         }
