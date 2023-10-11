@@ -21,6 +21,7 @@ use App\{
 };
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -39,7 +40,7 @@ use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
 
-class RemoteStatusDelete implements ShouldQueue
+class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -52,9 +53,35 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
+    public $tries = 3;
+    public $maxExceptions = 3;
     public $timeout = 180;
-    public $tries = 2;
-    public $maxExceptions = 1;
+    public $failOnTimeout = true;
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'status:remote:delete:' . $this->status->id;
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping("status-remote-delete-{$this->status->id}"))->shared()->dontRelease()];
+    }
 
     /**
      * Create a new job instance.
