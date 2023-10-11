@@ -3,16 +3,17 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 use App\User;
 
-class UserAdmin extends Command
+class UserAdmin extends Command implements PromptsForMissingInput
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'user:admin {id}';
+    protected $signature = 'user:admin {username}';
 
     /**
      * The console command description.
@@ -22,13 +23,15 @@ class UserAdmin extends Command
     protected $description = 'Make a user an admin, or remove admin privileges.';
 
     /**
-     * Create a new command instance.
+     * Prompt for missing input arguments using the returned questions.
      *
-     * @return void
+     * @return array
      */
-    public function __construct()
+    protected function promptForMissingArgumentsUsing()
     {
-        parent::__construct();
+        return [
+            'username' => 'Which username should we toggle admin privileges for?',
+        ];
     }
 
     /**
@@ -38,16 +41,15 @@ class UserAdmin extends Command
      */
     public function handle()
     {
-        $id = $this->argument('id');
-        if(ctype_digit($id) == true) {
-            $user = User::find($id);
-        } else {
-            $user = User::whereUsername($id)->first();
-        }
+        $id = $this->argument('username');
+
+        $user = User::whereUsername($id)->first();
+
         if(!$user) {
             $this->error('Could not find any user with that username or id.');
             exit;
         }
+
         $this->info('Found username: ' . $user->username);
         $state = $user->is_admin ? 'Remove admin privileges from this user?' : 'Add admin privileges to this user?';
         $confirmed = $this->confirm($state);

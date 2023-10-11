@@ -33,12 +33,18 @@ class UserToggle2FA extends Command implements PromptsForMissingInput
             'username' => 'Which username should we disable 2FA for?',
         ];
     }
+
     /**
      * Execute the console command.
      */
     public function handle()
     {
         $user = User::whereUsername($this->argument('username'))->first();
+
+        if(!$user) {
+            $this->error('Could not find any user with that username');
+            exit;
+        }
 
         if(!$user->{'2fa_enabled'}) {
             $this->info('User did not have 2FA enabled!');
