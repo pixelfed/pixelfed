@@ -5,6 +5,7 @@
 ### Added
 - Resilient Media Storage ([#4665](https://github.com/pixelfed/pixelfed/pull/4665)) ([fb1deb6](https://github.com/pixelfed/pixelfed/commit/fb1deb6))
 - Added user:2fa command to easily disable 2FA for given account ([c6408fd7](https://github.com/pixelfed/pixelfed/commit/c6408fd7))
+- Added `avatar:storage-deep-clean` command to dispatch remote avatar storage cleanup jobs ([c37b7cde](https://github.com/pixelfed/pixelfed/commit/c37b7cde))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
@@ -30,6 +31,7 @@
 - Update user:admin command, improve logic. Fixes ([#2465](https://github.com/pixelfed/pixelfed/issues/2465)) ([01bac511](https://github.com/pixelfed/pixelfed/commit/01bac511))
 - Update AP helpers, adjust RemoteAvatarFetch ttl from 24h to 3 months ([36b23fe3](https://github.com/pixelfed/pixelfed/commit/36b23fe3))
 - Update AvatarPipeline, improve refresh logic and garbage collection to purge old avatars ([82798b5e](https://github.com/pixelfed/pixelfed/commit/82798b5e))
+- Update CreateAvatar job, add processing constraints and set `is_remote` attribute ([319ced40](https://github.com/pixelfed/pixelfed/commit/319ced40))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
