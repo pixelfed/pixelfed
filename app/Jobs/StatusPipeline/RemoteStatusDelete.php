@@ -37,6 +37,7 @@ use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
+use App\Jobs\ProfilePipeline\DecrementPostCount;
 
 class RemoteStatusDelete implements ShouldQueue
 {
@@ -51,7 +52,7 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 90;
+    public $timeout = 180;
     public $tries = 2;
     public $maxExceptions = 1;
 
@@ -62,7 +63,7 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public function __construct(Status $status)
     {
-        $this->status = $status;
+        $this->status = $status->withoutRelations();
     }
 
     /**
@@ -77,14 +78,10 @@ class RemoteStatusDelete implements ShouldQueue
         if($status->deleted_at) {
             return;
         }
-        $profile = $this->status->profile;
 
         StatusService::del($status->id, true);
 
-        if($profile->status_count && $profile->status_count > 0) {
-            $profile->status_count = $profile->status_count - 1;
-            $profile->save();
-        }
+        DecrementPostCount::dispatch($status->profile_id)->onQueue('inbox');
 
         return $this->unlinkRemoveMedia($status);
     }
