@@ -49,6 +49,9 @@ class NotificationService {
 	public static function getEpochId($months = 6)
 	{
 		return Cache::remember(self::EPOCH_CACHE_KEY . $months, 1209600, function() use($months) {
+            if(Notification::count() === 0) {
+                return 0;
+            }
 			return Notification::where('created_at', '>', now()->subMonths($months))->first()->id;
 		});
 	}
