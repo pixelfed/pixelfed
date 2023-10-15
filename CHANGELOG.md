@@ -32,6 +32,8 @@
 - Update AP helpers, adjust RemoteAvatarFetch ttl from 24h to 3 months ([36b23fe3](https://github.com/pixelfed/pixelfed/commit/36b23fe3))
 - Update AvatarPipeline, improve refresh logic and garbage collection to purge old avatars ([82798b5e](https://github.com/pixelfed/pixelfed/commit/82798b5e))
 - Update CreateAvatar job, add processing constraints and set `is_remote` attribute ([319ced40](https://github.com/pixelfed/pixelfed/commit/319ced40))
+- Update RemoteStatusDelete and DecrementPostCount pipelines ([edbcf3ed](https://github.com/pixelfed/pixelfed/commit/edbcf3ed))
+- Update lexer regex, fix mention regex and add more tests ([778e83d3](https://github.com/pixelfed/pixelfed/commit/778e83d3))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
