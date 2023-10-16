@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 use App\Services\PollService;
 use App\Models\CustomEmoji;
 use App\Services\BookmarkService;
+use App\Util\Lexer\Autolink;
 
 class StatusTransformer extends Fractal\TransformerAbstract
 {
@@ -27,6 +28,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 		$pid = request()->user()->profile_id;
 		$taggedPeople = MediaTagService::get($status->id);
 		$poll = $status->type === 'poll' ? PollService::get($status->id, $pid) : null;
+        $rendered = $status->caption ? Autolink::create()->autolink($status->caption) : null;
 
 		return [
 			'_v'                        => 1,
@@ -37,7 +39,7 @@ class StatusTransformer extends Fractal\TransformerAbstract
 			'in_reply_to_id'            => (string) $status->in_reply_to_id,
 			'in_reply_to_account_id'    => (string) $status->in_reply_to_profile_id,
 			'reblog'                    => $status->reblog_of_id ? StatusService::get($status->reblog_of_id) : null,
-			'content'                   => $status->rendered ?? $status->caption,
+			'content'                   => $rendered,
 			'content_text'              => $status->caption,
 			'created_at'                => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),
 			'emojis'                    => CustomEmoji::scan($status->caption),

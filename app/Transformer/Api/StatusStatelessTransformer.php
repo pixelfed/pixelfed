@@ -16,6 +16,7 @@ use App\Services\StatusLabelService;
 use App\Services\StatusMentionService;
 use App\Services\PollService;
 use App\Models\CustomEmoji;
+use App\Util\Lexer\Autolink;
 
 class StatusStatelessTransformer extends Fractal\TransformerAbstract
 {
@@ -23,6 +24,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 	{
 		$taggedPeople = MediaTagService::get($status->id);
 		$poll = $status->type === 'poll' ? PollService::get($status->id) : null;
+        $rendered = $status->caption ? Autolink::create()->autolink($status->caption) : null;
 
 		return [
 			'_v'                        => 1,
@@ -34,7 +36,7 @@ class StatusStatelessTransformer extends Fractal\TransformerAbstract
 			'in_reply_to_id'            => $status->in_reply_to_id ? (string) $status->in_reply_to_id : null,
 			'in_reply_to_account_id'    => $status->in_reply_to_profile_id ? (string) $status->in_reply_to_profile_id : null,
 			'reblog'                    => $status->reblog_of_id ? StatusService::get($status->reblog_of_id, false) : null,
-			'content'                   => $status->rendered ?? $status->caption,
+			'content'                   => $rendered,
 			'content_text'              => $status->caption,
 			'created_at'                => str_replace('+00:00', 'Z', $status->created_at->format(DATE_RFC3339_EXTENDED)),
 			'emojis'                    => CustomEmoji::scan($status->caption),
