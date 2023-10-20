@@ -28,7 +28,9 @@ class StatusTransformer extends Fractal\TransformerAbstract
 		$pid = request()->user()->profile_id;
 		$taggedPeople = MediaTagService::get($status->id);
 		$poll = $status->type === 'poll' ? PollService::get($status->id, $pid) : null;
-        $rendered = $status->caption ? Autolink::create()->autolink($status->caption) : null;
+        $rendered = config('exp.autolink') ?
+            ( $status->caption ? Autolink::create()->autolink($status->caption) : '' ) :
+            ( $status->rendered ?? $status->caption );
 
 		return [
 			'_v'                        => 1,
