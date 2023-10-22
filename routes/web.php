@@ -96,6 +96,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 	Route::get('autospam/home', 'AdminController@autospamHome')->name('admin.autospam');
 
+    Route::redirect('asf/', 'asf/home');
+    Route::get('asf/home', 'AdminShadowFilterController@home');
+    Route::get('asf/create', 'AdminShadowFilterController@create');
+    Route::get('asf/edit/{id}', 'AdminShadowFilterController@edit');
+    Route::post('asf/edit/{id}', 'AdminShadowFilterController@storeEdit');
+    Route::post('asf/create', 'AdminShadowFilterController@store');
+
 	Route::prefix('api')->group(function() {
 		Route::get('stats', 'AdminController@getStats');
 		Route::get('accounts', 'AdminController@getAccounts');

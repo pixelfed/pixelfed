@@ -20,6 +20,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Services\UserFilterService;
+use App\Services\AdminShadowFilterService;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -176,7 +177,9 @@ class StatusEntityLexer implements ShouldQueue
 			$status->reblog_of_id === null &&
 			($hideNsfw ? $status->is_nsfw == false : true)
 		) {
-			PublicTimelineService::add($status->id);
+            if(AdminShadowFilterService::canAddToPublicFeedByProfileId($status->profile_id)) {
+    			PublicTimelineService::add($status->id);
+            }
 		}
 
 		if(config_cache('federation.activitypub.enabled') == true && config('app.env') == 'production') {

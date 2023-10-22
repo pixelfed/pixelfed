@@ -20,13 +20,13 @@ trait PrivacySettings
 
     public function privacy()
     {
-		$user = Auth::user();
-		$settings = $user->settings;
-		$profile = $user->profile;
-		$is_private = $profile->is_private;
-		$settings['is_private'] = (bool) $is_private;
+        $user = Auth::user();
+        $settings = $user->settings;
+        $profile = $user->profile;
+        $is_private = $profile->is_private;
+        $settings['is_private'] = (bool) $is_private;
 
-		return view('settings.privacy', compact('settings', 'profile'));
+        return view('settings.privacy', compact('settings', 'profile'));
     }
 
     public function privacyStore(Request $request)
@@ -39,11 +39,13 @@ trait PrivacySettings
           'public_dm',
           'show_profile_follower_count',
           'show_profile_following_count',
+          'indexable',
           'show_atom',
         ];
 
-		$profile->is_suggestable = $request->input('is_suggestable') == 'on';
-		$profile->save();
+        $profile->indexable = $request->input('indexable') == 'on';
+        $profile->is_suggestable = $request->input('is_suggestable') == 'on';
+        $profile->save();
 
         foreach ($fields as $field) {
             $form = $request->input($field);
@@ -70,6 +72,8 @@ trait PrivacySettings
                 } else {
                     $settings->{$field} = false;
                 }
+            } elseif ($field == 'indexable') {
+
             } else {
                 if ($form == 'on') {
                     $settings->{$field} = true;

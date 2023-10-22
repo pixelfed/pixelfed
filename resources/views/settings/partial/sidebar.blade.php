@@ -72,6 +72,8 @@
 			@media only screen and (min-width: 768px) {
 				border-right: 1px solid #dee2e6 !important
 			}
+			height: 100%;
+			flex-grow: 1;
 		}
 	</style>
 	@endpush

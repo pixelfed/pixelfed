@@ -45,6 +45,11 @@ class StatusTagsPipeline implements ShouldQueue
 	{
 		$res = $this->activity;
 		$status = $this->status;
+
+        if(isset($res['tag']['type'], $res['tag']['name'])) {
+            $res['tag'] = [$res['tag']];
+        }
+
 		$tags = collect($res['tag']);
 
 		// Emoji
@@ -73,19 +78,18 @@ class StatusTagsPipeline implements ShouldQueue
 
             if(config('database.default') === 'pgsql') {
             	$hashtag = Hashtag::where('name', 'ilike', $name)
-            		->orWhere('slug', 'ilike', str_slug($name))
+            		->orWhere('slug', 'ilike', str_slug($name, '-', false))
             		->first();
 
-            	if(!$hashtag) {
-            		$hashtag = new Hashtag;
-            		$hashtag->name = $name;
-            		$hashtag->slug = str_slug($name);
-            		$hashtag->save();
-            	}
+				if(!$hashtag) {
+					$hashtag = Hashtag::updateOrCreate([
+						'slug' => str_slug($name, '-', false),
+						'name' => $name
+					]);
+				}
             } else {
-				$hashtag = Hashtag::firstOrCreate([
-					'slug' => str_slug($name)
-				], [
+				$hashtag = Hashtag::updateOrCreate([
+					'slug' => str_slug($name, '-', false),
 					'name' => $name
 				]);
             }

@@ -79,6 +79,34 @@ return [
             'throw' => true,
         ],
 
+        'alt-primary' => [
+            'enabled'  => env('ALT_PRI_ENABLED', false),
+            'driver'   => 's3',
+            'key'      => env('ALT_PRI_AWS_ACCESS_KEY_ID'),
+            'secret'   => env('ALT_PRI_AWS_SECRET_ACCESS_KEY'),
+            'region'   => env('ALT_PRI_AWS_DEFAULT_REGION'),
+            'bucket'   => env('ALT_PRI_AWS_BUCKET'),
+            'visibility' => 'public',
+            'url'      => env('ALT_PRI_AWS_URL'),
+            'endpoint' => env('ALT_PRI_AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('ALT_PRI_AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => true,
+        ],
+
+        'alt-secondary' => [
+            'enabled'  => env('ALT_SEC_ENABLED', false),
+            'driver'   => 's3',
+            'key'      => env('ALT_SEC_AWS_ACCESS_KEY_ID'),
+            'secret'   => env('ALT_SEC_AWS_SECRET_ACCESS_KEY'),
+            'region'   => env('ALT_SEC_AWS_DEFAULT_REGION'),
+            'bucket'   => env('ALT_SEC_AWS_BUCKET'),
+            'visibility' => 'public',
+            'url'      => env('ALT_SEC_AWS_URL'),
+            'endpoint' => env('ALT_SEC_AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('ALT_SEC_AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => true,
+        ],
+
         'spaces' => [
             'driver' => 's3',
             'key' => env('DO_SPACES_KEY'),

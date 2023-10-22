@@ -9,7 +9,9 @@ use App\Http\Controllers\StatusController;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Poll;
 use App\Services\AccountService;
+use App\Services\StatusService;
 use App\Models\StatusEdit;
+use Illuminate\Support\Str;
 
 class Status extends Model
 {
@@ -95,16 +97,30 @@ class Status extends Model
 
 	public function thumb($showNsfw = false)
 	{
-		$key = $showNsfw ? 'status:thumb:nsfw1'.$this->id : 'status:thumb:nsfw0'.$this->id;
-		return Cache::remember($key, now()->addMinutes(15), function() use ($showNsfw) {
-			$type = $this->type ?? $this->setType();
-			$is_nsfw = !$showNsfw ? $this->is_nsfw : false;
-			if ($this->media->count() == 0 || $is_nsfw || !in_array($type,['photo', 'photo:album', 'video'])) {
-				return url(Storage::url('public/no-preview.png'));
-			}
+		$entity = StatusService::get($this->id, false);
 
-			return url(Storage::url($this->firstMedia()->thumbnail_path));
-		});
+		if(!$entity || !isset($entity['media_attachments']) || empty($entity['media_attachments'])) {
+			return url(Storage::url('public/no-preview.png'));
+		}
+
+		if((!isset($entity['sensitive']) || $entity['sensitive']) && !$showNsfw) {
+			return url(Storage::url('public/no-preview.png'));
+		}
+
+        if(!isset($entity['visibility']) || !in_array($entity['visibility'], ['public', 'unlisted'])) {
+            return url(Storage::url('public/no-preview.png'));
+        }
+
+		return collect($entity['media_attachments'])
+            ->filter(fn($media) => $media['type'] == 'image' && in_array($media['mime'], ['image/jpeg', 'image/png']))
+            ->map(function($media) {
+                if(!Str::endsWith($media['preview_url'], ['no-preview.png', 'no-preview.jpg'])) {
+                    return $media['preview_url'];
+                }
+
+                return $media['url'];
+            })
+            ->first() ?? url(Storage::url('public/no-preview.png'));
 	}
 
 	public function url($forceLocal = false)

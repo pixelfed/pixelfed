@@ -28,9 +28,17 @@
     <div class="form-check pb-3">
       <input class="form-check-input" type="checkbox" name="crawlable" id="crawlable" {{!$settings->crawlable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
       <label class="form-check-label font-weight-bold" for="crawlable">
-        {{__('Opt-out of search engine indexing')}}
+        {{__('Disable Search Engine indexing')}}
       </label>
-      <p class="text-muted small help-text">When your account is visible to search engines, your information can be crawled and stored by search engines.</p>
+      <p class="text-muted small help-text">When your account is visible to search engines, your information can be crawled and stored by search engines. {!! $settings->is_private ? '<strong>Not available when your account is private</strong>' : ''!!}</p>
+    </div>
+
+    <div class="form-check pb-3">
+      <input class="form-check-input" type="checkbox" name="indexable" id="indexable" {{$profile->indexable ? 'checked=""':''}} {{$settings->is_private ? 'disabled=""':''}}>
+      <label class="form-check-label font-weight-bold" for="indexable">
+        {{__('Include public posts in search results')}}
+      </label>
+        <p class="text-muted small help-text">Your public posts may appear in search results on Pixelfed and Mastodon. People who have interacted with your posts may be able to search them regardless. {!! $settings->is_private ? '<strong>Not available when your account is private</strong>' : ''!!}</p>
     </div>
 
 
@@ -39,7 +47,7 @@
       <label class="form-check-label font-weight-bold" for="is_suggestable">
         {{__('Show on Directory')}}
       </label>
-      <p class="text-muted small help-text">When this option is enabled, your profile is included in the Directory. Only public profiles are eligible.</p>
+      <p class="text-muted small help-text">When this option is enabled, your profile is included in the Directory. Only public profiles are eligible. {!! $settings->is_private ? '<strong>Not available when your account is private</strong>' : ''!!}</p>
     </div>
 
     <div class="form-check pb-3">
@@ -97,10 +105,10 @@
       <p class="text-muted small help-text mb-0">Enable your profile atom feed. Only public profiles are eligible.</p>
       @if($settings->show_atom)
       <p class="small">
-      	 <a href="{{$profile->permalink('.atom')}}" class="text-success font-weight-bold small" target="_blank">
-      	 	{{ $profile->permalink('.atom') }}
-      	 	<i class="far fa-external-link ml-1 text-muted" style="opacity: 0.5"></i>
-      	 </a>
+         <a href="{{$profile->permalink('.atom')}}" class="text-success font-weight-bold small" target="_blank">
+            {{ $profile->permalink('.atom') }}
+            <i class="far fa-external-link ml-1 text-muted" style="opacity: 0.5"></i>
+         </a>
       </p>
       @endif
     </div>

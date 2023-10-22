@@ -2193,6 +2193,7 @@ class ApiV1Controller extends Controller
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
 					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -2203,6 +2204,7 @@ class ApiV1Controller extends Controller
                 if(!empty($status['reblog'])) {
                     $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                     $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
                 }
 
                 return $status;
@@ -2244,6 +2246,7 @@ class ApiV1Controller extends Controller
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
 					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
 				}
 				return $status;
 			})
@@ -2254,6 +2257,7 @@ class ApiV1Controller extends Controller
                 if(!empty($status['reblog'])) {
                     $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
                     $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
                 }
 
                 return $status;
@@ -2378,6 +2382,7 @@ class ApiV1Controller extends Controller
 			if($user) {
 				$status['favourited'] = (bool) LikeService::liked($user->profile_id, $k);
 				$status['reblogged'] = (bool) ReblogService::get($user->profile_id, $status['id']);
+                $status['bookmarked'] = (bool) BookmarkService::get($user->profile_id, $status['id']);
 			}
 			return $status;
 		})
@@ -2502,7 +2507,7 @@ class ApiV1Controller extends Controller
 	{
 		abort_if(!$request->user(), 403);
 
-		$user = $request->user();
+		$pid = $request->user()->profile_id;
 
 		$res = $request->has(self::PF_API_ENTITY_KEY) ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
 		if(!$res || !isset($res['visibility'])) {
@@ -2512,17 +2517,23 @@ class ApiV1Controller extends Controller
 		$scope = $res['visibility'];
 		if(!in_array($scope, ['public', 'unlisted'])) {
 			if($scope === 'private') {
-				if(intval($res['account']['id']) !== intval($user->profile_id)) {
-					abort_unless(FollowerService::follows($user->profile_id, $res['account']['id']), 403);
+				if(intval($res['account']['id']) !== intval($pid)) {
+					abort_unless(FollowerService::follows($pid, $res['account']['id']), 403);
 				}
 			} else {
 				abort(400, 'Invalid request');
 			}
 		}
 
-		$res['favourited'] = LikeService::liked($user->profile_id, $res['id']);
-		$res['reblogged'] = ReblogService::get($user->profile_id, $res['id']);
-		$res['bookmarked'] = BookmarkService::get($user->profile_id, $res['id']);
+        if(!empty($res['reblog']) && isset($res['reblog']['id'])) {
+            $res['reblog']['favourited'] = (bool) LikeService::liked($pid, $res['reblog']['id']);
+            $res['reblog']['reblogged'] = (bool) ReblogService::get($pid, $res['reblog']['id']);
+            $res['reblog']['bookmarked'] = BookmarkService::get($pid, $res['reblog']['id']);
+        }
+
+		$res['favourited'] = LikeService::liked($pid, $res['id']);
+		$res['reblogged'] = ReblogService::get($pid, $res['id']);
+		$res['bookmarked'] = BookmarkService::get($pid, $res['id']);
 
 		return $this->json($res);
 	}
@@ -3615,8 +3626,8 @@ class ApiV1Controller extends Controller
 		abort_if(!$request->user(), 403);
 
 		$pid = $request->user()->profile_id;
-		$home = $request->input('home.last_read_id');
-		$notifications = $request->input('notifications.last_read_id');
+		$home = $request->input('home[last_read_id]');
+		$notifications = $request->input('notifications[last_read_id]');
 
 		if($home) {
 			return $this->json(MarkerService::set($pid, 'home', $home));

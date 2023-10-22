@@ -2,7 +2,41 @@
 
 ## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.9...dev)
 
-## [v0.11.9 (2023-08-06)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
+### Added
+- Resilient Media Storage ([#4665](https://github.com/pixelfed/pixelfed/pull/4665)) ([fb1deb6](https://github.com/pixelfed/pixelfed/commit/fb1deb6))
+- Added user:2fa command to easily disable 2FA for given account ([c6408fd7](https://github.com/pixelfed/pixelfed/commit/c6408fd7))
+- Added `avatar:storage-deep-clean` command to dispatch remote avatar storage cleanup jobs ([c37b7cde](https://github.com/pixelfed/pixelfed/commit/c37b7cde))
+
+### Federation
+- Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
+- Update AP Helpers, consume actor `indexable` attribute ([fbdcdd9d](https://github.com/pixelfed/pixelfed/commit/fbdcdd9d))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+### Updates
+- Update FollowerService, add forget method to RelationshipService call to reduce load when mass purging ([347e4f59](https://github.com/pixelfed/pixelfed/commit/347e4f59))
+- Update FollowServiceWarmCache, improve handling larger following/follower lists ([61a6d904](https://github.com/pixelfed/pixelfed/commit/61a6d904))
+- Update StoryApiV1Controller, add viewers route to view story viewers ([941736ce](https://github.com/pixelfed/pixelfed/commit/941736ce))
+- Update NotificationService, improve cache warming query ([2496386d](https://github.com/pixelfed/pixelfed/commit/2496386d))
+- Update StatusService, hydrate accounts on request instead of caching them along with status objects ([223661ec](https://github.com/pixelfed/pixelfed/commit/223661ec))
+- Update profile embed, fix resize ([dc23c21d](https://github.com/pixelfed/pixelfed/commit/dc23c21d))
+- Update Status model, improve thumb logic ([d969a973](https://github.com/pixelfed/pixelfed/commit/d969a973))
+- Update Status model, allow unlisted thumbnails ([1f0a45b7](https://github.com/pixelfed/pixelfed/commit/1f0a45b7))
+- Update StatusTagsPipeline, fix object tags and slug normalization ([d295e605](https://github.com/pixelfed/pixelfed/commit/d295e605))
+- Update Note and CreateNote transformers, include attachment blurhash, width and height ([ce1afe27](https://github.com/pixelfed/pixelfed/commit/ce1afe27))
+- Update ap helpers, store media attachment width and height if present ([8c969191](https://github.com/pixelfed/pixelfed/commit/8c969191))
+- Update Sign-in with Mastodon, allow usage when registrations are closed ([895dc4fa](https://github.com/pixelfed/pixelfed/commit/895dc4fa))
+- Update profile embeds, filter sensitive posts ([ede5ec3b](https://github.com/pixelfed/pixelfed/commit/ede5ec3b))
+- Update ApiV1Controller, hydrate reblog interactions. Fixes ([#4686](https://github.com/pixelfed/pixelfed/issues/4686)) ([135798eb](https://github.com/pixelfed/pixelfed/commit/135798eb))
+- Update AdminReportController, add `profile_id` to group by. Fixes ([#4685](https://github.com/pixelfed/pixelfed/issues/4685)) ([e4d3b196](https://github.com/pixelfed/pixelfed/commit/e4d3b196))
+- Update user:admin command, improve logic. Fixes ([#2465](https://github.com/pixelfed/pixelfed/issues/2465)) ([01bac511](https://github.com/pixelfed/pixelfed/commit/01bac511))
+- Update AP helpers, adjust RemoteAvatarFetch ttl from 24h to 3 months ([36b23fe3](https://github.com/pixelfed/pixelfed/commit/36b23fe3))
+- Update AvatarPipeline, improve refresh logic and garbage collection to purge old avatars ([82798b5e](https://github.com/pixelfed/pixelfed/commit/82798b5e))
+- Update CreateAvatar job, add processing constraints and set `is_remote` attribute ([319ced40](https://github.com/pixelfed/pixelfed/commit/319ced40))
+- Update RemoteStatusDelete and DecrementPostCount pipelines ([edbcf3ed](https://github.com/pixelfed/pixelfed/commit/edbcf3ed))
+- Update lexer regex, fix mention regex and add more tests ([778e83d3](https://github.com/pixelfed/pixelfed/commit/778e83d3))
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
 
 ### Added
 - Import from Instagram ([#4466](https://github.com/pixelfed/pixelfed/pull/4466)) ([cf3078c5](https://github.com/pixelfed/pixelfed/commit/cf3078c5))
@@ -57,8 +91,7 @@
 - Update RemoteStatusDelete pipeline ([71e92261](https://github.com/pixelfed/pixelfed/commit/71e92261))
 - Update RemoteStatusDelete pipeline ([fab8f25e](https://github.com/pixelfed/pixelfed/commit/fab8f25e))
 - Update RemoteStatusPipeline, fix reply check ([618b6727](https://github.com/pixelfed/pixelfed/commit/618b6727))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update ApiV1Controller, add bookmarked to timeline entities ([ca746717](https://github.com/pixelfed/pixelfed/commit/ca746717))
 
 ## [v0.11.8 (2023-05-29)](https://github.com/pixelfed/pixelfed/compare/v0.11.7...v0.11.8)
 

@@ -20,10 +20,14 @@ class FollowerService
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
 	const FOLLOWERS_KEY = 'pf:services:follow:followers:id:';
 
-	public static function add($actor, $target)
+	public static function add($actor, $target, $refresh = true)
 	{
 		$ts = (int) microtime(true);
-		RelationshipService::refresh($actor, $target);
+        if($refresh) {
+          RelationshipService::refresh($actor, $target);
+        } else {
+		  RelationshipService::forget($actor, $target);
+        }
 		Redis::zadd(self::FOLLOWING_KEY . $actor, $ts, $target);
 		Redis::zadd(self::FOLLOWERS_KEY . $target, $ts, $actor);
 		Cache::forget('profile:following:' . $actor);
