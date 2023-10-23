@@ -66,6 +66,21 @@ class VideoHlsPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function handle(): void
     {
+        $depCheck = Cache::rememberForever('video-pipeline:hls:depcheck', function() {
+            $bin = config('laravel-ffmpeg.ffmpeg.binaries');
+            $output = shell_exec($bin . ' -version');
+            if($output && preg_match('/ffmpeg version ([^\s]+)/', $output, $matches)) {
+                $version = $matches[1];
+                return (version_compare($version, config('laravel-ffmpeg.min_hls_version')) >= 0) ? 'ok' : false;
+            } else {
+                return false;
+            }
+        });
+
+        if(!$depCheck || $depCheck !== 'ok') {
+            return;
+        }
+
         $media = $this->media;
 
         $bitrate = (new X264)->setKiloBitrate(config('media.hls.bitrate') ?? 1000);
