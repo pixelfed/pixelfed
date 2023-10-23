@@ -24,6 +24,11 @@ Documentation for Pixelfed can be found on the [Pixelfed documentation website](
 
 Pixelfed app for [YunoHost](https://yunohost.org 'YunoHost'). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh 'pixelfed_ynh repository on GitHub')
 
+## One-click deploy on Elestio
+[![Deploy](https://pub-da36157c854648669813f3f76c526c2b.r2.dev/deploy-on-elestio-black.png)](https://elest.io/open-source/pixelfed)
+
+Elestio provides option to deploy Pixelfed as fully managed deployment option.
+
 ## License
 
 Pixelfed is open-sourced software licensed under the AGPL license.
