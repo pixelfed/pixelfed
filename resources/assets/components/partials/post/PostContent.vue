@@ -12,7 +12,7 @@
 			</div>
 
 			<div v-else-if="status.pf_type === 'video'" class="w-100">
-				<video-presenter :status="status" v-on:togglecw="status.sensitive = false"></video-presenter>
+                <video-player :status="status" :fixedHeight="fixedHeight" v-on:togglecw="status.sensitive = false" />
 			</div>
 
 			<div v-else-if="status.pf_type === 'photo:album'" class="w-100">
@@ -108,27 +108,11 @@
 				</div>
 			</div>
 
-			<template v-else-if="status.pf_type === 'video'">
-				<div v-if="status.sensitive == true" class="content-label-wrapper">
-					<div class="text-light content-label">
-						<p class="text-center">
-							<i class="far fa-eye-slash fa-2x"></i>
-						</p>
-						<p class="h4 font-weight-bold text-center">
-							Sensitive Content
-						</p>
-						<p class="text-center py-2 content-label-text">
-							{{ status.spoiler_text ? status.spoiler_text : 'This post may contain sensitive content.'}}
-						</p>
-						<p class="mb-0">
-							<button @click="status.sensitive = false" class="btn btn-outline-light btn-block btn-sm font-weight-bold">See Post</button>
-						</p>
-					</div>
-				</div>
-				<video v-else class="card-img-top shadow" :class="{ fixedHeight: fixedHeight }" style="border-radius:15px;object-fit: contain;background-color: #000;" controls :poster="getPoster(status)">
-					<source :src="status.media_attachments[0].url" :type="status.media_attachments[0].mime">
-				</video>
-			</template>
+            <video-player
+                v-else-if="status.pf_type === 'video'"
+                :status="status"
+                :fixedHeight="fixedHeight"
+            />
 
 			<div v-else-if="status.pf_type === 'photo:album'" class="card-img-top shadow" style="border-radius: 15px;">
 				<photo-album-presenter :status="status" v-on:lightbox="toggleLightbox" v-on:togglecw="toggleContentWarning()" style="border-radius:15px !important;object-fit: contain;background-color: #000;overflow: hidden;" :class="{ fixedHeight: fixedHeight }"/>
@@ -185,12 +169,14 @@
 <script type="text/javascript">
 	import BigPicture from 'bigpicture';
 	import ReadMore from './ReadMore.vue';
+    import VideoPlayer from './../../presenter/VideoPlayer.vue';
 
 	export default {
 		props: ['status'],
 
 		components: {
 			"read-more": ReadMore,
+            "video-player": VideoPlayer
 		},
 
 		data() {

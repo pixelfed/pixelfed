@@ -4,6 +4,7 @@
 
 ### Added
 - Resilient Media Storage ([#4665](https://github.com/pixelfed/pixelfed/pull/4665)) ([fb1deb6](https://github.com/pixelfed/pixelfed/commit/fb1deb6))
+- Video WebP2P ([#4713](https://github.com/pixelfed/pixelfed/pull/4713)) ([0405ef12](https://github.com/pixelfed/pixelfed/commit/0405ef12))
 - Added user:2fa command to easily disable 2FA for given account ([c6408fd7](https://github.com/pixelfed/pixelfed/commit/c6408fd7))
 - Added `avatar:storage-deep-clean` command to dispatch remote avatar storage cleanup jobs ([c37b7cde](https://github.com/pixelfed/pixelfed/commit/c37b7cde))
 
@@ -34,6 +35,8 @@
 - Update CreateAvatar job, add processing constraints and set `is_remote` attribute ([319ced40](https://github.com/pixelfed/pixelfed/commit/319ced40))
 - Update RemoteStatusDelete and DecrementPostCount pipelines ([edbcf3ed](https://github.com/pixelfed/pixelfed/commit/edbcf3ed))
 - Update lexer regex, fix mention regex and add more tests ([778e83d3](https://github.com/pixelfed/pixelfed/commit/778e83d3))
+- Update StatusTransformer, generate autolink on request ([dfe2379b](https://github.com/pixelfed/pixelfed/commit/dfe2379b))
+- Update ComposeModal component, fix multi filter bug and allow media re-ordering before upload/posting ([56e315f6](https://github.com/pixelfed/pixelfed/commit/56e315f6))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
