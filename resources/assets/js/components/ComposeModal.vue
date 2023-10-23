@@ -178,9 +178,13 @@
 						</span>
 						<span v-else>
 							<a v-if="!pageLoading && (page > 1 && page <= 2) || (page == 1 && ids.length != 0) || page == 'cropPhoto'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="nextPage">Next</a>
-							<a v-if="!pageLoading && page == 3" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
+                            <template v-if="!pageLoading && page == 3" >
+                                <b-spinner v-if="isPosting" small />
+							    <a v-else class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
+                            </template>
 							<a v-if="!pageLoading && page == 'addText'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="composeTextPost()">Post</a>
-							<a v-if="!pageLoading && page == 'video-2'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
+                            <a v-if="!pageLoading && page == 'video-2'" class="font-weight-bold text-decoration-none" href="#" @click.prevent="compose()">Post</a>
+							<span v-if="!pageLoading && page == 'filteringMedia'" class="font-weight-bold text-decoration-none text-muted">Next</span>
 						</span>
 					</div>
 				</div>
@@ -201,10 +205,10 @@
 						</div>
 					</div>
 
-					<div v-if="page == 'textOptions'" class="w-100 h-100" style="min-height: 280px;">
+					<div v-else-if="page == 'textOptions'" class="w-100 h-100" style="min-height: 280px;">
 					</div>
 
-					<div v-if="page == 'addText'" class="w-100 h-100" style="min-height: 280px;">
+					<div v-else-if="page == 'addText'" class="w-100 h-100" style="min-height: 280px;">
 						<div class="mt-2">
 							<div class="media px-3">
 								<div class="media-body">
@@ -236,7 +240,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
+					<div v-else-if="page == 1" class="w-100 h-100 d-flex justify-content-center align-items-center" style="min-height: 400px;">
 						<div class="text-center">
 							<div v-if="media.length == 0" class="card my-md-3 shadow-none border compose-action text-decoration-none text-dark">
 								<div @click.prevent="addMedia" class="card-body py-2">
@@ -337,7 +341,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 'cropPhoto'" class="w-100 h-100">
+					<div v-else-if="page == 'cropPhoto'" class="w-100 h-100">
 						<div v-if="ids.length > 0">
 							<vue-cropper
 								ref="cropper"
@@ -352,7 +356,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 2" class="w-100 h-100">
+					<div v-else-if="page == 2" class="w-100 h-100">
 						<div v-if="media.length == 1">
 							<div slot="img" style="display:flex;min-height: 420px;align-items: center;">
 								<img :class="'d-block img-fluid w-100 ' + [media[carouselCursor].filter_class?media[carouselCursor].filter_class:'']" :src="media[carouselCursor].url" :alt="media[carouselCursor].description" :title="media[carouselCursor].description">
@@ -368,7 +372,9 @@
 									</li>
 									<li class="nav-item" v-for="(filter, index) in filters">
 										<div class="p-1 pt-3">
-											<img :src="media[carouselCursor].url" width="100px" height="60px" :class="filter[1]" v-on:click.prevent="toggleFilter($event, filter[1])">
+                                            <div class="rounded" :class="filter[1]">
+											 <img :src="media[carouselCursor].url" width="100px" height="60px" v-on:click.prevent="toggleFilter($event, filter[1])">
+                                            </div>
 										</div>
 										<a :class="[media[carouselCursor].filter_class == filter[1] ? 'nav-link text-primary active' : 'nav-link text-muted']" href="#" v-on:click.prevent="toggleFilter($event, filter[1])">{{filter[0]}}</a>
 									</li>
@@ -376,20 +382,21 @@
 							</div>
 						</div>
 						<div v-else-if="media.length > 1" class="d-flex-inline px-2 pt-2">
-							<ul class="nav media-drawer-filters text-center">
+							<ul class="nav media-drawer-filters text-center pb-3">
 								<li class="nav-item mx-md-4">&nbsp;</li>
-								<li v-for="(m, i) in media" class="nav-item mx-md-4">
+								<li v-for="(m, i) in media" :key="m.id + ':' + carouselCursor" class="nav-item mx-md-4">
 										<div class="nav-link" style="display:block;width:300px;height:300px;" @click="carouselCursor = i">
 											<!-- <img :class="'d-block img-fluid w-100 ' + [m.filter_class?m.filter_class:'']" :src="m.url" :alt="m.description" :title="m.description"> -->
-											<span :class="[m.filter_class?m.filter_class:'']">
-
-												<span :class="'rounded border ' +  [i == carouselCursor ? ' border-primary shadow':'']" :style="'display:block;padding:5px;width:100%;height:100%;background-image: url(' + m.url + ');background-size:cover;border-width:3px !important;'"></span>
-											</span>
+											<div :class="[m.filter_class?m.filter_class:'']" style="width:100%;height:100%;display:block;">
+												<div :class="'rounded ' +  [i == carouselCursor ? ' border border-primary shadow':'']" :style="'display:block;width:100%;height:100%;background-image: url(' + m.url + ');background-size:cover;'"></div>
+											</div>
 										</div>
 										<div v-if="i == carouselCursor" class="text-center mb-0 small text-lighter font-weight-bold pt-2">
+                                            <button class="btn btn-link" @click="mediaReorder('prev')"><i class="far fa-chevron-circle-left"></i></button>
 											<span class="cursor-pointer" @click.prevent="showCropPhotoCard">Crop</span>
 											<span class="cursor-pointer px-3" @click.prevent="showEditMediaCard()">Edit</span>
 											<span class="cursor-pointer" @click="deleteMedia()">Delete</span>
+                                            <button class="btn btn-link" @click="mediaReorder('next')"><i class="far fa-chevron-circle-right"></i></button>
 										</div>
 								</li>
 								<li class="nav-item mx-md-4">&nbsp;</li>
@@ -417,7 +424,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 3" class="w-100 h-100">
+					<div v-else-if="page == 3" class="w-100 h-100">
 						<div class="border-bottom mt-2">
 							<div class="media px-3">
 								<img :src="media[0].url" width="42px" height="42px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
@@ -524,7 +531,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 'tagPeople'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'tagPeople'" class="w-100 h-100 p-3">
 						<autocomplete
 							v-show="taggedUsernames.length < 10"
 							:search="tagSearch"
@@ -557,14 +564,14 @@
 						<p class="font-weight-bold text-center small text-muted pt-3 mb-0">When you tag someone, they are sent a notification.<br>For more information on tagging, <a href="#" class="text-primary" @click.prevent="showTagHelpCard()">click here</a>.</p>
 					</div>
 
-					<div v-if="page == 'tagPeopleHelp'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'tagPeopleHelp'" class="w-100 h-100 p-3">
 						<p class="mb-0 text-center py-3 px-2 lead">Tagging someone is like mentioning them, with the option to make it private between you.</p>
 						<p class="mb-3 py-3 px-2 font-weight-lighter">
 							You can choose to tag someone in public or private mode. Public mode will allow others to see who you tagged in the post and private mode tagged users will not be shown to others.
 						</p>
 					</div>
 
-					<div v-if="page == 'addLocation'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'addLocation'" class="w-100 h-100 p-3">
 						<p class="mb-0">Add Location</p>
 						<autocomplete
 							:search="locationSearch"
@@ -576,7 +583,7 @@
 						</autocomplete>
 					</div>
 
-					<div v-if="page == 'advancedSettings'" class="w-100 h-100">
+					<div v-else-if="page == 'advancedSettings'" class="w-100 h-100">
 						<div class="list-group list-group-flush">
 							<!-- <div class="d-none list-group-item d-flex justify-content-between">
 								<div>
@@ -650,7 +657,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 'visibility'" class="w-100 h-100">
+					<div v-else-if="page == 'visibility'" class="w-100 h-100">
 						<div class="list-group list-group-flush">
 							<div
 								v-if="!profile.locked"
@@ -675,7 +682,7 @@
 						</div>
 					</div>
 
-					<div v-if="page == 'altText'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'altText'" class="w-100 h-100 p-3">
 						<div v-for="(m, index) in media">
 							<div class="media">
 								<img :src="m.preview_url" class="mr-3" width="50px" height="50px">
@@ -692,7 +699,7 @@
 						</p>
 					</div>
 
-					<div v-if="page == 'addToCollection'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'addToCollection'" class="w-100 h-100 p-3">
 						<div v-if="collectionsLoaded && collections.length" class="list-group mb-3 collections-list-group">
 							<div
 								v-for="(collection, index) in collections"
@@ -721,19 +728,19 @@
 						</p>
 					</div>
 
-					<div v-if="page == 'schedulePost'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'schedulePost'" class="w-100 h-100 p-3">
 						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
 					</div>
 
-					<div v-if="page == 'mediaMetadata'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'mediaMetadata'" class="w-100 h-100 p-3">
 						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
 					</div>
 
-					<div v-if="page == 'addToStory'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'addToStory'" class="w-100 h-100 p-3">
 						<p class="text-center lead text-muted mb-0 py-5">This feature is not available yet.</p>
 					</div>
 
-					<div v-if="page == 'editMedia'" class="w-100 h-100 p-3">
+					<div v-else-if="page == 'editMedia'" class="w-100 h-100 p-3">
 						<div class="media">
 							<img :src="media[carouselCursor].preview_url" class="mr-3" width="50px" height="50px">
 							<div class="media-body">
@@ -770,7 +777,7 @@
 						</p>
 					</div>
 
-					<div v-if="page == 'video-2'" class="w-100 h-100">
+					<div v-else-if="page == 'video-2'" class="w-100 h-100">
 						<div v-if="video.title.length" class="border-bottom">
 							<div class="media p-3">
 								<img :src="media[0].url" width="100px" height="70px" :class="[media[0].filter_class?'mr-2 ' + media[0].filter_class:'mr-2']">
@@ -833,6 +840,12 @@
 						</div>
 					</div>
 
+                    <div v-else-if="page == 'filteringMedia'" class="w-100 h-100 py-5">
+                        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+                            <b-spinner small />
+                            <p class="font-weight-bold mt-3">Applying filters...</p>
+                        </div>
+                    </div>
 				</div>
 
 				<!-- card-footers -->
@@ -910,6 +923,7 @@ export default {
 			},
 
 			namedPages: [
+                'filteringMedia',
 				'cropPhoto',
 				'tagPeople',
 				'addLocation',
@@ -943,7 +957,6 @@ export default {
 								cb(res.data);
 							})
 							.catch(err => {
-								console.log(err);
 							})
 						})
 					},
@@ -957,7 +970,6 @@ export default {
 								cb(res.data);
 							})
 							.catch(err => {
-								console.log(err);
 							})
 						})
 					}
@@ -1032,6 +1044,10 @@ export default {
 			collectionsPage: 1,
 			collectionsCanLoadMore: false,
 			spoilerText: undefined,
+            isFilteringMedia: false,
+            filteringMediaTimeout: undefined,
+            filteringRemainingCount: 0,
+            isPosting: false,
 		}
 	},
 
@@ -1242,6 +1258,50 @@ export default {
 			});
 		},
 
+        mediaReorder(dir) {
+            const m = this.media;
+            const cur = this.carouselCursor;
+            const pla = m[cur];
+            let res = [];
+            let cursor = 0;
+
+            if(dir == 'prev') {
+                if(cur == 0) {
+                    for (let i = cursor; i < m.length - 1; i++) {
+                        res[i] = m[i+1];
+                    }
+                    res[m.length - 1] = pla;
+                    cursor = 0;
+                } else {
+                    res = this.handleSwap(m, cur, cur - 1);
+                    cursor = cur - 1;
+                }
+            } else {
+                if(cur == m.length - 1) {
+                    res = m;
+                    let lastItem = res.pop();
+                    res.unshift(lastItem);
+                    cursor = m.length - 1;
+                } else {
+                    res = this.handleSwap(m, cur, cur + 1);
+                    cursor = cur + 1;
+                }
+            }
+            this.$nextTick(() => {
+                this.media = res;
+                this.carouselCursor = cursor;
+            })
+        },
+
+        handleSwap(arr, index1, index2) {
+            if (index1 >= 0 && index1 < arr.length && index2 >= 0 && index2 < arr.length) {
+                const temp = arr[index1];
+                arr[index1] = arr[index2];
+                arr[index2] = temp;
+                return arr;
+            }
+        },
+
 		compose() {
 			let state = this.composeState;
 
@@ -1254,8 +1314,15 @@ export default {
 				return;
 			}
 
+
 			switch(state) {
-				case 'publish' :
+				case 'publish':
+                    this.isPosting = true;
+                    let count = this.media.filter(m => m.filter_class && !m.hasOwnProperty('is_filtered')).length;
+                    if(count) {
+                        this.applyFilterToMedia();
+                        return;
+                    }
 					if(this.composeSettings.media_descriptions === true) {
 						let count = this.media.filter(m => {
 							return !m.hasOwnProperty('alt') || m.alt.length < 2;
@@ -1377,6 +1444,10 @@ export default {
 			switch(this.mode) {
 				case 'photo':
 					switch(this.page) {
+                        case 'filteringMedia':
+                            this.page = 2;
+                        break;
+
 						case 'addText':
 							this.page = 1;
 						break;
@@ -1411,6 +1482,10 @@ export default {
 
 				case 'video':
 					switch(this.page) {
+                        case 'filteringMedia':
+                            this.page = 2;
+                        break;
+
 						case 'licensePicker':
 							this.page = 'video-2';
 						break;
@@ -1430,6 +1505,10 @@ export default {
 						case 'addText':
 							this.page = 1;
 						break;
+
+                        case 'filteringMedia':
+                            this.page = 2;
+                        break;
 
 						case 'textOptions':
 							this.page = 'addText';
@@ -1470,6 +1549,9 @@ export default {
 					this.page = 2;
 				break;
 
+                case 'filteringMedia':
+                break;
+
 				case 'cropPhoto':
 					this.pageLoading = true;
 					let self = this;
@@ -1495,14 +1577,7 @@ export default {
 				break;
 
 				case 2:
-					if(this.currentFilter) {
-						if(window.confirm('Are you sure you want to apply this filter?')) {
-							this.applyFilterToMedia();
-							this.page++;
-						}
-					} else {
 						this.page++;
-					}
 				break;
 				case 3:
 					this.page++;
@@ -1649,42 +1724,72 @@ export default {
 			// this is where the magic happens
 			var ua = navigator.userAgent.toLowerCase();
 			if(ua.indexOf('firefox') == -1 && ua.indexOf('chrome') == -1) {
+                this.isPosting = false;
 			 	swal('Oops!', 'Your browser does not support the filter feature.', 'error');
+                this.page = 3;
 			 	return;
 			}
 
-			let medias = this.media;
-			let media = null;
-			const canvas = document.getElementById('pr_canvas');
-			const ctx = canvas.getContext('2d');
-			let image = document.getElementById('pr_img');
-			let blob = null;
-			let data = null;
-
-			for (var i = medias.length - 1; i >= 0; i--) {
-				media = medias[i];
-				if(media.filter_class) {
-					image.src = media.url;
-					image.addEventListener('load', e => {
-						canvas.width = image.width;
-						canvas.height = image.height;
-						ctx.filter = App.util.filterCss[media.filter_class];
-						ctx.drawImage(image, 0, 0, image.width, image.height);
-						ctx.save();
-						canvas.toBlob(function(blob) {
-							data = new FormData();
-							data.append('file', blob);
-							data.append('id', media.id);
-							axios.post('/api/compose/v0/media/update', data).then(res => {
-							}).catch(err => {
-							});
-						});
-					}, media.mime, 0.9);
-					ctx.clearRect(0, 0, image.width, image.height);
-				}
-			}
-
+            let count = this.media.filter(m => m.filter_class).length;
+            if(count) {
+                this.page = 'filteringMedia';
+                this.filteringRemainingCount = count;
+                this.$nextTick(() => {
+                    this.isFilteringMedia = true;
+                    this.media.forEach((media, idx) => this.applyFilterToMediaSave(media, idx));
+                })
+            } else {
+                this.page = 3;
+            }
 		},
+
+        applyFilterToMediaSave(media, idx) {
+            if(!media.filter_class) {
+                return;
+            }
+
+            let self = this;
+            let data = null;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let image = document.createElement('img');
+            image.src = media.url;
+            image.addEventListener('load', e => {
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.filter = App.util.filterCss[media.filter_class];
+                ctx.drawImage(image, 0, 0, image.width, image.height);
+                ctx.save();
+                canvas.toBlob(function(blob) {
+                    data = new FormData();
+                    data.append('file', blob);
+                    data.append('id', media.id);
+                    axios.post('/api/compose/v0/media/update', data)
+                    .then(res => {
+                        self.media[idx].is_filtered = true;
+                        self.updateFilteringMedia();
+                    }).catch(err => {
+                    });
+                });
+            }, media.mime, 0.9);
+            ctx.clearRect(0, 0, image.width, image.height);
+        },
+
+        updateFilteringMedia() {
+            this.filteringRemainingCount--;
+            this.filteringMediaTimeout = setTimeout(() => this.filteringMediaTimeoutJob(), 500);
+        },
+
+        filteringMediaTimeoutJob() {
+            if(this.filteringRemainingCount === 0) {
+                this.isFilteringMedia = false;
+                clearTimeout(this.filteringMediaTimeout);
+                setTimeout(() => this.compose(), 500);
+            } else {
+                clearTimeout(this.filteringMediaTimeout);
+                this.filteringMediaTimeout = setTimeout(() => this.filteringMediaTimeoutJob(), 1000);
+            }
+        },
 
 		tagSearch(input) {
 			if (input.length < 1) { return []; }
@@ -1800,7 +1905,6 @@ export default {
 				}
 				window.location.href = res.data.url;
 			}).catch(err => {
-				console.log(err.response.data.error);
 				if(err.response.data.hasOwnProperty('error')) {
 					if(err.response.data.error == 'Duplicate detected.') {
 						this.postingPoll = false;
