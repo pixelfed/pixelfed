@@ -205,11 +205,19 @@
 
 				<div v-else class="float-right">
 					<button
+					    v-if="posts.length > 0"
 						type="button"
 						class="btn btn-outline-primary btn-sm py-1 font-weight-bold px-3"
 						@click.prevent="publishCollection">
 						Publish
 					</button>
+
+					<button
+						v-else
+						type="button"
+						class="btn btn-outline-primary btn-sm py-1 font-weight-bold px-3 disabled" disabled>
+						Publish
+				    </button>
 
 					<button
 						type="button"
@@ -527,6 +535,11 @@ export default {
 		},
 
 		publishCollection() {
+			if (this.posts.length === 0) {
+				swal('Error', 'You cannot publish an empty collection');
+				return;
+			}
+
 			if(this.owner == false) {
 				return;
 			}
@@ -541,7 +554,9 @@ export default {
 				.then(res => {
 					console.log(res.data);
 					// window.location.href = res.data.url;
-				});
+				}).catch(err => {
+					swal('Something went wrong', 'There was a problem with your request, please try again later.', 'error')
+			    });
 			} else {
 				return;
 			}
