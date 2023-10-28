@@ -17,6 +17,7 @@ use App\Http\Controllers\AvatarController;
 use GuzzleHttp\Exception\RequestException;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use Illuminate\Support\Arr;
+use App\Jobs\AvatarPipeline\AvatarStorageCleanup;
 
 class MediaStorageService {
 
@@ -29,9 +30,9 @@ class MediaStorageService {
 		return;
 	}
 
-	public static function avatar($avatar, $local = false)
+	public static function avatar($avatar, $local = false, $skipRecentCheck = false)
 	{
-		return (new self())->fetchAvatar($avatar, $local);
+		return (new self())->fetchAvatar($avatar, $local, $skipRecentCheck);
 	}
 
 	public static function head($url)
@@ -182,6 +183,7 @@ class MediaStorageService {
 
 	protected function fetchAvatar($avatar, $local = false, $skipRecentCheck = false)
 	{
+		$queue = random_int(1, 15) > 5 ? 'mmo' : 'low';
 		$url = $avatar->remote_url;
 		$driver = $local ? 'local' : config('filesystems.cloud');
 
@@ -205,7 +207,7 @@ class MediaStorageService {
 		$max_size = (int) config('pixelfed.max_avatar_size') * 1000;
 
 		if(!$skipRecentCheck) {
-			if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subDay())) {
+			if($avatar->last_fetched_at && $avatar->last_fetched_at->gt(now()->subMonths(3))) {
 				return;
 			}
 		}
@@ -261,6 +263,7 @@ class MediaStorageService {
 
 		Cache::forget('avatar:' . $avatar->profile_id);
 		AccountService::del($avatar->profile_id);
+		AvatarStorageCleanup::dispatch($avatar)->onQueue($queue)->delay(now()->addMinutes(random_int(3, 15)));
 
 		unlink($tmpName);
 	}

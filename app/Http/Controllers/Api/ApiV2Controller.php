@@ -34,6 +34,7 @@ use App\Transformer\Api\Mastodon\v1\{
 use App\Transformer\Api\{
 	RelationshipTransformer,
 };
+use App\Util\Site\Nodeinfo;
 
 class ApiV2Controller extends Controller
 {
@@ -77,12 +78,7 @@ class ApiV2Controller extends Controller
 			'description' => config_cache('app.short_description'),
 			'usage' => [
 				'users' => [
-					'active_month' => (int) Cache::remember('api:nodeinfo:am', 172800, function() {
-						return User::select('last_active_at', 'created_at')
-							->where('last_active_at', '>', now()->subMonths(1))
-							->orWhere('created_at', '>', now()->subMonths(1))
-							->count();
-					})
+					'active_month' => (int) Nodeinfo::activeUsersMonthly()
 				]
 			],
 			'thumbnail' => [
