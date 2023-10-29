@@ -11,6 +11,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\AccountLog;
 use App\EmailVerification;
+use App\Follower;
 use App\Place;
 use App\Status;
 use App\Report;
@@ -21,6 +22,8 @@ use App\UserSetting;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
+use App\Services\LikeService;
+use App\Services\ReblogService;
 use App\Services\PublicTimelineService;
 use App\Services\NetworkTimelineService;
 use App\Util\Lexer\RestrictedNames;
@@ -572,7 +575,12 @@ class ApiV1Dot1Controller extends Controller
 		]);
 		$ut = $request->input('ut');
 		$rt = $request->input('rt');
-		$url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt . '&domain=' . config('pixelfed.domain.app');
+		$params = http_build_query([
+			'ut' => $ut,
+			'rt' => $rt,
+			'domain' => config('pixelfed.domain.app')
+		]);
+		$url = 'pixelfed://confirm-account/'. $ut . '?' . $params;
 		return redirect()->away($url);
 	}
 
