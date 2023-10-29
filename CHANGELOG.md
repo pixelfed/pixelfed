@@ -37,6 +37,9 @@
 - Update lexer regex, fix mention regex and add more tests ([778e83d3](https://github.com/pixelfed/pixelfed/commit/778e83d3))
 - Update StatusTransformer, generate autolink on request ([dfe2379b](https://github.com/pixelfed/pixelfed/commit/dfe2379b))
 - Update ComposeModal component, fix multi filter bug and allow media re-ordering before upload/posting ([56e315f6](https://github.com/pixelfed/pixelfed/commit/56e315f6))
+- Update ApiV1Dot1Controller, allow iar rate limits to be configurable ([28a80803](https://github.com/pixelfed/pixelfed/commit/28a80803))
+- Update ApiV1Dot1Controller, add domain to iar redirect ([1f82d47c](https://github.com/pixelfed/pixelfed/commit/1f82d47c))
+- Update ApiV1Dot1Controller, add configurable app confirm rate limit ttl ([4c6a0719](https://github.com/pixelfed/pixelfed/commit/4c6a0719))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
