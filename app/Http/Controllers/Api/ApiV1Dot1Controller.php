@@ -558,7 +558,12 @@ class ApiV1Dot1Controller extends Controller
 		$verify->random_token = $rtoken;
 		$verify->save();
 
-		$appUrl = url('/api/v1.1/auth/iarer?ut=' . $user->app_register_token . '&rt=' . $rtoken);
+		$params = http_build_query([
+			'ut' => $user->app_register_token,
+			'rt' => $rtoken,
+			'ea' => base64_encode($user->email)
+		]);
+		$appUrl = url('/api/v1.1/auth/iarer?'. $params);
 
 		Mail::to($user->email)->send(new ConfirmAppEmail($verify, $appUrl));
 
@@ -571,14 +576,17 @@ class ApiV1Dot1Controller extends Controller
 	{
 		$this->validate($request, [
 			'ut' => 'required',
-			'rt' => 'required'
+			'rt' => 'required',
+			'ea' => 'required'
 		]);
 		$ut = $request->input('ut');
 		$rt = $request->input('rt');
+		$ea = $request->input('ea');
 		$params = http_build_query([
 			'ut' => $ut,
 			'rt' => $rt,
-			'domain' => config('pixelfed.domain.app')
+			'domain' => config('pixelfed.domain.app'),
+			'ea' => $ea
 		]);
 		$url = 'pixelfed://confirm-account/'. $ut . '?' . $params;
 		return redirect()->away($url);
