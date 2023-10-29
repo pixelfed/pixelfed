@@ -543,10 +543,10 @@ class ApiV1Dot1Controller extends Controller
 		$user->password = Hash::make($password);
 		$user->register_source = 'app';
 		$user->app_register_ip = $request->ip();
-		$user->app_register_token = Str::random(32);
+		$user->app_register_token = Str::random(40);
 		$user->save();
 
-		$rtoken = Str::random(mt_rand(64, 70));
+		$rtoken = Str::random(64);
 
 		$verify = new EmailVerification();
 		$verify->user_id = $user->id;
@@ -570,12 +570,9 @@ class ApiV1Dot1Controller extends Controller
 			'ut' => 'required',
 			'rt' => 'required'
 		]);
-		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
 		$ut = $request->input('ut');
 		$rt = $request->input('rt');
-		$url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt;
+		$url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt . '&domain=' . config('pixelfed.domain.app');
 		return redirect()->away($url);
 	}
 
