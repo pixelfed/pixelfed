@@ -470,7 +470,7 @@ class ApiV1Dot1Controller extends Controller
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
 
-		$rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), 3, function(){}, 1800);
+		$rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), config('pixelfed.app_registration_rate_limit_attempts', 3), function(){}, config('pixelfed.app_registration_rate_limit_decay', 1800));
 		abort_if(!$rl, 400, 'Too many requests');
 
 		$this->validate($request, [
