@@ -286,4 +286,9 @@ return [
 	'max_altext_length' => env('PF_MEDIA_MAX_ALTTEXT_LENGTH', 1000),
 
 	'allow_app_registration' => env('PF_ALLOW_APP_REGISTRATION', true),
+
+    'app_registration_rate_limit_attempts' => env('PF_IAR_RL_ATTEMPTS', 3),
+    'app_registration_rate_limit_decay' => env('PF_IAR_RL_DECAY', 1800),
+    'app_registration_confirm_rate_limit_attempts' => env('PF_IARC_RL_ATTEMPTS', 20),
+    'app_registration_confirm_rate_limit_decay' => env('PF_IARC_RL_ATTEMPTS', 1800),
 ];
