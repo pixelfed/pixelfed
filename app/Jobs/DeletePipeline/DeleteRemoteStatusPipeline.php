@@ -57,7 +57,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         $status = $this->status;
 
         if(AccountService::get($status->profile_id, true)) {
-            DecrementPostCount::dispatch($status->profile_id)->onQueue('feed');
+            DecrementPostCount::dispatch($status->profile_id)->onQueue('low');
         }
 
         NetworkTimelineService::del($status->id);

@@ -25,8 +25,7 @@ class LikeController extends Controller
 			'item'    => 'required|integer|min:1',
 		]);
 
-		// API deprecated
-		return;
+		abort(422, 'Deprecated API Endpoint');
 
 		$user = Auth::user();
 		$profile = $user->profile;
@@ -34,7 +33,7 @@ class LikeController extends Controller
 
 		if (Like::whereStatusId($status->id)->whereProfileId($profile->id)->exists()) {
 			$like = Like::whereProfileId($profile->id)->whereStatusId($status->id)->firstOrFail();
-			UnlikePipeline::dispatch($like);
+			UnlikePipeline::dispatch($like)->onQueue('feed');
 		} else {
 			abort_if(
 				Like::whereProfileId($user->profile_id)
@@ -60,7 +59,7 @@ class LikeController extends Controller
 					]) == false;
 				$like->save();
 				$status->save();
-				LikePipeline::dispatch($like);
+				LikePipeline::dispatch($like)->onQueue('feed');
 			}
 		}
 

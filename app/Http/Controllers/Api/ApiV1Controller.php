@@ -1271,7 +1271,7 @@ class ApiV1Controller extends Controller
 			Status::findOrFail($status['id'])->update([
 				'likes_count' => ($status['favourites_count'] ?? 0) + 1
 			]);
-			LikePipeline::dispatch($like);
+			LikePipeline::dispatch($like)->onQueue('feed');
 		}
 
 		$status['favourited'] = true;
@@ -1308,7 +1308,7 @@ class ApiV1Controller extends Controller
 
 		if($like) {
 			$like->forceDelete();
-			$status->likes_count = $status->likes()->count();
+			$status->likes_count = $status->likes_count > 1 ? $status->likes_count - 1 : 0;
 			$status->save();
 		}
 
