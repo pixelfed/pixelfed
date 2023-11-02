@@ -348,16 +348,18 @@
                 }, 500);
             },
 
-			// Facebook and Instagram are encoding UTF8 characters in a weird way in their json
-			// here is a good explanation what's going wrong https://sorashi.github.io/fix-facebook-json-archive-encoding
-			fixFacebookEncoding(string) {
-				const replaced = string.replace(/\\u00([a-f0-9]{2})/g, (x) => String.fromCharCode(parseInt(x.slice(2), 16)));
-				const buffer = Array.from(replaced, (c) => c.charCodeAt(0));
-				return new TextDecoder().decode(new Uint8Array(buffer));
-			},
+            async fixFacebookEncoding(string) {
+                // Facebook and Instagram are encoding UTF8 characters in a weird way in their json
+                // here is a good explanation what's going wrong https://sorashi.github.io/fix-facebook-json-archive-encoding
+                // See https://github.com/pixelfed/pixelfed/pull/4726 for more info
+                const replaced = string.replace(/\\u00([a-f0-9]{2})/g, (x) => String.fromCharCode(parseInt(x.slice(2), 16)));
+                const buffer = Array.from(replaced, (c) => c.charCodeAt(0));
+                return new TextDecoder().decode(new Uint8Array(buffer));
+            },
 
-            filterPostMeta(media) {
-                let json = JSON.parse(this.fixFacebookEncoding(media));
+            async filterPostMeta(media) {
+            	let fbfix = await this.fixFacebookEncoding(media);
+                let json = JSON.parse(fbfix);
                 let res = json.filter(j => {
                     let ids = j.media.map(m => m.uri).filter(m => {
                         if(this.config.allow_video_posts == true) {
@@ -408,10 +410,10 @@
                     })
                     .map(async entry => {
                         if(
-							(
-								entry.filename.startsWith('media/posts/') ||
-								entry.filename.startsWith('media/other/')
-							) && (
+                            (
+                                entry.filename.startsWith('media/posts/') ||
+                                entry.filename.startsWith('media/other/')
+                            ) && (
                                 entry.filename.endsWith('.png') ||
                                 entry.filename.endsWith('.jpg') ||
                                 entry.filename.endsWith('.mp4')
