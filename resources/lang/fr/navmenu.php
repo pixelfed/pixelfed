@@ -7,6 +7,7 @@ return [
     'network'           =>    'Réseau',
     'discover'          =>    'Découvrir',
     'viewMyProfile'     =>    'Voir mon profil',
+	'myProfile'         =>    'Mon profil',
     'myTimeline'        =>    'Ma Chronologie',
     'publicTimeline'    =>    'Chronologie Publique',
     'remoteFollow'      =>    'Suivre à distance',
