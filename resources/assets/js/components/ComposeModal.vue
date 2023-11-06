@@ -29,7 +29,7 @@
 						<div v-for="(m, index) in cameraRollMedia" :class="[index == 0 ? 'col-12 p-0' : 'col-3 p-0']">
 							<div class="card info-overlay p-0 rounded-0 shadow-none border">
 								<div class="square">
-									<img class="square-content" :src="m.preview_url"></img>
+									<img class="square-content" :src="m.preview_url" />
 								</div>
 							</div>
 						</div>
