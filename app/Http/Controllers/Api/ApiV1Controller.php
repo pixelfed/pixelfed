@@ -2155,6 +2155,12 @@ class ApiV1Controller extends Controller
 			return $following->push($pid)->toArray();
 		});
 
+		$muted = UserFilterService::mutes($pid);
+
+		if($muted && count($muted)) {
+			$following = array_diff($following, $muted);
+		}
+
 		if($min || $max) {
 			$dir = $min ? '>' : '<';
 			$id = $min ?? $max;
