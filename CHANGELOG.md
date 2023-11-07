@@ -7,6 +7,7 @@
 - Video WebP2P ([#4713](https://github.com/pixelfed/pixelfed/pull/4713)) ([0405ef12](https://github.com/pixelfed/pixelfed/commit/0405ef12))
 - Added user:2fa command to easily disable 2FA for given account ([c6408fd7](https://github.com/pixelfed/pixelfed/commit/c6408fd7))
 - Added `avatar:storage-deep-clean` command to dispatch remote avatar storage cleanup jobs ([c37b7cde](https://github.com/pixelfed/pixelfed/commit/c37b7cde))
+- Added S3 command to rewrite media urls ([5b3a5610](https://github.com/pixelfed/pixelfed/commit/5b3a5610))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
@@ -43,6 +44,7 @@
 - Update LikePipeline, dispatch to feed queue. Fixes ([#4723](https://github.com/pixelfed/pixelfed/issues/4723)) ([da510089](https://github.com/pixelfed/pixelfed/commit/da510089))
 - Update AccountImport ([5a2d7e3e](https://github.com/pixelfed/pixelfed/commit/5a2d7e3e))
 - Update ImportPostController, fix IG bug with missing spaces between hashtags ([9c24157a](https://github.com/pixelfed/pixelfed/commit/9c24157a))
+- Update ApiV1Controller, fix mutes in home feed ([ddc21714](https://github.com/pixelfed/pixelfed/commit/ddc21714))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
