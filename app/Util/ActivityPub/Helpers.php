@@ -760,6 +760,13 @@ class Helpers {
         if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
             return;
         }
+        // skip invalid usernames
+        if(!ctype_alnum($res['preferredUsername'])) {
+            $tmpUsername = str_replace(['_', '.', '-'], '', $res['preferredUsername']);
+            if(!ctype_alnum($tmpUsername)) {
+                return;
+            }
+        }
         $username = (string) Purify::clean($res['preferredUsername'] ?? $res['nickname']);
         if(empty($username)) {
             return;
