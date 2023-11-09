@@ -153,7 +153,7 @@ class CollectionController extends Controller
             abort(400, 'You can only add '.$max.' posts per collection');
         }
 
-        $status = Status::whereScope('public')
+        $status = Status::whereIn('scope', ['public', 'unlisted'])
             ->whereProfileId($profileId)
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
@@ -176,7 +176,7 @@ class CollectionController extends Controller
         $collection->save();
         CollectionService::setCollection($collection->id, $collection);
 
-        return StatusService::get($status->id);
+        return StatusService::get($status->id, false);
     }
 
     public function getCollection(Request $request, $id)
@@ -226,10 +226,10 @@ class CollectionController extends Controller
 
         return collect($items)
         	->map(function($id) {
-        		return StatusService::get($id);
+                return StatusService::get($id, false);
         	})
         	->filter(function($item) {
-        		return $item && isset($item['account'], $item['media_attachments']);
+                return $item && ($item['visibility'] == 'public' ||  $item['visibility'] == 'unlisted') && isset($item['account'], $item['media_attachments']);
         	})
         	->values();
     }
@@ -298,7 +298,7 @@ class CollectionController extends Controller
             abort(400, 'You cannot delete the only post of a collection!');
         }
 
-        $status = Status::whereScope('public')
+        $status = Status::whereIn('scope', ['public', 'unlisted'])
             ->whereIn('type', ['photo', 'photo:album', 'video'])
             ->findOrFail($postId);
 
