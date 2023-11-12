@@ -217,7 +217,7 @@ class FollowerService
 	public static function localFollowerIds($pid, $limit = 0)
 	{
 		$key = self::FOLLOWERS_LOCAL_KEY . $pid;
-		$res = Cache::remember($key, 86400, function() use($pid) {
+		$res = Cache::remember($key, 7200, function() use($pid) {
 			return DB::table('followers')->whereFollowingId($pid)->whereLocalProfile(true)->pluck('profile_id')->sort();
 		});
 		return $limit ?
