@@ -46,7 +46,7 @@ class HomeTimelineService
 
     public static function add($id, $val)
     {
-        if(self::count($id) > 400) {
+        if(self::count($id) >= 400) {
             Redis::zpopmin(self::CACHE_KEY . $id);
         }
 
