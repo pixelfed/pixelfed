@@ -50,6 +50,7 @@
 - Update delete pipelines, properly invoke StatusHashtag delete events ([ce54d29c](https://github.com/pixelfed/pixelfed/commit/ce54d29c))
 - Update mail config ([0e431271](https://github.com/pixelfed/pixelfed/commit/0e431271))
 - Update hashtag following ([015b1b80](https://github.com/pixelfed/pixelfed/commit/015b1b80))
+- Update IncrementPostCount job, prevent overlap ([b2c9cc23](https://github.com/pixelfed/pixelfed/commit/b2c9cc23))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
