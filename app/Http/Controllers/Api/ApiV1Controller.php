@@ -71,6 +71,7 @@ use App\Services\{
 	CollectionService,
 	FollowerService,
 	HashtagService,
+	HashtagFollowService,
 	HomeTimelineService,
 	InstanceService,
 	LikeService,
@@ -3780,6 +3781,7 @@ class ApiV1Controller extends Controller
 		);
 
 		HashtagService::follow($pid, $tag->id);
+		HashtagFollowService::add($tag->id, $pid);
 
 		return response()->json(FollowedTagResource::make($follows)->toArray($request));
 	}
@@ -3819,6 +3821,7 @@ class ApiV1Controller extends Controller
 
 		if($follows) {
 			HashtagService::unfollow($pid, $tag->id);
+			HashtagFollowService::unfollow($tag->id, $pid);
 			$follows->delete();
 		}
 

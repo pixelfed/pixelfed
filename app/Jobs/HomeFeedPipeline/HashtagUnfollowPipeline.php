@@ -10,16 +10,20 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
-use App\Services\FollowerService;
+use Illuminate\Support\Facades\Cache;
+use App\Follower;
+use App\Hashtag;
+use App\StatusHashtag;
+use App\Services\HashtagFollowService;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
 
-class FeedRemovePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class HashtagUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $sid;
     protected $pid;
+    protected $hid;
 
     public $timeout = 900;
     public $tries = 3;
@@ -38,7 +42,7 @@ class FeedRemovePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:remove:sid:' . $this->sid;
+        return 'hfp:hashtag:unfollow:' . $this->hid . ':' . $this->pid;
     }
 
     /**
@@ -48,15 +52,15 @@ class FeedRemovePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:remove:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hfp:hashtag:unfollow:{$this->hid}:{$this->pid}"))->shared()->dontRelease()];
     }
 
     /**
      * Create a new job instance.
      */
-    public function __construct($sid, $pid)
+    public function __construct($hid, $pid)
     {
-        $this->sid = $sid;
+        $this->hid = $hid;
         $this->pid = $pid;
     }
 
@@ -65,12 +69,29 @@ class FeedRemovePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function handle(): void
     {
-        $ids = FollowerService::localFollowerIds($this->pid);
+        $hid = $this->hid;
+        $pid = $this->pid;
 
-        HomeTimelineService::rem($this->pid, $this->sid);
+        $statusIds = HomeTimelineService::get($pid, 0, -1);
 
-        foreach($ids as $id) {
-            HomeTimelineService::rem($id, $this->sid);
+        if(!$statusIds || !count($statusIds)) {
+            return;
+        }
+
+        $followingIds = Cache::remember('profile:following:'.$pid, 1209600, function() use($pid) {
+            $following = Follower::whereProfileId($pid)->pluck('following_id');
+            return $following->push($pid)->toArray();
+        });
+
+        foreach($statusIds as $id) {
+            $status = StatusService::get($id, false);
+            if(!$status) {
+                HomeTimelineService::rem($pid, $id);
+                continue;
+            }
+            if(!in_array($status['account']['id'], $followingIds)) {
+                HomeTimelineService::rem($pid, $id);
+            }
         }
     }
 }
