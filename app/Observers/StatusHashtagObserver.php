@@ -38,12 +38,12 @@ class StatusHashtagObserver implements ShouldHandleEventsAfterCommit
     }
 
     /**
-     * Handle the notification "deleting" event.
+     * Handle the notification "deleted" event.
      *
      * @param  \App\StatusHashtag  $hashtag
      * @return void
      */
-    public function deleting(StatusHashtag $hashtag)
+    public function deleted(StatusHashtag $hashtag)
     {
         StatusHashtagService::del($hashtag->hashtag_id, $hashtag->status_id);
         DB::table('hashtags')->where('id', $hashtag->hashtag_id)->decrement('cached_count');
