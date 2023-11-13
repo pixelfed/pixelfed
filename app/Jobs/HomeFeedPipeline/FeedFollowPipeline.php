@@ -12,6 +12,7 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use App\Services\AccountService;
 use App\Services\HomeTimelineService;
+use App\Services\SnowflakeService;
 use App\Status;
 
 class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
@@ -68,7 +69,10 @@ class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $actorId = $this->actorId;
         $followingId = $this->followingId;
 
-        $ids = Status::where('profile_id', $followingId)
+        $minId = SnowflakeService::byDate(now()->subMonths(6));
+
+        $ids = Status::where('id', '>', $minId)
+            ->where('profile_id', $followingId)
             ->whereNull(['in_reply_to_id', 'reblog_of_id'])
             ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
             ->whereIn('visibility',['public', 'unlisted', 'private'])

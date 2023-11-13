@@ -73,7 +73,10 @@ class HomeTimelineService
                 return $following->push($id)->toArray();
             });
 
-            $ids = Status::whereIn('profile_id', $following)
+            $minId = SnowflakeService::byDate(now()->subMonths(6));
+
+            $ids = Status::where('id', '>', $minId)
+                ->whereIn('profile_id', $following)
                 ->whereNull(['in_reply_to_id', 'reblog_of_id'])
                 ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
                 ->whereIn('visibility',['public', 'unlisted', 'private'])
