@@ -160,7 +160,10 @@ class StatusEntityLexer implements ShouldQueue
 		$status = $this->status;
 
 		if(config('exp.cached_home_timeline')) {
-			if($status->in_reply_to_id == null && in_array($status->scope, ['public', 'unlisted', 'private'])) {
+			if( $status->in_reply_to_id === null &&
+				$status->reblog_of_id === null &&
+				in_array($status->scope, ['public', 'unlisted', 'private'])
+			) {
 				FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 			}
 		}
