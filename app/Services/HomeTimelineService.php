@@ -10,6 +10,7 @@ use App\Status;
 class HomeTimelineService
 {
     const CACHE_KEY = 'pf:services:timeline:home:';
+    const FOLLOWER_FEED_POST_LIMIT = 10;
 
     public static function get($id, $start = 0, $stop = 10)
     {
