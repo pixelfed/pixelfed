@@ -12,6 +12,7 @@ use App\Transformer\Api\NotificationTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Jobs\InternalPipeline\NotificationEpochUpdatePipeline;
 
 class NotificationService {
 
@@ -48,12 +49,12 @@ class NotificationService {
 
 	public static function getEpochId($months = 6)
 	{
-		return Cache::remember(self::EPOCH_CACHE_KEY . $months, 1209600, function() use($months) {
-            if(Notification::count() === 0) {
-                return 0;
-            }
-			return Notification::where('created_at', '>', now()->subMonths($months))->first()->id;
-		});
+		$epoch = Cache::get(self::EPOCH_CACHE_KEY . $months);
+		if(!$epoch) {
+			NotificationEpochUpdatePipeline::dispatch();
+			return 1;
+		}
+		return $epoch;
 	}
 
 	public static function coldGet($id, $start = 0, $stop = 400)
