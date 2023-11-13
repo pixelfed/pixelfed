@@ -7,6 +7,7 @@ use App\Services\ProfileStatusService;
 use Cache;
 use App\Models\ImportPost;
 use App\Services\ImportService;
+use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
 
 class StatusObserver
 {
@@ -62,6 +63,10 @@ class StatusObserver
         if($status->uri == null) {
             ImportPost::whereProfileId($status->profile_id)->whereStatusId($status->id)->delete();
             ImportService::clearImportedFiles($status->profile_id);
+        }
+
+        if(config('exp.cached_home_timeline')) {
+        	FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
         }
     }
 

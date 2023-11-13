@@ -21,6 +21,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Services\UserFilterService;
 use App\Services\AdminShadowFilterService;
+use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
+use App\Jobs\HomeFeedPipeline\HashtagInsertFanoutPipeline;
 
 class StatusEntityLexer implements ShouldQueue
 {
@@ -105,12 +107,12 @@ class StatusEntityLexer implements ShouldQueue
 			}
 			DB::transaction(function () use ($status, $tag) {
 				$slug = str_slug($tag, '-', false);
-				$hashtag = Hashtag::where('slug', $slug)->first();
-				if (!$hashtag) {
-					$hashtag = Hashtag::create(
-						['name' => $tag, 'slug' => $slug]
-					);
-				}
+
+                $hashtag = Hashtag::firstOrCreate([
+                    'slug' => $slug
+                ], [
+                    'name' => $tag
+                ]);
 
 				StatusHashtag::firstOrCreate(
 					[
@@ -149,6 +151,21 @@ class StatusEntityLexer implements ShouldQueue
 
 				MentionPipeline::dispatch($status, $m);
 			});
+		}
+		$this->fanout();
+	}
+
+	public function fanout()
+	{
+		$status = $this->status;
+
+		if(config('exp.cached_home_timeline')) {
+			if( $status->in_reply_to_id === null &&
+				$status->reblog_of_id === null &&
+				in_array($status->scope, ['public', 'unlisted', 'private'])
+			) {
+				FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+			}
 		}
 		$this->deliver();
 	}

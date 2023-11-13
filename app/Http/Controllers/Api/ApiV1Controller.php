@@ -71,6 +71,7 @@ use App\Services\{
 	CollectionService,
 	FollowerService,
 	HashtagService,
+	HomeTimelineService,
 	InstanceService,
 	LikeService,
 	NetworkTimelineService,
@@ -102,6 +103,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Purify;
 use Carbon\Carbon;
 use App\Http\Resources\MastoApi\FollowedTagResource;
+use App\Jobs\HomeFeedPipeline\FeedWarmCachePipeline;
 
 class ApiV1Controller extends Controller
 {
@@ -2129,11 +2131,11 @@ class ApiV1Controller extends Controller
 	public function timelineHome(Request $request)
 	{
 		$this->validate($request,[
-		  'page'        => 'sometimes|integer|max:40',
-		  'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
-		  'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
-		  'limit'       => 'sometimes|integer|min:1|max:100',
-          'include_reblogs' => 'sometimes',
+			'page'        => 'sometimes|integer|max:40',
+			'min_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
+			'max_id'      => 'sometimes|integer|min:0|max:' . PHP_INT_MAX,
+			'limit'       => 'sometimes|integer|min:1|max:40',
+			'include_reblogs' => 'sometimes',
 		]);
 
 		$napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -2142,13 +2144,77 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$pid = $request->user()->profile_id;
-        $includeReblogs = $request->filled('include_reblogs');
-        $nullFields = $includeReblogs ?
-            ['in_reply_to_id'] :
-            ['in_reply_to_id', 'reblog_of_id'];
-        $inTypes = $includeReblogs ?
-            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
-            ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+		$includeReblogs = $request->filled('include_reblogs');
+		$nullFields = $includeReblogs ?
+		['in_reply_to_id'] :
+		['in_reply_to_id', 'reblog_of_id'];
+		$inTypes = $includeReblogs ?
+		['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
+		['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+
+		if(config('exp.cached_home_timeline')) {
+			if($min || $max) {
+				if($request->has('min_id')) {
+					$res = HomeTimelineService::getRankedMinId($pid, $min ?? 0, $limit + 10);
+				} else {
+					$res = HomeTimelineService::getRankedMaxId($pid, $max ?? 0, $limit + 10);
+				}
+			} else {
+				$res = HomeTimelineService::get($pid, 0, $limit + 10);
+			}
+
+			if(!$res) {
+				$res = Cache::has('pf:services:apiv1:home:cached:coldbootcheck:' . $pid);
+				if(!$res) {
+					Cache::set('pf:services:apiv1:home:cached:coldbootcheck:' . $pid, 1, 86400);
+					FeedWarmCachePipeline::dispatchSync($pid);
+					return response()->json([], 206);
+				} else {
+					Cache::set('pf:services:apiv1:home:cached:coldbootcheck:' . $pid, 1, 86400);
+					return response()->json([], 206);
+				}
+			}
+
+			$res = collect($res)->take($limit)->map(function($id) use($napi) {
+				return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
+			})->filter(function($res) {
+				return $res && isset($res['account']);
+			})->map(function($status) use($pid) {
+				if($pid) {
+					$status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
+					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
+					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+				}
+				return $status;
+			});
+
+			$baseUrl = config('app.url') . '/api/v1/timelines/home?limit=' . $limit . '&';
+			$minId = $res->map(function($s) {
+				return ['id' => $s['id']];
+			})->min('id');
+			$maxId = $res->map(function($s) {
+				return ['id' => $s['id']];
+			})->max('id');
+
+			if($minId == $maxId) {
+				$minId = null;
+			}
+
+			if($maxId) {
+				$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next"';
+			}
+
+			if($minId) {
+				$link = '<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+			}
+
+			if($maxId && $minId) {
+				$link = '<'.$baseUrl.'max_id='.$minId.'>; rel="next",<'.$baseUrl.'min_id='.$maxId.'>; rel="prev"';
+			}
+
+			$headers = isset($link) ? ['Link' => $link] : [];
+			return $this->json($res->toArray(), 200, $headers);
+		}
 
 		$following = Cache::remember('profile:following:'.$pid, 1209600, function() use($pid) {
 			$following = Follower::whereProfileId($pid)->pluck('following_id');
@@ -2160,6 +2226,7 @@ class ApiV1Controller extends Controller
 		if($muted && count($muted)) {
 			$following = array_diff($following, $muted);
 		}
+
 
 		if($min || $max) {
 			$dir = $min ? '>' : '<';
@@ -2199,22 +2266,22 @@ class ApiV1Controller extends Controller
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
 					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
 				}
 				return $status;
 			})
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
-            ->map(function($status) use($pid) {
-                if(!empty($status['reblog'])) {
-                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                }
+			->map(function($status) use($pid) {
+				if(!empty($status['reblog'])) {
+					$status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+					$status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+				}
 
-                return $status;
-            })
+				return $status;
+			})
 			->take($limit)
 			->values();
 		} else {
@@ -2252,22 +2319,22 @@ class ApiV1Controller extends Controller
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $s['id']);
 					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
 				}
 				return $status;
 			})
 			->filter(function($status) {
 				return $status && isset($status['account']);
 			})
-            ->map(function($status) use($pid) {
-                if(!empty($status['reblog'])) {
-                    $status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
-                    $status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
-                    $status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
-                }
+			->map(function($status) use($pid) {
+				if(!empty($status['reblog'])) {
+					$status['reblog']['favourited'] = (bool) LikeService::liked($pid, $status['reblog']['id']);
+					$status['reblog']['reblogged'] = (bool) ReblogService::get($pid, $status['reblog']['id']);
+					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
+				}
 
-                return $status;
-            })
+				return $status;
+			})
 			->take($limit)
 			->values();
 		}
@@ -2321,10 +2388,11 @@ class ApiV1Controller extends Controller
 		$max = $request->input('max_id');
 		$limit = $request->input('limit') ?? 20;
 		$user = $request->user();
-		$remote = ($request->has('remote') && $request->input('remote') == true) || ($request->filled('local') && $request->input('local') != true);
+		$remote = $request->has('remote');
+		$local = $request->has('local');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
 
-        if((!$request->has('local') || $remote) && config('instance.timeline.network.cached')) {
+        if($remote && config('instance.timeline.network.cached')) {
 			Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
 				if(NetworkTimelineService::count() == 0) {
 					NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
@@ -2338,7 +2406,9 @@ class ApiV1Controller extends Controller
 			} else {
 				$feed = NetworkTimelineService::get(0, $limit + 5);
 			}
-        } else {
+        }
+
+        if($local || !$remote && !$local) {
 			Cache::remember('api:v1:timelines:public:cache_check', 10368000, function() {
 				if(PublicTimelineService::count() == 0) {
 					PublicTimelineService::warmCache(true, 400);
@@ -3533,19 +3603,6 @@ class ApiV1Controller extends Controller
 		->filter(function($profile) use($pid) {
 			return $profile['id'] != $pid;
 		})
-        ->map(function($profile) {
-            $ids = collect(ProfileStatusService::get($profile['id'], 0, 9))
-                ->map(function($id) {
-                    return StatusService::get($id, true);
-                })
-                ->filter(function($post) {
-                    return $post && isset($post['id']);
-                })
-                ->take(3)
-                ->values();
-            $profile['recent_posts'] = $ids;
-            return $profile;
-        })
 		->take(6)
 		->values();
 
