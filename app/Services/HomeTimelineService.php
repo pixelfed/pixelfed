@@ -75,6 +75,12 @@ class HomeTimelineService
 
             $minId = SnowflakeService::byDate(now()->subMonths(6));
 
+            $filters = UserFilterService::filters($id);
+
+            if($filters && count($filters)) {
+                $following = array_diff($following, $filters);
+            }
+
             $ids = Status::where('id', '>', $minId)
                 ->whereIn('profile_id', $following)
                 ->whereNull(['in_reply_to_id', 'reblog_of_id'])
