@@ -13,7 +13,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
 
-class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class FeedRemovePipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -37,7 +37,7 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function uniqueId(): string
     {
-        return 'hts:feed:insert:sid:' . $this->sid;
+        return 'hts:feed:remove:sid:' . $this->sid;
     }
 
     /**
@@ -47,7 +47,7 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function middleware(): array
     {
-        return [(new WithoutOverlapping("hts:feed:insert:sid:{$this->sid}"))->shared()->dontRelease()];
+        return [(new WithoutOverlapping("hts:feed:remove:sid:{$this->sid}"))->shared()->dontRelease()];
     }
 
     /**
@@ -67,7 +67,7 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $ids = FollowerService::localFollowerIds($this->pid);
 
         foreach($ids as $id) {
-            HomeTimelineService::add($id, $this->sid);
+            HomeTimelineService::rem($id, $this->sid);
         }
     }
 }
