@@ -43,6 +43,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37);
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32);
         }
+        $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21');
     }
 
     /**
