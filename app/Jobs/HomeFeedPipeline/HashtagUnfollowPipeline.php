@@ -18,7 +18,7 @@ use App\Services\HashtagFollowService;
 use App\Services\StatusService;
 use App\Services\HomeTimelineService;
 
-class HashtagUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
+class HashtagUnfollowPipeline implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -29,31 +29,6 @@ class HashtagUnfollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcess
     public $tries = 3;
     public $maxExceptions = 1;
     public $failOnTimeout = true;
-
-    /**
-     * The number of seconds after which the job's unique lock will be released.
-     *
-     * @var int
-     */
-    public $uniqueFor = 3600;
-
-    /**
-     * Get the unique ID for the job.
-     */
-    public function uniqueId(): string
-    {
-        return 'hfp:hashtag:unfollow:' . $this->hid . ':' . $this->pid;
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping("hfp:hashtag:unfollow:{$this->hid}:{$this->pid}"))->shared()->dontRelease()];
-    }
 
     /**
      * Create a new job instance.
