@@ -24,12 +24,7 @@ class HashtagFollowService
 
 	public static function unfollow($hid, $pid)
 	{
-		$list = self::getPidByHid($hid);
-		if($list && count($list)) {
-			$list = array_values(array_diff($list, [$pid]));
-			Cache::put(self::FOLLOW_KEY . $hid, $list, 86400);
-		}
-		return;
+		return Redis::zrem(self::CACHE_KEY . $hid, $pid);
 	}
 
 	public static function add($hid, $pid)
@@ -67,7 +62,7 @@ class HashtagFollowService
 
 	public static function isWarm($hid)
 	{
-		return Redis::zcount($hid, 0, -1) ?? Redis::zscore(self::CACHE_WARMED, $hid) != null;
+		return Redis::zcount(self::CACHE_KEY . $hid, 0, -1) ?? Redis::zscore(self::CACHE_WARMED, $hid) != null;
 	}
 
 	public static function setWarm($hid)
