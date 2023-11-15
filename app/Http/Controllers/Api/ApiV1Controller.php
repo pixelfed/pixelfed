@@ -105,6 +105,7 @@ use Purify;
 use Carbon\Carbon;
 use App\Http\Resources\MastoApi\FollowedTagResource;
 use App\Jobs\HomeFeedPipeline\FeedWarmCachePipeline;
+use App\Jobs\HomeFeedPipeline\HashtagUnfollowPipeline;
 
 class ApiV1Controller extends Controller
 {
@@ -3822,6 +3823,7 @@ class ApiV1Controller extends Controller
 		if($follows) {
 			HashtagService::unfollow($pid, $tag->id);
 			HashtagFollowService::unfollow($tag->id, $pid);
+			HashtagUnfollowPipeline::dispatch($tag->id, $pid)->onQueue('feed');
 			$follows->delete();
 		}
 
