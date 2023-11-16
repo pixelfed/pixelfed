@@ -44,6 +44,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32);
         }
         $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21');
+        $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25);
     }
 
     /**
