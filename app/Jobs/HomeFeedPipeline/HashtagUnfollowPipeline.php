@@ -68,9 +68,9 @@ class HashtagUnfollowPipeline implements ShouldQueue
                 continue;
             }
 
-            $tags = collect($status['tags'])->filter(function($tag) {
+            $tags = collect($status['tags'])->map(function($tag) {
                 return $tag['name'];
-            })->toArray();
+            })->filter()->values()->toArray();
 
             if(in_array($slug, $tags)) {
                 HomeTimelineService::rem($pid, $id);
