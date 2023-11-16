@@ -12,6 +12,7 @@ use App\Hashtag;
 use App\StatusHashtag;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
+use App\Services\StatusService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
@@ -68,6 +69,15 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
     {
         $sid = $this->sid;
         $hid = $this->hid;
+        $status = StatusService::get($sid, false);
+
+        if(!$status) {
+            return;
+        }
+
+        if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            return;
+        }
 
         $ids = HashtagFollowService::getPidByHid($hid);
 

@@ -12,6 +12,7 @@ use App\Hashtag;
 use App\StatusHashtag;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
+use App\Services\StatusService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 
@@ -72,11 +73,21 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
     public function handle(): void
     {
         $hashtag = $this->hashtag;
+        $sid = $hashtag->status_id;
+        $status = StatusService::get($sid, false);
+
+        if(!$status) {
+            return;
+        }
+
+        if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            return;
+        }
 
         $ids = HashtagFollowService::getPidByHid($hashtag->hashtag_id);
 
         if(!$ids || !count($ids)) {
-        	return;
+            return;
         }
 
         foreach($ids as $id) {
