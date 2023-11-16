@@ -57,6 +57,7 @@
 - Update HashtagService, improve count perf ([3327a008](https://github.com/pixelfed/pixelfed/commit/3327a008))
 - Update StatusHashtagService, remove problematic cache layer ([e5401f85](https://github.com/pixelfed/pixelfed/commit/e5401f85))
 - Update HomeFeedPipeline, fix tag filtering ([f105f4e8](https://github.com/pixelfed/pixelfed/commit/f105f4e8))
+- Update HashtagService, reduce cached_count cache ttl ([15f29f7d](https://github.com/pixelfed/pixelfed/commit/15f29f7d))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
