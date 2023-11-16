@@ -24,6 +24,7 @@ class HashtagUnfollowPipeline implements ShouldQueue
 
     protected $pid;
     protected $hid;
+    protected $slug;
 
     public $timeout = 900;
     public $tries = 3;
@@ -33,10 +34,11 @@ class HashtagUnfollowPipeline implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($hid, $pid)
+    public function __construct($hid, $pid, $slug)
     {
         $this->hid = $hid;
         $this->pid = $pid;
+        $this->slug = $slug;
     }
 
     /**
@@ -46,6 +48,7 @@ class HashtagUnfollowPipeline implements ShouldQueue
     {
         $hid = $this->hid;
         $pid = $this->pid;
+        $slug = $this->slug;
 
         $statusIds = HomeTimelineService::get($pid, 0, -1);
 
@@ -60,7 +63,16 @@ class HashtagUnfollowPipeline implements ShouldQueue
                 HomeTimelineService::rem($pid, $id);
                 continue;
             }
-            if(!in_array($status['account']['id'], $followingIds)) {
+            $following = in_array($status['account']['id'], $followingIds);
+            if($following || !isset($status['tags'])) {
+                continue;
+            }
+
+            $tags = collect($status['tags'])->filter(function($tag) {
+                return $tag['name'];
+            })->toArray();
+
+            if(in_array($slug, $tags)) {
                 HomeTimelineService::rem($pid, $id);
             }
         }

@@ -3831,7 +3831,7 @@ class ApiV1Controller extends Controller
 		if($follows) {
 			HashtagService::unfollow($pid, $tag->id);
 			HashtagFollowService::unfollow($tag->id, $pid);
-			HashtagUnfollowPipeline::dispatch($tag->id, $pid)->onQueue('feed');
+			HashtagUnfollowPipeline::dispatch($tag->id, $pid, $tag->slug)->onQueue('feed');
 			$follows->delete();
 		}
 
