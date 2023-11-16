@@ -84,18 +84,14 @@ class StatusHashtagService {
 
 	public static function statusTags($statusId)
 	{
-		$key = 'pf:services:sh:id:' . $statusId;
+		$status = Status::with('hashtags')->find($statusId);
+		if(!$status) {
+			return [];
+		}
 
-		return Cache::remember($key, 604800, function() use($statusId) {
-			$status = Status::find($statusId);
-			if(!$status) {
-				return [];
-			}
-
-			$fractal = new Fractal\Manager();
-			$fractal->setSerializer(new ArraySerializer());
-			$resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer());
-			return $fractal->createData($resource)->toArray();
-		});
+		$fractal = new Fractal\Manager();
+		$fractal->setSerializer(new ArraySerializer());
+		$resource = new Fractal\Resource\Collection($status->hashtags, new HashtagTransformer());
+		return $fractal->createData($resource)->toArray();
 	}
 }
