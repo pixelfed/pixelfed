@@ -538,7 +538,11 @@ class Helpers {
 
         IncrementPostCount::dispatch($pid)->onQueue('low');
 
-        FeedInsertRemotePipeline::dispatch($status->id, $pid)->onQueue('feed');
+        if( $status->in_reply_to_id === null &&
+            in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+        ) {
+            FeedInsertRemotePipeline::dispatch($status->id, $pid)->onQueue('feed');
+        }
 
         return $status;
     }
