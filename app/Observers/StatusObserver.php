@@ -8,6 +8,7 @@ use Cache;
 use App\Models\ImportPost;
 use App\Services\ImportService;
 use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
+use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 
 class StatusObserver
 {
@@ -66,7 +67,11 @@ class StatusObserver
         }
 
         if(config('exp.cached_home_timeline')) {
-        	FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        	if($status->uri) {
+        		FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        	} else {
+        		FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+        	}
         }
     }
 

@@ -17,6 +17,7 @@ use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
 use App\Services\ReblogService;
 use App\Services\StatusService;
+use App\Jobs\HomeFeedPipeline\FeedInsertPipeline;
 
 class SharePipeline implements ShouldQueue
 {
@@ -81,6 +82,8 @@ class SharePipeline implements ShouldQueue
 				'item_id' => $status->reblog_of_id ?? $status->id,
 			]
 		);
+
+		FeedInsertPipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
 		return $this->remoteAnnounceDeliver();
 	}
