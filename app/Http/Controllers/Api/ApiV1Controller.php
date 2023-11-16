@@ -2177,18 +2177,26 @@ class ApiV1Controller extends Controller
 				}
 			}
 
-			$res = collect($res)->take($limit)->map(function($id) use($napi) {
+			$res = collect($res)
+			->map(function($id) use($napi) {
 				return $napi ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
-			})->filter(function($res) {
+			})
+			->filter(function($res) {
 				return $res && isset($res['account']);
-			})->map(function($status) use($pid) {
+			})
+			->filter(function($s) use($includeReblogs) {
+				return $includeReblogs ? true : $s['reblog'] == null;
+			})
+			->take($limit)
+			->map(function($status) use($pid) {
 				if($pid) {
 					$status['favourited'] = (bool) LikeService::liked($pid, $status['id']);
 					$status['reblogged'] = (bool) ReblogService::get($pid, $status['id']);
 					$status['bookmarked'] = (bool) BookmarkService::get($pid, $status['id']);
 				}
 				return $status;
-			});
+			})
+			->values();
 
 			$baseUrl = config('app.url') . '/api/v1/timelines/home?limit=' . $limit . '&';
 			$minId = $res->map(function($s) {
@@ -3823,7 +3831,7 @@ class ApiV1Controller extends Controller
 		if($follows) {
 			HashtagService::unfollow($pid, $tag->id);
 			HashtagFollowService::unfollow($tag->id, $pid);
-			HashtagUnfollowPipeline::dispatch($tag->id, $pid)->onQueue('feed');
+			HashtagUnfollowPipeline::dispatch($tag->id, $pid, $tag->slug)->onQueue('feed');
 			$follows->delete();
 		}
 

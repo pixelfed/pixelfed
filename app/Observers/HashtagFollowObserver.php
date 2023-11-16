@@ -31,7 +31,6 @@ class HashtagFollowObserver implements ShouldHandleEventsAfterCommit
     public function deleting(HashtagFollow $hashtagFollow): void
     {
         HashtagFollowService::unfollow($hashtagFollow->hashtag_id, $hashtagFollow->profile_id);
-        HashtagUnfollowPipeline::dispatch($hashtagFollow->hashtag_id, $hashtagFollow->profile_id);
     }
 
     /**
@@ -48,6 +47,5 @@ class HashtagFollowObserver implements ShouldHandleEventsAfterCommit
     public function forceDeleted(HashtagFollow $hashtagFollow): void
     {
         HashtagFollowService::unfollow($hashtagFollow->hashtag_id, $hashtagFollow->profile_id);
-        HashtagUnfollowPipeline::dispatch($hashtagFollow->hashtag_id, $hashtagFollow->profile_id);
     }
 }

@@ -49,6 +49,7 @@ use App\Models\Conversation;
 use App\Models\RemoteReport;
 use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
+use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 
 class Inbox
 {
@@ -707,6 +708,7 @@ class Inbox
 						if(!$status) {
 							return;
 						}
+						FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 						RemoteStatusDelete::dispatch($status)->onQueue('high');
 						return;
 					break;
@@ -803,6 +805,7 @@ class Inbox
 				if(!$status) {
 					return;
 				}
+				FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 				Status::whereProfileId($profile->id)
 					->whereReblogOfId($status->id)
 					->delete();

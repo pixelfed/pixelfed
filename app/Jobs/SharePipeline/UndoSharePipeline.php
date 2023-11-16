@@ -17,6 +17,7 @@ use GuzzleHttp\{Pool, Client, Promise};
 use App\Util\ActivityPub\HttpSignature;
 use App\Services\ReblogService;
 use App\Services\StatusService;
+use App\Jobs\HomeFeedPipeline\FeedRemovePipeline;
 
 class UndoSharePipeline implements ShouldQueue
 {
@@ -34,6 +35,8 @@ class UndoSharePipeline implements ShouldQueue
 		$status = $this->status;
 		$actor = $status->profile;
 		$parent = Status::find($status->reblog_of_id);
+
+		FeedRemovePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
 
 		if($parent) {
 			$target = $parent->profile_id;
