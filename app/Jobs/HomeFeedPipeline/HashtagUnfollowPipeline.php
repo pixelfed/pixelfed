@@ -48,7 +48,7 @@ class HashtagUnfollowPipeline implements ShouldQueue
     {
         $hid = $this->hid;
         $pid = $this->pid;
-        $slug = $this->slug;
+        $slug = strtolower($this->slug);
 
         $statusIds = HomeTimelineService::get($pid, 0, -1);
 
@@ -59,17 +59,17 @@ class HashtagUnfollowPipeline implements ShouldQueue
 
         foreach($statusIds as $id) {
             $status = StatusService::get($id, false);
-            if(!$status) {
+            if(!$status || empty($status['tags'])) {
                 HomeTimelineService::rem($pid, $id);
                 continue;
             }
-            $following = in_array($status['account']['id'], $followingIds);
-            if($following || !isset($status['tags'])) {
+            $following = in_array((int) $status['account']['id'], $followingIds);
+            if($following === true) {
                 continue;
             }
 
             $tags = collect($status['tags'])->map(function($tag) {
-                return $tag['name'];
+                return strtolower($tag['name']);
             })->filter()->values()->toArray();
 
             if(in_array($slug, $tags)) {

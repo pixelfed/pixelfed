@@ -54,6 +54,8 @@
 - Update HashtagFollowService, fix cache invalidation bug ([84f4e885](https://github.com/pixelfed/pixelfed/commit/84f4e885))
 - Update Experimental Home Feed, fix remote posts, shares and reblogs ([c6a6b3ae](https://github.com/pixelfed/pixelfed/commit/c6a6b3ae))
 - Update HashtagService, improve count perf ([3327a008](https://github.com/pixelfed/pixelfed/commit/3327a008))
+- Update StatusHashtagService, remove problematic cache layer ([e5401f85](https://github.com/pixelfed/pixelfed/commit/e5401f85))
+- Update HomeFeedPipeline, fix tag filtering ([f105f4e8](https://github.com/pixelfed/pixelfed/commit/f105f4e8))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
