@@ -51,6 +51,9 @@
 - Update mail config ([0e431271](https://github.com/pixelfed/pixelfed/commit/0e431271))
 - Update hashtag following ([015b1b80](https://github.com/pixelfed/pixelfed/commit/015b1b80))
 - Update IncrementPostCount job, prevent overlap ([b2c9cc23](https://github.com/pixelfed/pixelfed/commit/b2c9cc23))
+- Update HashtagFollowService, fix cache invalidation bug ([84f4e885](https://github.com/pixelfed/pixelfed/commit/84f4e885))
+- Update Experimental Home Feed, fix remote posts, shares and reblogs ([c6a6b3ae](https://github.com/pixelfed/pixelfed/commit/c6a6b3ae))
+- Update HashtagService, improve count perf ([3327a008](https://github.com/pixelfed/pixelfed/commit/3327a008))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)

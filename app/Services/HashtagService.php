@@ -29,8 +29,9 @@ class HashtagService
 
     public static function count($id)
     {
-        return Cache::remember('services:hashtag:public-count:by_id:' . $id, 86400, function() use($id) {
-            return StatusHashtag::whereHashtagId($id)->whereStatusVisibility('public')->count();
+        return Cache::remember('services:hashtag:public-count:by_id:' . $id, 3600, function() use($id) {
+            $tag = Hashtag::find($id);
+            return $tag ? $tag->cached_count ?? 0 : 0;
         });
     }
 
