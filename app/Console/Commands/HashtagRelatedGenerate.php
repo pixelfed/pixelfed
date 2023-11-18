@@ -9,6 +9,7 @@ use App\Models\HashtagRelated;
 use App\Services\HashtagRelatedService;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\confirm;
 
 class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
 {
@@ -48,6 +49,16 @@ class HashtagRelatedGenerate extends Command implements PromptsForMissingInput
         if(!$hashtag) {
             $this->error('Hashtag not found, aborting...');
             exit;
+        }
+
+        $exists = HashtagRelated::whereHashtagId($hashtag->id)->exists();
+
+        if($exists) {
+            $confirmed = confirm('Found existing related tags, do you want to regenerate them?');
+            if(!$confirmed) {
+                $this->error('Aborting...');
+                exit;
+            }
         }
 
         $this->info('Looking up #' . $tag . '...');
