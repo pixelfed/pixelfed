@@ -9,6 +9,8 @@ class HashtagRelated extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     /**
      * The attributes that should be mutated to dates and other custom formats.
      *
