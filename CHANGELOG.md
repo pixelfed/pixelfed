@@ -60,7 +60,7 @@
 - Update HomeFeedPipeline, fix tag filtering ([f105f4e8](https://github.com/pixelfed/pixelfed/commit/f105f4e8))
 - Update HashtagService, reduce cached_count cache ttl ([15f29f7d](https://github.com/pixelfed/pixelfed/commit/15f29f7d))
 - Update ApiV1Controller, fix include_reblogs param on timelines/home endpoint, and improve limit pagination logic ([287f903b](https://github.com/pixelfed/pixelfed/commit/287f903b))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update StoryApiV1Controller, add self-carousel endpoint. Fixes ([#4352](https://github.com/pixelfed/pixelfed/issues/4352)) ([bcb88d5b](https://github.com/pixelfed/pixelfed/commit/bcb88d5b))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)

@@ -313,6 +313,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
             Route::group(['prefix' => 'stories'], function () use($middleware) {
                 Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
+                Route::get('self-carousel', 'Stories\StoryApiV1Controller@selfCarousel')->middleware($middleware);
                 Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);
                 Route::post('publish', 'Stories\StoryApiV1Controller@publish')->middleware($middleware);
                 Route::post('seen', 'Stories\StoryApiV1Controller@viewed')->middleware($middleware);
