@@ -18,7 +18,7 @@ class AttemptRemoteAuthentication
      */
     public function handle(Request $request, Closure $next): Response
     {
-	\Log::info('In handler for Remote Authentication Attempt');
+	\Log::debug('In handler for Remote Authentication Attempt');
 	$zid = $request->query('zid');
 	if (!isset($zid) || preg_match('/^.+@.+$/i', $zid) === false) {
 		return $next($request);
@@ -28,18 +28,17 @@ class AttemptRemoteAuthentication
 		$zid = '@' . $zid;
 	}
 	\Log::info('Remote user (zid) = ' . print_r($zid, true));
-	$fullUrl = $request->fullUrlWithoutQuery(['zid']);
-	\Log::debug('Full url = ' . $fullUrl);
-	$remoteDest = $fullUrl;
+	$remoteDest = $request->fullUrlWithoutQuery(['zid']);
+	\Log::debug('Remote destination = ' . $remoteDest);
 
-	// TODO this would make it impossible for remote destination like https://magic.example.com
-	if (strstr($remoteDest, '/magic')) {
+    $path = parse_url($remoteDest, PHP_URL_PATH);
+	if (str_starts_with($path, '/magic')) {
 		\Log::info('Destination already contains the /magic endpoint - avoiding recursion - not going to attempt remote auth');
 		return $next($request);
 	}
-	\Log::info('dest = ' . print_r($remoteDest, true));
-	$domain = substr(strrchr($zid, '@'), 1);
-	$remoteUrl = 'https://' . $domain . '/magic' . '?f=&rev=1&owa=1&bdest=' . bin2hex($remoteDest);
+	
+    $domain = substr(strrchr($zid, '@'), 1);
+	$remoteUrl = 'https://' . $domain . '/magic?f=&rev=1&owa=1&bdest=' . bin2hex($remoteDest);
 	\Log::info('Remote url = ' . print_r($remoteUrl, true));
 
 	return redirect()->away($remoteUrl);

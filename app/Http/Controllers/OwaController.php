@@ -59,7 +59,7 @@ class OwaController extends Controller
 				    $wf_account = WebfingerService::lookup($keyId);
 				    \Log::debug('Webfinger returned ' . print_r($wf_account, true));
 
-				    $r = Profile::where('remote_url', $keyId /*$wf_account['url']*/)->first();
+				    $r = Profile::where('remote_url', $keyId)->first();
 				    \Log::debug('Found profile: ' . print_r($r, true));
 
 				    if (!$r) {
@@ -87,7 +87,6 @@ class OwaController extends Controller
 	    return response()->json($ret_response);
     }
 
-    // this should probably belong in a HTTP Signature helper
     /**
      * @brief
      *
@@ -251,7 +250,6 @@ class OwaController extends Controller
         if (! $key) {
             return false;
         }
-        // check for passed/provided $alg that is empty
         if (! $alg) {
             $alg = 'sha256';
         }
