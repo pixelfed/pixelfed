@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Hashtag;
 use App\StatusHashtag;
+use App\UserFilter;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
@@ -84,6 +85,8 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
             return;
         }
 
+        $skipIds = UserFilter::whereFilterableType('App\Profile')->whereFilterableId($status['account']['id'])->whereIn('filter_type', ['mute', 'block'])->pluck('user_id')->toArray();
+
         $ids = HashtagFollowService::getPidByHid($hashtag->hashtag_id);
 
         if(!$ids || !count($ids)) {
@@ -91,7 +94,9 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
         }
 
         foreach($ids as $id) {
-            HomeTimelineService::add($id, $hashtag->status_id);
+            if(!in_array($id, $skipIds)) {
+                HomeTimelineService::add($id, $hashtag->status_id);
+            }
         }
     }
 }

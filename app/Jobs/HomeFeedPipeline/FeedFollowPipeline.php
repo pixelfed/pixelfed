@@ -69,7 +69,7 @@ class FeedFollowPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $actorId = $this->actorId;
         $followingId = $this->followingId;
 
-        $minId = SnowflakeService::byDate(now()->subMonths(6));
+        $minId = SnowflakeService::byDate(now()->subWeeks(6));
 
         $ids = Status::where('id', '>', $minId)
             ->where('profile_id', $followingId)
