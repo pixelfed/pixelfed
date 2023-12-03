@@ -32,7 +32,7 @@ class AttemptRemoteAuthentication
 	\Log::debug('Remote destination = ' . $remoteDest);
 
     $path = parse_url($remoteDest, PHP_URL_PATH);
-	if (str_starts_with($path, '/magic')) {
+	if ($path == '/magic') {
 		\Log::info('Destination already contains the /magic endpoint - avoiding recursion - not going to attempt remote auth');
 		return $next($request);
 	}
