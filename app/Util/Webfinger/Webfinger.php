@@ -11,7 +11,8 @@ class Webfinger
 
 	public function __construct($user)
 	{
-		$this->subject = 'acct:'.$user->username.'@'.parse_url(config('app.url'), PHP_URL_HOST);
+		$baseurl = config('app.url');
+		$this->subject = 'acct:'.$user->username.'@'.parse_url($baseurl, PHP_URL_HOST);
 		$this->aliases = [
 			$user->url(),
 			$user->permalink(),
@@ -31,6 +32,16 @@ class Webfinger
 				'rel'  => 'self',
 				'type' => 'application/activity+json',
 				'href' => $user->permalink(),
+			],
+			[
+				'rel'  => 'http://purl.org/openwebauth/v1',
+				'type' => 'application/json',
+				'href' => $baseurl . '/owa',
+			],
+			[
+				'rel'  => 'http://purl.org/openwebauth/v1#redirect',
+				'type' => 'application/json',
+				'href' =>  $baseurl . '/magic',
 			],
 		];
 	}
