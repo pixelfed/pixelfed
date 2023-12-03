@@ -73,7 +73,7 @@ class FollowServiceWarmCache implements ShouldQueue
         if(Follower::whereProfileId($id)->orWhere('following_id', $id)->count()) {
             $following = [];
             $followers = [];
-    		foreach(Follower::lazy() as $follow) {
+    		foreach(Follower::where('following_id', $id)->orWhere('profile_id', $id)->lazyById(500) as $follow) {
                 if($follow->following_id != $id && $follow->profile_id != $id) {
                     continue;
                 }
