@@ -10,8 +10,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
+use App\UserFilter;
 use App\Services\FollowerService;
 use App\Services\HomeTimelineService;
+use App\Services\StatusService;
 
 class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -64,11 +66,32 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
      */
     public function handle(): void
     {
-        $ids = FollowerService::localFollowerIds($this->pid);
+        $sid = $this->sid;
+        $status = StatusService::get($sid, false);
+
+        if(!$status) {
+            return;
+        }
+
+        if(!in_array($status['pf_type'], ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])) {
+            return;
+        }
 
         HomeTimelineService::add($this->pid, $this->sid);
+
+
+        $ids = FollowerService::localFollowerIds($this->pid);
+
+        if(!$ids || !count($ids)) {
+            return;
+        }
+
+        $skipIds = UserFilter::whereFilterableType('App\Profile')->whereFilterableId($status['account']['id'])->whereIn('filter_type', ['mute', 'block'])->pluck('user_id')->toArray();
+
         foreach($ids as $id) {
-            HomeTimelineService::add($id, $this->sid);
+            if(!in_array($id, $skipIds)) {
+                HomeTimelineService::add($id, $this->sid);
+            }
         }
     }
 }
