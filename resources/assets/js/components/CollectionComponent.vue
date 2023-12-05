@@ -460,7 +460,7 @@ export default {
 				})
 				.then(res => {
 					self.postsList = res.data.filter(l => {
-						return self.ids.indexOf(l.id) == -1;
+						return  (l.visibility == 'public' || l.visibility == 'unlisted') && l.sensitive == false && self.ids.indexOf(l.id) == -1; 
 					});
 					self.loadingPostList = false;
 					self.$refs.addPhotoModal.show();
@@ -619,6 +619,9 @@ export default {
 			this.posts = this.posts.filter(post => {
 				return post.id != id;
 			});
+			this.ids = this.ids.filter(post_id => {
+				return post_id != id;
+			});
 		},
 
 		addRecentId(post) {
@@ -630,6 +633,7 @@ export default {
 				// window.location.reload();
 				this.closeModals();
 				this.posts.push(res.data);
+				this.ids.push(post.id);
 				this.collection.post_count++;
 			}).catch(err => {
 				swal('Oops!', 'An error occured, please try selecting another post.', 'error');

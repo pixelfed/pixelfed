@@ -194,7 +194,6 @@ export default {
 				swal('Invalid URL', 'You can only add posts from this instance', 'error');
 				this.id = '';
 			}
-
             if(url.includes('/i/web/post/') || url.includes('/p/')) {
             	let id = split[split.length - 1];
             	console.log('adding ' + id);
@@ -228,7 +227,7 @@ export default {
 					let ids = this.posts.map(s => {
 						return s.id;
 					});
-					return s.visibility == 'public' && s.sensitive == false && ids.indexOf(s.id) == -1;
+					return (s.visibility == 'public' || s.visibility == 'unlisted') && s.sensitive == false && ids.indexOf(s.id) == -1;
 				});
 			});
 		},
