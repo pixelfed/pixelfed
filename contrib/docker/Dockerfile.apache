@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /var/www/
 
 # Get Composer binary
-COPY --from=composer:2.4.4 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Install package dependencies
 RUN apt-get update \
