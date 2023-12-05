@@ -166,11 +166,7 @@ class CollectionController extends Controller
             'order'         => $count,
         ]);
 
-        CollectionService::addItem(
-        	$collection->id,
-        	$status->id,
-        	$count
-        );
+        CollectionService::deleteCollection($collection->id);
 
         $collection->updated_at = now();
         $collection->save();
