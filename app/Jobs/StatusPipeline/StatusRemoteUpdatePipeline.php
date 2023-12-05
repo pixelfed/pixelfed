@@ -90,7 +90,7 @@ class StatusRemoteUpdatePipeline implements ShouldQueue
 			]);
 
 		$nm->each(function($n, $key) use($status) {
-			$res = Http::retry(3, 100, throw: false)->head($n['url']);
+			$res = Http::withOptions(['allow_redirects' => false])->retry(3, 100, throw: false)->head($n['url']);
 
 			if(!$res->successful()) {
 				return;

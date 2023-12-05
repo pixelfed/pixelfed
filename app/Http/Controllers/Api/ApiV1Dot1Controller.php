@@ -11,6 +11,7 @@ use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
 use App\AccountLog;
 use App\EmailVerification;
+use App\Follower;
 use App\Place;
 use App\Status;
 use App\Report;
@@ -21,6 +22,8 @@ use App\UserSetting;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
+use App\Services\LikeService;
+use App\Services\ReblogService;
 use App\Services\PublicTimelineService;
 use App\Services\NetworkTimelineService;
 use App\Util\Lexer\RestrictedNames;
@@ -470,7 +473,7 @@ class ApiV1Dot1Controller extends Controller
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
 
-		$rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), 3, function(){}, 1800);
+		$rl = RateLimiter::attempt('pf:apiv1.1:iar:'.$request->ip(), config('pixelfed.app_registration_rate_limit_attempts', 3), function(){}, config('pixelfed.app_registration_rate_limit_decay', 1800));
 		abort_if(!$rl, 400, 'Too many requests');
 
 		$this->validate($request, [
@@ -543,10 +546,10 @@ class ApiV1Dot1Controller extends Controller
 		$user->password = Hash::make($password);
 		$user->register_source = 'app';
 		$user->app_register_ip = $request->ip();
-		$user->app_register_token = Str::random(32);
+		$user->app_register_token = Str::random(40);
 		$user->save();
 
-		$rtoken = Str::random(mt_rand(64, 70));
+		$rtoken = Str::random(64);
 
 		$verify = new EmailVerification();
 		$verify->user_id = $user->id;
@@ -555,7 +558,12 @@ class ApiV1Dot1Controller extends Controller
 		$verify->random_token = $rtoken;
 		$verify->save();
 
-		$appUrl = url('/api/v1.1/auth/iarer?ut=' . $user->app_register_token . '&rt=' . $rtoken);
+		$params = http_build_query([
+			'ut' => $user->app_register_token,
+			'rt' => $rtoken,
+			'ea' => base64_encode($user->email)
+		]);
+		$appUrl = url('/api/v1.1/auth/iarer?'. $params);
 
 		Mail::to($user->email)->send(new ConfirmAppEmail($verify, $appUrl));
 
@@ -568,14 +576,19 @@ class ApiV1Dot1Controller extends Controller
 	{
 		$this->validate($request, [
 			'ut' => 'required',
-			'rt' => 'required'
+			'rt' => 'required',
+			'ea' => 'required'
 		]);
-		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
-			abort_if(BouncerService::checkIp($request->ip()), 404);
-		}
 		$ut = $request->input('ut');
 		$rt = $request->input('rt');
-		$url = 'pixelfed://confirm-account/'. $ut . '?rt=' . $rt;
+		$ea = $request->input('ea');
+		$params = http_build_query([
+			'ut' => $ut,
+			'rt' => $rt,
+			'domain' => config('pixelfed.domain.app'),
+			'ea' => $ea
+		]);
+		$url = 'pixelfed://confirm-account/'. $ut . '?' . $params;
 		return redirect()->away($url);
 	}
 
@@ -589,8 +602,8 @@ class ApiV1Dot1Controller extends Controller
 			abort_if(BouncerService::checkIp($request->ip()), 404);
 		}
 
-		$rl = RateLimiter::attempt('pf:apiv1.1:iarc:'.$request->ip(), 10, function(){}, 1800);
-		abort_if(!$rl, 400, 'Too many requests');
+		$rl = RateLimiter::attempt('pf:apiv1.1:iarc:'.$request->ip(), config('pixelfed.app_registration_confirm_rate_limit_attempts', 20), function(){}, config('pixelfed.app_registration_confirm_rate_limit_decay', 1800));
+		abort_if(!$rl, 429, 'Too many requests');
 
 		$this->validate($request, [
 			'user_token' => 'required',

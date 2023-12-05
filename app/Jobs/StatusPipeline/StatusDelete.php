@@ -130,7 +130,10 @@ class StatusDelete implements ShouldQueue
 			->delete();
 
         StatusArchived::whereStatusId($status->id)->delete();
-        StatusHashtag::whereStatusId($status->id)->delete();
+        $statusHashtags = StatusHashtag::whereStatusId($status->id)->get();
+        foreach($statusHashtags as $stag) {
+        	$stag->delete();
+        }
         StatusView::whereStatusId($status->id)->delete();
 		Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 

@@ -45,7 +45,6 @@
 					:href="profile.url"
 					@click.prevent="goToProfile()"
 					v-html="getDisplayName()">
-					{{ profile.display_name ? profile.display_name : profile.username }}
 				</a>
 			</p>
 

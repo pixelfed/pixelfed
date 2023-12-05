@@ -20,7 +20,7 @@
 
 @endsection
 
-@push('meta')<meta property="og:description" content="{{$profile->bio}}">
+@push('meta')<meta property="og:description" content="{{strip_tags($profile->bio)}}">
 	@if(false == $settings['crawlable'] || $profile->remote_url)
 	<meta name="robots" content="noindex, nofollow">
 	@else  <meta property="og:image" content="{{$profile->avatarUrl()}}">

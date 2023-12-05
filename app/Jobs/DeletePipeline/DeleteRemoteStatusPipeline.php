@@ -57,7 +57,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
         $status = $this->status;
 
         if(AccountService::get($status->profile_id, true)) {
-            DecrementPostCount::dispatch($status->profile_id)->onQueue('feed');
+            DecrementPostCount::dispatch($status->profile_id)->onQueue('low');
         }
 
         NetworkTimelineService::del($status->id);
@@ -76,7 +76,10 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
             });
         Mention::whereStatusId($status->id)->forceDelete();
         Report::whereObjectType('App\Status')->whereObjectId($status->id)->delete();
-        StatusHashtag::whereStatusId($status->id)->delete();
+        $statusHashtags = StatusHashtag::whereStatusId($status->id)->get();
+        foreach($statusHashtags as $stag) {
+        	$stag->delete();
+        }
         StatusView::whereStatusId($status->id)->delete();
         Status::whereReblogOfId($status->id)->forceDelete();
         $status->forceDelete();

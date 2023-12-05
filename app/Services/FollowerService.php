@@ -19,6 +19,7 @@ class FollowerService
 	const FOLLOWING_SYNC_KEY = 'pf:services:followers:sync-following:';
 	const FOLLOWING_KEY = 'pf:services:follow:following:id:';
 	const FOLLOWERS_KEY = 'pf:services:follow:followers:id:';
+	const FOLLOWERS_LOCAL_KEY = 'pf:services:follow:local-follower-ids:';
 
 	public static function add($actor, $target, $refresh = true)
 	{
@@ -211,5 +212,16 @@ class FollowerService
 		Redis::del(self::FOLLOWERS_KEY . $id);
 		Cache::forget(self::FOLLOWERS_SYNC_KEY . $id);
 		Cache::forget(self::FOLLOWING_SYNC_KEY . $id);
+	}
+
+	public static function localFollowerIds($pid, $limit = 0)
+	{
+		$key = self::FOLLOWERS_LOCAL_KEY . $pid;
+		$res = Cache::remember($key, 7200, function() use($pid) {
+			return DB::table('followers')->whereFollowingId($pid)->whereLocalProfile(true)->pluck('profile_id')->sort();
+		});
+		return $limit ?
+			$res->take($limit)->values()->toArray() :
+			$res->values()->toArray();
 	}
 }

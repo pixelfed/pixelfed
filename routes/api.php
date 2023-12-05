@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Middleware\DeprecatedEndpoint;
+use App\Http\Controllers\Api\V1\TagsController;
 
 $middleware = ['auth:api','validemail'];
 
@@ -92,10 +93,11 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         Route::get('markers', 'Api\ApiV1Controller@getMarkers')->middleware($middleware);
         Route::post('markers', 'Api\ApiV1Controller@setMarkers')->middleware($middleware);
 
-        Route::get('followed_tags', 'Api\ApiV1Controller@getFollowedTags')->middleware($middleware);
-        Route::post('tags/{id}/follow', 'Api\ApiV1Controller@followHashtag')->middleware($middleware);
-        Route::post('tags/{id}/unfollow', 'Api\ApiV1Controller@unfollowHashtag')->middleware($middleware);
-        Route::get('tags/{id}', 'Api\ApiV1Controller@getHashtag')->middleware($middleware);
+        Route::get('followed_tags', [TagsController::class, 'getFollowedTags'])->middleware($middleware);
+        Route::post('tags/{id}/follow', [TagsController::class, 'followHashtag'])->middleware($middleware);
+        Route::post('tags/{id}/unfollow', [TagsController::class, 'unfollowHashtag'])->middleware($middleware);
+        Route::get('tags/{id}/related', [TagsController::class, 'relatedTags'])->middleware($middleware);
+        Route::get('tags/{id}', [TagsController::class, 'getHashtag'])->middleware($middleware);
 
         Route::get('statuses/{id}/history', 'StatusEditController@history')->middleware($middleware);
         Route::put('statuses/{id}', 'StatusEditController@store')->middleware($middleware);
@@ -311,6 +313,7 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
 
             Route::group(['prefix' => 'stories'], function () use($middleware) {
                 Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
+                Route::get('self-carousel', 'Stories\StoryApiV1Controller@selfCarousel')->middleware($middleware);
                 Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);
                 Route::post('publish', 'Stories\StoryApiV1Controller@publish')->middleware($middleware);
                 Route::post('seen', 'Stories\StoryApiV1Controller@viewed')->middleware($middleware);

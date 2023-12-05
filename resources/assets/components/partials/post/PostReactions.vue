@@ -5,7 +5,7 @@
 				Liked by
 				<span v-if="status.favourites_count == 1 && status.favourited == true" class="font-weight-bold">me</span>
 				<span v-else>
-					<router-link :to="'/i/web/profile/' + status.liked_by.id" class="primary font-weight-bold"">&commat;{{ status.liked_by.username}}</router-link>
+					<router-link :to="'/i/web/profile/' + status.liked_by.id" class="primary font-weight-bold">{{ status.liked_by.username}}</router-link>
 					<span v-if="status.liked_by.others || status.favourites_count > 1">
 						and <a href="#" class="primary font-weight-bold" @click.prevent="showLikes()">{{ count(status.favourites_count - 1) }} others</a>
 					</span>

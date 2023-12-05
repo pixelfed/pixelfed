@@ -8,7 +8,6 @@
 					<div class="media-body">
 						<div class="pl-2 d-flex align-items-top">
 							<a class="username font-weight-bold text-dark text-decoration-none text-break" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
-								Loading...
 							</a>
 							<span class="px-1 text-lighter">
 								·
@@ -61,7 +60,6 @@
 				</div>
 				<div class="pl-2">
 					<a class="username font-weight-bold text-dark text-decoration-none text-break" v-bind:href="profileUrl(status)" v-html="statusCardUsernameFormat(status)">
-						Loading...
 					</a>
 					<span v-if="status.account.is_admin" class="fa-stack" title="Admin Account" data-toggle="tooltip" style="height:1em; line-height:1em; max-width:19px;">
 						<i class="fas fa-certificate text-danger fa-stack-1x"></i>
