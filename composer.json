@@ -20,6 +20,7 @@
 		"doctrine/dbal": "^3.0",
 		"intervention/image": "^2.4",
 		"jenssegers/agent": "^2.6",
+		"laravel-notification-channels/webpush": "^7.1",
 		"laravel/framework": "^10.0",
 		"laravel/helpers": "^1.1",
 		"laravel/horizon": "^5.0",
