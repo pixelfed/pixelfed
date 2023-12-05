@@ -460,7 +460,7 @@ export default {
 				})
 				.then(res => {
 					self.postsList = res.data.filter(l => {
-						return self.ids.indexOf(l.id) == -1;
+						return  (l.visibility == 'public' || l.visibility == 'unlisted') && l.sensitive == false && self.ids.indexOf(l.id) == -1; 
 					});
 					self.loadingPostList = false;
 					self.$refs.addPhotoModal.show();
