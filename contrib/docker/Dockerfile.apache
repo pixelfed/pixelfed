@@ -8,80 +8,78 @@ WORKDIR /var/www/
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Install package dependencies
-RUN apt-get update \
-  && apt-get upgrade -y \
-#  && apt-get install -y --no-install-recommends apt-utils \
-  && apt-get install -y --no-install-recommends \
-## Standard
-      locales \
-      locales-all \
-      git \
-      gosu \
-      zip \
-      unzip \
-      libzip-dev \
-      libcurl4-openssl-dev \
-## Image Optimization
-      optipng \
-      pngquant \
-      jpegoptim \
-      gifsicle \
-## Image Processing
-      libjpeg62-turbo-dev \
-      libpng-dev \
-      libmagickwand-dev \
-# Required for GD
-      libxpm4 \
-      libxpm-dev \
-      libwebp7 \
-      libwebp-dev \
-## Video Processing
-      ffmpeg \
-## Database
-#      libpq-dev \
-#      libsqlite3-dev \
-      mariadb-client \
-# Locales Update
+RUN \
+  # Apt update & upgrade to check for security updates to Debian image
+  apt-get update; \
+  apt-get dist-upgrade -yq; \
+  # Install necessary components
+  apt-get install -y --no-install-recommends \
+  ## Standard
+  wget \
+  locales \
+  locales-all \
+  git \
+  gosu \
+  zip \
+  unzip \
+  libzip-dev \
+  libcurl4-openssl-dev \
+  ## Image Optimization
+  optipng \
+  pngquant \
+  jpegoptim \
+  gifsicle \
+  ## Image Processing
+  libjpeg62-turbo-dev \
+  libpng-dev \
+  libmagickwand-dev \
+  # Required for GD
+  libxpm4 \
+  libxpm-dev \
+  libwebp-dev \
+  ## Video Processing
+  ffmpeg \
+  ## Database
+  libpq-dev \
+  libsqlite3-dev \
+  mariadb-client \
+  # Locales Update
   && sed -i '/en_US/s/^#//g' /etc/locale.gen \
   && locale-gen \
   && update-locale \
-# Install PHP extensions
+  # Install PHP extensions
   && docker-php-source extract \
-#PHP Imagemagick extensions
+  #PHP Imagemagick extensions
   && pecl install imagick \
   && docker-php-ext-enable imagick \
-# PHP GD extensions
+  # PHP GD extensions
   && docker-php-ext-configure gd \
-      --with-freetype \
-      --with-jpeg \
-      --with-webp \
-      --with-xpm \
+  --with-freetype \
+  --with-jpeg \
+  --with-webp \
+  --with-xpm \
   && docker-php-ext-install -j$(nproc) gd \
-#PHP Redis extensions
+  #PHP Redis extensions
   && pecl install redis \
   && docker-php-ext-enable redis \
-#PHP Database extensions
+  #PHP Database extensions
   && docker-php-ext-install pdo_mysql \
-#pdo_pgsql pdo_sqlite \
-#PHP extensions (dependencies)
+  #pdo_pgsql pdo_sqlite \
+  #PHP extensions (dependencies)
   && docker-php-ext-configure intl \
   && docker-php-ext-install -j$(nproc) intl bcmath zip pcntl exif curl \
-#APACHE Bootstrap
+  #APACHE Bootstrap
   && a2enmod rewrite remoteip \
- && {\
-     echo RemoteIPHeader X-Real-IP ;\
-     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
-     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
-     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
-     echo SetEnvIf X-Forwarded-Proto "https" HTTPS=on ;\
-    } > /etc/apache2/conf-available/remoteip.conf \
- && a2enconf remoteip \
-#Cleanup
-  && docker-php-source delete \
-  && apt-get autoremove --purge -y \
-  && apt-get clean \
-  && rm -rf /var/cache/apt \
-  && rm -rf /var/lib/apt/lists/
+  && {\
+  echo RemoteIPHeader X-Real-IP ;\
+  echo RemoteIPTrustedProxy 10.0.0.0/8 ;\
+  echo RemoteIPTrustedProxy 172.16.0.0/12 ;\
+  echo RemoteIPTrustedProxy 192.168.0.0/16 ;\
+  echo SetEnvIf X-Forwarded-Proto "https" HTTPS=on ;\
+  } > /etc/apache2/conf-available/remoteip.conf \
+  && a2enconf remoteip \
+  #Cleanup
+  && docker-php-source delete
 
 # Use the default production configuration
 COPY contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
