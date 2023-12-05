@@ -124,12 +124,15 @@ class FederationController extends Controller
             return redirect('/' . $username);
         }
 
+        $id = AccountService::usernameToId($username);
+        abort_if(!$id, 404);
+        $account = AccountService::get($id);
+        abort_if(!$account || !isset($account['statuses_count']), 404);
         $res = [
             '@context' => 'https://www.w3.org/ns/activitystreams',
             'id' => 'https://' . config('pixelfed.domain.app') . '/users/' . $username . '/outbox',
             'type' => 'OrderedCollection',
-            'totalItems' => 0,
-            'orderedItems' => []
+            'totalItems' => $account['statuses_count'] ?? 0,
         ];
 
         return response(json_encode($res, JSON_UNESCAPED_SLASHES))->header('Content-Type', 'application/activity+json');
