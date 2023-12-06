@@ -183,16 +183,9 @@ class Helpers {
                 return false;
             }
 
-            // a valid URL could contain '://' twice like in a webfinger URL for a web resource
-            // "exactly once" is true in case of Mastodon, but not in all cases
-            // e.g. https://example.tld/.well-known/webfinger?resource=https://example.tld/user/joe is correct
-            // so the generic test should be "at least once"
-            // now this test becomes redundant given the check just above for "https://"
-            /*
             if(substr_count($url, '://') !== 1) {
                 return false;
             }
-            */
 
             if(mb_substr($url, 0, 8) !== 'https://') {
                 $url = 'https://' . substr($url, 8);

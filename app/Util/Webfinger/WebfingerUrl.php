@@ -31,8 +31,11 @@ class WebfingerUrl
                     return false;
                 }
             }
+            $resource = urlencode($resource);
 
         }
+
+        \Log::debug('WebfingerUrl generated resource = ' . $resource);
 
         $path = "https://{$domain}/.well-known/webfinger?resource={$resource}";
         return $path;
