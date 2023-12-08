@@ -63,6 +63,9 @@
 - Update StoryApiV1Controller, add self-carousel endpoint. Fixes ([#4352](https://github.com/pixelfed/pixelfed/issues/4352)) ([bcb88d5b](https://github.com/pixelfed/pixelfed/commit/bcb88d5b))
 - Update FollowServiceWarmCache, use more efficient query ([fe9b4c5a](https://github.com/pixelfed/pixelfed/commit/fe9b4c5a))
 - Update HomeFeedPipeline, observe mutes/blocks during fanout ([8548294c](https://github.com/pixelfed/pixelfed/commit/8548294c))
+- Update FederationController, add proper following/follower counts ([3204fb96](https://github.com/pixelfed/pixelfed/commit/3204fb96))
+- Update FederationController, add proper statuses counts ([3204fb96](https://github.com/pixelfed/pixelfed/commit/3204fb96))
+- Update Inbox handler, fix missing object_url and uri fields for direct statuses ([a0157fce](https://github.com/pixelfed/pixelfed/commit/a0157fce))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
