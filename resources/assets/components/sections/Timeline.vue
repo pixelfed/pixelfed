@@ -186,7 +186,8 @@
                 sharesModalPost: {},
                 forceUpdateIdx: 0,
                 showReblogBanner: false,
-                enablingReblogs: false
+                enablingReblogs: false,
+                baseApi: '/api/v1/pixelfed/timelines/',
             }
         },
 
@@ -200,6 +201,10 @@
                     swal('Error', 'Cannot load this timeline', 'error');
                     return;
                 };
+            }
+            if(window.App.config.ab.hasOwnProperty('cached_home_timeline')) {
+                const cht = window.App.config.ab.cached_home_timeline == true;
+                this.baseApi = cht ? '/api/v1/timelines/' : '/api/pixelfed/v1/timelines/';
             }
             this.fetchSettings();
         },
@@ -247,7 +252,7 @@
             fetchTimeline(scrollToTop = false) {
                 let url, params;
                 if(this.getScope() === 'home' && this.settings && this.settings.hasOwnProperty('enable_reblogs') && this.settings.enable_reblogs) {
-                    url = `/api/v1/timelines/home`;
+                    url = this.baseApi + `home`;
                     params = {
                         '_pe': 1,
                         max_id: this.max_id,
@@ -255,11 +260,16 @@
                         include_reblogs: true,
                     }
                 } else {
-                    url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
+                    url = this.baseApi + this.getScope();
                     params = {
                         max_id: this.max_id,
                         limit: 6,
+                        '_pe': 1,
                     }
+                }
+                if(this.getScope() === 'network') {
+                    params.remote = true;
+                    url = this.baseApi + `public`;
                 }
                 axios.get(url, {
                     params: params
@@ -278,7 +288,7 @@
                     this.max_id = Math.min(...ids);
                     this.feed = res.data;
 
-                    if(res.data.length !== 6) {
+                    if(res.data.length < 4) {
                         this.canLoadMore = false;
                         this.showLoadMore = true;
                     }
@@ -306,7 +316,8 @@
 
                 let url, params;
                 if(this.getScope() === 'home' && this.settings && this.settings.hasOwnProperty('enable_reblogs') && this.settings.enable_reblogs) {
-                    url = `/api/v1/timelines/home`;
+                    url = this.baseApi + `home`;
+
                     params = {
                         '_pe': 1,
                         max_id: this.max_id,
@@ -314,11 +325,17 @@
                         include_reblogs: true,
                     }
                 } else {
-                    url = `/api/pixelfed/v1/timelines/${this.getScope()}`;
+                    url = this.baseApi + this.getScope();
                     params = {
                         max_id: this.max_id,
                         limit: 6,
+                        '_pe': 1,
                     }
+                }
+                if(this.getScope() === 'network') {
+                    params.remote = true;
+                    url = this.baseApi + `public`;
+
                 }
                 axios.get(url, {
                     params: params
