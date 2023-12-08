@@ -713,8 +713,10 @@ class Inbox
 						if(!$status) {
 							return;
 						}
-						if($status->scope && $status->scope != 'direct') {
-							FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+						if($status->scope && in_array($status->scope, ['public', 'unlisted', 'private'])) {
+							if($status->type && !in_array($status->type, ['story:reaction', 'story:reply', 'reply'])) {
+								FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+							}
 						}
 						RemoteStatusDelete::dispatch($status)->onQueue('high');
 						return;
@@ -985,9 +987,18 @@ class Inbox
 			return;
 		}
 
+		$url = $id;
+
+		if(str_ends_with($url, '/activity')) {
+			$url = substr($url, 0, -9);
+		}
+
 		$status = new Status;
 		$status->profile_id = $actorProfile->id;
 		$status->type = 'story:reaction';
+		$status->url = $url;
+		$status->uri = $url;
+		$status->object_url = $url;
 		$status->caption = $text;
 		$status->rendered = $text;
 		$status->scope = 'direct';
@@ -1094,11 +1105,20 @@ class Inbox
 			return;
 		}
 
+		$url = $id;
+
+		if(str_ends_with($url, '/activity')) {
+			$url = substr($url, 0, -9);
+		}
+
 		$status = new Status;
 		$status->profile_id = $actorProfile->id;
 		$status->type = 'story:reply';
 		$status->caption = $text;
 		$status->rendered = $text;
+		$status->url = $url;
+		$status->uri = $url;
+		$status->object_url = $url;
 		$status->scope = 'direct';
 		$status->visibility = 'direct';
 		$status->in_reply_to_profile_id = $story->profile_id;
