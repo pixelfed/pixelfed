@@ -1347,6 +1347,7 @@ export default {
 
 						if(count.length) {
 							swal('Missing media descriptions', 'You have enabled mandatory media descriptions. Please add media descriptions under Advanced settings to proceed. For more information, please see the media settings page.', 'warning');
+							this.isPosting = false;
 							return;
 						}
 					}
