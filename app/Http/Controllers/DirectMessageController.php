@@ -23,6 +23,8 @@ use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\WebfingerService;
 use App\Models\Conversation;
+use App\Jobs\DirectPipeline\DirectDeletePipeline;
+use App\Jobs\DirectPipeline\DirectDeliverPipeline;
 
 class DirectMessageController extends Controller
 {
@@ -829,13 +831,13 @@ class DirectMessageController extends Controller
 			]
 		];
 
-		Helpers::sendSignedObject($profile, $url, $body);
+		DirectDeliverPipeline::dispatch($profile, $url, $body)->onQueue('high');
 	}
 
 	public function remoteDelete($dm)
 	{
 		$profile = $dm->author;
-		$url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
+		$url = $dm->recipient->inbox_url;
 
 		$body = [
 			'@context' => [
@@ -852,7 +854,6 @@ class DirectMessageController extends Controller
 				'type' => 'Tombstone'
 			]
 		];
-
-		Helpers::sendSignedObject($profile, $url, $body);
+		DirectDeletePipeline::dispatch($profile, $url, $body)->onQueue('high');
 	}
 }
