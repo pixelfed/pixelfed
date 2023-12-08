@@ -835,7 +835,7 @@ class DirectMessageController extends Controller
 	public function remoteDelete($dm)
 	{
 		$profile = $dm->author;
-		$url = $dm->recipient->sharedInbox ?? $dm->recipient->inbox_url;
+		$url = $dm->recipient->inbox_url;
 
 		$body = [
 			'@context' => [
