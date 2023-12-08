@@ -79,7 +79,6 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 
         HomeTimelineService::add($this->pid, $this->sid);
 
-
         $ids = FollowerService::localFollowerIds($this->pid);
 
         if(!$ids || !count($ids)) {
