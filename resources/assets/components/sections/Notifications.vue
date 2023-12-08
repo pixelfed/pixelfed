@@ -87,12 +87,12 @@
 									</div>
 									<div v-else-if="n.type == 'story:react'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> reacted to your <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">story</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'story:comment'">
 										<p class="my-0">
-											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/account/direct/t/'+n.account.id">story</a>.
+											<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.acct">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="'/i/web/direct/thread/'+n.account.id">story</a>.
 										</p>
 									</div>
 									<div v-else-if="n.type == 'mention'">
@@ -216,7 +216,7 @@
 
 		methods: {
 			init() {
-				if(this.retryAttempts == 3) {
+				if(this.retryAttempts == 1) {
 					this.hasLoaded = true;
 					this.isEmpty = true;
 					clearTimeout(this.retryTimeout);

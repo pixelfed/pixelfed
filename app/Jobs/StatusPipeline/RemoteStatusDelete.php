@@ -40,6 +40,7 @@ use App\Services\CollectionService;
 use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
+use App\Services\NotificationService;
 
 class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -137,14 +138,34 @@ class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
                 CollectionService::removeItem($col->collection_id, $col->object_id);
                 $col->delete();
         });
-        DirectMessage::whereStatusId($status->id)->delete();
+        $dms = DirectMessage::whereStatusId($status->id)->get();
+        foreach($dms as $dm) {
+            $not = Notification::whereItemType('App\DirectMessage')
+                ->whereItemId($dm->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $dm->delete();
+        }
         Like::whereStatusId($status->id)->forceDelete();
         Media::whereStatusId($status->id)
         ->get()
         ->each(function($media) {
             MediaDeletePipeline::dispatch($media)->onQueue('mmo');
         });
-        MediaTag::where('status_id', $status->id)->delete();
+        $mediaTags = MediaTag::where('status_id', $status->id)->get();
+        foreach($mediaTags as $mtag) {
+            $not = Notification::whereItemType('App\MediaTag')
+                ->whereItemId($mtag->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $mtag->delete();
+        }
         Mention::whereStatusId($status->id)->forceDelete();
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)

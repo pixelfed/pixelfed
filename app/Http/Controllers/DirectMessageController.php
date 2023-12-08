@@ -17,6 +17,7 @@ use App\{
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Jobs\StatusPipeline\StatusDelete;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Services\AccountService;
@@ -502,6 +503,8 @@ class DirectMessageController extends Controller
 		if($recipient['local'] == false) {
 			$dmc = $dm;
 			$this->remoteDelete($dmc);
+		} else {
+			StatusDelete::dispatch($status)->onQueue('high');
 		}
 
 		if(Conversation::whereStatusId($sid)->count()) {
@@ -542,9 +545,6 @@ class DirectMessageController extends Controller
 		}
 
 		StatusService::del($status->id, true);
-
-		$status->delete();
-		$dm->delete();
 
 		return [200];
 	}
