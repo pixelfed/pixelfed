@@ -282,8 +282,8 @@ class Inbox
 		}
 
 		if($actor->followers_count == 0) {
-            if(config('federation.activitypub.ingest.store_notes_without_followers')) {
-            } else if(FollowerService::followerCount($actor->id, true) == 0) {
+			if(config('federation.activitypub.ingest.store_notes_without_followers')) {
+			} else if(FollowerService::followerCount($actor->id, true) == 0) {
 				return;
 			}
 		}
@@ -401,6 +401,8 @@ class Inbox
 		$status->visibility = 'direct';
 		$status->scope = 'direct';
 		$status->url = $activity['id'];
+		$status->uri = $activity['id'];
+		$status->object_url = $activity['id'];
 		$status->in_reply_to_profile_id = $profile->id;
 		$status->save();
 
@@ -703,12 +705,17 @@ class Inbox
 							return;
 						}
 						$status = Status::whereProfileId($profile->id)
-							->whereObjectUrl($id)
+							->where(function($q) use($id) {
+								return $q->where('object_url', $id)
+									->orWhere('url', $id);
+							})
 							->first();
 						if(!$status) {
 							return;
 						}
-						FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+						if($status->scope && $status->scope != 'direct') {
+							FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
+						}
 						RemoteStatusDelete::dispatch($status)->onQueue('high');
 						return;
 					break;
