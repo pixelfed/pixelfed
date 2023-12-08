@@ -546,6 +546,7 @@ class DirectMessageController extends Controller
 
 		StatusService::del($status->id, true);
 
+		$status->forceDeleteQuietly();
 		return [200];
 	}
 
