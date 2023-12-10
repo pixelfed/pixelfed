@@ -77,7 +77,7 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
         $sid = $hashtag->status_id;
         $status = StatusService::get($sid, false);
 
-        if(!$status) {
+        if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
             return;
         }
 

@@ -69,7 +69,7 @@ class FeedInsertPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
         $sid = $this->sid;
         $status = StatusService::get($sid, false);
 
-        if(!$status) {
+        if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
             return;
         }
 
