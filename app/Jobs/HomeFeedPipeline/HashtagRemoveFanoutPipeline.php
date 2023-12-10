@@ -71,7 +71,7 @@ class HashtagRemoveFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
         $hid = $this->hid;
         $status = StatusService::get($sid, false);
 
-        if(!$status) {
+        if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
             return;
         }
 
