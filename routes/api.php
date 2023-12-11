@@ -111,12 +111,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
     });
 
     Route::group(['prefix' => 'v1.1'], function() use($middleware) {
-        $reportMiddleware = $middleware;
-        $reportMiddleware[] = DeprecatedEndpoint::class;
-        Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($reportMiddleware);
+        Route::post('report', 'Api\ApiV1Dot1Controller@report')->middleware($middleware);
 
         Route::group(['prefix' => 'accounts'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('timelines/home', 'Api\ApiV1Controller@timelineHome')->middleware($middleware);
             Route::delete('avatar', 'Api\ApiV1Dot1Controller@deleteAvatar')->middleware($middleware);
             Route::get('{id}/posts', 'Api\ApiV1Dot1Controller@accountPosts')->middleware($middleware);
@@ -125,10 +122,10 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
             Route::get('two-factor', 'Api\ApiV1Dot1Controller@accountTwoFactor')->middleware($middleware);
             Route::get('emails-from-pixelfed', 'Api\ApiV1Dot1Controller@accountEmailsFromPixelfed')->middleware($middleware);
             Route::get('apps-and-applications', 'Api\ApiV1Dot1Controller@accountApps')->middleware($middleware);
+            Route::get('mutuals/{id}', 'Api\ApiV1Dot1Controller@getMutualAccounts')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'collections'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('accounts/{id}', 'CollectionController@getUserCollections')->middleware($middleware);
             Route::get('items/{id}', 'CollectionController@getItems')->middleware($middleware);
             Route::get('view/{id}', 'CollectionController@getCollection')->middleware($middleware);
@@ -139,7 +136,6 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         });
 
         Route::group(['prefix' => 'direct'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('thread', 'DirectMessageController@thread')->middleware($middleware);
             Route::post('thread/send', 'DirectMessageController@create')->middleware($middleware);
             Route::delete('thread/message', 'DirectMessageController@delete')->middleware($middleware);
@@ -151,19 +147,16 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         });
 
         Route::group(['prefix' => 'archive'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::post('add/{id}', 'Api\ApiV1Dot1Controller@archive')->middleware($middleware);
             Route::post('remove/{id}', 'Api\ApiV1Dot1Controller@unarchive')->middleware($middleware);
             Route::get('list', 'Api\ApiV1Dot1Controller@archivedPosts')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'places'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('posts/{id}/{slug}', 'Api\ApiV1Dot1Controller@placesById')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'stories'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('carousel', 'Stories\StoryApiV1Controller@carousel')->middleware($middleware);
             Route::post('add', 'Stories\StoryApiV1Controller@add')->middleware($middleware);
             Route::post('publish', 'Stories\StoryApiV1Controller@publish')->middleware($middleware);
@@ -173,20 +166,17 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         });
 
         Route::group(['prefix' => 'compose'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('search/location', 'ComposeController@searchLocation')->middleware($middleware);
             Route::get('settings', 'ComposeController@composeSettings')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'discover'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('accounts/popular', 'Api\ApiV1Controller@discoverAccountsPopular')->middleware($middleware);
             Route::get('posts/trending', 'DiscoverController@trendingApi')->middleware($middleware);
             Route::get('posts/hashtags', 'DiscoverController@trendingHashtags')->middleware($middleware);
         });
 
         Route::group(['prefix' => 'directory'], function () use($middleware) {
-            $middleware[] = DeprecatedEndpoint::class;
             Route::get('listing', 'PixelfedDirectoryController@get');
         });
 

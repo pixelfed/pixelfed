@@ -20,6 +20,7 @@ use App\StatusArchived;
 use App\User;
 use App\UserSetting;
 use App\Services\AccountService;
+use App\Services\FollowerService;
 use App\Services\StatusService;
 use App\Services\ProfileStatusService;
 use App\Services\LikeService;
@@ -896,5 +897,20 @@ class ApiV1Dot1Controller extends Controller
         $settings->save();
 
         return [200];
+    }
+
+    public function getMutualAccounts(Request $request, $id)
+    {
+        abort_if(!$request->user(), 403);
+        $account = AccountService::get($id, true);
+        if(!$account || !isset($account['id'])) { return []; }
+        $res = collect(FollowerService::mutualAccounts($request->user()->profile_id, $id))
+            ->map(function($accountId) {
+                return AccountService::get($accountId, true);
+            })
+            ->filter()
+            ->take(24)
+            ->values();
+        return $this->json($res);
     }
 }
