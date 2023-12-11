@@ -77,6 +77,7 @@
 - Update PhotoAlbumPresenter.vue, fix fullscreen mode ([822e9888](https://github.com/pixelfed/pixelfed/commit/822e9888))
 - Update Timeline.vue, improve CHT pagination ([9c43e7e2](https://github.com/pixelfed/pixelfed/commit/9c43e7e2))
 - Update HomeFeedPipeline, fix StatusService validation ([041c0135](https://github.com/pixelfed/pixelfed/commit/041c0135))
+- Update Inbox, improve tombstone query efficiency ([759a4393](https://github.com/pixelfed/pixelfed/commit/759a4393))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)

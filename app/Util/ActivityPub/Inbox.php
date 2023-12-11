@@ -404,7 +404,7 @@ class Inbox
         $status->uri = $activity['id'];
         $status->object_url = $activity['id'];
         $status->in_reply_to_profile_id = $profile->id;
-        $status->save();
+        $status->saveQuietly();
 
         $dm = new DirectMessage;
         $dm->to_id = $profile->id;
@@ -704,13 +704,15 @@ class Inbox
                         if(!$profile || $profile->private_key != null) {
                             return;
                         }
-                        $status = Status::whereProfileId($profile->id)
-                            ->where(function($q) use($id) {
-                                return $q->where('object_url', $id)
-                                    ->orWhere('url', $id);
-                            })
-                            ->first();
+
+                        $status = Status::where('object_url', $id)->first();
                         if(!$status) {
+                            $status = Status::where('url', $id)->first();
+                            if(!$status) {
+                                return;
+                            }
+                        }
+                        if($status->profile_id != $profile->id) {
                             return;
                         }
                         if($status->scope && in_array($status->scope, ['public', 'unlisted', 'private'])) {
