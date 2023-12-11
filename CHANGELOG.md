@@ -11,6 +11,7 @@
 - Experimental home feed ([#4752](https://github.com/pixelfed/pixelfed/pull/4752)) ([c39b9afb](https://github.com/pixelfed/pixelfed/commit/c39b9afb))
 - Added `app:hashtag-cached-count-update` command to update cached_count of hashtags and add to scheduler to run every 25 minutes past the hour ([1e31fee6](https://github.com/pixelfed/pixelfed/commit/1e31fee6))
 - Added `app:hashtag-related-generate` command to generate related hashtags ([176b4ed7](https://github.com/pixelfed/pixelfed/commit/176b4ed7))
+- Added Mutual Followers API endpoint ([33dbbe46](https://github.com/pixelfed/pixelfed/commit/33dbbe46))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
@@ -75,6 +76,7 @@
 - Update ComposeModal, fix missing alttext post state ([0a068119](https://github.com/pixelfed/pixelfed/commit/0a068119))
 - Update PhotoAlbumPresenter.vue, fix fullscreen mode ([822e9888](https://github.com/pixelfed/pixelfed/commit/822e9888))
 - Update Timeline.vue, improve CHT pagination ([9c43e7e2](https://github.com/pixelfed/pixelfed/commit/9c43e7e2))
+- Update HomeFeedPipeline, fix StatusService validation ([041c0135](https://github.com/pixelfed/pixelfed/commit/041c0135))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
