@@ -3,8 +3,8 @@
 		<div class="profile-hover-card-inner">
 			<div class="d-flex justify-content-between align-items-start" style="max-width: 240px;">
 				<a
-					:href="profile.url"
-					@click.prevent="goToProfile()">
+					:href="canEditProfile && profile.url"
+					@click.prevent="canEditProfile && goToProfile()">
 					<img
 						:src="profile.avatar"
 						width="50"
@@ -13,11 +13,11 @@
 						onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';">
 				</a>
 
-				<div v-if="user.id == profile.id">
+				<div v-if="canEditProfile && (user.id == profile.id)">
 					<a class="btn btn-outline-primary px-3 py-1 font-weight-bold rounded-pill" href="/settings/home">Edit Profile</a>
 				</div>
 
-				<div v-if="user.id != profile.id && relationship">
+				<div v-if="canUpdateFollowing && (user.id != profile.id && relationship)">
 					<button
 						v-if="relationship.following"
 						class="btn btn-outline-primary px-3 py-1 font-weight-bold rounded-pill"
@@ -42,17 +42,17 @@
 
 			<p class="display-name">
 				<a
-					:href="profile.url"
-					@click.prevent="goToProfile()"
+					:href="canOpenRemoteProfile && profile.url"
+					@click.prevent="canOpenRemoteProfile && goToProfile()"
 					v-html="getDisplayName()">
 				</a>
 			</p>
 
 			<div class="username">
 				<a
-					:href="profile.url"
+					:href="canOpenRemoteProfile && profile.url"
 					class="username-link"
-					@click.prevent="goToProfile()">
+					@click.prevent="canOpenRemoteProfile && goToProfile()">
 					&commat;{{ getUsername() }}
 				</a>
 
@@ -106,7 +106,10 @@
 				user: window._sharedData.user,
 				bio: undefined,
 				isLoading: false,
-				relationship: undefined
+				relationship: undefined,
+				canEditProfile: true,
+				canUpdateFollowing: true,
+				canOpenRemoteProfile: true
 			};
 		},
 
@@ -123,6 +126,12 @@
 					this.relationship = res.data[0];
 					this.$store.commit('updateRelationship', res.data);
 				})
+			}
+
+			if (this.user.register_source == 'owa') {
+				this.canEditProfile = false;
+				this.canUpdateFollowing = false;
+				this.canOpenRemoteProfile = false;
 			}
 		},
 

@@ -230,7 +230,7 @@
 													</div>
 												</router-link>
 
-												<router-link class="nav-link text-center px-3" :to="'/i/web/profile/' + user.id">
+												<router-link v-if="canEditProfile" class="nav-link text-center px-3" :to="'/i/web/profile/' + user.id">
 													<div class="icon text-lighter">
 														<i class="far fa-user"></i>
 													</div>
@@ -240,7 +240,7 @@
 											<hr class="mb-0" style="margin-top: -5px;opacity: 0.4;" />
 										</li>
 
-										<li class="nav-item">
+										<li v-if="canCompose" class="nav-item">
 											<router-link class="nav-link" to="/i/web/compose">
 												<span class="icon text-lighter"><i class="far fa-plus-square"></i></span>
 												{{ $t('navmenu.compose') }}
@@ -254,7 +254,7 @@
 											</router-link>
 										</li> -->
 
-										<li class="nav-item">
+										<li v-if="canAccessDirectMessages" class="nav-item">
 											<router-link class="nav-link d-flex justify-content-between align-items-center" to="/i/web/direct">
 												<span>
 													<span class="icon text-lighter">
@@ -305,7 +305,7 @@
 											</a>
 										</li>
 
-										<li class="nav-item">
+										<li v-if="canSwitchToOldUI" class="nav-item">
 											<hr class="mt-n1" style="opacity: 0.4;margin-bottom: 0;" />
 											<a class="nav-link" href="/">
 												<span class="icon text-lighter">
@@ -446,7 +446,12 @@
 				user: window._sharedData.user,
 				profileLayoutModel: 'grid',
 				hasLocalTimeline: true,
-				hasNetworkTimeline: false
+				hasNetworkTimeline: false,
+				canEditProfile: true,
+				canCompose: true,
+				canViewDirectMessages: true,
+				canSwitchToOldUI: true,
+				canAccessDirectMessages: true 
 			}
 		},
 
@@ -526,6 +531,14 @@
 			}
 
 			this.brandName = window.App.config.site.name;
+
+			if (this.user.register_source == 'owa') {
+				this.canEditProfile = false;
+				this.canCompose = false;
+				this.canViewDirectMessages = false;
+				this.canSwitchToOldUI = false;
+				this.canAccessDirectMessages = false;
+			} 
 		},
 
 		methods: {

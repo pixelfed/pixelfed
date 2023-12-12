@@ -6,8 +6,8 @@
 			<div class="card-body p-2">
 				<div class="media user-card user-select-none">
 					<div style="position: relative;">
-						<img :src="user.avatar" class="avatar shadow cursor-pointer" draggable="false" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';" @click="gotoMyProfile()">
-						<button class="btn btn-light btn-sm avatar-update-btn" @click="updateAvatar()">
+						<img :src="user.avatar" :class="canEditProfile ? 'avatar shadow cursor-pointer' : 'avatar shadow'" draggable="false" onerror="this.onerror=null;this.src='/storage/avatars/default.png?v=0';" @click="canEditProfile && gotoMyProfile()">
+						<button v-if="canUpdateAvatar" class="btn btn-light btn-sm avatar-update-btn" @click="updateAvatar()">
 							<span class="avatar-update-btn-icon"></span>
 						</button>
 					</div>
@@ -27,7 +27,7 @@
 			</div>
 		</div>
 
-		<div class="btn-group btn-group-lg btn-block mb-4">
+		<div v-if="canCompose" class="btn-group btn-group-lg btn-block mb-4">
 			<!-- <button type="button" class="btn btn-outline-primary btn-block font-weight-bold" style="border-top-left-radius: 18px;border-bottom-left-radius:18px;font-size:18px;font-weight:300!important" @click="createNewPost()">
 				<i class="fal fa-arrow-circle-up mr-1"></i> {{ $t('navmenu.compose') }} Post
 			</button> -->
@@ -119,7 +119,7 @@
 					</router-link>
 				</li>
 
-				<li class="nav-item">
+				<li v-if="canViewDirectMessages" class="nav-item">
 					<router-link class="nav-link d-flex justify-content-between align-items-center" to="/i/web/direct">
 						<span>
 							<span class="icon text-lighter">
@@ -163,7 +163,7 @@
 					</router-link>
 				</li>
 
-				<li class="nav-item">
+				<li v-if="canEditProfile" class="nav-item">
 					<hr class="mt-n1" style="opacity: 0.4;margin-bottom: 0;" />
 
 					<router-link class="nav-link" :to="'/i/web/profile/' + user.id">
@@ -214,7 +214,7 @@
 					</a>
 				</li>
 
-				<li class="nav-item">
+				<li v-if="canSwitchToOldUI" class="nav-item">
 					<hr class="mt-n1" style="opacity: 0.4;margin-bottom: 0;" />
 					<a class="nav-link" href="/?force_old_ui=1">
 						<span class="icon text-lighter">
@@ -426,6 +426,11 @@
 				hasNetworkTimeline: false,
 				hasLiveStreams: false,
                 hasStories: false,
+				canEditProfile: true,
+				canUpdateAvatar: true,
+				canCompose: true,
+				canViewDirectMessages: true,
+				canSwitchToOldUI: true,
 			}
 		},
 
@@ -438,6 +443,14 @@
             if(window.App.config.features.hasOwnProperty('stories')) {
                 this.hasStories = App.config.features.stories;
             }
+			if (this.user.register_source == 'owa') {
+				this.canEditProfile = false;
+				this.canUpdateAvatar = false;
+				this.canCompose = false;
+				this.canViewDirectMessages = false;
+				this.hasLiveStreams = false;
+				this.canSwitchToOldUI = false;
+			} 
 			// if(!this.user.username) {
 			// 	this.user = window._sharedData.user;
 			// }
