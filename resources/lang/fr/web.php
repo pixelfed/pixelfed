@@ -4,7 +4,7 @@ return [
 
 	'common' => [
 		'comment' => 'Commenter',
-		'commented' => 'Commentaires',
+		'commented' => 'Commenté',
 		'comments' => 'Commentaires',
 		'like' => 'J\'aime',
 		'liked' => 'Aimé',
@@ -13,21 +13,21 @@ return [
 		'shared' => 'Partagé',
 		'shares' => 'Partages',
 		'unshare' => 'Ne plus partager',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Marque-page',
 
 		'cancel' => 'Annuler',
 		'copyLink' => 'Copier le lien',
 		'delete' => 'Supprimer',
 		'error' => 'Erreur',
 		'errorMsg' => 'Une erreur est survenue. Veuillez réessayer plus tard.',
-		'oops' => 'Zut !',
+		'oops' => 'Oups !',
 		'other' => 'Autre',
 		'readMore' => 'En savoir plus',
-		'success' => 'Opération réussie',
+		'success' => 'Succès',
 		'proceed' => 'Continuer',
 		'next' => 'Suivant',
 		'close' => 'Fermer',
-		'clickHere' => 'cliquer ici',
+		'clickHere' => 'cliquez ici',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenu sensible',
@@ -202,7 +202,7 @@ return [
 		'reported' => 'Signalé',
 		'sendingReport' => 'Envoi du signalement',
 		'thanksMsg' => 'Merci pour votre signalement, les gens comme vous aident à assurer la sécurité de notre communauté !',
-		'contactAdminMsg' => 'Si vous souhaitez contacter un administrateur à propos de cette publication ou de ce signalement',
+		'contactAdminMsg' => 'Si vous souhaitez contacter un·e administrateur·trice à propos de cette publication ou de ce signalement',
 	],
 
 ];
