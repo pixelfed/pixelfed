@@ -3,35 +3,35 @@
 return [
 
 	'common' => [
-		'comment' => 'Comentario',
+		'comment' => 'Comentar',
 		'commented' => 'Comentado',
 		'comments' => 'Comentarios',
 		'like' => 'Me gusta',
 		'liked' => 'Te gusta',
-		'likes' => 'Me gustas',
+		'likes' => 'Me gusta',
 		'share' => 'Compartir',
 		'shared' => 'Compartido',
 		'shares' => 'Compartidos',
 		'unshare' => 'No compartir',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Marcador',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar Enlace',
 		'delete' => 'Eliminar',
 		'error' => 'Error',
-		'errorMsg' => 'Algo fue mal. Por favor inténtelo de nuevo más tarde.',
+		'errorMsg' => 'Algo salió mal. Por favor inténtalo de nuevo más tarde.',
 		'oops' => 'Upss!',
 		'other' => 'Otros',
 		'readMore' => 'Ver más',
 		'success' => 'Correcto',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Proceder',
+		'next' => 'Siguiente',
+		'close' => 'Cerrar',
+		'clickHere' => 'haz click aquí',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contenido Sensible',
-		'sensitiveContentWarning' => 'Este post podría tener contenido sensible',
+		'sensitiveContentWarning' => 'Esta publicación podría contener contenido sensible',
 	],
 
 	'site' => [
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'No se han encontrado notificaciones',
 	],
 
 	'post' => [
@@ -147,8 +147,8 @@ return [
 		'sensitive' => 'Contenido Sensible',
 		'abusive' => 'Abusivo o Dañino',
 		'underageAccount' => 'Cuenta de Menor de Edad',
-		'copyrightInfringement' => 'Violación de Copyright',
-		'impersonation' => 'Suplantación',
+		'copyrightInfringement' => 'Infracción de derechos de autor',
+		'impersonation' => 'Suplantación de identidad',
 		'scamOrFraud' => 'Scam o Fraude',
 		'confirmReport' => 'Confirmar Reporte',
 		'confirmReportText' => '¿Seguro que quieres reportar esta publicación?',
@@ -172,8 +172,8 @@ return [
 		'compactMode' => 'Modo Compacto',
 		'embedConfirmText' => 'Usando este incrustado, usted acepta',
 
-		'deletePostConfirm' => '¿Seguro que desea eliminar esta publicación?',
-		'archivePostConfirm' => '¿Seguro que desea archivar esta publicación?',
+		'deletePostConfirm' => '¿Seguro que deseas eliminar esta publicación?',
+		'archivePostConfirm' => '¿Seguro que deseas archivar esta publicación?',
 		'unarchivePostConfirm' => '¿Seguro que desea desarchivar esta publicación?',
 	],
 
@@ -182,13 +182,13 @@ return [
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'Gente que podrías conocer',
+		'peopleYouMayKnow' => 'Personas que quizás conozcas',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Bienvenido/a',
+			'thisIsYourHomeFeed' => 'Este es tu cronología principal, que muestra de manera cronológica las publicaciones de cuentas que sigues.',
+			'letUsHelpYouFind' => 'Déjanos ayudarte a encontrar algunas personas interesantes para seguir',
+			'refreshFeed' => 'Actualizar mi cronología',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Reportar',
+		'selectReason' => 'Seleccionar un motivo',
+		'reported' => 'Reportado',
+		'sendingReport' => 'Enviando reporte',
+		'thanksMsg' => 'Gracias por el reporte, ¡personas como tú ayudan a mantener nuestra comunidad segura!',
+		'contactAdminMsg' => 'Si quieres contactar un administrador sobre esta publicación o reporte',
 	],
 
 ];
