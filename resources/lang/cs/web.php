@@ -6,14 +6,14 @@ return [
 		'comment' => 'Komentář',
 		'commented' => 'Okomentováno',
 		'comments' => 'Komentáře',
-		'like' => 'To se mi líbí',
+		'like' => 'Líbí se mi',
 		'liked' => 'Líbí se',
 		'likes' => 'To se mi líbí',
 		'share' => 'Sdílet',
 		'shared' => 'Sdíleno',
 		'shares' => 'Sdílení',
 		'unshare' => 'Zrušit sdílení',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Záložka',
 
 		'cancel' => 'Zrušit',
 		'copyLink' => 'Kopírovat odkaz',
@@ -24,8 +24,8 @@ return [
 		'other' => 'Další',
 		'readMore' => 'Číst více',
 		'success' => 'Úspěch',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
+		'proceed' => 'Pokračovat',
+		'next' => 'Další',
 		'close' => 'Zavřít',
 		'clickHere' => 'klikněte zde',
 
@@ -44,9 +44,9 @@ return [
 		'admin' => 'Administrátorský ovládací panel',
 
 		// Timelines
-		'homeFeed' => 'Domů',
+		'homeFeed' => 'Domovská časová osa',
 		'localFeed' => 'Místní kanál',
-		'globalFeed' => 'Globální kanál',
+		'globalFeed' => 'Globalní časová osa',
 
 		// Core features
 		'discover' => 'Objevovat',
@@ -76,7 +76,7 @@ return [
 	'directMessages' => [
 		'inbox' => 'Přijaté zprávy',
 		'sent' => 'Odeslané',
-		'requests' => 'Žádosti'
+		'requests' => 'Požadavky'
 	],
 
 	'notifications' => [
@@ -115,7 +115,7 @@ return [
 	'profile' => [
 		'posts' => 'Příspěvky',
 		'followers' => 'Sledující',
-		'following' => 'Sleduje',
+		'following' => 'Sledovaní',
 		'admin' => 'Administrátor',
 		'collections' => 'Sbírky',
 		'follow' => 'Sledovat',
@@ -188,7 +188,7 @@ return [
 			'welcome' => 'Vítejte',
 			'thisIsYourHomeFeed' => 'Toto je váš domovský kanál, chronologický kanál příspěvků z účtů, které sledujete.',
 			'letUsHelpYouFind' => 'Pomůžeme vám najít nějaké zajímavé lidi ke sledování',
-			'refreshFeed' => 'Refresh my feed',
+			'refreshFeed' => 'Obnovit můj kanál',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
+		'report' => 'Nahlásit',
 		'selectReason' => 'Vyberte důvod',
 		'reported' => 'Nahlášeno',
 		'sendingReport' => 'Odesílání hlášení',
 		'thanksMsg' => 'Díky za hlášení, lidé jako jste vy pomáhají udržet naši komunitu bezpečnou!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'contactAdminMsg' => 'Pokud chcete kontaktovat administrátora ohledně tohoto příspěvku nebo hlášení',
 	],
 
 ];
