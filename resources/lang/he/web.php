@@ -13,7 +13,7 @@ return [
 		'shared' => 'שיתפו',
 		'shares' => 'שיתופים',
 		'unshare' => 'ביטול-שיתוף',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'שמירה',
 
 		'cancel' => 'ביטול',
 		'copyLink' => 'העתק קישור',
@@ -24,10 +24,10 @@ return [
 		'other' => 'אחר',
 		'readMore' => 'קרא עוד',
 		'success' => 'הצלחה',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'המשך',
+		'next' => 'הבא',
+		'close' => 'סגור',
+		'clickHere' => 'לחץ כאן',
 
 		'sensitive' => 'רגיש',
 		'sensitiveContent' => 'תוכן רגיש',
@@ -89,7 +89,7 @@ return [
 		'updatedA' => 'עדכנו',
 		'sentA' => 'שלחו',
 
-		'followed' => 'עוקבים',
+		'followed' => 'עקבו',
 		'mentioned' => 'ציינו',
 		'you' => 'אתכם',
 
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'לוג מנהלים',
 		'post' => 'פוסט',
 		'story' => 'סטורי',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'לא נמצאו התראות',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'אנשים שאתם אולי מכירים',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'ברוכים הבאים',
+			'thisIsYourHomeFeed' => 'זהו פיד הבית, פיד כרונולוגי של פוסטים מחשבונות אחריהם אתם עוקבים.',
+			'letUsHelpYouFind' => 'אפשרו לנו לעזור לך למצוא אנשים מעניינים לעקוב',
+			'refreshFeed' => 'ריענון הפיד',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'דווח',
+		'selectReason' => 'בחרו סיבה',
+		'reported' => 'דיווח נשלח',
+		'sendingReport' => 'שולח דיווח',
+		'thanksMsg' => 'תודה על הדיווח, אנשים כמוכם מסעיים לשמור על בטחון קהילתנו!',
+		'contactAdminMsg' => 'אם ברצונכם ליצור קשר עם מנהל לגבי הפוסט או דיווח הזה',
 	],
 
 ];
