@@ -83,7 +83,7 @@ return [
 		'liked' => 'đã thích ảnh',
 		'commented' => 'bình luận về ảnh',
 		'reacted' => 'xem ảnh',
-		'shared' => 'chia sẻ ảnh',
+		'shared' => 'đã chia sẻ',
 		'tagged' => 'nhắc đến bạn trong',
 
 		'updatedA' => 'đã cập nhật',
@@ -178,7 +178,7 @@ return [
 	],
 
 	'story' => [
-		'add' => 'Thêm khoảnh khắc'
+		'add' => 'Khoảnh khắc'
 	],
 
 	'timeline' => [
