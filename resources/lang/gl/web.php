@@ -13,7 +13,7 @@ return [
 		'shared' => 'Compartiu',
 		'shares' => 'Compartido',
 		'unshare' => 'Non compartir',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Marcar',
 
 		'cancel' => 'Cancelar',
 		'copyLink' => 'Copiar ligazón',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Outro',
 		'readMore' => 'Ler máis',
 		'success' => 'Éxito',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Proceder',
+		'next' => 'Seguinte',
+		'close' => 'Pechar',
+		'clickHere' => 'preme aquí',
 
 		'sensitive' => 'Sensible',
 		'sensitiveContent' => 'Contido sensible',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'publicación',
 		'story' => 'historia',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Non hai notificacións',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Xente que podes coñecer',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Benvido/a',
+			'thisIsYourHomeFeed' => 'Esta é a túa cronoloxía de inicio, formada por publicacións en orde cronolóxica das contas que segues.',
+			'letUsHelpYouFind' => 'Deixa que che axudemos a atopar xente interesante que seguir',
+			'refreshFeed' => 'Actualiza a cronoloxía',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Denunciar',
+		'selectReason' => 'Elixe unha razón',
+		'reported' => 'Denunciado',
+		'sendingReport' => 'Enviando a denuncia',
+		'thanksMsg' => 'Grazas pola denuncia e axudarnos a manter segura a comunidade!',
+		'contactAdminMsg' => 'Se queres contactar coa administración acerca desta publicación ou denuncia',
 	],
 
 ];
