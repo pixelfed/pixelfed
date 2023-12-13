@@ -13,7 +13,7 @@ return [
 		'shared' => 'Condiviso',
 		'shares' => 'Condivisioni',
 		'unshare' => 'Annulla condivisione',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Preferiti',
 
 		'cancel' => 'Annulla',
 		'copyLink' => 'Copia link',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Altro',
 		'readMore' => 'Leggi di più',
 		'success' => 'Riuscito',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Continua',
+		'next' => 'Avanti',
+		'close' => 'Chiudi',
+		'clickHere' => 'clicca qui',
 
 		'sensitive' => 'Sensibile',
 		'sensitiveContent' => 'Contenuto Sensibile',
@@ -36,7 +36,7 @@ return [
 
 	'site' => [
 		'terms' => 'Termini di Utilizzo',
-		'privacy' => 'Informativa sulla Privacy',
+		'privacy' => 'Informativa Privacy',
 	],
 
 	'navmenu' => [
@@ -64,7 +64,7 @@ return [
 
 		// Nav footer
 		'about' => 'Info',
-		'help' => 'Aiuto',
+		'help' => 'Supporto',
 		'language' => 'Lingua',
 		'privacy' => 'Privacy',
 		'terms' => 'Condizioni',
@@ -81,17 +81,17 @@ return [
 
 	'notifications' => [
 		'liked' => 'ha messo like a',
-		'commented' => 'ha commentato',
+		'commented' => 'ha commentato il tuo',
 		'reacted' => 'ha reagito a',
-		'shared' => 'ha condiviso',
+		'shared' => 'ha condiviso il tuo',
 		'tagged' => 'ti ha taggato in',
 
 		'updatedA' => 'ha aggiornato un',
 		'sentA' => 'ha inviato un',
 
-		'followed' => 'stai seguendo',
+		'followed' => 'sta seguendo',
 		'mentioned' => 'menzionato',
-		'you' => 'tu',
+		'you' => 'te',
 
 		'yourApplication' => 'La tua candidatura per unirti',
 		'applicationApproved' => 'è stata approvata!',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'storia',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Non ci sono notifiche',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Persone che potresti conoscere',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Benvenuto',
+			'thisIsYourHomeFeed' => 'Questo è il tuo feed principale, un feed in ordine cronologico dei post da account che segui.',
+			'letUsHelpYouFind' => 'Ti aiutiamo a trovare delle persone interessanti da seguire',
+			'refreshFeed' => 'Aggiorna il mio feed',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Segnala',
+		'selectReason' => 'Seleziona un motivo',
+		'reported' => 'Segnalato',
+		'sendingReport' => 'Invio della segnalazione',
+		'thanksMsg' => 'Grazie per la segnalazione, le persone come te aiutano a mantenere la comunità al sicuro!',
+		'contactAdminMsg' => 'Se desideri contattare un amministratore per questo post o rapporto',
 	],
 
 ];
