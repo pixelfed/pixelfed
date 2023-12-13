@@ -13,7 +13,7 @@ return [
 		'shared' => 'Rhannu',
 		'shares' => 'Rhannu',
 		'unshare' => 'Dad-rannu',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Tudalnodau',
 
 		'cancel' => 'Canslo',
 		'copyLink' => 'Copïo\'r ddolen',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Arall',
 		'readMore' => 'Darllen mwy',
 		'success' => 'Llwyddiant',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Parhau',
+		'next' => 'Nesaf',
+		'close' => 'Cau',
+		'clickHere' => 'cliciwch yma',
 
 		'sensitive' => 'Sensitif',
 		'sensitiveContent' => 'Cynnwys sensitif',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'post',
 		'story' => 'stori',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Dim hysbysiadau',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Pobl efallai eich bod chi\'n eu hadnabod',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Croeso',
+			'thisIsYourHomeFeed' => 'Dyma\'ch porthiant cartref, porthiant cronolegol o bostiadau o gyfrifon rydych chi\'n eu dilyn.',
+			'letUsHelpYouFind' => 'Gadewch inni eich helpu i ddod o hyd i rai pobl ddiddorol i\'w dilyn',
+			'refreshFeed' => 'Adnewyddu fy mhorthiant',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Adroddi',
+		'selectReason' => 'Dewiswch reswm',
+		'reported' => 'Adroddwyd',
+		'sendingReport' => 'Anfon adroddiad',
+		'thanksMsg' => 'Diolch am yr adroddiad, mae pobl fel chi yn helpu i gadw ein cymuned yn ddiogel!',
+		'contactAdminMsg' => 'Os hoffech chi gysylltu â gweinyddwr am y post neu\'r adroddiad hwn',
 	],
 
 ];
