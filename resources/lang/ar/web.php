@@ -13,7 +13,7 @@ return [
 		'shared' => 'تمَّ مُشارَكَتُه',
 		'shares' => 'مُشارَكَات',
 		'unshare' => 'إلغاء المُشارَكَة',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'ضَع عَلامَةً مَرجِعِيَّة',
 
 		'cancel' => 'إلغاء',
 		'copyLink' => 'نَسخ الرابِط',
@@ -24,10 +24,10 @@ return [
 		'other' => 'اُخرى',
 		'readMore' => 'قراءةُ المزيد',
 		'success' => 'نَجاح',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'تابِع',
+		'next' => 'التَّالي',
+		'close' => 'إغْلَاق',
+		'clickHere' => 'اِضْغَط هُنَا',
 
 		'sensitive' => 'حسَّاس',
 		'sensitiveContent' => 'مُحتَوًى حسَّاس',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'سجلات المُشرِف',
 		'post' => 'مَنشور',
 		'story' => 'قَصَّة',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'لم يتم العثور على إشعارات',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'أشخاصٌ قَد تَعرِفُهُم',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'مَرحَبًا',
+			'thisIsYourHomeFeed' => 'هَذِهِ هِيَ تَغذِيَتُكَ الرَّئِيسَة، هِيَ تَغذِيَةُ مُرَتَّبَةٌ زَمَنِيًّا، مُكَوَّنَة مِن مَنشوراتِ الحِسابَاتِ الَّتِي تُتبِعُهَا.',
+			'letUsHelpYouFind' => 'دَعنا نُساعِدُكَ فِي العُثُورِ عَلَى أشخاصٍ يُثيرُونَ اِهتِمَامَكَ لِمُتابَعَتِهِم',
+			'refreshFeed' => 'حَدِّث تَغذِيَتي',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'إبلَاغ',
+		'selectReason' => 'حَدِّد سَبَبَاً',
+		'reported' => 'مُبْلَغٌ عَنه',
+		'sendingReport' => 'إرسَالُ التَّقريرِ جَارٍ',
+		'thanksMsg' => 'شُكرًا عَلَى الإبلَاغ، أُناسٌ مِن أمثالِكَ يُساعِدُونَ فِي الحِفاظِ عَلَى سَلامَةِ مُجتَمَعِنَا!',
+		'contactAdminMsg' => 'إذَا رَغِبتَ فِي التَّواصُلِ مَعَ مَسؤولٍ حَولَ هَذَا المَنشُورِ أو الإبلَاغ',
 	],
 
 ];
