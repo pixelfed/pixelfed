@@ -78,6 +78,8 @@
 - Update Timeline.vue, improve CHT pagination ([9c43e7e2](https://github.com/pixelfed/pixelfed/commit/9c43e7e2))
 - Update HomeFeedPipeline, fix StatusService validation ([041c0135](https://github.com/pixelfed/pixelfed/commit/041c0135))
 - Update Inbox, improve tombstone query efficiency ([759a4393](https://github.com/pixelfed/pixelfed/commit/759a4393))
+- Update AccountService, add setLastActive method ([ebbd98e7](https://github.com/pixelfed/pixelfed/commit/ebbd98e7))
+- Update ApiV1Controller, set last_active_at ([b6419545](https://github.com/pixelfed/pixelfed/commit/b6419545))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
