@@ -80,22 +80,22 @@ return [
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'さんが次をいいねしました:',
+		'commented' => 'さんが次にコメントしました:',
+		'reacted' => 'さんが次に反応しました:',
+		'shared' => 'さんが次を共有しました:',
+		'tagged' => 'さんが次にあなたをタグ付けしました:',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'さんが次を更新しました:',
+		'sentA' => 'さんが次を送信しました:',
 
-		'followed' => 'followed',
-		'mentioned' => 'mentioned',
+		'followed' => 'さんがフォローしました:',
+		'mentioned' => 'さんが返信しました:',
 		'you' => 'あなた',
 
-		'yourApplication' => 'Your application to join',
-		'applicationApproved' => 'was approved!',
-		'applicationRejected' => 'was rejected. You can re-apply to join in 6 months.',
+		'yourApplication' => '参加するアプリケーション',
+		'applicationApproved' => 'が承認されました!',
+		'applicationRejected' => 'は拒否されました。6ヶ月後に再度参加を申請できます。',
 
 		'dm' => 'dm',
 		'groupPost' => 'グループの投稿',
@@ -165,12 +165,12 @@ return [
 		'modMarkAsSpammerConfirm' => 'このユーザーをスパムとして登録していいですか？既存のまた、今後の投稿はすべてタイムラインに表示されず、コンテンツ警告が適用されます。',
 		'modMarkAsSpammerSuccess' => 'アカウントをスパムとしてマークしました',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'フォロワー向け',
 
 		'showCaption' => '説明を表示',
 		'showLikes' => 'いいねを表示',
 		'compactMode' => 'コンパクトモード',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'embedConfirmText' => 'この埋め込みを利用する事で、あなたは次に同意したとみなされます:',
 
 		'deletePostConfirm' => '本当にこの投稿を削除しますか？',
 		'archivePostConfirm' => '本当にこの投稿をアーカイブしますか？',
