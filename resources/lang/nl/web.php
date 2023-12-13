@@ -13,7 +13,7 @@ return [
 		'shared' => 'Gedeeld',
 		'shares' => 'Gedeeld door',
 		'unshare' => 'Niet meer delen',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Bladwijzer',
 
 		'cancel' => 'Annuleren',
 		'copyLink' => 'Link kopiëren',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Anders',
 		'readMore' => 'Lees meer',
 		'success' => 'Geslaagd',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Doorgaan',
+		'next' => 'Volgende',
+		'close' => 'Sluiten',
+		'clickHere' => 'klik hier',
 
 		'sensitive' => 'Gevoelig',
 		'sensitiveContent' => 'Gevoelige inhoud',
@@ -60,7 +60,7 @@ return [
 		'drive' => 'Drive',
 		'settings' => 'Instellingen',
 		'compose' => 'Nieuwe aanmaken',
-		'logout' => 'Logout',
+		'logout' => 'Uitloggen',
 
 		// Nav footer
 		'about' => 'Over',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlogboek',
 		'post' => 'post',
 		'story' => 'verhaal',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Geen notificaties gevonden',
 	],
 
 	'post' => [
@@ -124,8 +124,8 @@ return [
 		'followRequested' => 'Volgen verzocht',
 		'joined' => 'Lid geworden',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'We kunnen geen collecties vinden',
+		'emptyPosts' => 'We kunnen geen posts vinden',
 	],
 
 	'menu' => [
@@ -185,24 +185,24 @@ return [
 		'peopleYouMayKnow' => 'Mensen die u misschien kent',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Welkom',
+			'thisIsYourHomeFeed' => 'Dit is je thuisfeed, een chronologische feed van accounts die je volgt.',
+			'letUsHelpYouFind' => 'Laat ons u helpen interessante mensen te vinden om te volgen',
+			'refreshFeed' => 'Mijn feed vernieuwen',
 		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'We kunnen geen berichten voor deze hashtag vinden'
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Rapporteren',
+		'selectReason' => 'Een reden selecteren',
+		'reported' => 'Gerapporteerd',
+		'sendingReport' => 'Rapport versturen',
+		'thanksMsg' => 'Bedankt voor het rapport, mensen zoals u helpen onze gemeenschap veilig te houden!',
+		'contactAdminMsg' => 'Als u over dit bericht of rapport contact wilt opnemen met een beheerder',
 	],
 
 ];
