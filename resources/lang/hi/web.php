@@ -13,7 +13,7 @@ return [
 		'shared' => 'साझा',
 		'shares' => 'साझा',
 		'unshare' => 'साझा न करें',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'बुकमार्क',
 
 		'cancel' => 'रद्द',
 		'copyLink' => 'लिंक प्रतिलिपि',
@@ -22,12 +22,12 @@ return [
 		'errorMsg' => 'कुछ दोष है। कृपया पुनः प्रयास करें।',
 		'oops' => 'ओह!',
 		'other' => 'अन्य',
-		'readMore' => 'और पढ़ें',
-		'success' => 'सफल',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'readMore' => 'आगे पढ़ें',
+		'success' => 'सफल हुआ',
+		'proceed' => 'आगे बढ़ें',
+		'next' => 'अगला',
+		'close' => 'बंद करें',
+		'clickHere' => 'यहाँ क्लिक करें',
 
 		'sensitive' => 'संवेदनशील',
 		'sensitiveContent' => 'संवेदनशील विषय वस्तु',
@@ -44,9 +44,9 @@ return [
 		'admin' => 'एडमिन डैशबोर्ड',
 
 		// Timelines
-		'homeFeed' => 'Home Feed',
-		'localFeed' => 'Local Feed',
-		'globalFeed' => 'Global Feed',
+		'homeFeed' => 'होम फीड',
+		'localFeed' => 'लोकल फ़ीड',
+		'globalFeed' => 'ग्लोबल फ़ीड',
 
 		// Core features
 		'discover' => 'अन्वेषण',
@@ -56,7 +56,7 @@ return [
 		'stories' => 'कथाएँ',
 
 		// Self links
-		'profile' => 'Profile',
+		'profile' => 'प्रोफाइल',
 		'drive' => 'ड्राइव',
 		'settings' => 'समायोजन',
 		'compose' => 'नया बनाएँ',
@@ -70,24 +70,24 @@ return [
 		'terms' => 'अनुबंध',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Go back to previous design'
+		'backToPreviousDesign' => 'पिछले संपादक पे वापस जाएँ'
 	],
 
 	'directMessages' => [
 		'inbox' => 'सन्देश',
-		'sent' => 'Sent',
+		'sent' => 'भेजे गए',
 		'requests' => 'निवेदन'
 	],
 
 	'notifications' => [
-		'liked' => 'liked your',
-		'commented' => 'commented on your',
-		'reacted' => 'reacted to your',
-		'shared' => 'shared your',
-		'tagged' => 'tagged you in a',
+		'liked' => 'आपकी पसंद',
+		'commented' => 'आपकी (पोस्ट) पे कमेंट किए',
+		'reacted' => 'आपके लिए प्रतिक्रिया दिये',
+		'shared' => 'आपका शेयर किये',
+		'tagged' => 'आपके एक (पोस्ट) में टैग किया गया',
 
-		'updatedA' => 'updated a',
-		'sentA' => 'sent a',
+		'updatedA' => 'अपडेट करें ....',
+		'sentA' => 'भेजें....',
 
 		'followed' => 'अनुगमन किया',
 		'mentioned' => 'उल्लेख किया',
@@ -99,10 +99,10 @@ return [
 
 		'dm' => 'संदेश',
 		'groupPost' => 'सामूहिक प्रकाशन',
-		'modlog' => 'modlog',
+		'modlog' => 'मॉडलॉग',
 		'post' => 'प्रकाशन',
 		'story' => 'कथा',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'कोई नोटीफिकेसन नहीं प्राप्त हुयी',
 	],
 
 	'post' => [
@@ -114,41 +114,41 @@ return [
 
 	'profile' => [
 		'posts' => 'प्रकाशन',
-		'followers' => 'Followers',
-		'following' => 'Following',
-		'admin' => 'Admin',
-		'collections' => 'Collections',
-		'follow' => 'Follow',
-		'unfollow' => 'Unfollow',
-		'editProfile' => 'Edit Profile',
-		'followRequested' => 'Follow Requested',
-		'joined' => 'Joined',
+		'followers' => 'फोलोअर्स',
+		'following' => 'फॉलोइंग',
+		'admin' => 'एडमिन',
+		'collections' => 'कलेक्शनस',
+		'follow' => 'फॉलो',
+		'unfollow' => 'अनफॉलो',
+		'editProfile' => 'प्रोफाइल सम्पादित करें',
+		'followRequested' => 'रिक्वेस्टएड को फॉलो करें',
+		'joined' => 'ज्वाइनड',
 
-		'emptyCollections' => 'We can\'t seem to find any collections',
-		'emptyPosts' => 'We can\'t seem to find any posts',
+		'emptyCollections' => 'हमें किसी संग्रहों का पता नहीं लग सकता',
+		'emptyPosts' => 'हम किसी पोस्ट का पता नहीं लग सकता है',
 	],
 
 	'menu' => [
-		'viewPost' => 'View Post',
-		'viewProfile' => 'View Profile',
-		'moderationTools' => 'Moderation Tools',
-		'report' => 'Report',
+		'viewPost' => 'पोस्ट देखें',
+		'viewProfile' => 'प्रोफाइल देखें',
+		'moderationTools' => 'मॉडरेशन टूल्स',
+		'report' => 'रिपोर्ट',
 		'archive' => 'Archive',
 		'unarchive' => 'Unarchive',
-		'embed' => 'Embed',
+		'embed' => 'एम्बेड',
 
-		'selectOneOption' => 'Select one of the following options',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Add Content Warning',
-		'removeCW' => 'Remove Content Warning',
-		'markAsSpammer' => 'Mark as Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
-		'spam' => 'Spam',
-		'sensitive' => 'Sensitive Content',
-		'abusive' => 'Abusive or Harmful',
-		'underageAccount' => 'Underage Account',
-		'copyrightInfringement' => 'Copyright Infringement',
-		'impersonation' => 'Impersonation',
+		'selectOneOption' => 'किसी एक विकल्प को चुने',
+		'unlistFromTimelines' => 'टाइमलाइन्स से हटाएं',
+		'addCW' => 'कंटेंट चेतावनी जोड़ें',
+		'removeCW' => 'चेतावनी कंटेंट हटाएं',
+		'markAsSpammer' => 'स्पैमर मार्क करें',
+		'markAsSpammerText' => 'अनलिस्ट + सीडबल्यु मौजूदा और भविष्य पोस्ट',
+		'spam' => 'स्पैम',
+		'sensitive' => 'सेंसिटिव कंटेंट',
+		'abusive' => 'अपमानजनक या हानिकारक',
+		'underageAccount' => 'नाबालिग अकाउंट',
+		'copyrightInfringement' => 'कॉपीराईट का उल्लंघन',
+		'impersonation' => 'प्रतिरूपण',
 		'scamOrFraud' => 'Scam or Fraud',
 		'confirmReport' => 'Confirm Report',
 		'confirmReportText' => 'Are you sure you want to report this post?',
