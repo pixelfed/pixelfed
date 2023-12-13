@@ -4,8 +4,8 @@ return [
 
 	'common' => [
 		'comment' => 'Comentar',
-		'commented' => 'Commented',
-		'comments' => 'Comments',
+		'commented' => 'Comentat',
+		'comments' => 'Comentaris',
 		'like' => 'Like',
 		'liked' => 'Liked',
 		'likes' => 'Likes',
@@ -13,11 +13,11 @@ return [
 		'shared' => 'Shared',
 		'shares' => 'Shares',
 		'unshare' => 'Unshare',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Marcapaginas',
 
 		'cancel' => 'Anullar',
 		'copyLink' => 'Copy Link',
-		'delete' => 'Delete',
+		'delete' => 'Suprimir',
 		'error' => 'Error',
 		'errorMsg' => 'Something went wrong. Please try again later.',
 		'oops' => 'Oops!',
@@ -26,7 +26,7 @@ return [
 		'success' => 'Success',
 		'proceed' => 'Proceed',
 		'next' => 'Next',
-		'close' => 'Close',
+		'close' => 'Tampar',
 		'clickHere' => 'click here',
 
 		'sensitive' => 'Sensitive',
@@ -58,24 +58,24 @@ return [
 		// Self links
 		'profile' => 'Profile',
 		'drive' => 'Drive',
-		'settings' => 'Settings',
+		'settings' => 'Paramètres',
 		'compose' => 'Create New',
 		'logout' => 'Logout',
 
 		// Nav footer
-		'about' => 'About',
-		'help' => 'Help',
-		'language' => 'Language',
-		'privacy' => 'Privacy',
-		'terms' => 'Terms',
+		'about' => 'A prepaus',
+		'help' => 'Ajuda',
+		'language' => 'Lenga',
+		'privacy' => 'Confidencialitat',
+		'terms' => 'Condicions d’utilizacion',
 
 		// Temporary links
 		'backToPreviousDesign' => 'Go back to previous design'
 	],
 
 	'directMessages' => [
-		'inbox' => 'Inbox',
-		'sent' => 'Sent',
+		'inbox' => 'Dintrant',
+		'sent' => 'Mandats',
 		'requests' => 'Requests'
 	],
 
