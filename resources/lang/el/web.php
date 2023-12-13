@@ -26,8 +26,8 @@ return [
 		'success' => 'Επιτυχής',
 		'proceed' => 'Proceed',
 		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'close' => 'Κλείσιμο',
+		'clickHere' => 'κάντε κλικ εδώ',
 
 		'sensitive' => 'Ευαίσθητο',
 		'sensitiveContent' => 'Ευαίσθητο περιεχόμενο',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'δημοσίευση',
 		'story' => 'ιστορία',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Δεν βρέθηκαν ειδοποιήσεις',
 	],
 
 	'post' => [
