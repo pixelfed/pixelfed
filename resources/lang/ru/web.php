@@ -13,7 +13,7 @@ return [
 		'shared' => 'Поделились',
 		'shares' => 'Поделились',
 		'unshare' => 'Не делиться',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Закладка',
 
 		'cancel' => 'Отмена',
 		'copyLink' => 'Скопировать ссылку',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Прочее',
 		'readMore' => 'Читать далее',
 		'success' => 'Успешно',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Продолжить',
+		'next' => 'Далее',
+		'close' => 'Закрыть',
+		'clickHere' => 'нажмите здесь',
 
 		'sensitive' => 'Чувствительный',
 		'sensitiveContent' => 'Чувствительный контент',
@@ -59,7 +59,7 @@ return [
 		'profile' => 'Профиль',
 		'drive' => 'Диск',
 		'settings' => 'Настройки',
-		'compose' => 'Создать новый пост',
+		'compose' => 'Создать новый',
 		'logout' => 'Выйти',
 
 		// Nav footer
@@ -86,11 +86,11 @@ return [
 		'shared' => 'поделился вашим',
 		'tagged' => 'отметил вас в публикации',
 
-		'updatedA' => 'updated a',
+		'updatedA' => 'обновил(а)',
 		'sentA' => 'отправил',
 
 		'followed' => 'подписался',
-		'mentioned' => 'mentioned',
+		'mentioned' => 'упомянул(а)',
 		'you' => 'вы',
 
 		'yourApplication' => 'Ваше заявка на вступление',
@@ -98,11 +98,11 @@ return [
 		'applicationRejected' => 'было отклонено. Вы можете повторно подать заявку на регистрацию в течение 6 месяцев.',
 
 		'dm' => 'сообщение',
-		'groupPost' => 'сообщения группы',
-		'modlog' => 'modlog',
+		'groupPost' => 'пост в группе',
+		'modlog' => 'журнал модерации',
 		'post' => 'пост',
 		'story' => 'история',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Уведомления не найдены',
 	],
 
 	'post' => [
@@ -142,7 +142,7 @@ return [
 		'addCW' => 'Добавить предупреждение о контенте',
 		'removeCW' => 'Удалить предупреждение о контенте',
 		'markAsSpammer' => 'Пометить как спамера',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'Скрыть из лент и пометить предупреждениями существующие и будущие публикации',
 		'spam' => 'Спам',
 		'sensitive' => 'Деликатный контент',
 		'abusive' => 'Жестокое обращение или причинение вреда',
@@ -161,7 +161,7 @@ return [
 		'modRemoveCWConfirm' => 'Вы действительно хотите удалить предупреждение о контенте с этого поста?',
 		'modRemoveCWSuccess' => 'Предупреждение о контенте успешно удалено',
 		'modUnlistConfirm' => 'Вы действительно хотите скрыть этот пост из лент?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
+		'modUnlistSuccess' => 'Пост удален',
 		'modMarkAsSpammerConfirm' => 'Вы уверены, что хотите отметить этого пользователя спамом? Все существующие и будущие сообщения будут исключены из списка в сроки, и будет применяться предупреждение о содержании.',
 		'modMarkAsSpammerSuccess' => 'Аккаунт успешно помечен как спаммер',
 
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Возможные друзья',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Добро пожаловать',
+			'thisIsYourHomeFeed' => 'Это ваша домашняя лента, где хронологически собраны посты с аккаунтов, на которые вы подписаны.',
+			'letUsHelpYouFind' => 'Давайте мы поможем вам найти интересных людей, на которых можно подписаться',
+			'refreshFeed' => 'Обновить мою ленту',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Пожаловаться',
+		'selectReason' => 'Выберите причину',
+		'reported' => 'Жалоба отправлена',
+		'sendingReport' => 'Отправка жалобы',
+		'thanksMsg' => 'Спасибо за обращение! Такие, как вы, помогают сделать сообщество безопаснее!',
+		'contactAdminMsg' => 'Хотите ли вы связаться с администратором по поводу этой публикации или жалобы',
 	],
 
 ];
