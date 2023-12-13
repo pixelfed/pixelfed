@@ -59,7 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Festplatte',
 		'settings' => 'Einstellungen',
-		'compose' => 'Neu erstellen',
+		'compose' => 'Neu erstellen:',
 		'logout' => 'Ausloggen',
 
 		// Nav footer
@@ -81,7 +81,7 @@ return [
 
 	'notifications' => [
 		'liked' => 'gefällt dein',
-		'commented' => 'kommentierte dein',
+		'commented' => 'kommentierte deinen',
 		'reacted' => 'reagierte auf dein',
 		'shared' => 'teilte deine',
 		'tagged' => 'markierte dich in einem',
@@ -89,9 +89,9 @@ return [
 		'updatedA' => 'aktualisierte ein',
 		'sentA' => 'sendete ein',
 
-		'followed' => 'gefolgt',
-		'mentioned' => 'erwähnt',
-		'you' => 'du',
+		'followed' => 'folgt',
+		'mentioned' => 'erwähnte',
+		'you' => 'dir',
 
 		'yourApplication' => 'Deine Bewerbung um beizutreten',
 		'applicationApproved' => 'wurde genehmigt!',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'Beitrag',
 		'story' => 'Story',
-		'noneFound' => 'Keine Benachrichtigungen gefunden',
+		'noneFound' => 'Keine Benachrichtigungen vorhanden',
 	],
 
 	'post' => [
@@ -162,7 +162,7 @@ return [
 		'modRemoveCWSuccess' => 'Inhaltswarnung erfolgreich entfernt',
 		'modUnlistConfirm' => 'Bist du sicher, dass du diesen Beitrag nicht listen möchtest?',
 		'modUnlistSuccess' => 'Beitrag aus Timelines entfernt',
-		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spammer markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
+		'modMarkAsSpammerConfirm' => 'Bist du sicher, dass du diesen Benutzer als Spam markieren möchtest? Alle existierenden und zukünftigen Beiträge werden nicht mehr in der Zeitleiste angezeigt und mit einer Inhaltswarnung versehen.',
 		'modMarkAsSpammerSuccess' => 'Konto erfolgreich als Spammer markiert',
 
 		'toFollowers' => 'an die Folgenden',
@@ -185,9 +185,9 @@ return [
 		'peopleYouMayKnow' => 'Leute, die du vielleicht kennst',
 
 		'onboarding' => [
-			'welcome' => 'Herzlich willkommen',
-			'thisIsYourHomeFeed' => 'Dies ist Ihr Heim-Feed, ein chronologischer Feed von Beiträgen aus den Konten, denen Sie folgen.',
-			'letUsHelpYouFind' => 'Lassen Sie uns Ihnen helfen, einige interessante Leute zu finden, denen Sie folgen können',
+			'welcome' => 'Herzlich Willkommen',
+			'thisIsYourHomeFeed' => 'Dies ist dein Heim-Feed, ein chronologischer Feed von Beiträgen aus den Konten, denen du folgst.',
+			'letUsHelpYouFind' => 'Lass uns dir helfen, einige interessante Leute zu finden, denen du folgen kannst',
 			'refreshFeed' => 'Feed aktualisieren',
 		],
 	],
@@ -198,11 +198,11 @@ return [
 
 	'report' => [
 		'report' => 'Melden',
-		'selectReason' => 'Wählen Sie einen Grund',
+		'selectReason' => 'Einen Grund auswählen',
 		'reported' => 'Gemeldet',
 		'sendingReport' => 'Meldung wird gesendet',
-		'thanksMsg' => 'Vielen Dank für die Meldung, Leute wie Sie helfen, unsere Community sicher zu halten!',
-		'contactAdminMsg' => 'Wenn Sie einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren möchten',
+		'thanksMsg' => 'Vielen Dank für die Meldung, Leute wie du helfen, unsere Community sicher zu halten!',
+		'contactAdminMsg' => 'Wenn du einen Administrator zu diesem Beitrag oder dieser Meldung kontaktieren möchtest',
 	],
 
 ];
