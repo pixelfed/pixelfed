@@ -36,17 +36,20 @@ return [
 
         'array' => [
             'driver' => 'array',
+            'serialize' => false,
         ],
 
         'database' => [
             'driver'     => 'database',
             'table'      => 'cache',
             'connection' => null,
+            'lock_connection' => null,
         ],
 
         'file' => [
             'driver' => 'file',
             'path'   => storage_path('framework/cache/data'),
+            'lock_path' => storage_path('framework/cache/data'),
         ],
 
         'memcached' => [
@@ -70,6 +73,7 @@ return [
 
         'redis' => [
             'driver' => 'redis',
+            'lock_connection' => 'default',
             'client' => env('REDIS_CLIENT', 'phpredis'),
 
             'default' => [
@@ -81,6 +85,25 @@ return [
                 'database' => env('REDIS_DATABASE', 0),
             ],
 
+        ],
+
+        'redis:session' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'prefix' => 'pf_session',
+        ],
+
+        'dynamodb' => [
+            'driver' => 'dynamodb',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
+            'endpoint' => env('DYNAMODB_ENDPOINT'),
+        ],
+
+        'octane' => [
+            'driver' => 'octane',
         ],
 
     ],
@@ -101,4 +124,5 @@ return [
         str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
 
+    'limiter' => env('CACHE_LIMITER_DRIVER', 'redis'),
 ];
