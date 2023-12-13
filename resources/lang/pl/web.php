@@ -13,7 +13,7 @@ return [
 		'shared' => 'Udostępnione',
 		'shares' => 'Udostępnione',
 		'unshare' => 'Anuluj udostępnianie',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Zakładka',
 
 		'cancel' => 'Anuluj',
 		'copyLink' => 'Kopiuj Link',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Inne',
 		'readMore' => 'Czytaj więcej',
 		'success' => 'Sukces',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Kontynuuj',
+		'next' => 'Następny',
+		'close' => 'Zamknij',
+		'clickHere' => 'kliknij tutaj',
 
 		'sensitive' => 'Wrażliwe',
 		'sensitiveContent' => 'Treść wrażliwa',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'logi',
 		'post' => 'post',
 		'story' => 'opowieść',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Brak powiadomień',
 	],
 
 	'post' => [
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Ludzie, których możesz znać',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Witaj',
+			'thisIsYourHomeFeed' => 'To jest Twój kanał główny, chronologiczny kanał wpisów z kont, które śledzisz.',
+			'letUsHelpYouFind' => 'Pomożemy Ci znaleźć ciekawych ludzi do obserwowania',
+			'refreshFeed' => 'Odśwież mój kanał',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Zgłoś',
+		'selectReason' => 'Wybierz przyczynę',
+		'reported' => 'Zgłoszono',
+		'sendingReport' => 'Wysyłanie zgłoszenia',
+		'thanksMsg' => 'Dziękujemy za zgłoszenie, ludzie tacy jak ty pomagają chronić naszą społeczność!',
+		'contactAdminMsg' => 'Jeśli chcesz skontaktować się z administratorem w sprawie tego wpisu lub go zgłosić',
 	],
 
 ];
