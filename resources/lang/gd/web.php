@@ -13,7 +13,7 @@ return [
 		'shared' => '’Ga cho-roinneadh',
 		'shares' => '’Ga cho-roinneadh',
 		'unshare' => 'Na co-roinn tuilleadh',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Comharra-lìn',
 
 		'cancel' => 'Sguir dheth',
 		'copyLink' => 'Dèan lethbhreac dhen cheangal',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Eile',
 		'readMore' => 'Leugh an còrr',
 		'success' => 'Chaidh leis',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Lean air adhart',
+		'next' => 'Air adhart',
+		'close' => 'Dùin',
+		'clickHere' => 'briog an-seo',
 
 		'sensitive' => 'Frionasach',
 		'sensitiveContent' => 'Susbaint fhrionasach',
@@ -59,7 +59,7 @@ return [
 		'profile' => 'Pròifil',
 		'drive' => 'Draibh',
 		'settings' => 'Roghainnean',
-		'compose' => 'Cruthaich fear ùr',
+		'compose' => 'Cruthaich',
 		'logout' => 'Clàraich a-mach',
 
 		// Nav footer
@@ -89,7 +89,7 @@ return [
 		'updatedA' => '– dh’ùraich iad',
 		'sentA' => '– chuir iad',
 
-		'followed' => '– lean iad air:',
+		'followed' => '– lean iad:',
 		'mentioned' => '– thug iad iomradh air:',
 		'you' => 'thusa',
 
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'loga nam maor',
 		'post' => 'post',
 		'story' => 'sgeul',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Cha deach brath a lorg',
 	],
 
 	'post' => [
@@ -118,10 +118,10 @@ return [
 		'following' => 'A’ leantainn',
 		'admin' => 'Rianaire',
 		'collections' => 'Cruinneachaidhean',
-		'follow' => 'Lean air',
+		'follow' => 'Lean',
 		'unfollow' => 'Na lean tuilleadh',
 		'editProfile' => 'Deasaich a’ phròifil',
-		'followRequested' => 'Iarrar leantainn orm',
+		'followRequested' => 'Iarrar leantainn',
 		'joined' => 'Air ballrachd fhaighinn',
 
 		'emptyCollections' => 'Cha do lorg sinn cruinneachadh sam bith',
@@ -185,10 +185,10 @@ return [
 		'peopleYouMayKnow' => 'Daoine as aithne dhut ’s dòcha',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'welcome' => 'Fàilte ort',
+			'thisIsYourHomeFeed' => 'Seo inbhir na dachaigh agad a sheallas na postaichean o na cunntasan a leanas tu dhut, a-rèir an ama.',
+			'letUsHelpYouFind' => 'An cuidich sinn thu ach an lorg thu daoine inntinneach ri an leantainn?',
+			'refreshFeed' => 'Ath-nuadhaich an t-inbhir agam',
 		],
 	],
 
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Dèan gearan',
+		'selectReason' => 'Tagh adhbhar',
+		'reported' => 'Chaidh gearan a dhèanamh',
+		'sendingReport' => 'A’ cur a’ ghearain',
+		'thanksMsg' => 'Mòran taing airson gearan a dhèanamh, cuidichidh daoine mar a tha thu fhèin ach an cumamaid ar coimhearsnachd sàbhailte!',
+		'contactAdminMsg' => 'Nam bu toigh leat fios a chur gu rianaire mun post no ghearan seo',
 	],
 
 ];
