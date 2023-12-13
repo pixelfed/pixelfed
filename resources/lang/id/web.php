@@ -3,10 +3,10 @@
 return [
 
 	'common' => [
-		'comment' => 'Komentar',
+		'comment' => 'Komentari',
 		'commented' => 'Dikomentari',
 		'comments' => 'Komentar',
-		'like' => 'Menyukai',
+		'like' => 'Sukai',
 		'liked' => 'Disukai',
 		'likes' => 'Suka',
 		'share' => 'Bagikan',
@@ -19,7 +19,7 @@ return [
 		'copyLink' => 'Salin tautan',
 		'delete' => 'Hapus',
 		'error' => 'Galat',
-		'errorMsg' => 'Telah terjadi kesalahan. Silakan coba lagi nanti.',
+		'errorMsg' => 'Terjadi kesalahan. Silakan coba lagi nanti.',
 		'oops' => 'Oops!',
 		'other' => 'Lainnya',
 		'readMore' => 'Baca selengkapnya',
@@ -45,21 +45,21 @@ return [
 
 		// Timelines
 		'homeFeed' => 'Beranda',
-		'localFeed' => 'Umpan lokal',
-		'globalFeed' => 'Umpan global',
+		'localFeed' => 'Beranda Setempat',
+		'globalFeed' => 'Beranda Global',
 
 		// Core features
 		'discover' => 'Jelajahi',
 		'directMessages' => 'Pesan Langsung',
-		'notifications' => 'Notifikasi',
+		'notifications' => 'Pemberitahuan',
 		'groups' => 'Grup',
 		'stories' => 'Cerita',
 
 		// Self links
 		'profile' => 'Profil',
-		'drive' => 'Perangkat Keras',
+		'drive' => 'Kandar',
 		'settings' => 'Pengaturan',
-		'compose' => 'Buat baru',
+		'compose' => 'Buat',
 		'logout' => 'Keluar',
 
 		// Nav footer
@@ -70,7 +70,7 @@ return [
 		'terms' => 'Ketentuan',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Kembali ke desain sebelumnya'
+		'backToPreviousDesign' => 'Kembali ke rancangan sebelumnya'
 	],
 
 	'directMessages' => [
@@ -82,33 +82,33 @@ return [
 	'notifications' => [
 		'liked' => 'menyukai',
 		'commented' => 'mengomentari',
-		'reacted' => 'bereaksi terhadap',
+		'reacted' => 'bereaksi ke',
 		'shared' => 'membagikan',
-		'tagged' => 'menandai Anda pada sebuah',
+		'tagged' => 'menandai Anda di',
 
-		'updatedA' => 'memperbarui sebuah',
-		'sentA' => 'mengirim sebuah',
+		'updatedA' => 'memperbarui',
+		'sentA' => 'mengirim',
 
 		'followed' => 'diikuti',
 		'mentioned' => 'disebut',
-		'you' => 'anda',
+		'you' => 'Anda',
 
-		'yourApplication' => 'Aplikasi anda untuk mengikuti',
+		'yourApplication' => 'Aplikasi Anda untuk mengikuti',
 		'applicationApproved' => 'telah disetujui!',
-		'applicationRejected' => 'telah ditolak. Anda dapat kembali mengajukan untuk bergabung dalam 6 bulan.',
+		'applicationRejected' => 'ditolak. Anda dapat mengajukan lagi untuk bergabung dalam 6 bulan.',
 
 		'dm' => 'dm',
 		'groupPost' => 'postingan grup',
 		'modlog' => 'modlog',
 		'post' => 'postingan',
 		'story' => 'cerita',
-		'noneFound' => 'Tak ditemukan pemberitahuan',
+		'noneFound' => 'Tidak ditemukan pemberitahuan',
 	],
 
 	'post' => [
-		'shareToFollowers' => 'Membagikan kepada pengikut',
-		'shareToOther' => 'Membagikan ke orang lain',
-		'noLikes' => 'Belum ada yang menyukai',
+		'shareToFollowers' => 'Bagikan kepada pengikut',
+		'shareToOther' => 'Bagikan ke orang lain',
+		'noLikes' => 'Masih belum disukai',
 		'uploading' => 'Mengunggah',
 	],
 
@@ -119,7 +119,7 @@ return [
 		'admin' => 'Pengurus',
 		'collections' => 'Koleksi',
 		'follow' => 'Ikuti',
-		'unfollow' => 'Berhenti Ikuti',
+		'unfollow' => 'Berhenti ikuti',
 		'editProfile' => 'Ubah Profil',
 		'followRequested' => 'Meminta Permintaan Mengikuti',
 		'joined' => 'Bergabung',
@@ -134,7 +134,7 @@ return [
 		'moderationTools' => 'Alat Moderasi',
 		'report' => 'Laporkan',
 		'archive' => 'Arsipkan',
-		'unarchive' => 'Keluarkan dari arsip',
+		'unarchive' => 'Lepas arsip',
 		'embed' => 'Penyemat',
 
 		'selectOneOption' => 'Pilih salah satu dari opsi berikut',
@@ -186,8 +186,8 @@ return [
 
 		'onboarding' => [
 			'welcome' => 'Selamat Datang',
-			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'thisIsYourHomeFeed' => 'Ini merupakan tampilan beranda Anda, tampilan dari postingan akun yang Anda ikuti secara kronologis.',
+			'letUsHelpYouFind' => 'Biarkan kami membantumu menemukan orang-orang yang menarik untuk diikuti',
 			'refreshFeed' => 'Segarkan laman umpan',
 		],
 	],
@@ -202,7 +202,7 @@ return [
 		'reported' => 'Terlaporkan',
 		'sendingReport' => 'Mengirim laporan',
 		'thanksMsg' => 'Terima kasih atas laporannya, tindakan Anda amat membantu menjaga komunitas!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'contactAdminMsg' => 'Jika Anda berminat menghubungi seorang administrator mengenai postingan ini atau melaporkan',
 	],
 
 ];
