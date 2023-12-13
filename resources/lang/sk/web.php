@@ -4,7 +4,7 @@ return [
 
 	'common' => [
 		'comment' => 'Komentovať',
-		'commented' => 'Commented',
+		'commented' => 'Komentoval',
 		'comments' => 'Komentáre',
 		'like' => 'Páči sa mi',
 		'liked' => 'Páči sa mi',
@@ -13,7 +13,7 @@ return [
 		'shared' => 'Zdieľané',
 		'shares' => 'Zdiaľané',
 		'unshare' => 'Zrušiť zdieľanie',
-		'bookmark' => 'Bookmark',
+		'bookmark' => 'Uložiť',
 
 		'cancel' => 'Zrušiť',
 		'copyLink' => 'Skopírovať odkaz',
@@ -24,10 +24,10 @@ return [
 		'other' => 'Iné',
 		'readMore' => 'Zobraziť viac',
 		'success' => 'Hotovo',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Pokračovať',
+		'next' => 'Ďalej',
+		'close' => 'Zavrieť',
+		'clickHere' => 'klikni tu',
 
 		'sensitive' => 'Citlivý',
 		'sensitiveContent' => 'Citlivý obsah',
@@ -60,7 +60,7 @@ return [
 		'drive' => 'Úložisko',
 		'settings' => 'Nastavenia',
 		'compose' => 'Vytvoriť nový',
-		'logout' => 'Logout',
+		'logout' => 'Odhlásiť sa',
 
 		// Nav footer
 		'about' => 'O aplikácii',
@@ -102,7 +102,7 @@ return [
 		'modlog' => 'modlog',
 		'post' => 'príspevok',
 		'story' => 'story',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Žiadne nájdené notifikácie',
 	],
 
 	'post' => [
@@ -122,7 +122,7 @@ return [
 		'unfollow' => 'Prestať sledovať',
 		'editProfile' => 'Upraviť Profil',
 		'followRequested' => 'Žiadosť o sledovanie bola odoslaná',
-		'joined' => 'Joined',
+		'joined' => 'Pripojené',
 
 		'emptyCollections' => 'Zdá sa, že nemôžeme nájsť žiadne kolekcie',
 		'emptyPosts' => 'Zdá sa, že nemôžeme nájsť žiadne príspevky',
@@ -138,11 +138,11 @@ return [
 		'embed' => 'Vložiť',
 
 		'selectOneOption' => 'Prosím, vyberte jednu z nasledujúcich možností',
-		'unlistFromTimelines' => 'Unlist from Timelines',
+		'unlistFromTimelines' => 'Odstrániť z Timelines',
 		'addCW' => 'Pridať upozornenie o obsahu',
 		'removeCW' => 'Odstrániť upozornenie o obsahu',
 		'markAsSpammer' => 'Označiť ako Spammer',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'markAsSpammerText' => 'Odstrániť zo zoznamu + upozornenie o obsahu existujúce a budúce príspevky',
 		'spam' => 'Spam',
 		'sensitive' => 'Citlivý obsah',
 		'abusive' => 'Zneužívajúci alebo Škodlivý',
@@ -160,9 +160,9 @@ return [
 		'modCWSuccess' => 'Upozornenie o obsahu bolo úspešne pridané',
 		'modRemoveCWConfirm' => 'Naozaj chcete odstrániť upozornenie o obsahu z tohto príspevku?',
 		'modRemoveCWSuccess' => 'Upozornenie o obsahu bolo úspešne odstránené',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
+		'modUnlistConfirm' => 'Naozaj chcete odstrániť zo zoznamu tento príspevok?',
+		'modUnlistSuccess' => 'Príspevok bol úspešne odstránený zo zoznamu',
+		'modMarkAsSpammerConfirm' => 'Naozaj chcete označiť tohto používateľa ako odosielateľa spamu? Všetky existujúce a budúce príspevky budú odstránené z timelines a bude pridané upozornenie o obsahu.',
 		'modMarkAsSpammerSuccess' => 'Účet bol úspešne označený ako spammer',
 
 		'toFollowers' => 'pre Sledujúcich',
@@ -185,9 +185,9 @@ return [
 		'peopleYouMayKnow' => 'Ľudia ktorých možno poznáte',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
+			'welcome' => 'Vitajte',
 			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
-			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
+			'letUsHelpYouFind' => 'Nechajte nás pomôcť vám nájsť zaujímavých ľudí ktorých môžete sledovať',
 			'refreshFeed' => 'Refresh my feed',
 		],
 	],
@@ -197,12 +197,12 @@ return [
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
-		'reported' => 'Reported',
-		'sendingReport' => 'Sending report',
-		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
-		'contactAdminMsg' => 'If you\'d like to contact an administrator about this post or report',
+		'report' => 'Nahlásiť',
+		'selectReason' => 'Vyberte dôvod',
+		'reported' => 'Nahlásené',
+		'sendingReport' => 'Odosielanie hlásenia',
+		'thanksMsg' => 'Ďakujeme za hlásenie, ľudia ako vy pomáhajú udržiavať našu komunitu v bezpečí!',
+		'contactAdminMsg' => 'Ak chcete kontaktovať administrátora ohľadom tohto príspevku alebo ho nahlásiť',
 	],
 
 ];
