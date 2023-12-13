@@ -3,55 +3,55 @@
 return [
 
 	'common' => [
-		'comment' => 'Kommentar',
-		'commented' => 'Kommenterades',
+		'comment' => 'Kommentera',
+		'commented' => 'Kommenterade',
 		'comments' => 'Kommentarer',
 		'like' => 'Gilla',
-		'liked' => 'Gillad',
-		'likes' => 'Gillanden',
+		'liked' => 'Gillade',
+		'likes' => 'Gillar-markeringar',
 		'share' => 'Dela',
-		'shared' => 'Utdelad',
-		'shares' => 'Utdelade',
-		'unshare' => 'Sluta dela ut',
-		'bookmark' => 'Bookmark',
+		'shared' => 'Delade',
+		'shares' => 'Delningar',
+		'unshare' => 'Sluta dela',
+		'bookmark' => 'Bokmärk',
 
 		'cancel' => 'Avbryt',
 		'copyLink' => 'Kopiera länk',
 		'delete' => 'Ta bort',
 		'error' => 'Fel',
-		'errorMsg' => 'Något gick fel. Vänligen försök igen senare.',
+		'errorMsg' => 'Något gick fel. Försök igen senare',
 		'oops' => 'Hoppsan!',
-		'other' => 'Annat',
+		'other' => 'Andra',
 		'readMore' => 'Läs mer',
 		'success' => 'Lyckades',
-		'proceed' => 'Proceed',
-		'next' => 'Next',
-		'close' => 'Close',
-		'clickHere' => 'click here',
+		'proceed' => 'Fortsätt',
+		'next' => 'Nästa',
+		'close' => 'Stäng',
+		'clickHere' => 'klicka här',
 
 		'sensitive' => 'Känsligt',
 		'sensitiveContent' => 'Känsligt innehåll',
-		'sensitiveContentWarning' => 'Det här inlägget kan innehålla känsligt innehåll',
+		'sensitiveContentWarning' => 'TDet här inlägget kan innehålla känsligt innehåll',
 	],
 
 	'site' => [
-		'terms' => 'Användarvillkor',
+		'terms' => 'Villkor',
 		'privacy' => 'Integritetspolicy',
 	],
 
 	'navmenu' => [
 		'search' => 'Sök',
-		'admin' => 'Kontrollpanel för administratör',
+		'admin' => 'Admin Panel',
 
 		// Timelines
-		'homeFeed' => 'Hemflöde',
-		'localFeed' => 'Lokalt flöde',
-		'globalFeed' => 'Globalt flöde',
+		'homeFeed' => 'Hemflödet',
+		'localFeed' => 'Lokala flödet',
+		'globalFeed' => 'Globala flödet',
 
 		// Core features
-		'discover' => 'Upptäck',
+		'discover' => 'Utforska',
 		'directMessages' => 'Direktmeddelanden',
-		'notifications' => 'Aviseringar',
+		'notifications' => 'Notifikationer',
 		'groups' => 'Grupper',
 		'stories' => 'Historier',
 
@@ -59,7 +59,7 @@ return [
 		'profile' => 'Profil',
 		'drive' => 'Enhet',
 		'settings' => 'Inställningar',
-		'compose' => 'Skapa ny',
+		'compose' => 'Skapa nytt',
 		'logout' => 'Logga ut',
 
 		// Nav footer
@@ -67,10 +67,10 @@ return [
 		'help' => 'Hjälp',
 		'language' => 'Språk',
 		'privacy' => 'Integritet',
-		'terms' => 'Villkor',
+		'terms' => 'Vilkor',
 
 		// Temporary links
-		'backToPreviousDesign' => 'Gå tillbaka till föregående design'
+		'backToPreviousDesign' => 'Gå tillbaka till den gamla designen'
 	],
 
 	'directMessages' => [
@@ -81,34 +81,34 @@ return [
 
 	'notifications' => [
 		'liked' => 'gillade ditt',
-		'commented' => 'kommenterade på din',
-		'reacted' => 'reagerade på din',
-		'shared' => 'delade din',
-		'tagged' => 'taggade dig i ett',
+		'commented' => 'kommenterade på ditt',
+		'reacted' => 'reagerade på ditt',
+		'shared' => 'delade ditt',
+		'tagged' => 'taggade dig i en',
 
 		'updatedA' => 'uppdaterade en',
 		'sentA' => 'skickade en',
 
-		'followed' => 'följde',
+		'followed' => 'följer',
 		'mentioned' => 'nämnde',
-		'you' => 'du',
+		'you' => 'dig',
 
-		'yourApplication' => 'Din ansökan för att gå med',
-		'applicationApproved' => 'godkändes!',
-		'applicationRejected' => 'nekades. Du kan söka för att gå med igen om 6 månader.',
+		'yourApplication' => 'Din ansökan att gå med',
+		'applicationApproved' => 'blev godkänd!',
+		'applicationRejected' => 'blev nekad. Du kan ansöka igen om 6 månader.',
 
 		'dm' => 'dm',
-		'groupPost' => 'gruppinlägg',
+		'groupPost' => 'grupp inlägg',
 		'modlog' => 'modlog',
 		'post' => 'inlägg',
 		'story' => 'historik',
-		'noneFound' => 'No notifications found',
+		'noneFound' => 'Inga aviseringar hittades',
 	],
 
 	'post' => [
 		'shareToFollowers' => 'Dela till följare',
 		'shareToOther' => 'Dela till andra',
-		'noLikes' => 'Inga gillningar än',
+		'noLikes' => 'Inga gilla-markeringar än',
 		'uploading' => 'Laddar upp',
 	],
 
@@ -117,88 +117,88 @@ return [
 		'followers' => 'Följare',
 		'following' => 'Följer',
 		'admin' => 'Administratör',
-		'collections' => 'Samlingar',
+		'collections' => 'Kollektioner',
 		'follow' => 'Följ',
 		'unfollow' => 'Sluta följa',
 		'editProfile' => 'Redigera profil',
-		'followRequested' => 'Follow Requested',
+		'followRequested' => 'Följförfrågan skickad',
 		'joined' => 'Gick med',
 
-		'emptyCollections' => 'Vi verkar inte kunna hitta några samlingar',
-		'emptyPosts' => 'Vi verkar inte riktigt kunna hitta några inlägg',
+		'emptyCollections' => 'Vi verkar inte hitta några kollektioner',
+		'emptyPosts' => 'Vi verkar inte hitta några inlägg',
 	],
 
 	'menu' => [
 		'viewPost' => 'Visa inlägg',
 		'viewProfile' => 'Visa profil',
-		'moderationTools' => 'Verktyg för moderering',
+		'moderationTools' => 'Modereringsverktyg',
 		'report' => 'Rapportera',
 		'archive' => 'Arkivera',
-		'unarchive' => 'Avarkivera',
+		'unarchive' => 'avarkivera',
 		'embed' => 'Bädda in',
 
-		'selectOneOption' => 'Välj något av följande alternativ',
-		'unlistFromTimelines' => 'Unlist from Timelines',
-		'addCW' => 'Lägg till innehållsvarning',
-		'removeCW' => 'Ta bort innehållsvarning',
-		'markAsSpammer' => 'Markera som skickare av skräppost',
-		'markAsSpammerText' => 'Unlist + CW existing and future posts',
+		'selectOneOption' => 'Välj ett av följande alternativ',
+		'unlistFromTimelines' => 'Avlista från tidslinjer',
+		'addCW' => 'Lägg till känslighetsvarning',
+		'removeCW' => 'Ta bort känslighetsvarning',
+		'markAsSpammer' => 'Markera som spammare',
+		'markAsSpammerText' => 'Avlista + känslighetsmarkera nuvarande och framtida inlägg',
 		'spam' => 'Skräppost',
 		'sensitive' => 'Känsligt innehåll',
-		'abusive' => 'Abusive or Harmful',
+		'abusive' => 'Missbruk eller skadligt',
 		'underageAccount' => 'Minderårigt konto',
 		'copyrightInfringement' => 'Upphovsrättsintrång',
-		'impersonation' => 'Imitering',
-		'scamOrFraud' => 'Lurendrejeri eller Bedrägeri',
-		'confirmReport' => 'Bekräfta rapport',
-		'confirmReportText' => 'Är du säker på att du vill rapportera det här inlägget?',
-		'reportSent' => 'Rapporten skickades!',
-		'reportSentText' => 'Mottagningen av din rapport lyckades.',
-		'reportSentError' => 'Det uppstod ett problem när det här inlägget skulle rapporteras.',
+		'impersonation' => 'Personimitation',
+		'scamOrFraud' => 'Bedrägeri',
+		'confirmReport' => 'Bekräfta anmälan',
+		'confirmReportText' => 'Är du säker att du vill anmäla detta inlägg?',
+		'reportSent' => 'Anmälan skickad!',
+		'reportSentText' => 'Vi har fått emot din anmälan till detta inlägg.',
+		'reportSentError' => 'Något gick fel när detta inlägget skulle anmälas.',
 
-		'modAddCWConfirm' => 'Are you sure you want to add a content warning to this post?',
-		'modCWSuccess' => 'Successfully added content warning',
-		'modRemoveCWConfirm' => 'Are you sure you want to remove the content warning on this post?',
-		'modRemoveCWSuccess' => 'Successfully removed content warning',
-		'modUnlistConfirm' => 'Are you sure you want to unlist this post?',
-		'modUnlistSuccess' => 'Successfully unlisted post',
-		'modMarkAsSpammerConfirm' => 'Are you sure you want to mark this user as a spammer? All existing and future posts will be unlisted on timelines and a content warning will be applied.',
-		'modMarkAsSpammerSuccess' => 'Successfully marked account as spammer',
+		'modAddCWConfirm' => 'Är du säker att du vill lägga till känslighetsvarning på detta inlägget?',
+		'modCWSuccess' => 'Lade till känslighetsvarning',
+		'modRemoveCWConfirm' => 'Är du säker att du vill ta bort känslighetsvarningen på detta inlägget?',
+		'modRemoveCWSuccess' => 'Tog bort känsloghetsvarning',
+		'modUnlistConfirm' => 'Är du säker att du vill avlista detta inlägget?',
+		'modUnlistSuccess' => 'Avlistade inlägget',
+		'modMarkAsSpammerConfirm' => 'Är du säker att du vill markera detta konto som spammare? Alla nuvarande och framtida inlägg kommer avlistas och en känslighetsvarning kommer läggas till på inläggen',
+		'modMarkAsSpammerSuccess' => 'Markerade kontot som spammare',
 
-		'toFollowers' => 'to Followers',
+		'toFollowers' => 'till följare',
 
-		'showCaption' => 'Show Caption',
-		'showLikes' => 'Show Likes',
-		'compactMode' => 'Compact Mode',
-		'embedConfirmText' => 'By using this embed, you agree to our',
+		'showCaption' => 'Visa bildtext',
+		'showLikes' => 'Visa gilla-markeringar',
+		'compactMode' => 'Kompaktläge',
+		'embedConfirmText' => 'Genom att använda denna inbäddning godkänner du vår',
 
-		'deletePostConfirm' => 'Are you sure you want to delete this post?',
-		'archivePostConfirm' => 'Are you sure you want to archive this post?',
-		'unarchivePostConfirm' => 'Are you sure you want to unarchive this post?',
+		'deletePostConfirm' => 'Är du säker att du vill ta bort detta inlägg?',
+		'archivePostConfirm' => 'Är du säker att du vill arkivera detta inlägg?',
+		'unarchivePostConfirm' => 'Är du säker att du vill avarkivera detta inlägg?',
 	],
 
 	'story' => [
-		'add' => 'Add Story'
+		'add' => 'Lägg till Story'
 	],
 
 	'timeline' => [
-		'peopleYouMayKnow' => 'People you may know',
+		'peopleYouMayKnow' => 'Personer du kanske känner',
 
 		'onboarding' => [
-			'welcome' => 'Welcome',
+			'welcome' => 'Välkommen',
 			'thisIsYourHomeFeed' => 'This is your home feed, a chronological feed of posts from accounts you follow.',
 			'letUsHelpYouFind' => 'Let us help you find some interesting people to follow',
-			'refreshFeed' => 'Refresh my feed',
+			'refreshFeed' => 'Uppdatera mitt flöde',
 		],
 	],
 
 	'hashtags' => [
-		'emptyFeed' => 'We can\'t seem to find any posts for this hashtag'
+		'emptyFeed' => 'Vi kan inte hitta några inlägg med den hashtagen'
 	],
 
 	'report' => [
-		'report' => 'Report',
-		'selectReason' => 'Select a reason',
+		'report' => 'Rapportera',
+		'selectReason' => 'Välj en anledning',
 		'reported' => 'Reported',
 		'sendingReport' => 'Sending report',
 		'thanksMsg' => 'Thanks for the report, people like you help keep our community safe!',
