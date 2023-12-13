@@ -189,6 +189,7 @@ class ApiV1Controller extends Controller
 
         abort_if(!$user, 403);
         abort_if($user->status != null, 403);
+        AccountService::setLastActive($user->id);
 
         $res = $request->has(self::PF_API_ENTITY_KEY) ? AccountService::get($user->profile_id) : AccountService::getMastodon($user->profile_id);
 
@@ -247,6 +248,7 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
         $profile = $user->profile;
         $settings = $user->settings;
 
@@ -754,6 +756,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
@@ -838,6 +841,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
@@ -941,6 +945,7 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
         $query = $request->input('q');
         $limit = $request->input('limit') ?? 20;
         $resolve = (bool) $request->input('resolve', false);
@@ -1013,6 +1018,7 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
         $pid = $user->profile_id ?? $user->profile->id;
+        AccountService::setLastActive($user->id);
 
         if(intval($id) === intval($pid)) {
             abort(400, 'You cannot block yourself');
@@ -1105,6 +1111,7 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
         $pid = $user->profile_id ?? $user->profile->id;
+        AccountService::setLastActive($user->id);
 
         if(intval($id) === intval($pid)) {
             abort(400, 'You cannot unblock yourself');
@@ -1237,6 +1244,8 @@ class ApiV1Controller extends Controller
 
         $user = $request->user();
 
+        AccountService::setLastActive($user->id);
+
         $status = StatusService::getMastodon($id, false);
 
         abort_unless($status, 400);
@@ -1295,6 +1304,8 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+
+        AccountService::setLastActive($user->id);
 
         $status = Status::findOrFail($id);
 
@@ -1611,6 +1622,7 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
 
         if($user->last_active_at == null) {
             return [];
@@ -1732,6 +1744,7 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
 
         $media = Media::whereUserId($user->id)
             ->whereProfileId($user->profile_id)
@@ -1778,6 +1791,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
 
         $media = Media::whereUserId($user->id)
             ->whereNull('status_id')
@@ -1820,6 +1834,8 @@ class ApiV1Controller extends Controller
         if($user->last_active_at == null) {
             return [];
         }
+
+        AccountService::setLastActive($user->id);
 
         if(empty($request->file('file'))) {
             return response('', 422);
@@ -2065,6 +2081,8 @@ class ApiV1Controller extends Controller
             'min_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'max_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
             'since_id' => 'nullable|integer|min:1|max:'.PHP_INT_MAX,
+            'types[]' => 'sometimes|array',
+            'type' => 'sometimes|string|in:mention,reblog,follow,favourite'
         ]);
 
         $pid = $request->user()->profile_id;
@@ -2078,28 +2096,28 @@ class ApiV1Controller extends Controller
             $min = 1;
         }
 
+        $types = $request->input('types');
+
         $maxId = null;
         $minId = null;
+        AccountService::setLastActive($request->user()->id);
 
-        if($max) {
-            $res = NotificationService::getMaxMastodon($pid, $max, $limit);
-            $ids = NotificationService::getRankedMaxId($pid, $max, $limit);
-            if(!empty($ids)) {
-                $maxId = max($ids);
-                $minId = min($ids);
-            }
-        } else {
-            $res = NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
-            $ids = NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
-            if(!empty($ids)) {
-                $maxId = max($ids);
-                $minId = min($ids);
-            }
+        $res = $max ?
+            NotificationService::getMaxMastodon($pid, $max, $limit) :
+            NotificationService::getMinMastodon($pid, $min ?? $since, $limit);
+        $ids = $max ?
+            NotificationService::getRankedMaxId($pid, $max, $limit) :
+            NotificationService::getRankedMinId($pid, $min ?? $since, $limit);
+        if(!empty($ids)) {
+            $maxId = max($ids);
+            $minId = min($ids);
         }
 
-        if(empty($res) && !Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
-            Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
-            NotificationService::warmCache($pid, 400, true);
+        if(empty($res)) {
+            if(!Cache::has('pf:services:notifications:hasSynced:'.$pid)) {
+                Cache::put('pf:services:notifications:hasSynced:'.$pid, 1, 1209600);
+                NotificationService::warmCache($pid, 400, true);
+            }
         }
 
         $baseUrl = config('app.url') . '/api/v1/notifications?limit=' . $limit . '&';
@@ -2153,6 +2171,7 @@ class ApiV1Controller extends Controller
         $inTypes = $includeReblogs ?
         ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album', 'share'] :
         ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'];
+        AccountService::setLastActive($request->user()->id);
 
         if(config('exp.cached_home_timeline')) {
             $paddedLimit = $includeReblogs ? $limit + 10 : $limit + 50;
@@ -2402,6 +2421,7 @@ class ApiV1Controller extends Controller
         $remote = $request->has('remote');
         $local = $request->has('local');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
+        AccountService::setLastActive($user->id);
 
         if($remote && config('instance.timeline.network.cached')) {
             Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
@@ -2593,7 +2613,7 @@ class ApiV1Controller extends Controller
     public function statusById(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
-
+        AccountService::setLastActive($request->user()->id);
         $pid = $request->user()->profile_id;
 
         $res = $request->has(self::PF_API_ENTITY_KEY) ? StatusService::get($id, false) : StatusService::getMastodon($id, false);
@@ -2637,6 +2657,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
         $pid = $user->profile_id;
         $status = StatusService::getMastodon($id, false);
 
@@ -3107,7 +3128,7 @@ class ApiV1Controller extends Controller
     public function statusDelete(Request $request, $id)
     {
         abort_if(!$request->user(), 403);
-
+        AccountService::setLastActive($request->user()->id);
         $status = Status::whereProfileId($request->user()->profile->id)
         ->findOrFail($id);
 
@@ -3135,6 +3156,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
         if(intval($status->profile_id) !== intval($user->profile_id)) {
@@ -3181,6 +3203,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
         if(intval($status->profile_id) !== intval($user->profile_id)) {
