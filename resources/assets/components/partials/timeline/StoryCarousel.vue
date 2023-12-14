@@ -20,7 +20,7 @@
 						style="width: 100%;height:200px;border-radius:15px;">
 						<p class="mb-4"></p>
 						<p class="mb-0"><i class="fal fa-plus-circle fa-2x"></i></p>
-						<p class="font-weight-bold">{{ $t('story.add') }}</p>
+						<p class="font-weight-bold text-center">{{ $t('story.add') }}</p>
 					</div>
 				</template>
 			</a>
@@ -168,11 +168,14 @@
 
 				.username {
 					color: #fff;
+					text-align: center;
 				}
 
 				.avatar {
 					border-radius: 6px;
 					margin-bottom: 5px;
+					width: 100%;
+					height: auto;
 				}
 
 				&.seen {
