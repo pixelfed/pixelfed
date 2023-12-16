@@ -8,8 +8,9 @@
   <hr>
   <div class="form-group pb-1">
     <p>
-      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">Muted Users</a>
-      <a class="btn btn-outline-secondary py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">Blocked Users</a>
+      <a class="btn btn-link py-0 font-weight-bold" href="{{route('settings.privacy.muted-users')}}">Muted Accounts</a>
+      <a class="btn btn-link py-0 font-weight-bold" href="{{route('settings.privacy.blocked-users')}}">Blocked Accounts</a>
+      <a class="btn btn-link py-0 font-weight-bold" href="{{route('settings.privacy.domain-blocks')}}">Domain Blocks</a>
     </p>
   </div>
   <form method="post">
