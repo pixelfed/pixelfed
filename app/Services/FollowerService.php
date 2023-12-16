@@ -89,10 +89,14 @@ class FollowerService
         return Redis::zCard(self::FOLLOWING_KEY . $id);
     }
 
-    public static function follows(string $actor, string $target)
+    public static function follows(string $actor, string $target, $quickCheck = false)
     {
         if($actor == $target) {
             return false;
+        }
+
+        if($quickCheck) {
+            return (bool) Redis::zScore(self::FOLLOWERS_KEY . $target, $actor);
         }
 
         if(self::followerCount($target, false) && self::followingCount($actor, false)) {
