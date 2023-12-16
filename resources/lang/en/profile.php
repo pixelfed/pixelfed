@@ -12,4 +12,6 @@ return [
 
   'status.disabled.header' 	  => 'Profile Unavailable',
   'status.disabled.body'	  => 'Sorry, this profile is not available at the moment. Please try again shortly.',
+
+  'block.domain.max'      => 'Max limit of domain blocks reached! You can only block :max domains at a time. Ask your admin to adjust this limit.'
 ];
