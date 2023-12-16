@@ -3619,25 +3619,31 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 86400, function() {
+        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 3600, function() {
             return DB::table('profiles')
             ->where('is_private', false)
             ->whereNull('status')
             ->orderByDesc('profiles.followers_count')
-            ->limit(20)
+            ->limit(30)
             ->get();
         });
-
+        $filters = UserFilterService::filters($pid);
         $ids = $ids->map(function($profile) {
             return AccountService::get($profile->id, true);
         })
         ->filter(function($profile) use($pid) {
-            return $profile && isset($profile['id']);
+            return $profile && isset($profile['id'], $profile['locked']) && !$profile['locked'];
         })
         ->filter(function($profile) use($pid) {
             return $profile['id'] != $pid;
         })
-        ->take(6)
+        ->filter(function($profile) use($pid) {
+            return !FollowerService::follows($pid, $profile['id'], true);
+        })
+        ->filter(function($profile) use($filters) {
+            return !in_array($profile['id'], $filters);
+        })
+        ->take(16)
         ->values();
 
         return $this->json($ids);
