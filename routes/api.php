@@ -51,9 +51,9 @@ Route::group(['prefix' => 'api'], function() use($middleware) {
         Route::get('blocks', 'Api\ApiV1Controller@accountBlocks')->middleware($middleware);
         Route::get('conversations', 'Api\ApiV1Controller@conversations')->middleware($middleware);
         Route::get('custom_emojis', 'Api\ApiV1Controller@customEmojis');
-        Route::get('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware($middleware);
-        Route::post('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware($middleware);
-        Route::delete('domain_blocks', 'Api\ApiV1Controller@accountDomainBlocks')->middleware($middleware);
+        Route::get('domain_blocks', 'Api\V1\DomainBlockController@index')->middleware($middleware);
+        Route::post('domain_blocks', 'Api\V1\DomainBlockController@store')->middleware($middleware);
+        Route::delete('domain_blocks', 'Api\V1\DomainBlockController@delete')->middleware($middleware);
         Route::get('endorsements', 'Api\ApiV1Controller@accountEndorsements')->middleware($middleware);
         Route::get('favourites', 'Api\ApiV1Controller@accountFavourites')->middleware($middleware);
         Route::get('filters', 'Api\ApiV1Controller@accountFilters')->middleware($middleware);
