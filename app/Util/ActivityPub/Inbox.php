@@ -836,6 +836,9 @@ class Inbox
                 if(!$status) {
                     return;
                 }
+                if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
+                    return;
+                }
                 FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
                 Status::whereProfileId($profile->id)
                     ->whereReblogOfId($status->id)
@@ -855,6 +858,9 @@ class Inbox
             case 'Follow':
                 $following = self::actorFirstOrCreate($obj['object']);
                 if(!$following) {
+                    return;
+                }
+                if(AccountService::blocksDomain($following->id, $profile->domain) == true) {
                     return;
                 }
                 Follower::whereProfileId($profile->id)
@@ -880,6 +886,9 @@ class Inbox
                 }
                 $status = Helpers::statusFirstOrFetch($objectUri);
                 if(!$status) {
+                    return;
+                }
+                if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
                     return;
                 }
                 Like::whereProfileId($profile->id)
