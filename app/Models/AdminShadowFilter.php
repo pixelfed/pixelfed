@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\AccountService;
+use App\Profile;
 
 class AdminShadowFilter extends Model
 {
@@ -23,5 +24,10 @@ class AdminShadowFilter extends Model
         }
 
         return;
+    }
+
+    public function profile()
+    {
+        return $this->belongsTo(Profile::class, 'item_id');
     }
 }

@@ -19,7 +19,8 @@ class AdminShadowFilterController extends Controller
     {
         $filter = $request->input('filter');
         $searchQuery = $request->input('q');
-        $filters = AdminShadowFilter::when($filter, function($q, $filter) {
+        $filters = AdminShadowFilter::whereHas('profile')
+        ->when($filter, function($q, $filter) {
             if($filter == 'all') {
                 return $q;
             } else if($filter == 'inactive') {
