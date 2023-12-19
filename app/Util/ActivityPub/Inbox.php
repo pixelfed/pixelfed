@@ -646,6 +646,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($target->id, $actor->domain) == true) {
+            return;
+        }
+
         $request = FollowRequest::whereFollowerId($actor->id)
             ->whereFollowingId($target->id)
             ->whereIsRejected(false)
