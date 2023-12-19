@@ -944,6 +944,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($story->profile_id, $profile->domain) == true) {
+            return;
+        }
+
         if(!FollowerService::follows($profile->id, $story->profile_id)) {
             return;
         }
@@ -1013,6 +1017,10 @@ class Inbox
         }
 
         $actorProfile = Helpers::profileFetch($actor);
+
+        if(AccountService::blocksDomain($targetProfile->id, $actorProfile->domain) == true) {
+            return;
+        }
 
         if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
             return;
@@ -1131,6 +1139,11 @@ class Inbox
         }
 
         $actorProfile = Helpers::profileFetch($actor);
+
+
+        if(AccountService::blocksDomain($targetProfile->id, $actorProfile->domain) == true) {
+            return;
+        }
 
         if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
             return;
