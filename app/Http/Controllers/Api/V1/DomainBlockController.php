@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserDomainBlock;
 use App\Util\ActivityPub\Helpers;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
+use App\Jobs\HomeFeedPipeline\FeedRemoveDomainPipeline;
+use App\Jobs\ProfilePipeline\ProfilePurgeNotificationsByDomain;
+use App\Jobs\ProfilePipeline\ProfilePurgeFollowersByDomain;
 
 class DomainBlockController extends Controller
 {
@@ -59,7 +65,7 @@ class DomainBlockController extends Controller
             return abort(500, 'Invalid domain or already blocked by server admins');
         }
 
-        $domain = parse_url($domain, PHP_URL_HOST);
+        $domain = strtolower(parse_url($domain, PHP_URL_HOST));
 
         abort_if(config_cache('pixelfed.domain.app') == $domain, 400, 'Cannot ban your own server');
 
@@ -69,10 +75,22 @@ class DomainBlockController extends Controller
 
         abort_if($existingCount >= $maxLimit, 400, $errorMsg);
 
-        $block = UserDomainBlock::updateOrInsert([
+        $block = UserDomainBlock::updateOrCreate([
             'profile_id' => $pid,
             'domain' => $domain
         ]);
+
+        if($block->wasRecentlyCreated) {
+            Bus::batch([
+                [
+                    new FeedRemoveDomainPipeline($pid, $domain),
+                    new ProfilePurgeNotificationsByDomain($pid, $domain),
+                    new ProfilePurgeFollowersByDomain($pid, $domain)
+                ]
+            ])->allowFailures()->onQueue('feed')->dispatch();
+
+            Cache::forget('profile:following:' . $pid);
+        }
 
         return $this->json([]);
     }
@@ -87,7 +105,7 @@ class DomainBlockController extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $domain = trim($request->input('domain'));
+        $domain = strtolower(trim($request->input('domain')));
 
         $filters = UserDomainBlock::whereProfileId($pid)->whereDomain($domain)->delete();
 
