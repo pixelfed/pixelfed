@@ -2,6 +2,7 @@
 
 namespace App\Jobs\HomeFeedPipeline;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,7 +16,7 @@ use App\Services\HomeTimelineService;
 
 class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $pid;
     protected $domain;
@@ -67,6 +68,11 @@ class FeedRemoveDomainPipeline implements ShouldQueue, ShouldBeUniqueUntilProces
         if(!config('exp.cached_home_timeline')) {
             return;
         }
+
+        if ($this->batch()->cancelled()) {
+            return;
+        }
+
         if(!$this->pid || !$this->domain) {
             return;
         }
