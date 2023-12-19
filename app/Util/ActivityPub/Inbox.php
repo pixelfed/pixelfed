@@ -775,6 +775,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
+            return;
+        }
+
         $blocks = UserFilterService::blocks($status->profile_id);
         if($blocks && in_array($profile->id, $blocks)) {
             return;
