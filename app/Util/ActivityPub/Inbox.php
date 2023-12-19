@@ -372,7 +372,11 @@ class Inbox
             ->whereUsername(array_last(explode('/', $activity['to'][0])))
             ->firstOrFail();
 
-        if(in_array($actor->id, $profile->blockedIds()->toArray())) {
+        if(!$actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
+            return;
+        }
+
+        if(AccountService::blocksDomain($profile->id, $actor->domain) == true) {
             return;
         }
 
