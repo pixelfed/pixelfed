@@ -35,16 +35,18 @@ class FollowerService
         Cache::forget('profile:following:' . $actor);
     }
 
-    public static function remove($actor, $target)
+    public static function remove($actor, $target, $silent = false)
     {
         Redis::zrem(self::FOLLOWING_KEY . $actor, $target);
         Redis::zrem(self::FOLLOWERS_KEY . $target, $actor);
-        Cache::forget('pf:services:follower:audience:' . $actor);
-        Cache::forget('pf:services:follower:audience:' . $target);
-        AccountService::del($actor);
-        AccountService::del($target);
-        RelationshipService::refresh($actor, $target);
-        Cache::forget('profile:following:' . $actor);
+        if($silent !== true) {
+            AccountService::del($actor);
+            AccountService::del($target);
+            RelationshipService::refresh($actor, $target);
+            Cache::forget('profile:following:' . $actor);
+        } else {
+            RelationshipService::forget($actor, $target);
+        }
     }
 
     public static function followers($id, $start = 0, $stop = 10)
@@ -89,10 +91,14 @@ class FollowerService
         return Redis::zCard(self::FOLLOWING_KEY . $id);
     }
 
-    public static function follows(string $actor, string $target)
+    public static function follows(string $actor, string $target, $quickCheck = false)
     {
         if($actor == $target) {
             return false;
+        }
+
+        if($quickCheck) {
+            return (bool) Redis::zScore(self::FOLLOWERS_KEY . $target, $actor);
         }
 
         if(self::followerCount($target, false) && self::followingCount($actor, false)) {

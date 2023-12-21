@@ -31,6 +31,7 @@ use App\{
     UserSetting,
     UserFilter,
 };
+use App\Models\UserDomainBlock;
 use League\Fractal;
 use App\Transformer\Api\Mastodon\v1\{
     AccountTransformer,
@@ -2422,6 +2423,7 @@ class ApiV1Controller extends Controller
         $local = $request->has('local');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         AccountService::setLastActive($user->id);
+        $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
 
         if($remote && config('instance.timeline.network.cached')) {
             Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
@@ -2495,6 +2497,13 @@ class ApiV1Controller extends Controller
         })
         ->filter(function($s) use($filtered) {
             return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+        })
+        ->filter(function($s) use($domainBlocks) {
+            if(!$domainBlocks || !count($domainBlocks)) {
+                return $s;
+            }
+            $domain = strtolower(parse_url($s['url'], PHP_URL_HOST));
+            return !in_array($domain, $domainBlocks);
         })
         ->take($limit)
         ->values();
@@ -3276,6 +3285,7 @@ class ApiV1Controller extends Controller
         $limit = $request->input('limit', 20);
         $onlyMedia = $request->input('only_media', true);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
+        $pid = $request->user()->profile_id;
 
         if($min || $max) {
             $minMax = SnowflakeService::byDate(now()->subMonths(6));
@@ -3287,7 +3297,8 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $filters = UserFilterService::filters($request->user()->profile_id);
+        $filters = UserFilterService::filters($pid);
+        $domainBlocks = UserFilterService::domainBlocks($pid);
 
         if(!$min && !$max) {
             $id = 1;
@@ -3313,10 +3324,11 @@ class ApiV1Controller extends Controller
                 if($onlyMedia && !isset($i['media_attachments']) || !count($i['media_attachments'])) {
                     return false;
                 }
-                return $i && isset($i['account']);
+                return $i && isset($i['account'], $i['url']);
             })
-            ->filter(function($i) use($filters) {
-                return !in_array($i['account']['id'], $filters);
+            ->filter(function($i) use($filters, $domainBlocks) {
+                $domain = strtolower(parse_url($i['url'], PHP_URL_HOST));
+                return !in_array($i['account']['id'], $filters) && !in_array($domain, $domainBlocks);
             })
             ->values()
             ->toArray();
@@ -3619,25 +3631,31 @@ class ApiV1Controller extends Controller
 
         $pid = $request->user()->profile_id;
 
-        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 86400, function() {
+        $ids = Cache::remember('api:v1.1:discover:accounts:popular', 3600, function() {
             return DB::table('profiles')
             ->where('is_private', false)
             ->whereNull('status')
             ->orderByDesc('profiles.followers_count')
-            ->limit(20)
+            ->limit(30)
             ->get();
         });
-
+        $filters = UserFilterService::filters($pid);
         $ids = $ids->map(function($profile) {
             return AccountService::get($profile->id, true);
         })
         ->filter(function($profile) use($pid) {
-            return $profile && isset($profile['id']);
+            return $profile && isset($profile['id'], $profile['locked']) && !$profile['locked'];
         })
         ->filter(function($profile) use($pid) {
             return $profile['id'] != $pid;
         })
-        ->take(6)
+        ->filter(function($profile) use($pid) {
+            return !FollowerService::follows($pid, $profile['id'], true);
+        })
+        ->filter(function($profile) use($filters) {
+            return !in_array($profile['id'], $filters);
+        })
+        ->take(16)
         ->values();
 
         return $this->json($ids);

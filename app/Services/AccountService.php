@@ -7,6 +7,7 @@ use App\Profile;
 use App\Status;
 use App\User;
 use App\UserSetting;
+use App\Models\UserDomainBlock;
 use App\Transformer\Api\AccountTransformer;
 use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
@@ -233,5 +234,14 @@ class AccountService
             Cache::put($key, 1, 14400);
         }
         return;
+    }
+
+    public static function blocksDomain($pid, $domain = false)
+    {
+        if(!$domain) {
+            return;
+        }
+
+        return UserDomainBlock::whereProfileId($pid)->whereDomain($domain)->exists();
     }
 }

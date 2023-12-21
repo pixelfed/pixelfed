@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Follower;
 use App\Status;
+use App\Models\UserDomainBlock;
 
 class HomeTimelineService
 {
@@ -81,6 +82,8 @@ class HomeTimelineService
                 $following = array_diff($following, $filters);
             }
 
+            $domainBlocks = UserDomainBlock::whereProfileId($id)->pluck('domain')->toArray();
+
             $ids = Status::where('id', '>', $minId)
                 ->whereIn('profile_id', $following)
                 ->whereNull(['in_reply_to_id', 'reblog_of_id'])
@@ -91,6 +94,16 @@ class HomeTimelineService
                 ->pluck('id');
 
             foreach($ids as $pid) {
+                $status = StatusService::get($pid, false);
+                if(!$status || !isset($status['account'], $status['url'])) {
+                    continue;
+                }
+                if($domainBlocks && count($domainBlocks)) {
+                    $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
+                    if(in_array($domain, $domainBlocks)) {
+                        continue;
+                    }
+                }
                 self::add($id, $pid);
             }
 

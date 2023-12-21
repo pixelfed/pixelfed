@@ -11,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Hashtag;
 use App\StatusHashtag;
 use App\UserFilter;
+use App\Models\UserDomainBlock;
 use App\Services\HashtagFollowService;
 use App\Services\HomeTimelineService;
 use App\Services\StatusService;
@@ -77,7 +78,7 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
         $sid = $hashtag->status_id;
         $status = StatusService::get($sid, false);
 
-        if(!$status || !isset($status['account']) || !isset($status['account']['id'])) {
+        if(!$status || !isset($status['account']) || !isset($status['account']['id'], $status['url'])) {
             return;
         }
 
@@ -85,7 +86,20 @@ class HashtagInsertFanoutPipeline implements ShouldQueue, ShouldBeUniqueUntilPro
             return;
         }
 
-        $skipIds = UserFilter::whereFilterableType('App\Profile')->whereFilterableId($status['account']['id'])->whereIn('filter_type', ['mute', 'block'])->pluck('user_id')->toArray();
+        $domain = strtolower(parse_url($status['url'], PHP_URL_HOST));
+        $skipIds = [];
+
+        if(strtolower(config('pixelfed.domain.app')) !== $domain) {
+            $skipIds = UserDomainBlock::where('domain', $domain)->pluck('profile_id')->toArray();
+        }
+
+        $filters = UserFilter::whereFilterableType('App\Profile')->whereFilterableId($status['account']['id'])->whereIn('filter_type', ['mute', 'block'])->pluck('user_id')->toArray();
+
+        if($filters && count($filters)) {
+            $skipIds = array_merge($skipIds, $filters);
+        }
+
+        $skipIds = array_unique(array_values($skipIds));
 
         $ids = HashtagFollowService::getPidByHid($hashtag->hashtag_id);
 

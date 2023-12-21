@@ -39,6 +39,7 @@ use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 
+use App\Services\AccountService;
 use App\Services\PollService;
 use App\Services\FollowerService;
 use App\Services\ReblogService;
@@ -372,7 +373,11 @@ class Inbox
             ->whereUsername(array_last(explode('/', $activity['to'][0])))
             ->firstOrFail();
 
-        if(in_array($actor->id, $profile->blockedIds()->toArray())) {
+        if(!$actor || in_array($actor->id, $profile->blockedIds()->toArray())) {
+            return;
+        }
+
+        if(AccountService::blocksDomain($profile->id, $actor->domain) == true) {
             return;
         }
 
@@ -510,6 +515,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($target->id, $actor->domain) == true) {
+            return;
+        }
+
         if(
             Follower::whereProfileId($actor->id)
                 ->whereFollowingId($target->id)
@@ -581,6 +590,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($parent->profile_id, $actor->domain) == true) {
+            return;
+        }
+
         $blocks = UserFilterService::blocks($parent->profile_id);
         if($blocks && in_array($actor->id, $blocks)) {
             return;
@@ -631,6 +644,10 @@ class Inbox
         $target = Helpers::profileFetch($target);
 
         if(!$actor || !$target) {
+            return;
+        }
+
+        if(AccountService::blocksDomain($target->id, $actor->domain) == true) {
             return;
         }
 
@@ -759,6 +776,10 @@ class Inbox
             return;
         }
 
+        if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
+            return;
+        }
+
         $blocks = UserFilterService::blocks($status->profile_id);
         if($blocks && in_array($profile->id, $blocks)) {
             return;
@@ -816,6 +837,9 @@ class Inbox
                 if(!$status) {
                     return;
                 }
+                if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
+                    return;
+                }
                 FeedRemoveRemotePipeline::dispatch($status->id, $status->profile_id)->onQueue('feed');
                 Status::whereProfileId($profile->id)
                     ->whereReblogOfId($status->id)
@@ -835,6 +859,9 @@ class Inbox
             case 'Follow':
                 $following = self::actorFirstOrCreate($obj['object']);
                 if(!$following) {
+                    return;
+                }
+                if(AccountService::blocksDomain($following->id, $profile->domain) == true) {
                     return;
                 }
                 Follower::whereProfileId($profile->id)
@@ -860,6 +887,9 @@ class Inbox
                 }
                 $status = Helpers::statusFirstOrFetch($objectUri);
                 if(!$status) {
+                    return;
+                }
+                if(AccountService::blocksDomain($status->profile_id, $profile->domain) == true) {
                     return;
                 }
                 Like::whereProfileId($profile->id)
@@ -912,6 +942,10 @@ class Inbox
             ->find($storyId);
 
         if(!$story) {
+            return;
+        }
+
+        if(AccountService::blocksDomain($story->profile_id, $profile->domain) == true) {
             return;
         }
 
@@ -984,6 +1018,10 @@ class Inbox
         }
 
         $actorProfile = Helpers::profileFetch($actor);
+
+        if(AccountService::blocksDomain($targetProfile->id, $actorProfile->domain) == true) {
+            return;
+        }
 
         if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
             return;
@@ -1102,6 +1140,11 @@ class Inbox
         }
 
         $actorProfile = Helpers::profileFetch($actor);
+
+
+        if(AccountService::blocksDomain($targetProfile->id, $actorProfile->domain) == true) {
+            return;
+        }
 
         if(!FollowerService::follows($actorProfile->id, $targetProfile->id)) {
             return;

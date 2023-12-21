@@ -95,7 +95,15 @@ class SearchApiV2Service
         if(substr($webfingerQuery, 0, 1) !== '@') {
             $webfingerQuery = '@' . $webfingerQuery;
         }
-        $banned = InstanceService::getBannedDomains();
+        $banned = InstanceService::getBannedDomains() ?? [];
+        $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
+        if($domainBlocks && count($domainBlocks)) {
+            $banned = array_unique(
+                array_values(
+                    array_merge($banned, $domainBlocks)
+                )
+            );
+        }
         $operator = config('database.default') === 'pgsql' ? 'ilike' : 'like';
         $results = Profile::select('username', 'id', 'followers_count', 'domain')
             ->where('username', $operator, $query)
@@ -172,8 +180,18 @@ class SearchApiV2Service
             'hashtags' => [],
             'statuses' => [],
         ];
+        $user = request()->user();
         $mastodonMode = self::$mastodonMode;
         $query = urldecode($this->query->input('q'));
+        $banned = InstanceService::getBannedDomains();
+        $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
+        if($domainBlocks && count($domainBlocks)) {
+            $banned = array_unique(
+                array_values(
+                    array_merge($banned, $domainBlocks)
+                )
+            );
+        }
         if(substr($query, 0, 1) === '@' && !Str::contains($query, '.')) {
             $default['accounts'] = $this->accounts(substr($query, 1));
             return $default;
@@ -197,7 +215,11 @@ class SearchApiV2Service
                 } catch (\Exception $e) {
                     return $default;
                 }
-                if($res && isset($res['id'])) {
+                if($res && isset($res['id'], $res['url'])) {
+                    $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
+                    if(in_array($domain, $banned)) {
+                        return $default;
+                    }
                     $default['accounts'][] = $res;
                     return $default;
                 } else {
@@ -212,6 +234,10 @@ class SearchApiV2Service
                     return $default;
                 }
                 if($res && isset($res['id'])) {
+                    $domain = strtolower(parse_url($res['url'], PHP_URL_HOST));
+                    if(in_array($domain, $banned)) {
+                        return $default;
+                    }
                     $default['accounts'][] = $res;
                     return $default;
                 } else {
@@ -221,6 +247,9 @@ class SearchApiV2Service
 
             if($sid = Status::whereUri($query)->first()) {
                 $s = StatusService::get($sid->id, false);
+                if(!$s) {
+                    return $default;
+                }
                 if(in_array($s['visibility'], ['public', 'unlisted'])) {
                     $default['statuses'][] = $s;
                     return $default;
@@ -229,7 +258,7 @@ class SearchApiV2Service
 
             try {
                 $res = ActivityPubFetchService::get($query);
-                $banned = InstanceService::getBannedDomains();
+
                 if($res) {
                     $json = json_decode($res, true);
 
