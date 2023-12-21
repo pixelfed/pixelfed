@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_domain_blocks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('profile_id')->index();
-            $table->string('domain');
+            $table->string('domain')->index();
             $table->unique(['profile_id', 'domain'], 'user_domain_blocks_by_id');
         });
     }
