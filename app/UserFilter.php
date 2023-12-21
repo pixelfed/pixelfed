@@ -33,4 +33,9 @@ class UserFilter extends Model
     {
         return $this->belongsTo(Instance::class, 'filterable_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(Profile::class, 'user_id');
+    }
 }
