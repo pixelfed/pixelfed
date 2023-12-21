@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\User;
+use App\Models\DefaultDomainBlock;
 use App\Models\UserDomainBlock;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\confirm;
@@ -31,6 +32,7 @@ class AddUserDomainBlock extends Command
     public function handle()
     {
         $domain = text('Enter domain you want to block');
+        $domain = strtolower($domain);
         $domain = $this->validateDomain($domain);
         $this->processBlocks($domain);
         return;
@@ -74,6 +76,9 @@ class AddUserDomainBlock extends Command
 
     protected function processBlocks($domain)
     {
+        DefaultDomainBlock::updateOrCreate([
+            'domain' => $domain
+        ]);
         progress(
             label: 'Updating user domain blocks...',
             steps: User::lazyById(500),

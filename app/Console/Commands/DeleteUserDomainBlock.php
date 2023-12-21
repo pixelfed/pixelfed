@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\User;
+use App\Models\DefaultDomainBlock;
 use App\Models\UserDomainBlock;
 use function Laravel\Prompts\text;
 use function Laravel\Prompts\confirm;
@@ -31,6 +32,7 @@ class DeleteUserDomainBlock extends Command
     public function handle()
     {
         $domain = text('Enter domain you want to unblock');
+        $domain = strtolower($domain);
         $domain = $this->validateDomain($domain);
         $this->processUnblocks($domain);
         return;
@@ -74,6 +76,7 @@ class DeleteUserDomainBlock extends Command
 
     protected function processUnblocks($domain)
     {
+        DefaultDomainBlock::whereDomain($domain)->delete();
         progress(
             label: 'Updating user domain blocks...',
             steps: UserDomainBlock::whereDomain($domain)->lazyById(500),
