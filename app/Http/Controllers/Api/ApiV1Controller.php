@@ -3285,6 +3285,7 @@ class ApiV1Controller extends Controller
         $limit = $request->input('limit', 20);
         $onlyMedia = $request->input('only_media', true);
         $pe = $request->has(self::PF_API_ENTITY_KEY);
+        $pid = $request->user()->profile_id;
 
         if($min || $max) {
             $minMax = SnowflakeService::byDate(now()->subMonths(6));
@@ -3296,7 +3297,8 @@ class ApiV1Controller extends Controller
             }
         }
 
-        $filters = UserFilterService::filters($request->user()->profile_id);
+        $filters = UserFilterService::filters($pid);
+        $domainBlocks = UserFilterService::domainBlocks($pid);
 
         if(!$min && !$max) {
             $id = 1;
@@ -3322,10 +3324,11 @@ class ApiV1Controller extends Controller
                 if($onlyMedia && !isset($i['media_attachments']) || !count($i['media_attachments'])) {
                     return false;
                 }
-                return $i && isset($i['account']);
+                return $i && isset($i['account'], $i['url']);
             })
-            ->filter(function($i) use($filters) {
-                return !in_array($i['account']['id'], $filters);
+            ->filter(function($i) use($filters, $domainBlocks) {
+                $domain = strtolower(parse_url($i['url'], PHP_URL_HOST));
+                return !in_array($i['account']['id'], $filters) && !in_array($domain, $domainBlocks);
             })
             ->values()
             ->toArray();
