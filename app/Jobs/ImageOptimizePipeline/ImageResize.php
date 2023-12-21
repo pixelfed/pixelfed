@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Log;
 
 class ImageResize implements ShouldQueue
 {
@@ -46,6 +47,7 @@ class ImageResize implements ShouldQueue
         }
         $path = storage_path('app/'.$media->media_path);
         if (!is_file($path) || $media->skip_optimize) {
+            Log::info('Tried to optimize media that does not exist or is not readable. ' . $path);
             return;
         }
 
@@ -57,6 +59,7 @@ class ImageResize implements ShouldQueue
             $img = new Image();
             $img->resizeImage($media);
         } catch (Exception $e) {
+            Log::error($e);
         }
 
         ImageThumbnail::dispatch($media)->onQueue('mmo');
