@@ -34,6 +34,10 @@ class DeleteUserDomainBlock extends Command
         $domain = text('Enter domain you want to unblock');
         $domain = strtolower($domain);
         $domain = $this->validateDomain($domain);
+        if(!$domain || empty($domain)) {
+            $this->error('Invalid domain');
+            return;
+        }
         $this->processUnblocks($domain);
         return;
     }
@@ -41,7 +45,6 @@ class DeleteUserDomainBlock extends Command
     protected function validateDomain($domain)
     {
         if(!strpos($domain, '.')) {
-            $this->error('Invalid domain');
             return;
         }
 
@@ -53,16 +56,14 @@ class DeleteUserDomainBlock extends Command
             $domain = str_replace('http://', '', $domain);
         }
 
+        $domain = strtolower(parse_url('https://' . $domain, PHP_URL_HOST));
+
         $valid = filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME|FILTER_NULL_ON_FAILURE);
         if(!$valid) {
-            $this->error('Invalid domain');
             return;
         }
 
-        $domain = strtolower(parse_url('https://' . $domain, PHP_URL_HOST));
-
         if($domain === config('pixelfed.domain.app')) {
-            $this->error('Invalid domain');
             return;
         }
 
@@ -77,6 +78,10 @@ class DeleteUserDomainBlock extends Command
     protected function processUnblocks($domain)
     {
         DefaultDomainBlock::whereDomain($domain)->delete();
+        if(!UserDomainBlock::whereDomain($domain)->count()) {
+            $this->info('No results found!');
+            return;
+        }
         progress(
             label: 'Updating user domain blocks...',
             steps: UserDomainBlock::whereDomain($domain)->lazyById(500),
