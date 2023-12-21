@@ -31,6 +31,7 @@ use App\{
     UserSetting,
     UserFilter,
 };
+use App\Models\UserDomainBlock;
 use League\Fractal;
 use App\Transformer\Api\Mastodon\v1\{
     AccountTransformer,
@@ -2422,6 +2423,7 @@ class ApiV1Controller extends Controller
         $local = $request->has('local');
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         AccountService::setLastActive($user->id);
+        $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
 
         if($remote && config('instance.timeline.network.cached')) {
             Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
@@ -2495,6 +2497,13 @@ class ApiV1Controller extends Controller
         })
         ->filter(function($s) use($filtered) {
             return $s && isset($s['account']) && in_array($s['account']['id'], $filtered) == false;
+        })
+        ->filter(function($s) use($domainBlocks) {
+            if(!$domainBlocks || !count($domainBlocks)) {
+                return $s;
+            }
+            $domain = strtolower(parse_url($s['url'], PHP_URL_HOST));
+            return !in_array($domain, $domainBlocks);
         })
         ->take($limit)
         ->values();
