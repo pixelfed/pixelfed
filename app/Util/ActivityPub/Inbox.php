@@ -39,6 +39,7 @@ use App\Util\ActivityPub\Validator\Like as LikeValidator;
 use App\Util\ActivityPub\Validator\UndoFollow as UndoFollowValidator;
 use App\Util\ActivityPub\Validator\UpdatePersonValidator;
 
+use App\Services\AccountService;
 use App\Services\PollService;
 use App\Services\FollowerService;
 use App\Services\ReblogService;
