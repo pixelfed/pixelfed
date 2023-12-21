@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserDomainBlock;
 use App\Util\ActivityPub\Helpers;
+use App\Services\UserFilterService;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
@@ -90,6 +91,7 @@ class DomainBlockController extends Controller
             ])->allowFailures()->onQueue('feed')->dispatch();
 
             Cache::forget('profile:following:' . $pid);
+            UserFilterService::domainBlocks($pid, true);
         }
 
         return $this->json([]);
@@ -108,6 +110,8 @@ class DomainBlockController extends Controller
         $domain = strtolower(trim($request->input('domain')));
 
         $filters = UserDomainBlock::whereProfileId($pid)->whereDomain($domain)->delete();
+
+        UserFilterService::domainBlocks($pid, true);
 
         return $this->json([]);
     }
