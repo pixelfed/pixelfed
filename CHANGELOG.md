@@ -83,6 +83,7 @@
 - Update ApiV1Controller, set last_active_at ([b6419545](https://github.com/pixelfed/pixelfed/commit/b6419545))
 - Update AdminShadowFilter, fix deleted profile bug ([a492a95a](https://github.com/pixelfed/pixelfed/commit/a492a95a))
 - Update FollowerService, add $silent param to remove method to more efficently purge relationships ([1664a5bc](https://github.com/pixelfed/pixelfed/commit/1664a5bc))
+- Update AP ProfileTransformer, add published attribute ([adfaa2b1](https://github.com/pixelfed/pixelfed/commit/adfaa2b1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
