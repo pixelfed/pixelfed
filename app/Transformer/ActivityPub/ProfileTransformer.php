@@ -40,6 +40,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'url'                       => $profile->url(),
           'manuallyApprovesFollowers' => (bool) $profile->is_private,
           'indexable'                 => (bool) $profile->indexable,
+          'published'                 => $profile->created_at->format('Y-m-d') . 'T00:00:00Z',
           'publicKey' => [
             'id'           => $profile->permalink().'#main-key',
             'owner'        => $profile->permalink(),
