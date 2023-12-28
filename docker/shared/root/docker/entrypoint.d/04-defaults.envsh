@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# NOTE:
+#
+# This file is *sourced* not run by the entrypoint runner
+# so any environment values set here will be accessible to all sub-processes
+# and future entrypoint.d scripts
+#
+# We also don't need to source `helpers.sh` since it's already available
+
+entrypoint-set-script-name "${BASH_SOURCE[0]}"
+
+load-config-files
+
+: "${MAX_PHOTO_SIZE:=15000}"
+: "${MAX_ALBUM_LENGTH:=4}"
+
+# We assign a 1MB buffer to the just-in-time calculated max post size to allow for fields and overhead
+: "${POST_MAX_SIZE_BUFFER:=1M}"
+log-info "POST_MAX_SIZE_BUFFER is set to [${POST_MAX_SIZE_BUFFER}]"
+buffer=$(numfmt --invalid=fail --from=auto --to=none --to-unit=K "${POST_MAX_SIZE_BUFFER}")
+log-info "POST_MAX_SIZE_BUFFER converted to KB is [${buffer}]"
+
+# Automatically calculate the [post_max_size] value for [php.ini] and [nginx]
+log-info "POST_MAX_SIZE will be calculated by [({MAX_PHOTO_SIZE} * {MAX_ALBUM_LENGTH}) + {POST_MAX_SIZE_BUFFER}]"
+log-info "  MAX_PHOTO_SIZE=${MAX_PHOTO_SIZE}"
+log-info "  MAX_ALBUM_LENGTH=${MAX_ALBUM_LENGTH}"
+log-info "  POST_MAX_SIZE_BUFFER=${buffer}"
+: "${POST_MAX_SIZE:=$(numfmt --invalid=fail --from=auto --from-unit=K --to=si $(((MAX_PHOTO_SIZE * MAX_ALBUM_LENGTH) + buffer)))}"
+log-info "POST_MAX_SIZE was calculated to [${POST_MAX_SIZE}]"
+
+# NOTE: must export the value so it's available in other scripts!
+export POST_MAX_SIZE

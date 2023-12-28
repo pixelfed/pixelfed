@@ -1,8 +1,4 @@
-data
-Dockerfile
-contrib/docker/Dockerfile.*
-docker-compose*.yml
-.dockerignore
+.env
 .git
 .gitignore
-.env
+/docker-compose-state/
