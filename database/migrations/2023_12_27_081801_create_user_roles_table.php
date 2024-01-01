@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('profile_id')->unique()->index();
             $table->unsignedInteger('user_id')->unique()->index();
             $table->json('roles')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }
