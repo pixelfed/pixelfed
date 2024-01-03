@@ -80,7 +80,7 @@
 			},
 
 			injectCustomEmoji() {
-				// console.log('inecting custom emoji');
+				// console.log('injecting custom emoji');
 				// let re = /:\w{1,100}:/g;
 				// let matches = this.status.content.match(re);
 				// console.log(matches);
