@@ -13,6 +13,7 @@ use League\Fractal;
 use League\Fractal\Serializer\ArraySerializer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use \NumberFormatter;
 
 class AccountService
 {
@@ -243,5 +244,39 @@ class AccountService
         }
 
         return UserDomainBlock::whereProfileId($pid)->whereDomain($domain)->exists();
+    }
+
+    public static function formatNumber($num) {
+        if(!$num || $num < 1) {
+            return "0";
+        }
+        $num = intval($num);
+        $formatter = new NumberFormatter('en_US', NumberFormatter::DECIMAL);
+        $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, 1);
+
+        if ($num >= 1000000000) {
+            return $formatter->format($num / 1000000000) . 'B';
+        } else if ($num >= 1000000) {
+            return $formatter->format($num / 1000000) . 'M';
+        } elseif ($num >= 1000) {
+            return $formatter->format($num / 1000) . 'K';
+        } else {
+            return $formatter->format($num);
+        }
+    }
+
+    public static function getMetaDescription($id)
+    {
+        $account = self::get($id, true);
+
+        if(!$account) return "";
+
+        $posts = self::formatNumber($account['statuses_count']) . ' Posts, ';
+        $following = self::formatNumber($account['following_count']) . ' Following, ';
+        $followers = self::formatNumber($account['followers_count']) . ' Followers';
+        $note = $account['note'] && strlen($account['note']) ?
+            ' · ' . \Purify::clean(strip_tags(str_replace("\n", '', str_replace("\r", '', $account['note'])))) :
+            '';
+        return $posts . $following . $followers . $note;
     }
 }
