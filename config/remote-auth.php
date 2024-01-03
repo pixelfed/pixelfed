@@ -5,7 +5,7 @@ return [
         'enabled' => env('PF_LOGIN_WITH_MASTODON_ENABLED', false),
         'ignore_closed_state' => env('PF_LOGIN_WITH_MASTODON_ENABLED_SKIP_CLOSED', false),
 
-        'contraints' => [
+        'constraints' => [
             /*
              *   Skip email verification
              *

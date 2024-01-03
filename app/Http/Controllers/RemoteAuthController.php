@@ -701,7 +701,7 @@ class RemoteAuthController extends Controller
             'username' => $data['username'],
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
-            'email_verified_at' => config('remote-auth.mastodon.contraints.skip_email_verification') ? now() : null,
+            'email_verified_at' => config('remote-auth.mastodon.constraints.skip_email_verification') ? now() : null,
             'app_register_ip' => request()->ip(),
             'register_source' => 'mastodon'
         ])));
