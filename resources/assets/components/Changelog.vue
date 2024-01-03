@@ -36,7 +36,7 @@
 					</div>
 
 					<div class="mt-4 pb-3">
-						<p class="lead">Febuary 2022</p>
+						<p class="lead">February 2022</p>
 						<ul>
 							<li class="font-weight-bold">New Discover layout with My Hashtags, My Memories, Account Insights, Find Friends and Server Timelines</li>
 							<li class="font-weight-bold">Mobile app drawer menu</li>
