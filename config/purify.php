@@ -32,7 +32,7 @@ return [
     |   HTML.ForbiddenElements      The forbidden HTML elements. Elements that are listed in this
     |                               string will be removed, however their content will remain.
     |   CSS.AllowedProperties       The Allowed CSS properties.
-    |   AutoFormat.AutoParagraph    Newlines are converted in to paragraphs whenever possible.
+    |   AutoFormat.AutoParagraph    Newlines are converted into paragraphs whenever possible.
     |   AutoFormat.RemoveEmpty      Remove empty elements that contribute no semantic information to the document.
     |
     */
