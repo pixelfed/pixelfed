@@ -193,7 +193,7 @@ $(document).ready(function() {
 			axios.delete('/settings/avatar').then(res => {
 				window.location.href = window.location.href;
 			}).catch(err => {
-				swal('Error', 'An error occured, please try again later', 'error');
+				swal('Error', 'An error occurred, please try again later', 'error');
 			});
 		});
 })

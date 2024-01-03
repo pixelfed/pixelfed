@@ -272,7 +272,7 @@
         			this.popularAccounts.splice(index, 1);
 				}).catch(err => {
         			this.followingIndex = undefined;
-					swal('Oops!', 'An error occured when attempting to follow this account.', 'error');
+					swal('Oops!', 'An error occurred when attempting to follow this account.', 'error');
 				});
         	},
 

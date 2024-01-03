@@ -135,7 +135,7 @@
                 axios.post('/auth/raw/mastodon/s/check')
                 .then(res => {
                     if(!res && !res.hasOwnProperty('action')) {
-                        swal('Oops!', 'An unexpected error occured, please try again later', 'error');
+                        swal('Oops!', 'An unexpected error occurred, please try again later', 'error');
                         return;
                     }
 

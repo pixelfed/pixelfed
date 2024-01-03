@@ -708,7 +708,7 @@
 					this.instances.unshift(res.data.data);
 				})
 				.catch(err => {
-					swal('Oops!', 'An error occured, please try again later.', 'error');
+					swal('Oops!', 'An error occurred, please try again later.', 'error');
 					this.addNewInstance = {
 						domain: "",
 						banned: false,
@@ -807,7 +807,7 @@
 					let el = document.createElement('p');
 					el.classList.add('text-left');
 					el.classList.add('mb-0');
-					el.innerHTML = '<p class="lead">An error occured when attempting to parse the import file. <span class="font-weight-bold">Please try again later.</span></p><br /><p class="small text-danger mb-0">Error message:</p><div class="card card-body"><code>' + err.message + '</code></div>';
+					el.innerHTML = '<p class="lead">An error occurred when attempting to parse the import file. <span class="font-weight-bold">Please try again later.</span></p><br /><p class="small text-danger mb-0">Error message:</p><div class="card card-body"><code>' + err.message + '</code></div>';
 					let wrapper = document.createElement('div');
 					wrapper.appendChild(el);
 					swal({

@@ -540,7 +540,7 @@
 					if(err.response.data.hasOwnProperty('error')) {
 						swal('Error', err.response.data.error, 'error');
 					} else {
-						swal('Error', 'An error occured, please try again later', 'error');
+						swal('Error', 'An error occurred, please try again later', 'error');
 					}
 					console.log(err);
 				})

@@ -387,7 +387,7 @@ export default {
 				this.ids.splice(this.carouselCursor, 1);
 				this.media.splice(this.carouselCursor, 1);
 			}).catch(err => {
-				swal('Whoops!', 'An error occured when attempting to delete this, please try again', 'error');
+				swal('Whoops!', 'An error occurred when attempting to delete this, please try again', 'error');
 			});
 		},
 
@@ -453,7 +453,7 @@ export default {
 						let data = res.data;
 						window.location.href = data;
 					}).catch(err => {
-						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
+						let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occurred.'
 						swal('Oops, something went wrong!', msg, 'error');
 					});
 					return;

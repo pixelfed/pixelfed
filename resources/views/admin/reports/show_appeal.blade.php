@@ -117,7 +117,7 @@
 			}).then(res => {
 				window.location.href = '/i/admin/reports/appeals';
 			}).catch(err => {
-				swal('Oops!', 'An error occured, please try again later.', 'error');
+				swal('Oops!', 'An error occurred, please try again later.', 'error');
 			});
 		}
 	}

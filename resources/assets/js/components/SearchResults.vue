@@ -6,7 +6,7 @@
 		</div>
 	</div>
 	<div v-if="networkError" class="pt-5 text-center">
-		<p class="lead font-weight-lighter">An error occured, results could not be loaded.<br> Please try again later.</p>
+		<p class="lead font-weight-lighter">An error occurred, results could not be loaded.<br> Please try again later.</p>
 	</div>
 
 	<div v-if="!loading && !networkError" class="mt-5">

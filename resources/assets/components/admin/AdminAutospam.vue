@@ -872,7 +872,7 @@
             		if(error.response.status === 422) {
             			swal('Error', error.response.data.error, 'error');
             		} else {
-            			swal('Error', 'Oops, an error occured, please try again later', 'error');
+            			swal('Error', 'Oops, an error occurred, please try again later', 'error');
             		}
             	})
             },
@@ -928,7 +928,7 @@
             		if(error.response.status === 422) {
             			swal('Error', error.response.data.error, 'error');
             		} else {
-            			swal('Error', 'Oops, an error occured, please try again later', 'error');
+            			swal('Error', 'Oops, an error occurred, please try again later', 'error');
             		}
             	})
             },
@@ -949,7 +949,7 @@
             		console.log(res.data);
             	})
             	.catch(err => {
-            		swal('Oops! An Error Occured', err.response.data.message, 'error');
+            		swal('Oops! An Error Occurred', err.response.data.message, 'error');
             	})
             	.finally(() => {
             		this.customTokenForm = {
@@ -1054,7 +1054,7 @@
 						}, 5000);
 				  	})
 				  	.catch(err => {
-				  		swal('Oops!', 'An error occured, please try again later', 'error');
+				  		swal('Oops!', 'An error occurred, please try again later', 'error');
 				  	})
 				  } else {
 				  }
@@ -1090,7 +1090,7 @@
 						}, 5000);
 				  	})
 				  	.catch(err => {
-				  		swal('Oops!', 'An error occured, please try again later', 'error');
+				  		swal('Oops!', 'An error occurred, please try again later', 'error');
 				  	})
 				  }
 				})

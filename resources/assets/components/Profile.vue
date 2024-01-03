@@ -171,7 +171,7 @@
                     }
                     this.profile.followers_count--;
                 }).catch(err => {
-                    swal('Oops!', 'An error occured when attempting to unfollow this account.', 'error');
+                    swal('Oops!', 'An error occurred when attempting to unfollow this account.', 'error');
                     this.relationship.following = true;
                 });
             },
@@ -186,7 +186,7 @@
                     }
                     this.profile.followers_count++;
                 }).catch(err => {
-                    swal('Oops!', 'An error occured when attempting to follow this account.', 'error');
+                    swal('Oops!', 'An error occurred when attempting to follow this account.', 'error');
                     this.relationship.following = false;
                 });
             },

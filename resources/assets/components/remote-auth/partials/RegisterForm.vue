@@ -496,7 +496,7 @@
                             this.storeBio();
                         }, 2000);
                     } else {
-                        swal('Something went wrong', 'An unexpected error occured, please try again later');
+                        swal('Something went wrong', 'An unexpected error occurred, please try again later');
                     }
                 })
             },

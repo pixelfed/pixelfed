@@ -210,7 +210,7 @@ class SettingsController extends Controller
 		$opencollective = Str::startsWith($opencollective, 'opencollective.com/') ? e($opencollective) : null;
 
 		if(empty($patreon) && empty($liberapay) && empty($opencollective)) {
-			return redirect(route('settings'))->with('error', 'An error occured. Please try again later.');
+			return redirect(route('settings'))->with('error', 'An error occurred. Please try again later.');
 		}
 
 		$res = [

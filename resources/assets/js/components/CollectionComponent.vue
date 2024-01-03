@@ -466,7 +466,7 @@ export default {
 					self.$refs.addPhotoModal.show();
 				}).catch(err => {
 					self.loadingPostList = false;
-					swal('An Error Occured', 'We cannot process your request at this time, please try again later.', 'error');
+					swal('An Error Occurred', 'We cannot process your request at this time, please try again later.', 'error');
 				})
 			} else {
 				this.$refs.addPhotoModal.show();
@@ -606,7 +606,7 @@ export default {
 					.catch(err => {
 						swal(
 							'Oops!',
-							'An error occured with your request, please try again later.',
+							'An error occurred with your request, please try again later.',
 							'error'
 						);
 					})
@@ -636,7 +636,7 @@ export default {
 				this.ids.push(post.id);
 				this.collection.post_count++;
 			}).catch(err => {
-				swal('Oops!', 'An error occured, please try selecting another post.', 'error');
+				swal('Oops!', 'An error occurred, please try selecting another post.', 'error');
 				this.photoId = '';
 			});
 		},

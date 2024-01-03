@@ -99,7 +99,7 @@
 
                                     <div v-else>
                                         <div class="card card-body shadow-none border d-flex align-items-center justify-content-center py-5">
-                                            <p class="display-3 mb-1">Oops! An unexpected error occured</p>
+                                            <p class="display-3 mb-1">Oops! An unexpected error occurred</p>
                                             <p class="text-primary mb-1">Ask the Pixelfed team for assistance.</p>
                                         </div>
                                     </div>

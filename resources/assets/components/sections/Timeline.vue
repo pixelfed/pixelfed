@@ -670,7 +670,7 @@
                         this.updateProfile({ following_count: this.profile.following_count + 1 });
                         this.feed[index].reblog.account.followers_count = this.feed[index].reblog.account.followers_count + 1;
                     }).catch(err => {
-                        swal('Oops!', 'An error occured when attempting to follow this account.', 'error');
+                        swal('Oops!', 'An error occurred when attempting to follow this account.', 'error');
                         this.feed[index].reblog.relationship.following = false;
                     });
                 } else {
@@ -680,7 +680,7 @@
                         this.updateProfile({ following_count: this.profile.following_count + 1 });
                         this.feed[index].account.followers_count = this.feed[index].account.followers_count + 1;
                     }).catch(err => {
-                        swal('Oops!', 'An error occured when attempting to follow this account.', 'error');
+                        swal('Oops!', 'An error occurred when attempting to follow this account.', 'error');
                         this.feed[index].relationship.following = false;
                     });
                 }
@@ -694,7 +694,7 @@
                         this.updateProfile({ following_count: this.profile.following_count - 1 });
                         this.feed[index].reblog.account.followers_count = this.feed[index].reblog.account.followers_count - 1;
                     }).catch(err => {
-                        swal('Oops!', 'An error occured when attempting to unfollow this account.', 'error');
+                        swal('Oops!', 'An error occurred when attempting to unfollow this account.', 'error');
                         this.feed[index].reblog.relationship.following = true;
                     });
                 } else {
@@ -704,7 +704,7 @@
                         this.updateProfile({ following_count: this.profile.following_count - 1 });
                         this.feed[index].account.followers_count = this.feed[index].account.followers_count - 1;
                     }).catch(err => {
-                        swal('Oops!', 'An error occured when attempting to unfollow this account.', 'error');
+                        swal('Oops!', 'An error occurred when attempting to unfollow this account.', 'error');
                         this.feed[index].relationship.following = true;
                     });
                 }

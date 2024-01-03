@@ -420,7 +420,7 @@
                     }, 5000);
                 })
                 .catch(err => {
-                    swal('Oops!', 'An error occured, please try again.', 'error');
+                    swal('Oops!', 'An error occurred, please try again.', 'error');
                     console.log(err);
                 })
             },
