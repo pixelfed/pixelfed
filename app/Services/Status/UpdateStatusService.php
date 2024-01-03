@@ -17,14 +17,14 @@ class UpdateStatusService
 	public static function call(Status $status, $attributes)
 	{
 		self::createPreviousEdit($status);
-		self::updateMediaAttachements($status, $attributes);
+		self::updateMediaAttachments($status, $attributes);
 		self::handleImmediateAttributes($status, $attributes);
 		self::createEdit($status, $attributes);
 
 		return StatusService::get($status->id);
 	}
 
-	public static function updateMediaAttachements(Status $status, $attributes)
+	public static function updateMediaAttachments(Status $status, $attributes)
 	{
 		$count = $status->media()->count();
 		if($count === 0 || $count === 1) {
