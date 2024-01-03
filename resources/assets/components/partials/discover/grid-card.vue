@@ -65,7 +65,7 @@
 				}
 
 				if(!this.buttonLink || this.buttonLink == undefined) {
-					swal('Oops', 'This is embarassing, we cannot redirect you to the proper page at the moment', 'warning');
+					swal('Oops', 'This is embarrassing, we cannot redirect you to the proper page at the moment', 'warning');
 					return;
 				}
 
