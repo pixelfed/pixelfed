@@ -46,12 +46,12 @@ class StatusDedupe extends Command
             return;
         }
         DB::table('statuses')
-            ->selectRaw('id, uri, count(uri) as occurences')
+            ->selectRaw('id, uri, count(uri) as occurrences')
             ->whereNull('deleted_at')
             ->whereNotNull('uri')
             ->groupBy('uri')
             ->orderBy('created_at')
-            ->having('occurences', '>', 1)
+            ->having('occurrences', '>', 1)
             ->chunk(50, function($statuses) {
                 foreach($statuses as $status) {
                     $this->info("Found duplicate: $status->uri");
