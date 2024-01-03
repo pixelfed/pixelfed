@@ -6,12 +6,19 @@ use App\Models\UserRoles;
 
 class UserRoleService
 {
-    public static function can($action, $id)
+    public static function can($action, $id, $useDefaultFallback = true)
     {
+        $default = self::defaultRoles();
         $roles = self::get($id);
-
-        return in_array($action, $roles) ? $roles[$action] : null;
-    }
+        return
+            in_array($action, array_keys($roles)) ?
+                $roles[$action] :
+                (
+                    $useDefaultFallback ?
+                        $default[$action] :
+                        false
+                );
+        }
 
     public static function get($id)
     {
@@ -36,6 +43,7 @@ class UserRoleService
             'can-view-public-feed' => true,
             'can-view-network-feed' => true,
             'can-view-discover' => true,
+            'can-view-hashtag-feed' => false,
 
             'can-post' => true,
             'can-comment' => true,
