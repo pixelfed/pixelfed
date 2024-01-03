@@ -54,6 +54,7 @@ use App\Util\Lexer\Autolink;
 use App\Util\Lexer\Extractor;
 use App\Util\Media\License;
 use Image;
+use App\Services\UserRoleService;
 
 class ComposeController extends Controller
 {
@@ -92,6 +93,7 @@ class ComposeController extends Controller
 
 		$user = Auth::user();
 		$profile = $user->profile;
+		abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
 		$limitKey = 'compose:rate-limit:media-upload:' . $user->id;
 		$limitTtl = now()->addMinutes(15);
@@ -184,6 +186,7 @@ class ComposeController extends Controller
 		]);
 
 		$user = Auth::user();
+		abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
 		$limitKey = 'compose:rate-limit:media-updates:' . $user->id;
 		$limitTtl = now()->addMinutes(15);
