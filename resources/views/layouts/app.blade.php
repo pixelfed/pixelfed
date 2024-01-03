@@ -12,9 +12,9 @@
 	<title>{{ $title ?? config_cache('app.name') }}</title>
 	<link rel="manifest" href="{{url('/manifest.json')}}">
 
-	<meta property="og:site_name" content="{{ config_cache('app.name') }}">
-	<meta property="og:title" content="{{ $title ?? config_cache('app.name') }}">
-	<meta property="og:type" content="article">
+	<meta property="og:site_name" content="Pixelfed">
+	<meta property="og:title" content="{{ $ogTitle ?? $title ?? config_cache('app.name') }}">
+	<meta property="og:type" content="{{ $ogType ?? 'article' }}">
 	<meta property="og:url" content="{{url(request()->url())}}">
 	@stack('meta')
 
@@ -73,9 +73,9 @@
 	<title>{{ $title ?? config('app.name', 'Pixelfed') }}</title>
 	<link rel="manifest" href="/manifest.json">
 
-	<meta property="og:site_name" content="{{ config('app.name', 'pixelfed') }}">
-	<meta property="og:title" content="{{ $title ?? config('app.name', 'pixelfed') }}">
-	<meta property="og:type" content="article">
+	<meta property="og:site_name" content="Pixelfed">
+	<meta property="og:title" content="{{ $ogTitle ?? $title ?? config('app.name', 'pixelfed') }}">
+	<meta property="og:type" content="{{ $ogType ?? 'article' }}">
 	<meta property="og:url" content="{{url(request()->url())}}">
 	@stack('meta')
 
