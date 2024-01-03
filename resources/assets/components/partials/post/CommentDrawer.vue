@@ -152,7 +152,7 @@
                                             </div>
 
                                             <div v-else>
-                                                <p>Cannot render commment</p>
+                                                <p>Cannot render comment</p>
                                             </div>
 
     										<button
