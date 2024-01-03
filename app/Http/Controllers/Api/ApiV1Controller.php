@@ -1245,6 +1245,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         AccountService::setLastActive($user->id);
 
@@ -1306,6 +1307,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         AccountService::setLastActive($user->id);
 
@@ -3175,6 +3177,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-share', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
@@ -3222,6 +3225,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-share', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
@@ -3271,6 +3275,13 @@ class ApiV1Controller extends Controller
           'only_media'  => 'sometimes|boolean',
           '_pe'         => 'sometimes'
         ]);
+
+        $user = $request->user();
+        abort_if(
+            $user->has_roles && !UserRoleService::can('can-view-hashtag-feed', $user->id),
+            403,
+            'Invalid permissions for this action'
+        );
 
         if(config('database.default') === 'pgsql') {
             $tag = Hashtag::where('name', 'ilike', $hashtag)
