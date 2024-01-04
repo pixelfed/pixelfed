@@ -8,17 +8,25 @@
 ARG COMPOSER_VERSION="2.6"
 ARG NGINX_VERSION=1.25.3
 ARG FOREGO_VERSION=0.17.2
-ARG PECL_EXTENSIONS_EXTRA=""
-ARG PECL_EXTENSIONS="imagick redis"
-ARG PHP_BASE_TYPE="apache"
-ARG PHP_DATABASE_EXTENSIONS="pdo_pgsql pdo_mysql pdo_sqlite"
-ARG PHP_DEBIAN_RELEASE="bullseye"
-ARG PHP_EXTENSIONS_EXTRA=""
-ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"
+
+# PHP base configuration
 ARG PHP_VERSION="8.1"
-ARG APT_PACKAGES_EXTRA=""
-ARG RUNTIME_UID=33
-ARG RUNTIME_GID=33
+ARG PHP_BASE_TYPE="apache"
+ARG PHP_DEBIAN_RELEASE="bullseye"
+ARG RUNTIME_UID=33 # often called 'www-data'
+ARG RUNTIME_GID=33 # often called 'www-data'
+
+# APT extra packages
+ARG APT_PACKAGES_EXTRA=
+
+# Extensions installed via [pecl install]
+ARG PHP_PECL_EXTENSIONS=""
+ARG PHP_PECL_EXTENSIONS_EXTRA=
+
+# Extensions installed via [docker-php-ext-install]
+ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"
+ARG PHP_EXTENSIONS_EXTRA=
+ARG PHP_EXTENSIONS_DATABASE="pdo_pgsql pdo_mysql pdo_sqlite"
 
 # GPG key for nginx apt repository
 ARG NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
@@ -75,87 +83,13 @@ RUN set -ex \
 
 WORKDIR /var/www/
 
-# Install package dependencies
+ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
+
+# Install and configure base layer
+COPY contrib/docker/install/base.sh /install/base.sh
 RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
-<<-SCRIPT
-	#!/bin/bash
-	set -ex -o errexit -o nounset -o pipefail
-
-	# ensure we keep apt cache around in a Docker environment
-	rm -f /etc/apt/apt.conf.d/docker-clean
-	echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-
-	# Standard packages
-	standardPackages=(
-		apt-utils
-		ca-certificates
-		gettext-base
-		git
-		gnupg1
-		gosu
-		libcurl4-openssl-dev
-		libzip-dev
-		locales
-		locales-all
-		nano
-		procps
-		unzip
-		zip
-	)
-
-	# Image Optimization
-	imageOptimization=(
-		gifsicle
-		jpegoptim
-		optipng
-		pngquant
-	)
-
-	# Image Processing
-	imageProcessing=(
-		libjpeg62-turbo-dev
-		libmagickwand-dev
-		libpng-dev
-	)
-
-	# Required for GD
-	gdDependencies=(
-		libwebp-dev
-		libwebp6
-		libxpm-dev
-		libxpm4
-	)
-
-	# Video Processing
-	videoProcessing=(
-		ffmpeg
-	)
-
-	# Database
-	databaseDependencies=(
-		libpq-dev
-		libsqlite3-dev
-	)
-
-	apt-get update
-
-	apt-get upgrade -y
-
-	apt-get install -y --no-install-recommends \
-		${standardPackages[*]} \
-		${imageOptimization[*]} \
-		${imageProcessing[*]} \
-		${gdDependencies[*]} \
-		${videoProcessing[*]} \
-		${databaseDependencies[*]} \
-		${APT_PACKAGES_EXTRA}
-SCRIPT
-
-# update locales
-RUN set -ex \
-	&& locale-gen \
-	&& update-locale
+    /install/base.sh
 
 #######################################################
 # PHP: extensions
@@ -163,37 +97,35 @@ RUN set -ex \
 
 FROM base AS php-extensions
 
-ARG PECL_EXTENSIONS
-ARG PECL_EXTENSIONS_EXTRA
-ARG PHP_DATABASE_EXTENSIONS
+ARG PHP_EXTENSIONS_DATABASE
 ARG PHP_DEBIAN_RELEASE
 ARG PHP_EXTENSIONS
 ARG PHP_EXTENSIONS_EXTRA
+ARG PHP_PECL_EXTENSIONS
+ARG PHP_PECL_EXTENSIONS_EXTRA
 ARG PHP_VERSION
 ARG TARGETPLATFORM
 
+ENV PHP_EXTENSIONS_DATABASE=${PHP_EXTENSIONS_DATABASE}
+ENV PHP_DEBIAN_RELEASE=${PHP_DEBIAN_RELEASE}
+ENV PHP_EXTENSIONS_EXTRA=${PHP_EXTENSIONS_EXTRA}
+ENV PHP_EXTENSIONS=${PHP_EXTENSIONS}
+ENV PHP_PECL_EXTENSIONS_EXTRA=${PHP_PECL_EXTENSIONS_EXTRA}
+ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
+ENV PHP_VERSION=${PHP_VERSION}
+ENV TARGETPLATFORM=${TARGETPLATFORM}
+
+COPY contrib/docker/install/php-extensions.sh /install/php-extensions.sh
 RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php/ \
-	set -ex \
-	# Grab the PHP source code so we can compile against it
-	&& docker-php-source extract \
-	# Install pecl extensions
-	&& pecl install ${PECL_EXTENSIONS} ${PECL_EXTENSIONS_EXTRA} \
-	# PHP GD extensions
-	&& docker-php-ext-configure gd \
-		--with-freetype \
-		--with-jpeg \
-		--with-webp \
-		--with-xpm \
-	# PHP extensions (dependencies)
-	&& docker-php-ext-install -j$(nproc) ${PHP_EXTENSIONS} ${PHP_EXTENSIONS_EXTRA} ${PHP_DATABASE_EXTENSIONS} \
-	# Enable all extensions
-	&& docker-php-ext-enable ${PECL_EXTENSIONS} ${PECL_EXTENSIONS_EXTRA} ${PHP_EXTENSIONS} ${PHP_EXTENSIONS_EXTRA} ${PHP_DATABASE_EXTENSIONS}
+    --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
+	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
+    /install/php-extensions.sh
 
 #######################################################
 # PHP: composer and source code
 #######################################################
 
-FROM base AS composer-and-src
+FROM php-extensions AS composer-and-src
 
 ARG PHP_VERSION
 ARG PHP_DEBIAN_RELEASE
@@ -241,6 +173,12 @@ USER root:root
 
 FROM base AS shared-runtime
 
+ARG RUNTIME_UID
+ARG RUNTIME_GID
+
+ENV RUNTIME_UID=${RUNTIME_UID}
+ENV RUNTIME_GID=${RUNTIME_GID}
+
 COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
@@ -252,9 +190,9 @@ RUN set -ex \
 	&& cp --recursive --link --preserve=all storage storage.skel \
 	&& rm -rf html && ln -s public html
 
-COPY --link contrib/docker/docker-entrypoint.sh /docker-entrypoint.sh
-COPY --link contrib/docker/shared/lib.sh /lib.sh
-COPY --link contrib/docker/shared/docker-entrypoint.d /docker-entrypoint.d/
+COPY contrib/docker/docker-entrypoint.sh /docker-entrypoint.sh
+COPY contrib/docker/shared/lib.sh /lib.sh
+COPY contrib/docker/shared/docker-entrypoint.d /docker-entrypoint.d/
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

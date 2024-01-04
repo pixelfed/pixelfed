@@ -1,5 +1,4 @@
 data
-contrib/docker/Dockerfile
 docker-compose*.yml
 .dockerignore
 .git
