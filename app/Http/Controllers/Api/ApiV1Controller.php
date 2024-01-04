@@ -98,6 +98,7 @@ use App\Jobs\MediaPipeline\MediaSyncLicensePipeline;
 use App\Services\DiscoverService;
 use App\Services\CustomEmojiService;
 use App\Services\MarkerService;
+use App\Services\UserRoleService;
 use App\Models\Conversation;
 use App\Jobs\FollowPipeline\FollowAcceptPipeline;
 use App\Jobs\FollowPipeline\FollowRejectPipeline;
@@ -1244,6 +1245,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         AccountService::setLastActive($user->id);
 
@@ -1305,6 +1307,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
         AccountService::setLastActive($user->id);
 
@@ -1623,6 +1626,8 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
 
         if($user->last_active_at == null) {
@@ -1792,6 +1797,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
 
         $media = Media::whereUserId($user->id)
@@ -1831,6 +1837,7 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         if($user->last_active_at == null) {
             return [];
@@ -2419,8 +2426,13 @@ class ApiV1Controller extends Controller
         $max = $request->input('max_id');
         $limit = $request->input('limit') ?? 20;
         $user = $request->user();
+
         $remote = $request->has('remote');
         $local = $request->has('local');
+        $userRoleKey = $remote ? 'can-view-network-feed' : 'can-view-public-feed';
+        if($user->has_roles && !UserRoleService::can($userRoleKey, $user->id)) {
+            return [];
+        }
         $filtered = $user ? UserFilterService::filters($user->profile_id) : [];
         AccountService::setLastActive($user->id);
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
@@ -3165,6 +3177,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-share', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
@@ -3212,6 +3225,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-share', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
 
@@ -3261,6 +3275,13 @@ class ApiV1Controller extends Controller
           'only_media'  => 'sometimes|boolean',
           '_pe'         => 'sometimes'
         ]);
+
+        $user = $request->user();
+        abort_if(
+            $user->has_roles && !UserRoleService::can('can-view-hashtag-feed', $user->id),
+            403,
+            'Invalid permissions for this action'
+        );
 
         if(config('database.default') === 'pgsql') {
             $tag = Hashtag::where('name', 'ilike', $hashtag)

@@ -34,7 +34,16 @@
 						</div>
 						<div v-else-if="n.type == 'comment'">
 							<p class="my-0">
-								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> commented on your
+								<span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
+									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id">post</a>.
+									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
+										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
+									</b-popover>
+								</span>
+								<span v-else>
+									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
+								</span>
 							</p>
 						</div>
 						<div v-else-if="n.type == 'group:comment'">
@@ -64,7 +73,16 @@
 						</div>
 						<div v-else-if="n.type == 'share'">
 							<p class="my-0">
-								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> shared your <a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
+								<a :href="getProfileUrl(n.account)" class="font-weight-bold text-dark word-break" :title="n.account.username">{{n.account.local == false ? '@':''}}{{truncate(n.account.username)}}</a> shared your
+								<span v-if="n.status && n.status.hasOwnProperty('media_attachments')">
+									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)" :id="'fvn-' + n.id">post</a>.
+									<b-popover :target="'fvn-' + n.id" title="" triggers="hover" placement="top" boundary="window">
+										<img :src="notificationPreview(n)" width="100px" height="100px" style="object-fit: cover;">
+									</b-popover>
+								</span>
+								<span v-else>
+									<a class="font-weight-bold" v-bind:href="getPostUrl(n.status)">post</a>.
+								</span>
 							</p>
 						</div>
 						<div v-else-if="n.type == 'modlog'">
