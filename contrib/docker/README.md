@@ -103,7 +103,7 @@ When a Pixelfed container starts up, the [`ENTRYPOINT`](https://docs.docker.com/
 
 1. Search the `/docker/entrypoint.d/` directory for files and for each file (in lexical order).
 1. Check if the file is executable.
-    1. If the file is not executable, print an error and exit the container.
+    1. If the file is *not* executable, print an error and exit the container.
 1. If the file has the extension `.envsh` the file will be [sourced](https://superuser.com/a/46146).
 1. If the file has the extension `.sh` the file will be run like a normal script.
 1. Any other file extension will log a warning and will be ignored.
@@ -158,6 +158,15 @@ Please see the
 
 * [gomplate syntax documentation](https://docs.gomplate.ca/syntax/)
 * [gomplate functions documentation](https://docs.gomplate.ca/functions/)
+
+### Fixing ownership on startup
+
+You can set the environment variable `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS` to a list of paths that should have their `$USER` and `$GROUP` ownership changed to the configured runtime user and group during container bootstrapping.
+
+The variable is a space-delimited list shown below and accepts both relative and absolute paths:
+
+* `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS="./storage ./bootstrap"`
+* `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS="/some/other/folder"`
 
 ## Build settings (arguments)
 

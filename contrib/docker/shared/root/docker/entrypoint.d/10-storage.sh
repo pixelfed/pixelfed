@@ -3,8 +3,8 @@ source /docker/helpers.sh
 
 entrypoint-set-name "$0"
 
+# Copy the [storage/] skeleton files over the "real" [storage/] directory so assets are updated between versions
 run-as-runtime-user cp --recursive storage.skel/* storage/
-run-as-runtime-user php artisan storage:link
 
-log-info "Ensure permissions are correct"
-chown --recursive ${RUNTIME_UID}:${RUNTIME_GID} storage/ bootstrap/
+# Ensure storage linkk are correctly configured
+run-as-runtime-user php artisan storage:link
