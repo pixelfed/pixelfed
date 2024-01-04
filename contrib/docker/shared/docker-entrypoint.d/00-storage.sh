@@ -1,6 +1,6 @@
 #!/bin/bash
+set -o errexit -o nounset -o pipefail
 
-set -e
 source /lib.sh
 
 entrypoint_log "==> Create the storage tree if needed"
