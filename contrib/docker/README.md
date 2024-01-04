@@ -119,6 +119,7 @@ You can also `docker exec` or `docker run` into a container and run `/`
 * `/docker/entrypoint.d/04-defaults.envsh` calculates Docker container environment variables needed for [templating](#templating) configuration files.
 * `/docker/entrypoint.d/05-templating.sh` renders [template](#templating) configuration files.
 * `/docker/entrypoint.d/10-storage.sh` ensures Pixelfed storage related permissions and commands are run.
+* `//docker/entrypoint.d/15-storage-permissions.sh` (optionally) ensures permissions for files are corrected (see [fixing ownership on startup](#fixing-ownership-on-startup))
 * `/docker/entrypoint.d/20-horizon.sh` ensures [Laravel Horizon](https://laravel.com/docs/master/horizon) used by Pixelfed is configured
 * `/docker/entrypoint.d/30-cache.sh` ensures all Pixelfed caches (router, view, config) is warmed
 
