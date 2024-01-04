@@ -3,37 +3,53 @@ source /docker/helpers.sh
 
 entrypoint-set-name "$0"
 
-declare template_dir="${ENVSUBST_TEMPLATE_DIR:-/docker/templates}"
-declare output_dir="${ENVSUBST_OUTPUT_DIR:-}"
-declare filter="${ENVSUBST_FILTER:-}"
-declare template defined_envs relative_path output_path output_dir subdir
-
-# load all dot-env files
-load-config-files
-
+# Show [git diff] of templates being rendered (will help verify output)
 : ${ENTRYPOINT_SHOW_TEMPLATE_DIFF:=1}
+# Directory where templates can be found
+: ${ENTRYPOINT_TEMPLATE_DIR:=/docker/templates/}
+# Root path to write template template_files to (default is '', meaning it will be written to /<path>)
+: ${ENTRYPOINT_TEMPLATE_OUTPUT_PREFIX:=}
+
+declare template_file relative_template_file_path output_file_dir
+
+# load all dot-env config files
+load-config-files
 
 # export all dot-env variables so they are available in templating
 export ${seen_dot_env_variables[@]}
 
-find "$template_dir" -follow -type f -print | while read -r template; do
-    relative_path="${template#"$template_dir/"}"
-    subdir=$(dirname "$relative_path")
-    output_path="$output_dir/${relative_path}"
-    output_dir=$(dirname "$output_path")
+find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r template_file; do
+    # Example: template_file=/docker/templates/usr/local/etc/php/php.ini
 
-    if [ ! -w "$output_dir" ]; then
-        log-error-and-exit "ERROR: $template_dir exists, but $output_dir is not writable"
+    # The file path without the template dir prefix ($ENTRYPOINT_TEMPLATE_DIR)
+    #
+    # Example: /usr/local/etc/php/php.ini
+    relative_template_file_path="${template_file#"${ENTRYPOINT_TEMPLATE_DIR}"}"
+
+    # Adds optional prefix to the output file path
+    #
+    # Example: /usr/local/etc/php/php.ini
+    output_file_path="${ENTRYPOINT_TEMPLATE_OUTPUT_PREFIX}/${relative_template_file_path}"
+
+    # Remove the file from the path
+    #
+    # Example: /usr/local/etc/php
+    output_file_dir=$(dirname "${output_file_path}")
+
+    # Ensure the output directory is writable
+    if ! is-writable "${output_file_dir}"; then
+        log-error-and-exit "${output_file_dir} is not writable"
     fi
 
-    # create a subdirectory where the template file exists
-    mkdir -p "$output_dir/$subdir"
+    # Create the output directory if it doesn't exists
+    ensure-directory "${output_file_dir}"
 
-    log-info "Running [gomplate] on [$template] --> [$output_path]"
-    cat "$template" | gomplate >"$output_path"
+    # Render the template
+    log-info "Running [gomplate] on [${template_file}] --> [${output_file_path}]"
+    cat "${template_file}" | gomplate >"${output_file_path}"
 
     # Show the diff from the envsubst command
     if [[ ${ENTRYPOINT_SHOW_TEMPLATE_DIFF} = 1 ]]; then
-        git --no-pager diff "$template" "${output_path}" || :
+        git --no-pager diff "${template_file}" "${output_file_path}" || :
     fi
 done

@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e -o errexit -o nounset -o pipefail
 
+: ${ENTRYPOINT_DEBUG:=0}
+
+[[ ${ENTRYPOINT_DEBUG} == 1 ]] && set -x
+
 # Some splash of color for important messages
 declare -g error_message_color="\033[1;31m"
 declare -g warn_message_color="\033[1;34m"
@@ -108,6 +112,14 @@ function in-array() {
 
 function is-executable() {
     [[ -x "$1" ]]
+}
+
+function is-writable() {
+    [[ -w "$1" ]]
+}
+
+function ensure-directory() {
+    mkdir -pv "$@"
 }
 
 function get-entrypoint-script-name() {
