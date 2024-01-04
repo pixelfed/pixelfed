@@ -1,8 +1,8 @@
 #!/bin/bash
 source /docker/helpers.sh
 
-set_identity "$0"
+entrypoint-set-name "$0"
 
-as_runtime_user php artisan route:cache
-as_runtime_user php artisan view:cache
-as_runtime_user php artisan config:cache
+run-as-runtime-user php artisan route:cache
+run-as-runtime-user php artisan view:cache
+run-as-runtime-user php artisan config:cache

@@ -154,7 +154,7 @@ RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TA
 # PHP: composer and source code
 #######################################################
 
-FROM php-extensions AS composer-and-src
+FROM base AS composer-and-src
 
 ARG PHP_VERSION
 ARG PHP_DEBIAN_RELEASE
@@ -178,7 +178,7 @@ COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 USER ${RUNTIME_UID}:${RUNTIME_GID}
 
 # Copy over only composer related files so docker layer cache isn't invalidated on PHP file changes
-COPY --link --chown=${RUNTIME_UID}:${RUNTIME_GID} composer.json composer.lock /var/www/
+COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} composer.json composer.lock /var/www/
 
 # Install composer dependencies
 # NOTE: we skip the autoloader generation here since we don't have all files avaliable (yet)
@@ -187,14 +187,7 @@ RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}
 	&& composer install --prefer-dist --no-autoloader --ignore-platform-reqs
 
 # Copy all other files over
-COPY --link --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
-
-# Generate optimized autoloader now that we have all files around
-RUN set -ex \
-	&& composer dump-autoload --optimize
-
-#! Changing back to root
-USER root:root
+COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
 
 #######################################################
 # Runtime: base
@@ -213,9 +206,19 @@ ENV RUNTIME_GID=${RUNTIME_GID}
 
 COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
-COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
 COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplate
+COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
+COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
+
+#! Changing user to runtime user
+USER ${RUNTIME_UID}:${RUNTIME_GID}
+
+# Generate optimized autoloader now that we have all files around
+RUN set -ex \
+	&& composer dump-autoload --optimize
+
+USER root
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN set -ex \

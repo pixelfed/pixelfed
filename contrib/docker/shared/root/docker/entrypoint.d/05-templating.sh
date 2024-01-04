@@ -1,7 +1,7 @@
 #!/bin/bash
 source /docker/helpers.sh
 
-set_identity "$0"
+entrypoint-set-name "$0"
 
 declare template_dir="${ENVSUBST_TEMPLATE_DIR:-/docker/templates}"
 declare output_dir="${ENVSUBST_OUTPUT_DIR:-}"
@@ -23,13 +23,13 @@ find "$template_dir" -follow -type f -print | while read -r template; do
     output_dir=$(dirname "$output_path")
 
     if [ ! -w "$output_dir" ]; then
-        log_error_and_exit "ERROR: $template_dir exists, but $output_dir is not writable"
+        log-error-and-exit "ERROR: $template_dir exists, but $output_dir is not writable"
     fi
 
     # create a subdirectory where the template file exists
     mkdir -p "$output_dir/$subdir"
 
-    log "Running [gomplate] on [$template] --> [$output_path]"
+    log-info "Running [gomplate] on [$template] --> [$output_path]"
     cat "$template" | gomplate >"$output_path"
 
     # Show the diff from the envsubst command
