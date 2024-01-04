@@ -8,6 +8,6 @@ function entrypoint_log() {
     fi
 }
 
-function as_www_user() {
-	su --preserve-environment www-data --shell /bin/bash --command "${*}"
+function as_runtime_user() {
+    su --preserve-environment ${RUNTIME_UID} --shell /bin/bash --command "${*}"
 }

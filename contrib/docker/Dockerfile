@@ -17,6 +17,8 @@ ARG PHP_EXTENSIONS_EXTRA=""
 ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"
 ARG PHP_VERSION="8.1"
 ARG APT_PACKAGES_EXTRA=""
+ARG RUNTIME_UID=33
+ARG RUNTIME_GID=33
 
 # GPG key for nginx apt repository
 ARG NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
@@ -56,6 +58,8 @@ FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS base
 ARG PHP_VERSION
 ARG PHP_DEBIAN_RELEASE
 ARG APT_PACKAGES_EXTRA
+ARG RUNTIME_UID
+ARG RUNTIME_GID
 
 ARG TARGETPLATFORM
 ARG BUILDKIT_SBOM_SCAN_STAGE=true
@@ -67,7 +71,7 @@ SHELL ["/bin/bash", "-c"]
 
 RUN set -ex \
 	&& mkdir -pv /var/www/ \
-	&& chown -R 33:33 /var/www
+	&& chown -R ${RUNTIME_UID}:${RUNTIME_GID} /var/www
 
 WORKDIR /var/www/
 
@@ -193,6 +197,8 @@ FROM base AS composer-and-src
 
 ARG PHP_VERSION
 ARG PHP_DEBIAN_RELEASE
+ARG RUNTIME_UID
+ARG RUNTIME_GID
 ARG TARGETPLATFORM
 
 # Make sure composer cache is targeting our cache mount later
@@ -207,11 +213,11 @@ ENV COMPOSER_NO_INTERACTION=1
 # Copy composer from https://hub.docker.com/_/composer
 COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 
-#! Changing user to 33
-USER 33:33
+#! Changing user to runtime user
+USER ${RUNTIME_UID}:${RUNTIME_GID}
 
 # Copy over only composer related files so docker layer cache isn't invalidated on PHP file changes
-COPY --link --chown=33:33 composer.json composer.lock /var/www/
+COPY --link --chown=${RUNTIME_UID}:${RUNTIME_GID} composer.json composer.lock /var/www/
 
 # Install composer dependencies
 # NOTE: we skip the autoloader generation here since we don't have all files avaliable (yet)
@@ -220,7 +226,7 @@ RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}
 	&& composer install --prefer-dist --no-autoloader --ignore-platform-reqs
 
 # Copy all other files over
-COPY --link --chown=33:33 . /var/www/
+COPY --link --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
 
 # Generate optimized autoloader now that we have all files around
 RUN set -ex \
@@ -237,7 +243,7 @@ FROM base AS shared-runtime
 
 COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
-COPY --link --from=composer-and-src --chown=33:33 /var/www /var/www
+COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
 COPY --link contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
