@@ -108,6 +108,12 @@ When a Pixelfed container starts up, the [`ENTRYPOINT`](https://docs.docker.com/
 1. If the file has the extension `.sh` the file will be run like a normal script.
 1. Any other file extension will log a warning and will be ignored.
 
+#### Debugging
+
+You can set environment variable `ENTRYPOINT_DEBUG=1` to show verbose output of what each `entrypoint.d` script is doing.
+
+You can also `docker exec` or `docker run` into a container and run `/`
+
 #### Included scripts
 
 * `/docker/entrypoint.d/04-defaults.envsh` calculates Docker container environment variables needed for [templating](#templating) configuration files.
@@ -145,7 +151,7 @@ Variables available for templating are sourced (in order, so *last* source takes
 
 #### Template guide 101
 
-Please see the [gomplate documentation](https://docs.gomplate.ca/) for a more comprehensive overview.
+Please see the [`gomplate` documentation](https://docs.gomplate.ca/) for a more comprehensive overview.
 
 The most frequent use-case you have is likely to print a environment variable (or a default value if it's missing), so this is how to do that:
 
@@ -156,8 +162,8 @@ The script will *fail* if you reference a variable that does not exist (and don'
 
 Please see the
 
-* [gomplate syntax documentation](https://docs.gomplate.ca/syntax/)
-* [gomplate functions documentation](https://docs.gomplate.ca/functions/)
+* [`gomplate` syntax documentation](https://docs.gomplate.ca/syntax/)
+* [`gomplate` functions documentation](https://docs.gomplate.ca/functions/)
 
 ### Fixing ownership on startup
 

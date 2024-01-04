@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e -o errexit -o nounset -o pipefail
 
-: ${ENTRYPOINT_DEBUG:=0}
-
-[[ ${ENTRYPOINT_DEBUG} == 1 ]] && set -x
+[[ ${ENTRYPOINT_DEBUG:=0} == 1 ]] && set -x
 
 # Some splash of color for important messages
 declare -g error_message_color="\033[1;31m"
@@ -40,14 +38,37 @@ function entrypoint-restore-name() {
 # @exitcode 0 if the command succeeeds
 # @exitcode 1 if the command fails
 function run-as-runtime-user() {
+    run-command-as "$(id -un ${RUNTIME_UID})" "${@}"
+}
+
+# @description Run a command as the [runtime user]
+# @arg $@ string The command to run
+# @exitcode 0 if the command succeeeds
+# @exitcode 1 if the command fails
+function run-as-current-user() {
+    run-command-as "$(id -un)" "${@}"
+}
+
+# @description Run a command as the a named user
+# @arg $1 string The user to run the command as
+# @arg $@ string The command to run
+# @exitcode 0 If the command succeeeds
+# @exitcode 1 If the command fails
+function run-command-as() {
     local -i exit_code
     local target_user
 
-    target_user=$(id -un ${RUNTIME_UID})
+    target_user=${1}
+    shift
 
-    log-info "👷 Running [${*}] as [${target_user}]"
+    log-info-stderr "👷 Running [${*}] as [${target_user}]"
 
-    su --preserve-environment "${target_user}" --shell /bin/bash --command "${*}"
+    if [[ ${target_user} != "root" ]]; then
+        su --preserve-environment "${target_user}" --shell /bin/bash --command "${*}"
+    else
+        "${@}"
+    fi
+
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
@@ -55,7 +76,7 @@ function run-as-runtime-user() {
         return $exit_code
     fi
 
-    log-info "✅ OK!"
+    log-info-stderr "✅ OK!"
     return $exit_code
 }
 
@@ -87,6 +108,15 @@ function log-warning() {
 # @arg $@ string A info message.
 # @stdout The info message provided with log prefix unless $ENTRYPOINT_QUIET_LOGS
 function log-info() {
+    if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
+        echo "${log_prefix}$*"
+    fi
+}
+
+# @description Print the given message to stderr unless [ENTRYPOINT_QUIET_LOGS] is set
+# @arg $@ string A info message.
+# @stderr The info message provided with log prefix unless $ENTRYPOINT_QUIET_LOGS
+function log-info-stderr() {
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
         echo "${log_prefix}$*"
     fi

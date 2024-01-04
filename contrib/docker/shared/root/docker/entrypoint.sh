@@ -50,7 +50,9 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
+        log-info
         log-info "Sourcing [${file}]"
+        log-info
 
         source "${file}"
 
@@ -65,7 +67,10 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
+        log-info
         log-info "Running [${file}]"
+        log-info
+
         "${file}"
         ;;
 
