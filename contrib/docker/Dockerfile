@@ -86,10 +86,10 @@ WORKDIR /var/www/
 ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
 
 # Install and configure base layer
-COPY contrib/docker/install/base.sh /install/base.sh
+COPY contrib/docker/shared/root/docker/install/base.sh /docker/install/base.sh
 RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
-    /install/base.sh
+    /docker/install/base.sh
 
 #######################################################
 # PHP: extensions
@@ -115,11 +115,11 @@ ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
 ENV PHP_VERSION=${PHP_VERSION}
 ENV TARGETPLATFORM=${TARGETPLATFORM}
 
-COPY contrib/docker/install/php-extensions.sh /install/php-extensions.sh
+COPY contrib/docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
 RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php/ \
     --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
-    /install/php-extensions.sh
+    /docker/install/php-extensions.sh
 
 #######################################################
 # PHP: composer and source code
@@ -183,18 +183,15 @@ COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/p
 COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
-COPY --link contrib/docker/php.production.ini "$PHP_INI_DIR/php.ini"
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN set -ex \
 	&& cp --recursive --link --preserve=all storage storage.skel \
 	&& rm -rf html && ln -s public html
 
-COPY contrib/docker/docker-entrypoint.sh /docker-entrypoint.sh
-COPY contrib/docker/shared/lib.sh /lib.sh
-COPY contrib/docker/shared/docker-entrypoint.d /docker-entrypoint.d/
+COPY contrib/docker/shared/root /
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker/entrypoint.sh"]
 
 VOLUME /var/www/storage /var/www/bootstrap
 
@@ -204,8 +201,7 @@ VOLUME /var/www/storage /var/www/bootstrap
 
 FROM shared-runtime AS apache-runtime
 
-COPY --link contrib/docker/apache/conf-available/remoteip.conf /etc/apache2/conf-available/remoteip.conf
-COPY --link contrib/docker/apache/docker-entrypoint.d /docker-entrypoint.d/
+COPY contrib/docker/apache/root /
 
 RUN set -ex \
 	&& a2enmod rewrite remoteip proxy proxy_http \
@@ -221,7 +217,7 @@ EXPOSE 80
 
 FROM shared-runtime AS fpm-runtime
 
-COPY --link contrib/docker/fpm/docker-entrypoint.d /docker-entrypoint.d/
+COPY contrib/docker/fpm/root /
 
 CMD ["php-fpm"]
 
@@ -252,10 +248,9 @@ RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE
 		nginx=${NGINX_VERSION}*
 
 # copy docker entrypoints from the *real* nginx image directly
-COPY --link --from=nginx-image /docker-entrypoint.d /docker-entrypoint.d/
-COPY --link contrib/docker/nginx/docker-entrypoint.d /docker-entrypoint.d/
-COPY --link contrib/docker/nginx/default-http.conf /etc/nginx/templates/default.conf.template
-COPY --link contrib/docker/nginx/Procfile .
+COPY --link --from=nginx-image /docker-entrypoint.d /docker/entrypoint.d/
+COPY contrib/docker/nginx/root /
+COPY contrib/docker/nginx/Procfile .
 
 EXPOSE 80
 

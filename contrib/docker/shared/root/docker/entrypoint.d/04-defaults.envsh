@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# NOTE:
+#
+# this file is *sourced* not run by the entrypoint runner
+# so any environment values set here will be accessible to all sub-processes
+# and future entrypoint.d scripts
+#
+
+set_identity "${BASH_SOURCE[0]}"
+
+load-config-files
+
+: ${POST_MAX_SIZE_BUFFER:=1M}
+log "POST_MAX_SIZE_BUFFER is set to [${POST_MAX_SIZE_BUFFER}]"
+buffer=$(numfmt --invalid=fail --from=auto --to=none --to-unit=K "${POST_MAX_SIZE_BUFFER}")
+log "POST_MAX_SIZE_BUFFER converted to KB is [${buffer}]"
+
+log "POST_MAX_SIZE will be calculated by [({MAX_PHOTO_SIZE} * {MAX_ALBUM_LENGTH}) + {POST_MAX_SIZE_BUFFER}]"
+log "  MAX_PHOTO_SIZE=${MAX_PHOTO_SIZE}"
+log "  MAX_ALBUM_LENGTH=${MAX_ALBUM_LENGTH}"
+log "  POST_MAX_SIZE_BUFFER=${buffer}"
+: ${POST_MAX_SIZE:=$(numfmt --invalid=fail --from=auto --from-unit=K --to=si $(((${MAX_PHOTO_SIZE} * ${MAX_ALBUM_LENGTH}) + ${buffer})))}
+log "POST_MAX_SIZE was calculated to [${POST_MAX_SIZE}]"
+
+export POST_MAX_SIZE

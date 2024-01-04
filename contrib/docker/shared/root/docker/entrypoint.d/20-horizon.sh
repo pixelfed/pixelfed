@@ -1,6 +1,6 @@
 #!/bin/bash
-set -o errexit -o nounset -o pipefail
+source /docker/helpers.sh
 
-source /lib.sh
+set_identity "$0"
 
 as_runtime_user php artisan horizon:publish
