@@ -42,7 +42,7 @@ find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r templat
     fi
 
     # Create the output directory if it doesn't exists
-    ensure-directory "${output_file_dir}"
+    ensure-directory-exists "${output_file_dir}"
 
     # Render the template
     log-info "Running [gomplate] on [${template_file}] --> [${output_file_path}]"

@@ -23,15 +23,22 @@ declare -ra dot_env_files=(
 # environment keys seen when source dot files (so we can [export] them)
 declare -ga seen_dot_env_variables=()
 
+# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-name]
+# @arg $1 string The name (or path) of the entrypoint script being run
 function entrypoint-set-name() {
     log_prefix_previous="${log_prefix}"
     log_prefix="ENTRYPOINT - [$(get-entrypoint-script-name $1)] - "
 }
 
+# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-name]
 function entrypoint-restore-name() {
     log_prefix="${log_prefix_previous}"
 }
 
+# @description Run a command as the [runtime user]
+# @arg $@ string The command to run
+# @exitcode 0 if the command succeeeds
+# @exitcode 1 if the command fails
 function run-as-runtime-user() {
     local -i exit_code
     local target_user
@@ -54,12 +61,14 @@ function run-as-runtime-user() {
 
 # @description Print the given error message to stderr
 # @arg $message string A error message.
+# @stderr The error message provided with log prefix
 function log-error() {
     echo -e "${error_message_color}${log_prefix}ERROR - ${*}${color_clear}" >/dev/stderr
 }
 
 # @description Print the given error message to stderr and exit 1
 # @arg $@ string A error message.
+# @stderr The error message provided with log prefix
 # @exitcode 1
 function log-error-and-exit() {
     log-error "$@"
@@ -69,18 +78,22 @@ function log-error-and-exit() {
 
 # @description Print the given warning message to stderr
 # @arg $@ string A warning message.
+# @stderr The warning message provided with log prefix
 function log-warning() {
     echo -e "${warn_message_color}${log_prefix}WARNING - ${*}${color_clear}" >/dev/stderr
 }
 
-# @description Print the given message to stderr unless [ENTRYPOINT_QUIET_LOGS] is set
-# @arg $@ string A warning message.
+# @description Print the given message to stdout unless [ENTRYPOINT_QUIET_LOGS] is set
+# @arg $@ string A info message.
+# @stdout The info message provided with log prefix unless $ENTRYPOINT_QUIET_LOGS
 function log-info() {
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
         echo "${log_prefix}$*"
     fi
 }
 
+# @description Loads the dot-env files used by Docker and track the keys present in the configuration.
+# @sets seen_dot_env_variables array List of config keys discovered during loading
 function load-config-files() {
     # Associative array (aka map/dictionary) holding the unique keys found in dot-env files
     local -A _tmp_dot_env_keys
@@ -103,6 +116,11 @@ function load-config-files() {
     seen_dot_env_variables=(${!_tmp_dot_env_keys[@]})
 }
 
+# @description Checks if $needle exists in $haystack
+# @arg $1 string The needle (value) to search for
+# @arg $2 array  The haystack (array) to search in
+# @exitcode 0 If $needle was found in $haystack
+# @exitcode 1 If $needle was *NOT* found in $haystack
 function in-array() {
     local -r needle="\<${1}\>"
     local -nr haystack=$2
@@ -110,18 +128,41 @@ function in-array() {
     [[ ${haystack[*]} =~ $needle ]]
 }
 
+# @description Checks if $1 has executable bit set or not
+# @arg $1 string The path to check
+# @exitcode 0 If $1 has executable bit
+# @exitcode 1 If $1 does *NOT* have executable bit
 function is-executable() {
     [[ -x "$1" ]]
 }
 
+# @description Checks if $1 is writable or not
+# @arg $1 string The path to check
+# @exitcode 0 If $1 is writable
+# @exitcode 1 If $1 is *NOT* writable
 function is-writable() {
     [[ -w "$1" ]]
 }
 
-function ensure-directory() {
+# @description Checks if $1 contains any files or not
+# @arg $1 string The path to check
+# @exitcode 0 If $1 contains files
+# @exitcode 1 If $1 does *NOT* contain files
+function is-directory-empty() {
+    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v
+}
+
+# @description Ensures a directory exists (via mkdir)
+# @arg $1 string The path to create
+# @exitcode 0 If $1 If the path exists *or* was created
+# @exitcode 1 If $1 If the path does *NOT* exists and could *NOT* be created
+function ensure-directory-exists() {
     mkdir -pv "$@"
 }
 
+# @description Find the relative path for a entrypoint script by removing the ENTRYPOINT_ROOT prefix
+# @arg $1 string The path to manipulate
+# @stdout The relative path to the entrypoint script
 function get-entrypoint-script-name() {
     echo "${1#"$ENTRYPOINT_ROOT"}"
 }
