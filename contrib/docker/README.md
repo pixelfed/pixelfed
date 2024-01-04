@@ -93,6 +93,72 @@ services:
      PHP_BASE_TYPE: fpm
 ```
 
+## Customizing your `Dockerfile`
+
+### Running commands on container start
+
+#### Description
+
+When a Pixelfed container starts up, the [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#entrypoint) script will
+
+1. Search the `/docker/entrypoint.d/` directory for files and for each file (in lexical order).
+1. Check if the file is executable.
+    1. If the file is not executable, print an error and exit the container.
+1. If the file has the extension `.envsh` the file will be [sourced](https://superuser.com/a/46146).
+1. If the file has the extension `.sh` the file will be run like a normal script.
+1. Any other file extension will log a warning and will be ignored.
+
+#### Included scripts
+
+* `/docker/entrypoint.d/04-defaults.envsh` calculates Docker container environment variables needed for [templating](#templating) configuration files.
+* `/docker/entrypoint.d/05-templating.sh` renders [template](#templating) configuration files.
+* `/docker/entrypoint.d/10-storage.sh` ensures Pixelfed storage related permissions and commands are run.
+* `/docker/entrypoint.d/20-horizon.sh` ensures [Laravel Horizon](https://laravel.com/docs/master/horizon) used by Pixelfed is configured
+* `/docker/entrypoint.d/30-cache.sh` ensures all Pixelfed caches (router, view, config) is warmed
+
+#### Disabling entrypoint or individual scripts
+
+To disable the entire entrypoint you can set the variable `ENTRYPOINT_SKIP=1`.
+
+To disable individual entrypoint scripts you can add the filename to the space (`" "`) separated variable `ENTRYPOINT_SKIP_SCRIPTS`. (example: `ENTRYPOINT_SKIP_SCRIPTS="10-storage.sh 30-cache.sh"`)
+
+### Templating
+
+The Docker container can do some basic templating (more like variable replacement) as part of the entrypoint scripts via [gomplate](https://docs.gomplate.ca/).
+
+Any file put in the `/docker/templates/` directory will be templated and written to the right directory.
+
+#### File path examples
+
+1. To template `/usr/local/etc/php/php.ini` in the container put the source file in `/docker/templates/usr/local/etc/php/php.ini`.
+1. To template `/a/fantastic/example.txt` in the container put the source file in `/docker/templates/a/fantastic/example.txt`.
+1. To template `/some/path/anywhere` in the container put the source file in `/docker/templates/a/fantastic/example.txt`.
+
+#### Available variables
+
+Variables available for templating are sourced (in order, so *last* source takes precedence) like this:
+
+1. `env:` in your `docker-compose.yml` or `-e` in your `docker run` / `docker compose run`
+1. Any exported variables in `.envsh` files loaded *before* `05-templating.sh` (e.g. any file with `04-`, `03-`, `02-`, `01-` or `00-` prefix)
+1. All key/value pairs in `/var/www/.env.docker`
+1. All key/value pairs in `/var/www/.env`
+
+#### Template guide 101
+
+Please see the [gomplate documentation](https://docs.gomplate.ca/) for a more comprehensive overview.
+
+The most frequent use-case you have is likely to print a environment variable (or a default value if it's missing), so this is how to do that:
+
+* `{{ getenv "VAR_NAME" }}` print an environment variable and **fail** if the variable is not set. ([docs](https://docs.gomplate.ca/functions/env/#envgetenv))
+* `{{ getenv "VAR_NAME" "default" }}` print an environment variable and print `default` if the variable is not set. ([docs](https://docs.gomplate.ca/functions/env/#envgetenv))
+
+The script will *fail* if you reference a variable that does not exist (and don't have a default value) in a template.
+
+Please see the
+
+* [gomplate syntax documentation](https://docs.gomplate.ca/syntax/)
+* [gomplate functions documentation](https://docs.gomplate.ca/functions/)
+
 ## Build settings (arguments)
 
 The Pixelfed Dockerfile utilizes [Docker Multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Build arguments](https://docs.docker.com/build/guide/build-args/).

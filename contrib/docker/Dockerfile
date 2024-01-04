@@ -5,14 +5,29 @@
 # Configuration
 #######################################################
 
+# See: https://github.com/composer/composer/releases
 ARG COMPOSER_VERSION="2.6"
+
+# See: https://nginx.org/
 ARG NGINX_VERSION=1.25.3
+
+# See: https://github.com/ddollar/forego
 ARG FOREGO_VERSION=0.17.2
 
+# See: https://github.com/hairyhenderson/gomplate
+ARG GOMPLATE_VERSION=v3.11.6
+
+###
 # PHP base configuration
+###
+
+# See: https://hub.docker.com/_/php/tags
 ARG PHP_VERSION="8.1"
+
+# See: https://github.com/docker-library/docs/blob/master/php/README.md#image-variants
 ARG PHP_BASE_TYPE="apache"
 ARG PHP_DEBIAN_RELEASE="bullseye"
+
 ARG RUNTIME_UID=33 # often called 'www-data'
 ARG RUNTIME_GID=33 # often called 'www-data'
 
@@ -57,17 +72,31 @@ FROM nginx:${NGINX_VERSION} AS nginx-image
 # See: https://github.com/nginx-proxy/forego
 FROM nginxproxy/forego:${FOREGO_VERSION}-debian AS forego-image
 
+# gomplate-image grabs the gomplate binary from GitHub releases
+#
+# It's in its own layer so it can be fetched in parallel with other build steps
+FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS gomplate-image
+
+ARG BUILDARCH
+ARG BUILDOS
+ARG GOMPLATE_VERSION
+
+RUN set -ex \
+    && curl --silent --show-error --location --output /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${BUILDOS}-${BUILDARCH} \
+    && chmod +x /usr/local/bin/gomplate \
+    && /usr/local/bin/gomplate --version
+
 #######################################################
 # Base image
 #######################################################
 
 FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS base
 
-ARG PHP_VERSION
-ARG PHP_DEBIAN_RELEASE
 ARG APT_PACKAGES_EXTRA
-ARG RUNTIME_UID
+ARG PHP_DEBIAN_RELEASE
+ARG PHP_VERSION
 ARG RUNTIME_GID
+ARG RUNTIME_UID
 
 ARG TARGETPLATFORM
 ARG BUILDKIT_SBOM_SCAN_STAGE=true
@@ -173,8 +202,11 @@ USER root:root
 
 FROM base AS shared-runtime
 
-ARG RUNTIME_UID
+ARG BUILDARCH
+ARG BUILDOS
+ARG GOMPLATE_VERSION
 ARG RUNTIME_GID
+ARG RUNTIME_UID
 
 ENV RUNTIME_UID=${RUNTIME_UID}
 ENV RUNTIME_GID=${RUNTIME_GID}
@@ -183,6 +215,7 @@ COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/p
 COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
+COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplate
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN set -ex \

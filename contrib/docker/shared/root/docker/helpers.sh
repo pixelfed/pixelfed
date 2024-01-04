@@ -10,11 +10,11 @@ declare -ra dot_env_files=(
     /var/www/.env.docker
     /var/www/.env
 )
-declare -a seen_dot_env_variables=()
+declare -ga seen_dot_env_variables=()
 
 function set_identity() {
     old_log_prefix="${log_prefix}"
-    log_prefix="ENTRYPOINT - [${1}] - "
+    log_prefix="ENTRYPOINT - [$(get_script_name $1)] - "
 }
 
 function resetore_identity() {
@@ -22,7 +22,23 @@ function resetore_identity() {
 }
 
 function as_runtime_user() {
-    su --preserve-environment $(id -un ${RUNTIME_UID}) --shell /bin/bash --command "${*}"
+    local -i exit_code
+    local target_user
+
+    target_user=$(id -un ${RUNTIME_UID})
+
+    log "👷 Running [${*}] as [${target_user}]"
+
+    su --preserve-environment "${target_user}" --shell /bin/bash --command "${*}"
+    exit_code=$?
+
+    if [[ $exit_code != 0 ]]; then
+        log_error "❌ Error!"
+        return $exit_code
+    fi
+
+    log "✅ OK!"
+    return $exit_code
 }
 
 # @description Display the given error message with its line number on stderr and exit with error.
@@ -53,7 +69,7 @@ function log() {
 }
 
 function load-config-files() {
-    # Associative array (aka map/disctrionary) holding the unique keys found in dot-env files
+    # Associative array (aka map/dictionary) holding the unique keys found in dot-env files
     local -A _tmp_dot_env_keys
 
     for f in "${dot_env_files[@]}"; do
@@ -72,4 +88,15 @@ function load-config-files() {
     done
 
     seen_dot_env_variables=(${!_tmp_dot_env_keys[@]})
+}
+
+function array_value_exists() {
+    local -nr validOptions=$1
+    local -r providedValue="\<${2}\>"
+
+    [[ ${validOptions[*]} =~ $providedValue ]]
+}
+
+function get_script_name() {
+    echo "${1#"$ENTRYPOINT_ROOT"}"
 }

@@ -15,7 +15,7 @@ echo 'APT::Install-Suggests "false";' >>/etc/apt/apt.conf
 declare -ra standardPackages=(
     apt-utils
     ca-certificates
-    gettext-base
+    curl
     git
     gnupg1
     gosu
@@ -25,9 +25,10 @@ declare -ra standardPackages=(
     locales-all
     nano
     procps
-    unzip
-    zip
     software-properties-common
+    unzip
+    wget
+    zip
 )
 
 # Image Optimization
