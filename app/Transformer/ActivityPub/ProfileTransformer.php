@@ -15,6 +15,7 @@ class ProfileTransformer extends Fractal\TransformerAbstract
             'https://w3id.org/security/v1',
             'https://www.w3.org/ns/activitystreams',
             [
+              'toot' => 'http://joinmastodon.org/ns#',
               'manuallyApprovesFollowers' => 'as:manuallyApprovesFollowers',
               'alsoKnownAs' => [
                     '@id' => 'as:alsoKnownAs',
@@ -23,7 +24,8 @@ class ProfileTransformer extends Fractal\TransformerAbstract
               'movedTo' => [
                     '@id' => 'as:movedTo',
                     '@type' => '@id'
-              ]
+              ],
+              'indexable' => 'toot:indexable',
             ],
           ],
           'id'                        => $profile->permalink(),
@@ -37,6 +39,8 @@ class ProfileTransformer extends Fractal\TransformerAbstract
           'summary'                   => $profile->bio,
           'url'                       => $profile->url(),
           'manuallyApprovesFollowers' => (bool) $profile->is_private,
+          'indexable'                 => (bool) $profile->indexable,
+          'published'                 => $profile->created_at->format('Y-m-d') . 'T00:00:00Z',
           'publicKey' => [
             'id'           => $profile->permalink().'#main-key',
             'owner'        => $profile->permalink(),

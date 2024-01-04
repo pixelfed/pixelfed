@@ -17,12 +17,15 @@ use App\{
 use App\Services\MediaPathService;
 use App\Services\MediaBlocklistService;
 use App\Jobs\StatusPipeline\NewStatusPipeline;
+use App\Jobs\StatusPipeline\StatusDelete;
 use Illuminate\Support\Str;
 use App\Util\ActivityPub\Helpers;
 use App\Services\AccountService;
 use App\Services\StatusService;
 use App\Services\WebfingerService;
 use App\Models\Conversation;
+use App\Jobs\DirectPipeline\DirectDeletePipeline;
+use App\Jobs\DirectPipeline\DirectDeliverPipeline;
 
 class DirectMessageController extends Controller
 {
@@ -500,6 +503,8 @@ class DirectMessageController extends Controller
 		if($recipient['local'] == false) {
 			$dmc = $dm;
 			$this->remoteDelete($dmc);
+		} else {
+			StatusDelete::dispatch($status)->onQueue('high');
 		}
 
 		if(Conversation::whereStatusId($sid)->count()) {
@@ -541,9 +546,7 @@ class DirectMessageController extends Controller
 
 		StatusService::del($status->id, true);
 
-		$status->delete();
-		$dm->delete();
-
+		$status->forceDeleteQuietly();
 		return [200];
 	}
 
@@ -829,7 +832,7 @@ class DirectMessageController extends Controller
 			]
 		];
 
-		Helpers::sendSignedObject($profile, $url, $body);
+		DirectDeliverPipeline::dispatch($profile, $url, $body)->onQueue('high');
 	}
 
 	public function remoteDelete($dm)
@@ -852,7 +855,6 @@ class DirectMessageController extends Controller
 				'type' => 'Tombstone'
 			]
 		];
-
-		Helpers::sendSignedObject($profile, $url, $body);
+		DirectDeletePipeline::dispatch($profile, $url, $body)->onQueue('high');
 	}
 }

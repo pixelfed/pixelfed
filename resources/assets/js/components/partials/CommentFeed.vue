@@ -18,8 +18,8 @@
 							</div>
 						</div>
 
-						<div v-if="composeText" class="reply-options" v-model="visibility">
-							<select class="form-control form-control-sm rounded-pill font-weight-bold">
+						<div v-if="composeText" class="reply-options">
+							<select class="form-control form-control-sm rounded-pill font-weight-bold" v-model="visibility">
 								<option value="public">Public</option>
 								<option value="private">Followers Only</option>
 							</select>

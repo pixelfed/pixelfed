@@ -96,6 +96,13 @@ Route::domain(config('pixelfed.domain.admin'))->prefix('i/admin')->group(functio
 
 	Route::get('autospam/home', 'AdminController@autospamHome')->name('admin.autospam');
 
+    Route::redirect('asf/', 'asf/home');
+    Route::get('asf/home', 'AdminShadowFilterController@home');
+    Route::get('asf/create', 'AdminShadowFilterController@create');
+    Route::get('asf/edit/{id}', 'AdminShadowFilterController@edit');
+    Route::post('asf/edit/{id}', 'AdminShadowFilterController@storeEdit');
+    Route::post('asf/create', 'AdminShadowFilterController@store');
+
 	Route::prefix('api')->group(function() {
 		Route::get('stats', 'AdminController@getStats');
 		Route::get('accounts', 'AdminController@getAccounts');
@@ -482,6 +489,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 		Route::post('privacy/muted-users', 'SettingsController@mutedUsersUpdate');
 		Route::get('privacy/blocked-users', 'SettingsController@blockedUsers')->name('settings.privacy.blocked-users');
 		Route::post('privacy/blocked-users', 'SettingsController@blockedUsersUpdate');
+		Route::get('privacy/domain-blocks', 'SettingsController@domainBlocks')->name('settings.privacy.domain-blocks');
 		Route::get('privacy/blocked-instances', 'SettingsController@blockedInstances')->name('settings.privacy.blocked-instances');
 		Route::post('privacy/blocked-instances', 'SettingsController@blockedInstanceStore');
 		Route::post('privacy/blocked-instances/unblock', 'SettingsController@blockedInstanceUnblock')->name('settings.privacy.blocked-instances.unblock');

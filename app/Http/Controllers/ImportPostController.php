@@ -83,6 +83,17 @@ class ImportPostController extends Controller
         );
     }
 
+    public function formatHashtags($val = false)
+    {
+        if(!$val || !strlen($val)) {
+            return null;
+        }
+
+        $groupedHashtagRegex = '/#\w+(?=#)/';
+
+        return preg_replace($groupedHashtagRegex, '$0 ', $val);
+    }
+
     public function store(Request $request)
     {
         abort_unless(config('import.instagram.enabled'), 404);
@@ -128,11 +139,11 @@ class ImportPostController extends Controller
             $ip->media = $c->map(function($m) {
                 return [
                     'uri' => $m['uri'],
-                    'title' => $m['title'],
+                    'title' => $this->formatHashtags($m['title']),
                     'creation_timestamp' => $m['creation_timestamp']
                 ];
             })->toArray();
-            $ip->caption = $c->count() > 1 ? $file['title'] : $ip->media[0]['title'];
+            $ip->caption = $c->count() > 1 ? $this->formatHashtags($file['title']) : $this->formatHashtags($ip->media[0]['title']);
             $ip->filename = last(explode('/', $ip->media[0]['uri']));
             $ip->metadata = $c->map(function($m) {
                 return [

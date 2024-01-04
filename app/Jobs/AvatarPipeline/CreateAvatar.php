@@ -2,19 +2,25 @@
 
 namespace App\Jobs\AvatarPipeline;
 
-use App\Avatar;
-use App\Profile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use App\Avatar;
+use App\Profile;
 
-class CreateAvatar implements ShouldQueue
+class CreateAvatar implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $profile;
+    public $profile;
+    public $tries = 3;
+    public $maxExceptions = 3;
+    public $timeout = 900;
+    public $failOnTimeout = true;
 
     /**
      * Delete the job if its models no longer exist.
@@ -22,6 +28,31 @@ class CreateAvatar implements ShouldQueue
      * @var bool
      */
     public $deleteWhenMissingModels = true;
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'avatar:create:' . $this->profile->id;
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping("avatar-create:{$this->profile->id}"))->shared()->dontRelease()];
+    }
     
     /**
      * Create a new job instance.
@@ -30,7 +61,7 @@ class CreateAvatar implements ShouldQueue
      */
     public function __construct(Profile $profile)
     {
-        $this->profile = $profile;
+        $this->profile = $profile->withoutRelations();
     }
 
     /**
@@ -41,12 +72,18 @@ class CreateAvatar implements ShouldQueue
     public function handle()
     {
         $profile = $this->profile;
+        $isRemote = (bool) $profile->private_key == null;
         $path = 'public/avatars/default.jpg';
-        $avatar = new Avatar();
-        $avatar->profile_id = $profile->id;
-        $avatar->media_path = $path;
-        $avatar->change_count = 0;
-        $avatar->last_processed_at = \Carbon\Carbon::now();
-        $avatar->save();
+        Avatar::updateOrCreate(
+            [
+                'profile_id' => $profile->id,
+            ],
+            [
+                'media_path' => $path,
+                'change_count' => 0,
+                'is_remote' => $isRemote,
+                'last_processed_at' => now()
+            ]
+        );
     }
 }

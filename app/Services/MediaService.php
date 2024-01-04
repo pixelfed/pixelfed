@@ -18,7 +18,7 @@ class MediaService
 
 	public static function get($statusId)
 	{
-		return Cache::remember(self::CACHE_KEY.$statusId, 86400, function() use($statusId) {
+		return Cache::remember(self::CACHE_KEY.$statusId, 21600, function() use($statusId) {
 			$media = Media::whereStatusId($statusId)->orderBy('order')->get();
 			if(!$media) {
 				return [];
@@ -46,7 +46,8 @@ class MediaService
 				$media['orientation'],
 				$media['filter_name'],
 				$media['filter_class'],
-				$media['mime']
+				$media['mime'],
+				$media['hls_manifest']
 			);
 
 			$media['type'] = $mime ? strtolower($mime[0]) : 'unknown';

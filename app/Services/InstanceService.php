@@ -120,6 +120,9 @@ class InstanceService
 				$pixels[] = $row;
 			}
 
+			// Free the allocated GdImage object from memory:
+			imagedestroy($image);
+
 			$components_x = 4;
 			$components_y = 4;
 			$blurhash = Blurhash::encode($pixels, $components_x, $components_y);

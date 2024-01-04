@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Services\AccountService;
 use App\Services\FollowerService;
 use App\Services\NotificationService;
+use App\Jobs\HomeFeedPipeline\FeedUnfollowPipeline;
 
 class UnfollowPipeline implements ShouldQueue
 {
@@ -54,6 +55,8 @@ class UnfollowPipeline implements ShouldQueue
 		if(!$targetProfile) {
 			return;
 		}
+
+		FeedUnfollowPipeline::dispatch($actor, $target)->onQueue('follow');
 
 		FollowerService::remove($actor, $target);
 

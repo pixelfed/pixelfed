@@ -35,6 +35,7 @@ use GuzzleHttp\Promise;
 use App\Util\ActivityPub\HttpSignature;
 use App\Services\CollectionService;
 use App\Services\StatusService;
+use App\Services\NotificationService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 
 class StatusDelete implements ShouldQueue
@@ -115,10 +116,30 @@ class StatusDelete implements ShouldQueue
                 $col->delete();
         });
 
-        DirectMessage::whereStatusId($status->id)->delete();
+        $dms = DirectMessage::whereStatusId($status->id)->get();
+        foreach($dms as $dm) {
+            $not = Notification::whereItemType('App\DirectMessage')
+                ->whereItemId($dm->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $dm->delete();
+        }
         Like::whereStatusId($status->id)->delete();
 
-		MediaTag::where('status_id', $status->id)->delete();
+        $mediaTags = MediaTag::where('status_id', $status->id)->get();
+        foreach($mediaTags as $mtag) {
+            $not = Notification::whereItemType('App\MediaTag')
+                ->whereItemId($mtag->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $mtag->delete();
+        }
         Mention::whereStatusId($status->id)->forceDelete();
 
 		Notification::whereItemType('App\Status')

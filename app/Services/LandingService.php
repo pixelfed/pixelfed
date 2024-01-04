@@ -9,17 +9,13 @@ use Illuminate\Support\Facades\Redis;
 use App\Status;
 use App\User;
 use App\Services\AccountService;
+use App\Util\Site\Nodeinfo;
 
 class LandingService
 {
 	public static function get($json = true)
 	{
-		$activeMonth = Cache::remember('api:nodeinfo:am', 172800, function() {
-			return User::select('last_active_at')
-				->where('last_active_at', '>', now()->subMonths(1))
-				->orWhere('created_at', '>', now()->subMonths(1))
-				->count();
-		});
+		$activeMonth = Nodeinfo::activeUsersMonthly();
 
 		$totalUsers = Cache::remember('api:nodeinfo:users', 43200, function() {
 			return User::count();

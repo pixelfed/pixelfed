@@ -26,8 +26,7 @@
 			<slide v-for="(img, index) in status.media_attachments" :key="'px-carousel-'+img.id + '-' + index" class="" style="background: #000; display: flex;align-items: center;" :title="img.description">
 
 				<img
-					:class="img.filter_class + ' img-fluid w-100 p-0'"
-					style=""
+					class="img-fluid w-100 p-0"
 					:src="img.url"
 					:alt="altText(img)"
 					loading="lazy"
@@ -162,28 +161,28 @@
 
 <style type="text/css" scoped>
   .card-img-top {
-    border-top-left-radius: 0 !important;
-    border-top-right-radius: 0 !important;
+	border-top-left-radius: 0 !important;
+	border-top-right-radius: 0 !important;
   }
   .content-label-wrapper {
-  	position: relative;
+	position: relative;
   }
   .content-label {
-  	margin: 0;
-  	position: absolute;
-  	top:50%;
-  	left:50%;
-  	transform: translate(-50%, -50%);
-  	display: flex;
-  	flex-direction: column;
-  	align-items: center;
-  	justify-content: center;
-  	width: 100%;
-  	height: 100%;
-  	z-index: 2;
-  	background: rgba(0, 0, 0, 0.2)
+	margin: 0;
+	position: absolute;
+	top:50%;
+	left:50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	background: rgba(0, 0, 0, 0.2)
   }
   .album-wrapper {
-  	position: relative;
+	position: relative;
   }
 </style>

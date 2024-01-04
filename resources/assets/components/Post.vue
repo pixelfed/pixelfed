@@ -37,6 +37,8 @@
 						v-on:bookmark="handleBookmark()"
 						v-on:share="shareStatus()"
 						v-on:unshare="unshareStatus()"
+						v-on:follow="follow()"
+						v-on:unfollow="unfollow()"
 						v-on:counter-change="counterChange"
 						/>
 				</div>
@@ -331,6 +333,30 @@
 					this.post.reblogs_count = count;
 					this.post.reblogged = false;
 				})
+			},
+
+			follow() {
+				axios.post('/api/v1/accounts/' + this.post.account.id + '/follow')
+				.then(res => {
+					this.$store.commit('updateRelationship', [res.data]);
+					this.user.following_count++;
+					this.post.account.followers_count++;
+				}).catch(err => {
+					swal('Oops!', 'An error occurred when attempting to follow this account.', 'error');
+					this.post.relationship.following = false;
+				});
+			},
+
+			unfollow() {
+				axios.post('/api/v1/accounts/' + this.post.account.id + '/unfollow')
+				.then(res => {
+					this.$store.commit('updateRelationship', [res.data]);
+					this.user.following_count--;
+					this.post.account.followers_count--;
+				}).catch(err => {
+					swal('Oops!', 'An error occurred when attempting to unfollow this account.', 'error');
+					this.post.relationship.following = true;
+				});
 			},
 
 			openContextMenu() {

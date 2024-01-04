@@ -21,9 +21,11 @@ use App\{
 };
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use League\Fractal;
 use Illuminate\Support\Str;
 use League\Fractal\Serializer\ArraySerializer;
@@ -37,8 +39,10 @@ use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
+use App\Jobs\ProfilePipeline\DecrementPostCount;
+use App\Services\NotificationService;
 
-class RemoteStatusDelete implements ShouldQueue
+class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -51,9 +55,35 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public $deleteWhenMissingModels = true;
 
-    public $timeout = 90;
-    public $tries = 2;
-    public $maxExceptions = 1;
+    public $tries = 3;
+    public $maxExceptions = 3;
+    public $timeout = 180;
+    public $failOnTimeout = true;
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600;
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return 'status:remote:delete:' . $this->status->id;
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping("status-remote-delete-{$this->status->id}"))->shared()->dontRelease()];
+    }
 
     /**
      * Create a new job instance.
@@ -62,7 +92,7 @@ class RemoteStatusDelete implements ShouldQueue
      */
     public function __construct(Status $status)
     {
-        $this->status = $status;
+        $this->status = $status->withoutRelations();
     }
 
     /**
@@ -77,14 +107,10 @@ class RemoteStatusDelete implements ShouldQueue
         if($status->deleted_at) {
             return;
         }
-        $profile = $this->status->profile;
 
         StatusService::del($status->id, true);
 
-        if($profile->status_count && $profile->status_count > 0) {
-            $profile->status_count = $profile->status_count - 1;
-            $profile->save();
-        }
+        DecrementPostCount::dispatch($status->profile_id)->onQueue('inbox');
 
         return $this->unlinkRemoveMedia($status);
     }
@@ -112,14 +138,34 @@ class RemoteStatusDelete implements ShouldQueue
                 CollectionService::removeItem($col->collection_id, $col->object_id);
                 $col->delete();
         });
-        DirectMessage::whereStatusId($status->id)->delete();
+        $dms = DirectMessage::whereStatusId($status->id)->get();
+        foreach($dms as $dm) {
+            $not = Notification::whereItemType('App\DirectMessage')
+                ->whereItemId($dm->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $dm->delete();
+        }
         Like::whereStatusId($status->id)->forceDelete();
         Media::whereStatusId($status->id)
         ->get()
         ->each(function($media) {
             MediaDeletePipeline::dispatch($media)->onQueue('mmo');
         });
-        MediaTag::where('status_id', $status->id)->delete();
+        $mediaTags = MediaTag::where('status_id', $status->id)->get();
+        foreach($mediaTags as $mtag) {
+            $not = Notification::whereItemType('App\MediaTag')
+                ->whereItemId($mtag->id)
+                ->first();
+            if($not) {
+                NotificationService::del($not->profile_id, $not->id);
+                $not->forceDeleteQuietly();
+            }
+            $mtag->delete();
+        }
         Mention::whereStatusId($status->id)->forceDelete();
         Notification::whereItemType('App\Status')
             ->whereItemId($status->id)

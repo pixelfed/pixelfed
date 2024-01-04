@@ -205,11 +205,19 @@
 
 				<div v-else class="float-right">
 					<button
+					    v-if="posts.length > 0"
 						type="button"
 						class="btn btn-outline-primary btn-sm py-1 font-weight-bold px-3"
 						@click.prevent="publishCollection">
 						Publish
 					</button>
+
+					<button
+						v-else
+						type="button"
+						class="btn btn-outline-primary btn-sm py-1 font-weight-bold px-3 disabled" disabled>
+						Publish
+				    </button>
 
 					<button
 						type="button"
@@ -452,7 +460,7 @@ export default {
 				})
 				.then(res => {
 					self.postsList = res.data.filter(l => {
-						return self.ids.indexOf(l.id) == -1;
+						return  (l.visibility == 'public' || l.visibility == 'unlisted') && l.sensitive == false && self.ids.indexOf(l.id) == -1; 
 					});
 					self.loadingPostList = false;
 					self.$refs.addPhotoModal.show();
@@ -527,6 +535,11 @@ export default {
 		},
 
 		publishCollection() {
+			if (this.posts.length === 0) {
+				swal('Error', 'You cannot publish an empty collection');
+				return;
+			}
+
 			if(this.owner == false) {
 				return;
 			}
@@ -541,7 +554,9 @@ export default {
 				.then(res => {
 					console.log(res.data);
 					// window.location.href = res.data.url;
-				});
+				}).catch(err => {
+					swal('Something went wrong', 'There was a problem with your request, please try again later.', 'error')
+			    });
 			} else {
 				return;
 			}
@@ -604,6 +619,9 @@ export default {
 			this.posts = this.posts.filter(post => {
 				return post.id != id;
 			});
+			this.ids = this.ids.filter(post_id => {
+				return post_id != id;
+			});
 		},
 
 		addRecentId(post) {
@@ -615,6 +633,7 @@ export default {
 				// window.location.reload();
 				this.closeModals();
 				this.posts.push(res.data);
+				this.ids.push(post.id);
 				this.collection.post_count++;
 			}).catch(err => {
 				swal('Oops!', 'An error occured, please try selecting another post.', 'error');

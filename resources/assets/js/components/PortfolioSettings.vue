@@ -238,7 +238,7 @@
                 	</div>
                 </div>
 
-                <div v-else-if="tabIndex === 'Share'" class="col-12 col-md-8 bg-dark mt-3 py-2 rounded" key="0">
+                <div v-else-if="tabIndex === 'Share'" class="col-12 col-md-8 bg-dark mt-3 py-2 rounded" key="3">
                     <div class="py-2">
                         <p class="text-muted">Portfolio URL</p>
                         <p class="lead mb-0"><a :href="settings.url">{{ settings.url }}</a></p>
