@@ -116,11 +116,11 @@ Any valid Docker Hub PHP version is acceptable here, as long as it's [published 
 
 **Default value**: `8.1`
 
-### `PECL_EXTENSIONS`
+### `PHP_PECL_EXTENSIONS`
 
 PECL extensions to install via `pecl install`
 
-Use [PECL_EXTENSIONS_EXTRA](#pecl_extensions_extra) if you want to add *additional* extenstions.
+Use [PHP_PECL_EXTENSIONS_EXTRA](#php_pecl_extensions_extra) if you want to add *additional* extenstions.
 
 Only change this setting if you want to change the baseline extensions.
 
@@ -128,7 +128,7 @@ See the [`PECL extensions` documentation on Docker Hub](https://hub.docker.com/_
 
 **Default value**: `imagick redis`
 
-### `PECL_EXTENSIONS_EXTRA`
+### `PHP_PECL_EXTENSIONS_EXTRA`
 
 Extra PECL extensions (separated by space) to install via `pecl install`
 
@@ -154,13 +154,13 @@ See the [`How to install more PHP extensions` documentation on Docker Hub](https
 
 **Default value**: `""`
 
-### `PHP_DATABASE_EXTENSIONS`
+### `PHP_EXTENSIONS_DATABASE`
 
 PHP database extensions to install.
 
 By default we install both `pgsql` and `mysql` since it's more convinient (and adds very little build time! but can be overwritten here if required.
 
-**Default value**: `pdo_pgsql pdo_mysql`
+**Default value**: `pdo_pgsql pdo_mysql pdo_sqlite`
 
 ### `COMPOSER_VERSION`
 
