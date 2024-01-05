@@ -9,13 +9,13 @@
 ARG COMPOSER_VERSION="2.6"
 
 # See: https://nginx.org/
-ARG NGINX_VERSION=1.25.3
+ARG NGINX_VERSION="1.25.3"
 
 # See: https://github.com/ddollar/forego
-ARG FOREGO_VERSION=0.17.2
+ARG FOREGO_VERSION="0.17.2"
 
 # See: https://github.com/hairyhenderson/gomplate
-ARG GOMPLATE_VERSION=v3.11.6
+ARG GOMPLATE_VERSION="v3.11.6"
 
 ###
 # PHP base configuration
@@ -32,22 +32,22 @@ ARG RUNTIME_UID=33 # often called 'www-data'
 ARG RUNTIME_GID=33 # often called 'www-data'
 
 # APT extra packages
-ARG APT_PACKAGES_EXTRA=
+ARG APT_PACKAGES_EXTRA=""
 
 # Extensions installed via [pecl install]
 ARG PHP_PECL_EXTENSIONS=""
-ARG PHP_PECL_EXTENSIONS_EXTRA=
+ARG PHP_PECL_EXTENSIONS_EXTRA=""
 
 # Extensions installed via [docker-php-ext-install]
 ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"
-ARG PHP_EXTENSIONS_EXTRA=
+ARG PHP_EXTENSIONS_EXTRA=""
 ARG PHP_EXTENSIONS_DATABASE="pdo_pgsql pdo_mysql pdo_sqlite"
 
 # GPG key for nginx apt repository
-ARG NGINX_GPGKEY=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+ARG NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 
 # GPP key path for nginx apt repository
-ARG NGINX_GPGKEY_PATH=/usr/share/keyrings/nginx-archive-keyring.gpg
+ARG NGINX_GPGKEY_PATH="/usr/share/keyrings/nginx-archive-keyring.gpg"
 
 #######################################################
 # Docker "copy from" images
@@ -93,15 +93,14 @@ RUN set -ex \
 FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS base
 
 ARG APT_PACKAGES_EXTRA
+ARG BUILDKIT_SBOM_SCAN_STAGE="true"
 ARG PHP_DEBIAN_RELEASE
 ARG PHP_VERSION
 ARG RUNTIME_GID
 ARG RUNTIME_UID
-
 ARG TARGETPLATFORM
-ARG BUILDKIT_SBOM_SCAN_STAGE=true
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND="noninteractive"
 
 # Ensure we run all scripts through 'bash' rather than 'sh'
 SHELL ["/bin/bash", "-c"]
@@ -160,7 +159,7 @@ ARG RUNTIME_GID
 ARG TARGETPLATFORM
 
 # Make sure composer cache is targeting our cache mount later
-ENV COMPOSER_CACHE_DIR=/cache/composer
+ENV COMPOSER_CACHE_DIR="/cache/composer"
 
 # Don't enforce any memory limits for composer
 ENV COMPOSER_MEMORY_LIMIT=-1
