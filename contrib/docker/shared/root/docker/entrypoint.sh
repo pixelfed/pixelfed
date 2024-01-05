@@ -15,7 +15,7 @@ export ENTRYPOINT_ROOT
 source /docker/helpers.sh
 
 # Set the entrypoint name for logging
-entrypoint-set-name "entrypoint.sh"
+entrypoint-set-script-name "entrypoint.sh"
 
 # Convert ENTRYPOINT_SKIP_SCRIPTS into a native bash array for easier lookup
 declare -a skip_scripts
@@ -58,7 +58,7 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
 
         # the sourced file will (should) than the log prefix, so this restores our own
         # "global" log prefix once the file is done being sourced
-        entrypoint-restore-name
+        entrypoint-restore-script-name
         ;;
 
     *.sh)

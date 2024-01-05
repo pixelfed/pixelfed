@@ -1,7 +1,7 @@
 #!/bin/bash
 source /docker/helpers.sh
 
-entrypoint-set-name "$0"
+entrypoint-set-script-name "$0"
 
 # Optionally fix ownership of configured paths
 : ${ENTRYPOINT_ENSURE_OWNERSHIP_PATHS:=""}

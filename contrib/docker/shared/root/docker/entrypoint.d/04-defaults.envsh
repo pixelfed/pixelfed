@@ -8,7 +8,7 @@
 #
 # We also don't need to source `helpers.sh` since it's already available
 
-entrypoint-set-name "${BASH_SOURCE[0]}"
+entrypoint-set-script-name "${BASH_SOURCE[0]}"
 
 load-config-files
 

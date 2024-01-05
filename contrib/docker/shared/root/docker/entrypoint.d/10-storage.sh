@@ -1,7 +1,7 @@
 #!/bin/bash
 source /docker/helpers.sh
 
-entrypoint-set-name "$0"
+entrypoint-set-script-name "$0"
 
 # Copy the [storage/] skeleton files over the "real" [storage/] directory so assets are updated between versions
 run-as-runtime-user cp --recursive storage.skel/ storage/

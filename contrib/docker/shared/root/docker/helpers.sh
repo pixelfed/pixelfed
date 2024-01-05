@@ -21,15 +21,15 @@ declare -ra dot_env_files=(
 # environment keys seen when source dot files (so we can [export] them)
 declare -ga seen_dot_env_variables=()
 
-# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-name]
+# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
 # @arg $1 string The name (or path) of the entrypoint script being run
-function entrypoint-set-name() {
+function entrypoint-set-script-name() {
     log_prefix_previous="${log_prefix}"
     log_prefix="ENTRYPOINT - [$(get-entrypoint-script-name $1)] - "
 }
 
-# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-name]
-function entrypoint-restore-name() {
+# @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
+function entrypoint-restore-script-name() {
     log_prefix="${log_prefix_previous}"
 }
 

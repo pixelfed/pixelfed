@@ -1,7 +1,7 @@
 #!/bin/bash
 source /docker/helpers.sh
 
-entrypoint-set-name "$0"
+entrypoint-set-script-name "$0"
 
 # Show [git diff] of templates being rendered (will help verify output)
 : ${ENTRYPOINT_SHOW_TEMPLATE_DIFF:=1}
