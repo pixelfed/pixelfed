@@ -3,11 +3,18 @@
 ## Prerequisites
 
 * One of the `docker-compose.yml` files in this directory
-* A copy of the `example.env` file
+* A copy of the `example.env` file named `.env` next to `docker-compose.yml`
 
-In order to set configuration, please use a .env file in your compose project directory (the same directory as your docker-compose.yml), and set database options, application
-name, key, and other settings there.
+Your folder should look like this
 
-A list of available settings is available in .env.example
+```plain
+.
+├── .env
+└── docker-compose.yml
+```
 
-The services should scale properly across a swarm cluster if the volumes are properly shared between cluster members.
+## Modifying your settings (`.env` file)
+
+* `APP_NAME`
+* `APP_DOMAIN`
+* `DB_PASSWORD`
