@@ -17,7 +17,7 @@ class UpdateStatusVisibilityDefaults extends Migration
         switch($type)
         {
             case 'mysql':
-                DB::statement("ALTER TABLE statuses CHANGE COLUMN visibility visibility ENUM('public','unlisted','private','direct', 'draft') NOT NULL DEFAULT 'public'");
+                DB::statement("ALTER TABLE statuses CHANGE COLUMN visibility ENUM('public','unlisted','private','direct', 'draft') NOT NULL DEFAULT 'public'");
                 break;
 
             case 'pgsql':
