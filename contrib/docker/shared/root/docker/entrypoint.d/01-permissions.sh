@@ -3,7 +3,8 @@ source /docker/helpers.sh
 
 entrypoint-set-script-name "$0"
 
-# Ensure the two Docker volumes are owned by the runtime user
+# Ensure the two Docker volumes and dot-env files are owned by the runtime user as other scripts
+# will be writing to these
 run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./.env"
 run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./bootstrap/cache"
 run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./storage"
@@ -22,5 +23,5 @@ fi
 
 for path in "${ensure_ownership_paths[@]}"; do
     log-info "Ensure ownership of [${path}] is correct"
-    run-as-current-user chown --recursive ${RUNTIME_UID}:${RUNTIME_GID} "${path}"
+    stream-prefix-command-output run-as-current-user chown --recursive ${RUNTIME_UID}:${RUNTIME_GID} "${path}"
 done

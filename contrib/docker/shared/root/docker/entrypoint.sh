@@ -31,6 +31,8 @@ if is-directory-empty "${ENTRYPOINT_ROOT}"; then
     exec "$@"
 fi
 
+acquire-lock
+
 # Start scanning for entrypoint.d files to source or run
 log-info "looking for shell scripts in [${ENTRYPOINT_ROOT}]"
 
@@ -50,9 +52,9 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
-        log-info
-        log-info "Sourcing [${file}]"
-        log-info
+        log-info ""
+        log-info "${notice_message_color}Sourcing [${file}]${color_clear}"
+        log-info ""
 
         source "${file}"
 
@@ -67,9 +69,9 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
-        log-info
-        log-info "Running [${file}]"
-        log-info
+        log-info ""
+        log-info "${notice_message_color}Executing [${file}]${color_clear}"
+        log-info ""
 
         "${file}"
         ;;
@@ -79,6 +81,8 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
         ;;
     esac
 done
+
+release-lock
 
 log-info "Configuration complete; ready for start up"
 

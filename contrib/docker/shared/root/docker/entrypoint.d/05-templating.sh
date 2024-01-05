@@ -49,7 +49,7 @@ find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r templat
     cat "${template_file}" | gomplate >"${output_file_path}"
 
     # Show the diff from the envsubst command
-    if [[ ${ENTRYPOINT_SHOW_TEMPLATE_DIFF} = 1 ]]; then
-        git --no-pager diff "${template_file}" "${output_file_path}" || :
+    if [[ ${ENTRYPOINT_SHOW_TEMPLATE_DIFF:-1} = 1 ]]; then
+        git --no-pager diff --color=always "${template_file}" "${output_file_path}" || :
     fi
 done

@@ -23,6 +23,7 @@ declare -ra standardPackages=(
     libzip-dev
     locales
     locales-all
+    moreutils
     nano
     procps
     software-properties-common
@@ -63,6 +64,8 @@ declare -ra videoProcessing=(
 declare -ra databaseDependencies=(
     libpq-dev
     libsqlite3-dev
+    mariadb-client
+    postgresql-client
 )
 
 apt-get update
