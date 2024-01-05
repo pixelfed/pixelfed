@@ -1063,7 +1063,7 @@ export default {
 		.then(res => {
 			this.composeSettings = res.data;
 			this.licenseId = this.composeSettings.default_license;
-			this.maxAltTextLength = res.data.max_altext_length;
+			this.maxAltTextLength = res.data.max_alttext_length;
 			if(this.licenseId > 10) {
 				this.licenseTitle = this.availableLicenses.filter(l => {
 					return l.id == this.licenseId;

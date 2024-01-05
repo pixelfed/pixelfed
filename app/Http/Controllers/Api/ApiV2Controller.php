@@ -202,7 +202,7 @@ class ApiV2Controller extends Controller
 			],
 		  'filter_name' => 'nullable|string|max:24',
 		  'filter_class' => 'nullable|alpha_dash|max:24',
-		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_altext_length'),
+		  'description' => 'nullable|string|max:' . config_cache('pixelfed.max_alttext_length'),
 		  'replace_id' => 'sometimes'
 		]);
 

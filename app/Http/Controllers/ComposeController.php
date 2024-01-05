@@ -466,7 +466,7 @@ class ComposeController extends Controller
 			'media.*.id' => 'required|integer|min:1',
 			'media.*.filter_class' => 'nullable|alpha_dash|max:30',
 			'media.*.license' => 'nullable|string|max:140',
-			'media.*.alt' => 'nullable|string|max:'.config_cache('pixelfed.max_altext_length'),
+			'media.*.alt' => 'nullable|string|max:'.config_cache('pixelfed.max_alttext_length'),
 			'cw' => 'nullable|boolean',
 			'visibility' => 'required|string|in:public,private,unlisted|min:2|max:10',
 			'place' => 'nullable',
@@ -758,7 +758,7 @@ class ComposeController extends Controller
 		$default = [
 			'default_license' => 1,
 			'media_descriptions' => false,
-			'max_altext_length' => config_cache('pixelfed.max_altext_length')
+			'max_alttext_length' => config_cache('pixelfed.max_alttext_length')
 		];
 		$settings = AccountService::settings($uid);
 		if(isset($settings['other']) && isset($settings['other']['scope'])) {

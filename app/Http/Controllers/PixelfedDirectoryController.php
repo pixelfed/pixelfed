@@ -100,7 +100,7 @@ class PixelfedDirectoryController extends Controller
             'optimize_image' => config_cache('pixelfed.optimize_image'),
             'max_photo_size' => config_cache('pixelfed.max_photo_size'),
             'max_caption_length' => config_cache('pixelfed.max_caption_length'),
-            'max_altext_length' => config_cache('pixelfed.max_altext_length'),
+            'max_alttext_length' => config_cache('pixelfed.max_alttext_length'),
             'enforce_account_limit' => config_cache('pixelfed.enforce_account_limit'),
             'max_account_size' => config_cache('pixelfed.max_account_size'),
             'max_album_length' => config_cache('pixelfed.max_album_length'),

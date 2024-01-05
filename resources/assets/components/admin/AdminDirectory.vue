@@ -623,7 +623,7 @@
                                                         <i
                                                             class="far fa-2x mr-4"
                                                             :class="[
-                                                                !requirements_validator.hasOwnProperty('max_altext_length') ?
+                                                                !requirements_validator.hasOwnProperty('max_alttext_length') ?
                                                                 'fa-check-circle text-success' :
                                                                 'fa-exclamation-circle text-danger'
                                                             ]">
@@ -632,7 +632,7 @@
                                                     <div>
                                                         <p class="font-weight-bold text-dark my-0">Max Alt-text length</p>
                                                         <p class="mb-0 small text-muted">The alt-text length limit. Must be between 1000-5000.</p>
-                                                        <p v-if="requirements_validator.hasOwnProperty('max_altext_length')" class="mb-0 text-danger font-weight-bold">{{ requirements_validator.max_altext_length[0] }}</p>
+                                                        <p v-if="requirements_validator.hasOwnProperty('max_alttext_length')" class="mb-0 text-danger font-weight-bold">{{ requirements_validator.max_alttext_length[0] }}</p>
                                                     </div>
                                                 </div>
 

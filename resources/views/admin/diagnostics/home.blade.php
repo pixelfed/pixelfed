@@ -825,7 +825,7 @@
 	<tr>
 		<td><span class="badge badge-primary">PIXELFED</span></td>
 		<td><strong>PF_MEDIA_MAX_ALTTEXT_LENGTH</strong></td>
-		<td><span>"{{config_cache('pixelfed.max_altext_length')}}"</span></td>
+		<td><span>"{{config_cache('pixelfed.max_alttext_length')}}"</span></td>
 	</tr>
 
 	<tr>

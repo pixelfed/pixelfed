@@ -30,7 +30,7 @@ class Config {
                 'uploader' => [
                     'max_photo_size' => (int) config('pixelfed.max_photo_size'),
                     'max_caption_length' => (int) config('pixelfed.max_caption_length'),
-                    'max_altext_length' => (int) config('pixelfed.max_altext_length', 150),
+                    'max_alttext_length' => (int) config('pixelfed.max_alttext_length', 150),
                     'album_limit' => (int) config_cache('pixelfed.max_album_length'),
                     'image_quality' => (int) config_cache('pixelfed.image_quality'),
 
