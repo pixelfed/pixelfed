@@ -20,3 +20,6 @@ yarn-error.log
 .git-credentials
 /.composer/
 /nginx.conf
+/contrib/docker-compose/data
+/contrib/docker-compose/config
+!/contrib/docker-compose/.env

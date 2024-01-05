@@ -1,0 +1,59 @@
+---
+version: "3"
+
+services:
+  web:
+    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
+    restart: unless-stopped
+    env_file:
+      - "./.env"
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_DATA_ROOT}/pixelfed/bootstrap:/var/www/bootstrap"
+      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
+    ports:
+      - "${DOCKER_WEB_PORT_EXTERNAL}:80"
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
+    command: gosu www-data php artisan horizon
+    restart: unless-stopped
+    env_file:
+      - "./.env"
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_DATA_ROOT}/pixelfed/bootstrap:/var/www/bootstrap"
+      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mariadb:11.2
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    env_file:
+      - "./.env"
+    volumes:
+      - "${DOCKER_DATA_ROOT}/db:/var/lib/mysql"
+    ports:
+      - "${DOCKER_DB_PORT_EXTERNAL}:3306"
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    env_file:
+      - "./.env"
+    volumes:
+      - "${DOCKER_CONFIG_ROOT}/redis:/etc/redis"
+      - "${DOCKER_DATA_ROOT}/redis:/data"
+    ports:
+      - "${DOCKER_REDIS_PORT_EXTERNAL}:6399"
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      test: ["CMD", "redis-cli", "-p", "6399", "ping"]
