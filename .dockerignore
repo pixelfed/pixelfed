@@ -1,6 +1,9 @@
-data
-docker-compose*.yml
 .dockerignore
+.env
 .git
 .gitignore
-.env
+contrib/docker-compose/.env
+contrib/docker-compose/config
+contrib/docker-compose/data
+data
+docker-compose*.yml
