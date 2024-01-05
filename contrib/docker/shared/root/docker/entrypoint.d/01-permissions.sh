@@ -3,6 +3,11 @@ source /docker/helpers.sh
 
 entrypoint-set-script-name "$0"
 
+# Ensure the two Docker volumes are owned by the runtime user
+run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./.env"
+run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./bootstrap/cache"
+run-as-current-user chown --verbose ${RUNTIME_UID}:${RUNTIME_GID} "./storage"
+
 # Optionally fix ownership of configured paths
 : ${ENTRYPOINT_ENSURE_OWNERSHIP_PATHS:=""}
 
