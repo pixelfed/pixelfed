@@ -225,8 +225,6 @@ COPY contrib/docker/shared/root /
 
 ENTRYPOINT ["/docker/entrypoint.sh"]
 
-VOLUME /var/www/storage /var/www/bootstrap
-
 #######################################################
 # Runtime: apache
 #######################################################
@@ -241,8 +239,6 @@ RUN set -ex \
 
 CMD ["apache2-foreground"]
 
-EXPOSE 80
-
 #######################################################
 # Runtime: fpm
 #######################################################
@@ -252,8 +248,6 @@ FROM shared-runtime AS fpm-runtime
 COPY contrib/docker/fpm/root /
 
 CMD ["php-fpm"]
-
-EXPOSE 9000
 
 #######################################################
 # Runtime: nginx
@@ -283,8 +277,6 @@ RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE
 COPY --link --from=nginx-image /docker-entrypoint.d /docker/entrypoint.d/
 COPY contrib/docker/nginx/root /
 COPY contrib/docker/nginx/Procfile .
-
-EXPOSE 80
 
 STOPSIGNAL SIGQUIT
 
