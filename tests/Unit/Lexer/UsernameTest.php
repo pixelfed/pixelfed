@@ -176,7 +176,7 @@ class UsernameTest extends TestCase
     }
 
     /** @test * */
-    public function germanUmlatsAutolink()
+    public function germanUmlautsAutolink()
     {
         $mentions = "@März and @königin and @Glück";
         $autolink = Autolink::create()->autolink($mentions);
@@ -186,7 +186,7 @@ class UsernameTest extends TestCase
     }
 
     /** @test * */
-    public function germanUmlatsExtractor()
+    public function germanUmlautsExtractor()
     {
         $mentions = "@März and @königin and @Glück";
         $entities = Extractor::create()->extract($mentions);
@@ -230,7 +230,7 @@ class UsernameTest extends TestCase
     }
 
     /** @test * */
-    public function germanUmlatsWebfingerAutolink()
+    public function germanUmlautsWebfingerAutolink()
     {
         $mentions = "hello @märz@example.org!";
         $autolink = Autolink::create()->autolink($mentions);
