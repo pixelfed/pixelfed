@@ -29,6 +29,9 @@ declare -g docker_once_path="${docker_state_path}/once"
 
 declare -g runtime_username=$(id -un ${RUNTIME_UID})
 
+# We should already be in /var/www, but just to be explicit
+cd /var/www || log-error-and-exit "could not change to /var/www"
+
 # @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
 # @arg $1 string The name (or path) of the entrypoint script being run
 function entrypoint-set-script-name() {
