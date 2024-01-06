@@ -16,7 +16,8 @@ services:
       - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
       - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
     ports:
-      - "${DOCKER_WEB_PORT_EXTERNAL}:80"
+      - "${DOCKER_WEB_HTTP_PORT_EXTERNAL}:80"
+      - "${DOCKER_WEB_HTTPS_PORT_EXTERNAL}:443"
     depends_on:
       - db
       - redis
