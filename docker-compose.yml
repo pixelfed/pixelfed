@@ -1,82 +1,59 @@
 ---
-version: '3'
+version: "3"
 
-# In order to set configuration, please use a .env file in
-# your compose project directory (the same directory as your
-# docker-compose.yml), and set database options, application
-# name, key, and other settings there.
-# A list of available settings is available in .env.example
-#
-# The services should scale properly across a swarm cluster
-# if the volumes are properly shared between cluster members.
+###############################################################
+# Please see docker/README.md for usage information
+###############################################################
 
 services:
-## App and Worker
-  app:
-    # Comment to use dockerhub image
-    image: pixelfed/pixelfed:latest
+  web:
+    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
+    # build:
+    #   target: apache-runtime
     restart: unless-stopped
-    env_file:
-      - .env.docker
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
-    networks:
-      - external
-      - internal
+      - "./.env:/var/www/.env"
+      - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
+      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
     ports:
-      - "8080:80"
+      - "${DOCKER_WEB_PORT_EXTERNAL}:80"
     depends_on:
       - db
       - redis
 
   worker:
-    image: pixelfed/pixelfed:latest
-    restart: unless-stopped
-    env_file:
-      - .env.docker
-    volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-    networks:
-      - external
-      - internal
+    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
+    # build:
+    #   target: apache-runtime
     command: gosu www-data php artisan horizon
+    restart: unless-stopped
+    volumes:
+      - "./.env:/var/www/.env"
+      - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
+      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
     depends_on:
       - db
       - redis
 
-## DB and Cache
   db:
-    image: mariadb:jammy
-    restart: unless-stopped
-    networks:
-      - internal
+    image: mariadb:11.2
     command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.docker
+    restart: unless-stopped
     volumes:
-      - "db-data:/var/lib/mysql"
+      - "${DOCKER_DATA_ROOT}/db:/var/lib/mysql"
+    ports:
+      - "${DOCKER_DB_PORT_EXTERNAL}:3306"
 
   redis:
-    image: redis:5-alpine
+    image: redis:7
     restart: unless-stopped
-    env_file:
-      - .env.docker
     volumes:
-      - "redis-data:/data"
-    networks:
-      - internal
-
-volumes:
-  db-data:
-  redis-data:
-  app-storage:
-  app-bootstrap:
-
-networks:
-  internal:
-    internal: true
-  external:
-    driver: bridge
+      - "${DOCKER_CONFIG_ROOT}/redis:/etc/redis"
+      - "${DOCKER_DATA_ROOT}/redis:/data"
+    ports:
+      - "${DOCKER_REDIS_PORT_EXTERNAL}:6399"
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      test: ["CMD", "redis-cli", "-p", "6399", "ping"]

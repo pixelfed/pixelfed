@@ -114,7 +114,7 @@ WORKDIR /var/www/
 ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
 
 # Install and configure base layer
-COPY contrib/docker/shared/root/docker/install/base.sh /docker/install/base.sh
+COPY docker/shared/root/docker/install/base.sh /docker/install/base.sh
 RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     /docker/install/base.sh
@@ -140,7 +140,7 @@ ENV PHP_EXTENSIONS=${PHP_EXTENSIONS}
 ENV PHP_PECL_EXTENSIONS_EXTRA=${PHP_PECL_EXTENSIONS_EXTRA}
 ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
 
-COPY contrib/docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
+COPY docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
 RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php/ \
     --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
@@ -221,7 +221,7 @@ RUN set -ex \
 	&& cp --recursive --link --preserve=all storage storage.skel \
 	&& rm -rf html && ln -s public html
 
-COPY contrib/docker/shared/root /
+COPY docker/shared/root /
 
 ENTRYPOINT ["/docker/entrypoint.sh"]
 
@@ -231,7 +231,7 @@ ENTRYPOINT ["/docker/entrypoint.sh"]
 
 FROM shared-runtime AS apache-runtime
 
-COPY contrib/docker/apache/root /
+COPY docker/apache/root /
 
 RUN set -ex \
 	&& a2enmod rewrite remoteip proxy proxy_http \
@@ -245,7 +245,7 @@ CMD ["apache2-foreground"]
 
 FROM shared-runtime AS fpm-runtime
 
-COPY contrib/docker/fpm/root /
+COPY docker/fpm/root /
 
 CMD ["php-fpm"]
 
@@ -275,8 +275,8 @@ RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE
 
 # copy docker entrypoints from the *real* nginx image directly
 COPY --link --from=nginx-image /docker-entrypoint.d /docker/entrypoint.d/
-COPY contrib/docker/nginx/root /
-COPY contrib/docker/nginx/Procfile .
+COPY docker/nginx/root /
+COPY docker/nginx/Procfile .
 
 STOPSIGNAL SIGQUIT
 

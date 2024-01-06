@@ -160,7 +160,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: contrib/docker/Dockerfile
+          file: Dockerfile
           target: ${{ matrix.target_runtime }}-runtime
           platforms: linux/amd64,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
