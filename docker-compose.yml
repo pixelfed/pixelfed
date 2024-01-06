@@ -6,6 +6,43 @@ version: "3"
 ###############################################################
 
 services:
+  # HTTP/HTTPS proxy
+  #
+  # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
+  proxy:
+    image: nginxproxy/nginx-proxy:1.4
+    container_name: "${APP_DOMAIN}-proxy"
+    #restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_CONFIG_ROOT}/proxy/html:/usr/share/nginx/html"
+      - "${DOCKER_CONFIG_ROOT}/proxy/vhost.d:/etc/nginx/vhost.d"
+    ports:
+      - "${DOCKER_PROXY_PORT_EXTERNAL_HTTP}:80"
+      - "${DOCKER_PROXY_PORT_EXTERNAL_HTTPS}:443"
+
+  # Proxy companion for managing letsencrypt SSL certificates
+  #
+  # See: https://github.com/nginx-proxy/acme-companion/tree/main/docs
+  proxy-acme:
+    image: nginxproxy/acme-companion
+    container_name: "${APP_DOMAIN}-proxy-acme"
+    #restart: unless-stopped
+    environment:
+      DEFAULT_EMAIL: "${LETSENCRYPT_EMAIL}"
+      LETSENCRYPT_TEST: "${LETSENCRYPT_TEST}"
+      NGINX_PROXY_CONTAINER: "${APP_DOMAIN}-proxy"
+    depends_on:
+      - proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_CONFIG_ROOT}/proxy/html:/usr/share/nginx/html"
+      - "${DOCKER_CONFIG_ROOT}/proxy/vhost.d:/etc/nginx/vhost.d"
+
   web:
     image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
     # build:
@@ -15,9 +52,17 @@ services:
       - "./.env:/var/www/.env"
       - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
       - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
-    ports:
-      - "${DOCKER_WEB_HTTP_PORT_EXTERNAL}:80"
-      - "${DOCKER_WEB_HTTPS_PORT_EXTERNAL}:443"
+    environment:
+      LETSENCRYPT_HOST: "${APP_DOMAIN},*.${APP_DOMAIN}"
+      VIRTUAL_HOST: "${APP_DOMAIN},*.${APP_DOMAIN}"
+      VIRTUAL_PORT: "80"
+    labels:
+      com.github.nginx-proxy.nginx-proxy.keepalive: 30
+      com.github.nginx-proxy.nginx-proxy.http2.enable: true
+      com.github.nginx-proxy.nginx-proxy.http3.enable: true
+    # ports:
+    #   - "${DOCKER_WEB_HTTP_PORT_EXTERNAL}:80"
+    #   - "${DOCKER_WEB_HTTPS_PORT_EXTERNAL}:443"
     depends_on:
       - db
       - redis

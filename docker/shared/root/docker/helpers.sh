@@ -410,7 +410,7 @@ function await-database-ready() {
         ;;
 
     *)
-        log-error-and-exit "Unknown database type: [${DB_CONNECT}]"
+        log-error-and-exit "Unknown database type: [${DB_CONNECTION}]"
         ;;
     esac
 
