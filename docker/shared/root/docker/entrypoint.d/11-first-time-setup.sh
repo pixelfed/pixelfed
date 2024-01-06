@@ -3,6 +3,7 @@ source /docker/helpers.sh
 
 entrypoint-set-script-name "$0"
 
+load-config-files
 await-database-ready
 
 only-once "storage:link" run-as-runtime-user php artisan storage:link

@@ -283,7 +283,7 @@ function is-directory-empty() {
 # @exitcode 0 If $1 If the path exists *or* was created
 # @exitcode 1 If $1 If the path does *NOT* exists and could *NOT* be created
 function ensure-directory-exists() {
-    mkdir -pv "$@"
+    stream-prefix-command-output mkdir -pv "$@"
 }
 
 # @description Find the relative path for a entrypoint script by removing the ENTRYPOINT_ROOT prefix
@@ -314,7 +314,7 @@ function only-once() {
         return 1
     fi
 
-    touch "${file}"
+    stream-prefix-command-output touch "${file}"
     return 0
 }
 
@@ -334,7 +334,7 @@ function acquire-lock() {
         staggered-sleep
     done
 
-    touch "${file}"
+    stream-prefix-command-output touch "${file}"
 
     log-info "🔐 Lock acquired [${file}]"
 
@@ -349,7 +349,7 @@ function release-lock() {
 
     log-info "🔓 Releasing lock [${file}]"
 
-    rm -f "${file}"
+    stream-prefix-command-output rm -fv "${file}"
 }
 
 # @description Helper function to append multiple actions onto
@@ -410,7 +410,7 @@ function await-database-ready() {
         ;;
 
     *)
-        log-error-and-exit "Unknown database type: [${DB_CONNECTION}]"
+        log-error-and-exit "Unknown database type: [${DB_CONNECTION:-}]"
         ;;
     esac
 

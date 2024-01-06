@@ -1,7 +1,4 @@
-.dockerignore
 .env
 .git
 .gitignore
-docker-compose*.yml
-
-/docker-compose/
+/docker-compose-state/
