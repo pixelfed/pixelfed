@@ -1188,7 +1188,7 @@ class ApiV1Controller extends Controller
     {
         abort_if(!$request->user(), 403);
         $this->validate($request, [
-            'limit' => 'sometimes|integer|min:1|max:20'
+            'limit' => 'sometimes|integer|min:1|max:40'
         ]);
 
         $user = $request->user();
