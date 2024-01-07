@@ -14,8 +14,13 @@
                         <div class="form-group row">
 
                             <div class="col-md-12">
-                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="{{__('Email')}}" required autofocus>
+                                <input id="login" type="text" class="form-control{{ $errors->has('email') || $errors->has('username') ? ' is-invalid' : '' }}" name="login" value="{{ old('username') ? old('username') : old('email') }}" placeholder="{{ __('Username')  }}/{{__('Email')}}" required autofocus>
 
+                                @if ($errors->has('username'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('username') }}</strong>
+                                    </span>
+                                @endif
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback">
                                         <strong>{{ $errors->first('email') }}</strong>

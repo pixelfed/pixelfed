@@ -68,8 +68,7 @@ class LoginController extends Controller
 		}
 
         $rules = [
-            $this->username() => 'required|email',
-            'password'        => 'required|string|min:6',
+            'password'  => 'required|string|min:6',
         ];
 
         if(
@@ -83,9 +82,42 @@ class LoginController extends Controller
         ) {
             $rules['h-captcha-response'] = 'required|filled|captcha|min:5';
         }
-        
+
         $this->validate($request, $rules);
     }
+
+
+    /**
+     *
+     * return the login type username or email
+     *
+     * @return string
+     */
+    public function username()
+    {
+        $login_type = $this->getLoginType();
+
+        request()->merge([
+            $login_type => request()->input('login')
+        ]);
+
+        return $login_type;
+    }
+
+
+    /**
+     *
+     * check login type username or email
+     *
+     * @return string
+     */
+    public function getLoginType()
+    {
+        return filter_var(request()->input('login'), FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'username';
+    }
+
 
     /**
      * The user has been authenticated.
