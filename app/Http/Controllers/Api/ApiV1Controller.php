@@ -1750,6 +1750,8 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
 
         $media = Media::whereUserId($user->id)
@@ -2983,6 +2985,15 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
 
         $user = $request->user();
+
+        if($user->has_roles) {
+            if($in_reply_to_id != null) {
+                abort_if(!UserRoleService::can('can-comment', $user->id), 403, 'Invalid permissions for this action');
+            } else {
+                abort_if(!UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+            }
+        }
+
         $profile = $user->profile;
 
         $limitKey = 'compose:rate-limit:store:' . $user->id;
