@@ -2575,7 +2575,11 @@ class ApiV1Controller extends Controller
 
         $limit = $request->input('limit', 20);
         $scope = $request->input('scope', 'inbox');
-        $pid = $request->user()->profile_id;
+        $user = $request->user();
+        if($user->has_roles && !UserRoleService::can('can-direct-message', $user->id)) {
+            return [];
+        }
+        $pid = $user->profile_id;
 
         if(config('database.default') == 'pgsql') {
             $dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
