@@ -758,6 +758,8 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-follow', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
@@ -843,6 +845,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+
         AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
@@ -947,6 +950,8 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-view-discover', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
         $query = $request->input('q');
         $limit = $request->input('limit') ?? 20;
