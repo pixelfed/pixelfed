@@ -536,15 +536,15 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 		});
 
-		Route::get('parental-controls', 'ParentalControlsController@index');
-		Route::get('parental-controls/add', 'ParentalControlsController@add')->name('settings.pc.add');
-		Route::post('parental-controls/add', 'ParentalControlsController@store');
-		Route::get('parental-controls/manage/{id}', 'ParentalControlsController@view');
-		Route::post('parental-controls/manage/{id}', 'ParentalControlsController@update');
-		Route::get('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInvite')->name('settings.pc.cancel-invite');
-		Route::post('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInviteHandle');
-		Route::get('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManaging')->name('settings.pc.stop-managing');
-		Route::post('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManagingHandle');
+		Route::get('parental-controls', 'ParentalControlsController@index')->name('settings.parental-controls')->middleware('dangerzone');
+		Route::get('parental-controls/add', 'ParentalControlsController@add')->name('settings.pc.add')->middleware('dangerzone');
+		Route::post('parental-controls/add', 'ParentalControlsController@store')->middleware('dangerzone');
+		Route::get('parental-controls/manage/{id}', 'ParentalControlsController@view')->middleware('dangerzone');
+		Route::post('parental-controls/manage/{id}', 'ParentalControlsController@update')->middleware('dangerzone');
+		Route::get('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInvite')->name('settings.pc.cancel-invite')->middleware('dangerzone');
+		Route::post('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInviteHandle')->middleware('dangerzone');
+		Route::get('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManaging')->name('settings.pc.stop-managing')->middleware('dangerzone');
+		Route::post('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManagingHandle')->middleware('dangerzone');
 
 		Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
 		Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport')->middleware('dangerzone');
