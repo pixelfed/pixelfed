@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ParentalControls;
 use App\Models\UserRoles;
+use App\Profile;
 use App\User;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Auth\Events\Registered;
@@ -65,6 +66,11 @@ class ParentalControlsController extends Controller
         $pc->save();
 
         $roles = UserRoleService::mapActions($pc->child_id, $ff);
+        if(isset($roles['account-force-private'])) {
+            $c = Profile::whereUserId($pc->child_id)->first();
+            $c->is_private = $roles['account-force-private'];
+            $c->save();
+        }
         UserRoles::whereUserId($pc->child_id)->update(['roles' => $roles]);
         return redirect($pc->manageUrl() . '?permissions');
     }
