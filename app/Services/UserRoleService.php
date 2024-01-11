@@ -179,7 +179,7 @@ class UserRoleService
         ];
 
         foreach ($map as $key => $value) {
-            if(!isset($data[$value], $data[substr($value, 1)])) {
+            if(!isset($data[$value]) && !isset($data[substr($value, 1)])) {
                 $map[$key] = false;
                 continue;
             }
@@ -187,5 +187,44 @@ class UserRoleService
         }
 
         return $map;
+    }
+
+    public static function mapActions($id, $data = [])
+    {
+        $res = [];
+        $map = [
+            'account-force-private' => 'private',
+            'account-ignore-follow-requests' => 'private',
+
+            'can-view-public-feed' => 'discovery_feeds',
+            'can-view-network-feed' => 'discovery_feeds',
+            'can-view-discover' => 'discovery_feeds',
+            'can-view-hashtag-feed' => 'discovery_feeds',
+
+            'can-post' => 'post',
+            'can-comment' => 'comment',
+            'can-like' => 'like',
+            'can-share' => 'share',
+
+            'can-follow' => 'follow',
+            'can-make-public' => '!private',
+
+            'can-direct-message' => 'dms',
+            'can-use-stories' => 'story',
+            'can-view-sensitive' => '!hide_cw',
+            'can-bookmark' => 'bookmark',
+            'can-collections' => 'collection',
+            'can-federation' => 'federation',
+        ];
+
+        foreach ($map as $key => $value) {
+            if(!isset($data[$value]) && !isset($data[substr($value, 1)])) {
+                $res[$key] = false;
+                continue;
+            }
+            $res[$key] = str_starts_with($value, '!') ? !$data[substr($value, 1)] : $data[$value];
+        }
+
+        return $res;
     }
 }

@@ -59,9 +59,13 @@ class ParentalControlsController extends Controller
     {
         $this->authPreflight($request);
         $uid = $request->user()->id;
+        $ff = $this->requestFormFields($request);
         $pc = ParentalControls::whereParentId($uid)->findOrFail($id);
-        $pc->permissions = $this->requestFormFields($request);
+        $pc->permissions = $ff;
         $pc->save();
+
+        $roles = UserRoleService::mapActions($pc->child_id, $ff);
+        UserRoles::whereUserId($pc->child_id)->update(['roles' => $roles]);
         return redirect($pc->manageUrl() . '?permissions');
     }
 
