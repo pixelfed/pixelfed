@@ -19,6 +19,7 @@ class ParentalControlsController extends Controller
     {
         if($authCheck) {
             abort_unless($request->user(), 404);
+            abort_unless($request->user()->has_roles === 0, 404);
         }
         abort_unless(config('instance.parental_controls.enabled'), 404);
         if(config_cache('pixelfed.open_registration') == false) {
