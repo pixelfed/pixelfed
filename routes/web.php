@@ -200,6 +200,8 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('auth/raw/mastodon/s/account-to-id', 'RemoteAuthController@accountToId');
     Route::post('auth/raw/mastodon/s/finish-up', 'RemoteAuthController@finishUp');
     Route::post('auth/raw/mastodon/s/login', 'RemoteAuthController@handleLogin');
+    Route::get('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegister');
+    Route::post('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegisterStore');
 
 	Route::get('discover', 'DiscoverController@home')->name('discover');
 
@@ -534,6 +536,16 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 
 		});
 
+		Route::get('parental-controls', 'ParentalControlsController@index');
+		Route::get('parental-controls/add', 'ParentalControlsController@add')->name('settings.pc.add');
+		Route::post('parental-controls/add', 'ParentalControlsController@store');
+		Route::get('parental-controls/manage/{id}', 'ParentalControlsController@view');
+		Route::post('parental-controls/manage/{id}', 'ParentalControlsController@update');
+		Route::get('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInvite')->name('settings.pc.cancel-invite');
+		Route::post('parental-controls/manage/{id}/cancel-invite', 'ParentalControlsController@cancelInviteHandle');
+		Route::get('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManaging')->name('settings.pc.stop-managing');
+		Route::post('parental-controls/manage/{id}/stop-managing', 'ParentalControlsController@stopManagingHandle');
+
 		Route::get('applications', 'SettingsController@applications')->name('settings.applications')->middleware('dangerzone');
 		Route::get('data-export', 'SettingsController@dataExport')->name('settings.dataexport')->middleware('dangerzone');
 		Route::post('data-export/following', 'SettingsController@exportFollowing')->middleware('dangerzone');
@@ -618,6 +630,7 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
 			Route::view('licenses', 'site.help.licenses')->name('help.licenses');
 			Route::view('instance-max-users-limit', 'site.help.instance-max-users')->name('help.instance-max-users-limit');
 			Route::view('import', 'site.help.import')->name('help.import');
+			Route::view('parental-controls', 'site.help.parental-controls');
 		});
 		Route::get('newsroom/{year}/{month}/{slug}', 'NewsroomController@show');
 		Route::get('newsroom/archive', 'NewsroomController@archive');

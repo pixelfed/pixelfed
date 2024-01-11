@@ -129,5 +129,15 @@ return [
 
 	'banner' => [
 		'blurhash' => env('INSTANCE_BANNER_BLURHASH', 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt')
-	]
+	],
+
+    'parental_controls' => [
+        'enabled' => env('INSTANCE_PARENTAL_CONTROLS', true),
+
+        'limits' => [
+            'respect_open_registration' => env('INSTANCE_PARENTAL_CONTROLS_RESPECT_OPENREG', true),
+            'max_children' => env('INSTANCE_PARENTAL_CONTROLS_MAX_CHILDREN', 10),
+            'auto_verify_email' => true,
+        ],
+    ]
 ];

@@ -60,7 +60,7 @@ class RegisterController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Validation\Validator
 	 */
-	protected function validator(array $data)
+	public function validator(array $data)
 	{
 		if(config('database.default') == 'pgsql') {
 			$data['username'] = strtolower($data['username']);
@@ -151,7 +151,7 @@ class RegisterController extends Controller
 	 *
 	 * @return \App\User
 	 */
-	protected function create(array $data)
+	public function create(array $data)
 	{
 		if(config('database.default') == 'pgsql') {
 			$data['username'] = strtolower($data['username']);
