@@ -87,7 +87,14 @@ class ParentalControlsController extends Controller
 
     public function inviteRegister(Request $request, $id, $code)
     {
+        if($request->user()) {
+            $title = 'You cannot complete this action on this device.';
+            $body = 'Please log out or use a different device or browser to complete the invitation registration.';
+            return view('errors.custom', compact('title', 'body'));
+        }
+
         $this->authPreflight($request, true, false);
+
         $pc = ParentalControls::whereRaw('verify_code = BINARY ?', $code)->whereNull(['email_verified_at', 'child_id'])->findOrFail($id);
         abort_unless(User::whereId($pc->parent_id)->exists(), 404);
         return view('settings.parental-controls.invite-register-form', compact('pc'));
@@ -95,6 +102,12 @@ class ParentalControlsController extends Controller
 
     public function inviteRegisterStore(Request $request, $id, $code)
     {
+        if($request->user()) {
+            $title = 'You cannot complete this action on this device.';
+            $body = 'Please log out or use a different device or browser to complete the invitation registration.';
+            return view('errors.custom', compact('title', 'body'));
+        }
+
         $this->authPreflight($request, true, false);
 
         $pc = ParentalControls::whereRaw('verify_code = BINARY ?', $code)->whereNull('email_verified_at')->findOrFail($id);
