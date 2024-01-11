@@ -3438,6 +3438,7 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
 
+        abort_if($user->has_roles && !UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
         abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
         abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
@@ -3477,6 +3478,7 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
 
+        abort_if($user->has_roles && !UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
         abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
         abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
