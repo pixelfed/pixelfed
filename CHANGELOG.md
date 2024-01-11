@@ -13,6 +13,7 @@
 - Added `app:hashtag-related-generate` command to generate related hashtags ([176b4ed7](https://github.com/pixelfed/pixelfed/commit/176b4ed7))
 - Added Mutual Followers API endpoint ([33dbbe46](https://github.com/pixelfed/pixelfed/commit/33dbbe46))
 - Added User Domain Blocks ([#4834](https://github.com/pixelfed/pixelfed/pull/4834)) ([fa0380ac](https://github.com/pixelfed/pixelfed/commit/fa0380ac))
+- Added Parental Controls ([#4862](https://github.com/pixelfed/pixelfed/pull/4862)) ([c91f1c59](https://github.com/pixelfed/pixelfed/commit/c91f1c59))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))

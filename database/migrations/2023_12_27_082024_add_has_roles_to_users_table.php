@@ -24,9 +24,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('has_roles');
-            $table->dropColumn('parent_id');
-            $table->dropColumn('role_id');
+            if (Schema::hasColumn('users', 'has_roles')) {
+                $table->dropColumn('has_roles');
+            }
+
+            if (Schema::hasColumn('users', 'role_id')) {
+                $table->dropColumn('role_id');
+            }
+
+            if (Schema::hasColumn('users', 'parent_id')) {
+                $table->dropColumn('parent_id');
+            }
         });
     }
 };

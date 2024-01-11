@@ -758,6 +758,8 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-follow', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
@@ -843,6 +845,7 @@ class ApiV1Controller extends Controller
         abort_if(!$request->user(), 403);
 
         $user = $request->user();
+
         AccountService::setLastActive($user->id);
 
         $target = Profile::where('id', '!=', $user->profile_id)
@@ -947,6 +950,8 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-view-discover', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
         $query = $request->input('q');
         $limit = $request->input('limit') ?? 20;
@@ -1750,6 +1755,8 @@ class ApiV1Controller extends Controller
         ]);
 
         $user = $request->user();
+        abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+
         AccountService::setLastActive($user->id);
 
         $media = Media::whereUserId($user->id)
@@ -2568,7 +2575,11 @@ class ApiV1Controller extends Controller
 
         $limit = $request->input('limit', 20);
         $scope = $request->input('scope', 'inbox');
-        $pid = $request->user()->profile_id;
+        $user = $request->user();
+        if($user->has_roles && !UserRoleService::can('can-direct-message', $user->id)) {
+            return [];
+        }
+        $pid = $user->profile_id;
 
         if(config('database.default') == 'pgsql') {
             $dms = DirectMessage::when($scope === 'inbox', function($q, $scope) use($pid) {
@@ -2983,6 +2994,15 @@ class ApiV1Controller extends Controller
         $in_reply_to_id = $request->input('in_reply_to_id');
 
         $user = $request->user();
+
+        if($user->has_roles) {
+            if($in_reply_to_id != null) {
+                abort_if(!UserRoleService::can('can-comment', $user->id), 403, 'Invalid permissions for this action');
+            } else {
+                abort_if(!UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
+            }
+        }
+
         $profile = $user->profile;
 
         $limitKey = 'compose:rate-limit:store:' . $user->id;
@@ -3438,6 +3458,7 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
 
+        abort_if($user->has_roles && !UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
         abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
         abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
@@ -3477,6 +3498,7 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
 
+        abort_if($user->has_roles && !UserRoleService::can('can-bookmark', $user->id), 403, 'Invalid permissions for this action');
         abort_if($status->in_reply_to_id || $status->reblog_of_id, 404);
         abort_if(!in_array($status->scope, ['public', 'unlisted', 'private']), 404);
         abort_if(!in_array($status->type, ['photo','photo:album', 'video', 'video:album', 'photo:video:album']), 404);
