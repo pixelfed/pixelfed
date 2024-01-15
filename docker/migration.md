@@ -55,7 +55,7 @@ If a key is missing in `.env.new`, don't worry, you can just add those key/value
 
 This is a great time to review your settings and familiarize you with all the new settings.
 
-In *particular* the following sections and the [Frequently Asked Question / FAQ](faq.md)
+In *particular* the following sections
 
 * `PHP configuration` section (near the end of the file) where
   * The `PHP_VERSION` settings controls your PHP version
@@ -63,6 +63,9 @@ In *particular* the following sections and the [Frequently Asked Question / FAQ]
 * `Docker Specific configuration` section (near the end of the file) where
   * The `DOCKER_DATA_ROOT` setting dictate where the new migrated data will live.
   * The `DOCKER_RUN_ONE_TIME_SETUP_TASKS` controls if the `One time setup tasks` should run or not. We do *not* want this, since your Pixelfed instance already is set up!
+* [Frequently Asked Question / FAQ](faq.md)
+  * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
+  * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
 
 #### 2. Stop all running containers
 
