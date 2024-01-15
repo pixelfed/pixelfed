@@ -147,7 +147,8 @@ jobs:
             latest=auto
             suffix=-${{ matrix.target_runtime }}-${{ matrix.php_version }}
           tags: |
-            type=edge,branch=dev
+            type=raw,value=dev,enable=${{ github.ref == format('refs/heads/{0}', 'dev') }}
+            type=raw,value=staging,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
             type=pep440,pattern={{raw}}
             type=pep440,pattern=v{{major}}.{{minor}}
             type=ref,event=branch,prefix=branch-
