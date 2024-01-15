@@ -16,6 +16,8 @@ services:
     image: nginxproxy/nginx-proxy:1.4
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy"
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_PROXY_PROFILE}
     volumes:
       - "${DOCKER_HOST_SOCKET_PATH}:/tmp/docker.sock:ro"
       - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
@@ -33,6 +35,8 @@ services:
     image: nginxproxy/acme-companion
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy-acme"
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_PROXY_ACME_PROFILE:-$DOCKER_PROXY_PROFILE}
     environment:
       DEBUG: 0
       DEFAULT_EMAIL: "${LETSENCRYPT_EMAIL}"
@@ -70,6 +74,8 @@ services:
       com.github.nginx-proxy.nginx-proxy.keepalive: 30
       com.github.nginx-proxy.nginx-proxy.http2.enable: true
       com.github.nginx-proxy.nginx-proxy.http3.enable: true
+    # ports:
+    #   - "${DOCKER_WEB_PORT_EXTERNAL_HTTP}:80"
     depends_on:
       - db
       - redis

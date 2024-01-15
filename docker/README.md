@@ -1,6 +1,8 @@
 # Pixelfed + Docker + Docker Compose
 
 * [Setting up a new Pixelfed server with Docker Compose](new-server.md)
+  * [I already have a SSL certificate, how do I use it?](faq.md#i-already-have-a-proxy-how-do-i-disable-the-included-one)
+  * [I already have an proxy / how do I disable the Nginx proxy](faq.md#i-already-have-a-ssl-certificate-how-do-i-use-it)
 * [Understanding Pixelfed Container runtimes (Apache, FPM, Nginx + FPM)](runtimes.md)
   * [Apache](runtimes.md#apache)
   * [FPM](runtimes.md#fpm)
