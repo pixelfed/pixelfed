@@ -3,6 +3,16 @@ source /docker/helpers.sh
 
 entrypoint-set-script-name "$0"
 
+# Allow automatic applying of outstanding/new migrations on startup
+: ${DOCKER_RUN_ONE_TIME_SETUP_TASKS:=1}
+
+if is-false "${DOCKER_RUN_ONE_TIME_SETUP_TASKS}"; then
+    log-warning "Automatic run of the 'One-time setup tasks' is disabled."
+    log-warning "Please set [DOCKER_RUN_ONE_TIME_SETUP_TASKS=1] in your [.env] file to enable this."
+
+    exit 0
+fi
+
 load-config-files
 await-database-ready
 
