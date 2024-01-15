@@ -48,9 +48,10 @@ jobs:
         uses: ludeeus/action-shellcheck@master
         env:
           SHELLCHECK_OPTS: --shell=bash --external-sources
-          INPUT_ADDITIONAL_FILE_ARGS: -o -name '*.envsh'
         with:
+          version: v0.9.0
           scandir: ./docker/
+          additional_files: "*.envsh"
 
   build:
     runs-on: ubuntu-latest
