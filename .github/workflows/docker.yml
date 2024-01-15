@@ -49,7 +49,7 @@ jobs:
         env:
           SHELLCHECK_OPTS: --shell=bash --external-sources
         with:
-          scandir: docker/
+          scandir: ./docker/
 
   build:
     runs-on: ubuntu-latest
