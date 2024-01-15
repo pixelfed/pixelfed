@@ -1,6 +1,6 @@
 # Pixelfed Docker FAQ
 
-## I already have a Proxy, how do I disable the included one?
+## How do I use my own Proxy server?
 
 No problem! All you have to do is:
 
@@ -11,7 +11,9 @@ No problem! All you have to do is:
     * The port is controlled by the `DOCKER_WEB_PORT_EXTERNAL_HTTP` key in `.env`.
     * The setting is near the bottom of the file.
 
-## I already have a SSL certificate, how do I use it?
+## How do I use my own SSL certificate?
+
+No problem! All you have to do is:
 
 1. Change the `DOCKER_PROXY_ACME_PROFILE` key/value pair in your `.env` file to `"disabled"`.
     * This disabled the `proxy-acme` service in `docker-compose.yml`.
