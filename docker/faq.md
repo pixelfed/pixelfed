@@ -2,18 +2,25 @@
 
 ## I already have a Proxy, how do I disable the included one?
 
-No problem! All you have to do is
+No problem! All you have to do is:
 
-1. *Comment out*  (or delete) the `proxy` and `proxy-acme` services in `docker-compose.yml`
-1. *Uncomment* the `ports` block for the `web` servince in `docker-compose.yml`
-1. Change the `DOCKER_WEB_PORT_EXTERNAL_HTTP` setting in your `.env` if you want to change the port from the default `8080`
-1. Point your proxy upstream to the exposed `web` port.
+1. Change the `DOCKER_PROXY_PROFILE` key/value pair in your `.env` file to `"disabled"`.
+    * This disables the `proxy` *and* `proxy-acme` services in `docker-compose.yml`.
+    * The setting is near the bottom of the file.
+1. Point your proxy upstream to the exposed `web` port (**Default**: `8080`).
+    * The port is controlled by the `DOCKER_WEB_PORT_EXTERNAL_HTTP` key in `.env`.
+    * The setting is near the bottom of the file.
 
 ## I already have a SSL certificate, how do I use it?
 
-1. *Comment out* (or delete) the `proxy-acme` service in `docker-compose.yml`
-1. Put your certificates in `${DOCKER_CONFIG_ROOT}/proxy/certs/${APP_DOMAIN}/`. The following files are expected to exist in the directory for the proxy to detect and use them automatically (this is the same directory and file names as LetsEncrypt uses)
-    1. `cert.pem`
-    1. `chain.pem`
-    1. `fullchain.pem`
-    1. `key.pem`
+1. Change the `DOCKER_PROXY_ACME_PROFILE` key/value pair in your `.env` file to `"disabled"`.
+    * This disabled the `proxy-acme` service in `docker-compose.yml`.
+    * It does *not* disable the `proxy` service.
+1. Put your certificates in `${DOCKER_CONFIG_ROOT}/proxy/certs` (e.g. `./docker-compose/config/proxy/certs`)
+    * You may need to create this folder manually if it does not exists.
+    * The following files are expected to exist in the directory for the proxy to detect and use them automatically (this is the same directory and file names as LetsEncrypt uses)
+        1. `${APP_DOMAIN}.cert.pem`
+        1. `${APP_DOMAIN}.chain.pem`
+        1. `${APP_DOMAIN}.fullchain.pem`
+        1. `${APP_DOMAIN}.key.pem`
+    * See the [`nginx-proxy` configuration file for name patterns](https://github.com/nginx-proxy/nginx-proxy/blob/main/nginx.tmpl#L659-L670)
