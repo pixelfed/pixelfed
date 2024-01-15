@@ -1,6 +1,7 @@
 # Pixelfed + Docker + Docker Compose
 
 * [Setting up a new Pixelfed server with Docker Compose](new-server.md)
+* [Migrating to the new `docker-compose.yml` setup](migration.md)
 * [Frequently Asked Question / FAQ](faq.md)
   * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
   * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)

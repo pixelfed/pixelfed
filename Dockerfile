@@ -37,7 +37,7 @@ ARG RUNTIME_UID=33 # often called 'www-data'
 ARG RUNTIME_GID=33 # often called 'www-data'
 
 # APT extra packages
-ARG APT_PACKAGES_EXTRA=""
+ARG APT_PACKAGES_EXTRA=
 
 # Extensions installed via [pecl install]
 ARG PHP_PECL_EXTENSIONS=

@@ -73,12 +73,12 @@ Please see the
 
 ## Fixing ownership on startup
 
-You can set the environment variable `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS` to a list of paths that should have their `$USER` and `$GROUP` ownership changed to the configured runtime user and group during container bootstrapping.
+You can set the environment variable `DOCKER_ENSURE_OWNERSHIP_PATHS` to a list of paths that should have their `$USER` and `$GROUP` ownership changed to the configured runtime user and group during container bootstrapping.
 
 The variable is a space-delimited list shown below and accepts both relative and absolute paths:
 
-* `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS="./storage ./bootstrap"`
-* `ENTRYPOINT_ENSURE_OWNERSHIP_PATHS="/some/other/folder"`
+* `DOCKER_ENSURE_OWNERSHIP_PATHS="./storage ./bootstrap"`
+* `DOCKER_ENSURE_OWNERSHIP_PATHS="/some/other/folder"`
 
 ## Build settings (arguments)
 

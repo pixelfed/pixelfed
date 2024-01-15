@@ -65,15 +65,22 @@ services:
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-web"
     restart: unless-stopped
     build:
-      target: apache-runtime
+      target: ${DOCKER_RUNTIME}-runtime
+      args:
+        PHP_VERSION: "${PHP_VERSION:-8.1}"
+        PHP_BASE_TYPE: "${PHP_BASE_TYPE:-apache}"
+        PHP_DEBIAN_RELEASE: "${PHP_DEBIAN_RELEASE:-bullseye}"
+        APT_PACKAGES_EXTRA: "${APT_PACKAGES_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_EXTENSIONS_EXTRA: "${PHP_EXTENSIONS_EXTRA:-}"
     volumes:
       - "./.env:/var/www/.env"
-      - "${APP_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${APP_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_STORAGE_PATH}:/var/www/storage"
     environment:
       LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
       LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
-      LETSENCRYPT_TEST: "${LETSENCRYPT_TEST}"
+      LETSENCRYPT_TEST: "${LETSENCRYPT_TEST:-}"
       VIRTUAL_HOST: "${APP_DOMAIN}"
       VIRTUAL_PORT: "80"
     labels:
@@ -91,15 +98,19 @@ services:
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
     restart: unless-stopped
-    deploy:
-      mode: replicated
-      replicas: 1
     build:
-      target: apache-runtime
+      target: ${DOCKER_RUNTIME}-runtime
+      args:
+        PHP_VERSION: "${PHP_VERSION:-8.1}"
+        PHP_BASE_TYPE: "${PHP_BASE_TYPE:-apache}"
+        PHP_DEBIAN_RELEASE: "${PHP_DEBIAN_RELEASE:-bullseye}"
+        APT_PACKAGES_EXTRA: "${APT_PACKAGES_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_EXTENSIONS_EXTRA: "${PHP_EXTENSIONS_EXTRA:-}"
     volumes:
       - "./.env:/var/www/.env"
-      - "${APP_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${APP_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_STORAGE_PATH}:/var/www/storage"
     depends_on:
       - db
       - redis
@@ -112,7 +123,7 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "${DB_DATA_PATH}:/var/lib/mysql"
+      - "${DOCKER_DB_DATA_PATH}:/var/lib/mysql"
     ports:
       - "${DOCKER_DB_PORT_EXTERNAL}:3306"
 
@@ -124,7 +135,7 @@ services:
       - ".env"
     volumes:
       - "${DOCKER_CONFIG_ROOT}/redis:/etc/redis"
-      - "${REDIS_DATA_PATH}:/data"
+      - "${DOCKER_REDIS_DATA_PATH}:/data"
     ports:
       - "${DOCKER_REDIS_PORT_EXTERNAL}:6399"
     healthcheck:
