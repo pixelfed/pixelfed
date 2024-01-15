@@ -1,9 +1,6 @@
 #!/bin/bash
 set -ex -o errexit -o nounset -o pipefail
 
-: "${APT_PACKAGES_EXTRA:=""}"
-: "${DOTENV_LINTER_VERSION:=""}"
-
 # Ensure we keep apt cache around in a Docker environment
 rm -f /etc/apt/apt.conf.d/docker-clean
 echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
@@ -14,8 +11,10 @@ echo 'APT::Install-Recommends "false";' >>/etc/apt/apt.conf
 # Don't install suggested packages by default
 echo 'APT::Install-Suggests "false";' >>/etc/apt/apt.conf
 
+declare -a packages=()
+
 # Standard packages
-declare -ra standardPackages=(
+packages+=(
     apt-utils
     ca-certificates
     curl
@@ -36,7 +35,7 @@ declare -ra standardPackages=(
 )
 
 # Image Optimization
-declare -ra imageOptimization=(
+packages+=(
     gifsicle
     jpegoptim
     optipng
@@ -44,14 +43,14 @@ declare -ra imageOptimization=(
 )
 
 # Image Processing
-declare -ra imageProcessing=(
+packages+=(
     libjpeg62-turbo-dev
     libmagickwand-dev
     libpng-dev
 )
 
 # Required for GD
-declare -ra gdDependencies=(
+packages+=(
     libwebp-dev
     libwebp6
     libxpm-dev
@@ -59,33 +58,26 @@ declare -ra gdDependencies=(
 )
 
 # Video Processing
-declare -ra videoProcessing=(
+packages+=(
     ffmpeg
 )
 
 # Database
-declare -ra databaseDependencies=(
+packages+=(
     libpq-dev
     libsqlite3-dev
     mariadb-client
     postgresql-client
 )
 
+readarray -d ' ' -t -O "${#packages[@]}" packages < <(echo -n "${APT_PACKAGES_EXTRA:-}")
+
 apt-get update
-
 apt-get upgrade -y
-
-apt-get install -y \
-    "${standardPackages[@]}" \
-    "${imageOptimization[@]}" \
-    "${imageProcessing[@]}" \
-    "${gdDependencies[@]}" \
-    "${videoProcessing[@]}" \
-    "${databaseDependencies[@]}" \
-    "${APT_PACKAGES_EXTRA}"
+apt-get install -y "${packages[@]}"
 
 locale-gen
 update-locale
 
 # Install dotenv linter (https://github.com/dotenv-linter/dotenv-linter)
-curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin "${DOTENV_LINTER_VERSION}"
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin "${DOTENV_LINTER_VERSION:-}"
