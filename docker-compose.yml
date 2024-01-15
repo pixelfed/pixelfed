@@ -8,6 +8,9 @@ version: "3"
 services:
   # HTTP/HTTPS proxy
   #
+  # Sits in front of the *real* webserver and manages SSL and (optionally)
+  # load-balancing between multiple web servers
+  #
   # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
   proxy:
     image: nginxproxy/nginx-proxy:1.4

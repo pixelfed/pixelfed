@@ -27,11 +27,23 @@ A safe starter/small instance hardware for 25 users and blow are:
 * **Storage** `20-50 GB` HDD is fine, but ideally SSD or NVMe, *especially* for the database.
 * **Network** `100 Mbit/s` or faster.
 
-### Other
+### Domain and DNS
 
-* A **Domain** you need a domain (or subdomain) where your Pixelfed server will be running (for example, `pixelfed.social`)
-* (Optional) An **Email/SMTP provider** for sending e-mails to your users, such as e-mail confirmation and notifications.
-* (Optional) An **Object Storage** provider for storing all images remotely, rather than locally on your server.
+* A **Domain** (or subdomain) is needed for the Pixelfed server (for example, `pixelfed.social` or `pixelfed.mydomain.com`)
+* Having the required `A`/`CNAME` DNS records for your domain (above) pointing to your server.
+  * Typically an `A` record for the root (sometimes shown as `@`) record for `mydomain.com`.
+  * Possibly an `A` record for `www.` subdomain as well.
+
+### Network
+
+* Port `80` (HTTP) and `443` (HTTPS) ports forwarded to the server.
+  * Example for Ubuntu using [`ufw`](https://help.ubuntu.com/community/UFW) for port `80`: `ufw allow 80`
+  * Example for Ubuntu using [`ufw`](https://help.ubuntu.com/community/UFW) for port `443`: `ufw allow 443`
+
+### Optional
+
+* An **Email/SMTP provider** for sending e-mails to your users, such as e-mail confirmation and notifications.
+* An **Object Storage** provider for storing all images remotely, rather than locally on your server.
 
 #### E-mail / SMTP provider
 
@@ -89,7 +101,7 @@ Run the following command to copy the file: `cp .env.docker .env`
 
 ### Modifying the configuration file
 
-The configuration file is *quite* long, but the good news is that you can ignore *most* of it, all of the *server* specific settings are configured for you out of the box.
+The configuration file is *quite* long, but the good news is that you can ignore *most* of it, most of the *server-specific* settings are configured for you out of the box.
 
 The minimum required settings you **must** change is:
 
@@ -122,13 +134,23 @@ docker compose up -d
 
 This will download all the required Docker images, start the containers, and being the automatic setup.
 
-You can follow the logs by running `docker compose logs --tail=100 --follow`.
+You can follow the logs by running `docker compose logs` - you might want to scroll to the top to logs from the start.
+
+You can use the CLI flag `--tail=100` to only see the most recent (`100` in this example) log lines for each container.
+
+You can use the CLI flag `--follow` to continue to see log output from the containers.
+
+You can combine `--tail=100` and `--follow` like this `docker compose logs --tail=100 --follow`.
+
+If you only care about specific contaieners, you can add them to the end of the command like this `docker compose logs web worker proxy`.
 
 ## Runtimes
 
 The Pixelfed Dockerfile support multiple target *runtimes* ([Apache](#apache), [Nginx + FPM](#nginx), and [fpm](#fpm)).
 
 You can consider a *runtime* target as individual Dockerfiles, but instead, all of them are build from the same optimized Dockerfile, sharing +90% of their configuration and packages.
+
+**If you are unsure of which runtime to choose, please use the [Apache runtime](#apache) it's the most straightforward one and also the default**
 
 ### Apache
 
