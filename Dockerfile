@@ -40,8 +40,8 @@ ARG RUNTIME_GID=33 # often called 'www-data'
 ARG APT_PACKAGES_EXTRA=""
 
 # Extensions installed via [pecl install]
-ARG PHP_PECL_EXTENSIONS=""
-ARG PHP_PECL_EXTENSIONS_EXTRA=""
+ARG PHP_PECL_EXTENSIONS=
+ARG PHP_PECL_EXTENSIONS_EXTRA=
 
 # Extensions installed via [docker-php-ext-install]
 ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"

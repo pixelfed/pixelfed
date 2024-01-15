@@ -1,20 +1,14 @@
 #!/bin/bash
 set -ex -o errexit -o nounset -o pipefail
 
-# shellcheck disable=SC2223
-: ${PHP_PECL_EXTENSIONS:=""}
+declare -a pecl_extensions=()
+readarray -d ' ' -t pecl_extensions < <(echo -n "${PHP_PECL_EXTENSIONS:-}")
+readarray -d ' ' -t -O "${#pecl_extensions[@]}" pecl_extensions < <(echo -n "${PHP_PECL_EXTENSIONS_EXTRA:-}")
 
-# shellcheck disable=SC2223
-: ${PHP_PECL_EXTENSIONS_EXTRA:=""}
-
-# shellcheck disable=SC2223
-: ${PHP_EXTENSIONS:=""}
-
-# shellcheck disable=SC2223
-: ${PHP_EXTENSIONS_EXTRA:=""}
-
-# shellcheck disable=SC2223
-: ${PHP_EXTENSIONS_DATABASE:=""}
+declare -a php_extensions=()
+readarray -d ' ' -t php_extensions < <(echo -n "${PHP_EXTENSIONS:-}")
+readarray -d ' ' -t -O "${#php_extensions[@]}" php_extensions < <(echo -n "${PHP_EXTENSIONS_EXTRA:-}")
+readarray -d ' ' -t -O "${#php_extensions[@]}" php_extensions < <(echo -n "${PHP_EXTENSIONS_DATABASE:-}")
 
 # Grab the PHP source code so we can compile against it
 docker-php-source extract
@@ -28,33 +22,21 @@ docker-php-ext-configure gd \
 
 # Optional script folks can copy into their image to do any [docker-php-ext-configure] work before the [docker-php-ext-install]
 # this can also overwirte the [gd] configure above by simply running it again
-if [[ -f /install/php-extension-configure.sh ]]; then
-    if [ ! -x "/install/php-extension-configure.sh" ]; then
-        echo >&2 "ERROR: found /install/php-extension-configure.sh but its not executable - please [chmod +x] the file!"
+declare -r custom_pre_configure_script=""
+if [[ -e "${custom_pre_configure_script}" ]]; then
+    if [ ! -x "${custom_pre_configure_script}" ]; then
+        echo >&2 "ERROR: found ${custom_pre_configure_script} but its not executable - please [chmod +x] the file!"
         exit 1
     fi
 
-    /install/php-extension-configure.sh
+    "${custom_pre_configure_script}"
 fi
 
 # Install pecl extensions
-pecl install "${PHP_PECL_EXTENSIONS}" "${PHP_PECL_EXTENSIONS_EXTRA}"
+pecl install "${pecl_extensions[@]}"
 
 # PHP extensions (dependencies)
-#
-# shellcheck disable=SC2086
-docker-php-ext-install \
-    -j "$(nproc)" \
-    ${PHP_EXTENSIONS} \
-    ${PHP_EXTENSIONS_EXTRA} \
-    ${PHP_EXTENSIONS_DATABASE}
+docker-php-ext-install -j "$(nproc)" "${php_extensions[@]}"
 
 # Enable all extensions
-#
-# shellcheck disable=SC2086
-docker-php-ext-enable \
-    ${PHP_PECL_EXTENSIONS} \
-    ${PHP_PECL_EXTENSIONS_EXTRA} \
-    ${PHP_EXTENSIONS} \
-    ${PHP_EXTENSIONS_EXTRA} \
-    ${PHP_EXTENSIONS_DATABASE}
+docker-php-ext-enable "${pecl_extensions[@]}" "${php_extensions[@]}"

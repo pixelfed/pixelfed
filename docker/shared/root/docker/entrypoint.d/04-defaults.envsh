@@ -10,6 +10,9 @@
 
 entrypoint-set-script-name "${BASH_SOURCE[0]}"
 
+: "${MAX_PHOTO_SIZE:-}"
+: "${MAX_ALBUM_LENGTH:-}"
+
 load-config-files
 
 # We assign a 1MB buffer to the just-in-time calculated max post size to allow for fields and overhead
