@@ -32,16 +32,20 @@ fi
 pecl install "${PHP_PECL_EXTENSIONS}" "${PHP_PECL_EXTENSIONS_EXTRA}"
 
 # PHP extensions (dependencies)
+#
+# shellcheck disable=SC2086
 docker-php-ext-install \
     -j "$(nproc)" \
-    "${PHP_EXTENSIONS}" \
-    "${PHP_EXTENSIONS_EXTRA}" \
-    "${PHP_EXTENSIONS_DATABASE}"
+    ${PHP_EXTENSIONS} \
+    ${PHP_EXTENSIONS_EXTRA} \
+    ${PHP_EXTENSIONS_DATABASE}
 
 # Enable all extensions
+#
+# shellcheck disable=SC2086
 docker-php-ext-enable \
-    "${PHP_PECL_EXTENSIONS}" \
-    "${PHP_PECL_EXTENSIONS_EXTRA}" \
-    "${PHP_EXTENSIONS}" \
-    "${PHP_EXTENSIONS_EXTRA}" \
-    "${PHP_EXTENSIONS_DATABASE}"
+    ${PHP_PECL_EXTENSIONS} \
+    ${PHP_PECL_EXTENSIONS_EXTRA} \
+    ${PHP_EXTENSIONS} \
+    ${PHP_EXTENSIONS_EXTRA} \
+    ${PHP_EXTENSIONS_DATABASE}
