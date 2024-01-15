@@ -81,7 +81,7 @@ services:
       com.github.nginx-proxy.nginx-proxy.http2.enable: true
       com.github.nginx-proxy.nginx-proxy.http3.enable: true
     ports:
-      - "${DOCKER_WEB_PORT_EXTERNAL_HTTP}:80"
+      - "${DOCKER_WEB_PORT_EXTERNAL_HTTP:-8080}:80"
     depends_on:
       - db
       - redis
