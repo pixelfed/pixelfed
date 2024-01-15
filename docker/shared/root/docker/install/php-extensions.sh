@@ -1,11 +1,20 @@
 #!/bin/bash
 set -ex -o errexit -o nounset -o pipefail
 
-: "${PHP_PECL_EXTENSIONS:=""}"
-: "${PHP_PECL_EXTENSIONS_EXTRA:=""}"
-: "${PHP_EXTENSIONS:=""}"
-: "${PHP_EXTENSIONS_EXTRA:=""}"
-: "${PHP_EXTENSIONS_DATABASE:=""}"
+# shellcheck disable=SC2223
+: ${PHP_PECL_EXTENSIONS:=""}
+
+# shellcheck disable=SC2223
+: ${PHP_PECL_EXTENSIONS_EXTRA:=""}
+
+# shellcheck disable=SC2223
+: ${PHP_EXTENSIONS:=""}
+
+# shellcheck disable=SC2223
+: ${PHP_EXTENSIONS_EXTRA:=""}
+
+# shellcheck disable=SC2223
+: ${PHP_EXTENSIONS_DATABASE:=""}
 
 # Grab the PHP source code so we can compile against it
 docker-php-source extract
