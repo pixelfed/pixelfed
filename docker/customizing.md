@@ -171,6 +171,24 @@ Please see the [Docker Hub `nginx` page](https://hub.docker.com/_/nginx) for ava
 
 **Default value**: `1.25.3`
 
+### `FOREGO_VERSION`
+
+Version of [`forego`](https://github.com/ddollar/forego) to install.
+
+**Default value**: `0.17.2`
+
+### `GOMPLATE_VERSION`
+
+Version of [`goplate`](https://github.com/hairyhenderson/gomplate) to install.
+
+**Default value**: `v3.11.6`
+
+### `DOTENV_LINTER_VERSION`
+
+Version of [`dotenv-linter`](https://github.com/dotenv-linter/dotenv-linter) to install.
+
+**Default value**: `v3.2.0`
+
 ### `PHP_BASE_TYPE`
 
 The `PHP` base image layer to use when building the runtime container.
