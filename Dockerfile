@@ -17,6 +17,11 @@ ARG FOREGO_VERSION="0.17.2"
 # See: https://github.com/hairyhenderson/gomplate
 ARG GOMPLATE_VERSION="v3.11.6"
 
+# See: https://github.com/dotenv-linter/dotenv-linter/releases
+#
+# WARN: v3.3.0 and above requires newer libc version than Ubuntu ships with
+ARG DOTENV_LINTER_VERSION="v3.2.0"
+
 ###
 # PHP base configuration
 ###
@@ -99,8 +104,10 @@ ARG PHP_VERSION
 ARG RUNTIME_GID
 ARG RUNTIME_UID
 ARG TARGETPLATFORM
+ARG DOTENV_LINTER_VERSION
 
 ENV DEBIAN_FRONTEND="noninteractive"
+ENV DOTENV_LINTER_VERSION="${DOTENV_LINTER_VERSION}"
 
 # Ensure we run all scripts through 'bash' rather than 'sh'
 SHELL ["/bin/bash", "-c"]

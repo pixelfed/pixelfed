@@ -224,17 +224,17 @@ function load-config-files() {
     # Associative array (aka map/dictionary) holding the unique keys found in dot-env files
     local -A _tmp_dot_env_keys
 
-    for f in "${dot_env_files[@]}"; do
-        if [ ! -e "$f" ]; then
-            log-warning "Could not source file [${f}]: does not exists"
+    for file in "${dot_env_files[@]}"; do
+        if ! file-exists "${file}"; then
+            log-warning "Could not source file [${file}]: does not exists"
             continue
         fi
 
-        log-info "Sourcing ${f}"
-        source "${f}"
+        log-info "Sourcing ${file}"
+        source "${file}"
 
         # find all keys in the dot-env file and store them in our temp associative array
-        for k in "$(grep -v '^#' "${f}" | sed -E 's/(.*)=.*/\1/' | xargs)"; do
+        for k in "$(grep -v '^#' "${file}" | cut -d"=" -f1 | xargs)"; do
             _tmp_dot_env_keys[$k]=1
         done
     done
@@ -270,6 +270,21 @@ function is-writable() {
     [[ -w "$1" ]]
 }
 
+# @description Checks if $1 exists (directory or file)
+# @arg $1 string The path to check
+# @exitcode 0 If $1 exists
+# @exitcode 1 If $1 does *NOT* exists
+function path-exists() {
+    [[ -e "$1" ]]
+}
+
+# @description Checks if $1 exists (file only)
+# @arg $1 string The path to check
+# @exitcode 0 If $1 exists
+# @exitcode 1 If $1 does *NOT* exists
+function file-exists() {
+    [[ -f "$1" ]]
+}
 # @description Checks if $1 contains any files or not
 # @arg $1 string The path to check
 # @exitcode 0 If $1 contains files
@@ -328,7 +343,7 @@ function acquire-lock() {
     ensure-directory-exists "$(dirname "${file}")"
 
     log-info "🔑 Trying to acquire lock: ${file}: "
-    while [[ -e "${file}" ]]; do
+    while file-exists "${file}"; do
         log-info "🔒 Waiting on lock ${file}"
 
         staggered-sleep
@@ -384,15 +399,17 @@ declare -f -t on-trap
 function await-database-ready() {
     log-info "❓ Waiting for database to be ready"
 
+    load-config-files
+
     case "${DB_CONNECTION:-}" in
     mysql)
-        while ! echo "SELECT 1" | mysql --user="$DB_USERNAME" --password="$DB_PASSWORD" --host="$DB_HOST" "$DB_DATABASE" --silent >/dev/null; do
+        while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent >/dev/null; do
             staggered-sleep
         done
         ;;
 
     pgsql)
-        while ! echo "SELECT 1" | psql --user="$DB_USERNAME" --password="$DB_PASSWORD" --host="$DB_HOST" "$DB_DATABASE" >/dev/null; do
+        while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" >/dev/null; do
             staggered-sleep
         done
         ;;
@@ -452,4 +469,51 @@ function show-call-stack() {
 
         log-error "  at: ${func} ${src}:${lineno}"
     done
+}
+
+# @description Helper function see if $1 could be considered truthy
+# @arg $1 string The string to evaluate
+# @see as-boolean
+function is-true() {
+    as-boolean "${1:-}" && return 0
+}
+
+# @description Helper function see if $1 could be considered falsey
+# @arg $1 string The string to evaluate
+# @see as-boolean
+function is-false() {
+    as-boolean "${1:-}" || return 0
+}
+
+# @description Helper function see if $1 could be truethy or falsey.
+#   since this is a bash context, returning 0 is true and 1 is false
+#   so it works with [if is-false $input; then .... fi]
+#
+#   This is a bit confusing, *especially* in a PHP world where [1] would be truthy and
+#   [0] would be falsely as return values
+# @arg $1 string The string to evaluate
+function as-boolean() {
+    local input="${1:-}"
+    local var="${input,,}" # convert input to lower-case
+
+    case "$var" in
+    1 | true)
+        log-info "[as-boolean] variable [${var}] was detected as truthy/true, returning [0]"
+
+        return 0
+        ;;
+
+    0 | false)
+        log-info "[as-boolean] variable [${var}] was detected as falsey/false, returning [1]"
+
+        return 1
+        ;;
+
+    *)
+        log-warning "[as-boolean] variable [${var}] could not be detected as true or false, returning [1] (false) as default"
+
+        return 1
+        ;;
+
+    esac
 }
