@@ -4,42 +4,48 @@ if [[ ${ENTRYPOINT_SKIP:=0} != 0 ]]; then
     exec "$@"
 fi
 
-# Directory where entrypoint scripts lives
-: ${ENTRYPOINT_ROOT:="/docker/entrypoint.d/"}
+: "${ENTRYPOINT_ROOT:="/docker"}"
 export ENTRYPOINT_ROOT
 
+# Directory where entrypoint scripts lives
+: "${ENTRYPOINT_D_ROOT:="${ENTRYPOINT_ROOT}/entrypoint.d/"}"
+export ENTRYPOINT_D_ROOT
+
 # Space separated list of scripts the entrypoint runner should skip
-: ${ENTRYPOINT_SKIP_SCRIPTS:=""}
+: "${ENTRYPOINT_SKIP_SCRIPTS:=""}"
 
 # Load helper scripts
-source /docker/helpers.sh
+#
+# shellcheck source=SCRIPTDIR/helpers.sh
+source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 # Set the entrypoint name for logging
 entrypoint-set-script-name "entrypoint.sh"
 
 # Convert ENTRYPOINT_SKIP_SCRIPTS into a native bash array for easier lookup
 declare -a skip_scripts
-IFS=' ' read -a skip_scripts <<<"$ENTRYPOINT_SKIP_SCRIPTS"
+# shellcheck disable=SC2034
+IFS=' ' read -ar skip_scripts <<<"$ENTRYPOINT_SKIP_SCRIPTS"
 
 # Ensure the entrypoint root folder exists
-mkdir -p "${ENTRYPOINT_ROOT}"
+mkdir -p "${ENTRYPOINT_D_ROOT}"
 
-# If ENTRYPOINT_ROOT directory is empty, warn and run the regular command
-if is-directory-empty "${ENTRYPOINT_ROOT}"; then
-    log-warning "No files found in ${ENTRYPOINT_ROOT}, skipping configuration"
+# If ENTRYPOINT_D_ROOT directory is empty, warn and run the regular command
+if is-directory-empty "${ENTRYPOINT_D_ROOT}"; then
+    log-warning "No files found in ${ENTRYPOINT_D_ROOT}, skipping configuration"
 
     exec "$@"
 fi
 
-acquire-lock
+acquire-lock "entrypoint.sh"
 
 # Start scanning for entrypoint.d files to source or run
-log-info "looking for shell scripts in [${ENTRYPOINT_ROOT}]"
+log-info "looking for shell scripts in [${ENTRYPOINT_D_ROOT}]"
 
-find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file; do
+find "${ENTRYPOINT_D_ROOT}" -follow -type f -print | sort -V | while read -r file; do
     # Skip the script if it's in the skip-script list
-    if in-array $(get-entrypoint-script-name "${file}") skip_scripts; then
-        log-warning "Skipping script [${script_name}] since it's in the skip list (\$ENTRYPOINT_SKIP_SCRIPTS)"
+    if in-array "$(get-entrypoint-script-name "${file}")" skip_scripts; then
+        log-warning "Skipping script [${file}] since it's in the skip list (\$ENTRYPOINT_SKIP_SCRIPTS)"
 
         continue
     fi
@@ -56,6 +62,7 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
         log-info "${notice_message_color}Sourcing [${file}]${color_clear}"
         log-info ""
 
+        # shellcheck disable=SC1090
         source "${file}"
 
         # the sourced file will (should) than the log prefix, so this restores our own
@@ -82,7 +89,7 @@ find "${ENTRYPOINT_ROOT}" -follow -type f -print | sort -V | while read -r file;
     esac
 done
 
-release-lock
+release-lock "entrypoint.sh"
 
 log-info "Configuration complete; ready for start up"
 

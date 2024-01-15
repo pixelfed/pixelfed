@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex -o errexit -o nounset -o pipefail
 
+: "${APT_PACKAGES_EXTRA:=""}"
+: "${DOTENV_LINTER_VERSION:=""}"
+
 # Ensure we keep apt cache around in a Docker environment
 rm -f /etc/apt/apt.conf.d/docker-clean
 echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
@@ -73,16 +76,16 @@ apt-get update
 apt-get upgrade -y
 
 apt-get install -y \
-    ${standardPackages[*]} \
-    ${imageOptimization[*]} \
-    ${imageProcessing[*]} \
-    ${gdDependencies[*]} \
-    ${videoProcessing[*]} \
-    ${databaseDependencies[*]} \
-    ${APT_PACKAGES_EXTRA}
+    "${standardPackages[@]}" \
+    "${imageOptimization[@]}" \
+    "${imageProcessing[@]}" \
+    "${gdDependencies[@]}" \
+    "${videoProcessing[@]}" \
+    "${databaseDependencies[@]}" \
+    "${APT_PACKAGES_EXTRA}"
 
 locale-gen
 update-locale
 
 # Install dotenv linter (https://github.com/dotenv-linter/dotenv-linter)
-curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin ${DOTENV_LINTER_VERSION}
+curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin "${DOTENV_LINTER_VERSION}"

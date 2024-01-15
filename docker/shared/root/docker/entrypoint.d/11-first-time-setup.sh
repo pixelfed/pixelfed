@@ -1,10 +1,13 @@
 #!/bin/bash
-source /docker/helpers.sh
+: "${ENTRYPOINT_ROOT:="/docker"}"
+
+# shellcheck source=SCRIPTDIR/../helpers.sh
+source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 entrypoint-set-script-name "$0"
 
 # Allow automatic applying of outstanding/new migrations on startup
-: ${DOCKER_RUN_ONE_TIME_SETUP_TASKS:=1}
+: "${DOCKER_RUN_ONE_TIME_SETUP_TASKS:=1}"
 
 if is-false "${DOCKER_RUN_ONE_TIME_SETUP_TASKS}"; then
     log-warning "Automatic run of the 'One-time setup tasks' is disabled."

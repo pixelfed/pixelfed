@@ -1,10 +1,13 @@
 #!/bin/bash
-source /docker/helpers.sh
+: "${ENTRYPOINT_ROOT:="/docker"}"
+
+# shellcheck source=SCRIPTDIR/../helpers.sh
+source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 entrypoint-set-script-name "$0"
 
 # Allow automatic applying of outstanding/new migrations on startup
-: ${DOCKER_APPLY_NEW_MIGRATIONS_AUTOMATICALLY:=0}
+: "${DOCKER_APPLY_NEW_MIGRATIONS_AUTOMATICALLY:=0}"
 
 # Wait for the database to be ready
 await-database-ready

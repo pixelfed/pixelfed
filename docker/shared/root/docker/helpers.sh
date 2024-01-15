@@ -3,6 +3,9 @@ set -e -o errexit -o nounset -o pipefail
 
 [[ ${ENTRYPOINT_DEBUG:=0} == 1 ]] && set -x
 
+: "${RUNTIME_UID:="33"}"
+: "${RUNTIME_GID:="33"}"
+
 # Some splash of color for important messages
 declare -g error_message_color="\033[1;31m"
 declare -g warn_message_color="\033[1;34m"
@@ -23,11 +26,14 @@ declare -a dot_env_files=(
 # environment keys seen when source dot files (so we can [export] them)
 declare -ga seen_dot_env_variables=()
 
-declare -g docker_state_path="$(readlink -f ./storage/docker)"
+declare -g docker_state_path
+docker_state_path="$(readlink -f ./storage/docker)"
+
 declare -g docker_locks_path="${docker_state_path}/lock"
 declare -g docker_once_path="${docker_state_path}/once"
 
-declare -g runtime_username=$(id -un ${RUNTIME_UID})
+declare -g runtime_username
+runtime_username=$(id -un "${RUNTIME_UID}")
 
 # We should already be in /var/www, but just to be explicit
 cd /var/www || log-error-and-exit "could not change to /var/www"
@@ -38,7 +44,7 @@ function entrypoint-set-script-name() {
     script_name_previous="${script_name}"
     script_name="${1}"
 
-    log_prefix="[entrypoint / $(get-entrypoint-script-name $1)] - "
+    log_prefix="[entrypoint / $(get-entrypoint-script-name "$1")] - "
 }
 
 # @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
@@ -86,20 +92,18 @@ function run-command-as() {
 
     if [[ $exit_code != 0 ]]; then
         log-error "❌ Error!"
-        return $exit_code
+        return "$exit_code"
     fi
 
     log-info-stderr "✅ OK!"
-    return $exit_code
+    return "$exit_code"
 }
 
 # @description Streams stdout from the command and echo it
 # with log prefixing.
 # @see stream-prefix-command-output
 function stream-stdout-handler() {
-    local prefix="${1:-}"
-
-    while read line; do
+    while read -r line; do
         log-info "(stdout) ${line}"
     done
 }
@@ -108,7 +112,7 @@ function stream-stdout-handler() {
 # with a bit of color and log prefixing.
 # @see stream-prefix-command-output
 function stream-stderr-handler() {
-    while read line; do
+    while read -r line; do
         log-info-stderr "(${error_message_color}stderr${color_clear}) ${line}"
     done
 }
@@ -123,11 +127,13 @@ function stream-prefix-command-output() {
 
     # if stdout is being piped, print it like normal with echo
     if [ ! -t 1 ]; then
+        # shellcheck disable=SC1007
         stdout= echo >&1 -ne
     fi
 
     # if stderr is being piped, print it like normal with echo
     if [ ! -t 2 ]; then
+        # shellcheck disable=SC1007
         stderr= echo >&2 -ne
     fi
 
@@ -141,11 +147,11 @@ function log-error() {
     local msg
 
     if [[ $# -gt 0 ]]; then
-        msg="$@"
+        msg="$*"
     elif [[ ! -t 0 ]]; then
-        read msg || log-error-and-exit "[${FUNCNAME}] could not read from stdin"
+        read -r msg || log-error-and-exit "[${FUNCNAME[0]}] could not read from stdin"
     else
-        log-error-and-exit "[${FUNCNAME}] did not receive any input arguments and STDIN is empty"
+        log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
     echo -e "${error_message_color}${log_prefix}ERROR - ${msg}${color_clear}" >/dev/stderr
@@ -170,11 +176,11 @@ function log-warning() {
     local msg
 
     if [[ $# -gt 0 ]]; then
-        msg="$@"
+        msg="$*"
     elif [[ ! -t 0 ]]; then
-        read msg || log-error-and-exit "[${FUNCNAME}] could not read from stdin"
+        read -r msg || log-error-and-exit "[${FUNCNAME[0]}] could not read from stdin"
     else
-        log-error-and-exit "[${FUNCNAME}] did not receive any input arguments and STDIN is empty"
+        log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
     echo -e "${warn_message_color}${log_prefix}WARNING - ${msg}${color_clear}" >/dev/stderr
@@ -187,15 +193,15 @@ function log-info() {
     local msg
 
     if [[ $# -gt 0 ]]; then
-        msg="$@"
+        msg="$*"
     elif [[ ! -t 0 ]]; then
-        read msg || log-error-and-exit "[${FUNCNAME}] could not read from stdin"
+        read -r msg || log-error-and-exit "[${FUNCNAME[0]}] could not read from stdin"
     else
-        log-error-and-exit "[${FUNCNAME}] did not receive any input arguments and STDIN is empty"
+        log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
-        echo -e "${log_prefix}${msg}"
+        echo -e "${notice_message_color}${log_prefix}${msg}${color_clear}"
     fi
 }
 
@@ -206,11 +212,11 @@ function log-info-stderr() {
     local msg
 
     if [[ $# -gt 0 ]]; then
-        msg="$@"
+        msg="$*"
     elif [[ ! -t 0 ]]; then
-        read msg || log-error-and-exit "[${FUNCNAME}] could not read from stdin"
+        read -r msg || log-error-and-exit "[${FUNCNAME[0]}] could not read from stdin"
     else
-        log-error-and-exit "[${FUNCNAME}] did not receive any input arguments and STDIN is empty"
+        log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
@@ -231,15 +237,19 @@ function load-config-files() {
         fi
 
         log-info "Sourcing ${file}"
+        # shellcheck disable=SC1090
         source "${file}"
 
         # find all keys in the dot-env file and store them in our temp associative array
-        for k in "$(grep -v '^#' "${file}" | cut -d"=" -f1 | xargs)"; do
+        for k in $(grep -v '^#' "${file}" | cut -d"=" -f1 | xargs); do
             _tmp_dot_env_keys[$k]=1
         done
     done
 
-    seen_dot_env_variables=(${!_tmp_dot_env_keys[@]})
+    # Used in other scripts (like templating) for [export]-ing the values
+    #
+    # shellcheck disable=SC2034
+    seen_dot_env_variables=("${!_tmp_dot_env_keys[@]}")
 }
 
 # @description Checks if $needle exists in $haystack
@@ -290,7 +300,7 @@ function file-exists() {
 # @exitcode 0 If $1 contains files
 # @exitcode 1 If $1 does *NOT* contain files
 function is-directory-empty() {
-    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v
+    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read -r
 }
 
 # @description Ensures a directory exists (via mkdir)
@@ -301,11 +311,11 @@ function ensure-directory-exists() {
     stream-prefix-command-output mkdir -pv "$@"
 }
 
-# @description Find the relative path for a entrypoint script by removing the ENTRYPOINT_ROOT prefix
+# @description Find the relative path for a entrypoint script by removing the ENTRYPOINT_D_ROOT prefix
 # @arg $1 string The path to manipulate
 # @stdout The relative path to the entrypoint script
 function get-entrypoint-script-name() {
-    echo "${1#"$ENTRYPOINT_ROOT"}"
+    echo "${1#"$ENTRYPOINT_D_ROOT"}"
 }
 
 # @description Ensure a command is only run once (via a 'lock' file) in the storage directory.
@@ -373,12 +383,14 @@ function release-lock() {
 # @arg $@ string The list of trap signals to register
 function on-trap() {
     local trap_add_cmd=$1
-    shift || log-error-and-exit "${FUNCNAME} usage error"
+    shift || log-error-and-exit "${FUNCNAME[0]} usage error"
 
     for trap_add_name in "$@"; do
         trap -- "$(
             # helper fn to get existing trap command from output
             # of trap -p
+            #
+            # shellcheck disable=SC2317
             extract_trap_cmd() { printf '%s\n' "${3:-}"; }
             # print existing trap command with newline
             eval "extract_trap_cmd $(trap -p "${trap_add_name}")"
@@ -403,12 +415,14 @@ function await-database-ready() {
 
     case "${DB_CONNECTION:-}" in
     mysql)
+        # shellcheck disable=SC2154
         while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent >/dev/null; do
             staggered-sleep
         done
         ;;
 
     pgsql)
+        # shellcheck disable=SC2154
         while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" >/dev/null; do
             staggered-sleep
         done
@@ -417,6 +431,7 @@ function await-database-ready() {
     sqlsrv)
         log-warning "Don't know how to check if SQLServer is *truely* ready or not - so will just check if we're able to connect to it"
 
+        # shellcheck disable=SC2154
         while ! timeout 1 bash -c "cat < /dev/null > /dev/tcp/${DB_HOST}/${DB_PORT}"; do
             staggered-sleep
         done
@@ -437,7 +452,7 @@ function await-database-ready() {
 # @description sleeps between 1 and 3 seconds to ensure a bit of randomness
 #   in multiple scripts/containers doing work almost at the same time.
 function staggered-sleep() {
-    sleep $(get-random-number-between 1 3)
+    sleep "$(get-random-number-between 1 3)"
 }
 
 # @description Helper function to get a random number between $1 and $2
@@ -459,13 +474,13 @@ function show-call-stack() {
     local src
 
     # to avoid noise we start with 1 to skip the get_stack function
-    for ((i = 1; i < $stack_size; i++)); do
+    for ((i = 1; i < stack_size; i++)); do
         func="${FUNCNAME[$i]}"
-        [ x$func = x ] && func=MAIN
+        [ -z "$func" ] && func="MAIN"
 
         lineno="${BASH_LINENO[$((i - 1))]}"
         src="${BASH_SOURCE[$i]}"
-        [ x"$src" = x ] && src=non_file_source
+        [ -z "$src" ] && src="non_file_source"
 
         log-error "  at: ${func} ${src}:${lineno}"
     done

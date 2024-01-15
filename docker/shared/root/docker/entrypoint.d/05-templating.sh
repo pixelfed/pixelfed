@@ -1,14 +1,17 @@
 #!/bin/bash
-source /docker/helpers.sh
+: "${ENTRYPOINT_ROOT:="/docker"}"
+
+# shellcheck source=SCRIPTDIR/../helpers.sh
+source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 entrypoint-set-script-name "$0"
 
 # Show [git diff] of templates being rendered (will help verify output)
-: ${ENTRYPOINT_SHOW_TEMPLATE_DIFF:=1}
+: "${ENTRYPOINT_SHOW_TEMPLATE_DIFF:=1}"
 # Directory where templates can be found
-: ${ENTRYPOINT_TEMPLATE_DIR:=/docker/templates/}
+: "${ENTRYPOINT_TEMPLATE_DIR:=/docker/templates/}"
 # Root path to write template template_files to (default is '', meaning it will be written to /<path>)
-: ${ENTRYPOINT_TEMPLATE_OUTPUT_PREFIX:=}
+: "${ENTRYPOINT_TEMPLATE_OUTPUT_PREFIX:=}"
 
 declare template_file relative_template_file_path output_file_dir
 
@@ -16,6 +19,8 @@ declare template_file relative_template_file_path output_file_dir
 load-config-files
 
 # export all dot-env variables so they are available in templating
+#
+# shellcheck disable=SC2068
 export ${seen_dot_env_variables[@]}
 
 find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r template_file; do
@@ -46,7 +51,7 @@ find "${ENTRYPOINT_TEMPLATE_DIR}" -follow -type f -print | while read -r templat
 
     # Render the template
     log-info "Running [gomplate] on [${template_file}] --> [${output_file_path}]"
-    cat "${template_file}" | gomplate >"${output_file_path}"
+    gomplate <"${template_file}" >"${output_file_path}"
 
     # Show the diff from the envsubst command
     if is-true "${ENTRYPOINT_SHOW_TEMPLATE_DIFF}"; then

@@ -1,6 +1,12 @@
 #!/bin/bash
 set -ex -o errexit -o nounset -o pipefail
 
+: "${PHP_PECL_EXTENSIONS:=""}"
+: "${PHP_PECL_EXTENSIONS_EXTRA:=""}"
+: "${PHP_EXTENSIONS:=""}"
+: "${PHP_EXTENSIONS_EXTRA:=""}"
+: "${PHP_EXTENSIONS_DATABASE:=""}"
+
 # Grab the PHP source code so we can compile against it
 docker-php-source extract
 
@@ -14,7 +20,7 @@ docker-php-ext-configure gd \
 # Optional script folks can copy into their image to do any [docker-php-ext-configure] work before the [docker-php-ext-install]
 # this can also overwirte the [gd] configure above by simply running it again
 if [[ -f /install/php-extension-configure.sh ]]; then
-    if [ !-x "$f" ]; then
+    if [ ! -x "/install/php-extension-configure.sh" ]; then
         echo >&2 "ERROR: found /install/php-extension-configure.sh but its not executable - please [chmod +x] the file!"
         exit 1
     fi
@@ -23,10 +29,19 @@ if [[ -f /install/php-extension-configure.sh ]]; then
 fi
 
 # Install pecl extensions
-pecl install ${PHP_PECL_EXTENSIONS} ${PHP_PECL_EXTENSIONS_EXTRA}
+pecl install "${PHP_PECL_EXTENSIONS}" "${PHP_PECL_EXTENSIONS_EXTRA}"
 
 # PHP extensions (dependencies)
-docker-php-ext-install -j$(nproc) ${PHP_EXTENSIONS} ${PHP_EXTENSIONS_EXTRA} ${PHP_EXTENSIONS_DATABASE}
+docker-php-ext-install \
+    -j "$(nproc)" \
+    "${PHP_EXTENSIONS}" \
+    "${PHP_EXTENSIONS_EXTRA}" \
+    "${PHP_EXTENSIONS_DATABASE}"
 
 # Enable all extensions
-docker-php-ext-enable ${PHP_PECL_EXTENSIONS} ${PHP_PECL_EXTENSIONS_EXTRA} ${PHP_EXTENSIONS} ${PHP_EXTENSIONS_EXTRA} ${PHP_EXTENSIONS_DATABASE}
+docker-php-ext-enable \
+    "${PHP_PECL_EXTENSIONS}" \
+    "${PHP_PECL_EXTENSIONS_EXTRA}" \
+    "${PHP_EXTENSIONS}" \
+    "${PHP_EXTENSIONS_EXTRA}" \
+    "${PHP_EXTENSIONS_DATABASE}"
