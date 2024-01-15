@@ -68,8 +68,8 @@ services:
       target: apache-runtime
     volumes:
       - "./.env:/var/www/.env"
-      - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
-      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
+      - "${APP_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${APP_STORAGE_PATH}:/var/www/storage"
     environment:
       LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
       LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
@@ -98,8 +98,8 @@ services:
       target: apache-runtime
     volumes:
       - "./.env:/var/www/.env"
-      - "${DOCKER_DATA_ROOT}/pixelfed/cache:/var/www/bootstrap/cache"
-      - "${DOCKER_DATA_ROOT}/pixelfed/storage:/var/www/storage"
+      - "${APP_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${APP_STORAGE_PATH}:/var/www/storage"
     depends_on:
       - db
       - redis
@@ -112,7 +112,7 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "${DOCKER_DATA_ROOT}/db:/var/lib/mysql"
+      - "${DB_DATA_PATH}:/var/lib/mysql"
     ports:
       - "${DOCKER_DB_PORT_EXTERNAL}:3306"
 
@@ -124,7 +124,7 @@ services:
       - ".env"
     volumes:
       - "${DOCKER_CONFIG_ROOT}/redis:/etc/redis"
-      - "${DOCKER_DATA_ROOT}/redis:/data"
+      - "${REDIS_DATA_PATH}:/data"
     ports:
       - "${DOCKER_REDIS_PORT_EXTERNAL}:6399"
     healthcheck:

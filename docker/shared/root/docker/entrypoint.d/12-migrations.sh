@@ -7,7 +7,7 @@ source "${ENTRYPOINT_ROOT}/helpers.sh"
 entrypoint-set-script-name "$0"
 
 # Allow automatic applying of outstanding/new migrations on startup
-: "${DOCKER_APPLY_NEW_MIGRATIONS_AUTOMATICALLY:=0}"
+: "${DB_APPLY_NEW_MIGRATIONS_AUTOMATICALLY:=0}"
 
 # Wait for the database to be ready
 await-database-ready
@@ -24,9 +24,9 @@ fi
 
 log-warning "New migrations available, will automatically apply them now"
 
-if is-false "${DOCKER_APPLY_NEW_MIGRATIONS_AUTOMATICALLY}"; then
+if is-false "${DB_APPLY_NEW_MIGRATIONS_AUTOMATICALLY}"; then
     log-info "Automatic applying of new database migrations is disabled"
-    log-info "Please set [DOCKER_APPLY_NEW_MIGRATIONS_AUTOMATICALLY=1] in your [.env] file to enable this."
+    log-info "Please set [DB_APPLY_NEW_MIGRATIONS_AUTOMATICALLY=1] in your [.env] file to enable this."
 
     exit 0
 fi

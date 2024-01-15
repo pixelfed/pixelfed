@@ -50,8 +50,7 @@ jobs:
           SHELLCHECK_OPTS: --shell=bash --external-sources
         with:
           version: v0.9.0
-          scandir: ./docker/
-          additional_files: "*.envsh"
+          additional_files: "*.envsh .env .env.docker .env.example .env.testing"
 
   build:
     runs-on: ubuntu-latest
