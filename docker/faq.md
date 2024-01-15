@@ -26,3 +26,7 @@ No problem! All you have to do is:
         1. `${APP_DOMAIN}.fullchain.pem`
         1. `${APP_DOMAIN}.key.pem`
     * See the [`nginx-proxy` configuration file for name patterns](https://github.com/nginx-proxy/nginx-proxy/blob/main/nginx.tmpl#L659-L670)
+
+## How do I change the container name prefix?
+
+Change the `DOCKER_CONTAINER_NAME_PREFIX` key/value pair in your `.env` file.

@@ -11,13 +11,19 @@ services:
   # Sits in front of the *real* webserver and manages SSL and (optionally)
   # load-balancing between multiple web servers
   #
+  # You can disable this service by setting [DOCKER_PROXY_PROFILE="disabled"]
+  # in your [.env] file - the setting is near the bottom of the file.
+  #
+  # This also disables the [proxy-acme] service, if this is not desired, change the
+  # [DOCKER_PROXY_ACME_PROFILE] setting to an empty string [""]
+  #
   # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
   proxy:
     image: nginxproxy/nginx-proxy:1.4
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy"
     restart: unless-stopped
     profiles:
-      - ${DOCKER_PROXY_PROFILE}
+      - ${DOCKER_PROXY_PROFILE:-}
     volumes:
       - "${DOCKER_HOST_SOCKET_PATH}:/tmp/docker.sock:ro"
       - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
@@ -30,13 +36,16 @@ services:
 
   # Proxy companion for managing letsencrypt SSL certificates
   #
+  # You can disable this service by setting [DOCKER_PROXY_ACME_PROFILE="disabled"]
+  # in your [.env] file - the setting is near the bottom of the file.
+  #
   # See: https://github.com/nginx-proxy/acme-companion/tree/main/docs
   proxy-acme:
     image: nginxproxy/acme-companion
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy-acme"
     restart: unless-stopped
     profiles:
-      - ${DOCKER_PROXY_ACME_PROFILE}
+      - ${DOCKER_PROXY_ACME_PROFILE:-}
     environment:
       DEBUG: 0
       DEFAULT_EMAIL: "${LETSENCRYPT_EMAIL}"
