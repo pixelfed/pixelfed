@@ -8,7 +8,7 @@ set -e -o errexit -o nounset -o pipefail
 
 # Some splash of color for important messages
 declare -g error_message_color="\033[1;31m"
-declare -g warn_message_color="\033[1;34m"
+declare -g warn_message_color="\033[1;33m"
 declare -g notice_message_color="\033[1;34m"
 declare -g success_message_color="\033[1;32m"
 # shellcheck disable=SC2034
