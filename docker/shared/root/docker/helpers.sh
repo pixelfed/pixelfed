@@ -491,6 +491,8 @@ function show-call-stack() {
 # @see as-boolean
 function is-true() {
     as-boolean "${1:-}" && return 0
+
+    return 1
 }
 
 # @description Helper function see if $1 could be considered falsey
@@ -498,6 +500,8 @@ function is-true() {
 # @see as-boolean
 function is-false() {
     as-boolean "${1:-}" || return 0
+
+    return 1
 }
 
 # @description Helper function see if $1 could be truethy or falsey.
