@@ -71,6 +71,9 @@ In *particular* the following sections
 
 #### 2. Stop all running containers
 
+> [!CAUTION]
+> This will take your Pixelfed instance offline
+
 Stop *all* running containers (web, worker, redis, db)
 
 ```shell
@@ -134,6 +137,9 @@ $ ls redis-data/new
 ```
 
 #### 6. Copy the data
+
+> [!WARNING]
+> This is where we potentially will double your disk usage (temporarily)
 
 Now we will copy the data from the old volumes, to the new ones.
 
