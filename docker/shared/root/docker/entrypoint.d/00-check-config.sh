@@ -16,6 +16,3 @@ for file in "${dot_env_files[@]}"; do
     log-info "Linting dotenv file ${file}"
     dotenv-linter --skip=QuoteCharacter --skip=UnorderedKey "${file}"
 done
-
-# Write the config cache
-run-as-runtime-user php artisan config:cache

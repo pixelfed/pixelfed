@@ -14,7 +14,7 @@ await-database-ready
 
 # Detect if we have new migrations
 declare -i new_migrations=0
-run-as-runtime-user php artisan migrate:status | grep No && new_migrations=1
+(run-as-runtime-user php artisan migrate:status || :) | grep No && new_migrations=1
 
 if is-true "${new_migrations}"; then
     log-info "No outstanding migrations detected"
