@@ -54,21 +54,22 @@ Then open your old `.env.old` configuration file, and for each of the key/value 
 Don't worry though, the file might *look* different (and significantly larger) but it behaves *exactly* the way the old file did, it just has way more options!
 
 > [!TIP]
-> If a key is missing in `.env.new`, don't worry, you can just add those key/value pairs back to the new file - ideally in the `Other configuration` section near the end of the file - but anywhere *should* be fine.
+> Don't worry if a key is missing in `.env.new`, you can add those key/value pairs back to the new file - ideally in the `Other configuration` section near the end of the file - but anywhere *should* be fine.
 
 This is a great time to review your settings and familiarize you with all the new settings.
 
-In *particular* the following sections
-
-* `PHP configuration` section (near the end of the file) where
-  * The `PHP_VERSION` settings controls your PHP version
-  * The `PHP_MEMORY_LIMIT` settings controls your PHP memory limit
-* `Docker Specific configuration` section (near the end of the file) where
-  * The `DOCKER_ALL_HOST_DATA_ROOT_PATH` setting dictate where the new migrated data will live.
-  * The `DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS` controls if the `One time setup tasks` should run or not. We do *not* want this, since your Pixelfed instance already is set up!
-* [Frequently Asked Question / FAQ](faq.md)
-  * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
-  * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
+> [!NOTE]
+> In *particular* the following sections
+>
+> * `PHP configuration` section (near the end of the file) where
+>   * The `DOCKER_APP_PHP_VERSION` settings controls your PHP version
+>   * The `PHP_MEMORY_LIMIT` settings controls your PHP memory limit
+> * `Docker Specific configuration` section (near the end of the file) where
+>   * The `DOCKER_ALL_HOST_DATA_ROOT_PATH` setting dictate where the new migrated data will live.
+>   * The `DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS` controls if the `One time setup tasks` should run or not. We do *not* want this, since your Pixelfed instance already is set up!
+> * [Frequently Asked Question / FAQ](faq.md)
+>   * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
+>   * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
 
 #### 2. Stop all running containers
 
