@@ -220,7 +220,7 @@ function log-info-stderr() {
     fi
 
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
-        echo -e "${log_prefix}$msg" >/dev/stderr
+        echo -e "${notice_message_color}${log_prefix}${msg}${color_clear}" >/dev/stderr
     fi
 }
 
