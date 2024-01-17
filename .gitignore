@@ -9,7 +9,7 @@
 /.idea
 /.vagrant
 /.vscode
-/docker-compose/
+/docker-compose-state/
 /node_modules
 /public/hot
 /public/storage
