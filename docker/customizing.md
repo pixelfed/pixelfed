@@ -15,7 +15,7 @@ When a Pixelfed container starts up, the [`ENTRYPOINT`](https://docs.docker.com/
 
 ### Debugging
 
-You can set environment variable `ENTRYPOINT_DEBUG=1` to show verbose output of what each `entrypoint.d` script is doing.
+You can set environment variable `DOCKER_APP_ENTRYPOINT_DEBUG=1` to show verbose output of what each `entrypoint.d` script is doing.
 
 You can also `docker exec` or `docker run` into a container and run `/`
 
@@ -73,12 +73,12 @@ Please see the
 
 ## Fixing ownership on startup
 
-You can set the environment variable `DOCKER_ENSURE_OWNERSHIP_PATHS` to a list of paths that should have their `$USER` and `$GROUP` ownership changed to the configured runtime user and group during container bootstrapping.
+You can set the environment variable `DOCKER_APP_ENSURE_OWNERSHIP_PATHS` to a list of paths that should have their `$USER` and `$GROUP` ownership changed to the configured runtime user and group during container bootstrapping.
 
 The variable is a space-delimited list shown below and accepts both relative and absolute paths:
 
-* `DOCKER_ENSURE_OWNERSHIP_PATHS="./storage ./bootstrap"`
-* `DOCKER_ENSURE_OWNERSHIP_PATHS="/some/other/folder"`
+* `DOCKER_APP_ENSURE_OWNERSHIP_PATHS="./storage ./bootstrap"`
+* `DOCKER_APP_ENSURE_OWNERSHIP_PATHS="/some/other/folder"`
 
 ## Build settings (arguments)
 

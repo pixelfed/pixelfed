@@ -13,13 +13,13 @@ run-as-current-user chown --verbose "${RUNTIME_UID}:${RUNTIME_GID}" "./bootstrap
 run-as-current-user chown --verbose "${RUNTIME_UID}:${RUNTIME_GID}" "./storage"
 
 # Optionally fix ownership of configured paths
-: "${DOCKER_ENSURE_OWNERSHIP_PATHS:=""}"
+: "${DOCKER_APP_ENSURE_OWNERSHIP_PATHS:=""}"
 
 declare -a ensure_ownership_paths=()
-IFS=' ' read -ar ensure_ownership_paths <<<"${DOCKER_ENSURE_OWNERSHIP_PATHS}"
+IFS=' ' read -ar ensure_ownership_paths <<<"${DOCKER_APP_ENSURE_OWNERSHIP_PATHS}"
 
 if [[ ${#ensure_ownership_paths[@]} == 0 ]]; then
-    log-info "No paths has been configured for ownership fixes via [\$DOCKER_ENSURE_OWNERSHIP_PATHS]."
+    log-info "No paths has been configured for ownership fixes via [\$DOCKER_APP_ENSURE_OWNERSHIP_PATHS]."
 
     exit 0
 fi

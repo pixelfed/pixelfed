@@ -19,7 +19,7 @@ No problem! All you have to do is:
 1. Change the `DOCKER_PROXY_ACME_PROFILE` key/value pair in your `.env` file to `"disabled"`.
     * This disabled the `proxy-acme` service in `docker-compose.yml`.
     * It does *not* disable the `proxy` service.
-1. Put your certificates in `${DOCKER_CONFIG_ROOT}/proxy/certs` (e.g. `./docker-compose/config/proxy/certs`)
+1. Put your certificates in `${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/certs` (e.g. `./docker-compose/config/proxy/certs`)
     * You may need to create this folder manually if it does not exists.
     * The following files are expected to exist in the directory for the proxy to detect and use them automatically (this is the same directory and file names as LetsEncrypt uses)
         1. `${APP_DOMAIN}.cert.pem`
@@ -31,4 +31,4 @@ No problem! All you have to do is:
 
 ## How do I change the container name prefix?
 
-Change the `DOCKER_CONTAINER_NAME_PREFIX` key/value pair in your `.env` file.
+Change the `DOCKER_ALL_CONTAINER_NAME_PREFIX` key/value pair in your `.env` file.

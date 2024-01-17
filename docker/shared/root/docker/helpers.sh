@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -o errexit -o nounset -o pipefail
 
-[[ ${ENTRYPOINT_DEBUG:=0} == 1 ]] && set -x
+[[ ${DOCKER_APP_ENTRYPOINT_DEBUG:=0} == 1 ]] && set -x
 
 : "${RUNTIME_UID:="33"}"
 : "${RUNTIME_GID:="33"}"

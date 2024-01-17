@@ -61,8 +61,8 @@ In *particular* the following sections
   * The `PHP_VERSION` settings controls your PHP version
   * The `PHP_MEMORY_LIMIT` settings controls your PHP memory limit
 * `Docker Specific configuration` section (near the end of the file) where
-  * The `DOCKER_DATA_ROOT` setting dictate where the new migrated data will live.
-  * The `DOCKER_RUN_ONE_TIME_SETUP_TASKS` controls if the `One time setup tasks` should run or not. We do *not* want this, since your Pixelfed instance already is set up!
+  * The `DOCKER_ALL_HOST_DATA_ROOT_PATH` setting dictate where the new migrated data will live.
+  * The `DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS` controls if the `One time setup tasks` should run or not. We do *not* want this, since your Pixelfed instance already is set up!
 * [Frequently Asked Question / FAQ](faq.md)
   * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
   * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
@@ -232,9 +232,9 @@ If the worker is crash looping, inspect the logs and try to resolve the issues.
 
 You can consider the following additional steps:
 
-* Enabling `ENTRYPOINT_DEBUG` which will show even more log output to help understand whats going on
-* Enabling `DOCKER_ENSURE_OWNERSHIP_PATHS` against the path(s) that might have permission issues
-* Fixing permission issues directly on the host since your data should all be in the `${DOCKER_DATA_ROOT}` folder (`./docker-compose-state/data` by default)
+* Enabling `DOCKER_APP_ENTRYPOINT_DEBUG` which will show even more log output to help understand whats going on
+* Enabling `DOCKER_APP_ENSURE_OWNERSHIP_PATHS` against the path(s) that might have permission issues
+* Fixing permission issues directly on the host since your data should all be in the `${DOCKER_ALL_HOST_DATA_ROOT_PATH}` folder (`./docker-compose-state/data` by default)
 
 ##### Web
 

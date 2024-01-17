@@ -20,22 +20,22 @@ services:
   # See: https://github.com/nginx-proxy/nginx-proxy/tree/main/docs
   proxy:
     image: nginxproxy/nginx-proxy:1.4
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
     restart: unless-stopped
     profiles:
       - ${DOCKER_PROXY_PROFILE:-}
     volumes:
-      - "${DOCKER_HOST_SOCKET_PATH}:/tmp/docker.sock:ro"
-      - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
-      - "${DOCKER_CONFIG_ROOT}/proxy/vhost.d:/etc/nginx/vhost.d"
-      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
-      - "${DOCKER_DATA_ROOT}/proxy/html:/usr/share/nginx/html"
+      - "${DOCKER_PROXY_HOST_DOCKER_SOCKET_PATH}:/tmp/docker.sock:ro"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/vhost.d:/etc/nginx/vhost.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_ALL_HOST_DATA_ROOT_PATH}/proxy/html:/usr/share/nginx/html"
     ports:
-      - "${DOCKER_PROXY_PORT_EXTERNAL_HTTP}:80"
-      - "${DOCKER_PROXY_PORT_EXTERNAL_HTTPS}:443"
+      - "${DOCKER_PROXY_HOST_PORT_HTTP}:80"
+      - "${DOCKER_PROXY_HOST_PORT_HTTPS}:443"
     healthcheck:
       test: "curl --fail https://${APP_DOMAIN}/api/service/health-check"
-      interval: "${DOCKER_PROXY_HEALTHCHECK_INTERVAL:-10s}"
+      interval: "${DOCKER_PROXY_HEALTHCHECK_INTERVAL}"
       retries: 2
       timeout: 5s
 
@@ -47,41 +47,43 @@ services:
   # See: https://github.com/nginx-proxy/acme-companion/tree/main/docs
   proxy-acme:
     image: nginxproxy/acme-companion
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy-acme"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy-acme"
     restart: unless-stopped
     profiles:
       - ${DOCKER_PROXY_ACME_PROFILE:-}
     environment:
       DEBUG: 0
       DEFAULT_EMAIL: "${LETSENCRYPT_EMAIL}"
-      NGINX_PROXY_CONTAINER: "${DOCKER_CONTAINER_NAME_PREFIX}-proxy"
+      NGINX_PROXY_CONTAINER: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
     depends_on:
       - proxy
     volumes:
-      - "${DOCKER_CONFIG_ROOT}/proxy-acme:/etc/acme.sh"
-      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
-      - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
-      - "${DOCKER_CONFIG_ROOT}/proxy/vhost.d:/etc/nginx/vhost.d"
-      - "${DOCKER_DATA_ROOT}/proxy/html:/usr/share/nginx/html"
-      - "${DOCKER_HOST_SOCKET_PATH}:/var/run/docker.sock:ro"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy-acme:/etc/acme.sh"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/certs:/etc/nginx/certs"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/conf.d:/etc/nginx/conf.d"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/proxy/vhost.d:/etc/nginx/vhost.d"
+      - "${DOCKER_ALL_HOST_DATA_ROOT_PATH}/proxy/html:/usr/share/nginx/html"
+      - "${DOCKER_PROXY_HOST_DOCKER_SOCKET_PATH}:/var/run/docker.sock:ro"
 
   web:
-    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-web"
+    image: "${DOCKER_APP_IMAGE}:${DOCKER_APP_TAG}"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-web"
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_WEB_PROFILE:-}
     build:
-      target: ${DOCKER_RUNTIME}-runtime
+      target: ${DOCKER_APP_RUNTIME}-runtime
       args:
-        PHP_VERSION: "${PHP_VERSION:-8.1}"
-        PHP_BASE_TYPE: "${PHP_BASE_TYPE:-apache}"
-        PHP_DEBIAN_RELEASE: "${PHP_DEBIAN_RELEASE:-bullseye}"
-        APT_PACKAGES_EXTRA: "${APT_PACKAGES_EXTRA:-}"
-        PHP_PECL_EXTENSIONS_EXTRA: "${PHP_PECL_EXTENSIONS_EXTRA:-}"
-        PHP_EXTENSIONS_EXTRA: "${PHP_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION}"
+        PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
+        PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
     volumes:
       - "./.env:/var/www/.env"
-      - "${DOCKER_APP_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${DOCKER_APP_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
     environment:
       LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
       LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
@@ -93,54 +95,58 @@ services:
       com.github.nginx-proxy.nginx-proxy.http2.enable: true
       com.github.nginx-proxy.nginx-proxy.http3.enable: true
     ports:
-      - "${DOCKER_WEB_PORT_EXTERNAL_HTTP:-8080}:80"
+      - "${DOCKER_WEB_PORT_EXTERNAL_HTTP}:80"
     depends_on:
       - db
       - redis
     healthcheck:
       test: 'curl --header "Host: ${APP_DOMAIN}" --fail http://localhost/api/service/health-check'
-      interval: "${DOCKER_WEB_HEALTHCHECK_INTERVAL:-10s}"
+      interval: "${DOCKER_WEB_HEALTHCHECK_INTERVAL}"
       retries: 2
       timeout: 5s
 
   worker:
-    image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-worker"
+    image: "${DOCKER_APP_IMAGE}:${DOCKER_APP_TAG}"
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_WORKER_PROFILE:-}
     build:
-      target: ${DOCKER_RUNTIME}-runtime
+      target: ${DOCKER_APP_RUNTIME}-runtime
       args:
-        PHP_VERSION: "${PHP_VERSION:-8.1}"
-        PHP_BASE_TYPE: "${PHP_BASE_TYPE:-apache}"
-        PHP_DEBIAN_RELEASE: "${PHP_DEBIAN_RELEASE:-bullseye}"
-        APT_PACKAGES_EXTRA: "${APT_PACKAGES_EXTRA:-}"
-        PHP_PECL_EXTENSIONS_EXTRA: "${PHP_PECL_EXTENSIONS_EXTRA:-}"
-        PHP_EXTENSIONS_EXTRA: "${PHP_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION}"
+        PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
+        PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
     volumes:
       - "./.env:/var/www/.env"
-      - "${DOCKER_APP_CACHE_PATH}:/var/www/bootstrap/cache"
-      - "${DOCKER_APP_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
+      - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
     depends_on:
       - db
       - redis
     healthcheck:
       test: gosu www-data php artisan horizon:status | grep running
-      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL:-10s}"
+      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL}"
       timeout: 5s
       retries: 2
 
   db:
-    image: mariadb:${DB_VERSION:-11.2}
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-db"
+    image: mariadb:${DB_VERSION}
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-db"
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
+    profiles:
+      - ${DOCKER_DB_PROFILE:-}
     env_file:
       - ".env"
     volumes:
-      - "${DOCKER_DB_DATA_PATH}:/var/lib/mysql"
+      - "${DOCKER_DB_HOST_DATA_PATH}:/var/lib/mysql"
     ports:
-      - "${DOCKER_DB_PORT_EXTERNAL}:3306"
+      - "${DOCKER_DB_HOST_PORT}:3306"
     healthcheck:
       test:
         [
@@ -150,13 +156,13 @@ services:
           "--connect",
           "--innodb_initialized",
         ]
-      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL:-10s}"
+      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL}"
       retries: 2
       timeout: 5s
 
   redis:
-    image: redis:${REDIS_VERSION:-7.2}
-    container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-redis"
+    image: redis:${DOCKER_REDIS_VERSION}
+    container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
     command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     environment:
@@ -164,12 +170,12 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "${DOCKER_CONFIG_ROOT}/redis:/etc/redis"
-      - "${DOCKER_REDIS_DATA_PATH}:/data"
+      - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/redis:/etc/redis"
+      - "${DOCKER_REDIS_HOST_DATA_PATH}:/data"
     ports:
-      - "${DOCKER_REDIS_PORT_EXTERNAL}:6379"
+      - "${DOCKER_REDIS_HOST_PORT}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6379", "ping"]
-      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL:-10s}"
+      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL}"
       retries: 2
       timeout: 5s

@@ -7,11 +7,11 @@ source "${ENTRYPOINT_ROOT}/helpers.sh"
 entrypoint-set-script-name "$0"
 
 # Allow automatic applying of outstanding/new migrations on startup
-: "${DOCKER_RUN_ONE_TIME_SETUP_TASKS:=1}"
+: "${DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS:=1}"
 
-if is-false "${DOCKER_RUN_ONE_TIME_SETUP_TASKS}"; then
+if is-false "${DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS}"; then
     log-warning "Automatic run of the 'One-time setup tasks' is disabled."
-    log-warning "Please set [DOCKER_RUN_ONE_TIME_SETUP_TASKS=1] in your [.env] file to enable this."
+    log-warning "Please set [DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS=1] in your [.env] file to enable this."
 
     exit 0
 fi
