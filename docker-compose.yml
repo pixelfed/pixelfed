@@ -33,6 +33,11 @@ services:
     ports:
       - "${DOCKER_PROXY_PORT_EXTERNAL_HTTP}:80"
       - "${DOCKER_PROXY_PORT_EXTERNAL_HTTPS}:443"
+    healthcheck:
+      test: 'curl --header "Host: $[APP_DOMAIN}" --fail http://localhost/api/service/health-check'
+      interval: 10s
+      retries: 2
+      timeout: 5s
 
   # Proxy companion for managing letsencrypt SSL certificates
   #
@@ -92,6 +97,11 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: 'curl --header "Host: $[APP_DOMAIN}" --fail http://localhost/api/service/health-check'
+      interval: 10s
+      retries: 2
+      timeout: 5s
 
   worker:
     image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
@@ -114,6 +124,11 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: gosu www-data php artisan horizon:status | grep running
+      interval: 10s
+      timeout: 5s
+      retries: 2
 
   db:
     image: mariadb:11.2
@@ -126,6 +141,18 @@ services:
       - "${DOCKER_DB_DATA_PATH}:/var/lib/mysql"
     ports:
       - "${DOCKER_DB_PORT_EXTERNAL}:3306"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su-mysql",
+          "--connect",
+          "--innodb_initialized",
+        ]
+      interval: 10s
+      retries: 2
+      timeout: 5s
 
   redis:
     image: redis:7.2
@@ -142,7 +169,7 @@ services:
     ports:
       - "${DOCKER_REDIS_PORT_EXTERNAL}:6379"
     healthcheck:
-      interval: 10s
-      timeout: 5s
-      retries: 2
       test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 10s
+      retries: 2
+      timeout: 5s
