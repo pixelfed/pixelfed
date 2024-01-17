@@ -53,12 +53,12 @@ services:
     depends_on:
       - proxy
     volumes:
-      - "${DOCKER_HOST_SOCKET_PATH}:/var/run/docker.sock:ro"
+      - "${DOCKER_CONFIG_ROOT}/proxy-acme:/etc/acme.sh"
+      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
       - "${DOCKER_CONFIG_ROOT}/proxy/conf.d:/etc/nginx/conf.d"
       - "${DOCKER_CONFIG_ROOT}/proxy/vhost.d:/etc/nginx/vhost.d"
-      - "${DOCKER_CONFIG_ROOT}/proxy/certs:/etc/nginx/certs"
       - "${DOCKER_DATA_ROOT}/proxy/html:/usr/share/nginx/html"
-      - "${DOCKER_DATA_ROOT}/proxy-acme:/etc/acme.sh"
+      - "${DOCKER_HOST_SOCKET_PATH}:/var/run/docker.sock:ro"
 
   web:
     image: "${DOCKER_IMAGE}:${DOCKER_TAG}"
@@ -131,7 +131,7 @@ services:
     image: redis:7.2
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
-    command: "${DOCKER_REDIS_CONFIG_FILE} --requirepass '${REDIS_PASSWORD:-}'"
+    command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     environment:
       - REDISCLI_AUTH=${REDIS_PASSWORD:-}
     env_file:

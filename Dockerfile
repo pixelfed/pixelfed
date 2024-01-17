@@ -97,17 +97,17 @@ RUN set -ex \
 
 FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS base
 
-ARG APT_PACKAGES_EXTRA
 ARG BUILDKIT_SBOM_SCAN_STAGE="true"
+
+ARG APT_PACKAGES_EXTRA
+ARG DOTENV_LINTER_VERSION
 ARG PHP_DEBIAN_RELEASE
 ARG PHP_VERSION
 ARG RUNTIME_GID
 ARG RUNTIME_UID
 ARG TARGETPLATFORM
-ARG DOTENV_LINTER_VERSION
 
 ENV DEBIAN_FRONTEND="noninteractive"
-ENV DOTENV_LINTER_VERSION="${DOTENV_LINTER_VERSION}"
 
 # Ensure we run all scripts through 'bash' rather than 'sh'
 SHELL ["/bin/bash", "-c"]
@@ -119,6 +119,7 @@ RUN set -ex \
 WORKDIR /var/www/
 
 ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
+ENV DOTENV_LINTER_VERSION="${DOTENV_LINTER_VERSION}"
 
 # Install and configure base layer
 COPY docker/shared/root/docker/install/base.sh /docker/install/base.sh
@@ -148,7 +149,7 @@ ENV PHP_PECL_EXTENSIONS_EXTRA=${PHP_PECL_EXTENSIONS_EXTRA}
 ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
 
 COPY docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
-RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php/ \
+RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php \
     --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
 	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     /docker/install/php-extensions.sh

@@ -19,6 +19,10 @@ fi
 load-config-files
 await-database-ready
 
+# Following https://docs.pixelfed.org/running-pixelfed/installation/#one-time-setup-tasks
+#
+# NOTE: Caches happens in [30-cache.sh]
+
 only-once "key:generate" run-as-runtime-user php artisan key:generate
 only-once "storage:link" run-as-runtime-user php artisan storage:link
 only-once "initial:migrate" run-as-runtime-user php artisan migrate --force
