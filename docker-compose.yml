@@ -126,7 +126,7 @@ services:
       - redis
     healthcheck:
       test: gosu www-data php artisan horizon:status | grep running
-      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL}"
+      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL:-10s}"
       timeout: 5s
       retries: 2
 
@@ -170,6 +170,6 @@ services:
       - "${DOCKER_REDIS_PORT_EXTERNAL}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6379", "ping"]
-      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL}"
+      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL:-10s}"
       retries: 2
       timeout: 5s
