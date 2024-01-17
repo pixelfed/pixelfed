@@ -34,7 +34,7 @@ services:
       - "${DOCKER_PROXY_PORT_EXTERNAL_HTTP}:80"
       - "${DOCKER_PROXY_PORT_EXTERNAL_HTTPS}:443"
     healthcheck:
-      test: 'curl --header "Host: $[APP_DOMAIN}" --fail http://localhost/api/service/health-check'
+      test: 'curl --header "Host: $[APP_DOMAIN}" --fail https://localhost/api/service/health-check'
       interval: 10s
       retries: 2
       timeout: 5s
