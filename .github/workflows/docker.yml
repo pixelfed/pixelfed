@@ -188,14 +188,16 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
           cache-to: type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
 
+      # goss validate the image
+      #
+      # See: https://github.com/goss-org/goss
       - uses: e1himself/goss-installation-action@v1
         with:
           version: "v0.4.4"
-
       - name: Execute Goss tests
         run: |
           dgoss run \
             -v "./.env.testing:/var/www/.env" \
-            -e EXPECTED_PHP_VERSION=${{ matrix.php_version }} \
-            -e PHP_BASE_TYPE=${{ matrix.php_base }} \
+            -e "EXPECTED_PHP_VERSION=${{ matrix.php_version }}" \
+            -e "PHP_BASE_TYPE=${{ matrix.php_base }}" \
             ${{ steps.meta.outputs.tags }}

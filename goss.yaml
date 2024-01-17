@@ -67,7 +67,6 @@ command:
       - pdo_sqlite
       - Phar
       - posix
-      - random
       - readline
       - redis
       - Reflection
