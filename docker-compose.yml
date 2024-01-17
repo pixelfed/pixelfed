@@ -35,7 +35,7 @@ services:
       - "${DOCKER_PROXY_PORT_EXTERNAL_HTTPS}:443"
     healthcheck:
       test: "curl --fail https://$[APP_DOMAIN}/api/service/health-check"
-      interval: 10s
+      interval: "${DOCKER_PROXY_HEALTHCHECK_INTERVAL:-10s}"
       retries: 2
       timeout: 5s
 
@@ -99,7 +99,7 @@ services:
       - redis
     healthcheck:
       test: 'curl --header "Host: $[APP_DOMAIN}" --fail http://localhost/api/service/health-check'
-      interval: 10s
+      interval: "${DOCKER_WEB_HEALTHCHECK_INTERVAL:-10s}"
       retries: 2
       timeout: 5s
 
@@ -126,12 +126,12 @@ services:
       - redis
     healthcheck:
       test: gosu www-data php artisan horizon:status | grep running
-      interval: 10s
+      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL}"
       timeout: 5s
       retries: 2
 
   db:
-    image: mariadb:11.2
+    image: mariadb:${DB_VERSION:-11.2}
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-db"
     command: --default-authentication-plugin=mysql_native_password
     restart: unless-stopped
@@ -150,12 +150,12 @@ services:
           "--connect",
           "--innodb_initialized",
         ]
-      interval: 10s
+      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL:-10s}"
       retries: 2
       timeout: 5s
 
   redis:
-    image: redis:7.2
+    image: redis:${REDIS_VERSION:-7.2}
     container_name: "${DOCKER_CONTAINER_NAME_PREFIX}-redis"
     restart: unless-stopped
     command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
@@ -170,6 +170,6 @@ services:
       - "${DOCKER_REDIS_PORT_EXTERNAL}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6379", "ping"]
-      interval: 10s
+      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL}"
       retries: 2
       timeout: 5s
