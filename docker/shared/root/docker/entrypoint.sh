@@ -58,9 +58,9 @@ find "${ENTRYPOINT_D_ROOT}" -follow -type f -print | sort -V | while read -r fil
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
-        log-info "${section_message_color}========================================${color_clear}"
+        log-info "${section_message_color}============================================================${color_clear}"
         log-info "${section_message_color}Sourcing [${file}]${color_clear}"
-        log-info "${section_message_color}========================================${color_clear}"
+        log-info "${section_message_color}============================================================${color_clear}"
 
         # shellcheck disable=SC1090
         source "${file}"
@@ -76,9 +76,9 @@ find "${ENTRYPOINT_D_ROOT}" -follow -type f -print | sort -V | while read -r fil
             log-error-and-exit "File [${file}] is not executable (please 'chmod +x' it)"
         fi
 
-        log-info "${section_message_color}========================================${color_clear}"
+        log-info "${section_message_color}============================================================${color_clear}"
         log-info "${section_message_color}Executing [${file}]${color_clear}"
-        log-info "${section_message_color}========================================${color_clear}"
+        log-info "${section_message_color}============================================================${color_clear}"
 
         "${file}"
         ;;
