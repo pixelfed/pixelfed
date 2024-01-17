@@ -10,6 +10,7 @@ set -e -o errexit -o nounset -o pipefail
 declare -g error_message_color="\033[1;31m"
 declare -g warn_message_color="\033[1;34m"
 declare -g notice_message_color="\033[1;34m"
+declare -g success_message_color="\033[1;32m"
 declare -g color_clear="\033[1;0m"
 
 # Current and previous log prefix
@@ -80,7 +81,7 @@ function run-command-as() {
     target_user=${1}
     shift
 
-    log-info-stderr "👷 Running [${*}] as [${target_user}]"
+    log-info-stderr "${notice_message_color}👷 Running [${*}] as [${target_user}]${color_clear}"
 
     if [[ ${target_user} != "root" ]]; then
         stream-prefix-command-output su --preserve-environment "${target_user}" --shell /bin/bash --command "${*}"
@@ -91,11 +92,11 @@ function run-command-as() {
     exit_code=$?
 
     if [[ $exit_code != 0 ]]; then
-        log-error "❌ Error!"
+        log-error "${error_message_color}❌ Error!${color_clear}"
         return "$exit_code"
     fi
 
-    log-info-stderr "✅ OK!"
+    log-info-stderr "${success_message_color}✅ OK!${color_clear}"
     return "$exit_code"
 }
 
