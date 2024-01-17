@@ -487,6 +487,7 @@ function show-call-stack() {
 }
 
 # @description Helper function see if $1 could be considered truthy
+#   returns [0] if input is truthy, otherwise [1]
 # @arg $1 string The string to evaluate
 # @see as-boolean
 function is-true() {
@@ -496,12 +497,13 @@ function is-true() {
 }
 
 # @description Helper function see if $1 could be considered falsey
+#   returns [0] if input is falsey, otherwise [1]
 # @arg $1 string The string to evaluate
 # @see as-boolean
 function is-false() {
-    as-boolean "${1:-}" || return 0
+    as-boolean "${1:-}" && return 1
 
-    return 1
+    return 0
 }
 
 # @description Helper function see if $1 could be truethy or falsey.

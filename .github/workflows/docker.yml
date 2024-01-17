@@ -43,7 +43,7 @@ jobs:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
         env:
@@ -51,6 +51,14 @@ jobs:
         with:
           version: v0.9.0
           additional_files: "*.envsh .env .env.docker .env.example .env.testing"
+
+  bats:
+    name: Bats Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run bats
+        run: docker run -v "$PWD:/var/www" bats/bats:latest /var/www/tests/bats
 
   build:
     runs-on: ubuntu-latest
