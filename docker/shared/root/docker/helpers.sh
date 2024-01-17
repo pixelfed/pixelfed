@@ -11,6 +11,7 @@ declare -g error_message_color="\033[1;31m"
 declare -g warn_message_color="\033[1;34m"
 declare -g notice_message_color="\033[1;34m"
 declare -g success_message_color="\033[1;32m"
+# shellcheck disable=SC2034
 declare -g section_message_color="\033[1;35m"
 declare -g color_clear="\033[1;0m"
 
@@ -440,7 +441,7 @@ function await-database-ready() {
         ;;
 
     sqlite)
-        log-info "sqlite are always ready"
+        log-info "${success_message_color}sqlite is always ready${color_clear}"
         ;;
 
     *)
@@ -448,7 +449,7 @@ function await-database-ready() {
         ;;
     esac
 
-    log-info "✅ Successfully connected to database"
+    log-info "${success_message_color}✅ Successfully connected to database${color_clear}"
 }
 
 # @description sleeps between 1 and 3 seconds to ensure a bit of randomness
