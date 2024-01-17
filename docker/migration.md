@@ -53,7 +53,8 @@ Then open your old `.env.old` configuration file, and for each of the key/value 
 
 Don't worry though, the file might *look* different (and significantly larger) but it behaves *exactly* the way the old file did, it just has way more options!
 
-If a key is missing in `.env.new`, don't worry, you can just add those key/value pairs back to the new file - ideally in the `Other configuration` section near the end of the file - but anywhere *should* be fine.
+> [!TIP]
+> If a key is missing in `.env.new`, don't worry, you can just add those key/value pairs back to the new file - ideally in the `Other configuration` section near the end of the file - but anywhere *should* be fine.
 
 This is a great time to review your settings and familiarize you with all the new settings.
 
