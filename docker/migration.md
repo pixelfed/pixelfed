@@ -44,7 +44,7 @@ The consequence of this change is that *all* data stored in the - now unsupporte
 
 The new `.env` file for Docker is a bit different from the old one (many new settings!) so the easiest is to grab the new `.env.docker` file and modify it from scratch again.
 
-```shell
+```bash
 $ cp .env .env.old
 $ wget -O .env.new https://raw.githubusercontent.com/pixelfed/pixelfed/dev/.env.docker
 ```
@@ -78,7 +78,7 @@ This is a great time to review your settings and familiarize you with all the ne
 
 Stop *all* running containers (web, worker, redis, db)
 
-```shell
+```bash
 $ docker compose down
 ```
 
@@ -86,17 +86,18 @@ $ docker compose down
 
 Update your project to the latest release of Pixelfed by running
 
-```shell
+```bash
 $ git pull origin $release
 ```
 
-Where `$release` is either `dev`, `staging` or a [tagged release](https://github.com/pixelfed/pixelfed/releases) such as `v0.12.0`.
+> [!NOTE]
+> The `$release` can be any valid git reference like `dev`, `staging` or a [tagged release](https://github.com/pixelfed/pixelfed/releases) such as `v0.12.0`.
 
 #### Step 4. Run the migration container
 
 You can access the Docker container with both old and new volumes by running the following command
 
-```shell
+```bash
 $ docker compose -f docker-compose.migrate.yml run migrate bash
 ```
 
@@ -120,7 +121,7 @@ This will put you in the `/migrate` directory within the container, containing 8
 
 The following commands should all return *SOME* files and data - if they do not - then there might be an issue with the anonymous volume binding.
 
-```shell
+```bash
 $ ls app-storage/old
 $ ls db-data/old
 $ ls redis-data/old
@@ -132,7 +133,7 @@ The following commands should all return *NO* files and data - if they contain d
 
 If you haven't run `docker compose up` since you updated your project in step (2) - they should be empty and good to go.
 
-```shell
+```bash
 $ ls app-storage/new
 $ ls db-data/new
 $ ls redis-data/new
@@ -155,7 +156,7 @@ The migration container has [`rsync`](https://www.digitalocean.com/community/tut
 
 Lets copy the data by running the following commands:
 
-```shell
+```bash
 $ rsync -avP app-storage/old/ app-storage/new
 $ rsync -avP db-data/old/ db-data/new
 $ rsync -avP redis-data/old/ redis-data/new
@@ -169,21 +170,21 @@ Each *new* directory should contain *something* like (but not always exactly) th
 
 The **redis-data/new** directory might also contain a `server.pid`
 
-```shell
+```bash
 $ ls redis-data/new
 appendonlydir
 ```
 
 The **app-storage/new** directory should look *something* like this
 
-```shell
+```bash
 $ ls app-storage/new
 app  debugbar  docker  framework  logs  oauth-private.key  oauth-public.key  purify
 ```
 
 The **db-data/new** directory should look *something* like this. There might be a lot of files, or very few files, but there *must* be a `mysql`, `performance_schema`, and `${DB_DATABASE}` (e.g. `pixelfed_prod` directory)
 
-```shell
+```bash
 $ ls db-data/new
 aria_log_control  ddl_recovery-backup.log  ib_buffer_pool  ib_logfile0  ibdata1  mariadb_upgrade_info  multi-master.info  mysql  performance_schema  pixelfed_prod  sys  undo001  undo002  undo003
 ```
@@ -196,7 +197,7 @@ With all an updated Pixelfed (step 2), updated `.env` file (step 3), migrated da
 
 But before we start your Pixelfed server back up again, lets put the new `.env` file we made in step 1 in its right place.
 
-```shell
+```bash
 $ cp .env.new .env
 ```
 
@@ -204,7 +205,7 @@ $ cp .env.new .env
 
 First thing we want to try is to start up the database by running the following command and checking the logs
 
-```shell
+```bash
 $ docker compose up -d db
 $ docker compose logs --tail 250 --follow db
 ```
@@ -215,7 +216,7 @@ if there are no errors and the server isn't crashing, great! If you have an easy
 
 Next thing we want to try is to start up the Redis server by running the following command and checking the logs
 
-```shell
+```bash
 $ docker compose up -d redis
 $ docker compose logs --tail 250 --follow redis
 ```
@@ -226,7 +227,7 @@ if there are no errors and the server isn't crashing, great!
 
 Next thing we want to try is to start up the Worker server by running the following command and checking the logs
 
-```shell
+```bash
 $ docker compose up -d worker
 $ docker compose logs --tail 250 --follow worker
 ```
@@ -252,7 +253,7 @@ The final service, `web`, which will bring your site back online! What a journey
 
 Lets get to it, run these commands to start the `web` service and inspect the logs.
 
-```shell
+```bash
 $ docker compose up -d web
 $ docker compose logs --tail 250 --follow web
 ```
@@ -261,7 +262,7 @@ The output should be pretty much identical to that of the `worker`, so please se
 
 If the `web` service came online without issues, start the rest of the (optional) services, such as the `proxy`, if enabled, by running
 
-```shell
+```bash
 $ docker compose up -d
 $ docker compose logs --tail 250 --follow
 ```
@@ -288,7 +289,7 @@ Now, with all the data in the new folders, you can delete the old Docker Contain
 
 List all volumes, and give them a look:
 
-```shell
+```bash
 $ docker volume ls
 ```
 
@@ -296,13 +297,13 @@ The volumes we want to delete *ends* with the volume name (`db-data`, `app-stora
 
 Once you have found the volumes in in the list, delete each of them by running:
 
-```shell
+```bash
 $ docker volume rm $volume_name_in_column_two_of_the_output
 ```
 
 You can also delete the `docker-compose.yml.old` and `.env.old` file since they are no longer needed
 
-```shell
+```bash
 $ rm docker-compose.yml.old
 $ rm .env.old
 ```
@@ -313,26 +314,26 @@ Oh no, something went wrong? No worries, we you got backups and a quick way back
 
 #### Move `docker-compose.yml` back
 
-```shell
+```bash
 $ cp docker-compose.yml docker-compose.yml.new
 $ cp docker-compose.yml.old docker-compose.yml
 ```
 
 #### Move `.env` file back
 
-```shell
+```bash
 $ cp env.old .env
 ```
 
 #### Go back to old source code version
 
-```shell
+```bash
 $ git checkout $commit_id_from_step_0
 ```
 
 #### Start things back up
 
-```shell
+```bash
 docker compose up -d
 ```
 
