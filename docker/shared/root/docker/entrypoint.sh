@@ -59,7 +59,7 @@ find "${ENTRYPOINT_D_ROOT}" -follow -type f -print | sort -V | while read -r fil
         fi
 
         log-info ""
-        log-info "Sourcing [${file}]"
+        log-info "${notice_message_color}Sourcing [${file}]${color_clear}"
         log-info ""
 
         # shellcheck disable=SC1090
@@ -77,7 +77,7 @@ find "${ENTRYPOINT_D_ROOT}" -follow -type f -print | sort -V | while read -r fil
         fi
 
         log-info ""
-        log-info "Executing [${file}]"
+        log-info "${notice_message_color}Executing [${file}]${color_clear}"
         log-info ""
 
         "${file}"
