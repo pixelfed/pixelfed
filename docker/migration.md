@@ -32,7 +32,7 @@ The consequence of this change is that *all* data stored in the - now unsupporte
 > **It's important to note that this is a *copy* operation - so disk usage will (temporarily) double while you migrate**
 > We provide a "migration container" for your convenience that can access both the new and old volumes, allowing you to copy the data into the setup.
 
-#### 0. Backup, rollout, and rollback plan
+#### Step 0. Backup, rollout, and rollback plan
 
 1. Make sure to backup your server (ideally *after* step 1 below has completed, but *before* is better than not at all!)
 1. Capture the current Git version / Pixelfed release you are on (e.g. `git --no-pager log -1` outputs the commit reference as the 2nd word in first line)
@@ -40,7 +40,7 @@ The consequence of this change is that *all* data stored in the - now unsupporte
 1. Backup your `docker-compose.yml` file (`cp docker-compose.yml docker-compose.yml.old`)
 1. Read through the *entire* document before starting
 
-#### 1. Migrate your ".env" file
+#### Step 1. Migrate your ".env" file
 
 The new `.env` file for Docker is a bit different from the old one (many new settings!) so the easiest is to grab the new `.env.docker` file and modify it from scratch again.
 
@@ -71,7 +71,7 @@ This is a great time to review your settings and familiarize you with all the ne
 >   * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
 >   * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
 
-#### 2. Stop all running containers
+#### Step 2. Stop all running containers
 
 > [!CAUTION]
 > This will take your Pixelfed instance offline
@@ -82,7 +82,7 @@ Stop *all* running containers (web, worker, redis, db)
 $ docker compose down
 ```
 
-#### 3. Pull down the new source code
+#### Step 3. Pull down the new source code
 
 Update your project to the latest release of Pixelfed by running
 
@@ -92,7 +92,7 @@ $ git pull origin $release
 
 Where `$release` is either `dev`, `staging` or a [tagged release](https://github.com/pixelfed/pixelfed/releases) such as `v0.12.0`.
 
-#### 4. Run the migration container
+#### Step 4. Run the migration container
 
 You can access the Docker container with both old and new volumes by running the following command
 
@@ -114,7 +114,7 @@ This will put you in the `/migrate` directory within the container, containing 8
     `-- old
 ```
 
-#### 5. Check the folders
+#### Step 5. Check the folders
 
 ##### Old folders
 
@@ -138,7 +138,7 @@ $ ls db-data/new
 $ ls redis-data/new
 ```
 
-#### 6. Copy the data
+#### Step 6. Copy the data
 
 > [!WARNING]
 > This is where we potentially will double your disk usage (temporarily)
@@ -161,7 +161,7 @@ $ rsync -avP db-data/old/ db-data/new
 $ rsync -avP redis-data/old/ redis-data/new
 ```
 
-#### 7. Sanity checking
+#### Step 7. Sanity checking
 
 Lets make sure everything copied over successfully!
 
@@ -190,7 +190,7 @@ aria_log_control  ddl_recovery-backup.log  ib_buffer_pool  ib_logfile0  ibdata1 
 
 If everything looks good, type `exit` to leave exit the migration container
 
-#### 6. Starting up the your Pixelfed server again
+#### Step 8. Starting up the your Pixelfed server again
 
 With all an updated Pixelfed (step 2), updated `.env` file (step 3), migrated data (step 4, 5, 6 and 7) we're ready to start things back up again.
 
@@ -268,7 +268,7 @@ $ docker compose logs --tail 250 --follow
 
 If you changed anything in the `.env` file while debugging, some containers might restart now, thats perfectly fine.
 
-#### 7. Verify
+#### Step 9. Verify
 
 With all services online, it's time to go to your browser and check everything is working
 
@@ -280,7 +280,7 @@ With all services online, it's time to go to your browser and check everything i
 
 If everything looks fine, yay, you made it to the end! Lets do some cleanup
 
-#### 8. Final steps + cleanup
+#### Step 10. Final steps + cleanup
 
 With everything working, please take a new snapshot/backup of your server *before* we do any cleanup. A post-migration snapshot is incredibly useful, since it contains both the old and new configuration + data, making any recovery much easier in a rollback scenario later.
 
