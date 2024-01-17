@@ -11,6 +11,7 @@ declare -g error_message_color="\033[1;31m"
 declare -g warn_message_color="\033[1;34m"
 declare -g notice_message_color="\033[1;34m"
 declare -g success_message_color="\033[1;32m"
+declare -g section_message_color="\033[1;35m"
 declare -g color_clear="\033[1;0m"
 
 # Current and previous log prefix
