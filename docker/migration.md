@@ -20,15 +20,18 @@ The consequence of this change is that *all* data stored in the - now unsupporte
 
 #### Caveats and warnings
 
-**NOTE**: This is a best-effort guide to help migrate off the old system, the operation is potentially rather complicated (and risky), so please do be careful!
-
-***PLEASE MAKE SURE TO BACKUP YOUR SERVER AND DATA BEFORE ATTEMPTING A MIGRATION***
+> [!NOTE]
+> This is a best-effort guide to help migrate off the old system, the operation is potentially rather complicated (and risky), so please do be careful!
+>
+> [!CAUTION]
+> ***PLEASE MAKE SURE TO BACKUP YOUR SERVER AND DATA BEFORE ATTEMPTING A MIGRATION***
 
 We provide a "migration container" for your convenience that can access both the new and old volumes, allowing you to copy the data into the setup.
 
-**It's important to note that this is a *copy* operation - so disk usage will (temporarily) double while you migrate**
-
-**YOUR INSTANCE WILL BE *DOWN* WHILE DOING THE MIGRATION, PLEASE PLAN ACCORDINGLY, DEPENDING ON DATA SIZE IT COULD TAKE ANYWHERE FROM 5 *MINUTES* TO 5 *HOURS***
+> [!CAUTION]
+> **It's important to note that this is a *copy* operation - so disk usage will (temporarily) double while you migrate**
+>
+> **YOUR INSTANCE WILL BE *DOWN* WHILE DOING THE MIGRATION, PLEASE PLAN ACCORDINGLY, DEPENDING ON DATA SIZE IT COULD TAKE ANYWHERE FROM 5 *MINUTES* TO 5 *HOURS***
 
 #### 0. Backup, rollout, and rollback plan
 
