@@ -1,17 +1,3 @@
 # Pixelfed + Docker + Docker Compose
 
-* [Setting up a new Pixelfed server with Docker Compose](new-server.md)
-* [Migrating to the new `docker-compose.yml` setup](migration.md)
-* [Frequently Asked Question / FAQ](faq.md)
-  * [How do I use my own Proxy server?](faq.md#how-do-i-use-my-own-proxy-server)
-  * [How do I use my own SSL certificate?](faq.md#how-do-i-use-my-own-ssl-certificate)
-* [Understanding Pixelfed Container runtimes (Apache, FPM, Nginx + FPM)](runtimes.md)
-  * [Apache](runtimes.md#apache)
-  * [FPM](runtimes.md#fpm)
-  * [Nginx + FPM](runtimes.md#nginx)
-* [Customizing Docker image](customizing.md)
-  * [Running commands on container start](customizing.md#running-commands-on-container-start)
-  * [Disabling entrypoint or individual scripts](customizing.md#disabling-entrypoint-or-individual-scripts)
-  * [Templating](customizing.md#templating)
-  * [Fixing ownership on startup](customizing.md#fixing-ownership-on-startup)
-  * [Build settings (arguments)](customizing.md#build-settings-arguments)
+Please see the [Pixelfed Docs (Next)](https://jippi.github.io/pixelfed-docs-next/pr-preview/pr-1/running-pixelfed/) for current documentation on Docker usage
