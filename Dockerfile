@@ -87,7 +87,12 @@ ARG BUILDOS
 ARG GOMPLATE_VERSION
 
 RUN set -ex \
-    && curl --silent --show-error --location --output /usr/local/bin/gomplate https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${BUILDOS}-${BUILDARCH} \
+    && curl \
+        --silent \
+        --show-error \
+        --location \
+        --output /usr/local/bin/gomplate \
+        https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_${BUILDOS}-${BUILDARCH} \
     && chmod +x /usr/local/bin/gomplate \
     && /usr/local/bin/gomplate --version
 
@@ -113,8 +118,8 @@ ENV DEBIAN_FRONTEND="noninteractive"
 SHELL ["/bin/bash", "-c"]
 
 RUN set -ex \
-	&& mkdir -pv /var/www/ \
-	&& chown -R ${RUNTIME_UID}:${RUNTIME_GID} /var/www
+    && mkdir -pv /var/www/ \
+    && chown -R ${RUNTIME_UID}:${RUNTIME_GID} /var/www
 
 WORKDIR /var/www/
 
@@ -124,7 +129,7 @@ ENV DOTENV_LINTER_VERSION="${DOTENV_LINTER_VERSION}"
 # Install and configure base layer
 COPY docker/shared/root/docker/install/base.sh /docker/install/base.sh
 RUN --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
-	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     /docker/install/base.sh
 
 #######################################################
@@ -151,7 +156,7 @@ ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
 COPY docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
 RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php \
     --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
-	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
     /docker/install/php-extensions.sh
 
 #######################################################
@@ -187,8 +192,8 @@ COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} composer.json composer.lock /var/www/
 # Install composer dependencies
 # NOTE: we skip the autoloader generation here since we don't have all files avaliable (yet)
 RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/cache/composer \
-	set -ex \
-	&& composer install --prefer-dist --no-autoloader --ignore-platform-reqs
+    set -ex \
+    && composer install --prefer-dist --no-autoloader --ignore-platform-reqs
 
 # Copy all other files over
 COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
@@ -220,14 +225,14 @@ USER ${RUNTIME_UID}:${RUNTIME_GID}
 
 # Generate optimized autoloader now that we have all files around
 RUN set -ex \
-	&& composer dump-autoload --optimize
+    && composer dump-autoload --optimize
 
 USER root
 
 # for detail why storage is copied this way, pls refer to https://github.com/pixelfed/pixelfed/pull/2137#discussion_r434468862
 RUN set -ex \
-	&& cp --recursive --link --preserve=all storage storage.skel \
-	&& rm -rf html && ln -s public html
+    && cp --recursive --link --preserve=all storage storage.skel \
+    && rm -rf html && ln -s public html
 
 COPY docker/shared/root /
 
@@ -242,8 +247,8 @@ FROM shared-runtime AS apache-runtime
 COPY docker/apache/root /
 
 RUN set -ex \
-	&& a2enmod rewrite remoteip proxy proxy_http \
-	&& a2enconf remoteip
+    && a2enmod rewrite remoteip proxy proxy_http \
+    && a2enconf remoteip
 
 CMD ["apache2-foreground"]
 
@@ -272,14 +277,13 @@ ARG TARGETPLATFORM
 
 # Install nginx dependencies
 RUN --mount=type=cache,id=pixelfed-apt-lists-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt/lists \
-	--mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
-	set -ex \
-	&& gpg1 --keyserver "hkp://keyserver.ubuntu.com:80" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" \
-	&& gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" \
-	&& echo "deb [signed-by=${NGINX_GPGKEY_PATH}] https://nginx.org/packages/mainline/debian/ ${PHP_DEBIAN_RELEASE} nginx" >> /etc/apt/sources.list.d/nginx.list \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		nginx=${NGINX_VERSION}*
+    --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
+    set -ex \
+    && gpg1 --keyserver "hkp://keyserver.ubuntu.com:80" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" \
+    && gpg1 --export "$NGINX_GPGKEY" > "$NGINX_GPGKEY_PATH" \
+    && echo "deb [signed-by=${NGINX_GPGKEY_PATH}] https://nginx.org/packages/mainline/debian/ ${PHP_DEBIAN_RELEASE} nginx" >> /etc/apt/sources.list.d/nginx.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nginx=${NGINX_VERSION}*
 
 # copy docker entrypoints from the *real* nginx image directly
 COPY --link --from=nginx-image /docker-entrypoint.d /docker/entrypoint.d/
