@@ -86,6 +86,7 @@
 - Update FollowerService, add $silent param to remove method to more efficently purge relationships ([1664a5bc](https://github.com/pixelfed/pixelfed/commit/1664a5bc))
 - Update AP ProfileTransformer, add published attribute ([adfaa2b1](https://github.com/pixelfed/pixelfed/commit/adfaa2b1))
 - Update meta tags, improve descriptions and seo/og tags ([fd44c80c](https://github.com/pixelfed/pixelfed/commit/fd44c80c))
+- Update login view, add email prefill logic ([d76f0168](https://github.com/pixelfed/pixelfed/commit/d76f0168))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
