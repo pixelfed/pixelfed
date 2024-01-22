@@ -5,7 +5,7 @@ You recently requested to know the email address associated with your username [
 
 We're here to assist! Simply tap on the Login button below.
 
-<x-mail::button :url="url('/login?email=' . $user->email)" color="success">
+<x-mail::button :url="url('/login?email=' . urlencode($user->email))" color="success">
 Login to my <strong>{{'@' . $user->username}}</strong> account
 </x-mail::button>
 
