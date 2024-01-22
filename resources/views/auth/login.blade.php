@@ -11,11 +11,18 @@
                     </h4>
                 </div>
 
+                @if ($errors->any())
+                    @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger m-3">
+                        <span class="font-weight-bold small"><i class="far fa-exclamation-triangle mr-2"></i> {{ $error }}</span>
+                    </div>
+                    @endforeach
+                @endif
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-0">
 
                             <div class="col-md-12">
                                 <label for="email" class="small font-weight-bold text-muted mb-0">Email Address</label>
@@ -26,10 +33,16 @@
                                         <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                 @endif
+
+                                <div class="help-text small text-right mb-0">
+                                    <a href="{{ route('email.forgot') }}" class="small text-muted font-weight-bold">
+                                        {{ __('Forgot Email') }}
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-0">
 
                             <div class="col-md-12">
                                 <label for="password" class="small font-weight-bold text-muted mb-0">Password</label>

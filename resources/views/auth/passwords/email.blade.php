@@ -9,7 +9,7 @@
 <div class="page-wrapper">
 	<div class="container mt-4">
 	    <div class="row justify-content-center">
-	        <div class="col-lg-5">
+	        <div class="col-xl-6 col-lg-5 col-md-7 col-12">
 	        	<div class="text-center">
 	                <a href="/">
 	                	<img src="/img/pixelfed-icon-white.svg" height="60px">
@@ -19,9 +19,9 @@
 	            </div>
 
                 @if(session('status') || $errors->has('email'))
-                    <div class="alert alert-info small">
-                    	<div class="d-flex align-items-center font-weight-bold" style="gap:0.5rem;">
-                    		<i class="far fa-exclamation-triangle fa-lg" style="opacity:20%"></i>
+                    <div class="alert alert-info">
+                    	<div class="d-flex align-items-center font-weight-bold" style="gap:1rem;">
+                    		<i class="far fa-exclamation-triangle fa-2x" style="opacity:70%"></i>
 
                         	{{ session('status') ?? $errors->first('email') }}
                         </div>
@@ -39,7 +39,13 @@
 	                        <div class="form-group row">
 	                            <div class="col-md-12">
 	                            	<label class="font-weight-bold small text-muted">Email</label>
-	                                <input id="email" type="email" class="form-control" name="email" placeholder="{{ __('E-Mail Address') }}" required>
+	                                <input
+                                        id="email"
+                                        type="email"
+                                        class="form-control form-control-lg bg-glass text-white"
+                                        name="email"
+                                        placeholder="{{ __('E-Mail Address') }}"
+                                        required>
 	                                 @if ($errors->has('email') && $errors->first('email') === 'The email must be a valid email address.')
 	                                    <span class="text-danger small mb-3">
 	                                        <strong>{{ $errors->first('email') }}</strong>
@@ -76,7 +82,7 @@
                         <i class="far fa-long-arrow-left fa-lg mr-1"></i> {{ __('Back to Login') }}
                     </a>
 
-                    <a href="#" class="text-white font-weight-bold text-decoration-none" onclick="event.preventDefault();forgotUsername()">Forgot email?</a>
+                    <a href="{{route('email.forgot')}}" class="text-white font-weight-bold text-decoration-none">Forgot email?</a>
 	            </div>
 	        </div>
 	    </div>
@@ -86,29 +92,6 @@
 
 @push('scripts')
 <script type="text/javascript">
-	function forgotUsername() {
-		swal({
-			title: 'Forgot email?',
-			text: 'Contact the instance admins to assist you in recovering your account.',
-			icon: 'info',
-			buttons: {
-				contact: {
-					text: "Contact Admins",
-					value: "contact",
-					className: "bg-danger"
-				},
-				cancel: "Close",
-			},
-		})
-		.then((value) => {
-			switch(value) {
-				case 'contact':
-					window.location.href = '/site/contact';
-				break;
-			}
-		});
-	}
-
 	function handleSubmit() {
 		let email = document.getElementById('email');
 		email.classList.add('disabled');
@@ -120,4 +103,14 @@
 		document.getElementById('passwordReset').submit()
 	}
 </script>
+@endpush
+
+@push('styles')
+<style>
+    .bg-glass:focus {
+        background: rgba(255, 255, 255, 0.05) !important;
+        box-shadow: none !important;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+</style>
 @endpush
