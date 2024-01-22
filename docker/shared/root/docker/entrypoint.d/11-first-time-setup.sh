@@ -6,6 +6,8 @@ source "${ENTRYPOINT_ROOT}/helpers.sh"
 
 entrypoint-set-script-name "$0"
 
+load-config-files
+
 # Allow automatic applying of outstanding/new migrations on startup
 : "${DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS:=1}"
 
@@ -16,7 +18,6 @@ if is-false "${DOCKER_APP_RUN_ONE_TIME_SETUP_TASKS}"; then
     exit 0
 fi
 
-load-config-files
 await-database-ready
 
 # Following https://docs.pixelfed.org/running-pixelfed/installation/#one-time-setup-tasks
