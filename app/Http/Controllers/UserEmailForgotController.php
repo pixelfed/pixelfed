@@ -34,7 +34,7 @@ class UserEmailForgotController extends Controller
             'username.exists' => 'This username is no longer active or does not exist!'
         ];
 
-        if(config('captcha.enabled') || config('captcha.active.register')) {
+        if(config('captcha.enabled') || config('captcha.active.login') || config('captcha.active.register')) {
             $rules['h-captcha-response'] = 'required|captcha';
             $messages['h-captcha-response.required'] = 'You need to complete the captcha!';
         }
