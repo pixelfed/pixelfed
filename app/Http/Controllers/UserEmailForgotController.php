@@ -82,7 +82,6 @@ class UserEmailForgotController extends Controller
             'user_id' => $user->id,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'referrer' => $request->headers->get('referer'),
             'email_sent_at' => now()
         ]);
 
