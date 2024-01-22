@@ -14,6 +14,7 @@
 - Added Mutual Followers API endpoint ([33dbbe46](https://github.com/pixelfed/pixelfed/commit/33dbbe46))
 - Added User Domain Blocks ([#4834](https://github.com/pixelfed/pixelfed/pull/4834)) ([fa0380ac](https://github.com/pixelfed/pixelfed/commit/fa0380ac))
 - Added Parental Controls ([#4862](https://github.com/pixelfed/pixelfed/pull/4862)) ([c91f1c59](https://github.com/pixelfed/pixelfed/commit/c91f1c59))
+- Added Forgot Email Feature ([67c650b1](https://github.com/pixelfed/pixelfed/commit/67c650b1))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
@@ -87,6 +88,7 @@
 - Update AP ProfileTransformer, add published attribute ([adfaa2b1](https://github.com/pixelfed/pixelfed/commit/adfaa2b1))
 - Update meta tags, improve descriptions and seo/og tags ([fd44c80c](https://github.com/pixelfed/pixelfed/commit/fd44c80c))
 - Update login view, add email prefill logic ([d76f0168](https://github.com/pixelfed/pixelfed/commit/d76f0168))
+- Update LoginController, fix captcha validation error message ([0325e171](https://github.com/pixelfed/pixelfed/commit/0325e171))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)

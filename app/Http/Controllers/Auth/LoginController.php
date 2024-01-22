@@ -71,6 +71,7 @@ class LoginController extends Controller
             $this->username() => 'required|email',
             'password'        => 'required|string|min:6',
         ];
+        $messages = [];
 
         if(
         	config('captcha.enabled') ||
@@ -82,9 +83,9 @@ class LoginController extends Controller
 			)
         ) {
             $rules['h-captcha-response'] = 'required|filled|captcha|min:5';
+            $messages['h-captcha-response.required'] = 'The captcha must be filled';
         }
-        
-        $this->validate($request, $rules);
+        $request->validate($rules, $messages);
     }
 
     /**

@@ -203,6 +203,9 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::get('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegister');
     Route::post('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegisterStore');
 
+    Route::get('auth/forgot/email', 'UserEmailForgotController@index')->name('email.forgot');
+    Route::post('auth/forgot/email', 'UserEmailForgotController@store')->middleware('throttle:10,900,forgotEmail');
+
 	Route::get('discover', 'DiscoverController@home')->name('discover');
 
 	Route::group(['prefix' => 'api'], function () {
