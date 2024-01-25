@@ -27,11 +27,11 @@ ARG DOTENV_LINTER_VERSION="v3.2.0"
 ###
 
 # See: https://hub.docker.com/_/php/tags
-ARG PHP_VERSION="8.1"
+ARG PHP_VERSION="8.2"
 
 # See: https://github.com/docker-library/docs/blob/master/php/README.md#image-variants
 ARG PHP_BASE_TYPE="apache"
-ARG PHP_DEBIAN_RELEASE="bullseye"
+ARG PHP_DEBIAN_RELEASE="bookworm"
 
 ARG RUNTIME_UID=33 # often called 'www-data'
 ARG RUNTIME_GID=33 # often called 'www-data'

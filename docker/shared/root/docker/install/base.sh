@@ -52,7 +52,7 @@ packages+=(
 # Required for GD
 packages+=(
     libwebp-dev
-    libwebp6
+    libwebp7
     libxpm-dev
     libxpm4
 )
