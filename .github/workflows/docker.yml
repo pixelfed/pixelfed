@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - dev
-      - jippi-fork # TODO(jippi): remove me before merge
     tags:
       - "*"
 
