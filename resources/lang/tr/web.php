@@ -8,7 +8,7 @@ return [
 		'comments' => 'Yorumlar',
 		'like' => 'Beğen',
 		'liked' => 'Beğenildi',
-		'likes' => 'Beğeniler',
+		'likes' => 'Beğenenler',
 		'share' => 'Paylaş',
 		'shared' => 'Paylaşıldı',
 		'shares' => 'Paylaşılanlar',
