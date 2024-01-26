@@ -567,14 +567,10 @@ function as-boolean()
 
     case "$var" in
         1 | true)
-            log-info "[as-boolean] variable [${var}] was detected as truthy/true, returning [0]"
-
             return 0
             ;;
 
         0 | false)
-            log-info "[as-boolean] variable [${var}] was detected as falsey/false, returning [1]"
-
             return 1
             ;;
 
