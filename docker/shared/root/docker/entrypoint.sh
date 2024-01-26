@@ -11,6 +11,9 @@ export ENTRYPOINT_ROOT
 : "${ENTRYPOINT_D_ROOT:="${ENTRYPOINT_ROOT}/entrypoint.d/"}"
 export ENTRYPOINT_D_ROOT
 
+: "${DOCKER_APP_HOST_OVERRIDES_PATH:="${ENTRYPOINT_ROOT}/overrides"}"
+export DOCKER_APP_HOST_OVERRIDES_PATH
+
 # Space separated list of scripts the entrypoint runner should skip
 : "${ENTRYPOINT_SKIP_SCRIPTS:=""}"
 
@@ -35,6 +38,12 @@ if directory-is-empty "${ENTRYPOINT_D_ROOT}"; then
     log-warning "No files found in ${ENTRYPOINT_D_ROOT}, skipping configuration"
 
     exec "$@"
+fi
+
+# If the overridess directory exists, then copy all files into the container
+if ! directory-is-empty "${DOCKER_APP_HOST_OVERRIDES_PATH}"; then
+    log-info "Overrides directory is not empty, copying files"
+    run-as-current-user cp --verbose --recursive "${DOCKER_APP_HOST_OVERRIDES_PATH}/." /
 fi
 
 acquire-lock "entrypoint.sh"
