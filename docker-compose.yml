@@ -110,6 +110,7 @@ services:
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-worker"
     command: gosu www-data php artisan horizon
     restart: unless-stopped
+    stop_signal: SIGTERM
     profiles:
       - ${DOCKER_WORKER_PROFILE:-}
     build:
