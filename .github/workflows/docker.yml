@@ -25,6 +25,7 @@ on:
 
 jobs:
   lint:
+    name: hadolint
     runs-on: ubuntu-latest
 
     permissions:
@@ -41,7 +42,7 @@ jobs:
           failure-threshold: error
 
   shellcheck:
-    name: Shellcheck
+    name: ShellCheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +63,7 @@ jobs:
         run: docker run -v "$PWD:/var/www" bats/bats:latest /var/www/tests/bats
 
   build:
+    name: Build, Test, and Push
     runs-on: ubuntu-latest
 
     strategy:
