@@ -83,10 +83,6 @@ jobs:
         # See: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#excluding-matrix-configurations
         # See: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategymatrixexclude
         exclude:
-          # Broken for imagick on arm64 due to https://github.com/Imagick/imagick/pull/641
-          # Could probably figure out how to do a matrix only ignoring 8.3 + linux/arm64, but this is easier atm
-          - php_version: 8.3
-
           # targeting [apache] runtime with [fpm] base type doesn't make sense
           - target_runtime: apache
             php_base: fpm

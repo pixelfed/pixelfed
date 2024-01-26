@@ -21,8 +21,6 @@ packages+=(
     git
     gnupg1
     gosu
-    libcurl4-openssl-dev
-    libzip-dev
     locales
     locales-all
     moreutils
@@ -64,8 +62,6 @@ packages+=(
 
 # Database
 packages+=(
-    libpq-dev
-    libsqlite3-dev
     mariadb-client
     postgresql-client
 )
