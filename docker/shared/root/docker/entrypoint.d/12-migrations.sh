@@ -12,17 +12,25 @@ entrypoint-set-script-name "$0"
 # Wait for the database to be ready
 await-database-ready
 
-# Detect if we have new migrations
-declare -i new_migrations=0
-(run-as-runtime-user php artisan migrate:status || :) | grep No && new_migrations=1
+# Run the migrate:status command and capture output
+output=$(run-as-runtime-user php artisan migrate:status || :)
 
-if is-true "${new_migrations}"; then
-    log-info "No outstanding migrations detected"
+# By default we have no new migrations
+declare -i new_migrations=0
+
+# Detect if any new migrations are available by checking for "No" in the output
+echo "$output" | grep No && new_migrations=1
+
+if is-false "${new_migrations}"; then
+    log-info "No new migrations detected"
 
     exit 0
 fi
 
-log-warning "New migrations available!"
+log-warning "New migrations available"
+
+# Print the output
+echo "$output"
 
 if is-false "${DB_APPLY_NEW_MIGRATIONS_AUTOMATICALLY}"; then
     log-info "Automatic applying of new database migrations is disabled"
