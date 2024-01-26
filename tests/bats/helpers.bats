@@ -5,6 +5,12 @@ setup() {
     load "$ROOT/docker/shared/root/docker/helpers.sh"
 }
 
+teardown() {
+    if [[ -e test_dir ]]; then
+        rm -rf test_dir
+    fi
+}
+
 @test "test [is-true]" {
     is-true "1"
     is-true "true"
@@ -71,4 +77,27 @@ setup() {
     fi
 
     return 1
+}
+
+@test "test [directory-is-empty] - non existing" {
+    directory-is-empty test_dir
+}
+
+@test "test [directory-is-empty] - actually empty" {
+    mkdir -p test_dir
+
+    directory-is-empty test_dir
+}
+
+@test "test [directory-is-empty] - not empty (directory)" {
+    mkdir -p test_dir/sub-dir
+
+    ! directory-is-empty test_dir
+}
+
+@test "test [directory-is-empty] - not empty (file)" {
+    mkdir -p test_dir/
+    touch test_dir/hello-world.txt
+
+    ! directory-is-empty test_dir
 }
