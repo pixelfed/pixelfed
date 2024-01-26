@@ -16,7 +16,7 @@ run-as-current-user chown --verbose "${RUNTIME_UID}:${RUNTIME_GID}" "./storage"
 : "${DOCKER_APP_ENSURE_OWNERSHIP_PATHS:=""}"
 
 declare -a ensure_ownership_paths=()
-IFS=' ' read -ar ensure_ownership_paths <<<"${DOCKER_APP_ENSURE_OWNERSHIP_PATHS}"
+IFS=' ' read -ar ensure_ownership_paths <<< "${DOCKER_APP_ENSURE_OWNERSHIP_PATHS}"
 
 if [[ ${#ensure_ownership_paths[@]} == 0 ]]; then
     log-info "No paths has been configured for ownership fixes via [\$DOCKER_APP_ENSURE_OWNERSHIP_PATHS]."

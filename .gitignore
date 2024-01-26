@@ -8,7 +8,6 @@
 /.composer/
 /.idea
 /.vagrant
-/.vscode
 /docker-compose-state/
 /node_modules
 /public/hot
