@@ -324,7 +324,7 @@ function file-exists()
 # @exitcode 1 If $1 does *NOT* contain files
 function directory-is-empty()
 {
-    [ -z "$(ls -A "${1}")" ]
+    path-exists "${1}" && [[ -z "$(ls -A "${1}")" ]]
 }
 
 # @description Ensures a directory exists (via mkdir)
