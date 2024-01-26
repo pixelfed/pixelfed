@@ -48,7 +48,6 @@ command:
       - exif
       - fileinfo
       - filter
-      - ftp
       - gd
       - hash
       - iconv
