@@ -1,0 +1,7 @@
+{
+    "shellformat.useEditorConfig": true,
+    "files.associations": {
+        ".env": "shellscript",
+        ".env.*": "shellscript"
+    }
+}
