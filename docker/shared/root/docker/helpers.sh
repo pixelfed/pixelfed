@@ -317,13 +317,14 @@ function file-exists()
 {
     [[ -f "$1" ]]
 }
+
 # @description Checks if $1 contains any files or not
 # @arg $1 string The path to check
 # @exitcode 0 If $1 contains files
 # @exitcode 1 If $1 does *NOT* contain files
-function is-directory-empty()
+function directory-is-empty()
 {
-    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2> /dev/null | read -r
+    [ -z "$(ls -A "${1}")" ]
 }
 
 # @description Ensures a directory exists (via mkdir)
