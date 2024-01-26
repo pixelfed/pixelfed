@@ -9,7 +9,7 @@
 <div class="page-wrapper">
 	<div class="container mt-4">
 	    <div class="row justify-content-center">
-	        <div class="col-lg-5">
+	        <div class="col-xl-6 col-lg-5 col-md-7 col-12">
 	        	<div class="text-center">
 	                <a href="/">
 	                	<img src="/img/pixelfed-icon-white.svg" height="60px">
@@ -41,14 +41,14 @@
 	                            	<label class="font-weight-bold small text-muted">Email</label>
 	                                <input
 	                                	id="email"
-	                                	type="email"
-	                                	class="form-control {{ $errors->has('email') ? ' is-invalid' : '' }}"
+	                                	type="text"
+                                        class="form-control form-control-lg bg-dark bg-glass text-white{{ $errors->has('email') ? ' is-invalid' : '' }}"
 	                                	name="email"
 	                                	value="{{ $email ?? old('email') }}"
 	                                	placeholder="{{ __('E-Mail Address') }}"
 	                                	required
 	                                	disabled
-	                                	style="opacity: 20%;">
+                                        style="opacity:.5">
 
 	                                @if ($errors->has('email'))
 	                                    <span class="invalid-feedback">
@@ -67,7 +67,7 @@
 	                                <input
 	                                	id="password"
 	                                	type="password"
-	                                	class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                        class="form-control form-control-lg bg-glass text-white{{ $errors->has('password') ? ' is-invalid' : '' }}"
 	                                	name="password"
 	                                	placeholder="{{ __('Password') }}"
 	                                	minlength="{{config('pixelfed.min_password_length')}}"
@@ -93,7 +93,7 @@
 	                                <input
 	                                	id="password-confirm"
 	                                	type="password"
-	                                	class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}"
+                                        class="form-control form-control-lg bg-glass text-white{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}"
 	                                	name="password_confirmation"
 	                                	placeholder="{{ __('Confirm Password') }}"
 	                                	minlength="{{config('pixelfed.min_password_length')}}"
@@ -151,4 +151,14 @@
 		document.getElementById('passwordReset').submit()
 	}
 </script>
+@endpush
+
+@push('styles')
+<style>
+    .bg-glass:focus {
+        background: rgba(255, 255, 255, 0.05) !important;
+        box-shadow: none !important;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+</style>
 @endpush
