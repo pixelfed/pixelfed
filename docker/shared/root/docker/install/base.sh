@@ -21,8 +21,6 @@ packages+=(
     git
     gnupg1
     gosu
-    libcurl4-openssl-dev
-    libzip-dev
     locales
     locales-all
     moreutils
@@ -42,21 +40,6 @@ packages+=(
     pngquant
 )
 
-# Image Processing
-packages+=(
-    libjpeg62-turbo-dev
-    libmagickwand-dev
-    libpng-dev
-)
-
-# Required for GD
-packages+=(
-    libwebp-dev
-    libwebp6
-    libxpm-dev
-    libxpm4
-)
-
 # Video Processing
 packages+=(
     ffmpeg
@@ -64,8 +47,6 @@ packages+=(
 
 # Database
 packages+=(
-    libpq-dev
-    libsqlite3-dev
     mariadb-client
     postgresql-client
 )

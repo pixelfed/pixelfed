@@ -5,7 +5,10 @@
 # Configuration
 #######################################################
 
-# See: https://github.com/composer/composer/releases
+# See: https://github.com/mlocati/docker-php-extension-installer
+ARG DOCKER_PHP_EXTENSION_INSTALLER_VERSION="2.1.80"
+
+# See: https://github.com/composer/composer
 ARG COMPOSER_VERSION="2.6"
 
 # See: https://nginx.org/
@@ -17,7 +20,7 @@ ARG FOREGO_VERSION="0.17.2"
 # See: https://github.com/hairyhenderson/gomplate
 ARG GOMPLATE_VERSION="v3.11.6"
 
-# See: https://github.com/dotenv-linter/dotenv-linter/releases
+# See: https://github.com/dotenv-linter/dotenv-linter
 #
 # WARN: v3.3.0 and above requires newer libc version than Ubuntu ships with
 ARG DOTENV_LINTER_VERSION="v3.2.0"
@@ -40,7 +43,10 @@ ARG RUNTIME_GID=33 # often called 'www-data'
 ARG APT_PACKAGES_EXTRA=
 
 # Extensions installed via [pecl install]
-ARG PHP_PECL_EXTENSIONS="redis imagick"
+# ! NOTE: imagick is installed from [master] branch on GitHub due to 8.3 bug on ARM that haven't
+# ! been released yet (after +10 months)!
+# ! See: https://github.com/Imagick/imagick/pull/641
+ARG PHP_PECL_EXTENSIONS="redis https://codeload.github.com/Imagick/imagick/tar.gz/28f27044e435a2b203e32675e942eb8de620ee58"
 ARG PHP_PECL_EXTENSIONS_EXTRA=
 
 # Extensions installed via [docker-php-ext-install]
@@ -62,6 +68,11 @@ ARG NGINX_GPGKEY_PATH="/usr/share/keyrings/nginx-archive-keyring.gpg"
 #
 # NOTE: Docker will *not* pull this image unless it's referenced (via build target)
 FROM composer:${COMPOSER_VERSION} AS composer-image
+
+# php-extension-installer image from Docker Hub
+#
+# NOTE: Docker will *not* pull this image unless it's referenced (via build target)
+FROM mlocati/php-extension-installer:${DOCKER_PHP_EXTENSION_INSTALLER_VERSION} AS php-extension-installer
 
 # nginx webserver from Docker Hub.
 # Used to copy some docker-entrypoint files for [nginx-runtime]
@@ -147,23 +158,24 @@ ARG PHP_PECL_EXTENSIONS_EXTRA
 ARG PHP_VERSION
 ARG TARGETPLATFORM
 
-ENV PHP_EXTENSIONS_DATABASE=${PHP_EXTENSIONS_DATABASE}
-ENV PHP_EXTENSIONS_EXTRA=${PHP_EXTENSIONS_EXTRA}
-ENV PHP_EXTENSIONS=${PHP_EXTENSIONS}
-ENV PHP_PECL_EXTENSIONS_EXTRA=${PHP_PECL_EXTENSIONS_EXTRA}
-ENV PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS}
+COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 COPY docker/shared/root/docker/install/php-extensions.sh /docker/install/php-extensions.sh
-RUN --mount=type=cache,id=pixelfed-php-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/usr/src/php \
+RUN --mount=type=cache,id=pixelfed-pear-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/tmp/pear  \
     --mount=type=cache,id=pixelfed-apt-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/lib/apt \
     --mount=type=cache,id=pixelfed-apt-cache-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/var/cache/apt \
+    PHP_EXTENSIONS=${PHP_EXTENSIONS} \
+    PHP_EXTENSIONS_DATABASE=${PHP_EXTENSIONS_DATABASE} \
+    PHP_EXTENSIONS_EXTRA=${PHP_EXTENSIONS_EXTRA} \
+    PHP_PECL_EXTENSIONS=${PHP_PECL_EXTENSIONS} \
+    PHP_PECL_EXTENSIONS_EXTRA=${PHP_PECL_EXTENSIONS_EXTRA} \
     /docker/install/php-extensions.sh
 
 #######################################################
 # PHP: composer and source code
 #######################################################
 
-FROM base AS composer-and-src
+FROM php-extensions AS composer-and-src
 
 ARG PHP_VERSION
 ARG PHP_DEBIAN_RELEASE
@@ -188,7 +200,7 @@ USER ${RUNTIME_UID}:${RUNTIME_GID}
 
 # Install composer dependencies
 # NOTE: we skip the autoloader generation here since we don't have all files avaliable (yet)
-RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION}-${PHP_DEBIAN_RELEASE}-${TARGETPLATFORM},sharing=locked,target=/cache/composer \
+RUN --mount=type=cache,id=pixelfed-composer-${PHP_VERSION},sharing=locked,target=/cache/composer \
     --mount=type=bind,source=composer.json,target=/var/www/composer.json \
     --mount=type=bind,source=composer.lock,target=/var/www/composer.lock \
     set -ex \
@@ -201,7 +213,7 @@ COPY --chown=${RUNTIME_UID}:${RUNTIME_GID} . /var/www/
 # Runtime: base
 #######################################################
 
-FROM base AS shared-runtime
+FROM php-extensions AS shared-runtime
 
 ARG BUILDARCH
 ARG BUILDOS
@@ -212,8 +224,6 @@ ARG RUNTIME_UID
 ENV RUNTIME_UID=${RUNTIME_UID}
 ENV RUNTIME_GID=${RUNTIME_GID}
 
-COPY --link --from=php-extensions /usr/local/lib/php/extensions /usr/local/lib/php/extensions
-COPY --link --from=php-extensions /usr/local/etc/php /usr/local/etc/php
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
 COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplate
 COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
