@@ -84,6 +84,7 @@ services:
       - "./.env:/var/www/.env"
       - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
       - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
     environment:
       LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
       LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
@@ -126,6 +127,7 @@ services:
       - "./.env:/var/www/.env"
       - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
       - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
+      - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
     depends_on:
       - db
       - redis
