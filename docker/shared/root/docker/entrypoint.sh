@@ -31,7 +31,7 @@ IFS=' ' read -ar skip_scripts <<< "$ENTRYPOINT_SKIP_SCRIPTS"
 mkdir -p "${ENTRYPOINT_D_ROOT}"
 
 # If ENTRYPOINT_D_ROOT directory is empty, warn and run the regular command
-if is-directory-empty "${ENTRYPOINT_D_ROOT}"; then
+if directory-is-empty "${ENTRYPOINT_D_ROOT}"; then
     log-warning "No files found in ${ENTRYPOINT_D_ROOT}, skipping configuration"
 
     exec "$@"
