@@ -22,7 +22,7 @@ if is-true "${new_migrations}"; then
     exit 0
 fi
 
-log-warning "New migrations available, will automatically apply them now"
+log-warning "New migrations available!"
 
 if is-false "${DB_APPLY_NEW_MIGRATIONS_AUTOMATICALLY}"; then
     log-info "Automatic applying of new database migrations is disabled"
