@@ -43,7 +43,8 @@ cd /var/www || log-error-and-exit "could not change to /var/www"
 
 # @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
 # @arg $1 string The name (or path) of the entrypoint script being run
-function entrypoint-set-script-name() {
+function entrypoint-set-script-name()
+{
     script_name_previous="${script_name}"
     script_name="${1}"
 
@@ -51,7 +52,8 @@ function entrypoint-set-script-name() {
 }
 
 # @description Restore the log prefix to the previous value that was captured in [entrypoint-set-script-name ]
-function entrypoint-restore-script-name() {
+function entrypoint-restore-script-name()
+{
     entrypoint-set-script-name "${script_name_previous}"
 }
 
@@ -59,7 +61,8 @@ function entrypoint-restore-script-name() {
 # @arg $@ string The command to run
 # @exitcode 0 if the command succeeeds
 # @exitcode 1 if the command fails
-function run-as-runtime-user() {
+function run-as-runtime-user()
+{
     run-command-as "${runtime_username}" "${@}"
 }
 
@@ -67,7 +70,8 @@ function run-as-runtime-user() {
 # @arg $@ string The command to run
 # @exitcode 0 if the command succeeeds
 # @exitcode 1 if the command fails
-function run-as-current-user() {
+function run-as-current-user()
+{
     run-command-as "$(id -un)" "${@}"
 }
 
@@ -76,7 +80,8 @@ function run-as-current-user() {
 # @arg $@ string The command to run
 # @exitcode 0 If the command succeeeds
 # @exitcode 1 If the command fails
-function run-command-as() {
+function run-command-as()
+{
     local -i exit_code
     local target_user
 
@@ -105,7 +110,8 @@ function run-command-as() {
 # @description Streams stdout from the command and echo it
 # with log prefixing.
 # @see stream-prefix-command-output
-function stream-stdout-handler() {
+function stream-stdout-handler()
+{
     while read -r line; do
         log-info "(stdout) ${line}"
     done
@@ -114,7 +120,8 @@ function stream-stdout-handler() {
 # @description Streams stderr from the command and echo it
 # with a bit of color and log prefixing.
 # @see stream-prefix-command-output
-function stream-stderr-handler() {
+function stream-stderr-handler()
+{
     while read -r line; do
         log-info-stderr "(${error_message_color}stderr${color_clear}) ${line}"
     done
@@ -124,7 +131,8 @@ function stream-stderr-handler() {
 # and stdout/stderr prefix. If stdout or stderr is being piped/redirected
 # it will automatically fall back to non-prefixed output.
 # @arg $@ string The command to run
-function stream-prefix-command-output() {
+function stream-prefix-command-output()
+{
     local stdout=stream-stdout-handler
     local stderr=stream-stderr-handler
 
@@ -146,7 +154,8 @@ function stream-prefix-command-output() {
 # @description Print the given error message to stderr
 # @arg $message string A error message.
 # @stderr The error message provided with log prefix
-function log-error() {
+function log-error()
+{
     local msg
 
     if [[ $# -gt 0 ]]; then
@@ -157,14 +166,15 @@ function log-error() {
         log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
-    echo -e "${error_message_color}${log_prefix}ERROR -${color_clear} ${msg}" >/dev/stderr
+    echo -e "${error_message_color}${log_prefix}ERROR -${color_clear} ${msg}" > /dev/stderr
 }
 
 # @description Print the given error message to stderr and exit 1
 # @arg $@ string A error message.
 # @stderr The error message provided with log prefix
 # @exitcode 1
-function log-error-and-exit() {
+function log-error-and-exit()
+{
     log-error "$@"
 
     show-call-stack
@@ -175,7 +185,8 @@ function log-error-and-exit() {
 # @description Print the given warning message to stderr
 # @arg $@ string A warning message.
 # @stderr The warning message provided with log prefix
-function log-warning() {
+function log-warning()
+{
     local msg
 
     if [[ $# -gt 0 ]]; then
@@ -186,13 +197,14 @@ function log-warning() {
         log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
-    echo -e "${warn_message_color}${log_prefix}WARNING -${color_clear} ${msg}" >/dev/stderr
+    echo -e "${warn_message_color}${log_prefix}WARNING -${color_clear} ${msg}" > /dev/stderr
 }
 
 # @description Print the given message to stdout unless [ENTRYPOINT_QUIET_LOGS] is set
 # @arg $@ string A info message.
 # @stdout The info message provided with log prefix unless $ENTRYPOINT_QUIET_LOGS
-function log-info() {
+function log-info()
+{
     local msg
 
     if [[ $# -gt 0 ]]; then
@@ -211,7 +223,8 @@ function log-info() {
 # @description Print the given message to stderr unless [ENTRYPOINT_QUIET_LOGS] is set
 # @arg $@ string A info message.
 # @stderr The info message provided with log prefix unless $ENTRYPOINT_QUIET_LOGS
-function log-info-stderr() {
+function log-info-stderr()
+{
     local msg
 
     if [[ $# -gt 0 ]]; then
@@ -223,13 +236,14 @@ function log-info-stderr() {
     fi
 
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
-        echo -e "${notice_message_color}${log_prefix}${color_clear}${msg}" >/dev/stderr
+        echo -e "${notice_message_color}${log_prefix}${color_clear}${msg}" > /dev/stderr
     fi
 }
 
 # @description Loads the dot-env files used by Docker and track the keys present in the configuration.
 # @sets seen_dot_env_variables array List of config keys discovered during loading
-function load-config-files() {
+function load-config-files()
+{
     # Associative array (aka map/dictionary) holding the unique keys found in dot-env files
     local -A _tmp_dot_env_keys
 
@@ -260,7 +274,8 @@ function load-config-files() {
 # @arg $2 array  The haystack (array) to search in
 # @exitcode 0 If $needle was found in $haystack
 # @exitcode 1 If $needle was *NOT* found in $haystack
-function in-array() {
+function in-array()
+{
     local -r needle="\<${1}\>"
     local -nr haystack=$2
 
@@ -271,7 +286,8 @@ function in-array() {
 # @arg $1 string The path to check
 # @exitcode 0 If $1 has executable bit
 # @exitcode 1 If $1 does *NOT* have executable bit
-function is-executable() {
+function is-executable()
+{
     [[ -x "$1" ]]
 }
 
@@ -279,7 +295,8 @@ function is-executable() {
 # @arg $1 string The path to check
 # @exitcode 0 If $1 is writable
 # @exitcode 1 If $1 is *NOT* writable
-function is-writable() {
+function is-writable()
+{
     [[ -w "$1" ]]
 }
 
@@ -287,7 +304,8 @@ function is-writable() {
 # @arg $1 string The path to check
 # @exitcode 0 If $1 exists
 # @exitcode 1 If $1 does *NOT* exists
-function path-exists() {
+function path-exists()
+{
     [[ -e "$1" ]]
 }
 
@@ -295,29 +313,33 @@ function path-exists() {
 # @arg $1 string The path to check
 # @exitcode 0 If $1 exists
 # @exitcode 1 If $1 does *NOT* exists
-function file-exists() {
+function file-exists()
+{
     [[ -f "$1" ]]
 }
 # @description Checks if $1 contains any files or not
 # @arg $1 string The path to check
 # @exitcode 0 If $1 contains files
 # @exitcode 1 If $1 does *NOT* contain files
-function is-directory-empty() {
-    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read -r
+function is-directory-empty()
+{
+    ! find "${1}" -mindepth 1 -maxdepth 1 -type f -print -quit 2> /dev/null | read -r
 }
 
 # @description Ensures a directory exists (via mkdir)
 # @arg $1 string The path to create
 # @exitcode 0 If $1 If the path exists *or* was created
 # @exitcode 1 If $1 If the path does *NOT* exists and could *NOT* be created
-function ensure-directory-exists() {
+function ensure-directory-exists()
+{
     stream-prefix-command-output mkdir -pv "$@"
 }
 
 # @description Find the relative path for a entrypoint script by removing the ENTRYPOINT_D_ROOT prefix
 # @arg $1 string The path to manipulate
 # @stdout The relative path to the entrypoint script
-function get-entrypoint-script-name() {
+function get-entrypoint-script-name()
+{
     echo "${1#"$ENTRYPOINT_D_ROOT"}"
 }
 
@@ -325,7 +347,8 @@ function get-entrypoint-script-name() {
 #   The 'lock' is only written if the passed in command ($2) successfully ran.
 # @arg $1 string The name of the lock file
 # @arg $@ string The command to run
-function only-once() {
+function only-once()
+{
     local name="${1:-$script_name}"
     local file="${docker_once_path}/${name}"
     shift
@@ -349,7 +372,8 @@ function only-once() {
 # @description Best effort file lock to ensure *something* is not running in multiple containers.
 #   The script uses "trap" to clean up after itself if the script crashes
 # @arg $1 string The lock identifier
-function acquire-lock() {
+function acquire-lock()
+{
     local name="${1:-$script_name}"
     local file="${docker_locks_path}/${name}"
 
@@ -371,7 +395,8 @@ function acquire-lock() {
 
 # @description Release a lock aquired by [acquire-lock]
 # @arg $1 string The lock identifier
-function release-lock() {
+function release-lock()
+{
     local name="${1:-$script_name}"
     local file="${docker_locks_path}/${name}"
 
@@ -384,7 +409,8 @@ function release-lock() {
 #   the bash [trap] logic
 # @arg $1 string The command to run
 # @arg $@ string The list of trap signals to register
-function on-trap() {
+function on-trap()
+{
     local trap_add_cmd=$1
     shift || log-error-and-exit "${FUNCNAME[0]} usage error"
 
@@ -394,13 +420,16 @@ function on-trap() {
             # of trap -p
             #
             # shellcheck disable=SC2317
-            extract_trap_cmd() { printf '%s\n' "${3:-}"; }
+            extract_trap_cmd()
+            {
+                printf '%s\n' "${3:-}"
+            }
             # print existing trap command with newline
             eval "extract_trap_cmd $(trap -p "${trap_add_name}")"
             # print the new trap command
             printf '%s\n' "${trap_add_cmd}"
-        )" "${trap_add_name}" ||
-            log-error-and-exit "unable to add to trap ${trap_add_name}"
+        )" "${trap_add_name}" \
+            || log-error-and-exit "unable to add to trap ${trap_add_name}"
     done
 }
 
@@ -411,42 +440,43 @@ function on-trap() {
 declare -f -t on-trap
 
 # @description Waits for the database to be healthy and responsive
-function await-database-ready() {
+function await-database-ready()
+{
     log-info "❓ Waiting for database to be ready"
 
     load-config-files
 
     case "${DB_CONNECTION:-}" in
-    mysql)
-        # shellcheck disable=SC2154
-        while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent >/dev/null; do
-            staggered-sleep
-        done
-        ;;
+        mysql)
+            # shellcheck disable=SC2154
+            while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent > /dev/null; do
+                staggered-sleep
+            done
+            ;;
 
-    pgsql)
-        # shellcheck disable=SC2154
-        while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" >/dev/null; do
-            staggered-sleep
-        done
-        ;;
+        pgsql)
+            # shellcheck disable=SC2154
+            while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" > /dev/null; do
+                staggered-sleep
+            done
+            ;;
 
-    sqlsrv)
-        log-warning "Don't know how to check if SQLServer is *truely* ready or not - so will just check if we're able to connect to it"
+        sqlsrv)
+            log-warning "Don't know how to check if SQLServer is *truely* ready or not - so will just check if we're able to connect to it"
 
-        # shellcheck disable=SC2154
-        while ! timeout 1 bash -c "cat < /dev/null > /dev/tcp/${DB_HOST}/${DB_PORT}"; do
-            staggered-sleep
-        done
-        ;;
+            # shellcheck disable=SC2154
+            while ! timeout 1 bash -c "cat < /dev/null > /dev/tcp/${DB_HOST}/${DB_PORT}"; do
+                staggered-sleep
+            done
+            ;;
 
-    sqlite)
-        log-info "${success_message_color}sqlite is always ready${color_clear}"
-        ;;
+        sqlite)
+            log-info "${success_message_color}sqlite is always ready${color_clear}"
+            ;;
 
-    *)
-        log-error-and-exit "Unknown database type: [${DB_CONNECTION:-}]"
-        ;;
+        *)
+            log-error-and-exit "Unknown database type: [${DB_CONNECTION:-}]"
+            ;;
     esac
 
     log-info "${success_message_color}✅ Successfully connected to database${color_clear}"
@@ -454,14 +484,16 @@ function await-database-ready() {
 
 # @description sleeps between 1 and 3 seconds to ensure a bit of randomness
 #   in multiple scripts/containers doing work almost at the same time.
-function staggered-sleep() {
+function staggered-sleep()
+{
     sleep "$(get-random-number-between 1 3)"
 }
 
 # @description Helper function to get a random number between $1 and $2
 # @arg $1 int Minimum number in the range (inclusive)
 # @arg $2 int Maximum number in the range (inclusive)
-function get-random-number-between() {
+function get-random-number-between()
+{
     local -i from=${1:-1}
     local -i to="${2:-10}"
 
@@ -470,7 +502,8 @@ function get-random-number-between() {
 
 # @description Helper function to show the bask call stack when something
 #   goes wrong. Is super useful when needing to debug an issue
-function show-call-stack() {
+function show-call-stack()
+{
     local stack_size=${#FUNCNAME[@]}
     local func
     local lineno
@@ -493,7 +526,8 @@ function show-call-stack() {
 #   returns [0] if input is truthy, otherwise [1]
 # @arg $1 string The string to evaluate
 # @see as-boolean
-function is-true() {
+function is-true()
+{
     as-boolean "${1:-}" && return 0
 
     return 1
@@ -503,7 +537,8 @@ function is-true() {
 #   returns [0] if input is falsey, otherwise [1]
 # @arg $1 string The string to evaluate
 # @see as-boolean
-function is-false() {
+function is-false()
+{
     as-boolean "${1:-}" && return 1
 
     return 0
@@ -516,28 +551,29 @@ function is-false() {
 #   This is a bit confusing, *especially* in a PHP world where [1] would be truthy and
 #   [0] would be falsely as return values
 # @arg $1 string The string to evaluate
-function as-boolean() {
+function as-boolean()
+{
     local input="${1:-}"
     local var="${input,,}" # convert input to lower-case
 
     case "$var" in
-    1 | true)
-        log-info "[as-boolean] variable [${var}] was detected as truthy/true, returning [0]"
+        1 | true)
+            log-info "[as-boolean] variable [${var}] was detected as truthy/true, returning [0]"
 
-        return 0
-        ;;
+            return 0
+            ;;
 
-    0 | false)
-        log-info "[as-boolean] variable [${var}] was detected as falsey/false, returning [1]"
+        0 | false)
+            log-info "[as-boolean] variable [${var}] was detected as falsey/false, returning [1]"
 
-        return 1
-        ;;
+            return 1
+            ;;
 
-    *)
-        log-warning "[as-boolean] variable [${var}] could not be detected as true or false, returning [1] (false) as default"
+        *)
+            log-warning "[as-boolean] variable [${var}] could not be detected as true or false, returning [1] (false) as default"
 
-        return 1
-        ;;
+            return 1
+            ;;
 
     esac
 }

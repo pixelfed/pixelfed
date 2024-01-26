@@ -3,13 +3,13 @@ set -ex -o errexit -o nounset -o pipefail
 
 # Ensure we keep apt cache around in a Docker environment
 rm -f /etc/apt/apt.conf.d/docker-clean
-echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
+echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 # Don't install recommended packages by default
-echo 'APT::Install-Recommends "false";' >>/etc/apt/apt.conf
+echo 'APT::Install-Recommends "false";' >> /etc/apt/apt.conf
 
 # Don't install suggested packages by default
-echo 'APT::Install-Suggests "false";' >>/etc/apt/apt.conf
+echo 'APT::Install-Suggests "false";' >> /etc/apt/apt.conf
 
 declare -a packages=()
 

@@ -8,20 +8,20 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[{*.yml,*.yaml}]
+[*.{yml,yaml}]
 indent_style = space
 indent_size = 2
 
-[*.sh]
+[*.{sh,envsh,env,env*}]
 indent_style = space
 indent_size = 4
 
+# ShellCheck config
 shell_variant      = bash
 binary_next_line   = true
 case-indent 	   = true
 switch_case_indent = true
 space_redirects    = true
-keep_padding       = true
 function_next_line = true
 simplify           = true
 space-redirects    = true
