@@ -8,6 +8,7 @@
         "editorconfig.editorconfig",
         "github.vscode-github-actions",
         "bmewburn.vscode-intelephense-client",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker"
     ]
 }
