@@ -168,8 +168,8 @@ jobs:
             type=raw,value=staging,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
             type=pep440,pattern={{raw}}
             type=pep440,pattern=v{{major}}.{{minor}}
-            type=ref,event=branch,prefix=branch/
-            type=ref,event=pr,prefix=pr/
+            type=ref,event=branch,prefix=branch-
+            type=ref,event=pr,prefix=pr-
             type=ref,event=tag
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
