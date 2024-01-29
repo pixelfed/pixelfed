@@ -20,6 +20,8 @@ declare -g script_name=
 declare -g script_name_previous=
 declare -g log_prefix=
 
+declare -Ag lock_fds=()
+
 # dot-env files to source when reading config
 declare -a dot_env_files=(
     /var/www/.env.docker
@@ -352,17 +354,20 @@ function only-once() {
 function acquire-lock() {
     local name="${1:-$script_name}"
     local file="${docker_locks_path}/${name}"
+    local lock_fd
 
     ensure-directory-exists "$(dirname "${file}")"
 
+    exec {lock_fd}>"$file"
+
     log-info "🔑 Trying to acquire lock: ${file}: "
-    while file-exists "${file}"; do
+    while !([[ -v lock_fds[$name] ]] || flock -n -x "$lock_fd"); do
         log-info "🔒 Waiting on lock ${file}"
 
         staggered-sleep
     done
 
-    stream-prefix-command-output touch "${file}"
+    [[ -v lock_fds[$name] ]] || lock_fds[$name]=$lock_fd
 
     log-info "🔐 Lock acquired [${file}]"
 
@@ -377,7 +382,9 @@ function release-lock() {
 
     log-info "🔓 Releasing lock [${file}]"
 
-    stream-prefix-command-output rm -fv "${file}"
+    [[ -v lock_fds[$name] ]] || return
+    exec {lock_fds[$name]}>&-
+    unset lock_fds[$name]
 }
 
 # @description Helper function to append multiple actions onto
