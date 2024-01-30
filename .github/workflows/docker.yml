@@ -170,7 +170,8 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') && matrix.target_runtime == 'nginx' }}
             type=raw,value=nightly,enable=${{ github.ref == format('refs/heads/{0}', 'staging') && matrix.target_runtime == 'nginx' }}
             type=raw,value=develop,enable=${{ github.ref == format('refs/heads/{0}', 'develop') && matrix.target_runtime == 'nginx' }}
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}},enable=${{ matrix.target_runtime == 'nginx' }}
+            type=semver,pattern={{version}},prefix=${{ matrix.target_runtime }}-
             type=ref,event=pr,prefix=pr-
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
