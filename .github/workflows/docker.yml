@@ -8,7 +8,9 @@ on:
   # See: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#push
   push:
     branches:
-      - dev
+      - main
+      - staging
+      - develop
     tags:
       - "*"
 
@@ -162,16 +164,14 @@ jobs:
             name=ghcr.io/${{ github.repository }},enable=true
             name=${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }},enable=${{ env.HAS_DOCKER_HUB_CONFIGURED }}
           flavor: |
-            latest=auto
-            suffix=-${{ matrix.target_runtime }}-${{ matrix.php_version }}
+            latest=${{ github.ref == format('refs/heads/{0}', 'main') && matrix.target_runtime == 'nginx' }}
+            suffix=-${{ matrix.target_runtime }},onlatest=false
           tags: |
-            type=raw,value=dev,enable=${{ github.ref == format('refs/heads/{0}', 'dev') }}
-            type=raw,value=staging,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
-            type=pep440,pattern={{raw}}
-            type=pep440,pattern=v{{major}}.{{minor}}
-            type=ref,event=branch,prefix=branch-
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=nightly,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
+            type=raw,value=develop,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
+            type=semver,pattern={{version}}
             type=ref,event=pr,prefix=pr-
-            type=ref,event=tag
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
@@ -191,8 +191,8 @@ jobs:
           build-args: |
             PHP_VERSION=${{ matrix.php_version }}
             PHP_BASE_TYPE=${{ matrix.php_base }}
-          cache-from: type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
-          cache-to: type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}-${{ matrix.php_version }}
+          cache-from: type=gha,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.target_runtime }}-${{ matrix.php_base }}
 
       # goss validate the image
       #
