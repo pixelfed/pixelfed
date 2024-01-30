@@ -1204,12 +1204,19 @@ export default {
 					}, 300);
 				}).catch(function(e) {
 					switch(e.response.status) {
+						case 403:
+							self.uploading = false;
+							io.value = null;
+							swal('Account size limit reached', 'Contact your admin for assistance.', 'error');
+							self.page = 2;
+						break;
+
 						case 413:
 							self.uploading = false;
 							io.value = null;
 							swal('File is too large', 'The file you uploaded has the size of ' + self.formatBytes(io.size) + '. Unfortunately, only images up to ' + self.formatBytes(self.config.uploader.max_photo_size  * 1024) + ' are supported.\nPlease resize the file and try again.', 'error');
 							self.page = 2;
-							break;
+						break;
 
 						case 451:
 							self.uploading = false;
