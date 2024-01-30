@@ -163,13 +163,13 @@ jobs:
           images: |
             name=ghcr.io/${{ github.repository }},enable=true
             name=${{ env.DOCKER_HUB_ORGANISATION }}/${{ env.DOCKER_HUB_REPO }},enable=${{ env.HAS_DOCKER_HUB_CONFIGURED }}
-          flavor: |
-            latest=${{ github.ref == format('refs/heads/{0}', 'main') && matrix.target_runtime == 'nginx' }}
-            suffix=-${{ matrix.target_runtime }},onlatest=false
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=raw,value=nightly,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
-            type=raw,value=develop,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
+            type=raw,value=latest,prefix=${{ matrix.target_runtime }}-,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=nightly,prefix=${{ matrix.target_runtime }}-,enable=${{ github.ref == format('refs/heads/{0}', 'staging') }}
+            type=raw,value=develop,prefix=${{ matrix.target_runtime }}-,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') && matrix.target_runtime == 'nginx' }}
+            type=raw,value=nightly,enable=${{ github.ref == format('refs/heads/{0}', 'staging') && matrix.target_runtime == 'nginx' }}
+            type=raw,value=develop,enable=${{ github.ref == format('refs/heads/{0}', 'develop') && matrix.target_runtime == 'nginx' }}
             type=semver,pattern={{version}}
             type=ref,event=pr,prefix=pr-
         env:
