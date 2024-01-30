@@ -1094,6 +1094,16 @@ export default {
 			return `${parseFloat((bytes / Math.pow(1024, quotient)).toFixed(dec))} ${units[quotient]}`
 		},
 
+		defineErrorMessage(errObject) {
+			if (errObject.response) {
+				let msg = errObject.response.data.message ? errObject.response.data.message : 'An unexpected error occured.';
+			}
+			else {
+				let msg = errObject.message;
+			}
+			return swal('Oops, something went wrong!', msg, 'error');
+		},
+
 		fetchProfile() {
 			let tags = {
 				public: 'Public',
@@ -1395,15 +1405,23 @@ export default {
 							location.href = res.data;
 						}
 					}).catch(err => {
-						if(err.response) {
-							let msg = err.response.data.message ? err.response.data.message : 'An unexpected error occured.'
-							swal('Oops, something went wrong!', msg, 'error');
-						} else {
-							swal('Oops, something went wrong!', err.message, 'error');
-						}
-					});
-					return;
-				break;
+                        switch(err.response.status) {
+                            case 400:
+                                if (err.response.data.error == "Must contain a single photo or video or multiple photos.") {
+                                    swal("Wrong types of mixed media", "The album must contain a single photo or video or multiple photos.", 'error');
+                                }
+								else {
+									this.defineErrorMessage(err);
+								}
+                            break;
+
+                            default:
+								this.defineErrorMessage(err);
+                            break;
+                        }
+                    });
+                    return;
+                break;
 
 				case 'delete' :
 					this.ids = [];
