@@ -207,4 +207,4 @@ jobs:
             -v "./.env.testing:/var/www/.env" \
             -e "EXPECTED_PHP_VERSION=${{ matrix.php_version }}" \
             -e "PHP_BASE_TYPE=${{ matrix.php_base }}" \
-            ${{ steps.meta.outputs.tags }}
+            ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
