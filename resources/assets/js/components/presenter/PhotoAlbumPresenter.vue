@@ -186,3 +186,22 @@
 	position: relative;
   }
 </style>
+
+<style>
+.VueCarousel-navigation-button {
+  &.VueCarousel-navigation-prev {
+	    color: white;
+	    opacity: 0.5;
+		position: relative;
+        left: 30px;
+		bottom: 480px;
+  }
+  &.VueCarousel-navigation-next {
+	    color: white;
+	    opacity: 0.5;
+	    position: relative;
+        left: 615px; 
+		bottom: 480px;
+  }
+}
+</style>
