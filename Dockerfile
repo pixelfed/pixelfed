@@ -50,7 +50,7 @@ ARG PHP_PECL_EXTENSIONS="redis https://codeload.github.com/Imagick/imagick/tar.g
 ARG PHP_PECL_EXTENSIONS_EXTRA=
 
 # Extensions installed via [docker-php-ext-install]
-ARG PHP_EXTENSIONS="intl bcmath ftp zip pcntl exif curl gd"
+ARG PHP_EXTENSIONS="intl bcmath zip pcntl exif curl gd"
 ARG PHP_EXTENSIONS_EXTRA=""
 ARG PHP_EXTENSIONS_DATABASE="pdo_pgsql pdo_mysql pdo_sqlite"
 
