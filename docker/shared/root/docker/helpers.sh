@@ -361,7 +361,7 @@ function acquire-lock() {
     exec {lock_fd}>"$file"
 
     log-info "🔑 Trying to acquire lock: ${file}: "
-    while !([[ -v lock_fds[$name] ]] || flock -n -x "$lock_fd"); do
+    while ! ([[ -v lock_fds[$name] ]] || flock -n -x "$lock_fd"); do
         log-info "🔒 Waiting on lock ${file}"
 
         staggered-sleep
@@ -383,8 +383,9 @@ function release-lock() {
     log-info "🔓 Releasing lock [${file}]"
 
     [[ -v lock_fds[$name] ]] || return
+    # shellcheck disable=SC1083,SC2086
     exec {lock_fds[$name]}>&-
-    unset lock_fds[$name]
+    unset 'lock_fds[$name]'
 }
 
 # @description Helper function to append multiple actions onto
