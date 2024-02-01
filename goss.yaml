@@ -114,7 +114,7 @@ command:
 {{ end }}
 
 {{ if eq .Env.PHP_BASE_TYPE "apache" }}
-  nginx-version:
+  apache-version:
     exit-status: 0
     exec: 'apachectl -v'
     stdout:
