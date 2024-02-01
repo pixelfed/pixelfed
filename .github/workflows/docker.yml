@@ -167,7 +167,7 @@ jobs:
             type=raw,value=develop,enable=${{ github.ref == format('refs/heads/{0}', 'develop') && matrix.target_runtime == 'nginx' }}
             type=semver,pattern={{version}},enable=${{ matrix.target_runtime == 'nginx' }}
             type=semver,pattern={{version}},prefix=${{ matrix.target_runtime }}-
-            type=ref,event=pr,prefix=pr-
+            type=ref,event=pr,prefix=${{ matrix.target_runtime }}-pr-
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
