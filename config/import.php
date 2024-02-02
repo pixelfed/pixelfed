@@ -39,6 +39,12 @@ return [
 
             // Limit to specific user ids, in comma separated format
             'user_ids' => env('PF_IMPORT_IG_PERM_ONLY_USER_IDS', null),
+        ],
+
+        'storage' => [
+            'cloud' => [
+                'enabled' => env('PF_IMPORT_IG_CLOUD_STORAGE', env('PF_ENABLE_CLOUD', false)),
+            ]
         ]
     ]
 ];

@@ -3031,7 +3031,7 @@ class ApiV1Controller extends Controller
 
         $content = strip_tags($request->input('status'));
         $rendered = Autolink::create()->autolink($content);
-        $cw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+        $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
         if($in_reply_to_id) {

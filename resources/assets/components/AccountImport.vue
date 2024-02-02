@@ -381,7 +381,7 @@
                 let file = this.$refs.zipInput.files[0];
                 let entries = await this.model(file);
                 if (entries && entries.length) {
-                    let files = await entries.filter(e => e.filename === 'content/posts_1.json');
+                    let files = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json');
 
                     if(!files || !files.length) {
                         this.contactModal(
@@ -402,7 +402,7 @@
                 let entries = await this.model(file);
                 if (entries && entries.length) {
                     this.zipFiles = entries;
-                    let media = await entries.filter(e => e.filename === 'content/posts_1.json')[0].getData(new zip.TextWriter());
+                    let media = await entries.filter(e => e.filename === 'content/posts_1.json' || e.filename === 'your_instagram_activity/content/posts_1.json')[0].getData(new zip.TextWriter());
                     this.filterPostMeta(media);
 
                     let imgs = await Promise.all(entries.filter(entry => {
