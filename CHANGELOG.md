@@ -89,6 +89,7 @@
 - Update meta tags, improve descriptions and seo/og tags ([fd44c80c](https://github.com/pixelfed/pixelfed/commit/fd44c80c))
 - Update login view, add email prefill logic ([d76f0168](https://github.com/pixelfed/pixelfed/commit/d76f0168))
 - Update LoginController, fix captcha validation error message ([0325e171](https://github.com/pixelfed/pixelfed/commit/0325e171))
+- Update ApiV1Controller, properly cast boolean sensitive parameter. Fixes #4888 ([0aff126a](https://github.com/pixelfed/pixelfed/commit/0aff126a))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
