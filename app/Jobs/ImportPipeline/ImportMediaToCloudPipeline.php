@@ -14,6 +14,7 @@ use App\Models\ImportPost;
 use App\Media;
 use App\Services\MediaStorageService;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\VideoPipeline\VideoThumbnailToCloudPipeline;
 
 class ImportMediaToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -118,7 +119,11 @@ class ImportMediaToCloudPipeline implements ShouldQueue, ShouldBeUniqueUntilProc
         }
 
         if($res === 'success') {
-            Storage::disk('local')->delete($media->media_path);
+            if($media->mime === 'video/mp4') {
+                VideoThumbnailToCloudPipeline::dispatch($media)->onQueue('low');
+            } else {
+                Storage::disk('local')->delete($media->media_path);
+            }
         }
     }
 }
