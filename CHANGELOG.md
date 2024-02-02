@@ -15,6 +15,7 @@
 - Added User Domain Blocks ([#4834](https://github.com/pixelfed/pixelfed/pull/4834)) ([fa0380ac](https://github.com/pixelfed/pixelfed/commit/fa0380ac))
 - Added Parental Controls ([#4862](https://github.com/pixelfed/pixelfed/pull/4862)) ([c91f1c59](https://github.com/pixelfed/pixelfed/commit/c91f1c59))
 - Added Forgot Email Feature ([67c650b1](https://github.com/pixelfed/pixelfed/commit/67c650b1))
+- Added S3 IG Import Media Storage support ([#4891](https://github.com/pixelfed/pixelfed/pull/4891)) ([081360b9](https://github.com/pixelfed/pixelfed/commit/081360b9))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))

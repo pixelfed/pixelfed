@@ -42,6 +42,10 @@ class Kernel extends ConsoleKernel
             $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51);
             $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37);
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32);
+
+            if(config('import.instagram.storage.cloud.enabled') && (bool) config_cache('pixelfed.cloud_storage')) {
+                $schedule->command('app:import-upload-media-to-cloud-storage')->hourlyAt(39);
+            }
         }
         $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21');
         $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25);
