@@ -189,19 +189,26 @@
 
 <style>
 .VueCarousel-navigation-button {
+  top: 0 !important;
+  width: 25%;
+  height: 100%;
+  color: white !important;
+  opacity: 0.0 !important;
+  transform: none !important;
+}
+
+.VueCarousel-navigation-button:hover:not(.VueCarousel-navigation--disabled) {
+  opacity: 0.5 !important;
+}
+
+.VueCarousel-navigation-button {
   &.VueCarousel-navigation-prev {
-	    color: white;
-	    opacity: 0.5;
-		position: relative;
-        left: 30px;
-		bottom: 480px;
+    left: 0;
+    text-align: left;
   }
   &.VueCarousel-navigation-next {
-	    color: white;
-	    opacity: 0.5;
-	    position: relative;
-        left: 615px; 
-		bottom: 480px;
+    right: 0;
+    text-align: right;
   }
 }
 </style>
