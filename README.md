@@ -1,45 +1,39 @@
+# Pixelfed Glitch
+
 <p align="center"><img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/logos/pixelfed-full-color.svg" width="300px"></p>
 
 <p align="center">
-<a href="https://circleci.com/gh/pixelfed/pixelfed"><img src="https://circleci.com/gh/pixelfed/pixelfed.svg?style=svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/pixelfed/pixelfed"><img src="https://poser.pugx.org/pixelfed/pixelfed/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/pixelfed/pixelfed"><img src="https://poser.pugx.org/pixelfed/pixelfed/license.svg" alt="License"></a>
+<a href="https://github.com/pixelfed-glitch/pixelfed/actions/"><img src="https://github.com/pixelfed-glitch/pixelfed/actions/workflows/docker.yml/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/pixelfed-glitch/pixelfed"><img src="https://poser.pugx.org/pixelfed-glitch/pixelfed/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/pixelfed-glitch/pixelfed"><img src="https://poser.pugx.org/pixelfed-glitch/pixelfed/license.svg" alt="License"></a>
 </p>
 
 ## Introduction
 
-A free and ethical photo sharing platform, powered by ActivityPub federation.
+This is a fork of the official Pixelfed ActivityPub platform.
+
+Pixelfed is a free and ethical photo sharing platform, powered by ActivityPub federation.
 
 <p align="center">
 <img src="https://pixelfed.nyc3.cdn.digitaloceanspaces.com/media/pixelfed-screenshot.jpg">
 </p>
 
-## Official Documentation
+## Documentation
 
-Documentation for Pixelfed can be found on the [Pixelfed documentation website](https://docs.pixelfed.org/).
+Documentation for Pixelfed Glitch can be found on the [Pixelfed Glitch documentation website](https://pixelfed-glitch.github.io/docs).
 
-## Run on YunoHost
+Additionnally, you can find the official documentation for Pixelfed on the [Pixelfed documentation website](https://docs.pixelfed.org/).
 
-[![Install on YunoHost](https://user-images.githubusercontent.com/42862428/139559471-9495f1e9-e7a4-49f1-9a4b-675ddcc510a2.png 'Install on YunoHost')](https://install-app.yunohost.org/?app=pixelfed)
+## Run with Docker
 
-Pixelfed app for [YunoHost](https://yunohost.org 'YunoHost'). See [the package source code](https://github.com/YunoHost-Apps/pixelfed_ynh 'pixelfed_ynh repository on GitHub')
+More information on : [Running Pixelfed With Docker](https://pixelfed-glitch.github.io/docs/running-pixelfed/docker/prerequisites.html)
 
 ## License
 
-Pixelfed is open-sourced software licensed under the AGPL license.
+Pixelfed and Pixelfed Glitch are open-sourced software licensed under the AGPL license.
 
 ## Communication
 
-The ways you can communicate on the project are below. Before interacting, please
-read through the [Code Of Conduct](CODE_OF_CONDUCT.md).
+Maintainer : @Murazaki (@mehdi_benadel@mastodon.balamb.fr)
 
-* Mastodon: [@pixelfed@mastodon.social](https://mastodon.social/@pixelfed)
-* E-mail: [hello@pixelfed.org](mailto:hello@pixelfed.org)
-
-## Pixelfed Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Pixelfed development. If you are interested in becoming a sponsor, please visit the Pixelfed [Patreon Page](https://www.patreon.com/dansup/overview)
-
-- [NLnet Foundation](https://nlnet.nl) and [NGI0
-Discovery](https://nlnet.nl/discovery/), part of the [Next Generation
-Internet](https://ngi.eu) initiative.
+Discord Server : https://discord.gg/qbSsr5pa
