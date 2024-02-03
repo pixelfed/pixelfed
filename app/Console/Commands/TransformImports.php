@@ -70,6 +70,11 @@ class TransformImports extends Command
             }
 
             $idk = ImportService::getId($ip->user_id, $ip->creation_year, $ip->creation_month, $ip->creation_day);
+            if(!$idk) {
+                $ip->skip_missing_media = true;
+                $ip->save();
+                continue;
+            }
 
             if(Storage::exists('imports/' . $id . '/' . $ip->filename) === false) {
                 ImportService::clearAttempts($profile->id);
