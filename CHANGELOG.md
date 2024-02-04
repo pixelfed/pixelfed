@@ -94,6 +94,7 @@
 - Update AccountImport.vue, fix new IG export format ([59aa6a4b](https://github.com/pixelfed/pixelfed/commit/59aa6a4b))
 - Update TransformImports command, fix import service condition ([32c59f04](https://github.com/pixelfed/pixelfed/commit/32c59f04))
 - Update AP helpers, more efficently update post count ([7caed381](https://github.com/pixelfed/pixelfed/commit/7caed381))
+- Update AP helpers, refactor post count decrement logic ([b81ae577](https://github.com/pixelfed/pixelfed/commit/b81ae577))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
