@@ -48,8 +48,6 @@ use App\Services\UserFilterService;
 use App\Services\NetworkTimelineService;
 use App\Models\Conversation;
 use App\Models\RemoteReport;
-use App\Jobs\ProfilePipeline\IncrementPostCount;
-use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Jobs\HomeFeedPipeline\FeedRemoveRemotePipeline;
 
 class Inbox
