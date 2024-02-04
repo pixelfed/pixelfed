@@ -38,7 +38,7 @@ class Kernel extends ConsoleKernel
         }
 
         if(config('import.instagram.enabled')) {
-            $schedule->command('app:transform-imports')->everyFourMinutes();
+            $schedule->command('app:transform-imports')->everyTenMinutes();
             $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51);
             $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37);
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32);
@@ -49,6 +49,7 @@ class Kernel extends ConsoleKernel
         }
         $schedule->command('app:notification-epoch-update')->weeklyOn(1, '2:21');
         $schedule->command('app:hashtag-cached-count-update')->hourlyAt(25);
+        $schedule->command('app:account-post-count-stat-update')->everySixHours(25);
     }
 
     /**
