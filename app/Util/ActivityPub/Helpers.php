@@ -548,10 +548,11 @@ class Helpers {
 
     public static function getSensitive($activity, $url)
     {
-        $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
-        $url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
-        $urlDomain = parse_url($url, PHP_URL_HOST);
+        if(!$url || !strlen($url)) {
+            return true;
+        }
 
+        $urlDomain = parse_url($url, PHP_URL_HOST);
         $cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
 
         if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
