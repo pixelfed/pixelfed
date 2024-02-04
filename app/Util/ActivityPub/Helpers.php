@@ -43,6 +43,7 @@ use App\Jobs\ProfilePipeline\IncrementPostCount;
 use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Services\DomainService;
 use App\Services\UserFilterService;
+use App\Services\Account\AccountStatService;
 
 class Helpers {
 
@@ -536,7 +537,7 @@ class Helpers {
             }
         }
 
-        IncrementPostCount::dispatch($pid)->onQueue('low');
+        AccountStatService::incrementPostCount($pid);
 
         if( $status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
