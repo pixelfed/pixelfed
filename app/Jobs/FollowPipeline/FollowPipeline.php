@@ -72,16 +72,18 @@ class FollowPipeline implements ShouldQueue
         $target->save();
         AccountService::del($target->id);
 
-        try {
-            $notification = new Notification();
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'follow';
-            $notification->item_id = $target->id;
-            $notification->item_type = "App\Profile";
-            $notification->save();
-        } catch (Exception $e) {
-            Log::error($e);
+        if($target->user_id && $target->domain === null) {
+            try {
+                $notification = new Notification();
+                $notification->profile_id = $target->id;
+                $notification->actor_id = $actor->id;
+                $notification->action = 'follow';
+                $notification->item_id = $target->id;
+                $notification->item_type = "App\Profile";
+                $notification->save();
+            } catch (Exception $e) {
+                Log::error($e);
+            }
         }
     }
 }
