@@ -39,8 +39,6 @@ use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
 use App\Util\Media\License;
 use App\Models\Poll;
 use Illuminate\Contracts\Cache\LockTimeoutException;
-use App\Jobs\ProfilePipeline\IncrementPostCount;
-use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Services\DomainService;
 use App\Services\UserFilterService;
 use App\Services\Account\AccountStatService;

@@ -22,9 +22,9 @@ use App\Notification;
 use App\Services\AccountService;
 use App\Services\NetworkTimelineService;
 use App\Services\StatusService;
-use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
 use Cache;
+use App\Services\Account\AccountStatService;
 
 class DeleteRemoteStatusPipeline implements ShouldQueue
 {
@@ -56,10 +56,7 @@ class DeleteRemoteStatusPipeline implements ShouldQueue
     {
         $status = $this->status;
 
-        if(AccountService::get($status->profile_id, true)) {
-            DecrementPostCount::dispatch($status->profile_id)->onQueue('low');
-        }
-
+        AccountStatService::decrementPostCount($status->profile_id);
         NetworkTimelineService::del($status->id);
         StatusService::del($status->id, true);
         Bookmark::whereStatusId($status->id)->delete();

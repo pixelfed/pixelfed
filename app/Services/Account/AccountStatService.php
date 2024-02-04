@@ -14,6 +14,11 @@ class AccountStatService
         return Redis::zadd(self::REFRESH_CACHE_KEY, $pid, $pid);
     }
 
+    public static function decrementPostCount($pid)
+    {
+        return Redis::zadd(self::REFRESH_CACHE_KEY, $pid, $pid);
+    }
+
     public static function removeFromPostCount($pid)
     {
         return Redis::zrem(self::REFRESH_CACHE_KEY, $pid);
