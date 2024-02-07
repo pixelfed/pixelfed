@@ -42,6 +42,7 @@ use App\Services\{
 use App\Jobs\StatusPipeline\NewStatusPipeline;
 use League\Fractal\Serializer\ArraySerializer;
 use League\Fractal\Pagination\IlluminatePaginatorAdapter;
+use App\Services\InstanceService;
 
 class PublicApiController extends Controller
 {
@@ -661,6 +662,10 @@ class PublicApiController extends Controller
     public function account(Request $request, $id)
     {
         $res = AccountService::get($id);
+        if($res && isset($res['local'], $res['url']) && !$res['local']) {
+            $domain = parse_url($res['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
         return response()->json($res);
     }
 
@@ -679,6 +684,11 @@ class PublicApiController extends Controller
         $user = $request->user();
         $profile = AccountService::get($id);
         abort_if(!$profile, 404);
+
+        if($profile && isset($profile['local'], $profile['url']) && !$profile['local']) {
+            $domain = parse_url($profile['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
 
         $limit = $request->limit ?? 9;
         $max_id = $request->max_id;

@@ -98,6 +98,12 @@
 - Update AP helpers, fix sensitive bug ([00ed330c](https://github.com/pixelfed/pixelfed/commit/00ed330c))
 - Update NotificationEpochUpdatePipeline, use more efficient query ([4d401389](https://github.com/pixelfed/pixelfed/commit/4d401389))
 - Update notification pipelines, fix non-local saving ([fa97a1f3](https://github.com/pixelfed/pixelfed/commit/fa97a1f3))
+- Update NodeinfoService, disable redirects ([240e6bbe](https://github.com/pixelfed/pixelfed/commit/240e6bbe))
+- Update Instance model, add entity casts ([289cad47](https://github.com/pixelfed/pixelfed/commit/289cad47))
+- Update FetchNodeinfoPipeline, use more efficient dispatch ([ac01f51a](https://github.com/pixelfed/pixelfed/commit/ac01f51a))
+- Update horizon.php config ([1e3acade](https://github.com/pixelfed/pixelfed/commit/1e3acade))
+- Update PublicApiController, consume InstanceService blocked domains for account and statuses endpoints ([01b33fb3](https://github.com/pixelfed/pixelfed/commit/01b33fb3))
+- Update ApiV1Controller, enforce blocked instance domain logic ([5b284cac](https://github.com/pixelfed/pixelfed/commit/5b284cac))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
