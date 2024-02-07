@@ -96,6 +96,9 @@ class ApiV2Controller extends Controller
                     'streaming' => 'wss://' . config('pixelfed.domain.app'),
                     'status' => null
                 ],
+                'vapid' => [
+                    'public_key' => config('webpush.vapid.public_key'),
+                ],
                 'accounts' => [
                     'max_featured_tags' => 0,
                 ],
