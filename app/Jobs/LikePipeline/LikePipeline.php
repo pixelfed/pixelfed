@@ -79,16 +79,18 @@ class LikePipeline implements ShouldQueue
             return true;
         }
 
-        try {
-            $notification = new Notification();
-            $notification->profile_id = $status->profile_id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'like';
-            $notification->item_id = $status->id;
-            $notification->item_type = "App\Status";
-            $notification->save();
+        if($status->uri === null && $status->object_url === null && $status->url === null) {
+            try {
+                $notification = new Notification();
+                $notification->profile_id = $status->profile_id;
+                $notification->actor_id = $actor->id;
+                $notification->action = 'like';
+                $notification->item_id = $status->id;
+                $notification->item_type = "App\Status";
+                $notification->save();
 
-        } catch (Exception $e) {
+            } catch (Exception $e) {
+            }
         }
     }
 
