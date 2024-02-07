@@ -558,7 +558,7 @@ class ComposeController extends Controller
 
         $mediaType = StatusController::mimeTypeCheck($mimes);
 
-        if(in_array($mediaType, ['photo', 'video', 'photo:album']) == false) {
+        if(in_array($mediaType, ['photo', 'video', 'photo:album', 'video:album', 'photo:video:album']) == false) {
             abort(400, __('exception.compose.invalid.album'));
         }
 
