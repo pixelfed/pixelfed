@@ -104,6 +104,7 @@
 - Update horizon.php config ([1e3acade](https://github.com/pixelfed/pixelfed/commit/1e3acade))
 - Update PublicApiController, consume InstanceService blocked domains for account and statuses endpoints ([01b33fb3](https://github.com/pixelfed/pixelfed/commit/01b33fb3))
 - Update ApiV1Controller, enforce blocked instance domain logic ([5b284cac](https://github.com/pixelfed/pixelfed/commit/5b284cac))
+- Update ApiV2Controller, add vapid key to instance object. Thanks thisismissem! ([4d02d6f1](https://github.com/pixelfed/pixelfed/commit/4d02d6f1))
 -  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
