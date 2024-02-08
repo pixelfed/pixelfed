@@ -757,8 +757,9 @@ class ApiV1Dot1Controller extends Controller
 
 	public function moderatePost(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
 		abort_if($request->user()->is_admin != true, 403);
+		abort_unless($request->user()->tokenCan('admin:write'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
