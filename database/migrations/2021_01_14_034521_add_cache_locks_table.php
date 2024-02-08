@@ -27,6 +27,6 @@ class AddCacheLocksTable extends Migration
      */
     public function down()
     {
-        Schema::dropTable('cache_locks');
+        Schema::dropIfExists('cache_locks');
     }
 }

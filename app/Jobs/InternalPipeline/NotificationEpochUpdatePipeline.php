@@ -61,7 +61,12 @@ class NotificationEpochUpdatePipeline implements ShouldQueue, ShouldBeUniqueUnti
      */
     public function handle(): void
     {
-        $rec = Notification::where('created_at', '>', now()->subMonths(6))->first();
+        $pid = Cache::get(NotificationService::EPOCH_CACHE_KEY . '6');
+        if($pid && $pid > 1) {
+            $rec = Notification::where('id', '>', $pid)->whereDate('created_at', now()->subMonths(6)->format('Y-m-d'))->first();
+        } else {
+            $rec = Notification::whereDate('created_at', now()->subMonths(6)->format('Y-m-d'))->first();
+        }
         $id = 1;
         if($rec) {
             $id = $rec->id;
