@@ -33,13 +33,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('gc:passwordreset')->dailyAt('09:41')->onOneServer();
         $schedule->command('gc:sessions')->twiceDaily(13, 23)->onOneServer();
 
-        if(config('import.instagram.enabled')) {
+        if (in_array(config_cache('pixelfed.cloud_storage'), ['1', true, 'true']) && config('media.delete_local_after_cloud')) {
+            $schedule->command('media:s3gc')->hourlyAt(15);
+        }
+
+        if (config('import.instagram.enabled')) {
             $schedule->command('app:transform-imports')->everyTenMinutes()->onOneServer();
             $schedule->command('app:import-upload-garbage-collection')->hourlyAt(51)->onOneServer();
             $schedule->command('app:import-remove-deleted-accounts')->hourlyAt(37)->onOneServer();
             $schedule->command('app:import-upload-clean-storage')->twiceDailyAt(1, 13, 32)->onOneServer();
 
-            if(config('import.instagram.storage.cloud.enabled') && (bool) config_cache('pixelfed.cloud_storage')) {
+            if (config('import.instagram.storage.cloud.enabled') && (bool) config_cache('pixelfed.cloud_storage')) {
                 $schedule->command('app:import-upload-media-to-cloud-storage')->hourlyAt(39)->onOneServer();
             }
         }
@@ -56,11 +60,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-<<<<<<< HEAD
         $this->load(__DIR__ . '/Commands');
-=======
-        $this->load(__DIR__.'/Commands');
->>>>>>> d374d73ba74860d6eb90752d596cf2e22f189860
 
         require base_path('routes/console.php');
     }
