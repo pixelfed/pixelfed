@@ -32,7 +32,9 @@ class TagsController extends Controller
     */
     public function relatedTags(Request $request, $tag)
     {
-        abort_unless($request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
+
         $tag = Hashtag::whereSlug($tag)->firstOrFail();
         return HashtagRelatedService::get($tag->id);
     }
@@ -45,7 +47,8 @@ class TagsController extends Controller
     */
     public function followHashtag(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('follow'), 403);
 
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
@@ -87,7 +90,8 @@ class TagsController extends Controller
     */
     public function unfollowHashtag(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('follow'), 403);
 
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
@@ -132,7 +136,8 @@ class TagsController extends Controller
     */
     public function getHashtag(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
 
         $pid = $request->user()->profile_id;
         $account = AccountService::get($pid);
@@ -172,7 +177,8 @@ class TagsController extends Controller
     */
     public function getFollowedTags(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
 
         $account = AccountService::get($request->user()->profile_id);
 
