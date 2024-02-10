@@ -260,6 +260,8 @@ class ComposeController extends Controller
             $q = mb_substr($q, 1);
         }
 
+        $user = $request->user();
+
         abort_if($user->has_roles && !UserRoleService::can('can-post', $user->id), 403, 'Invalid permissions for this action');
 
         $blocked = UserFilter::whereFilterableType('App\Profile')
