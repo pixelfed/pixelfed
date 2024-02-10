@@ -20,9 +20,10 @@ declare -g script_name=
 declare -g script_name_previous=
 declare -g log_prefix=
 
+declare -Ag lock_fds=()
+
 # dot-env files to source when reading config
 declare -a dot_env_files=(
-    /var/www/.env.docker
     /var/www/.env
 )
 
@@ -166,7 +167,7 @@ function log-error()
         log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
-    echo -e "${error_message_color}${log_prefix}ERROR -${color_clear} ${msg}" > /dev/stderr
+    echo -e "${error_message_color}${log_prefix}ERROR -${color_clear} ${msg}" >/dev/stderr
 }
 
 # @description Print the given error message to stderr and exit 1
@@ -197,7 +198,7 @@ function log-warning()
         log-error-and-exit "[${FUNCNAME[0]}] did not receive any input arguments and STDIN is empty"
     fi
 
-    echo -e "${warn_message_color}${log_prefix}WARNING -${color_clear} ${msg}" > /dev/stderr
+    echo -e "${warn_message_color}${log_prefix}WARNING -${color_clear} ${msg}" >/dev/stderr
 }
 
 # @description Print the given message to stdout unless [ENTRYPOINT_QUIET_LOGS] is set
@@ -236,7 +237,7 @@ function log-info-stderr()
     fi
 
     if [ -z "${ENTRYPOINT_QUIET_LOGS:-}" ]; then
-        echo -e "${notice_message_color}${log_prefix}${color_clear}${msg}" > /dev/stderr
+        echo -e "${notice_message_color}${log_prefix}${color_clear}${msg}" >/dev/stderr
     fi
 }
 
@@ -377,17 +378,20 @@ function acquire-lock()
 {
     local name="${1:-$script_name}"
     local file="${docker_locks_path}/${name}"
+    local lock_fd
 
     ensure-directory-exists "$(dirname "${file}")"
 
+    exec {lock_fd}>"$file"
+
     log-info "🔑 Trying to acquire lock: ${file}: "
-    while file-exists "${file}"; do
+    while ! ([[ -v lock_fds[$name] ]] || flock -n -x "$lock_fd"); do
         log-info "🔒 Waiting on lock ${file}"
 
         staggered-sleep
     done
 
-    stream-prefix-command-output touch "${file}"
+    [[ -v lock_fds[$name] ]] || lock_fds[$name]=$lock_fd
 
     log-info "🔐 Lock acquired [${file}]"
 
@@ -403,7 +407,11 @@ function release-lock()
 
     log-info "🔓 Releasing lock [${file}]"
 
-    stream-prefix-command-output rm -fv "${file}"
+    [[ -v lock_fds[$name] ]] || return
+
+    # shellcheck disable=SC1083,SC2086
+    flock --unlock ${lock_fds[$name]}
+    unset 'lock_fds[$name]'
 }
 
 # @description Helper function to append multiple actions onto
@@ -450,14 +458,14 @@ function await-database-ready()
     case "${DB_CONNECTION:-}" in
         mysql)
             # shellcheck disable=SC2154
-            while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent > /dev/null; do
+            while ! echo "SELECT 1" | mysql --user="${DB_USERNAME}" --password="${DB_PASSWORD}" --host="${DB_HOST}" "${DB_DATABASE}" --silent >/dev/null; do
                 staggered-sleep
             done
             ;;
 
         pgsql)
             # shellcheck disable=SC2154
-            while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" > /dev/null; do
+            while ! echo "SELECT 1" | PGPASSWORD="${DB_PASSWORD}" psql --user="${DB_USERNAME}" --host="${DB_HOST}" "${DB_DATABASE}" >/dev/null; do
                 staggered-sleep
             done
             ;;

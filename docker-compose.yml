@@ -1,5 +1,6 @@
 ---
-version: "3"
+# Require 3.8 to ensure people use a recent version of Docker + Compose
+version: "3.8"
 
 ###############################################################
 # Please see docker/README.md for usage information
@@ -53,7 +54,7 @@ services:
       - ${DOCKER_PROXY_ACME_PROFILE:-}
     environment:
       DEBUG: 0
-      DEFAULT_EMAIL: "${LETSENCRYPT_EMAIL}"
+      DEFAULT_EMAIL: "${DOCKER_PROXY_LETSENCRYPT_EMAIL:?error}"
       NGINX_PROXY_CONTAINER: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-proxy"
     depends_on:
       - proxy
@@ -74,21 +75,21 @@ services:
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
       args:
-        PHP_VERSION: "${DOCKER_APP_PHP_VERSION}"
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
         PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
         PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
-        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
-        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
         PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
     volumes:
       - "./.env:/var/www/.env"
       - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
       - "${DOCKER_APP_HOST_STORAGE_PATH}:/var/www/storage"
       - "${DOCKER_APP_HOST_OVERRIDES_PATH}:/docker/overrides:ro"
     environment:
-      LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
-      LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
-      LETSENCRYPT_TEST: "${LETSENCRYPT_TEST:-}"
+      LETSENCRYPT_HOST: "${DOCKER_PROXY_LETSENCRYPT_HOST:?error}"
+      LETSENCRYPT_EMAIL: "${DOCKER_PROXY_LETSENCRYPT_EMAIL:?error}"
+      LETSENCRYPT_TEST: "${DOCKER_PROXY_LETSENCRYPT_TEST:-}"
       VIRTUAL_HOST: "${APP_DOMAIN}"
       VIRTUAL_PORT: "80"
     labels:
@@ -117,12 +118,12 @@ services:
     build:
       target: ${DOCKER_APP_RUNTIME}-runtime
       args:
-        PHP_VERSION: "${DOCKER_APP_PHP_VERSION}"
+        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
         PHP_BASE_TYPE: "${DOCKER_APP_BASE_TYPE}"
         PHP_DEBIAN_RELEASE: "${DOCKER_APP_DEBIAN_RELEASE}"
-        APT_PACKAGES_EXTRA: "${DOCKER_APP_APT_PACKAGES_EXTRA:-}"
-        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
         PHP_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_EXTENSIONS_EXTRA:-}"
+        PHP_PECL_EXTENSIONS_EXTRA: "${DOCKER_APP_PHP_PECL_EXTENSIONS_EXTRA:-}"
+        PHP_VERSION: "${DOCKER_APP_PHP_VERSION:?error}"
     volumes:
       - "./.env:/var/www/.env"
       - "${DOCKER_APP_HOST_CACHE_PATH}:/var/www/bootstrap/cache"
@@ -133,23 +134,37 @@ services:
       - redis
     healthcheck:
       test: gosu www-data php artisan horizon:status | grep running
-      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL}"
+      interval: "${DOCKER_WORKER_HEALTHCHECK_INTERVAL:?error}"
       timeout: 5s
       retries: 2
 
   db:
-    image: mariadb:${DB_VERSION}
+    image: ${DOCKER_DB_IMAGE:?error}
     container_name: "${DOCKER_ALL_CONTAINER_NAME_PREFIX}-db"
-    command: --default-authentication-plugin=mysql_native_password
+    command: ${DOCKER_DB_COMMAND:-}
     restart: unless-stopped
     profiles:
       - ${DOCKER_DB_PROFILE:-}
-    env_file:
-      - ".env"
+    environment:
+      TZ: "${TZ:?error}"
+      # MySQL (Oracle) - "Environment Variables" at https://hub.docker.com/_/mysql
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MYSQL_USER: "${DB_USERNAME:?error}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:?error}"
+      MYSQL_DATABASE: "${DB_DATABASE:?error}"
+      # MySQL (MariaDB) - "Start a mariadb server instance with user, password and database" at https://hub.docker.com/_/mariadb
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD:?error}"
+      MARIADB_USER: "${DB_USERNAME:?error}"
+      MARIADB_PASSWORD: "${DB_PASSWORD:?error}"
+      MARIADB_DATABASE: "${DB_DATABASE:?error}"
+      # PostgreSQL - "Environment Variables" at https://hub.docker.com/_/postgres
+      POSTGRES_USER: "${DB_USERNAME:?error}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?error}"
+      POSTGRES_DB: "${DB_DATABASE:?error}"
     volumes:
-      - "${DOCKER_DB_HOST_DATA_PATH}:/var/lib/mysql"
+      - "${DOCKER_DB_HOST_DATA_PATH:?error}:${DOCKER_DB_CONTAINER_DATA_PATH:?error}"
     ports:
-      - "${DOCKER_DB_HOST_PORT}:3306"
+      - "${DOCKER_DB_HOST_PORT:?error}:${DOCKER_DB_CONTAINER_PORT:?error}"
     healthcheck:
       test:
         [
@@ -159,7 +174,7 @@ services:
           "--connect",
           "--innodb_initialized",
         ]
-      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL}"
+      interval: "${DOCKER_DB_HEALTHCHECK_INTERVAL:?error}"
       retries: 2
       timeout: 5s
 
@@ -169,9 +184,8 @@ services:
     restart: unless-stopped
     command: "${DOCKER_REDIS_CONFIG_FILE:-} --requirepass '${REDIS_PASSWORD:-}'"
     environment:
-      - REDISCLI_AUTH=${REDIS_PASSWORD:-}
-    env_file:
-      - ".env"
+      TZ: "${TZ:?error}"
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-}
     volumes:
       - "${DOCKER_ALL_HOST_CONFIG_ROOT_PATH}/redis:/etc/redis"
       - "${DOCKER_REDIS_HOST_DATA_PATH}:/data"
@@ -179,6 +193,6 @@ services:
       - "${DOCKER_REDIS_HOST_PORT}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "6379", "ping"]
-      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL}"
+      interval: "${DOCKER_REDIS_HEALTHCHECK_INTERVAL:?error}"
       retries: 2
       timeout: 5s

@@ -13,5 +13,9 @@ for file in "${dot_env_files[@]}"; do
         continue
     fi
 
-    run-as-current-user dotenv-linter --skip=QuoteCharacter --skip=UnorderedKey "${file}"
+    # We ignore 'dir' + 'file' rules since they are validate *host* paths
+    # which do not (and should not) exists inside the container
+    #
+    # We disable fixer since its not interactive anyway
+    run-as-current-user dottie validate --file "${file}" --ignore-rule dir,file --no-fix
 done

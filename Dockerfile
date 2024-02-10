@@ -20,10 +20,8 @@ ARG FOREGO_VERSION="0.17.2"
 # See: https://github.com/hairyhenderson/gomplate
 ARG GOMPLATE_VERSION="v3.11.6"
 
-# See: https://github.com/dotenv-linter/dotenv-linter
-#
-# WARN: v3.3.0 and above requires newer libc version than Ubuntu ships with
-ARG DOTENV_LINTER_VERSION="v3.2.0"
+# See: https://github.com/jippi/dottie
+ARG DOTTIE_VERSION="v0.6.5"
 
 ###
 # PHP base configuration
@@ -88,6 +86,13 @@ FROM nginx:${NGINX_VERSION} AS nginx-image
 # See: https://github.com/nginx-proxy/forego
 FROM nginxproxy/forego:${FOREGO_VERSION}-debian AS forego-image
 
+# Dottie makes working with .env files easier and safer
+#
+# NOTE: Docker will *not* pull this image unless it's referenced (via build target)
+#
+# See: https://github.com/jippi/dottie
+FROM ghcr.io/jippi/dottie:${DOTTIE_VERSION} AS dottie-image
+
 # gomplate-image grabs the gomplate binary from GitHub releases
 #
 # It's in its own layer so it can be fetched in parallel with other build steps
@@ -116,7 +121,6 @@ FROM php:${PHP_VERSION}-${PHP_BASE_TYPE}-${PHP_DEBIAN_RELEASE} AS base
 ARG BUILDKIT_SBOM_SCAN_STAGE="true"
 
 ARG APT_PACKAGES_EXTRA
-ARG DOTENV_LINTER_VERSION
 ARG PHP_DEBIAN_RELEASE
 ARG PHP_VERSION
 ARG RUNTIME_GID
@@ -135,7 +139,6 @@ RUN set -ex \
 WORKDIR /var/www/
 
 ENV APT_PACKAGES_EXTRA=${APT_PACKAGES_EXTRA}
-ENV DOTENV_LINTER_VERSION="${DOTENV_LINTER_VERSION}"
 
 # Install and configure base layer
 COPY docker/shared/root/docker/install/base.sh /docker/install/base.sh
@@ -226,6 +229,7 @@ ENV RUNTIME_UID=${RUNTIME_UID}
 ENV RUNTIME_GID=${RUNTIME_GID}
 
 COPY --link --from=forego-image /usr/local/bin/forego /usr/local/bin/forego
+COPY --link --from=dottie-image /dottie /usr/local/bin/dottie
 COPY --link --from=gomplate-image /usr/local/bin/gomplate /usr/local/bin/gomplate
 COPY --link --from=composer-image /usr/bin/composer /usr/bin/composer
 COPY --link --from=composer-and-src --chown=${RUNTIME_UID}:${RUNTIME_GID} /var/www /var/www

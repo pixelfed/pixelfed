@@ -59,6 +59,3 @@ apt-get install -y "${packages[@]}"
 
 locale-gen
 update-locale
-
-# Install dotenv linter (https://github.com/dotenv-linter/dotenv-linter)
-curl -sSfL https://raw.githubusercontent.com/dotenv-linter/dotenv-linter/master/install.sh | sh -s -- -b /usr/local/bin "${DOTENV_LINTER_VERSION:-}"

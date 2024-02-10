@@ -17,11 +17,11 @@ indent_style = space
 indent_size = 4
 
 # ShellCheck config
-shell_variant      = bash
-binary_next_line   = true
-case-indent 	   = true
-switch_case_indent = true
-space_redirects    = true
-function_next_line = true
+shell_variant      = bash  # like -ln=bash
+binary_next_line   = true  # like -bn
+switch_case_indent = true  # like -ci
+space_redirects    = false # like -sr
+keep_padding       = false  # like -kp
+function_next_line = true  # like -fn
+never_split        = true  # like -ns
 simplify           = true
-space-redirects    = true
