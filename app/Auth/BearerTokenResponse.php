@@ -19,7 +19,6 @@ class BearerTokenResponse extends \League\OAuth2\Server\ResponseTypes\BearerToke
     {
         return [
             'created_at' => time(),
-            'scope' => implode(' ', $accessToken->getScopes())
         ];
     }
 }
