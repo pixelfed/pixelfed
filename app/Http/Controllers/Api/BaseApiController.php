@@ -56,7 +56,8 @@ class BaseApiController extends Controller
 
     public function notifications(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
 
 		$pid = $request->user()->profile_id;
 		$limit = $request->input('limit', 20);
@@ -98,7 +99,9 @@ class BaseApiController extends Controller
 
     public function avatarUpdate(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
+
         $this->validate($request, [
             'upload'   => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
@@ -134,9 +137,11 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
+
         $user = $request->user();
-        abort_if(!$user, 403);
-        if($user->status != null) {
+        if ($user->status != null) {
             Auth::logout();
             abort(403);
         }
@@ -146,7 +151,9 @@ class BaseApiController extends Controller
 
     public function accountLikes(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
+
         $this->validate($request, [
         	'page' => 'sometimes|int|min:1|max:20',
         	'limit' => 'sometimes|int|min:1|max:10'
@@ -173,7 +180,8 @@ class BaseApiController extends Controller
 
     public function archive(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
 
         $status = Status::whereNull('in_reply_to_id')
             ->whereNull('reblog_of_id')
@@ -201,7 +209,8 @@ class BaseApiController extends Controller
 
     public function unarchive(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('write'), 403);
 
         $status = Status::whereNull('in_reply_to_id')
             ->whereNull('reblog_of_id')
@@ -228,7 +237,8 @@ class BaseApiController extends Controller
 
     public function archivedPosts(Request $request)
     {
-        abort_if(!$request->user(), 403);
+        abort_if(!$request->user() || !$request->user()->token(), 403);
+        abort_unless($request->user()->tokenCan('read'), 403);
 
         $statuses = Status::whereProfileId($request->user()->profile_id)
             ->whereScope('archived')

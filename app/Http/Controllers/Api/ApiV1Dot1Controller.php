@@ -68,9 +68,10 @@ class ApiV1Dot1Controller extends Controller
 
 	public function report(Request $request)
 	{
-		$user = $request->user();
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
 
-		abort_if(!$user, 403);
+		$user = $request->user();
 		abort_if($user->status != null, 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -175,9 +176,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function deleteAvatar(Request $request)
 	{
-		$user = $request->user();
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
 
-		abort_if(!$user, 403);
+		$user = $request->user();
 		abort_if($user->status != null, 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -215,9 +217,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountPosts(Request $request, $id)
 	{
-		$user = $request->user();
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
 
-		abort_if(!$user, 403);
+		$user = $request->user();
 		abort_if($user->status != null, 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -255,8 +258,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountChangePassword(Request $request)
 	{
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
+
 		$user = $request->user();
-		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -296,8 +301,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountLoginActivity(Request $request)
 	{
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
+
 		$user = $request->user();
-		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -336,8 +343,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountTwoFactor(Request $request)
 	{
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
+
 		$user = $request->user();
-		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -358,8 +367,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountEmailsFromPixelfed(Request $request)
 	{
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
+
 		$user = $request->user();
-		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -433,8 +444,10 @@ class ApiV1Dot1Controller extends Controller
 	 */
 	public function accountApps(Request $request)
 	{
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
+
 		$user = $request->user();
-		abort_if(!$user, 403);
 		abort_if($user->status != null, 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
@@ -640,7 +653,8 @@ class ApiV1Dot1Controller extends Controller
 
 	public function archive(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -672,7 +686,8 @@ class ApiV1Dot1Controller extends Controller
 
 	public function unarchive(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -703,7 +718,8 @@ class ApiV1Dot1Controller extends Controller
 
 	public function archivedPosts(Request $request)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -719,7 +735,8 @@ class ApiV1Dot1Controller extends Controller
 
 	public function placesById(Request $request, $id, $slug)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -757,8 +774,9 @@ class ApiV1Dot1Controller extends Controller
 
 	public function moderatePost(Request $request, $id)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
 		abort_if($request->user()->is_admin != true, 403);
+		abort_unless($request->user()->tokenCan('admin:write'), 403);
 
 		if(config('pixelfed.bouncer.cloud_ips.ban_signups')) {
 			abort_if(BouncerService::checkIp($request->ip()), 404);
@@ -864,7 +882,9 @@ class ApiV1Dot1Controller extends Controller
 
 	public function getWebSettings(Request $request)
 	{
-		abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('read'), 403);
+
         $uid = $request->user()->id;
         $settings = UserSetting::firstOrCreate([
             'user_id' => $uid
@@ -877,7 +897,9 @@ class ApiV1Dot1Controller extends Controller
 
     public function setWebSettings(Request $request)
     {
-        abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('write'), 403);
+
         $this->validate($request, [
             'field' => 'required|in:enable_reblogs,hide_reblog_banner',
             'value' => 'required'
@@ -901,7 +923,9 @@ class ApiV1Dot1Controller extends Controller
 
     public function getMutualAccounts(Request $request, $id)
     {
-        abort_if(!$request->user(), 403);
+		abort_if(!$request->user() || !$request->user()->token(), 403);
+		abort_unless($request->user()->tokenCan('follows'), 403);
+
         $account = AccountService::get($id, true);
         if(!$account || !isset($account['id'])) { return []; }
         $res = collect(FollowerService::mutualAccounts($request->user()->profile_id, $id))
