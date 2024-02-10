@@ -3691,8 +3691,7 @@ class ApiV1Controller extends Controller
      */
     public function statusReplies(Request $request, $id)
     {
-        abort_if(!$request->user() || !$request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_if(!$request->user(), 403);
 
         $this->validate($request, [
             'limit' => 'int|min:1|max:10',
@@ -3788,8 +3787,7 @@ class ApiV1Controller extends Controller
      */
     public function statusState(Request $request, $id)
     {
-        abort_if(!$request->user() || !$request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_if(!$request->user(), 403);
 
         $status = Status::findOrFail($id);
         $pid = $request->user()->profile_id;
