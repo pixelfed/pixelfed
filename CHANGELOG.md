@@ -1,6 +1,11 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.10...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.11...dev)
+
+## [v0.11.11 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.10...v0.11.11)
+
+### Fixes
+- Fix api endpoints ([fd7f5dbb](https://github.com/pixelfed/pixelfed/commit/fd7f5dbb))
 
 ## [v0.11.10 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.9...v0.11.10)
 
