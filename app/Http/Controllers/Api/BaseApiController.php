@@ -99,6 +99,7 @@ class BaseApiController extends Controller
     public function avatarUpdate(Request $request)
     {
         abort_if(!$request->user(), 403);
+
         $this->validate($request, [
             'upload'   => 'required|mimetypes:image/jpeg,image/jpg,image/png|max:'.config('pixelfed.max_avatar_size'),
         ]);
@@ -134,9 +135,10 @@ class BaseApiController extends Controller
 
     public function verifyCredentials(Request $request)
     {
+        abort_if(!$request->user(), 403);
+
         $user = $request->user();
-        abort_if(!$user, 403);
-        if($user->status != null) {
+        if ($user->status != null) {
             Auth::logout();
             abort(403);
         }
@@ -147,6 +149,7 @@ class BaseApiController extends Controller
     public function accountLikes(Request $request)
     {
         abort_if(!$request->user(), 403);
+
         $this->validate($request, [
         	'page' => 'sometimes|int|min:1|max:20',
         	'limit' => 'sometimes|int|min:1|max:10'

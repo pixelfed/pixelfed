@@ -23,7 +23,8 @@ class DomainBlockController extends Controller
 
     public function index(Request $request)
     {
-        abort_unless($request->user(), 403);
+        abort_if(!$request->user(), 403);
+
         $this->validate($request, [
             'limit' => 'sometimes|integer|min:1|max:200'
         ]);
@@ -52,7 +53,7 @@ class DomainBlockController extends Controller
 
     public function store(Request $request)
     {
-        abort_unless($request->user(), 403);
+        abort_if(!$request->user(), 403);
 
         $this->validate($request, [
             'domain' => 'required|active_url|min:1|max:120'
@@ -99,7 +100,7 @@ class DomainBlockController extends Controller
 
     public function delete(Request $request)
     {
-        abort_unless($request->user(), 403);
+        abort_if(!$request->user(), 403);
 
         $this->validate($request, [
             'domain' => 'required|min:1|max:120'

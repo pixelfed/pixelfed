@@ -18,8 +18,7 @@ class BearerTokenResponse extends \League\OAuth2\Server\ResponseTypes\BearerToke
     protected function getExtraParams(AccessTokenEntityInterface $accessToken)
     {
         return [
-        	'created_at' => time(),
-        	'scope' => 'read write follow push'
+            'created_at' => time(),
         ];
     }
 }
