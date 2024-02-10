@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-bullseye
+FROM php:8.2-fpm-bookworm
 
 ENV COMPOSER_MEMORY_LIMIT=-1
 ARG DEBIAN_FRONTEND=noninteractive
