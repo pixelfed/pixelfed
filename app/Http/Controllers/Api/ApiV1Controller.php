@@ -956,8 +956,7 @@ class ApiV1Controller extends Controller
      */
     public function accountRelationshipsById(Request $request)
     {
-        abort_if(!$request->user() || !$request->user()->token(), 403);
-        abort_unless($request->user()->tokenCan('read'), 403);
+        abort_if(!$request->user(), 403);
 
         $this->validate($request, [
             'id'    => 'required|array|min:1|max:20',
