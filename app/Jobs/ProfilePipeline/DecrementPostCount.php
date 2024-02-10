@@ -35,18 +35,7 @@ class DecrementPostCount implements ShouldQueue
      */
     public function handle()
     {
-        $id = $this->id;
-
-        $profile = Profile::find($id);
-
-        if(!$profile) {
-            return 1;
-        }
-
-        $profile->status_count = $profile->status_count ? $profile->status_count - 1 : 0;
-        $profile->save();
-        AccountService::del($id);
-
-        return 1;
+        // deprecated
+        return;
     }
 }

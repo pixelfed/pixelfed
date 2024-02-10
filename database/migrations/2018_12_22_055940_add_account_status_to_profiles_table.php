@@ -54,12 +54,14 @@ class AddAccountStatusToProfilesTable extends Migration
             $table->string('hub_url')->nullable();
         });
 
-        Schema::table('stories', function (Blueprint $table) {
-            $table->dropColumn('id');
-        });
-        Schema::table('stories', function (Blueprint $table) {
-            $table->bigIncrements('bigIncrements')->first();
-        });
+        if (Schema::hasTable('stories')) {
+            Schema::table('stories', function (Blueprint $table) {
+                $table->dropColumn('id');
+            });
+            Schema::table('stories', function (Blueprint $table) {
+                $table->bigIncrements('bigIncrements')->first();
+            });
+        }
 
         Schema::table('profiles', function (Blueprint $table) {
             $table->dropColumn('status');

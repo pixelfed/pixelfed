@@ -22,7 +22,10 @@ class NodeinfoService
         $wk = $url . '/.well-known/nodeinfo';
 
         try {
-            $res = Http::withHeaders($headers)
+            $res = Http::withOptions([
+                'allow_redirects' => false,
+            ])
+            ->withHeaders($headers)
             ->timeout(5)
             ->get($wk);
         } catch (RequestException $e) {
@@ -61,7 +64,10 @@ class NodeinfoService
         }
 
         try {
-            $res = Http::withHeaders($headers)
+            $res = Http::withOptions([
+                'allow_redirects' => false,
+            ])
+            ->withHeaders($headers)
             ->timeout(5)
             ->get($href);
         } catch (RequestException $e) {

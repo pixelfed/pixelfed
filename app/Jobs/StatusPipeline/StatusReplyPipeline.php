@@ -87,18 +87,20 @@ class StatusReplyPipeline implements ShouldQueue
         Cache::forget('status:replies:all:' . $reply->id);
         Cache::forget('status:replies:all:' . $status->id);
 
-        DB::transaction(function() use($target, $actor, $status) {
-            $notification = new Notification();
-            $notification->profile_id = $target->id;
-            $notification->actor_id = $actor->id;
-            $notification->action = 'comment';
-            $notification->item_id = $status->id;
-            $notification->item_type = "App\Status";
-            $notification->save();
+        if($target->user_id && $target->domain === null) {
+            DB::transaction(function() use($target, $actor, $status) {
+                $notification = new Notification();
+                $notification->profile_id = $target->id;
+                $notification->actor_id = $actor->id;
+                $notification->action = 'comment';
+                $notification->item_id = $status->id;
+                $notification->item_type = "App\Status";
+                $notification->save();
 
-            NotificationService::setNotification($notification);
-            NotificationService::set($notification->profile_id, $notification->id);
-        });
+                NotificationService::setNotification($notification);
+                NotificationService::set($notification->profile_id, $notification->id);
+            });
+        }
 
         if($exists = Cache::get('status:replies:all:' . $reply->id)) {
         	if($exists && $exists->count() == 3) {

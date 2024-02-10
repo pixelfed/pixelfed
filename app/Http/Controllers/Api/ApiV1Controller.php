@@ -219,6 +219,10 @@ class ApiV1Controller extends Controller
         if(!$res) {
             return response()->json(['error' => 'Record not found'], 404);
         }
+        if($res && strpos($res['acct'], '@') != -1) {
+            $domain = parse_url($res['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
         return $this->json($res);
     }
 
@@ -483,6 +487,11 @@ class ApiV1Controller extends Controller
         $limit = $request->input('limit', 10);
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
+        if($account && strpos($account['acct'], '@') != -1) {
+            $domain = parse_url($account['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
+
         if(intval($pid) !== intval($account['id'])) {
             if($account['locked']) {
                 if(!FollowerService::follows($pid, $account['id'])) {
@@ -574,6 +583,11 @@ class ApiV1Controller extends Controller
         ]);
         $limit = $request->input('limit', 10);
         $napi = $request->has(self::PF_API_ENTITY_KEY);
+
+        if($account && strpos($account['acct'], '@') != -1) {
+            $domain = parse_url($account['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
 
         if(intval($pid) !== intval($account['id'])) {
             if($account['locked']) {
@@ -676,6 +690,11 @@ class ApiV1Controller extends Controller
             return $this->json(['error' => 'Account not found'], 404);
         }
 
+        if($profile && strpos($profile['acct'], '@') != -1) {
+            $domain = parse_url($profile['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
+
         $limit = $request->limit ?? 20;
         $max_id = $request->max_id;
         $min_id = $request->min_id;
@@ -765,6 +784,11 @@ class ApiV1Controller extends Controller
         $target = Profile::where('id', '!=', $user->profile_id)
             ->whereNull('status')
             ->findOrFail($id);
+
+        if($target && $target->domain) {
+            $domain = $target->domain;
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
 
         $private = (bool) $target->is_private;
         $remote = (bool) $target->domain;
@@ -1252,13 +1276,18 @@ class ApiV1Controller extends Controller
         $user = $request->user();
         abort_if($user->has_roles && !UserRoleService::can('can-like', $user->id), 403, 'Invalid permissions for this action');
 
-        AccountService::setLastActive($user->id);
-
         $status = StatusService::getMastodon($id, false);
 
-        abort_unless($status, 400);
+        abort_unless($status, 404);
+
+        if($status && isset($status['account'], $status['account']['acct']) && strpos($status['account']['acct'], '@') != -1) {
+            $domain = parse_url($status['account']['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
 
         $spid = $status['account']['id'];
+
+        AccountService::setLastActive($user->id);
 
         if(intval($spid) !== intval($user->profile_id)) {
             if($status['visibility'] == 'private') {
@@ -1402,6 +1431,11 @@ class ApiV1Controller extends Controller
 
         if(!$target) {
             return response()->json(['error' => 'Record not found'], 404);
+        }
+
+        if($target && strpos($target['acct'], '@') != -1) {
+            $domain = parse_url($target['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
         }
 
         $followRequest = FollowRequest::whereFollowingId($pid)->whereFollowerId($id)->first();
@@ -2010,6 +2044,11 @@ class ApiV1Controller extends Controller
         }
 
         $account = Profile::findOrFail($id);
+
+        if($account && $account->domain) {
+            $domain = $account->domain;
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
 
         $count = UserFilterService::muteCount($pid);
         $maxLimit = intval(config('instance.user_filters.max_user_mutes'));
@@ -2653,6 +2692,11 @@ class ApiV1Controller extends Controller
             abort(404);
         }
 
+        if($res && isset($res['account'], $res['account']['acct'], $res['account']['url']) && strpos($res['account']['acct'], '@') != -1) {
+            $domain = parse_url($res['account']['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
+
         $scope = $res['visibility'];
         if(!in_array($scope, ['public', 'unlisted'])) {
             if($scope === 'private') {
@@ -2695,6 +2739,11 @@ class ApiV1Controller extends Controller
 
         if(!$status || !isset($status['account'])) {
             return response('', 404);
+        }
+
+        if($status && isset($status['account'], $status['account']['acct']) && strpos($status['account']['acct'], '@') != -1) {
+            $domain = parse_url($status['account']['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
         }
 
         if(intval($status['account']['id']) !== intval($user->profile_id)) {
@@ -2780,6 +2829,10 @@ class ApiV1Controller extends Controller
         $status = Status::findOrFail($id);
         $account = AccountService::get($status->profile_id, true);
         abort_if(!$account, 404);
+        if($account && strpos($account['acct'], '@') != -1) {
+            $domain = parse_url($account['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
         $author = intval($status->profile_id) === intval($pid) || $user->is_admin;
         $napi = $request->has(self::PF_API_ENTITY_KEY);
 
@@ -2871,6 +2924,10 @@ class ApiV1Controller extends Controller
         $pid = $user->profile_id;
         $status = Status::findOrFail($id);
         $account = AccountService::get($status->profile_id, true);
+        if($account && strpos($account['acct'], '@') != -1) {
+            $domain = parse_url($account['url'], PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
         abort_if(!$account, 404);
         $author = intval($status->profile_id) === intval($pid) || $user->is_admin;
         $napi = $request->has(self::PF_API_ENTITY_KEY);
@@ -3031,7 +3088,7 @@ class ApiV1Controller extends Controller
 
         $content = strip_tags($request->input('status'));
         $rendered = Autolink::create()->autolink($content);
-        $cw = $user->profile->cw == true ? true : $request->input('sensitive', false);
+        $cw = $user->profile->cw == true ? true : $request->boolean('sensitive', false);
         $spoilerText = $cw && $request->filled('spoiler_text') ? $request->input('spoiler_text') : null;
 
         if($in_reply_to_id) {
@@ -3200,7 +3257,11 @@ class ApiV1Controller extends Controller
         abort_if($user->has_roles && !UserRoleService::can('can-share', $user->id), 403, 'Invalid permissions for this action');
         AccountService::setLastActive($user->id);
         $status = Status::whereScope('public')->findOrFail($id);
-
+        if($status && ($status->uri || $status->url || $status->object_url)) {
+            $url = $status->uri ?? $status->url ?? $status->object_url;
+            $domain = parse_url($url, PHP_URL_HOST);
+            abort_if(in_array($domain, InstanceService::getBannedDomains()), 404);
+        }
         if(intval($status->profile_id) !== intval($user->profile_id)) {
             if($status->scope == 'private') {
                 abort_if(!FollowerService::follows($user->profile_id, $status->profile_id), 403);
