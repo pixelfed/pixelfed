@@ -31,11 +31,6 @@ class AuthServiceProvider extends ServiceProvider
             if(config('instance.oauth.pat.enabled')) {
                 Passport::personalAccessClientId(config('instance.oauth.pat.id'));
             }
-            Passport::setDefaultScope([
-                'read',
-                'write',
-                'follow',
-            ]);
 
             Passport::tokensCan([
                 'read' => 'Full read access to your account',
@@ -44,6 +39,12 @@ class AuthServiceProvider extends ServiceProvider
                 'admin:read' => 'Read all data on the server',
                 'admin:write' => 'Modify all data on the server',
                 'push'  => 'Receive your push notifications'
+            ]);
+
+            Passport::setDefaultScope([
+                'read',
+                'write',
+                'follow',
             ]);
         }
 
