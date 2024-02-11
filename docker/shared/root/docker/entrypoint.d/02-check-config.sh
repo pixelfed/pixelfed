@@ -17,5 +17,5 @@ for file in "${dot_env_files[@]}"; do
     # which do not (and should not) exists inside the container
     #
     # We disable fixer since its not interactive anyway
-    run-as-current-user dottie validate --file "${file}" --ignore-rule dir,file --no-fix
+    run-as-current-user dottie validate --file "${file}" --ignore-rule dir,file --exclude-prefix APP_KEY --no-fix
 done
