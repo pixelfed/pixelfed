@@ -2536,20 +2536,38 @@ class ApiV1Controller extends Controller
         AccountService::setLastActive($user->id);
         $domainBlocks = UserFilterService::domainBlocks($user->profile_id);
 
-        if($remote && config('instance.timeline.network.cached')) {
-            Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
-                if(NetworkTimelineService::count() == 0) {
-                    NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
-                }
-            });
+        if($remote) {
+            if(config('instance.timeline.network.cached')) {
+                Cache::remember('api:v1:timelines:network:cache_check', 10368000, function() {
+                    if(NetworkTimelineService::count() == 0) {
+                        NetworkTimelineService::warmCache(true, config('instance.timeline.network.cache_dropoff'));
+                    }
+                });
 
-            if ($max) {
-                $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
-            } else if ($min) {
-                $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+                if ($max) {
+                    $feed = NetworkTimelineService::getRankedMaxId($max, $limit + 5);
+                } else if ($min) {
+                    $feed = NetworkTimelineService::getRankedMinId($min, $limit + 5);
+                } else {
+                    $feed = NetworkTimelineService::get(0, $limit + 5);
+                }
             } else {
-                $feed = NetworkTimelineService::get(0, $limit + 5);
+                $feed = Status::select(
+                    'id',
+                    'profile_id',
+                    'type',
+                    'visibility',
+                    'in_reply_to_id',
+                    'reblog_of_id'
+                )
+                ->whereIn('type', ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
+                ->where('visibility', 'public')
+                ->whereLocal(false)
+                ->orderByDesc('id')
+                ->take(($limit * 2))
+                ->pluck('id');
             }
+
         }
 
         if($local || !$remote && !$local) {
