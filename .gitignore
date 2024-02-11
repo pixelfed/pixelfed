@@ -3,6 +3,7 @@
 .bashrc
 .DS_Store
 .env
+.env.dottie-backup
 .git-credentials
 .gitconfig
 /.composer/
